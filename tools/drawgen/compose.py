@@ -50,6 +50,14 @@ def fmt(v, nd=2):
     return "0" if s in ("-0", "") else s
 
 
+class _Smaller(Exception):
+    """The sheet's row of removed sections and flat pattern ran off the sheet at this scale: draw again smaller."""
+
+    def __init__(self, scale):
+        Exception.__init__(self, scale)
+        self.scale = scale
+
+
 class NotDrawable(Exception):
     """The part has something this tool can't dimension properly: it goes back to Fusion (D-112, D-113)."""
 
@@ -530,14 +538,28 @@ def flat_dims(sh, part, fv):
                 q = (end[0] + u[0] * sg * k, end[1] + u[1] * sg * k)
                 an = "left" if u[0] * sg > 0.5 else ("right" if u[0] * sg < -0.5 else "center")
                 cands.append((q[0], q[1] - 1.25, an))
-        pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), cands[0])
+        # where those are taken (a small flat's bend lines end at the corner reliefs, by the next wall): beside the
+        # line, just inside each end, on either side of it
+        for end, sg in ((pb, -1.0), (pa, 1.0)):
+            for k in (3.0, 8.0, 15.0):
+                q = (end[0] + u[0] * sg * k, end[1] + u[1] * sg * k)
+                for side in (1.0, -1.0):
+                    nx_, ny_ = -u[1] * side, u[0] * side
+                    an = "left" if nx_ > 0.5 else ("right" if nx_ < -0.5 else "center")
+                    cands.append((q[0] + nx_ * 1.5, q[1] + ny_ * 1.5 - (1.25 if abs(ny_) < 0.5 else (0.0 if ny_ > 0 else 2.5)),
+                                  an))
+        pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), None)
+        if pick is None:
+            raise NotDrawable("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
         sh.text(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
         row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
 
 
 def flat_data(part, pl):
     """A bent part's flat pattern as the sheet gives it, for the read-back: its DXF, the K-factor and radius, the
-    chains' outside flange lengths, fold angles and thickness, each bend's row, and where the flat view sits."""
+    chains' outside flange lengths, fold angles and thickness, each bend's row, how each flange unfolds into the flat
+    (the reading the holes pinned, or one of several the DXF's symmetry makes the same part) and where the flat view
+    sits."""
     fl = getattr(part, "flat", None)
     if not fl:
         return None
@@ -545,10 +567,12 @@ def flat_data(part, pl):
     return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
             "vgroove": bool(fl.vgroove),
             "chains": [{"t": ch.t, "flanges": [L for L, _d in ch.flanges], "angles": [f.angle for f in ch.folds],
-                        "radii": [f.r for f in ch.folds], "dxf_axis": m["dxf_axis"], "reversed": m["reversed"]}
+                        "radii": [f.r for f in ch.folds], "radii_out": [f.r_out for f in ch.folds],
+                        "dxf_axis": m["dxf_axis"], "reversed": m["reversed"]}
                        for ch, m in zip(fl.chains, fl.matches)],
             "rows": [{"tag": r_["tag"], "axis": r_["axis"], "at": r_["at"], "dir": r_["dir"], "angle": r_["angle"],
                       "r": r_["r"], "printed_at": r_.get("printed_at")} for r_ in fl.rows],
+            "map": fl.map.record(), "readings": fl.readings,
             "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None}
 
 
@@ -559,12 +583,16 @@ def bent_flat(part, team, bent):
     if len(part.bodies) != 1:
         raise NotDrawable("%s: a bent part of %d bodies isn't drawn yet" % (part.pn, len(part.bodies)))
     b = part.bodies[0]
-    dxfs = sorted(_glob.glob(os.path.join(inputs.MANUF, team, "%s_*_DXF.dxf" % part.pn)))
+    cfg = bent if isinstance(bent, dict) else {}
+    # a test's own part gives its DXF; a team's part has it beside its STEP
+    dxfs = [cfg["dxf"]] if cfg.get("dxf") else sorted(_glob.glob(os.path.join(inputs.MANUF, team, "%s_*_DXF.dxf" % part.pn)))
     if not dxfs:
         raise NotDrawable("%s: a bent part needs its flat pattern's DXF in v2/03-Manufacturing/%s" % (part.pn, team))
-    cfg = bent if isinstance(bent, dict) else {}
     holes = [ft.f for ft in part.features if ft.body is b and ft.kind == "hole"]
     slots = [ft.f for ft in part.features if ft.body is b and ft.kind != "hole"]
+    if slots:
+        # the flat's check matches round holes only: a slot's DXF outline would go unchecked
+        raise NotDrawable("%s: a bent part's slots aren't matched to its DXF yet (%d in the model)" % (part.pn, len(slots)))
     try:
         fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes,
                                 vgroove=cfg.get("vgroove"))
@@ -634,8 +662,9 @@ def folded_or_bent(part):
     return None
 
 
-def _rectangle(wire):
-    """True when a wire is four straight edges, each parallel or square to the first."""
+def _rectangle(wire, cuts=False):
+    """True when a wire is four straight edges, each parallel or square to the first; with cuts, also short edges at
+    45° to them across corners (bevels along a member, legs 5 or less)."""
     from OCP.BRepAdaptor import BRepAdaptor_Curve
     from OCP.GeomAbs import GeomAbs_Line
     dirs = []
@@ -647,9 +676,12 @@ def _rectangle(wire):
         vs = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(ed)]
         if len(vs) != 2:
             return False
-        dirs.append(geom.vnorm(geom.vsub(vs[1], vs[0])))
+        dirs.append((geom.vnorm(geom.vsub(vs[1], vs[0])), math.dist(vs[0], vs[1])))
         e.Next()
-    return len(dirs) == 4 and all(abs(vdot(d, dirs[0])) < 1e-6 or abs(abs(vdot(d, dirs[0])) - 1) < 1e-6 for d in dirs)
+    ref = max(dirs, key=lambda t: t[1])[0]
+    square = [d for d, L in dirs if abs(vdot(d, ref)) < 1e-6 or abs(abs(vdot(d, ref)) - 1) < 1e-6]
+    cut = [d for d, L in dirs if cuts and abs(abs(vdot(d, ref)) - 0.7071068) < 1e-4 and L <= 5.0 * math.sqrt(2) + 0.01]
+    return len(square) == 4 and len(square) + len(cut) == len(dirs)
 
 
 def _convex(wire, lax):
@@ -700,8 +732,16 @@ def plain_section(b, lax):
         while e.More():
             wires.append(TopoDS.Wire_s(e.Current()))
             e.Next()
-        if (len(wires) == 1 and _convex(wires[0], lax)) or (len(wires) == 2 and all(_rectangle(w) for w in wires)):
+        if len(wires) == 1 and _convex(wires[0], lax):
             return True
+        if len(wires) == 2:
+            # the outer outline may have bevels across its corners (recognised as chamfers along the member); the bore
+            # is a plain rectangle
+            size = [sum((max(c) - min(c)) for c in zip(*[geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v)))
+                                                          for v in geom._vertices_of(w)])) for w in wires]
+            outer, inner = (wires[0], wires[1]) if size[0] >= size[1] else (wires[1], wires[0])
+            if _rectangle(outer, cuts=True) and _rectangle(inner):
+                return True
     return False
 
 
@@ -976,6 +1016,18 @@ def plan_views(part, spec):
         g.blocked = blocked
         g.free = free
         pl.groups.append(g)
+    # a chamfer no planned view shows (edge on, or as a band it faces) gets one: the view along its edge first (its
+    # true 45°), else one it faces (a bevel along a featureless tube needs the tube's end view)
+    def shows(v, ch):
+        on = abs(abs(vdot(v.n, ch.edge)) - 1) < 1e-6 and abs(vdot(v.n, ch.n)) < 1e-6
+        return on or (abs(vdot(v.n, ch.edge)) < 1e-6 and vdot(v.n, ch.n) > 0.05)
+    for ch in getattr(part, "chamfers", []):
+        if any(shows(rel[nm], ch) for nm in pl.plain if nm in rel):
+            continue
+        cand = [nm for nm, v in rel.items() if abs(abs(vdot(v.n, ch.edge)) - 1) < 1e-6 and abs(vdot(v.n, ch.n)) < 1e-6] or \
+            [nm for nm, v in rel.items() if shows(v, ch)]
+        if cand:
+            pl.plain.add(cand[0])
     # every end cut (a mitre, a compound cut's faces) shown in profile by a drawn view: edge on, the member's axis
     # across the view, where its angle from square prints at its end. A view is added where none does (FRONT's #320:
     # 8 tubes whose only view saw their mitres face on, as bands); a cut no plain view shows in profile is refused
@@ -1058,6 +1110,22 @@ def plan_views(part, spec):
         r.point = vadd(ft.f.entry, vmul(ft.f.axis, ft.f.depth / 2))
         r.n = n
         r.y = y
+        pl.removed.append(r)
+    # a bevel along a member is drawn at its true 45° in a section across that member (Reviewer 6 on #331: C1's seam
+    # bevel showed only as a band at 1:5): one is added where no removed section crosses that member
+    for ch in getattr(part, "chamfers", []):
+        if not ch.long or any(r_.body is ch.body for r_ in pl.removed):
+            continue
+        P0 = pl.principal
+        yv = next((c for c in (P0.y, P0.x, P0.n) if abs(vdot(c, ch.lax)) < 0.99), None)
+        yv = vnorm(vsub(yv, vmul(ch.lax, vdot(yv, ch.lax))))
+        pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(q))) for q in geom._vertices_of(ch.body.shape)]
+        sv = [vdot(q, ch.lax) for q in pts]
+        r = Plan()
+        r.feats, r.all, r.body = [], [], ch.body
+        r.n, r.y = ch.lax, yv
+        r.point = vadd(ch.body.centroid, vmul(ch.lax, (min(sv) + max(sv)) / 2 - vdot(ch.body.centroid, ch.lax)))
+        r.bevel = ch
         pl.removed.append(r)
     # a bent part: a section across each run of bends (its profile), seen as the related view along the bend lines
     # sees it, so each flange's outside length is sized where it shows true
@@ -1197,6 +1265,8 @@ def draw(part, spec, out_path, today=None):
     scale, rear_down, table_w = None, False, tw0
     for s in ISO_SCALES:
         if spec.get("scale") and abs(s - spec["scale"]) > 1e-9:
+            continue
+        if spec.get("_max_scale") and s > spec["_max_scale"] + 1e-9:
             continue
         for tw in (tw0, 230.0, 200.0):
             if tw > tw0 or not tables_fit(tw):
@@ -1442,6 +1512,15 @@ def draw(part, spec, out_path, today=None):
                 continue
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             rx += w + 80
+    # the removed sections and the flat pattern stay on the sheet: the scale was chosen for the main views alone, so
+    # where this row runs off the sheet the views are drawn again at the next smaller scale (make retries)
+    right_edge = W - 10 - pl.table_w - 4 - 10
+    for vd in place:
+        if vd.kind in ("detail", "aux") or getattr(vd, "dropped", False):
+            continue
+        b_ = vd.box()
+        if b_[1] < 20 or b_[0] < 20 or b_[2] > right_edge:
+            raise _Smaller(scale)
     for dv in [d_ for d_ in details if getattr(d_, "dropped", False)]:
         if pl.notch_views.get(dv.parent_name, (None, None, False))[2]:
             raise NotDrawable("%s: no room on the sheet for the detail that sizes the notch" % part.pn)
@@ -1683,26 +1762,34 @@ def chamfer_text(ch):
     return "%s x 45°" % fmt(ch.leg)
 
 
-def chamfer_callouts(sh, part, pl, vds):
+def chamfer_callouts(sh, part, pl, vds, removed=()):
     """Each chamfer (an edge break with equal legs): its size on a leader, in the view that looks along its edge
     and so shows its true angle, at the largest scale (ISO 129-1: '1 x 45°'); the leader goes out from the
     chamfer's middle, turned or longer until the text touches nothing and the leader crosses no text."""
     for ch in part.chamfers:
-        edge = vnorm(vcross(ch.lax, ch.side_n))
-        hosts = []
-        for vd in list(vds.values()) + list(getattr(pl, "details", [])):
-            if abs(vdot(vd.view.n, ch.n)) > 1e-6 or abs(abs(vdot(vd.view.n, edge)) - 1) > 1e-6:
+        edge = ch.edge
+        hosts, bands = [], []
+        # a removed section across the bevel's own member shows a bevel along it at its true angle (CEILING's seam
+        # member, 2:1)
+        secs_ = [r_ for r_ in removed if getattr(r_, "r", None) is not None and r_.r.body is ch.body and ch.long]
+        for vd in list(vds.values()) + list(getattr(pl, "details", [])) + secs_:
+            if abs(abs(vdot(vd.view.n, edge)) - 1) < 1e-6 and abs(vdot(vd.view.n, ch.n)) < 1e-6:
+                into = hosts            # looking along its edge: its true 45°
+            elif abs(vdot(vd.view.n, edge)) < 1e-6 and vdot(vd.view.n, ch.n) > 0.05:
+                into = bands            # facing it, its edge across the view: a band (CEILING's frames)
+            else:
                 continue
             q2 = [vd.view.to2d(p_) for p_ in ch.pts]
             m2 = (sum(q[0] for q in q2) / len(q2), sum(q[1] for q in q2) / len(q2))
             w = getattr(vd, "window", None)
             if vd.kind == "detail" and not (w[0] <= m2[0] <= w[1] and w[2] <= m2[1] <= w[3]):
                 continue
-            hosts.append((vd, m2))
-        if not hosts:
-            raise NotDrawable("%s: no view looks along the edge of the %s chamfer at its %s end" % (
-                part.pn, chamfer_text(ch), axis_name(vmul(ch.lax, ch.sgn)) or "far"))
-        vd, m2 = max(hosts, key=lambda t: t[0].scale)
+            into.append((vd, m2))
+        if not hosts and not bands:
+            raise NotDrawable("%s: no view shows the %s chamfer %s" % (
+                part.pn, chamfer_text(ch), "along %s" % ch.body.name if ch.long else
+                "at its %s end" % (axis_name(vmul(ch.lax, ch.sgn)) or "far")))
+        vd, m2 = max(hosts or bands, key=lambda t: t[0].scale)
         m = vd.S(m2)
         n2 = vd.view.to2d(ch.n)
         ln = math.hypot(*n2)
@@ -1728,7 +1815,7 @@ def chamfer_callouts(sh, part, pl, vds):
         sh.line(tail, m, 0.25)
         sh.arrow(m, (-u[0], -u[1]), 2.2, 0.9)
         sh.text(tx, tail[1], txt, 2.5, an, valign="mid")
-        ch.drawn = {"view": vd, "tip": m, "text": txt}
+        ch.drawn = {"view": vd, "tip": m, "text": txt, "box": sh.text_box(tx, tail[1], txt, 2.5, an, valign="mid")}
 
 
 def open_slot_dims(sh, vd, ft):
@@ -2266,7 +2353,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         flat_dims(sh, part, fv)
     sh.flush()
     aux_arrows()
-    chamfer_callouts(sh, part, pl, vds)
+    chamfer_callouts(sh, part, pl, vds, removed)
     sh.flush()
     # ---- removed sections: each wall's hole sized across its gap, on the outside of that wall (ISO 129-1), with
     # its tag; the words slide out along the line past anything they would touch
@@ -2382,7 +2469,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             continue
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
-              if vd.r.feats else "across the middle, showing the thickness",
+              if vd.r.feats else ("across %s, showing its bevel along it" % (vd.r.body.name or "the member"))
+              if getattr(vd.r, "bevel", None) else "across the middle, showing the thickness",
               extra=mapping_words(vd.view, part.pod_system))
     sh.flush()
     # ---- centre marks, origins and tags (draw's place_marks), clear of everything above
@@ -2692,21 +2780,25 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
     fl = getattr(part, "flat", None)
     if fl and fl.vgroove:
         gcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
-                 ("GROOVE", tw - 118, "l")]
+                 ("OUTSIDE RADIUS", 30, "r"), ("GROOVE", tw - 148, "l")]
         grows = [[row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
                                                            "left" if row["axis"] == "x" else "lower"),
-                  row["dir"], "%s°" % fmt(row["angle"]), str(fl.vgroove)] for row in fl.rows]
+                  row["dir"], "%s°" % fmt(row["angle"]), ("R%s" % fmt(row["r_out"])) if row.get("r_out") else "sharp",
+                  str(fl.vgroove)] for row in fl.rows]
+        rounded = any(row.get("r_out") for row in fl.rows)
         head = ["FOLDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
-                "V-groove and fold: UP, the fold closes toward the viewer of the flat pattern as drawn; each line at the "
-                "outside corner (the flat is the sum of the outside lengths)"]
+                "V-groove and fold: UP, the fold closes toward the viewer of the flat pattern as drawn; %s" % (
+                    "each line at the middle of its fold's outside arc (the flat develops along the outer face: each leg "
+                    "to its arc, plus the arc)" if rounded else
+                    "each line at the outside corner (the flat is the sum of the outside lengths)")]
         y = sh.table(right_x0, y, gcols, grows, size=2.5, title=head, title_size=2.5) - 5.0
     elif fl:
         bcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
                  ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 148, "l")]
         brows = []
         for row in fl.rows:
-            ch = next(c for c in fl.chains if any(row["line"] is ln for m in fl.matches for ln in m["lines"]))
-            f = next(f for c, m in zip(fl.chains, fl.matches) for f, ln in zip(c.folds, m["lines"]) if ln is row["line"])
+            ch, f = next((c, f) for c, m in zip(fl.chains, fl.matches) for f, ln in zip(c.folds, m["lines"])
+                         if ln is row["line"])
             import sheetmetal
             brows.append([row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
                                                                     "left" if row["axis"] == "x" else "lower"),
@@ -2778,10 +2870,15 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     fl = getattr(part, "flat", None)
     if fl and fl.vgroove:
+        rounded = sorted({fmt(f.r_out) for ch in fl.chains for f in ch.folds if f.r_out})
         notes.append("V-grooved and folded from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the "
-                     "folds' outside corners. The outer skin runs round each fold unstretched, so the flat is the sum of "
-                     "the outside lengths (the DXF checked against the model's flanges, every line within 0.05). Groove: "
-                     "%s. Flange lengths are outside sizes." % (inputs.rel(fl.path), inputs.sha12(fl.path), fl.vgroove))
+                     "folds' lines. The outer skin runs round each fold unstretched, so the flat develops along the outer "
+                     "face: %s (the DXF checked against the model's flanges, every line within 0.05). Groove: %s. Flange "
+                     "lengths are outside sizes, to each fold's outside sharp." % (
+                         inputs.rel(fl.path), inputs.sha12(fl.path),
+                         ("each leg to its fold's outside arc (R%s, the model's), plus the arc, each line at the arc's "
+                          "middle" % "/".join(rounded)) if rounded else
+                         "the sum of the outside lengths, each line at the outside corner", fl.vgroove))
     elif fl:
         import sheetmetal
         rad = "R%s from %s" % (fmt(fl.radius), fl.radius_from)
@@ -2913,7 +3010,15 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
     import re as _re
     m = _re.search(r"(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}", head)
     today = today or (m.group(1) if m else datetime.date.today().isoformat())
-    sh, pl, vds, secs, removed, dat, scale, report, groups = draw(part, spec, None, today)
+    while True:
+        try:
+            sh, pl, vds, secs, removed, dat, scale, report, groups = draw(part, spec, None, today)
+            break
+        except _Smaller as e:
+            smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
+            if not smaller:
+                raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
+            spec = dict(spec, _max_scale=smaller[0])
     spec = dict(spec)
     spec["_scale"] = scale
     other = [vd for nm, vd in sorted(vds.items()) if nm in pl.aux and abs(vd.scale - scale) > 1e-9]
@@ -3032,7 +3137,8 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                         "texts": dict(dr["texts"]) if dr else None, "drawn": nt is shown,
                         "box": dr["view"].box() if dr else None})
     chamfers = [{"sgn": ch.sgn, "end_s": ch.end_s, "lax": ch.lax, "side_n": ch.side_n, "n": ch.n, "leg": ch.leg,
-                 "pts": ch.pts, "text": ch.drawn["text"], "tip": ch.drawn["tip"]} for ch in part.chamfers]
+                 "long": ch.long, "leg_dirs": ch.leg_dirs, "pts": ch.pts, "text": ch.drawn["text"],
+                 "tip": ch.drawn["tip"], "box": ch.drawn["box"]} for ch in part.chamfers]
     feats = []
     for g in groups:
         vd = vds.get(g.view) if g.view else g.vd
@@ -3045,7 +3151,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                 feats[-1].update({"r": ft.f.r, "edge": ft.f.edge, "mouth": ft.f.mouth, "taper": ft.f.taper,
                                   "along": ft.f.along, "size": size_text(ft),
                                   "dims": getattr(ft, "dims", {}).get("texts"), "dims_box": getattr(ft, "dims", {}).get("box")})
-    return {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
+    out = {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
             "placement": ({"assembly": part.placement["assembly"], "m": part.placement["m"],
                            "t": part.placement["shift"]} if part.placement else None),
             "sheet_h": sh.H, "sources": srcs, "origin": dat["O"], "occurrences": part.occurrences,
@@ -3054,5 +3160,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                        if dat.get("C_plane") else None},
             "views": views, "features": feats, "notches": notches, "chamfers": chamfers,
             "angles": getattr(pl, "angle_marks", []),
-            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])],
-            "flat": flat_data(part, pl)}
+            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
+    if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
+        out["flat"] = flat_data(part, pl)
+    return out
