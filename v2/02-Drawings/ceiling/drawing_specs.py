@@ -147,7 +147,8 @@ def frame_hole_notes(half):
              "BACK SPIGOT ROUND": "back member, underside", "BACK SPIGOT SLOT": "back member, underside, slot 14 long along X",
              "SOFFIT HANGER FRONT": "front member, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
              "SOFFIT HANGER X1": "cross member X1, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
-             "SOFFIT LOCK": "front member, underside (rivnuts 838003 for the soffit's two captive lock screws, D-87)"}
+             "SOFFIT LOCK": "cross member 1, underside (rivnuts 838003 for the soffit's two captive lock screws, D-87; "
+                            "C2's are the same part's, unused)"}
     out = []
     for (name, d), pts in rows.items():
         if name.startswith(("BACK", "SOFFIT")):
