@@ -802,6 +802,33 @@ def key_note_fails(text, matched, krows, tol=0.1, holes=None):
     return out
 
 
+def angle_fails(data, faces, page_text, tol=0.01):
+    """An angle member's section (AIR's 611103), against the STEP's own faces (the repo's reader): its legs' outside
+    lengths (the part's extent along each leg) and its wall (the step between the two planes facing along the other
+    leg) must be the ones the section's title prints ('angle a x b x t')."""
+    fails = []
+    txt = " ".join(page_text.split())
+    for ag in data.get("angle_sections", []):
+        u, v, heel = ag["u"], ag["v"], ag["heel"]
+        pts = [p for f in faces if f["kind"] == "plane" and f["pts"] for p in f["pts"]]
+        a = max(dot(sub(p, heel), u) for p in pts) - min(dot(sub(p, heel), u) for p in pts)
+        b = max(dot(sub(p, heel), v) for p in pts) - min(dot(sub(p, heel), v) for p in pts)
+        offs = sorted({round(dot(sub(f["pts"][0], heel), v), 4) for f in faces if f["kind"] == "plane" and "n" in f
+                       and f["pts"] and abs(abs(dot(f["n"], v)) - 1) < 1e-6})
+        t = offs[1] - offs[0] if len(offs) >= 2 else None
+        m = re.search(r"SECTION %s-%s \S+ across the member: angle ([\d.]+) x ([\d.]+) x ([\d.]+)" % (
+            ag["letter"], ag["letter"]), txt)
+        if not m:
+            fails.append("section %s-%s: the angle's sizes aren't printed in its title" % (ag["letter"], ag["letter"]))
+            continue
+        pa, pb, pt = (float(g) for g in m.groups())
+        for name, got, want in (("leg", pa, a), ("leg", pb, b), ("wall", pt, t)):
+            if want is None or abs(got - want) > tol:
+                fails.append("section %s-%s prints the angle's %s %s; the STEP's is %s" % (
+                    ag["letter"], ag["letter"], name, _fmtv(got), "?" if want is None else _fmtv(want)))
+    return fails
+
+
 def check(pdf_path, step_path=None, verbose=False):
     """Run every check on one drawing; returns (failures, stats)."""
     doc = fitz.open(pdf_path)
@@ -936,6 +963,7 @@ def check(pdf_path, step_path=None, verbose=False):
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
+    fails += angle_fails(data, faces, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
     fails += vgroove_radius_fails(data, faces)
     two_wall = bool(two_wall_pairs(data["features"]))

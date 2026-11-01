@@ -279,8 +279,9 @@ def _profile(path, kind):
 
 def test_profiles_and_short_tubes():
     """A tube shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it reads as a tube,
-    not a folded sheet. A member whose section is an angle (an extrusion: its list says so) is refused as a profile to
-    size, not drawn with only its outer sizes (the sweep found FRONT's kick strip 361002 drawn so). A tube with a
+    not a folded sheet. A member whose section is an angle (an extrusion or a bought angle: its list says so) is
+    drawn with its section sized (legs and wall), read back against the STEP's faces; a sheet read against an angle of
+    another wall fails. A tube with a
     1 x 45° bevel along an outer corner (CEILING's seam member) is drawn, the bevel called out where a view shows its
     true angle, and read back against the STEP."""
     d = os.path.join(TMP, "profiles")
@@ -288,11 +289,34 @@ def test_profiles_and_short_tubes():
     stub = _profile(os.path.join(d, "219994_P01_TEST-STUB_STEP.step"), "stub")
     compose.Part("219994", "none", step=stub, row=dict(ROW, part_number="219994"))      # not refused as folded
     step = _profile(os.path.join(d, "219993_P01_TEST-ANGLE_STEP.step"), "angle")
-    try:
-        compose.Part("219993", "none", step=step, row=dict(ROW, part_number="219993", process="extruded angle, cut"))
-        raise AssertionError("drew an extruded angle as a plain member")
-    except compose.NotDrawable as e:
-        assert "is a profile" in str(e), str(e)
+    # an angle (AIR's 611103, FRONT's stops) is drawn with its section sized: a section across it, its legs and wall
+    # in its title and dimensions, read back against the STEP's own faces
+    pa = os.path.join(d, "angle.pdf")
+    compose.make("219993", "none", SPEC, pa, step=step, row=dict(ROW, part_number="219993", process="extruded angle, cut"))
+    fails, _st = readback.check(pa, step)
+    assert not fails, fails
+    dat = readback.read_data(fitz.open(pa))
+    assert [(round(a_["a"], 3), round(a_["b"], 3), round(a_["t"], 3)) for a_ in dat["angle_sections"]] == [(20.0, 20.0, 2.0)], dat
+    assert "angle 20 x 20 x 2, sharp root" in " ".join(fitz.open(pa)[0].get_text().split())
+    # the same sheet against an angle whose wall is 3: the read-back fails its printed wall
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt
+    bb = readback.step_faces(step, "219993")
+    xs = [p_[0] for f_ in bb for p_ in f_["pts"]]
+    ys = [p_[1] for f_ in bb for p_ in f_["pts"]]
+    zs = [p_[2] for f_ in bb for p_ in f_["pts"]]
+    x0, y0, z0 = min(xs), min(ys), min(zs)
+    fu = BRepAlgoAPI_Fuse(BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, z0), 20, max(ys) - y0, 3).Shape(),
+                          BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, z0), 3, max(ys) - y0, 20).Shape())
+    fu.Build()
+    other = os.path.join(d, "219993_P01_TEST-ANGLE-3_STEP.step")
+    w_ = STEPControl_Writer()
+    w_.Transfer(fu.Shape(), STEPControl_AsIs)
+    w_.Write(other)
+    f3 = readback.angle_fails(dat, readback.step_faces(other, "219993"), fitz.open(pa)[0].get_text())
+    assert any("prints the angle's wall 2; the STEP's is 3" in x for x in f3), f3
     step = _profile(os.path.join(d, "219992_P01_TEST-BEVELLED_STEP.step"), "bevelled")
     p = os.path.join(d, "bevelled.pdf")
     compose.make("219992", "none", SPEC, p, step=step, row=dict(ROW, part_number="219992", process="cut"))
