@@ -457,16 +457,14 @@ def p02_seal_runs(design):
         runs.append(("seal_r", "band_r", "X = %.2f (side band RH, inner face)" % v(xi), Y_MITRE_IN_R, yb,
                      [("%s - seal_t" % xi, Y_MITRE_IN_R), (xi, Y_MITRE_IN_R), (xi, yb), ("%s - seal_t" % xi, yb)]))
     if "sill" in PARTS:
-        # the sill's door-end plate (Reviewer 8's P1 on #303): its lip runs the closed end's whole bottom edge, from
-        # FR1's inner face to the kerb's outer face. Its leg is bonded on the plate's pod side; its envelope there starts
-        # where FR1's lip envelope ends (Y -pod_d/2 + band_t + seal_t), so the two only touch. Its fin sits under the
-        # plate, flush with the plate's outer face (p02_seal_fins), so FRONT's brush on the kick strip's end closes on
-        # one flat face from the floor up and the seal line has no gap at the corner.
-        xp, yr, yk = "(%s + sl_t)" % X_FR0, "(-pod_d / 2 + band_t)", "(-glass_y + ch_w / 2)"
-        runs.append(("seal_se", "front_r", "X = %.2f (the sill's door-end plate, its bottom edge)" % v(X_FR0), yr,
-                     "(%s + sl_t)" % yk,
-                     [(xp, "(%s + seal_t)" % yr), ("(%s + seal_t)" % xp, "(%s + seal_t)" % yr), ("(%s + seal_t)" % xp, yk),
-                      (xp, yk)]))
+        # the sill's door-end plate (D-150, Reviewer 8's P1 on #303): its lip runs the plate's bottom edge from FR1's
+        # lip (Y -pod_d/2 + band_t + seal_t, where FR1's lip envelope ends: the two only touch) to the kerb. Its leg is
+        # bonded on the plate's pod side and its fin sits under the plate, flush with the plate's outer face
+        # (p02_seal_sections), so FRONT's brush on the kick strip's end closes on a flat face from the floor up.
+        y0, y1 = "(-pod_d / 2 + band_t + seal_t)", "(-glass_y + ch_w / 2)"
+        xe = "(%s + sl_t + seal_t)" % X_FR0
+        runs.append(("seal_se", "front_r", "X = %.2f (the sill's door-end plate, its bottom edge)" % v(X_FR0), y0, y1,
+                     [(X_FR0, y0), (xe, y0), (xe, y1), (X_FR0, y1)]))
     if "fr1" in PARTS:
         # with the sill's door-end plate, FR1's lip starts at the plate's pod side (the plate's lip turns the corner)
         yf, x0 = "-pod_d / 2 + band_t", ("(%s + sl_t)" % X_FR0 if "sill" in PARTS else X_FR0)
@@ -475,14 +473,18 @@ def p02_seal_runs(design):
     return runs
 
 
-def p02_seal_fins(design):
-    """Fins of a lip that reach past its plan envelope, below the band's bottom line only: {run key: plan rectangle}.
-    The sill's door-end plate's lip has its fin under the plate (2 mm), flush with the plate's outer face X_FR0, from
-    FR1's inner face to the kerb's outer face; it is joined to that run's envelope, from the room floor to glide_h."""
+def p02_seal_sections(design):
+    """Lips whose envelope is a section across the run, not a plan rectangle: {run key: (start y, end y, [(x, z)])},
+    built as one extrude along +Y. The sill's door-end plate's lip: its leg on the plate's pod side (X_FR0 + sl_t to
+    + seal_t, up to seal_leg above the band's bottom) and its fin under the 2 mm plate, flush with the plate's outer
+    face X_FR0, from the room floor to the band's bottom line (an L). One extrude: a fin joined to the leg as a second
+    body stayed a second body in Fusion (2026-11-01)."""
     if "sill" not in PARTS:
         return {}
-    xp, yr, yk = "(%s + sl_t)" % X_FR0, "(-pod_d / 2 + band_t)", "(-glass_y + ch_w / 2 + sl_t)"
-    return {"seal_se": [(X_FR0, yr), (xp, yr), (xp, yk), (X_FR0, yk)]}
+    xo, xp, xe = X_FR0, "(%s + sl_t)" % X_FR0, "(%s + sl_t + seal_t)" % X_FR0
+    sec = [(xo, "0 mm"), (xe, "0 mm"), (xe, "glide_h + seal_leg"), (xp, "glide_h + seal_leg"), (xp, "glide_h"),
+           (xo, "glide_h")]
+    return {"seal_se": ("(-pod_d / 2 + band_t + seal_t)", "(-glass_y + ch_w / 2)", sec)}
 
 def p02_export(design, out):
     """The batch's facts for make_outputs.py: tube cuts, the sill's section (for its flat pattern) and length."""
