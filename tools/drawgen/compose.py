@@ -3110,7 +3110,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                 feats[-1].update({"r": ft.f.r, "edge": ft.f.edge, "mouth": ft.f.mouth, "taper": ft.f.taper,
                                   "along": ft.f.along, "size": size_text(ft),
                                   "dims": getattr(ft, "dims", {}).get("texts"), "dims_box": getattr(ft, "dims", {}).get("box")})
-    return {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
+    out = {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
             "placement": ({"assembly": part.placement["assembly"], "m": part.placement["m"],
                            "t": part.placement["shift"]} if part.placement else None),
             "sheet_h": sh.H, "sources": srcs, "origin": dat["O"], "occurrences": part.occurrences,
@@ -3119,5 +3119,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                        if dat.get("C_plane") else None},
             "views": views, "features": feats, "notches": notches, "chamfers": chamfers,
             "angles": getattr(pl, "angle_marks", []),
-            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])],
-            "flat": flat_data(part, pl)}
+            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
+    if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
+        out["flat"] = flat_data(part, pl)
+    return out

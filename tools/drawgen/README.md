@@ -75,11 +75,16 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   tagged B1..., MARK bend-zone edges thin) with its overall size; and a bend table: each bend line's place in the
   flat, its direction (UP: toward the viewer of the flat as drawn), angle, inside radius and bend allowance. The folds
   come from the model's own section; the DXF's bend lines must sit where the model's flanges put them at one K-factor
-  (solved from the DXF's flat size, and stated); the DXF's holes must sit where the model's holes unfold to; a model
+  (solved from the DXF's flat size, and stated); every model hole must sit on a DXF circle of its size where it
+  unfolds to, and every DXF circle on a model hole, on one run of bends or two (a tray: across each run from its own
+  flange, along it from the base both share). Where no hole pins which way up the DXF is drawn, every reading the
+  bend lines allow must fold the same part, so the DXF must be symmetric that way, or the part is refused (Reviewer 6
+  on #335). Cut-outs that aren't round holes, and slots, are refused for now (the check reads round holes). A model
   that folds sharp takes its inside radius from the entry. Anything else is refused with the reason (INTERIOR's
-  811201: a hole the DXF cuts in a bend zone).
+  811201: a hole the DXF cuts in a bend zone; WALL's 511202: its 304 x 268 and 80 x 11 cut-outs).
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
+  Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.
 - Labels: every line is drawn first (views, cutting planes, dimensions), then hole callouts, view titles, tags,
   origin names and datum symbols each go where they touch no line and no other text.
 - Title block: UNITS: mm, the first-angle symbol, part number, name (English and Vietnamese), revision of the
@@ -115,6 +120,7 @@ to be the same as the drawn one measures the same); the text has what the mechan
 Creator is drawgen, and no text touches another text or a part outline and no line runs through a text (read from
 the PDF's own text and paths); for a bent part, every bend row is on one of the DXF's BEND lines (read again, without
 OCC), each run's bend lines sit where its outside flange lengths, angles, inside radius and the printed K-factor put
-them within 0.05 mm, its flat is as long as the DXF's, and the flat's size, the K-factor and every bend tag are
-printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+them within 0.05 mm, its flat is as long as the DXF's, every STEP hole unfolds (by the sheet's record of how each
+flange unfolds, each flange checked against a face of the STEP) onto a DXF circle of its size within 0.05 mm and
+every DXF circle onto a STEP hole, and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.

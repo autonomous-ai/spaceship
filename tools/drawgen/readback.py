@@ -905,6 +905,8 @@ def check(pdf_path, step_path=None, verbose=False):
         fails += open_slot_fails(data, faces, rows, tb)
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
     fails += end_cut_fails(data, faces, tb)
+    if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
+        fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
     two_wall = bool(two_wall_pairs(data["features"]))
