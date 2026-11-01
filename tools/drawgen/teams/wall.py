@@ -15,7 +15,7 @@ WALL_FRAME = {
         "passes J-T7's coupons (HOLD-22).",
         "Weld in a jig that holds every member flat and square on its skin side: diagonally opposite corners in "
         "turn, then the T joints from the middle out, alternating sides; the frame cools in the jig. Beads on the "
-        "skin-side faces and the seam faces ground flush (0 to 0.2).",
+        "skin-side faces and the seam faces ground flush (0 to 0.2 proud, never more than 0.3 below the face).",
         "Pre-galvanized tube, zinc Z100: no hot-dip galvanizing after welding, so no vent or drain holes. Every "
         "burnt zone wire-brushed and coated with a 2-component zinc-rich epoxy (about 40 µm dry; assumption).",
         "Every joint hole is made after welding and the touch-up, by CNC or a drill jig that locates on the frame's "
@@ -24,7 +24,8 @@ WALL_FRAME = {
     "tolerance": "hole and slot positions Ø0.4 to A|B|C (R-J6); spigot hole and slot ±0.1 from the frame ends "
                  "(joints register section 4); rivnut holes Ø9.53 +0.10/0 (maker); other hole sizes +0.2/0 "
                  "(assumption); cut lengths ±0.5 (parts list); welded frame: seam faces flat within 0.5, skin-side "
-                 "faces within ±0.5 of one plane lying free, diagonals equal within 1.5 (J-FRAME-01).",
+                 "faces within ±0.5 of one plane lying free, diagonals equal within 1.5, measured on a flat table "
+                 "after welding, before the holes; straighten cold or reject, never clamp flat (J-FRAME-01).",
 }
 
 PARTS = {
