@@ -239,6 +239,59 @@ def _folded_sheet(path):
     return path
 
 
+def _profile(path, kind):
+    """Test members along Y: 'stub' a 20 x 20 x 1 tube only 15 long (shorter than its section, as FRONT's C10);
+    'angle' a 20 x 20 x 2 extruded angle 600 long; 'bevelled' a 20 x 40 x 1.2 tube 600 long with a 1 x 45° bevel along
+    one outer corner (CEILING's seam member)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt, gp_Vec
+
+    def box(x, y, z, dx, dy, dz):
+        return BRepPrimAPI_MakeBox(gp_Pnt(x, y, z), dx, dy, dz).Shape()
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        return c.Shape()
+    if kind == "stub":
+        sh = cut(box(0, 0, 0, 20, 15, 20), box(1, -1, 1, 18, 17, 18))
+    elif kind == "angle":
+        sh = cut(box(0, 0, 0, 20, 600, 20), box(2, -1, 2, 19, 602, 19))
+    else:
+        sh = cut(box(0, 0, 0, 20, 600, 40), box(1.2, -1, 1.2, 17.6, 602, 37.6))
+        poly = BRepBuilderAPI_MakePolygon()
+        for q in ((20, -1, 0), (19, -1, 0), (20, -1, 1)):
+            poly.Add(gp_Pnt(*q))
+        poly.Close()
+        sh = cut(sh, BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 602, 0)).Shape())
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_profiles_and_short_tubes():
+    """A tube shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it reads as a tube,
+    not a folded sheet. A member whose section is an angle (an extrusion: its list says so) or a tube with a bevel
+    along a corner is refused as a profile to size, not drawn with only its outer sizes (the sweep found FRONT's
+    kick strip 361002 drawn so)."""
+    d = os.path.join(TMP, "profiles")
+    os.makedirs(d, exist_ok=True)
+    stub = _profile(os.path.join(d, "219994_P01_TEST-STUB_STEP.step"), "stub")
+    compose.Part("219994", "none", step=stub, row=dict(ROW, part_number="219994"))      # not refused as folded
+    for pn, kind, proc in (("219993", "angle", "extruded angle, cut"), ("219992", "bevelled", "cut")):
+        step = _profile(os.path.join(d, "%s_P01_TEST-%s_STEP.step" % (pn, kind.upper())), kind)
+        try:
+            compose.Part(pn, "none", step=step, row=dict(ROW, part_number=pn, process=proc))
+            raise AssertionError("drew a %s as a plain member" % kind)
+        except compose.NotDrawable as e:
+            assert "is a profile" in str(e), (kind, str(e))
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
