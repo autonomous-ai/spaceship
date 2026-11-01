@@ -132,12 +132,40 @@ def cut_list_rows(team, cfg, pn):
         q = (row.get("qty_per_parent") or row.get("qty") or "").strip()
         out.append({"kind": "cut", "member_part": wpn, "name": "%s %s" % (wpn, (row.get("name") or "").strip()),
                     "size_mm": (row.get("material") or "").strip(), "material": (row.get("material") or "").strip(),
-                    "cut_length_mm": "-", "tolerance": "", "note": "welded in; its own drawing %s" % wpn,
+                    "cut_length_mm": "-", "tolerance": "",
+                    "note": "welded in; no drawing of its own, its parts-list row defines it (D-125)",
                     "_q": float(q or 0)})
     for o in out:
         q = o.pop("_q")
         o["qty"] = ("%d" % q) if q == int(q) else ("%g" % q)
     return out, path
+
+
+ANGLE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:°|deg\b)")
+
+
+def ends_cell(note, tol=""):
+    """A cut list row's ends as the sheet prints them: the text as written, shortened to 'square-cut ends' only when
+    it says square and gives no angle (agreed with the generator's owner: 'mitred 63.43 deg off square' keeps its
+    angle)."""
+    words = (note or "") + " " + (tol or "")
+    square = "square" in words.lower() and not ANGLE.search(words)
+    return ("%s; %s" % ("square-cut ends" if square else (note or ""), (tol or "").split(",")[0])).strip("; ")
+
+
+def ends_angles(text):
+    """The two end cuts' angles from square a cut list's ends text gives, sorted, or None when it gives none it can
+    be read for: 'square ...' with no angle is 0 and 0; one angle with 'both' is that angle twice; two angles are
+    those."""
+    t = text or ""
+    found = [float(x) for x in ANGLE.findall(t)]
+    if not found:
+        return [0.0, 0.0] if "square" in t.lower() else None
+    if len(found) == 1:
+        return [found[0], found[0]] if re.search(r"\bboth\b", t, re.I) else None
+    if len(found) == 2:
+        return sorted(found)
+    return None
 
 
 # ------------------------------------------------------------------ feature rationale

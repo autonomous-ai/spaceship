@@ -15,11 +15,15 @@ environment:
    drawing.
 3. The cut list prints each row's ends as written, and shortens them to 'square-cut ends' only when the text says
    square and gives no angle: 'mitred 63.43 deg off square' keeps its angle.
-4. On CEILING's own frames C1 and C2 (411101, 411102: D-131 welded steel, #348), once their members and their tube
+4. The cut list is the members' drawing, so it must be the model's: a member whose cut length (0.05 mm) or end
+   angles (0.05°) differ from its body is refused, and the read-back reads the printed cut list against the file,
+   so a length edited into the sheet fails it (Reviewer 9 on #365).
+5. On CEILING's own frames C1 and C2 (411101, 411102: D-131 welded steel, #348), once their members and their tube
    cut list are on this tree: both draw and read back, with the members and the mitre plates in the cut list.
 """
 
 import csv
+import math
 import os
 import shutil
 import sys
@@ -43,32 +47,43 @@ ROW = {"part_number": "219980", "name": "TEST - WELDED FRAME", "name_vi": "", "m
 SPEC = {"tolerance": "test", "notes": ["FRAME: test weldment."]}
 
 
-def _tube(x0, y0, length, along_x, holes=()):
-    """A 20 x 20 x 1.5 box tube, length along X (or Y), from (x0, y0, 0); holes: Ø8.5 through its top wall at these
-    distances from its start."""
+def _tube(x0, y0, length, along_x, mitre=0.0):
+    """A 20 x 20 x 1.5 box tube, length along X (or Y), from (x0, y0, 0); mitre: both ends cut that many degrees from
+    square in plan (the long points on its -Y face), as a frame's corner members are."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
-    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
-    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
+    from OCP.gp import gp_Pnt, gp_Vec
 
     def cut(a, b):
         c = BRepAlgoAPI_Cut(a, b)
         c.Build()
         return c.Shape()
+
+    def wedge(pts):
+        poly = BRepBuilderAPI_MakePolygon()
+        for q in pts:
+            poly.Add(gp_Pnt(q[0], q[1], -1))
+        poly.Close()
+        return BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 0, 22)).Shape()
     if along_x:
         sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, 0), length, 20, 20).Shape(),
                  BRepPrimAPI_MakeBox(gp_Pnt(x0 - 1, y0 + 1.5, 1.5), length + 2, 17, 17).Shape())
+        if mitre:
+            k = 20.0 * math.tan(math.radians(mitre))
+            sh = cut(sh, wedge([(x0 - 1, y0 + 20), (x0 + k, y0 + 20), (x0, y0), (x0 - 1, y0)]))
+            sh = cut(sh, wedge([(x0 + length + 1, y0 + 20), (x0 + length - k, y0 + 20), (x0 + length, y0),
+                                (x0 + length + 1, y0)]))
     else:
         sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, 0), 20, length, 20).Shape(),
                  BRepPrimAPI_MakeBox(gp_Pnt(x0 + 1.5, y0 - 1, 1.5), 17, length + 2, 17).Shape())
-    for d in holes:
-        c = (x0 + d, y0 + 10) if along_x else (x0 + 10, y0 + d)
-        sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(c[0], c[1], 15.0), gp_Dir(0, 0, 1)), 4.25, 10).Shape())
     return sh
 
 
 def _weldment(path, bought=False):
     """A test assembly '219970 TEST ASSY' holding the frame '219980 TEST FRAME' (no body of its own) at 0,0,0, as a
-    team STEP holds CEILING's 411101: two long members 219981 (300), two short ones 219982
+    team STEP holds CEILING's 411101: two long members 219981 (300, both ends mitred 45° in plan), two short ones
+    219982
     (180, between them), and one plate 219983 (a 2 mm plate on the corner), each a part named by its number. With
     bought, a bought part 219984 sits under the frame too. Each placement is named as Fusion names them ('NAME:1'), so
     the repo's own STEP reader sees the tree as it sees Fusion's files."""
@@ -95,8 +110,8 @@ def _weldment(path, bought=False):
     name(frame, "219980 TEST FRAME")
     # no holes here: the repo's STEP reader reads Fusion's hole faces, not the ones OCC writes; the after-weld holes
     # are read back on CEILING's own frames below
-    parts = [("219981 TEST MEMBER LONG", _tube(0, 0, 300, True)),
-             ("219981 TEST MEMBER LONG", _tube(0, 200, 300, True)),
+    parts = [("219981 TEST MEMBER LONG", _tube(0, 0, 300, True, mitre=45.0)),
+             ("219981 TEST MEMBER LONG", _tube(0, 200, 300, True, mitre=45.0)),
              ("219982 TEST MEMBER SHORT", _tube(0, 20, 180, False)),
              ("219982 TEST MEMBER SHORT", _tube(280, 20, 180, False)),
              ("219983 TEST PLATE", BRepPrimAPI_MakeBox(gp_Pnt(-2, -2, 0), 2, 24, 20).Shape())]
@@ -131,25 +146,51 @@ def _cut_list(path, rows):
 GOOD = [
     {"frame": "219980", "member": "LONG A", "member_part": "219981", "name": "TEST MEMBER LONG",
      "section": "steel tube 20 x 20 x 1.5", "length_mm": "300", "qty": "1",
-     "ends": "front end mitred 45.00° and back end 63.43° off square"},
+     "ends": "both ends mitred 45 deg off square, long points on its outer face"},
     {"frame": "219980", "member": "LONG B", "member_part": "219981", "name": "TEST MEMBER LONG",
      "section": "steel tube 20 x 20 x 1.5", "length_mm": "300", "qty": "1",
-     "ends": "front end mitred 45.00° and back end 63.43° off square"},
+     "ends": "both ends mitred 45 deg off square, long points on its outer face"},
     {"frame": "219980", "member": "SHORT", "member_part": "219982", "name": "TEST MEMBER SHORT",
      "section": "steel tube 20 x 20 x 1.5", "length_mm": "180", "qty": "2", "ends": "square ends"},
-    {"frame": "219980", "member": "PLATE", "member_part": "219983", "name": "TEST PLATE",
-     "section": "steel plate 2", "length_mm": "24", "qty": "1", "ends": "both ends mitred 26.57 deg off square"},
-    {"frame": "219999", "member": "OTHER", "member_part": "219999", "name": "ANOTHER FRAME'S ROW",
+    {"frame": "219980", "member": "OTHER", "member_part": "219999", "name": "ANOTHER FRAME'S ROW",
      "section": "-", "length_mm": "1", "qty": "1", "ends": "square cut"},
 ]
+for _r in GOOD[-1:]:
+    _r["frame"] = "219999"
+PLATE_ROW = {"part_number": "219983", "name": "TEST PLATE", "kind": "MP", "material": "steel plate 2",
+             "qty_per_parent": "1"}
 
 
-def _made(tag, rows=GOOD, bought=False):
+class _Rows:
+    """Parts-list rows the test's own parts need (the plate welded in, a bought part), the team's lists otherwise."""
+
+    def __init__(self, more):
+        self.more, self.real = more, inputs.parts_row
+
+    def __enter__(self):
+        inputs.parts_row = lambda pn, team: ((self.more[pn], [], None) if pn in self.more else self.real(pn, team))
+
+    def __exit__(self, *a):
+        inputs.parts_row = self.real
+
+
+def _made(tag, rows=GOOD, bought=False, welded_in=("219983",)):
     d = os.path.join(TMP, tag)
     os.makedirs(d, exist_ok=True)
     step = _weldment(os.path.join(d, "219970_P01_TEST-ASSY_STEP.step"), bought=bought)
-    spec = dict(SPEC, cut_list={"file": _cut_list(os.path.join(d, "cut.csv"), rows)})
+    spec = dict(SPEC, cut_list={"file": _cut_list(os.path.join(d, "cut.csv"), rows), "welded_in": list(welded_in)})
     return d, step, spec
+
+
+def _refused(tag, want, rows=GOOD, **kw):
+    d, step, spec = _made(tag, rows, **kw)
+    with _Rows({"219983": PLATE_ROW}):
+        try:
+            compose.make("219980", "none", spec, os.path.join(d, "x.pdf"), step=step, row=ROW)
+        except NotDrawable as e:
+            assert want in str(e), (want, str(e))
+            return
+    raise AssertionError("drawn, though: %s" % want)
 
 
 def test_a_frame_takes_its_members_bodies():
@@ -166,57 +207,73 @@ def test_a_frame_takes_its_members_bodies():
 def test_a_frame_draws_and_reads_back_with_its_cut_list():
     d, step, spec = _made("draw")
     p = os.path.join(d, "frame.pdf")
-    compose.make("219980", "none", spec, p, step=step, row=ROW)
-    fails, st = readback.check(p, step)
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
     assert not fails, fails
     text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
     assert "CUT LIST (cut list cut.csv)" in text, text[:400]
     assert "219981 TEST MEMBER LONG" in text and "219982 TEST MEMBER SHORT" in text and "219983 TEST PLATE" in text
-    # the ends as written where they give an angle; 'square-cut ends' for the plain square ends only
-    assert "63.43° off square" in text and "26.57 deg off square" in text, text
+    # the ends as written where they give an angle; 'square-cut ends' for the plain square ends only; the plate is
+    # defined by its parts-list row (D-125)
+    assert "both ends mitred 45 deg off square" in text, text
     assert text.count("square-cut ends") == 1, text.count("square-cut ends")
+    assert "no drawing of its own, its parts-list row defines it (D-125)" in text
     assert "ANOTHER FRAME" not in text
 
 
 def test_counts_both_ways_and_one_number_one_member():
-    _d, step, _s = _made("counts")
     rows = [dict(r) for r in GOOD]
     rows[2]["qty"] = "1"                        # the cut list says 1 short member, the frame holds 2
-    d, step, spec = _made("count1", rows)
-    try:
-        compose.make("219980", "none", spec, os.path.join(d, "x.pdf"), step=step, row=ROW)
-        raise AssertionError("a member count off by one was drawn")
-    except NotDrawable as e:
-        assert "219982 has 2 bodies under the frame, its cut list 1" in str(e), e
+    _refused("count1", "219982 has 2 bodies under the frame, its cut list 1", rows)
     rows = [dict(r) for r in GOOD]
     rows[1]["length_mm"] = "301"                # one number, two lengths (D-120)
-    d, step, spec = _made("count2", rows)
-    try:
-        compose.make("219980", "none", spec, os.path.join(d, "x.pdf"), step=step, row=ROW)
-        raise AssertionError("one number with two lengths was drawn")
-    except NotDrawable as e:
-        assert "219981 has two lengths or two ends texts" in str(e), e
-    rows = [r for r in GOOD if r["member_part"] != "219983"]      # a body whose number the cut list lacks
-    d, step, spec = _made("count3", rows)
-    try:
-        compose.make("219980", "none", spec, os.path.join(d, "x.pdf"), step=step, row=ROW)
-        raise AssertionError("a body missing from the cut list was drawn")
-    except NotDrawable as e:
-        assert "219983 has 1 bodies under the frame, its cut list 0" in str(e), e
+    _refused("count2", "219981 has two lengths or two ends texts", rows)
+    _refused("count3", "219983 has 1 bodies under the frame, its cut list 0", welded_in=())   # the plate not named
+
+
+def test_the_cut_list_is_checked_against_the_model():
+    """Reviewer 9 on #365: the cut list is the members' drawing (D-162), so a length or an end angle that differs
+    from the member's body is refused, and a length edited into the sheet fails the read-back."""
+    rows = [dict(r) for r in GOOD]
+    for r in rows[:2]:
+        r["length_mm"] = "303"
+    _refused("model1", "member 219981: its cut list says 303 long, its body is 300.00", rows)
+    rows = [dict(r) for r in GOOD]
+    for r in rows[:2]:
+        r["ends"] = "both ends mitred 30 deg off square"
+    _refused("model2", "its cut list's ends give 30°, 30°, its body's end cuts 45.00°, 45.00° from square", rows)
+    rows = [dict(r) for r in GOOD]
+    rows[2]["ends"] = "both ends mitred 45 deg"
+    _refused("model3", "its cut list's ends give 45°, 45°, its body's end cuts 0.00°, 0.00° from square", rows)
+    # a length edited into a copy of the sheet
+    d, step, spec = _made("edit")
+    p = os.path.join(d, "frame.pdf")
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        data = readback.read_data(fitz.open(p))
+        doc = fitz.open(p)
+        page = doc[data["cut_list"]["page"]]
+        hit = [w for w in page.get_text("words") if w[4] == "180"]
+        assert hit, "no 180 in the cut list"
+        r = fitz.Rect(hit[0][:4])
+        page.add_redact_annot(r)
+        page.apply_redactions()
+        page.insert_text((r.x0, r.y1 - 1), "181", fontsize=r.height * 0.8)
+        bad = os.path.join(d, "edited.pdf")
+        doc.save(bad)
+        fails, _st = readback.check(bad, step)
+    assert any("CUT LENGTH: '181' where cut.csv gives '180'" in f for f in fails), fails
 
 
 def test_a_bought_part_under_the_frame_is_refused():
     d, step, spec = _made("bought", bought=True)
-    real = inputs.parts_row
-    inputs.parts_row = lambda pn, team: (({"part_number": pn, "kind": "PI", "name": "TEST RIVNUT"}, [], None)
-                                         if pn == "219984" else real(pn, team))
-    try:
-        compose.make("219980", "none", spec, os.path.join(d, "x.pdf"), step=step, row=ROW)
-        raise AssertionError("a bought part under the frame was drawn as frame material")
-    except NotDrawable as e:
-        assert "219984" in str(e) and "bought part" in str(e), e
-    finally:
-        inputs.parts_row = real
+    with _Rows({"219983": PLATE_ROW, "219984": {"part_number": "219984", "kind": "PI", "name": "TEST RIVNUT"}}):
+        try:
+            compose.make("219980", "none", spec, os.path.join(d, "x.pdf"), step=step, row=ROW)
+            raise AssertionError("a bought part under the frame was drawn as frame material")
+        except NotDrawable as e:
+            assert "219984" in str(e) and "bought part" in str(e), e
 
 
 def test_ceilings_frames_when_they_are_on_this_tree():
@@ -239,6 +296,7 @@ def test_ceilings_frames_when_they_are_on_this_tree():
         assert not fails, (pn, fails)
         text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
         assert "831007" in text and "831008" in text and "412101" in text, pn
+        assert "its parts-list row defines it (D-125)" in text, pn
 
 
 def main():

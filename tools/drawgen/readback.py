@@ -410,6 +410,78 @@ def _cross(a, b):
     return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
 
 
+def _table_cells(page, sheet_h, x0, top, widths):
+    """The data rows of a ruled table drawn from (x0, top) with these column widths: each full-width band (a row's
+    rectangle, or the space between full-width rules) below its header row, each cell's words in reading order."""
+    x1 = x0 + sum(widths)
+    bands, ys = set(), set()
+    for d in page.get_drawings():
+        for it in d["items"]:
+            if it[0] == "re":
+                R = it[1]
+                if abs(R.x0 / MM - x0) < 0.6 and abs(R.x1 / MM - x1) < 0.6:
+                    bands.add((round(sheet_h - R.y0 / MM, 2), round(sheet_h - R.y1 / MM, 2)))
+            elif it[0] == "l":
+                p, q = it[1], it[2]
+                if abs(p.y - q.y) < 0.05 and abs(min(p.x, q.x) / MM - x0) < 0.6 and abs(max(p.x, q.x) / MM - x1) < 0.6:
+                    ys.add(round(sheet_h - p.y / MM, 2))
+    ys = sorted(ys, reverse=True)
+    bands |= set(zip(ys, ys[1:]))
+    bands = sorted((b for b in bands if b[0] <= top + 0.1 and b[0] - b[1] > 1.0), key=lambda b: -b[0])
+    words = [(w[0] / MM, sheet_h - w[3] / MM, w[2] / MM, sheet_h - w[1] / MM, w[4]) for w in page.get_text("words")]
+    cuts = [x0]
+    for wd in widths:
+        cuts.append(cuts[-1] + wd)
+    rows, header = [], False
+    for hi, lo in bands:
+        band = [w for w in words if lo < (w[1] + w[3]) / 2 < hi and x0 < (w[0] + w[2]) / 2 < x1]
+        if not band:
+            continue
+        cells = []
+        for c0, c1 in zip(cuts, cuts[1:]):
+            ws = sorted((w for w in band if c0 < (w[0] + w[2]) / 2 < c1), key=lambda w: (-round(w[3], 1), w[0]))
+            cells.append(" ".join(w[4] for w in ws))
+        if not header:
+            header = cells[0].upper() == "ITEM"
+            continue
+        rows.append(cells)
+    return rows
+
+
+def cut_list_fails(doc, data):
+    """A frame's cut list (D-162: the members' drawing), read from the sheet against its team file: every row's
+    member number and name, profile, cut length, quantity and ends, word for word and in order, and no row more or
+    fewer than the file gives."""
+    cl = data.get("cut_list")
+    if not cl:
+        return []
+    src = next((s_ for s_ in data["sources"] if s_["role"] == "cut list"), None)
+    if not src:
+        return ["the sheet has a cut list but names no cut list file"]
+    if HERE not in sys.path:
+        sys.path.insert(0, HERE)
+    import inputs as _inputs
+    cfg = {"file": os.path.join(REPO, src["path"]), "welded_in": cl.get("welded_in", []),
+           "tolerance": cl.get("tolerance", "")}
+    try:
+        rows, _p = _inputs.cut_list_rows(cl.get("team", ""), cfg, data["pn"])
+    except ValueError as e:
+        return ["cut list: %s" % e]
+    want = [[str(i + 1), r["name"], r["size_mm"], r["cut_length_mm"], r["qty"],
+             _inputs.ends_cell(r["note"], r["tolerance"])] for i, r in enumerate(rows)]
+    got = _table_cells(doc[cl["page"]], data["sheet_h"], cl["x"], cl["top"], cl["widths"])
+    fails = []
+    if len(got) != len(want):
+        fails.append("the cut list prints %d rows, %s gives %d" % (len(got), os.path.basename(src["path"]), len(want)))
+    heads = ["ITEM", "MEMBER", "PROFILE", "CUT LENGTH", "QTY", "ENDS"]
+    for i, (g, w) in enumerate(zip(got, want), 1):
+        for h, gc, wc in zip(heads, g, w):
+            if " ".join(gc.split()) != " ".join(wc.split()):
+                fails.append("cut list row %d %s: '%s' where %s gives '%s'" % (i, h, gc[:60], os.path.basename(src["path"]),
+                                                                              wc[:60]))
+    return fails
+
+
 def end_cut_fails(data, faces, texts, near=30.0):
     """Every end cut of every member, found by the repo's reader: on each solid that is a member (longest along the
     line square to its two longest flat faces that aren't parallel), a flat face 1.1° to 88.9° from square to that
@@ -907,6 +979,7 @@ def check(pdf_path, step_path=None, verbose=False):
         fails += open_slot_fails(data, faces, rows, tb)
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
     fails += end_cut_fails(data, faces, tb)
+    fails += cut_list_fails(doc, data)
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
