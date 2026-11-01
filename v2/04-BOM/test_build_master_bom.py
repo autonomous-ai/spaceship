@@ -85,6 +85,17 @@ class Rules(unittest.TestCase):
         _, _, _, fails, _ = run({FRONT: door("368101,FRONT - DOOR HINGE - HOLD,,\"bought, HOLD\",not named,3,0.6,assumption,HOLD,x,\n"), bom.REGISTER: REGISTER})
         self.assertTrue(any(f.startswith("hardware with no joints-register row: 368101") for f in fails), fails)
 
+    def test_hold_is_a_whole_word_in_any_case(self):
+        rows = ("368103,FRONT - DOOR SEAL HOLDER,Giá đỡ gioăng,bought,EPDM,1,0.05,assumption,DRAFT,x,\n"
+                "368104,FRONT - DOOR STOP - HOLD,Chặn cửa,bought,not named,1,0.1,assumption,DRAFT,x,\n"
+                "368105,FRONT - DOOR SWEEP,Gioăng quét,bought,EPDM,1,0.05,assumption,HOLD (T07),x,\n"
+                "368106,FRONT - DOOR BUFFER,Đệm cửa,bought,EPDM,1,0.01,assumption,on hold until T07,x,\n"
+                "368107,FRONT - DOOR SEAL CLIP,Kẹp gioăng,bought,steel,1,0.01,assumption,DRAFT (holds the seal),x,\n")
+        parts, _, _, _, _ = run({FRONT: door(rows), bom.REGISTER: REGISTER})
+        hold = {r["part_number"]: r["hold"] for r in parts}
+        self.assertEqual([hold[n] for n in ("368103", "368104", "368105", "368106", "368107")],
+                         [False, True, True, True, False])   # HOLDER and holds are not HOLD; "on hold" is, as in the checklist
+
     def test_electrical_parts_are_not_hardware(self):
         elec = "part_number,name,type,material,qty,unit_mass_kg,mass_status,status\n710001,ELECTRICAL - 12 V SUPPLY,bought,PSU,1,0.9,source,DRAFT\n"
         _, _, _, fails, _ = run({ELEC: elec, bom.REGISTER: REGISTER})
