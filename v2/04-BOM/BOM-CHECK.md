@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 271 part lines (100 made, 171 bought, 136 on HOLD) and 40 sub-assembly lines from 14 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 315.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 271 part lines (100 made, 171 bought, 136 on HOLD) and 40 sub-assembly lines from 14 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 317.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -181,7 +181,7 @@ Read from: this working tree.
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718102 ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718102 ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718103 ELECTRICAL - LED PROFILE END CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718104 ELECTRICAL - LED PROFILE MOUNTING CLIP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 
@@ -255,7 +255,7 @@ From `v2/04-BOM/number-allocation.csv`: 64 numbers, 54 not in a team's list yet,
 | 211632 | WALL - CAVITY FILL PIECE F14 373 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 2 | ALLOCATED |
 | 211633 | WALL - CAVITY FILL PIECE F15 373 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
 | 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | 810201 | 1 | in use |
-| 718102 | ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN | 810201 | 1 | in use |
+| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | 810201 | 1 | in use |
 | 718103 | ELECTRICAL - LED PROFILE END CAP | 810201 | 2 | in use |
 | 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | 810201 |  | in use |
 

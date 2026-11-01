@@ -87,7 +87,10 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "riser": "sheet metal: cut, folded into a tube (blank HOLD)", "sleeve": "sheet metal: cut, folded into a tube (blank HOLD)",
            "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut"}
 HOLD_MASS = {"hub": (0.0, "assumption: space only (in-house module, its mass is ELECTRICAL's)"),
-             "trans": (0.4, "assumption: 1 mm steel duct, about 0.4 kg"), "rtrans": (0.3, "assumption: about 0.3 kg"),
+             "trans": (1.89, "calculation: 0.35 m2 of 2 mm aluminium, the air report's sizing (D-60, 7f), until the AIR "
+                       "follow-up designs it into FRONT's reserved space"),
+             "rtrans": (1.47, "calculation: a 1 mm galvanised steel duct of 0.187 m2, from the riser's top (139 x 155) to the "
+                        "fan box's bottom (300 x 155) over 205, FRONT's reserved space, until the AIR follow-up designs it"),
              "stud": (0.012, "assumption: an M6 shoulder stud, about 12 g"),
              "hinge": (0.04, "assumption: a small concealed hinge, about 40 g"),
              "latch": (0.02, "assumption: a push latch, about 20 g")}
