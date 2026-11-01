@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 15 failure(s) on the five rules; 363 part lines (159 made, 204 bought, 140 on HOLD) and 50 sub-assembly lines from 18 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 394.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: FAIL.** 16 failure(s) on the five rules; 383 part lines (172 made, 211 bought, 143 on HOLD) and 53 sub-assembly lines from 19 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 415.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -29,6 +29,7 @@ Read from: this working tree.
 - `v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_BOM.csv` @ working tree
 - `v2/04-BOM/number-allocation.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
@@ -50,6 +51,7 @@ Read from: this working tree.
 - hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
 - hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
 - hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_BOM.csv @ working tree
+- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_BOM.csv @ working tree
 
 ## Missing or on HOLD, per team
 
@@ -99,6 +101,9 @@ Read from: this working tree.
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 
 **FRONT**
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
@@ -228,7 +233,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 180 numbers, 118 not in a team's list yet, 39 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 180 numbers, 111 not in a team's list yet, 46 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -277,11 +282,11 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 118 not in a team's list ye
 | 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 211203 | 2 | in use |
 | 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | in use |
 | 211611 | WALL - CAVITY FILL PIECE F09 373 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 2 | CANCELLED |
-| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
+| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | in use |
 | 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
-| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
-| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 211204 | 4 | ALLOCATED |
+| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 211204 | 2 | in use |
+| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 211204 | 2 | in use |
+| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 211204 | 4 | in use |
 | 211621 | WALL - CAVITY FILL PIECE F12 373 X 1078.6 - BACK LOWER - B2 | 210202 | 1 | CANCELLED |
 | 211513 | WALL - CAVITY FILL PIECE F02 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | CANCELLED |
 | 211514 | WALL - CAVITY FILL PIECE F03 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | CANCELLED |
@@ -384,11 +389,11 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 118 not in a team's list ye
 | 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | 110101 110102 110106 | 3 | ALLOCATED |
 | 111602 | BASE - LEVELLING GLIDE - M10 - D40 | 110101 110102 110103 110106 | 9 | ALLOCATED |
 | 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | in use |
-| 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
+| 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | in use |
 | 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | in use |
-| 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | in use |
 | 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | in use |
-| 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | in use |
 | 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
 | 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | in use |
 | 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | ALLOCATED |

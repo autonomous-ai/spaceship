@@ -536,6 +536,70 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 4. Revert: 192 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
+## Edit test: 210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211204, 211404, 211634, 211635, 212601, 212603, 212604, 212605, 212701, 831001, 831007, 838003.
+
+1. Reopen: timeline 192 items, 0 not healthy; sketches 48, 48 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm: rebuild 192 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 3 | 3 |
+| stile_pitch | 294.748 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1116.87 | 1155.48 |
+| pnl_h | 1118.61 | 1157.22 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212601 WALL - FRAME RAIL BOTTOM - BACK LOWER - B2:1 / RAIL - BOTTOM | (4.16, 804.0, 1233.13, 1200.33, 844.0, 1253.13) | (4.16, 804.0, 1194.52, 1100.33, 844.0, 1214.52) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212603 WALL - FRAME STILE OUTER - BACK LOWER - B2:1 / STILE - OUTER | (1181.74, 804.0, 1234.54, 1201.74, 844.0, 2350.33) | (1081.74, 804.0, 1195.93, 1101.74, 844.0, 2350.33) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212604 WALL - FRAME STILE CENTRE - BACK LOWER - B2:1 / STILE - CENTRE | (2.75, 804.0, 1234.54, 22.75, 844.0, 2350.33) | (2.75, 804.0, 1195.93, 22.75, 844.0, 2350.33) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212605 WALL - FRAME STILE MID - BACK LOWER - B2:1 / STILE - MID | (297.5, 804.0, 1253.13, 317.5, 844.0, 2331.74) | (272.5, 804.0, 1214.52, 292.5, 844.0, 2331.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212605 WALL - FRAME STILE MID - BACK LOWER - B2:2 / STILE - MID | (592.25, 804.0, 1253.13, 612.25, 844.0, 2331.74) | (542.25, 804.0, 1214.52, 562.25, 844.0, 2331.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212605 WALL - FRAME STILE MID - BACK LOWER - B2:3 / STILE - MID | (886.99, 804.0, 1253.13, 906.99, 844.0, 2331.74) | (811.99, 804.0, 1214.52, 831.99, 844.0, 2331.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212701 WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4:1 / RAIL - TOP | (4.16, 804.0, 2331.74, 1200.33, 844.0, 2351.74) | (4.16, 804.0, 2331.74, 1100.33, 844.0, 2351.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:1 / MITRE PLATE | (1181.06, 804.0, 1233.66, 1201.21, 844.0, 1253.81) | (1081.06, 804.0, 1195.05, 1101.21, 844.0, 1215.2) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:2 / MITRE PLATE | (3.28, 804.0, 1233.66, 23.43, 844.0, 1253.81) | (3.28, 804.0, 1195.05, 23.43, 844.0, 1215.2) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:3 / MITRE PLATE | (1181.06, 804.0, 2331.06, 1201.21, 844.0, 2351.21) | (1081.06, 804.0, 2331.06, 1101.21, 844.0, 2351.21) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:4 / MITRE PLATE | (3.28, 804.0, 2331.06, 23.43, 844.0, 2351.21) | (3.28, 804.0, 2331.06, 23.43, 844.0, 2351.21) |
+| 211404 WALL - SKIN - BACK UPPER - B4:1 / SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM | (1.13, 847.0, 1233.13, 1201.74, 850.0, 2351.74) | (1.13, 847.0, 1194.52, 1101.74, 850.0, 2351.74) |
+| 211634 WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON:1 / FILL - BAY 1 | (22.75, 804.0, 1253.13, 297.5, 844.0, 2331.74) | (22.75, 804.0, 1214.52, 272.5, 844.0, 2331.74) |
+| 211634 WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON:2 / FILL - BAY 1 | (906.99, 804.0, 1253.13, 1181.74, 844.0, 2331.74) | (831.99, 804.0, 1214.52, 1081.74, 844.0, 2331.74) |
+| 211635 WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON:1 / FILL - BAY 2 | (317.5, 804.0, 1253.13, 592.25, 844.0, 2331.74) | (292.5, 804.0, 1214.52, 542.25, 844.0, 2331.74) |
+| 211635 WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON:2 / FILL - BAY 2 | (612.25, 804.0, 1253.13, 886.99, 844.0, 2331.74) | (562.25, 804.0, 1214.52, 811.99, 844.0, 2331.74) |
+| 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:1 / SPIGOT | (98.75, 820.0, 2344.5, 106.75, 828.0, 2359.74) | (98.75, 820.0, 2344.5, 106.75, 828.0, 2359.74) |
+| 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:2 / SPIGOT | (1097.74, 820.0, 2344.5, 1105.74, 828.0, 2359.74) | (997.74, 820.0, 2344.5, 1005.74, 828.0, 2359.74) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:1 / RIVNUT | (96.28, 817.53, 2342.09, 109.22, 830.48, 2352.5) | (96.28, 817.53, 2342.09, 109.22, 830.48, 2352.5) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:2 / RIVNUT | (1095.27, 817.53, 2342.09, 1108.21, 830.48, 2352.5) | (995.27, 817.53, 2342.09, 1008.22, 830.48, 2352.5) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:3 / RIVNUT | (1.99, 817.53, 1446.65, 12.4, 830.48, 1459.61) | (1.99, 817.53, 1408.04, 12.4, 830.48, 1421.0) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:4 / RIVNUT | (1.99, 817.53, 1785.96, 12.4, 830.48, 1798.91) | (1.99, 817.53, 1766.65, 12.4, 830.48, 1779.61) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:5 / RIVNUT | (1.99, 817.53, 2125.26, 12.4, 830.48, 2138.21) | (1.99, 817.53, 2125.26, 12.4, 830.48, 2138.22) |
+
+| Check | Result |
+|---|---|
+| frame width follows half_fw (1098.99), the rails 2 plate cut-backs shorter | PASS |
+| frame stays close_gap / 2 from X 0 at the closing seam (the rail one cut-back further) | PASS |
+| frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26) | PASS |
+| perimeter stiles span the row height less 2 plate cut-backs of 1.41 (D-117, D-131) | PASS |
+| studs span the row height - 40 | PASS |
+| 3 studs, evenly spaced (D-135) | PASS |
+| no stud pitch over 300 | PASS |
+| fill bays = stud count + 1 (4) | PASS |
+| skin is half_pw wide and the row high | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 192 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
 ## Edit test: 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD.f3d
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211101, 212101, 212102, 212103, 212104, 212105, 831007, 831008.
@@ -847,6 +911,56 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 4. Revert: 132 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
+## Edit test: 211204_P01_WALL-PANEL-FRAME-BACK-UPPER-B4_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211204, 212601, 212603, 212604, 212605, 212701, 831007.
+
+1. Reopen: timeline 135 items, 0 not healthy; sketches 36, 36 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm: rebuild 135 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 3 | 3 |
+| stile_pitch | 294.748 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1116.87 | 1155.48 |
+| pnl_h | 1118.61 | 1157.22 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212601 WALL - FRAME RAIL BOTTOM - BACK LOWER - B2:1 / RAIL - BOTTOM | (4.16, 804.0, 1233.13, 1200.33, 844.0, 1253.13) | (4.16, 804.0, 1194.52, 1100.33, 844.0, 1214.52) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212603 WALL - FRAME STILE OUTER - BACK LOWER - B2:1 / STILE - OUTER | (1181.74, 804.0, 1234.54, 1201.74, 844.0, 2350.33) | (1081.74, 804.0, 1195.93, 1101.74, 844.0, 2350.33) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212604 WALL - FRAME STILE CENTRE - BACK LOWER - B2:1 / STILE - CENTRE | (2.75, 804.0, 1234.54, 22.75, 844.0, 2350.33) | (2.75, 804.0, 1195.93, 22.75, 844.0, 2350.33) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212605 WALL - FRAME STILE MID - BACK LOWER - B2:1 / STILE - MID | (297.5, 804.0, 1253.13, 317.5, 844.0, 2331.74) | (272.5, 804.0, 1214.52, 292.5, 844.0, 2331.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212605 WALL - FRAME STILE MID - BACK LOWER - B2:2 / STILE - MID | (592.25, 804.0, 1253.13, 612.25, 844.0, 2331.74) | (542.25, 804.0, 1214.52, 562.25, 844.0, 2331.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212605 WALL - FRAME STILE MID - BACK LOWER - B2:3 / STILE - MID | (886.99, 804.0, 1253.13, 906.99, 844.0, 2331.74) | (811.99, 804.0, 1214.52, 831.99, 844.0, 2331.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+212701 WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4:1 / RAIL - TOP | (4.16, 804.0, 2331.74, 1200.33, 844.0, 2351.74) | (4.16, 804.0, 2331.74, 1100.33, 844.0, 2351.74) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:1 / MITRE PLATE | (1181.06, 804.0, 1233.66, 1201.21, 844.0, 1253.81) | (1081.06, 804.0, 1195.05, 1101.21, 844.0, 1215.2) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:2 / MITRE PLATE | (3.28, 804.0, 1233.66, 23.43, 844.0, 1253.81) | (3.28, 804.0, 1195.05, 23.43, 844.0, 1215.2) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:3 / MITRE PLATE | (1181.06, 804.0, 2331.06, 1201.21, 844.0, 2351.21) | (1081.06, 804.0, 2331.06, 1101.21, 844.0, 2351.21) |
+| 211204 WALL - PANEL FRAME - BACK UPPER - B4:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:4 / MITRE PLATE | (3.28, 804.0, 2331.06, 23.43, 844.0, 2351.21) | (3.28, 804.0, 2331.06, 23.43, 844.0, 2351.21) |
+
+| Check | Result |
+|---|---|
+| frame width follows half_fw (1098.99), the rails 2 plate cut-backs shorter | PASS |
+| frame stays close_gap / 2 from X 0 at the closing seam (the rail one cut-back further) | PASS |
+| frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26) | PASS |
+| perimeter stiles span the row height less 2 plate cut-backs of 1.41 (D-117, D-131) | PASS |
+| studs span the row height - 40 | PASS |
+| 3 studs, evenly spaced (D-135) | PASS |
+| no stud pitch over 300 | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 135 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
 ## Edit test: 211301_P01_WALL-SKIN-SIDE-LOWER-LH_CAD.f3d
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211301.
@@ -991,6 +1105,40 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | Body | Before | After |
 |---|---|---|
 | 211403 WALL - SKIN - BACK UPPER - B3:1 / SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM | (-1201.74, 847.0, 1233.13, -1.13, 850.0, 2351.74) | (-1101.74, 847.0, 1194.52, -1.13, 850.0, 2351.74) |
+
+| Check | Result |
+|---|---|
+| skin is half_pw wide and the row high | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 5 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 211404_P01_WALL-SKIN-BACK-UPPER-B4_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211404.
+
+1. Reopen: timeline 5 items, 0 not healthy; sketches 1, 1 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm: rebuild 5 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 3 | 3 |
+| stile_pitch | 294.748 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1116.87 | 1155.48 |
+| pnl_h | 1118.61 | 1157.22 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211404 WALL - SKIN - BACK UPPER - B4:1 / SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM | (1.13, 847.0, 1233.13, 1201.74, 850.0, 2351.74) | (1.13, 847.0, 1194.52, 1101.74, 850.0, 2351.74) |
 
 | Check | Result |
 |---|---|
@@ -1380,6 +1528,63 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 | revert: every body back to its before box, healthy | PASS |
 
 4. Revert: 24 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 510204_P01_LINING-CASSETTE-BACK-UPPER-B4_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 511204, 511404, NO-PN-HOLD-H03.
+
+1. Reopen: timeline 48 items, 0 not healthy; sketches 14, 14 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm: rebuild 48 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 3 | 3 |
+| stile_pitch | 294.748 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1116.87 | 1155.48 |
+| pnl_h | 1118.61 | 1157.22 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| tray_t | 0.5 | 0.5 |
+| el_lt_x | 346 | 346 |
+| el_y_bg | 787.5 | 787.5 |
+| el_grm_d | 19.1 | 19.1 |
+| el_shelf_z | 2250 | 2250 |
+| el_shelf_d | 16 | 16 |
+| el_ceil_x | 583 | 533 |
+| el_ceil_z | 2330 | 2330 |
+| el_grm_s | 12 | 12 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 511204 LINING - TRAY - BACK UPPER - B4:1 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (1.13, 766.0, 1233.13, 1166.0, 800.0, 2350.0) | (1.13, 766.0, 1194.52, 1066.0, 800.0, 2350.0) |
+| 511404 LINING - FELT - BACK UPPER - B4:1 / FELT - PET 9 HELD BY THE TRAY LIPS | (2.63, 766.5, 1234.63, 1164.5, 775.5, 2348.5) | (2.63, 766.5, 1196.02, 1064.5, 775.5, 2348.5) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 1 (BOTTOM LOW X) | (297.5, 800.0, 1303.13, 317.5, 804.0, 1363.13) | (272.5, 800.0, 1264.52, 292.5, 804.0, 1324.52) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 2 (BOTTOM HIGH X) | (886.99, 800.0, 1303.13, 906.99, 804.0, 1363.13) | (811.99, 800.0, 1264.52, 831.99, 804.0, 1324.52) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 3 (TOP LOW X) | (297.5, 800.0, 2220.0, 317.5, 804.0, 2280.0) | (272.5, 800.0, 2220.0, 292.5, 804.0, 2280.0) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 4 (TOP HIGH X) | (886.99, 800.0, 2220.0, 906.99, 804.0, 2280.0) | (811.99, 800.0, 2220.0, 831.99, 804.0, 2280.0) |
+
+| Check | Result |
+|---|---|
+| tray runs cass_len | PASS |
+| tray height follows cass_h | PASS |
+| tray stops seam_gap / 2 short of X 0 | PASS |
+| felt follows the tray, 1 mm clear inside the 0.5 returns | PASS |
+| G-B2-B4 19.1 hole in the bottom return follows the row seam (Z 1194.52) | PASS |
+| no cable hole through the top lip | FAIL |
+| FX-CEIL 12 felt hole follows the pod width (X (pod_w - 2 stack_t) / 4 = 533.00), 2 under the lip | PASS |
+| FX-SHELF 16 felt hole at X 346, Z 2250 | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 48 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 511101_P01_LINING-TRAY-SIDE-LOWER-LH_CAD.f3d
 

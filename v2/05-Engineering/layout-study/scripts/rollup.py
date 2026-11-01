@@ -493,7 +493,7 @@ KEY_PNS = ("111211", "111212", "111213", "111214", "111215")  # the corner key f
 BASE_CAD = base_cad(elsewhere=KEY_PNS + FIXING_PNS + ("831001", "831002"))   # S54: what the other lines hold stays there
 
 CAP_KG = 460.0          # provisional, D-131 (the steel frames; was 420, D-37 and D-54), until the wall sample's recount
-TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
+TARGET_KG = 450.0       # confirmed: D-175 (2026-11-01): D-81's 410 retired with D-131's steel; 450, the same 10 under the cap
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
 D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not in the sum yet" (S39)
 
@@ -1138,7 +1138,8 @@ def rollup_md(rows):
     md.append("")
     md.append("## Parked (D-85)")
     md.append("")
-    md.append(f"{gap(tot - TARGET_KG).capitalize()} the {TARGET_KG:.0f} kg target, which stays (D-85). The wall sample "
+    md.append(f"{gap(tot - TARGET_KG).capitalize()} the {TARGET_KG:.0f} kg target (D-175: D-81's 410 retired with D-131's "
+              "steel frames; the same 10 kg under the cap). The wall sample "
               "settles the fill and the felt (FRONT's CAD settled the decor frames, PR #105). Each keeps the look and the "
               "sound targets.")
     md.append("")
