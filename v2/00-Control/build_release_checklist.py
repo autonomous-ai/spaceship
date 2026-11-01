@@ -495,7 +495,7 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     d125: number -> C05's D-125 reading of a plain strip or sheet (d125_strips), None skips that rule.
     drawgen: the numbers tools/drawgen draws (drawgen_parts), never blocked by a locked screen (D-113).
     d128: number -> what a felt or fill piece's DXF and row still lack for D-128 (d128_pieces), [] when nothing.
-    ga: ga_current()'s (path, why); a GA out of date leaves 100000's line open until it is redrawn (D-176)."""
+    ga: ga_current()'s (path, why); a GA out of date leaves a 100000 line open until it is redrawn (D-176). Today 100000 has no parts-list line (it is the master BOM's pod row), so the checklist's GA line above the totals is where its state shows."""
     chars, _, accept = fai
     tab_cover = tab_cover or {}
     by_cut_row = cut_rows(cut_texts)
@@ -756,8 +756,8 @@ def ga_line(ga):
                 "checkpoints.")
     shown = "; ".join(why[:6]) + ("; and %d more" % (len(why) - 6) if len(why) > 6 else "")
     return (f"**The GA (100000, D-176)**: out of date: `{path}` was drawn from sources that have moved since ({shown}). "
-            "Fusion Engineer 2 redraws it at checkpoints; it must be current at release, so 100000's line stays open "
-            "until then.")
+            "Fusion Engineer 2 redraws it at checkpoints, and it must be current at release; a parts-list line for "
+            "100000, if there is one, stays open until then.")
 
 
 def state_of(gaps, screen, hold=False, drawgen=False):
