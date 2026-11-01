@@ -1,5 +1,5 @@
 {
- "next": 188,
+ "next": 189,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1443,7 +1443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -1499,7 +1499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3082,7 +3082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3107,7 +3107,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -3137,7 +3137,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -3203,7 +3203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3228,7 +3228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3253,7 +3253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C01",
@@ -3377,7 +3377,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3402,7 +3402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3427,7 +3427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3452,7 +3452,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3477,7 +3477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3502,7 +3502,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3527,7 +3527,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3552,7 +3552,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3577,7 +3577,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3602,7 +3602,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3627,7 +3627,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3652,7 +3652,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3677,7 +3677,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3702,7 +3702,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3727,7 +3727,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3752,7 +3752,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3777,7 +3777,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3802,7 +3802,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3827,7 +3827,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -3852,7 +3852,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C01",
@@ -4293,7 +4293,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C01",
@@ -4352,7 +4352,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4377,7 +4377,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4402,7 +4402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4427,7 +4427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4452,7 +4452,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4477,7 +4477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4502,7 +4502,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4527,7 +4527,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4552,7 +4552,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4577,7 +4577,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4602,7 +4602,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4627,7 +4627,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -4682,7 +4682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4707,7 +4707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4732,7 +4732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4757,7 +4757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4782,7 +4782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4807,7 +4807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4832,7 +4832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -4867,7 +4867,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd",
+   "last_seen": "2026-11-01 7309f94",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4893,7 +4893,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -4922,7 +4922,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -4951,7 +4951,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -4980,7 +4980,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5009,7 +5009,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5038,7 +5038,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5067,7 +5067,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5096,7 +5096,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5125,7 +5125,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5154,7 +5154,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5183,7 +5183,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5212,7 +5212,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5241,7 +5241,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5270,7 +5270,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5299,7 +5299,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5328,7 +5328,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5357,7 +5357,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C06",
@@ -5386,7 +5386,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5411,7 +5411,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5436,7 +5436,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5461,7 +5461,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5486,7 +5486,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5511,7 +5511,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5536,7 +5536,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5561,7 +5561,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5586,7 +5586,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5611,7 +5611,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5636,7 +5636,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
   },
   {
    "check": "C05",
@@ -5661,7 +5661,36 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 513101 LINING - TRAY - CEILING:2 x 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1",
+   "severity": "severe",
+   "message": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5 overlap by 69.7 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING; ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 69.74,
+    "a": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5"
+   },
+   "key": "C01|clash|assembly 513101 LINING - TRAY - CEILING:2 x 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1",
+   "id": "F-188",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 3d6c2af",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "3d6c2af",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
