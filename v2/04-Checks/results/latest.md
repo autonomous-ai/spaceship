@@ -1,18 +1,18 @@
-# Mechanical check run: 6f2bff3 on 2026-11-01
+# Mechanical check run: 5a996ab on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `6f2bff3`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `5a996ab`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 180** (53 severe, 121 major, 6 minor). Register numbers in brackets.
+**Findings in this run: 180** (56 severe, 118 major, 6 minor). Register numbers in brackets.
 
 ## What ran
 
 | Check | Ran on this revision | Findings |
 |---|---|---|
 | C01 clash and minimum gaps (Fusion) | yes | 1 |
-| C02 tolerance stack-ups | yes | 1 |
+| C02 tolerance stack-ups | yes | 4 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 103 |
+| C05 drawing completeness | yes | 100 |
 | C06 BOM completeness | yes | 40 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -28,6 +28,9 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 |---|---|---|---|---|---|
 | F-136 | severe | C01 | assembly shell left-base Y 847..850 Z 10..110 | The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes. | BASE |
 | F-342 | severe | C02 | assembly KICK-OVER-FLOOR | KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it | FRONT |
+| F-343 | severe | C02 | assembly 351101 FRONT - DECOR SKIN - DL:1 | 351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 .... | FRONT |
+| F-344 | severe | C02 | assembly 351201 FRONT - DECOR SKIN - DT:1 | 351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 .... | FRONT |
+| F-345 | severe | C02 | assembly 351301 FRONT - DECOR SKIN - DR:1 | 351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 .... | FRONT |
 | F-045 | severe | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step. | Joints Engineer |
 | F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | Joints Engineer |
 | F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | Joints Engineer |
@@ -80,7 +83,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-244 | severe | C09 | 611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348 | Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates. | CEILING |
 | F-245 | severe | C09 | 611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348 | Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates. | CEILING |
 | F-039 | major | C05 | 110000 | 110000 BASE has no drawing PDF (110000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/110000_P01_BASE_STEP.step. | BASE |
-| F-040 | major | C05 | 110101 | 110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
 | F-041 | major | C05 | 110103 | 110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
 | F-019 | major | C05 | 210101 | 210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-106 | major | C05 | 210102 | 210102 WALL - PANEL ASSY - SIDE LOWER - RH has no drawing PDF (210102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step. | WALL |
@@ -106,7 +108,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-096 | major | C05 | 360002 | 360002 FRONT - FIXED GLASS UNIT has no drawing PDF (360002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step. | FRONT |
 | F-339 | major | C05 | 368004 | 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles. | FRONT |
 | F-138 | major | C05 | 410000 | 410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step. | CEILING |
-| F-139 | major | C05 | 410101 | 410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-140 | major | C05 | 410102 | 410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-118 | major | C05 | 510102 | 510102 LINING - CASSETTE - SIDE LOWER - RH has no drawing PDF (510102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step. | WALL |
@@ -116,7 +117,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-184 | major | C05 | 510202 | 510202 LINING - CASSETTE - BACK LOWER - B2 has no drawing PDF (510202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step. | WALL |
 | F-143 | major | C05 | 510301 | 510301 LINING - CASSETTE - CEILING - COMMON has no drawing PDF (510301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-254 | major | C05 | 610000 | 610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step. | CEILING |
-| F-255 | major | C05 | 610101 | 610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-256 | major | C05 | 610201 | 610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-257 | major | C05 | 610301 | 610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-258 | major | C05 | 610401 | 610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
@@ -267,5 +267,5 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 
 ## Fastener schedule (C07)
 
-131 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+132 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 
