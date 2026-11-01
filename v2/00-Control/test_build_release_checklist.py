@@ -608,6 +608,25 @@ class OpenPrFiles(unittest.TestCase):
         self.assertNotIn("Read from main although", rc.render([], [], [], [], "main", "unlocked", {}, ([], [], []), "2026-11-01"))
 
 
+class FallBackFilter(unittest.TestCase):
+    def test_the_list_names_only_files_the_checklist_reads(self):
+        self.assertTrue(rc.read_by_checklist("v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf", BOM))
+        self.assertTrue(rc.read_by_checklist("v2/01-CAD-Native/ceiling/410000_P01_CEILING_CAD.f3d", BOM))
+        self.assertTrue(rc.read_by_checklist("v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv", BOM))   # the BOM reads it
+        self.assertTrue(rc.read_by_checklist(BOM.REGISTER, BOM))
+        self.assertFalse(rc.read_by_checklist("v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md", BOM))
+        self.assertFalse(rc.read_by_checklist("v2/07-Packaging/910001_P01_PALLET-1-48X40_PKG.svg", BOM))
+
+    def test_the_notes_leave_out_files_it_never_reads(self):
+        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+        BOM.FELL_BACK[:] = [("origin/air", skin), ("origin/air", "v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md")]
+        try:
+            notes = rc.fell_back_notes(BOM, {"origin/air": "PR #91"})
+        finally:
+            BOM.FELL_BACK.clear()
+        self.assertEqual(notes, [f"`{skin}`: PR #91 changed it, but main changed it later"])
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
