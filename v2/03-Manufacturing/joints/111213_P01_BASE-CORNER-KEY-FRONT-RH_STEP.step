@@ -6,13 +6,13 @@ HEADER;
 
 FILE_DESCRIPTION(
 /* description */ (
-'BASE - CORNER KEY - FRONT - RH | rev P01 | cut 24.02 deg | joints reg
-ister J-BASE-02 | PROPOSED'),
+'BASE - CORNER KEY - FRONT - RH | rev P01 | cut 24.02 deg | fixing hol
+es (10.5, +7), (10.5, -7) | joints register J-BASE-02 | PROPOSED'),
 /* implementation_level */ '2;1');
 
 FILE_NAME(
 /* name */ '111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step',
-/* time_stamp */ '2026-11-01T04:09:10+07:00',
+/* time_stamp */ '2026-11-01T15:18:47+07:00',
 /* author */ (''),
 /* organization */ (''),
 /* preprocessor_version */ 'ST-DEVELOPER v20.2',
@@ -441,8 +441,8 @@ SOLID_ANGLE_UNIT()
 'Core Data for Automotive Mechanical Design Process');
 #383=PRODUCT_CONTEXT('part definition',#382,'mechanical');
 #384=PRODUCT('111213','111211_P01_BASE-CORNER-KEY-TABULATED_CAD',
-'BASE - CORNER KEY - FRONT - RH | rev P01 | cut 24.02 deg | joints reg
-ister J-BASE-02 | PROPOSED',(#383));
+'BASE - CORNER KEY - FRONT - RH | rev P01 | cut 24.02 deg | fixing hol
+es (10.5, +7), (10.5, -7) | joints register J-BASE-02 | PROPOSED',(#383));
 #385=PRESENTATION_STYLE_ASSIGNMENT((#387));
 #386=PRESENTATION_STYLE_ASSIGNMENT((#388));
 #387=SURFACE_STYLE_USAGE(.BOTH.,#389);

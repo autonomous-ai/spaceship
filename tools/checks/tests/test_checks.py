@@ -548,7 +548,7 @@ def test_generated_drawings_count_the_same_and_their_findings_go_to_the_generato
     assert f.owner == "Drawing Generator"
 
 
-def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
+def test_generated_drawings_follow_d113_sections_and_draw_bent_parts_d158(tmp_path):
     fitz = pytest.importorskip("fitz")
     d = tmp_path / "v2/02-Drawings/base"
     d.mkdir(parents=True)
@@ -563,14 +563,15 @@ def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
     pdf("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf", full, "drawgen 0.1")                 # holes through both walls
     pdf("111102_P01_BASE-BAND-TUBE-SIDE-RH_DWG.pdf", full + "\nSECTION A-A", "drawgen 0.1")
     pdf("111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf", full, "Autodesk Fusion")              # D-113 is the generator's rule
-    pdf("111601_P01_BASE-BRACKET_DWG.pdf", full, "drawgen 0.1")                         # a bent bracket
+    pdf("111601_P01_BASE-BRACKET_DWG.pdf", full, "drawgen 0.1")      # a bent bracket: the generator's since D-158
     pns = {"111101", "111102", "111103", "111601"}
     holes = {pn: [sf.Hole(1, (0, 0, 0), (0, 0, 1), 6.6, 2.0, [])] for pn in pns}
     fs = c_drawings.check_drawings(str(tmp_path), pns, holes, two_wall_by_pn={"111101": 2, "111102": 2, "111103": 2},
                                    bends_by_pn={"111601": 2})
     got = {(f.rule, f.subject): f for f in fs}
-    assert set(got) == {("no-section", "111101"), ("generated-bent-part", "111601")}
-    assert got[("no-section", "111101")].owner == got[("generated-bent-part", "111601")].owner == "Drawing Generator"
+    # D-158 replaced D-113 (3): the generator's bent sheet mode (#335) draws bent parts, so 111601 is no finding
+    assert set(got) == {("no-section", "111101")}
+    assert got[("no-section", "111101")].owner == "Drawing Generator"
     # the STEP facts behind them: a hole axis through both walls of one body; copies of a part counted once
     assert c_drawings.two_wall_axes([sf.Hole(1, (0, 0, 0), (0, 0, 1), 6.6, 2, []),
                                      sf.Hole(1, (0, 0, 40), (0, 0, 1), 6.6, 2, []),
@@ -700,7 +701,8 @@ def test_run_with_ref_leaves_no_export_behind():
     assert set(glob.glob(pattern)) == before
 
 
-def test_hole_size_rule_only_for_holes_facing_a_rivnut():
+@pytest.mark.parametrize("rivnut_hole", [9.53, 10.00, 10.10])      # CAH2's hole, and D-163's Ø10.00 +0.10
+def test_hole_size_rule_only_for_holes_facing_a_rivnut(rivnut_hole):
     rules = [{"id": "M6-CLEARANCE-7", "min_dia_mm": "6.3", "max_dia_mm": "6.95", "severity": "major",
               "status_source": "F-009", "message": "m", "fix": "f"}]
     def body(label, pn, holes):
@@ -708,7 +710,7 @@ def test_hole_size_rule_only_for_holes_facing_a_rivnut():
         b.file = label + ".step"
         return b
     frame = body("frame", "211101", [sf.Hole(1, (0.0, 0.0, 0.0), (0, 0, 1), 6.6, 1.2, [])])
-    band = body("band", "111101", [sf.Hole(2, (0.0, 0.0, -3.4), (0, 0, 1), 9.53, 2.0, [])])
+    band = body("band", "111101", [sf.Hole(2, (0.0, 0.0, -3.4), (0, 0, 1), rivnut_hole, 2.0, [])])
     rivet = body("trim", "211301", [sf.Hole(3, (100.0, 0.0, 0.0), (0, 0, 1), 6.5, 1.0, [])])     # a 6.4 blind rivet's hole
     fs = c_geometry.check_hole_sizes(ROOT, "assembly", [frame, band, rivet], hole_rules=rules)
     assert [f.evidence["dia_mm"] for f in fs] == [6.6]                 # only the hole facing the rivnut
@@ -752,13 +754,15 @@ def test_parts_list_rows_are_matched_only_against_their_own_teams_cad(tmp_path):
     assert not {s for r, s in got if r == "bom-not-in-cad"} & {"111401", "100000", "210000"}
 
 
-def test_bolt_patterns_across_assemblies_must_match():
+@pytest.mark.parametrize("rivnut_hole", [9.53, 10.00, 10.10])      # CAH2's hole, and D-163's Ø10.00 +0.10
+def test_bolt_patterns_across_assemblies_must_match(rivnut_hole):
     def body(label, file, holes):
         b = _B(label, None, "x", holes)
         b.file = file
         return b
     wall = body("wall rail", "wall.step", [sf.Hole(1, (-1227.0, y, 111.0), (0, 0, 1), 6.6, 1.2, []) for y in (-452.2, 278.8)])
-    band = body("band tube", "base.step", [sf.Hole(2, (-1227.0, y, 109.0), (0, 0, 1), 9.53, 2.0, []) for y in (-425.0, 278.3)])
+    band = body("band tube", "base.step", [sf.Hole(2, (-1227.0, y, 109.0), (0, 0, 1), rivnut_hole, 2.0, [])
+                                           for y in (-425.0, 278.3)])
     fs = c_geometry.check_unmatched(ROOT, "assembly", [wall, band])
     offs = sorted(round(f.evidence["offset_mm"], 1) for f in fs)
     assert offs == [27.2, 27.2]                 # the -452.2 / -425 pair, reported on both sides; 278.8 / 278.3 matches
