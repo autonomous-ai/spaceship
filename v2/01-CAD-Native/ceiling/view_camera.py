@@ -3,11 +3,13 @@ by eye before a method runs at scale).
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/ceiling/view_camera.py \\
         --doc 411101_P01_CEILING-PANEL-FRAME-C1_CAD --arg eye=-1100,950,2500 --arg target=-1190,830,2374 \\
-        --screenshot corner.png --direction current --close --discard --label "CEILING Engineer"
+        --arg png=/path/corner.png --close --discard --label "CEILING Engineer"
 
 eye and target are pod coordinates in mm; up is +Z. hide=PN,PN hides the occurrences of those part
 numbers (to see a detail behind them, such as a cleat slot behind a cross member's end); the run's
---close --discard drops that. Changes nothing else.
+--close --discard drops that. Changes nothing else. png=PATH saves the view from the viewport itself
+(Viewport.saveAsImageFile): the runner's --screenshot --direction current came back as a far view of the
+whole scene in the C1 sample (2026-11-01), so the camera set here didn't reach it.
 """
 
 import adsk.core
@@ -38,3 +40,8 @@ def run(_context):
     vp.refresh()
     adsk.doEvents()
     print("camera: eye %s, target %s" % (ARGS["eye"], ARGS["target"]))
+    if ARGS.get("png"):
+        ok = vp.saveAsImageFile(ARGS["png"], int(ARGS.get("w", "1600")), int(ARGS.get("h", "1000")))
+        print("image saved to %s: %s" % (ARGS["png"], ok))
+        if not ok:
+            raise RuntimeError("the viewport image was not saved")
