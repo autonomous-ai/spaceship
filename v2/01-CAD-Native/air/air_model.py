@@ -103,6 +103,7 @@ AIR_PARAMS = [
     # ---- fans (selection F1, D-51)
     ("fan_s", "140 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
     ("fan_t", "25 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
+    ("lock_hole", "7.0 mm", "mm", "source", "the joints register's R-J6: M6 bolt clearance holes 7.0 (the mechanical checks' C08 found 6.6 here, 0.31 mm of float over a rivnut)"),
     ("blk_t", "2 mm", "mm", "source", "the air report's sizing (calc.py, D-121): each fan box's 2 mm aluminium bulkhead, the fans mounted on it"),
     ("fan_bore", "135 mm", "mm", "source", "the air report's fan bore (calc.py FAN_BORE 0.135 m): the bulkhead's opening at each fan"),
     ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
@@ -413,7 +414,7 @@ def features():
         out.append((rail, "box", ("%s - key_w / 2" % x, "%s + key_w / 2" % x, edge, y, zr0, zr1)))
         out.append((rail, "zcircle", (x, y, zr0, zr1, "key_w")))
     for x in ("-lock_x", "-lock_x + lock_dx"):
-        out.append(("SOFFIT RAIL DOOR", "zcircle", (x, "%s + tube_w / 2" % YW, zr0, zr1, "6.6 mm")))
+        out.append(("SOFFIT RAIL DOOR", "zcircle", (x, "%s + tube_w / 2" % YW, zr0, zr1, "lock_hole")))
     # D-121: a fan bore in each bulkhead over each fan (the exhaust fans hang under theirs, the supply fans stand on theirs)
     for name, x, y, z in fan_points():
         tag = "EXHAUST" if name.startswith("EXHAUST") else "SUPPLY"
