@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 12 failure(s) on the five rules; 332 part lines (138 made, 194 bought, 136 on HOLD) and 46 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 368.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: FAIL.** 15 failure(s) on the five rules; 363 part lines (159 made, 204 bought, 140 on HOLD) and 50 sub-assembly lines from 18 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 394.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -28,6 +28,7 @@ Read from: this working tree.
 - `v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_BOM.csv` @ working tree
 - `v2/04-BOM/number-allocation.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
@@ -42,10 +43,13 @@ Read from: this working tree.
 - hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv @ working tree
 - hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv @ working tree
 - hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv @ working tree
+- hardware with no joints-register row: 848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
+- hardware with no joints-register row: 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8 in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
 - hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
 - hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
 - hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
 - hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
+- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_BOM.csv @ working tree
 
 ## Missing or on HOLD, per team
 
@@ -91,6 +95,10 @@ Read from: this working tree.
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
 
 **FRONT**
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
@@ -220,7 +228,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 180 numbers, 134 not in a team's list yet, 23 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 180 numbers, 118 not in a team's list yet, 39 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -263,11 +271,11 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 134 not in a team's list ye
 | 212405 | WALL - FRAME STILE MID - SIDE UPPER - RH | 211104 | 3 | ALLOCATED |
 | 211541 | WALL - CAVITY FILL PIECE 1082.7 X 344.9 - SIDE UPPER - RH | 210104 | 3 | CANCELLED |
 | 211542 | WALL - CAVITY FILL PIECE 1082.7 X 334.9 - SIDE UPPER - RH | 210104 | 1 | CANCELLED |
-| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
-| 212502 | WALL - FRAME RAIL TOP - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
-| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
-| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
-| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | ALLOCATED |
+| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 211203 | 2 | in use |
+| 212502 | WALL - FRAME RAIL TOP - BACK LOWER - B1 | 211201 | 1 | in use |
+| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 211203 | 2 | in use |
+| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 211203 | 2 | in use |
+| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | in use |
 | 211611 | WALL - CAVITY FILL PIECE F09 373 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 2 | CANCELLED |
 | 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
 | 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
@@ -354,7 +362,7 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 134 not in a team's list ye
 | 611211 | AIR - SOFFIT FILL - FRONT | 610201 | 1 | ALLOCATED |
 | 611502 | AIR - INTAKE BOOT | 610401 | 1 | ALLOCATED |
 | 611303 | AIR - CARTRIDGE INLET GASKET | 610301 | 2 | ALLOCATED |
-| 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | ALLOCATED |
+| 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | in use |
 | 351307 | FRONT - DECOR SEAM BAR - DR - REMOVABLE | 350003 | 1 | CANCELLED |
 | 211515 | WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
 | 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | in use |
@@ -364,25 +372,25 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 134 not in a team's list ye
 | 211536 | WALL - CAVITY FILL PIECE F06 230.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | in use |
 | 211537 | WALL - CAVITY FILL PIECE F07 205.5 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | in use |
 | 211538 | WALL - CAVITY FILL PIECE F08 214 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | in use |
-| 211614 | WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
-| 211615 | WALL - CAVITY FILL PIECE F10 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 2 | ALLOCATED |
-| 211616 | WALL - CAVITY FILL PIECE F11 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
-| 211634 | WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | ALLOCATED |
-| 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | ALLOCATED |
-| 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
+| 211614 | WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | in use |
+| 211615 | WALL - CAVITY FILL PIECE F10 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 2 | in use |
+| 211616 | WALL - CAVITY FILL PIECE F11 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | in use |
+| 211634 | WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | in use |
+| 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | in use |
+| 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | in use |
 | 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
 | 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | ALLOCATED |
 | 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | ALLOCATED |
 | 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | 110101 110102 110106 | 3 | ALLOCATED |
 | 111602 | BASE - LEVELLING GLIDE - M10 - D40 | 110101 110102 110103 110106 | 9 | ALLOCATED |
-| 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | ALLOCATED |
+| 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | in use |
 | 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
-| 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
+| 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | in use |
 | 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
-| 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
+| 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | in use |
 | 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
 | 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
-| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | ALLOCATED |
+| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | in use |
 | 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | ALLOCATED |
 | 412002 | CEILING - FRAME CLIP TAB | 411101 411102 | 12 | ALLOCATED |
 | 513103 | LINING - CATCH EYE BRACKET - CEILING | 510301 | 4 | ALLOCATED |

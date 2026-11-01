@@ -242,7 +242,11 @@ def test_cad_masses_from_main():
     assert abs(bb[3] - want) < 1e-9 and rollup.basis(bb) == "CAD, main (part)", bb
     for n in (1, 2):
         w = rollup.WALL_BACK[n]
-        assert w["mid_n"] == rollup.BACK_STUDS and w["mid_t"] == rollup.T_STUD_LIGHT, w     # D-85's 2 studs at 1.0 mm
+        if w["steel"]:                         # D-131, D-135: the steel frame's 3 studs are the design, at their CAD mass
+            assert w["mid_n"] == 3 and w["mid_kg"] == 0.0 and rollup.back_cad_kg(n, rollup.FILL_LIGHT, k10, 2) == \
+                rollup.back_cad_kg(n, rollup.FILL_LIGHT, k10, 3), w
+        else:
+            assert w["mid_n"] == rollup.BACK_STUDS and w["mid_t"] == rollup.T_STUD_LIGHT, w     # D-85's 2 studs at 1.0 mm
     cbl = next(r for k, r in rows.items() if k.startswith("Wall cassette, back, lower"))
     cad = sum(rollup.WALL_BACK[n]["tray"] + rollup.WALL_BACK[n]["felt"] + rollup.WALL_BACK[n]["cass_seals"] for n in (1, 2))
     assert abs(cbl[3] - cad / 2) < 1e-9 and rollup.basis(cbl) == "CAD, main", cbl

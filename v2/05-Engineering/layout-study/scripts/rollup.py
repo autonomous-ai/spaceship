@@ -589,11 +589,12 @@ OFF = dict(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_
 
 def back_cad_kg(n, fill, kgm_s, n_back):
     """WALL's back panel B<n> from its CAD (S50): its made parts and bond set, with the fill at `fill` and the inner studs
-    at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model)."""
+    at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model). A D-131 steel
+    frame's studs are the design (D-131, D-135: 3 on a back panel), so they keep their CAD mass and count."""
     w = WALL_BACK[n]
     return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"] + w["ledge"]
             + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1)
-            + (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s)
+            + (0.0 if w["steel"] else (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s))
 
 
 def back_est_kg(fill, kgm12, kgm_s, n_back):
