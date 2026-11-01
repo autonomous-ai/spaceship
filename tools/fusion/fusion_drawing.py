@@ -161,17 +161,6 @@ def first_angle_symbol(sheet: "adsk.drawing.Sheet", x0=None, cy=None, small=5.0,
     return outline, circles
 
 
-# Fusion keeps a view's scale in single precision (live 2026-11-01, GA sheet 1: the isometric view's
-# 0.0375 read back about 1.5e-9 off, so a 1e-9 check refused a view at the scale asked; 1:10 and 1:5
-# read back 1.5e-9 and 3e-9 off too). A scale counts as set when it is within this part of the asked one.
-SCALE_REL_TOL = 1e-6
-
-
-def scale_is(got, want):
-    """True when a view's read-back scale `got` is the scale `want` (SCALE_REL_TOL of it)."""
-    return abs(got - want) <= SCALE_REL_TOL * abs(want)
-
-
 def base_view(sheet: "adsk.drawing.Sheet", orientation, scale, at, style=None):
     """A base view at `at` (sheet mm, its centre), with the style and scale set again on
     the made view and checked (Fusion ignores the input's style). Default style:
@@ -189,14 +178,14 @@ def base_view(sheet: "adsk.drawing.Sheet", orientation, scale, at, style=None):
         raise RuntimeError("Views.add returned None")
     if view.style != style:
         view.style = style
-    if not scale_is(view.scaleValue, scale):
+    if abs(view.scaleValue - scale) > 1e-9:
         view.scaleValue = scale
     if adsk is not None:
         adsk.doEvents()
     if view.style != style:
         raise RuntimeError("the view's style stays %s after setting %s" % (view.style, style))
-    if not scale_is(view.scaleValue, scale):
-        raise RuntimeError("the view's scale stays %.9g after setting %.9g" % (view.scaleValue, scale))
+    if abs(view.scaleValue - scale) > 1e-9:
+        raise RuntimeError("the view's scale stays %g after setting %g" % (view.scaleValue, scale))
     return view
 
 
