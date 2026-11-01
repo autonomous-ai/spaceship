@@ -1,5 +1,5 @@
 {
- "rev": "6f2bff3",
+ "rev": "5a996ab",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -248,6 +248,54 @@
     ]
    },
    "key": "C02|gap-KICK-OVER-FLOOR|assembly KICK-OVER-FLOOR"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351101 FRONT - DECOR SKIN - DL:1",
+   "severity": "severe",
+   "message": "351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 17
+   },
+   "key": "C02|bond-line|assembly 351101 FRONT - DECOR SKIN - DL:1"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351201 FRONT - DECOR SKIN - DT:1",
+   "severity": "severe",
+   "message": "351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351201 FRONT - DECOR SKIN - DT:1"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351301 FRONT - DECOR SKIN - DR:1",
+   "severity": "severe",
+   "message": "351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351301 FRONT - DECOR SKIN - DR:1"
   },
   {
    "check": "C08",
@@ -1270,18 +1318,6 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "110101",
-   "severity": "major",
-   "message": "110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|110101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "110103",
    "severity": "major",
    "message": "110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings).",
@@ -1930,18 +1966,6 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "410101",
-   "severity": "major",
-   "message": "410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|410101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "410102",
    "severity": "major",
    "message": "410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings).",
@@ -2166,18 +2190,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|610000"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "610101",
-   "severity": "major",
-   "message": "610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|610101"
   },
   {
    "check": "C05",
@@ -3327,7 +3339,7 @@
    "torque_nm": "HOLD: into the corner key's M6 thread, from the joint test J-T6 (joints register)",
    "qty_parts_list": "4",
    "qty_cad": 4,
-   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:5",
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:5",
    "maker": "standard part, any maker (catalogue number at RFQ)",
    "sku": "ISO 7380-2 M6 x 12 - A2-70",
    "status": "DRAFT",
@@ -5282,7 +5294,7 @@
    "torque_nm": "",
    "qty_parts_list": "4",
    "qty_cad": 4,
-   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:5",
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:5",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5332,6 +5344,23 @@
    "finish": "",
    "torque_nm": "",
    "qty_parts_list": "2",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838011",
+   "name": "HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 200HV ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
    "qty_cad": "",
    "where_cad": "",
    "maker": "",
