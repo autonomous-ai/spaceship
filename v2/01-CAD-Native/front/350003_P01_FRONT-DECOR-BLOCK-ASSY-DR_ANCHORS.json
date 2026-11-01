@@ -130,17 +130,17 @@
   {
    "component": "352312 FRONT - DECOR FRAME DR - BACK RING DIAGONAL",
    "index": 0,
-   "expression": "((fg_dc + dr_skin_t - fg_dnz * (fg_vis_zt)) / fg_dnx)"
+   "expression": "((fg_dc + dr_fo - fg_dnz * (fg_vis_zt)) / fg_dnx)"
   },
   {
    "component": "352308 FRONT - DECOR FRAME DR - BACK RING BOLT LINE",
    "index": 3,
-   "expression": "pod_w / 2 - dr_skin_t"
+   "expression": "pod_w / 2 - dr_fo"
   },
   {
    "component": "352302 FRONT - DECOR FRAME DR - FRONT RING FACET SIDE",
    "index": 1,
-   "expression": "-pod_d / 2 + dr_skin_t"
+   "expression": "-pod_d / 2 + dr_fo"
   },
   {
    "component": "352310 FRONT - DECOR FRAME DR - BACK RING DT JOINT",
@@ -155,7 +155,7 @@
   {
    "component": "352309 FRONT - DECOR FRAME DR - BACK RING TOP",
    "index": 5,
-   "expression": "pod_h - dr_skin_t"
+   "expression": "pod_h - dr_fo"
   }
  ]
 }
