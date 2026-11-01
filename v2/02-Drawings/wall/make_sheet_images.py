@@ -161,11 +161,13 @@ def frame_blocks(pn, src=None):
     cut = {}
     for b in bodies:
         d = sorted(round(b["box"][i + 3] - b["box"][i], 2) for i in range(3))
-        wall = prm.get("stud_t", 1.0) if b["name"].startswith("STILE - MID") else prm.get("tube_t", 1.2)
+        wall = prm.get("stud_t", 0.8) if b["name"].startswith("STILE - MID") else (
+            prm.get("corner_t", prm.get("tube_t", 1.0)) if d[0] >= 39.9 else prm.get("tube_t", 1.0))
         sec = "%s × %.1f" % ("40 × 40" if d[0] >= 39.9 else "20 × 40", wall)
         key = (("%s %s" % (b["part"], b["name"])) if members else b["name"].rstrip("0123456789 ").strip(), sec, d[2])
         cut[key] = cut.get(key, 0) + 1
-    data = data_block(pn, frame, rep, "1:5", "A2", "aluminium tube 6063-T6, mill finish (D-79)", mass)
+    data = data_block(pn, frame, rep, "1:5", "A2", "steel box tube S280GD+Z (EN 10346) or SGC400 (JIS G3302), "
+                      "yield 280 MPa or more, pre-galvanized; welded (D-131)", mass)
     if pos["back"]:
         seam_x = bx[3] if not pos["right"] else bx[0]
         datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = the closing-seam face "
@@ -203,23 +205,26 @@ def frame_blocks(pn, src=None):
         datums,
         holes,
         "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009).",
-        ("5. Cut list, ends per note 6, tube 6063-T6 (studs 1.0 wall, D-85): " if members else
-         "5. Cut list, square ends, tube 6063-T6 (studs 1.0 wall, D-85): ") + "; ".join(
+        ("5. Cut list, ends per note 6, steel box tube (walls per the Joints Engineer, D-131): " if members else
+         "5. Cut list, square ends: ") + "; ".join(
             "%s: %s tube, length %g, qty %d" % (k[0].title().replace(" - ", " "), k[1], k[2], q)
             for k, q in sorted(cut.items())) + ".",
-        ("6. Member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no "
-         "welds). The 4 perimeter members run to the outer corners, mitred there (D-117: 45° where the two are the "
-         "same size; 26.57° on a 40 × 40 meeting a 20 × 40, 63.43° on the 20 × 40); the studs fit square between the "
-         "rails, with an 8 × 22 plug-cleat slot in the rail's bay-side wall at each stud end. Each member is its own "
-         "part (D-120); the cleats are the Joints Engineer's, placed when they land. %sCut lengths outer to outer, "
-         "±0.5 (assumption) until the frame maker's capability is known (guideline 6.3)." % extra) if members else
+        ("6. Welded frame (D-131): the 4 perimeter members run to the outer corners, mitred there (D-117: 45° where "
+         "the two are the same size; 26.57° on a 40 × 40 meeting a 20 × 40, 63.43° on the 20 × 40), each member cut "
+         "back so a 2 mm mitre plate (the Joints Engineer's register part) fits in the mitre, centred on the mitre "
+         "line: 1.41 off each member where the two are the same size, 2.24 off a 20 × 40 and 1.12 off a 40 × 40 where "
+         "they meet. The plate is welded in, its edges ground flush on the skin and seam faces. The studs fit square "
+         "between the rails and are welded there. Weld coupons prove the corner before the first frame is welded. "
+         "Pre-galvanized tube; the weld spots zinc-painted after welding; no hot-dip (it warps thin frames). Each "
+         "member is its own part (D-120). %sCut lengths outer to outer after the cut-back, ±0.5 (assumption) until "
+         "the frame maker's capability is known (guideline 6.3)." % extra) if members else
         ("6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
          "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
          "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's "
          "capability is known (guideline 6.3)." % extra),
         "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
         "(HOLD-02), torque (HOLD-01). P01 DRAFT.",
-        "8. Lengths and hole positions without their own tolerance: ISO 2768-1 class m (aluminium tube, sawn and "
+        "8. Lengths and hole positions without their own tolerance: ISO 2768-1 class m (steel tube, sawn and "
         "drilled), for the frame maker to confirm (guideline 3.2). Deburr every cut end and hole; break sharp "
         "edges 0.2 max. Hole tables: X to the right, Y up in each view, from the origin named in the table title.",
     ]
@@ -453,7 +458,7 @@ def assembly_blocks(pn, kind, src=None):
             "**GENERAL NOTES",
             "1. " + views_note(pos),
             "2. Stack outside to inside: ACP skin 3 (%s), bond line 3 (SikaTack Panel-50, 12 × 3 on every member), "
-            "frame 40 (%s, 6063-T6), PET fill 40 in the bays (%s): outer panel 46. Then the 4 mm gap and the lining "
+            "frame 40 (%s, welded galvanized steel, D-131), PET fill 40 in the bays (%s): outer panel 46. Then the 4 mm gap and the lining "
             "cassette 34 (%s, a separate part): 84 in all." % (skin, frame, fill, cass),
             "3. Site joints (joints register): %s Seam gap 2.26 at each stopped joint, set by the 1.5 mm stop washers."
             % JOINTS.get(pos["code"], ""),
@@ -462,7 +467,7 @@ def assembly_blocks(pn, kind, src=None):
             "left open beside every bolt this panel drives." % (
                 ", the closing-seam bulb seal (HOLD-12)" if pos["code"] in ("B2", "B4") else ""),
             "5. Bond: panel bonded face down on a flat table; no standing, stacking or shipping before 72 h (bond spec).",
-            "6. Member joints: internal cleats per D-115. HOLD: retainer (HOLD-02), torque (HOLD-01), gasket "
+            "6. Frame welded at the corners (mitre plates) and the T joints (D-131). HOLD: retainer (HOLD-02), torque (HOLD-01), gasket "
             "converter (HOLD-05).",
         ]
     else:
