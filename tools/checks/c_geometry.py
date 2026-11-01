@@ -391,13 +391,27 @@ def _plane_axes(n):
     return u, (n[1] * u[2] - n[2] * u[1], n[2] * u[0] - n[0] * u[2], n[0] * u[1] - n[1] * u[0])
 
 
-def skin_gap(skin, member, axis=None, reach=6.0):
+def skin_thickness(skin):
+    """A skin's thickness: its STEP's most common distance between opposite faces, or its box's least extent."""
+    t = getattr(skin.solid, "thickness", None)
+    return t if t else min(skin.box[k + 3] - skin.box[k] for k in range(3))
+
+
+def skin_gap(skin, member, axis=None, reach=6.0, edge=None):
     """The smallest gap between a skin's flat face and a frame member's flat face that face each other and overlap,
-    within reach; axis: only faces square to it (a panel's depth axis), or every face (a faceted block)."""
+    within reach; axis: only faces square to it (a panel's depth axis), or every face (a faceted block). edge: a skin
+    face no wider than this is the skin's cut edge, not a face that's bonded (the Lead's ruling on #313: DR's skin
+    edge butting the back-ring tubes end-on)."""
     best = None
     for ns, os_, ps in _world_planes(skin):
         if axis is not None and abs(abs(ns[axis]) - 1.0) > 1e-4:
             continue
+        if edge is not None:
+            u, v = _plane_axes(ns)
+            wide = min(max(sf.dot(q, u) for q in ps) - min(sf.dot(q, u) for q in ps),
+                       max(sf.dot(q, v) for q in ps) - min(sf.dot(q, v) for q in ps))
+            if wide <= edge + 0.01:
+                continue
         for nf, of, pf in _world_planes(member):
             if sf.dot(ns, nf) > -0.9999:
                 continue
@@ -433,8 +447,8 @@ def check_bond_lines(root, mdl, bodies, bt=None):
         g = groups.setdefault(key, {"skins": [], "frames": []})
         if SKIN_RE.search(parts[-2]):
             g["skins"].append(b)
-        elif FRAME_RE.search(comp) and not SKIN_RE.search(comp):
-            g["frames"].append(b)
+        elif FRAME_RE.search(comp) and not SKIN_RE.search(comp) and not is_soft(re.sub(r":\d+$", "", parts[-2])):
+            g["frames"].append(b)               # a seal isn't a frame member, whatever its name says (FRAME-STOP SEAL)
     fs = []
     for key, g in sorted(groups.items()):
         if not g["skins"] or not g["frames"]:
@@ -447,7 +461,7 @@ def check_bond_lines(root, mdl, bodies, bt=None):
         for skin in g["skins"]:
             off = []
             for m in g["frames"]:
-                d = skin_gap(skin, m, axis, reach=2.0 * bt)
+                d = skin_gap(skin, m, axis, reach=2.0 * bt, edge=skin_thickness(skin))
                 if d is not None and abs(d - bt) > BOND_TOL:
                     parts = (m.label or "").split(" / ")
                     name = parts[-2] if len(parts) > 1 else m.label

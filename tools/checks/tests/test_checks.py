@@ -1814,4 +1814,18 @@ def test_every_bonded_skin_sits_bond_t_off_its_frame():
     assert [(f.rule, f.severity) for f in thick] == [("bond-line", "major")]
     far = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -630.0)], bt=3.0)   # 17 mm behind: not bonded
     assert far == []
+    # Reviewer 7 on #313 (the Lead's ruling): a seal in the frame isn't a member, whatever its name says, and the skin's
+    # cut edge (a face no wider than the skin is thick) butting a tube end-on isn't a bonded face
+    seal = _box_body(top + " / 368005 FRONT - FRAME-STOP SEAL:1 / Body1", (0, -647.0, 0, 15, -643.0, 2000))
+    assert c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -644.0), seal], bt=3.0) == []
+    end_on = _box_body(top + " / 352307 FRONT - DECOR FRAME DR - BACK RING BOTTOM:1 / Body1", (400.0, -660, 0, 420, -640, 20))
+    assert c_geometry.skin_gap(skin, end_on, None, reach=6.0) == 0.0            # the edge face does face the tube
+    assert c_geometry.skin_gap(skin, end_on, None, reach=6.0, edge=3.0) is None  # but it is the skin's cut edge
+    # in a faceted block (every direction checked, as DR), the end-on tube is no finding
+    block = _box_body(top + " / 352309 FRONT - DECOR FRAME DR - FACET TUBE:1 / Body1", (0.0, -1500, 0, 20, -1480, 20))
+    assert c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -644.0), end_on, block], bt=3.0) == []
+    # but the same tube lying on the skin's broad face with no glue line is still found
+    flat = _box_body(top + " / 352308 FRONT - DECOR FRAME DR - BACK RING BOLT LINE:1 / Body1", (100.0, -647.0, 0, 120, -627, 20))
+    got = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -644.0), flat], bt=3.0)
+    assert [(f.rule, f.severity) for f in got] == [("bond-line", "severe")] and "BOLT LINE" in got[0].message
     assert c_geometry.bond_t(ROOT) == 3.0              # the skeleton's own parameter
