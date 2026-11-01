@@ -57,6 +57,14 @@ def contacts_from(bodies, tol=0.2):
     return out
 
 
+def own_file_first(pn, files):
+    """Which STEP file speaks for a part's holes: its own (the file named after its number) when there is one, else
+    the first file holding it. A copy in an assembly, older or modelled in another frame, then never adds holes the
+    part doesn't have (BASE's copy of corner key 111211 is the key turned 180 degrees: other key coordinates)."""
+    own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
+    return own[0] if own else sorted(files)[0]
+
+
 def run(root, rev):
     findings, ran, inputs = [], set(), {}
     # geometry
@@ -101,7 +109,7 @@ def run(root, rev):
     inputs["part_steps"] = [rel(root, p) for p in per_part]
     # STEP products for the BOM match and the drawings
     step_products, holes_by_pn, usage, faces_by_pn, flat_by_pn = {}, {}, {}, {}, {}
-    bends_by_pn, two_wall_by_pn, shapes_by_pn = {}, {}, {}
+    bends_by_pn, two_wall_by_pn, per_file = {}, {}, {}
     for p in per_part:
         s = c_geometry.load_step(p)
         counts, _tops = s.usage_counts()
@@ -126,20 +134,26 @@ def run(root, rev):
                     "%s: %s (%d void%s; outer shell used)" % (os.path.basename(p), inst["name"], so.voids,
                                                             "s" if so.voids > 1 else ""))
             pn = inst["part_number"]
-            # the holes of every different body of a part (a frame's members), once per shape: copies of one part
-            # (seven washers under one number) and the same part in a second file count once
+            # the holes of every different body of a part within one file (a frame's members), once per shape (seven
+            # washers under one number count once); across files the part's own STEP decides (below), so an older
+            # copy in an assembly can't add holes the part doesn't have
+            entry = per_file.setdefault(pn, {}).setdefault(p, {"shapes": set(), "holes": [], "two_wall": 0, "bends": 0})
             shape = c_drawings.body_shape(so)
-            if shape not in shapes_by_pn.setdefault(pn, set()):
-                shapes_by_pn[pn].add(shape)
-                holes_by_pn.setdefault(pn, []).extend(so.holes)
-                two_wall_by_pn[pn] = two_wall_by_pn.get(pn, 0) + c_drawings.two_wall_axes(so.holes)
-                bends_by_pn[pn] = max(bends_by_pn.get(pn, 0), len(so.bends))
+            if shape not in entry["shapes"]:
+                entry["shapes"].add(shape)
+                entry["holes"].extend(so.holes)
+                entry["two_wall"] += c_drawings.two_wall_axes(so.holes)
+                entry["bends"] = max(entry["bends"], len(so.bends))
             faces_by_pn.setdefault(inst["part_number"], []).append(len(so.faces))
             fl = sf.flat_plate(so)
             if not fl[0] or inst["part_number"] not in flat_by_pn:      # one body that isn't flat decides
                 flat_by_pn[inst["part_number"]] = fl
             usage.setdefault(inst["part_number"], []).append((rel(root, p), 1, [" / ".join(inst["path"][1:])]))
+    for pn, files in per_file.items():
+        pick = files[own_file_first(pn, files)]
+        holes_by_pn[pn], two_wall_by_pn[pn], bends_by_pn[pn] = pick["holes"], pick["two_wall"], pick["bends"]
     findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
+    findings += c_parts.check_copies(root, per_part, c_geometry.load_step)         # copies match their part
     if plists:
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
@@ -165,9 +179,10 @@ def run(root, rev):
                 if row["part_number"]:
                     src_by_pn.setdefault(row["part_number"], rel(root, p))
         cuboid_by_pn = c_drawings.strip_sides(per_part, c_geometry.load_step)     # D-125's plain strips
+        prism_by_pn = c_drawings.prism_shapes(per_part, c_geometry.load_step)    # D-128's through-cut pieces
         findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn,
                                               bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn,
-                                              cuboid_by_pn=cuboid_by_pn)
+                                              cuboid_by_pn=cuboid_by_pn, prism_by_pn=prism_by_pn)
         ran.add("C05")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,

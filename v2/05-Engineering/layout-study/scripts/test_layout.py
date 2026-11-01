@@ -19,6 +19,37 @@ def decided_parts():
         return parts_for("plan", FINAL)
 
 
+def repeated_keys(path, name):
+    """Keys written more than once in the dict literal assigned to `name` in a file: Python keeps only the last,
+    so the earlier entry vanishes without a word (S51 was both D-126's profile and FRONT's decor blocks)."""
+    import ast
+    from collections import Counter
+    with open(path, encoding="utf-8") as fh:
+        tree = ast.parse(fh.read())
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == name for t in node.targets):
+            if isinstance(node.value, ast.Dict):
+                keys = [k.value for k in node.value.keys if isinstance(k, ast.Constant)]
+                return sorted(k for k, c in Counter(keys).items() if c > 1)
+    raise AssertionError("no dict literal %s in %s" % (name, path))
+
+
+def test_every_source_label_and_input_name_written_once():
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), "inputs.py")
+    assert repeated_keys(here, "SOURCES") == []
+    assert repeated_keys(here, "P") == []
+
+
+def test_a_repeated_label_is_found():
+    """No pytest fixture: the README runs this file as a script, which calls each test with no arguments."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        f = os.path.join(tmp, "x.py")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write('SOURCES = {\n    "S51": ("a", "b"),\n    "S50": ("c", "d"),\n    "S51": ("e", "f"),\n}\n')
+        assert repeated_keys(f, "SOURCES") == ["S51"]
+
+
 def test_nested_override_keeps_outer_values():
     """Reviewer 2: an inner override used to drop the outer one's keys on exit (wall thickness fell back to 38 mm)."""
     base = p("wall_t_plan")
@@ -125,8 +156,17 @@ def test_p04_rollup_lines():
     assert [r[1] for r in csv_rows if kit.search(r[1] + " " + r[5])] == [later[0][1]], "only the kit is outside the cap"
     csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
-    air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
-    assert abs(air32 - (rollup.AA.d60_air_kg() + rollup.AA.fans_kg())) < 0.05, air32
+    # AIR from its CAD (PR #91): the lines add up to the parts list's 610000 plus the ruled changes its follow-up builds
+    # (D-116 layers at 32, D-124 casings at 3 mm) and what the CAD doesn't model yet (D-121, the riser's foot, D-130's boot), nothing
+    # twice; the fill moves only the column's and the soffit's fill, from the CAD's 32 kg/m3 (D-81)
+    air = lambda f: sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=f) if g == "AIR")
+    k, A = rollup.AIR["kg"], rollup.AIR
+    layers = 2 * A["n_layers"] * k["611302"] * (rollup.AA.CART_LAYER_KG_M3 / A["layer_rho"] - 1)
+    casings = (k["611401"] + k["611402"]) * (rollup.AA.CASINGS[rollup.AA.FANBOX_CASING][2] / rollup.AIR_FBOX_T_CAD - 1)
+    want = (k["610000"] + layers + casings + sum(rollup.air_unmodelled().values()) + rollup.AIR_RISER_FOOT_KG
+            + rollup.AA.BOOT_KG)
+    assert abs(air(32.0) - want) < 0.01, (air(32.0), want)
+    assert abs(air(32.0) - air(rollup.FILL_LIGHT) - (k["611104"] + k["611203"]) * (1 - rollup.FILL_LIGHT / 32.0)) < 1e-9
     for name in ("Named clips",):                                  # the light shelf and ledge are INTERIOR's CAD now
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
@@ -137,7 +177,7 @@ def test_p04_rollup_lines():
     assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 1e-6, "the table adds up exactly"
     assert set(rollup.OFF) == set(rollup.ADOPTED)
     op = rollup.parked()
-    assert len(op) == 3 and all(o[0] > 0 and o[2] and o[3] for o in op), op
+    assert len(op) == 2 and all(o[0] > 0 and o[2] and o[3] for o in op), op      # FRONT's CAD settled the decor frames
     names = [name for name, _ in rollup.REJECTED]
     assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
 
@@ -188,6 +228,11 @@ def test_cad_masses_from_main():
     sh = next(r for k, r in rows.items() if k.startswith("Light shelf"))
     ld = next(r for k, r in rows.items() if k.startswith("Work-wall ledge"))
     assert abs(sh[3] - rollup.INTERIOR["shelf"]) < 1e-9 and rollup.basis(sh) == "CAD, main", sh
+    it, el = rollup.INTERIOR, rollup.ELEC                     # S53: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
+    assert [pn for pn, _q, _m in el["hosted"].get("810201", [])] == it["shelf_elec"] and it["shelf_elec_kg"] > 0, it
+    assert set(it["shelf_gone"]) <= set(rollup.SHELF_REPLACED), it
+    assert abs(it["shelf"] - (it["shelf_listed"] - it["shelf_gone_kg"] + it["shelf_elec_kg"])) < 1e-12, it
+    assert all(pn not in el["hosted"] for pn in ("710000",)) and set(el["hosted"]) <= {"810201"}, el["hosted"]
     assert abs(ld[3] - rollup.INTERIOR["ledge"] - rollup.INTERIOR["rail"]) < 1e-9 and rollup.basis(ld) == "CAD, main", ld
     bb = rows["B1 to B4, back outer panels"]                                      # B1 and B2 from CAD (PR #152)
     k10, k12 = rollup.al_rhs(20, rollup.P04["frame_d"], rollup.T_STUD_LIGHT), rollup.al_rhs(20, rollup.P04["frame_d"], 1.2)
@@ -200,7 +245,16 @@ def test_cad_masses_from_main():
     cbl = next(r for k, r in rows.items() if k.startswith("Wall cassette, back, lower"))
     cad = sum(rollup.WALL_BACK[n]["tray"] + rollup.WALL_BACK[n]["felt"] + rollup.WALL_BACK[n]["cass_seals"] for n in (1, 2))
     assert abs(cbl[3] - cad / 2) < 1e-9 and rollup.basis(cbl) == "CAD, main", cbl
-    assert len(rollup.cad_swaps()) == 22
+    for item, b in (("Decor block - left", "DL"), ("Decor block - right", "DR"), ("Decor block - top", "DT")):  # PR #105
+        dl = rows[item]
+        d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(os.path.join(rollup.MANUF, "front",
+                                                                           rollup.FRONT_DECOR[b]["path"])) if r["pn"]}
+        assert abs(dl[3] - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
+    assert rollup.FRONT_DECOR["DR"]["reserved"] == ["350004", "351402", "351403", "351404", "351405"]
+    assert 0.5 < rollup.dr_channels_kg() < 0.6                                   # the right and diagonal channels
+    ks = rows["Base seal and cable grommets"]                       # the door edge seals are FRONT's (PR #105)
+    assert abs(ks[3] - p("base_seal_kg") - p("grommet_kg")) < 1e-9, ks
+    assert len(rollup.cad_swaps()) == 26
 
 
 def test_rollup_items_the_packing_plan_reads():

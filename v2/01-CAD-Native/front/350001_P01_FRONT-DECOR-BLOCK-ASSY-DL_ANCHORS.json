@@ -1,0 +1,81 @@
+{
+ "document": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD",
+ "f3d": "v2/01-CAD-Native/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD.f3d",
+ "anchors": [
+  {
+   "component": "351101 FRONT - DECOR SKIN - DL",
+   "index": 0,
+   "expression": "-pod_w / 2"
+  },
+  {
+   "component": "351101 FRONT - DECOR SKIN - DL",
+   "index": 3,
+   "expression": "dl_w - pod_w / 2"
+  },
+  {
+   "component": "351101 FRONT - DECOR SKIN - DL",
+   "index": 2,
+   "expression": "wall_z0"
+  },
+  {
+   "component": "351101 FRONT - DECOR SKIN - DL",
+   "index": 5,
+   "expression": "dl_zo"
+  },
+  {
+   "component": "351101 FRONT - DECOR SKIN - DL",
+   "index": 1,
+   "expression": "-dl_y3"
+  },
+  {
+   "component": "351101 FRONT - DECOR SKIN - DL",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d"
+  },
+  {
+   "component": "351102 FRONT - DECOR BACK PLATE - DL",
+   "index": 3,
+   "expression": "dl_w - pod_w / 2 - dl_skin_t"
+  },
+  {
+   "component": "368005 FRONT - FRAME-STOP SEAL",
+   "index": 0,
+   "expression": "door_xl - pod_w / 2"
+  },
+  {
+   "component": "368005 FRONT - FRAME-STOP SEAL",
+   "index": 5,
+   "expression": "dt_zb - ps_s"
+  },
+  {
+   "component": "351103 FRONT - DOOR HINGE-SIDE STOP - DL",
+   "index": 3,
+   "expression": "dl_w + stop_reach - pod_w / 2"
+  },
+  {
+   "component": "351104 FRONT - DECOR FRAME - DL",
+   "index": 0,
+   "expression": "-pod_w / 2 + dl_skin_t"
+  },
+  {
+   "component": "351104 FRONT - DECOR FRAME - DL",
+   "index": 3,
+   "expression": "dl_w - pod_w / 2 - dl_skin_t"
+  },
+  {
+   "component": "351104 FRONT - DECOR FRAME - DL",
+   "index": 2,
+   "expression": "wall_z0"
+  },
+  {
+   "component": "351104 FRONT - DECOR FRAME - DL",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dl_back_t"
+  },
+  {
+   "component": "351104 FRONT - DECOR FRAME - DL",
+   "index": 1,
+   "expression": "-dl_y3 + dl_skin_t"
+  }
+ ]
+}

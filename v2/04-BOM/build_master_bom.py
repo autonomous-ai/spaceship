@@ -349,9 +349,18 @@ def parse_register(text, where):
     """Hardware items of the joints register: one per part number, plus one per ID that has no number yet.
     [{'id', 'name', 'part_number', 'qty_per_pod', 'mass_each_kg', 'source_file'}]. Reads the hardware set
     table (ID | Item | ...) and any table with a part-number column; an ID's first cell may sit under any
-    header (ID or Item). One ID may have several numbers (a gasket in two thicknesses)."""
+    header (ID or Item). One ID may have several numbers (a gasket in two thicknesses). A number that a hardware
+    set row only mentions, while its own part-number row carries another ID, isn't that row's: H-14's text naming
+    848013 doesn't make 848013 the cassette edge seal (the PM, 2026-11-01)."""
     fam = "|".join(FAMILY)
     numbered, unnumbered = {}, {}
+    own = {}                                # number -> the ID of its own part-number row
+    for hdr, cells in table_rows(text):
+        pn_col = next((i for i, x in enumerate(hdr) if re.search(r"part\s*(number|no)\b|^pn$", x.lower())), None)
+        if pn_col is not None and pn_col < len(cells) and re.fullmatch(r"H-\d+\w*", clean(cells[0])):
+            m = re.search(r"\b\d{6}\b", cells[pn_col])
+            if m:
+                own.setdefault(m.group(0), clean(cells[0]))
     for hdr, cells in table_rows(text):
         h = [x.lower() for x in hdr]
         pn_col = next((i for i, x in enumerate(h) if re.search(r"part\s*(number|no)\b|^pn$", x)), None)
@@ -365,8 +374,9 @@ def parse_register(text, where):
             continue
         if pn_col is not None:
             m = re.search(r"\b\d{6}\b", cells[pn_col]) if pn_col < len(cells) else None
-        else:
-            m = next((re.search(r"\b(?:%s)\d{4}\b" % fam, c) for c in cells if re.search(r"\b(?:%s)\d{4}\b" % fam, c)), None)
+        else:  # the first number in the row that isn't another ID's own (it may only be mentioned)
+            m = next((x for c in cells for x in re.finditer(r"\b(?:%s)\d{4}\b" % fam, c)
+                      if own.get(x.group(0), rid) == rid), None)
         pn = m.group(0) if m else ""
         ncol = next((x for x in h if "name" in x), None)
         name = clean(row.get(ncol, "")) if ncol else ""
