@@ -217,6 +217,47 @@ def face_dims(sheet, view, key, done, faces, gap=16.0):
     return out
 
 
+def detail_dims(sheet, view, key, done, what, axes, gap=10.0):
+    """A detail of a bent section (the rib's hat at 2:1): its outside sizes as the reviewers asked (D-114 pass on #306:
+    guideline 6.1). height: the section's overall height, right of it; crown: the width of its lowest face, below it;
+    flange: from the left flange's tip to the web's outer face (the tip's top corner to the corner under the flange),
+    above it; thickness: the left flange tip's own edge, left of it. Each size once (S.new_size): the detail goes
+    before the first-angle views, so its sizes are the ones printed."""
+    lines, _ = view_curves(view)
+    pts = [p for ln in lines for p in (ln.startPoint, ln.endPoint)]
+    x0, y0, x1, y1 = extent(view)
+    sc = view.scaleValue
+    hx, vy = axes
+    out = []
+
+    def once(axis, a, b, place, value):
+        if S.new_size(done, axis, round(value, 2)):
+            out.append(dim(sheet, a, b, place))
+        else:
+            print("  %s: %s %.2f is printed already, left off" % (key, axis, value))
+    tip = [p for p in pts if abs(xy(p)[0] - x0) < 1e-4]                 # the left flange tip's edge
+    tip_top, tip_bot = max(tip, key=lambda p: xy(p)[1]), min(tip, key=lambda p: xy(p)[1])
+    for w in what:
+        if w == "height":
+            lo = extreme_point(view, 1, "min", x1)
+            hi = extreme_point(view, 1, "max", x1)
+            once(vy, lo, hi, (x1 + gap, (y0 + y1) / 2), (xy(hi)[1] - xy(lo)[1]) / sc)
+        elif w == "crown":
+            on = [p for p in pts if abs(xy(p)[1] - y0) < 1e-4]
+            a, b = min(on, key=lambda p: xy(p)[0]), max(on, key=lambda p: xy(p)[0])
+            once(hx, a, b, ((xy(a)[0] + xy(b)[0]) / 2, y0 - gap), (xy(b)[0] - xy(a)[0]) / sc)
+        elif w == "flange":
+            under = [p for p in pts if abs(xy(p)[1] - xy(tip_bot)[1]) < 1e-4 and xy(p)[0] > x0 + 1e-4]
+            corner = min(under, key=lambda p: xy(p)[0])                   # where the flange's underside meets the web
+            once(hx, tip_top, corner, ((x0 + xy(corner)[0]) / 2, y1 + gap * 0.8), (xy(corner)[0] - x0) / sc)
+        elif w == "thickness":
+            once(vy, tip_bot, tip_top, (x0 - gap, (xy(tip_top)[1] + xy(tip_bot)[1]) / 2),
+                 (xy(tip_top)[1] - xy(tip_bot)[1]) / sc)
+        else:
+            raise RuntimeError("detail dimension %r: only height, crown, flange and thickness are known" % w)
+    return out
+
+
 def hole_dims(sheet, view, gap=8.0):
     """Each hole: its diameter, and its centre from the view's left and top edges."""
     e = extent(view)
@@ -286,11 +327,14 @@ def insert_image(sheet, path, top_left):
     return ok
 
 
-def label_place(sheet_view_extent, png, key):
+def label_place(sheet_view_extent, png, key, detail=False):
     """Top left corner for a view's scale label: centred under the view, LABEL_GAP below it
-    (below the width dimension when the view has one there: the view from above)."""
-    x0, y0, x1, _y1 = sheet_view_extent
-    w_mm = _png_size(png)[0] / S.PX_MM
+    (below the width dimension when the view has one there: the view from above). A detail's label goes centred
+    above it, clear of the dimension over its flange (D-114 pass on #306: the label sat on the crown's 20)."""
+    x0, y0, x1, y1 = sheet_view_extent
+    w_mm, h_mm = (v / S.PX_MM for v in _png_size(png))
+    if detail:
+        return ((x0 + x1) / 2 - w_mm / 2, y1 + S.DETAIL_LABEL_GAP + h_mm)
     below = S.LABEL_GAP + (14.0 if key == "top" else 0.0)
     return ((x0 + x1) / 2 - w_mm / 2, y0 - below)
 
@@ -331,11 +375,20 @@ def annotate(part):
         e = extent(views[key])
         print("view %-5s extent %s scale %g style %s" % (key, tuple(round(v, 2) for v in e) if e else None,
                                                        views[key].scaleValue, style))
+    orient = {"front": VO.FrontViewOrientationType, "top": VO.TopViewOrientationType,
+              "left": VO.LeftViewOrientationType}
+    for key, d in sorted(sp.get("details", {}).items()):
+        views[key] = add_view(sheet, orient[d["of"]], d["at"], d["scale"], STYLE["visible"])
+        e = extent(views[key])
+        print("view %-5s extent %s scale %g style visible (detail of the %s view)" % (
+            key, tuple(round(v, 2) for v in e) if e else None, views[key].scaleValue, d["of"]))
     ef, et, el = extent(views["front"]), extent(views["top"]), extent(views["left"])
     print("alignment: front/top x %.2f %.2f, front/left y %.2f %.2f" % (
         ef[0] - et[0], ef[2] - et[2], ef[1] - el[1], ef[3] - el[3]))
     done = []
     overall_dims(sheet, views["top"], "top", done, below=True, left=True)
+    for key, d in sorted(sp.get("details", {}).items()):
+        detail_dims(sheet, views[key], key, done, d["dims"], S.AXES[d["of"]])
     overall_dims(sheet, views["front"], "front", done, below=False, left=True)
     overall_dims(sheet, views["left"], "left", done, below=False, left=False)
     for key, faces in sorted(sp.get("faces", {}).items()):
@@ -359,7 +412,8 @@ def annotate(part):
     for key, _text in S.labels(sp).items():
         png = os.path.join(notes_dir, "%s_LABEL_%s.png" % (sp["drawing"], key.upper()))
         extras.append(("%s view scale label" % key,
-                       lambda png=png, key=key: insert_image(sheet, png, label_place(extent(views[key]), png, key))))
+                       lambda png=png, key=key: insert_image(sheet, png, label_place(
+                           extent(views[key]), png, key, detail=key in sp.get("details", {})))))
     if sp["holes"]:
         extras.insert(0, ("hole table", lambda: hole_table(sheet, views[sp["holes"]], "HOLES - %s VIEW" % sp["holes"].upper())))
     for what, fn in extras:

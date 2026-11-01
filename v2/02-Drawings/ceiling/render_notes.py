@@ -100,15 +100,24 @@ def render_title(sp, path):
     return img.size
 
 
-def render_label(text, path):
-    """A view's label (its scale), 3.5 mm lettering, no frame."""
+LABEL_LH = 6.0      # mm between a label's lines
+
+
+def render_label(lines, path):
+    """A view's or a detail's label (its scale; a detail's name and what it says), one or more lines of 3.5 mm
+    lettering, no frame. The finish step writes the same lines as text over its place (pdf_notes_text.py)."""
+    if isinstance(lines, str):
+        lines = [lines]
     f = font(3.5)
     scratch = ImageDraw.Draw(Image.new("L", (10, 10)))
     pad = int(1 * PX_MM)
-    left, top, right, bottom = scratch.textbbox((0, 0), text, font=f)   # the glyphs' own box (the first label's
-    W, H = (right - left) + 2 * pad, (bottom - top) + 2 * pad            # fixed height cut its foot off)
+    boxes = [scratch.textbbox((0, 0), t, font=f) for t in lines]   # the glyphs' own boxes (the first label's fixed
+    W = max(b[2] - b[0] for b in boxes) + 2 * pad                     # height cut its foot off)
+    H = (boxes[0][3] - boxes[0][1]) + int(LABEL_LH * PX_MM) * (len(lines) - 1) + 2 * pad
     img = Image.new("L", (W, H), 255)
-    ImageDraw.Draw(img).text((pad - left, pad - top), text, font=f, fill=0)
+    d = ImageDraw.Draw(img)
+    for i, (t, b) in enumerate(zip(lines, boxes)):
+        d.text((pad - b[0], pad - boxes[0][1] + i * int(LABEL_LH * PX_MM)), t, font=f, fill=0)
     img.save(path, dpi=(PX_MM * 25.4, PX_MM * 25.4))
     return img.size
 

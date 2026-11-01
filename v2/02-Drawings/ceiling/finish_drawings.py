@@ -39,7 +39,7 @@ def specs(team):
     return os.path.dirname(path), mod.SPECS, mod.ORDER, getattr(mod, "IMG_W", 170.0)
 
 
-def finish(folder, drawing, sp=None, img_w=None):
+def finish(folder, drawing, sp=None, img_w=None, log_text=None, labels_of=None):
     raw = os.path.join(folder, ".raw", drawing + ".pdf")
     if not os.path.exists(raw):
         return "no raw PDF"
@@ -49,7 +49,14 @@ def finish(folder, drawing, sp=None, img_w=None):
         # the notes and title data as text in place of their pictures (pdf_notes_text.py: C05 reads the text)
         sys.path.insert(0, HERE)
         import pdf_notes_text as T
-        for what, pic_h, txt_h in T.replace_pictures(out, sp, img_w):
+        labels = None
+        if labels_of is not None and log_text:
+            boxes = T.label_boxes(log_text, drawing)
+            labels = {k: (boxes[k], lines) for k, lines in labels_of(sp).items() if k in boxes}
+            missing = sorted(set(labels_of(sp)) - set(labels))
+            if missing:
+                print("  labels not in the annotate log (left as pictures): %s" % missing)
+        for what, pic_h, txt_h in T.replace_pictures(out, sp, img_w, labels):
             print("  %s: picture %.1f mm tall replaced by text %.1f mm tall" % (what, pic_h, txt_h))
     png = os.path.join(folder, (drawing[:-4] if drawing.endswith("_DWG") else drawing) + "_IMG.png")
     with fitz.open(out) as doc:
@@ -67,9 +74,14 @@ def main(argv):
         argv = argv[:i] + argv[i + 2:]
     team, keys = argv[0], argv[1:]
     folder, sp, order, img_w = specs(team)
+    labels_of = None
+    if team == "ceiling":
+        sys.path.insert(0, HERE)
+        import drawing_specs as CS
+        labels_of = CS.labels
     failed = []
     for k in keys or order:
-        done = finish(folder, sp[k]["drawing"], sp[k], img_w)
+        done = finish(folder, sp[k]["drawing"], sp[k], img_w, log_text, labels_of)
         print("%s: %s" % (k, done))
         if team != "ceiling" or done == "no raw PDF":
             continue

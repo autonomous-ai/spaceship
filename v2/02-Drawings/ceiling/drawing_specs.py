@@ -29,6 +29,7 @@ PX_MM = 10.0                    # the images are drawn at 10 px per mm (render_n
 # 2026-10-31 and 2026-11-01), so each image is inserted at scale = its width / this
 FUSION_IMG_W = 58.02
 LABEL_GAP = 3.0                 # a view's scale label sits this far below the view, mm
+DETAIL_LABEL_GAP = 16.0         # a detail's label sits this far above it, clear of the dimension over its flange, mm
 # views drawn with hidden lines (the rest show visible edges only); make_drawing_ceiling.py sets
 # the style again after making the view, as Fusion ignores the one given on the input
 STYLES = {"tray": {"front": "hidden", "top": "hidden", "left": "hidden"}, "cassette": {"top": "hidden"}}
@@ -63,9 +64,12 @@ def scale_text(scale):
 
 
 def labels(sp):
-    """{view: text} for each view drawn at another scale than the sheet's (ISO 5455: that
-    scale goes next to the view; the sheet's own is in the title data)."""
-    return {k: "SCALE " + scale_text(x) for k, x in sorted(sp["scales"].items()) if abs(x - sp["scale"]) > 1e-9}
+    """{view: [lines]} for each view drawn at another scale than the sheet's (ISO 5455: that scale goes next to the
+    view; the sheet's own is in the title data), and each detail's own label (its name, scale and what it says)."""
+    out = {k: ["SCALE " + scale_text(x)] for k, x in sorted(sp["scales"].items()) if abs(x - sp["scale"]) > 1e-9}
+    for k, d in sorted(sp.get("details", {}).items()):
+        out[k] = list(d["label"])
+    return out
 
 
 def new_size(done, axis, value, tol=0.05):
@@ -95,13 +99,16 @@ def doc_name(key, doctype):
     return "%s_%s_%s_%s" % (pn, M.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"), doctype)
 
 
-def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None, faces=None, sizes=None):
+def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None, faces=None, sizes=None,
+         details=None):
     """A1 layout: the front view top left, the view from above below it, the view from the
     left to its right (first angle), the isometric view below that; notes top right, title
     data above the title block. faces: {view: ["bottom"]} adds the width of that face of the view where it is a
     size of its own (the rib's crown; the overall width is measured face to face, so a crown narrower than the
     flanges needs its own). sizes: every dimension value the drawing must print, once each (check_drawing_pdf.py
-    reads them back), taken from the model's values and the notes."""
+    reads them back), taken from the model's values and the notes. details: {name: {"of": a view's orientation,
+    "at": its centre, "scale", "label": [lines], "dims": [what make_drawing_ceiling.detail_dims puts on it]}}: a base
+    view of its own, outside the first-angle set, at a larger scale (the API makes no section or detail views)."""
     pn, name, vn, kind, mat = M.PARTS[key]
     mname = M.MATERIALS[mat][0] if mat else "see the parts list"
     v = dict(front=(200, 480), top=(200, 290), left=(480, 480), iso=(500, 260)) if sheet == "A1" else \
@@ -110,13 +117,15 @@ def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", 
     return {
         "key": key, "design": doc_name(key, "CAD"), "drawing": doc_name(key, "DWG"),
         "scale": scale, "scales": scales or {}, "views": v, "holes": holes, "sheet": sheet,
-        "faces": faces or {}, "sizes": list(sizes or []),
+        "faces": faces or {}, "sizes": list(sizes or []), "details": details or {},
         "styles": STYLES.get(key, {}),
         "images": image_places(sheet, bool(holes)),
         "title": [("PART NO.", pn), ("NAME", name), ("TÊN", vn), ("REV / STATUS", "%s / DRAFT" % M.REV),
                   ("MATERIAL", mname), ("FINISH", M.FINISH.get(key, "-")),
                   ("SCALE", scale_text(scale) + "".join(", %s view %s" % (k, scale_text(x))
-                                                         for k, x in sorted((scales or {}).items()))),
+                                                         for k, x in sorted((scales or {}).items()))
+                   + "".join(", detail %s %s" % (d["label"][0].split(":")[0].split()[-1], scale_text(d["scale"]))
+                             for _k, d in sorted((details or {}).items()))),
                    ("UNITS", "mm"), ("PROJECTION", "first angle"), ("SHEET", sheet)]
         + list(title_extra),
         "notes": list(notes) + COMMON_NOTES,
@@ -139,13 +148,17 @@ SPECS = {
     ], holes=None, sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
     "rib": spec("rib", 0.2, [
         "Tolerances (assumption): cut length +/-1; bent sizes +/-0.5.",
-        "Galvanised steel DX51D+Z, 0.5 thick, hat section: crown 20, height 24, flanges 2 x 12 (assumptions).",
-        "Blank and bend lines: 513102_P01_LINING-RIB-CEILING_DXF.dxf.",
+        "Galvanised steel DX51D+Z, one strip bent into the hat section of detail A (sizes outside). Blank and bend "
+        "lines: 513102_P01_LINING-RIB-CEILING_DXF.dxf, 88.52 wide with R0.5 inside and K 0.44 (assumptions until a "
+        "bend coupon on the factory's tooling sets them).",
         "Fixing to the tray and to the felt: HOLD (H09), drawn as touching only.",
-        "Two per cassette, at X' = +/- cs_w/6 (three equal felt spans).",
-        "The front view (the hat section) is drawn at 2:1 so the bends read; the other views at 1:5.",
-    ], sheet="A2", scales={"front": 2.0}, views={"front": (110, 360), "top": (110, 200), "left": (260, 360), "iso": (300, 180)},
-        faces={"front": ["bottom"]}, sizes=["44", "1034", "20", "24"]),
+        "Two per cassette, at X' = +/-193.33 (a sixth of the cassette's 1160: three equal felt spans).",
+        "Detail A draws the hat section at 2:1, outside the first-angle set; the first-angle views are at 1:5.",
+    ], sheet="A2", views={"front": (100, 380), "top": (100, 225), "left": (250, 380), "iso": (300, 130)},
+        sizes=["44", "1034", "20", "24", "12", "0.5"],
+        details={"detail": {"of": "front", "at": (330, 290), "scale": 2.0,
+                            "label": ["DETAIL A: HAT SECTION, SCALE 2:1", "SIZES OUTSIDE; R0.5 INSIDE, 4 × 90°"],
+                            "dims": ["height", "crown", "flange", "thickness"]}}),
     "felt": spec("felt", 0.2, [
         "Tolerances (assumption): knife-cut outline +/-1.",
         "PET felt 9, Dark Gray (D-79); the factory's felt (D-31), its emission certificate on HOLD.",

@@ -42,13 +42,25 @@ class Labels(unittest.TestCase):
     def test_scale_text(self):
         self.assertEqual([S.scale_text(x) for x in (2.0, 1.0, 0.2, 0.1, 0.05)], ["2:1", "1:1", "1:5", "1:10", "1:20"])
 
-    def test_rib_front_view_label(self):
-        self.assertEqual(S.labels(S.SPECS["rib"]), {"front": "SCALE 2:1"})
+    def test_rib_detail_label(self):
+        """D-114 pass on #306 (Reviewer 5): the first-angle set at 1:5, the hat section a labelled 2:1 detail that
+        says its sizes are outside and gives the bends."""
+        self.assertEqual(S.labels(S.SPECS["rib"]), {"detail": ["DETAIL A: HAT SECTION, SCALE 2:1",
+                                                               "SIZES OUTSIDE; R0.5 INSIDE, 4 × 90°"]})
+        self.assertEqual(S.SPECS["rib"]["scales"], {})
         self.assertEqual(S.labels(S.SPECS["tray"]), {})
 
     def test_title_scale_line(self):
         row = dict(S.SPECS["rib"]["title"])["SCALE"]
-        self.assertEqual(row, "1:5, front view 2:1")
+        self.assertEqual(row, "1:5, detail A 2:1")
+
+    def test_rib_layout_first_angle(self):
+        v = S.SPECS["rib"]["views"]
+        self.assertEqual(v["front"][0], v["top"][0])          # the view from above under the front view
+        self.assertGreater(v["front"][1], v["top"][1])
+        self.assertEqual(v["front"][1], v["left"][1])         # the view from the left to its right
+        self.assertGreater(v["left"][0], v["front"][0])
+        self.assertNotIn("cs_w", " ".join(S.SPECS["rib"]["notes"]))    # mm in the notes, no parameter names
 
 
 def sheet_pdf(path, outline, with_circles=True, images=()):
@@ -209,8 +221,8 @@ class SizesOnce(unittest.TestCase):
                                        ["1160", "1045", "34"]), [])
 
     def test_specs_list_their_sizes(self):
-        self.assertEqual(S.SPECS["rib"]["sizes"], ["44", "1034", "20", "24"])
-        self.assertEqual(S.SPECS["rib"]["faces"], {"front": ["bottom"]})
+        self.assertEqual(S.SPECS["rib"]["sizes"], ["44", "1034", "20", "24", "12", "0.5"])
+        self.assertEqual(S.SPECS["rib"]["details"]["detail"]["dims"], ["height", "crown", "flange", "thickness"])
         self.assertIsNone(S.SPECS["cassette"]["holes"])
         self.assertIsNone(S.SPECS["tray"]["holes"])      # its two holes are dimensioned (Fusion's table printed empty)
 
@@ -267,6 +279,42 @@ class NotesAsText(unittest.TestCase):
             sp["notes"] = list(sp["notes"]) + ["one more note than the picture had room for"]
             with self.assertRaises(RuntimeError):
                 T.replace_pictures(path, sp, S.IMG_W)
+
+
+class LabelsAsText(unittest.TestCase):
+    """A detail's label picture, placed where the annotate run's log says, comes back as text in its box, and the
+    PDF check reads it there (and wants it clear above the detail)."""
+
+    def test_detail_label(self):
+        import pdf_notes_text as T
+        sp = S.SPECS["rib"]
+        lines = S.labels(sp)["detail"]
+        x, top, w, hgt = 285.5, 342.3, 89.0, 12.3
+        log = ("view detail extent (286.0, 266.0, 374.0, 314.0) scale 2 style visible (detail of the front view)\n"
+               "image %s_LABEL_DETAIL.png at (%.1f, %.1f): True (%.1f x %.1f mm, scale 1.5)\n" % (
+                   sp["drawing"], x, top - hgt, w, hgt))
+        boxes = T.label_boxes(log, sp["drawing"])
+        self.assertEqual(boxes, {"detail": (x, top, w, hgt)})
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "rib.pdf")
+            NotesAsText.sheet(self, sp, path)
+            with fitz.open(path) as doc:          # add the label's picture where the log puts it
+                page = doc[0]
+                H = page.rect.height * C.MM
+                pix = fitz.Pixmap(fitz.csGRAY, fitz.IRect(0, 0, 40, 6), False)
+                pix.clear_with(0)
+                page.insert_image(fitz.Rect(x / C.MM, (H - top) / C.MM, (x + w) / C.MM, (H - top + hgt) / C.MM),
+                                  pixmap=pix, keep_proportion=False)
+                doc.saveIncr()
+            T.replace_pictures(path, sp, S.IMG_W, {"detail": (boxes["detail"], lines)})
+            with fitz.open(path) as doc:
+                page = doc[0]
+                self.assertEqual(len(T.real_images(page)), 0)
+                ext = C.extents_from_log(log)
+                self.assertEqual(C.label_problems(page, page.rect.height * C.MM, sp, log, ext), [])
+                low = dict(ext)
+                low["detail"] = (286.0, 266.0, 374.0, 330.0 - 0.1)     # a view reaching up to the label's foot
+                self.assertTrue(C.label_problems(page, page.rect.height * C.MM, sp, log, low))
 
 
 class Supersede(unittest.TestCase):

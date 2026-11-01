@@ -11,6 +11,7 @@ headings 4.2 mm. A text block taller than its picture is refused rather than run
 """
 
 import os
+import re
 
 import fitz  # PyMuPDF
 
@@ -121,9 +122,36 @@ def picture_at(page, x_mm, top_mm):
     return hits[0]["xref"], fitz.Rect(hits[0]["bbox"])
 
 
-def replace_pictures(pdf, sp, width_mm):
-    """In the finished PDF `pdf` (changed in place): the notes and title pictures at sp['images'] become text.
-    Returns [(what, picture height mm, text height mm)]."""
+LABEL_FS = 3.5 / 0.718          # a view's or a detail's label: 3.5 mm capitals (render_notes.render_label)
+LABEL_LH = 6.0                  # mm between a label's lines (render_notes.LABEL_LH)
+LABEL_PAD = 1.0
+LABEL_LINE = re.compile(r"image (\S+)_LABEL_([A-Z0-9_]+)\.png at \(([-\d.]+), ([-\d.]+)\): True \(([\d.]+) x ([\d.]+) mm")
+
+
+def label_boxes(log_text, drawing):
+    """{view key: (x, top, w, h) mm} of each label picture make_drawing_ceiling.py placed, read from its log (the
+    place depends on the view's extent, known only in Fusion); the log prints each picture's bottom left corner."""
+    out = {}
+    for m in LABEL_LINE.finditer(log_text or ""):
+        if m.group(1) != drawing:
+            continue
+        x, bottom, w, h = (float(m.group(i)) for i in range(3, 7))
+        out[m.group(2).lower()] = (x, bottom + h, w, h)
+    return out
+
+
+def draw_label(page, x0, y0, lines, ffile):
+    """A label's lines as text from the top left corner (x0, y0), page mm from the top left, as render_label lays
+    them out; returns its height."""
+    for i, t in enumerate(lines):
+        _text(page, x0 + LABEL_PAD, y0 + LABEL_PAD + 0.718 * LABEL_FS + i * LABEL_LH, t, LABEL_FS, ffile)
+    return 2 * LABEL_PAD + 0.718 * LABEL_FS + LABEL_LH * (len(lines) - 1)
+
+
+def replace_pictures(pdf, sp, width_mm, labels=None):
+    """In the finished PDF `pdf` (changed in place): the notes and title pictures at sp['images'], and the label
+    pictures given as {view key: ((x, top, w, h) mm, [lines])}, become text. Returns [(what, picture height mm,
+    text height mm)]."""
     ffile = font_file()
     font = fitz.Font(fontfile=ffile)
     doc = fitz.open(pdf)
@@ -131,34 +159,41 @@ def replace_pictures(pdf, sp, width_mm):
     sheet_h = page.rect.height / PT
     out, boxes = [], {}
     n_images, n_paths, text0 = len(real_images(page)), len(page.get_drawings()), page.get_text()
-    for what in ("notes", "title"):
-        x_mm, top_mm = sp["images"][what]
+    items = [(what, sp["images"][what]) for what in ("notes", "title")]
+    items += [("label " + k, (box[0], box[1])) for k, (box, _lines) in sorted((labels or {}).items())]
+    for what, (x_mm, top_mm) in items:
         _xref, rect = picture_at(page, x_mm, top_mm)
         pic_h = rect.height / PT
-        need = notes_height(sp["notes"], width_mm, font) if what == "notes" else title_height(sp["title"])
+        if what == "notes":
+            need = notes_height(sp["notes"], width_mm, font)
+        elif what == "title":
+            need = title_height(sp["title"])
+        else:
+            need = 2 * LABEL_PAD + 0.718 * LABEL_FS + LABEL_LH * (len(labels[what[6:]][1]) - 1)
         if need > pic_h + 0.5:
             raise RuntimeError("%s: the text needs %.1f mm, the picture's box is %.1f" % (what, need, pic_h))
         boxes[what] = rect
         # the picture goes from the page's content, not just hidden: a redaction a little inside its box, no fill,
         # images only (PyMuPDF 1.27 leaves an empty inline image, xref 0, where it was: nothing shows)
-        page.add_redact_annot(rect + (2, 2, -2, -2))
+        page.add_redact_annot(rect + (1, 1, -1, -1))
     page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_REMOVE, graphics=fitz.PDF_REDACT_LINE_ART_NONE,
                           text=fitz.PDF_REDACT_TEXT_NONE)
-    if len(real_images(page)) != n_images - 2 or len(page.get_drawings()) != n_paths or page.get_text() != text0:
-        raise RuntimeError("removing the two pictures changed more than them: images %d -> %d, paths %d -> %d, "
-                           "text changed %s" % (n_images, len(real_images(page)), n_paths, len(page.get_drawings()),
-                                                page.get_text() != text0))
+    if len(real_images(page)) != n_images - len(items) or len(page.get_drawings()) != n_paths or page.get_text() != text0:
+        raise RuntimeError("removing the pictures changed more than them: images %d -> %d (%d removed), paths %d -> %d,"
+                           " text changed %s" % (n_images, len(real_images(page)), len(items), n_paths,
+                                                 len(page.get_drawings()), page.get_text() != text0))
     for what, rect in boxes.items():
         if min(page.get_pixmap(dpi=50, clip=rect).samples) < 250:
             raise RuntimeError("%s: something still shows in the picture's box after removing it" % what)
-    for what in ("notes", "title"):
-        x_mm, top_mm = sp["images"][what]
+    for what, (x_mm, top_mm) in items:
         pic_h = boxes[what].height / PT
         y0 = sheet_h - top_mm
         if what == "notes":
             got = draw_notes(page, x_mm, y0, width_mm, sp["notes"], font, ffile)
-        else:
+        elif what == "title":
             got = draw_title(page, x_mm, y0, width_mm, sp["title"], ffile)
+        else:
+            got = draw_label(page, x_mm, y0, labels[what[6:]][1], ffile)
         out.append((what, pic_h, got))
     doc.subset_fonts()          # embed only the letters used (the whole Arial Unicode is about 15 MB)
     tmp = pdf + ".tmp"

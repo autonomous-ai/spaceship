@@ -297,6 +297,30 @@ def text_problems(page, doc, boxes=None):
     return bad, warn
 
 
+def label_problems(page, height, sp, log_text, ext):
+    """Each view's or detail's label as text (the finish step writes it over its picture): with the annotate log, in
+    the box the picture had, where the label must say exactly its lines, and a detail's label must sit above its
+    view (D-114 pass on #306: the scale label sat on the crown's 20); without the log, its lines somewhere on the
+    sheet."""
+    import pdf_notes_text as T
+    bad = []
+    boxes = T.label_boxes(log_text, sp["drawing"]) if log_text else {}
+    flat = " ".join(page.get_text().split())
+    for key, lines in S.labels(sp).items():
+        want = " ".join(" ".join(lines).split())
+        if key not in boxes:
+            if want not in flat:
+                bad.append("the %s label %r is not on the sheet as text" % (key, want))
+            continue
+        x, top, w, hgt = boxes[key]
+        got = block_text(page, height, (x - 0.5, top - hgt - 0.5, x + w + 0.5, top + 0.5))
+        if got != want:
+            bad.append("the %s label reads %r in its box, want %r" % (key, got, want))
+        if key in sp.get("details", {}) and key in ext and top - hgt < ext[key][3] + 5.0:
+            bad.append("the %s label's foot (%.1f) is not clear above its view (top %.1f)" % (key, top - hgt, ext[key][3]))
+    return bad
+
+
 def check(key, pdf=None, log_text=None, notes_dir=None):
     sp = S.SPECS[key]
     pdf = pdf or os.path.join(HERE, sp["drawing"] + ".pdf")
@@ -317,15 +341,8 @@ def check(key, pdf=None, log_text=None, notes_dir=None):
         m = S.SYMBOL_PX_MARGIN
         wanted.append(("first-angle symbol", (x0 - m, cy + 5.0 + m),
                        png_size_mm(os.path.join(notes_dir, "FIRST_ANGLE_SYMBOL.png"))))
-    for view in S.labels(sp):
-        png = os.path.join(notes_dir, "%s_LABEL_%s.png" % (sp["drawing"], view.upper()))
-        lw, lh = png_size_mm(png)
-        place = None
-        if view in ext:
-            x0, y0, x1, _y1 = ext[view]
-            place = ((x0 + x1) / 2 - lw / 2, y0 - S.LABEL_GAP - (14.0 if view == "top" else 0.0))
-        wanted.append(("%s view scale label" % view, place, (lw, lh)))
     bad += image_problems(image_boxes(page, h), wanted)
+    bad += label_problems(page, h, sp, log_text, ext)
     hb, hinfo = hidden_problems(page, h, sp, ext)
     bad += hb
     if hinfo:
