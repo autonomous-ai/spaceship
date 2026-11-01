@@ -349,8 +349,8 @@ part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện -
      note="folded tray 296 x 260 x 72 with 22 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
           "Ø25 sleeve entry (bottom), 4 M4 clinch nut holes in the lips")
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
-     AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.309,
-     "CAD (Fusion volume 115,340 mm3 x 2.68 g/cm3, 711002 P01 design)", size="320 x 284",
+     AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.344,
+     "CAD (Fusion volume 128,264 mm3 x 2.68 g/cm3, 711002 P01 design, D-133 rebuild)", size="320 x 284",
      process="laser cut from 1.5 mm sheet as a flat plate; anodised", status="DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133)",
      source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
