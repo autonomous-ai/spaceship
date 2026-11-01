@@ -207,7 +207,9 @@ def test_cad_masses_from_main():
         assert abs(dl[3] - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
     assert rollup.FRONT_DECOR["DR"]["reserved"] == ["350004", "351402", "351403", "351404", "351405"]
     assert 0.5 < rollup.dr_channels_kg() < 0.6                                   # the right and diagonal channels
-    assert len(rollup.cad_swaps()) == 25
+    ks = rows["Base seal and cable grommets"]                       # the door edge seals are FRONT's (PR #105)
+    assert abs(ks[3] - p("base_seal_kg") - p("grommet_kg")) < 1e-9, ks
+    assert len(rollup.cad_swaps()) == 26
 
 
 def test_rollup_items_the_packing_plan_reads():

@@ -582,7 +582,11 @@ def lines(**adopt):
                      "or less (D-03)" if loose else "")))
     L.append(("AIR", "Four 12 V fans", 1, AA.fans_kg(), "assumption", "S38: 0.3 kg each until the sample is weighed"))
     pt = base["K-SEALS"]
-    L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
+    L.append(("BASE", "Base seal and cable grommets", pt.qty, pt.kg - p("door_edge_seal_kg"), pt.status,
+              f"this study's model (S20): the seal under the floor and band and the sealed cable holes; its "
+              f"{p('door_edge_seal_kg'):.1f} kg of door edge seals is in FRONT's parts lists now (the frame-stop seals in DL "
+              "and DT, the magnetic seal pair on the door and the fixed glass), so it isn't counted again (PM ruling "
+              "2026-11-01)"))
     el = ELEC
     L.append(("ELECTRICAL", "Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)", 1, el["total"],
               "calculation (CAD)", f"S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 "
@@ -674,6 +678,8 @@ def cad_swaps():
              "FRONT 350003 P01, PR #105 (the estimate: this study's model from v1's shapes)"),
             ("Decor block DT, top", 1, base_parts_kg("F-DT"), FRONT_DECOR["DT"]["unit"],
              "FRONT 350002 P01, PR #105 (the estimate: this study's model from v1's shapes)"),
+            ("Door edge seals on 3 sides, in the seal kit", 1, p("door_edge_seal_kg"), 0.0,
+             "now in FRONT 350001, 350002, 360001 and 360002 P01 (PR #105; PM ruling 2026-11-01)"),
             ("Ceiling outer panels C1 and C2", 2, CEIL_PANEL + p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6,
              (CEILING["c1"] + CEILING["c2"]) / 2, "CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list)"),
             ("Ceiling cassettes", 2, CEIL_CASS - CEIL_FILL_M2 * (p("fill_pet_kgm3") - FILL_LIGHT) * P04["frame_d"] * 1e-3,
