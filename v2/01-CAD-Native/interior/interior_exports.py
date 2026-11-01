@@ -120,7 +120,9 @@ def sizes(v):
                               ("shelf_lh", "LIGHT SHELF LH", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
                               ("shelf_rh", "LIGHT SHELF RH", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
                               ("dchan", "DOWN CHANNEL RH", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
-                              ("diffuser", "DIFFUSER RH", v["df_t"], "cut length +/-1 (assumption)")):
+                              ("diffuser", "DIFFUSER RH", v["df_t"],
+                               "length +/-1, width +/-0.3 (cut from sheet), thickness 1.5 +/-0.15 (the sheet as supplied); "
+                               "assumptions until the diffuser is picked; no drawing (D-125: this line is its spec)")):
         d = dims(name)
         out[key] = ("%.1f long, section %.1f x %.1f, %.1f sheet" % (d[0], d[1], d[2], t), tol)
     return out
