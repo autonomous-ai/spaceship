@@ -281,8 +281,9 @@ OTHER = [
     ("F13", "{fill}", "Fill notches 60 x 60, right through the 40 mm batt, beside every bolt this panel drives (4 "
      "above F01, 3 beside F07); each piece cut from its DXF (D-128)",
      "the 5 mm key reaches F02 and F08 from inside the pod before the cassette goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
-    ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end, bonded to it through a "
-     "3 mm line (the frame stops bond_t short of the return)",
+    ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end at an outside radius of "
+     "2 (skin_fold_r; the maker's guide 01/2021/HDTC-VD 4.5), bonded to it through a 3 mm line (the frame stops bond_t "
+     "short of the return)",
      "the back corner shows ACP, not the frame end (D-55; register section 7 item 5); every skin face that meets a frame "
      "is bonded at bond_t, no zero fits (the Lead's ruling, 2026-11-01)", "skin_ret = outer_t - skin_t (assumption); "
      "frm_len = pnl_len - skin_t - bond_t",
@@ -311,6 +312,8 @@ def load(pn):
 
 def holes(rep):
     rows = {}
+    prm = {p["name"]: p["value"] for p in rep.get("parameters", [])}
+    fold_d = 2.0 * prm.get("skin_fold_r", 0.0)
     for c in rep["components"]:
         # panel parts (21xxxx) and the cassette's tray and felt (511x, 512x... 5114); joint hardware (83xxxx) has
         # the maker's bores; a tray's bends are cylinders too (Ø1 and Ø2), so only holes over 3 count there
@@ -320,6 +323,11 @@ def holes(rep):
         for b in c["bodies"]:
             for h in b["holes"]:
                 if lining and h["d"] <= 3.0:
+                    continue
+                # not holes: a convex face (a report since the fold radius flags it), and the skin fold's outside
+                # radius in a report before that (a quarter cylinder at skin_fold_r; it is F14's)
+                if h.get("convex") or (b["name"].startswith("SKIN") and fold_d and not h["full_circle"]
+                                       and abs(h["d"] - fold_d) < 0.01):
                     continue
                 key = (b["name"], h["d"], h["axis"])
                 rows.setdefault(key, []).append(h)
@@ -368,8 +376,10 @@ def main(argv):
                 unexplained.append(key)
                 continue
         cs = "; ".join("(%s)" % ", ".join("%g" % v for v in h["centre"] if v is not None) for h in hs)
+        # a frame member's holes are the welded frame's: J-FRAME-01 makes every joint hole after welding, in the frame
+        # (the drawing generator reads them under the frame's number, 211101 and so on)
         part = pns["felt"] if body == FELT else pns["tray"] if body == TRAY else pns["skin"] if body.startswith("SKIN") \
-            else body_part.get(body, pns["frame"])
+            else pns["frame"]
         lines.append("| %s | %s %s | Ø%g along %s, %d: %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             fam[0], part, body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7],
             fam[8]))

@@ -43,8 +43,22 @@ def holes(body):
         ctr = [r(o[i], 2) for i in range(3)]
         ctr[ax] = None
         full = all(abs((fb[i + 3] - fb[i]) - g.radius * 20) < 0.05 for i in range(3) if i != ax)
+        # convex: the face's normal points away from its axis (an outside round such as the skin's fold radius), so
+        # it isn't a hole
+        convex = False
+        try:
+            p = f.pointOnFace
+            ok, nrm = f.evaluator.getNormalAtPoint(p)
+            v = adsk.core.Vector3D.create(p.x - g.origin.x, p.y - g.origin.y, p.z - g.origin.z)
+            a = g.axis.copy()
+            a.normalize()
+            along = v.dotProduct(a)
+            radial = adsk.core.Vector3D.create(v.x - a.x * along, v.y - a.y * along, v.z - a.z * along)
+            convex = bool(ok) and nrm.dotProduct(radial) > 0
+        except Exception:            # noqa: BLE001  (an unreadable face stays a hole, as before)
+            convex = False
         out.append({"d": r(g.radius * 20, 2), "axis": "xyz"[ax], "centre": ctr, "from": lo, "to": hi,
-                    "full_circle": full})
+                    "full_circle": full, "convex": convex})
     return out
 
 
