@@ -77,14 +77,16 @@ TOL = {
 DATUMS = {
     "111601": "Part system: X across the band, Y along it, origin at the plate centre. Hole Ø13 3 mm off centre "
               "toward the pod side (gl_dx).",
-    "111104": "Part system CS-111104: X along FL1's outer face from its corner end (the long point of the 24.14 deg "
-              "mitre, on DL's outer facet), Y inward square to it, Z up from the band's bottom face. Datums: A = the "
-              "top face (DL's seat), B = the corner end plate's outer face, C = the outer face (Y 0). The corner end "
-              "is closed by a welded 1.5 plate (ground flush, anodised with FL1); the knee end is a 7.25 deg mitre, "
-              "open, with the knee key 111214 inside.",
-    "111105": "Part system CS-111105: X along FL2's outer face from its knee end (the long point of the 7.25 deg mitre), "
-              "Y inward square to it, Z up from the band's bottom face. Datums: A = the top face (DL's seat), B = the "
-              "knee end plate's outer face, C = the outer face (Y 0). At the door end: a 7 mm block welded on to reach "
+    "111104": "Part system CS-111104: X along FL1's outer face from its corner end (the long point of its mitre, on "
+              "DL's outer facet), Y inward square to it, Z up from the band's bottom face. Datums: A = the top face "
+              "(DL's seat), B = the corner end plate's outer face, C = the outer face (Y 0). End cuts: the corner "
+              "24.14 deg off square (65.86 deg to the outer face), closed by a welded 1.5 plate (ground flush, "
+              "anodised with FL1); the knee 7.25 deg off square (82.75 deg), open, with the knee key 111214 inside.",
+    "111105": "Part system CS-111105: X along FL2's outer face from its knee end (the long point of its mitre), Y "
+              "inward square to it, Z up from the band's bottom face. Datums: A = the top face (DL's seat), B = the "
+              "knee end plate's outer face, C = the outer face (Y 0). End cuts: the knee 7.25 deg off square (82.75 "
+              "deg to the outer face); the door end 27.20 deg off square (62.80 deg), parallel to DL's door face. "
+              "At the door end: a 7 mm block welded on to reach "
               "DL's door face, and a 2 mm plate welded into it, flush with DL's door face, from FL2's inner face to the "
               "kick strip's back line (112.6 wide), from the band's bottom face to its top, its back edge a full round "
               "R1 (the PM's hinge-side ruling); on the plate's door face the strike pad 8 x 12 x 65 (thickness HOLD), "
@@ -139,13 +141,14 @@ DATUMS = {
 HOLES = {
     "111601": "One hole Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163).",
     "111104": "Top wall: none (DL's base spigot went with D-169). Bottom wall: the knee key's 2 fixing holes Ø7.0, 10.5 from its back face and 7.0 either side of its "
-              "centre line (J-BASE-02, 111214). Corner end plate: 2 keyholes, a Ø12 entry 10 below each seat and a "
-              "6.5 slot up to it, the seats 27.5 and 61.5 above the bottom face on the plate's centre line (J-BASE-02, "
-              "the front corner key 111212's studs).",
+              "centre line (J-BASE-02, 111214), in the hole table. Corner end plate: 2 keyholes on the plate's centre "
+              "line, a Ø12 entry 10 below each seat and a 6.5 slot up to it, the seats 27.5 and 61.5 above the bottom "
+              "face (J-BASE-02, the front corner key 111212's studs). The end view sees the plate turned 24.14 deg, "
+              "so the keyholes show narrower there than these sizes.",
     "111105": "Top wall: the glide's key hole Ø8 (DL's base spigot went with D-169). "
-              "Bottom wall: the glide's rivnut hole Ø13.50 +0.15/0 (D-163). Knee end plate: 2 keyholes, a Ø12 entry 10 "
-              "below each seat and a 6.5 slot up to it, the seats 27.5 and 61.5 above the bottom face on the plate's "
-              "centre line (J-BASE-02, the knee key 111214's studs).",
+              "Bottom wall: the glide's rivnut hole Ø13.50 +0.15/0 (D-163); both in the hole table. Knee end plate: 2 "
+              "keyholes on the plate's centre line, a Ø12 entry 10 below each seat and a 6.5 slot up to it, the seats "
+              "27.5 and 61.5 above the bottom face (J-BASE-02, the knee key 111214's studs).",
     "111602": "Hex socket 5 across flats, 6 deep, in the stem's top: a 5 mm hex key turns the glide from above through "
               "the band top's Ø8 key hole (BASE feature rationale FB-06, FG-03).",
     "111211": "Bottom: 2 x M6, 15 of full thread (tap drill Ø5.0 x 18), for the M6 x 12 button head fixing screws, "

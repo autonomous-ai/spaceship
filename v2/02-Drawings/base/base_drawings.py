@@ -103,19 +103,28 @@ SPEC = {
     # hinge-side plate): CS-111104 / CS-111105, X along the outer face from the corner / knee end, Y inward, Z up from
     # the band's bottom; the glide, a turned part with a hex socket (its axis on Z)
     # A3 with the notes on the right (finish_pdfs NOTES_RIGHT): the views on the left half, first angle, the view from
-    # above below the front view, the view from the left on its right, the iso below them; the hole table top right
-    "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "tube", [   # A3, 1:1 (CS-111104: from its corner end)
+    # above below the front view, the view from the left on its right, the iso below them; the hole table top right.
+    # Kind "facet" (facet_dims): each size once (the Lead's ruling of 2026-11-01: one height printed in two views goes),
+    # each end cut's angle to the outer face (a mitre carries its angle), the hole positions in the hole table only.
+    # Options: "angles" [(end of the outer edge, the design's angle to the outer face, deg; "out" = placed beyond the
+    # corner, in the opposite sector, which shows the same angle, "in" = inside the part; arc radius on the sheet)],
+    # "seats": the side of the end view that takes the keyhole seats' heights (clear of the notes and the other views).
+    "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "facet", [  # A3, 1:1 (CS-111104: from its corner end)
         ("front", VO.FrontViewOrientationType, 1.0, (110.0, 220.0)),
         ("top", VO.TopViewOrientationType, 1.0, (110.0, 128.0)),            # hidden lines: the bottom wall's holes
         ("left", VO.LeftViewOrientationType, 1.0, (212.0, 220.0)),          # the corner end plate's keyholes
         ("iso", VO.IsoTopRightViewOrientationType, 0.5, (110.0, 52.0)),
-    ]),
-    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "tube", [   # A3, 1:2 (CS-111105: from its knee end)
-        ("front", VO.FrontViewOrientationType, 0.5, (95.0, 232.0)),
-        ("top", VO.TopViewOrientationType, 0.5, (95.0, 160.0)),             # hidden lines: the bottom wall's hole
-        ("left", VO.LeftViewOrientationType, 0.5, (187.0, 240.0)),          # the knee end plate's keyholes; its 100 clear of the notes
-        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (95.0, 70.0)),
-    ]),
+    ], {"angles": [("start", 65.855, "out", 14.0),                         # the corner end: 24.14 deg off square
+                   ("end", 82.745, "out", 14.0)],                          # the knee end: 7.25 deg off square
+        "seats": "left"}),
+    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "facet", [  # A3, 1:2 (CS-111105: from its knee end)
+        ("front", VO.FrontViewOrientationType, 0.5, (90.0, 232.0)),
+        ("top", VO.TopViewOrientationType, 0.5, (90.0, 160.0)),             # hidden lines: the bottom wall's hole
+        ("left", VO.LeftViewOrientationType, 0.5, (196.0, 240.0)),          # the knee end plate's keyholes; clear of the notes
+        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (90.0, 70.0)),
+    ], {"angles": [("start", 82.745, "in", 20.0),                          # the knee end: 7.25 deg off square
+                   ("end", 62.798, "out", 14.0)],                          # the door end, square to the pod's X: 27.20 off square
+        "seats": "left"}),                                                  # in the 19 mm gap between the front and end views
     "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "turned", [     # A3, 2:1
         ("front", VO.FrontViewOrientationType, 2.0, (120.0, 200.0)),        # hidden lines: the socket's depth
         ("top", VO.TopViewOrientationType, 2.0, (120.0, 75.0)),             # below it (first angle); notes on the right
@@ -471,6 +480,111 @@ def mitre_angle(sheet, view):
         return 0
 
 
+def _outer_edges(view):
+    """A facet's outer face in the view from above (Y 0, the view's lowest line): its lines along the bottom of the
+    extent, longest first (a hidden line can lie under the visible one)."""
+    lines, _ = curves(view)
+    e = extent(view)
+    flat = [ln for ln in lines if abs(xy(ln.startPoint)[1] - e[1]) < 1e-3 and abs(xy(ln.endPoint)[1] - e[1]) < 1e-3]
+    return sorted(flat, key=lambda ln: -abs(xy(ln.endPoint)[0] - xy(ln.startPoint)[0]))
+
+
+def facet_angles(sheet, view, wanted):
+    """Each end cut's angle to the outer face (the Lead's ruling of 2026-11-01: a mitre carries its angle), in the
+    view from above: between the outer edge and the line at that end whose angle to it, measured inside the part,
+    is the design's (within 0.05 deg; the longest such line, the cut's visible edge, first). Placed "out" (beyond
+    the corner, in the opposite sector, which shows the same angle) or "in" (inside the part), at radius rad on
+    the sheet. Every try is logged; returns the number made."""
+    import math
+    lines, _ = curves(view)
+    edges = _outer_edges(view)
+    if not edges:
+        print("  end cut angles: no outer edge found")
+        return 0
+    (ax, ay), (bx, by) = sorted([xy(edges[0].startPoint), xy(edges[0].endPoint)])
+    reach = 0.12 * (bx - ax)            # how far from the edge's end a cut line may meet the edge's line
+    n = 0
+    for end, want, where, rad in wanted:
+        vx = ax if end == "start" else bx
+        cands = []
+        for ln in lines:
+            (x1, y1), (x2, y2) = xy(ln.startPoint), xy(ln.endPoint)
+            dx, dy = x2 - x1, y2 - y1
+            if abs(dx) < 0.2 or abs(dy) < 0.2:
+                continue
+            ux, uy = (dx, dy) if dy > 0 else (-dx, -dy)       # along the cut, into the part (Y inward)
+            ang = math.degrees(math.atan2(uy, ux))
+            inside = ang if end == "start" else 180.0 - ang
+            if abs(inside - want) > 0.05:
+                continue
+            lo = (x1, y1) if y1 < y2 else (x2, y2)
+            mx = lo[0] + (ay - lo[1]) * ux / uy                 # where the cut's line meets the edge's line
+            if abs(mx - vx) > reach:
+                continue
+            cands.append((-math.hypot(dx, dy), ln, (mx, ay), (ux, uy)))
+        cands.sort(key=lambda c: c[0])
+        print("  end cut at the %s: %d line(s) at %.3f deg to the outer face" % (end, len(cands), want))
+        done = False
+        for _l, ln, V, (ux, uy) in cands:
+            L = math.hypot(ux, uy)
+            ux, uy = ux / L, uy / L
+            ex_ = 1.0 if end == "start" else -1.0                # along the edge, into the part
+            bx_, by_ = ex_ + ux, uy                               # the inside angle's bisector
+            B = math.hypot(bx_, by_)
+            bx_, by_ = bx_ / B, by_ / B
+            s = -1.0 if where == "out" else 1.0
+            P = (V[0] + s * rad * bx_, V[1] + s * rad * by_)
+            for edge in edges:
+                try:
+                    d = sheet.drawingDimensions.addAngularDimension(edge, ln, dpt(*P))
+                except RuntimeError as exc:
+                    print("    tried: vertex (%.2f, %.2f), at (%.2f, %.2f): %s" % (V[0], V[1], P[0], P[1], exc))
+                    continue
+                if d is None:
+                    print("    tried: vertex (%.2f, %.2f), at (%.2f, %.2f): no dimension" % (V[0], V[1], P[0], P[1]))
+                    continue
+                print("    made: vertex (%.2f, %.2f), placed at (%.2f, %.2f) (%s)" % (V[0], V[1], P[0], P[1], where))
+                n += 1
+                done = True
+                break
+            if done:
+                break
+        if not done:
+            print("  END CUT ANGLE NOT MADE at the %s (%.3f deg)" % (end, want))
+    return n
+
+
+def seat_heights(sheet, view, side, gap=6.0):
+    """The keyhole seats' heights in the end view: each keyhole's slot has straight sides that end at its seat's
+    centre (the slot's round end), and they are lines in any view (the keyholes' circles on a plate turned to the
+    view come out as ellipses or splines, with no centre). A chain in one column on that side of the view: the
+    lowest seat from the bottom corner on that side, then each seat from the one below (Fusion spaces stacked
+    dimensions about 10.5 apart, and a stack of two doesn't fit beside these views)."""
+    lines, _ = curves(view)
+    e = extent(view)
+    tops = {}
+    for ln in lines:
+        (x1, y1), (x2, y2) = xy(ln.startPoint), xy(ln.endPoint)
+        if abs(x2 - x1) > 1e-3:
+            continue
+        if not (1.0 < abs(y2 - y1) < 0.3 * (e[3] - e[1])):     # a slot's side (4.96 at 1:1), not an outline
+            continue
+        if min(abs(x1 - e[0]), abs(x1 - e[2])) < 1.0 or min(y1, y2) - e[1] < 1.0 or e[3] - max(y1, y2) < 1.0:
+            continue
+        tops.setdefault(round(max(y1, y2), 2), ln.startPoint if y1 > y2 else ln.endPoint)
+    prev, py = edge_end(view, e[0] if side == "left" else e[2], e[1]), e[1]
+    x = e[0] - gap if side == "left" else e[2] + gap
+    n = 0
+    for ty, p in sorted(tops.items()):
+        dim(sheet, prev, p, (x, (py + ty) / 2))
+        prev, py = p, ty
+        n += 1
+    sc = getattr(view, "scaleValue", 1.0) or 1.0
+    print("  keyhole seats: %d chained height(s) from the slots' sides (seats %s above the bottom face)" % (
+        n, ", ".join("%.2f" % ((ty - e[1]) / sc) for ty in sorted(tops))))
+    return n
+
+
 def hole_table(sheet, view, origin, title):
     try:
         inp = sheet.holeTables.createInput()
@@ -511,7 +625,8 @@ def run(_context):
     made = {}
     for vname, orient, scale, center in views:
         made[vname] = add_view(sheet, orient, scale, center,
-                               hidden=(kind == "tube" and vname == "top") or (kind == "turned" and vname == "front"))
+                               hidden=(kind in ("tube", "facet") and vname == "top") or
+                               (kind == "turned" and vname == "front"))
         e = extent(made[vname])
         print("  view %-6s scale %g at %s, extent %s" % (vname, scale, center,
                                                         tuple(round(a, 1) for a in e) if e else None))
@@ -551,6 +666,21 @@ def run(_context):
             if holes(sec):
                 e3 = extent(sec)
                 n_holes += hole_dims(sheet, sec, nearest_end(sec, (e3[0], e3[1])), side="above")
+    elif kind == "facet":
+        # DL's facets FL1 and FL2 in their own axes: each size once. The front view: the length and the height; the
+        # view from above: each end cut's angle, the holes in the hole table (their positions printed once, there);
+        # the end view: the width and the keyhole seats' heights
+        opts = SPEC[pn][3]
+        _o, n = overall(sheet, made["front"], which="both")
+        n_dims += n
+        top = made["top"]
+        e = extent(top)
+        o_top = nearest_end(top, (e[0], e[1]))
+        n_dims += facet_angles(sheet, top, opts["angles"])
+        tables += hole_table(sheet, top, o_top, "HOLES SEEN FROM ABOVE (THE BOTTOM WALL'S AS HIDDEN LINES), ORIGIN O = DATUMS C, B")
+        _o, n = overall(sheet, made["left"], below=True, left=False, gap=6.0, which="h")
+        n_dims += n
+        n_holes += seat_heights(sheet, made["left"], opts["seats"])
     elif kind == "turned":
         n_dims += turned_dims(sheet, made["front"], made["top"])
     else:
