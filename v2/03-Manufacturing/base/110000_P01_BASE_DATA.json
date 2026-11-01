@@ -37,7 +37,7 @@
   "110106>111106": 1,
   "110106>111301": 1,
   "110106>111601": 2,
-  "110106>118001": 1,
+  "110106>118001": 2,
   "110106>118002": 2,
   "110106>118003": 1
  },
@@ -1590,7 +1590,7 @@
    "value": 2.0
   },
   {
-   "comment": "BASE CONFIRMED: the intake's band stub left of the mesh, carrying the inline key 111211 (30 long since the Joints Engineer's change of 2026-11-01) behind no mesh, with 2 to spare (PM ruling 2026-11-01: the joint moves left of the mesh)",
+   "comment": "BASE CONFIRMED: the intake's band stub left of the mesh, carrying the inline key 111215 (111211's first layout under its own number since D-144; 30 long) behind no mesh, with 2 to spare (PM ruling 2026-11-01: the joint moves left of the mesh)",
    "expression": "32 mm",
    "name": "fr_stub",
    "unit": "mm",
@@ -1806,13 +1806,13 @@
    ],
    "class": "MP",
    "key": "sill",
-   "mass_kg": 1.0336,
+   "mass_kg": 1.0945,
    "material": "Aluminum",
    "name": "BASE - SILL - FIXED GLASS",
    "name_vi": "Bậu đỡ kính cố định",
    "parent": "110106",
    "pn": "111301",
-   "volume_mm3": 382818.0
+   "volume_mm3": 405382.0
   },
   "111601": {
    "box_mm": [
@@ -1836,21 +1836,21 @@
   "118001": {
    "box_mm": [
     218.46,
-    -810.0,
-    0.0,
-    915.0,
     -800.0,
+    0.0,
+    230.46,
+    -691.5,
     25.0
    ],
    "class": "PI",
-   "key": "seal_fr1",
-   "mass_kg": 0.0557,
+   "key": "seal_se",
+   "mass_kg": 0.0094,
    "material": "Lip seal envelope 320 kg/m3 (ASSUMPTION)",
    "name": "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD",
    "name_vi": "Gioăng môi sát sàn",
    "parent": "110106",
    "pn": "118001",
-   "volume_mm3": 174135.0
+   "volume_mm3": 29295.0
   },
   "118002": {
    "box_mm": [
@@ -1996,11 +1996,11 @@
    "to": 810.0
   },
   {
-   "from": -1210.0,
+   "from": -1200.0,
    "host": "110103",
-   "length_mm": 2420.0,
+   "length_mm": 2400.0,
    "line": "Y = 810.00 (back band, inner face)",
-   "to": 1210.0
+   "to": 1200.0
   },
   {
    "from": -654.17212026518,
@@ -2010,14 +2010,62 @@
    "to": 810.0
   },
   {
-   "from": 218.45982296533094,
+   "from": -800.0,
    "host": "110106",
-   "length_mm": 696.54,
+   "length_mm": 108.5,
+   "line": "X = 218.46 (the sill's door-end plate, its bottom edge)",
+   "to": -691.5
+  },
+  {
+   "from": 220.45982296533094,
+   "host": "110106",
+   "length_mm": 694.54,
    "line": "Y = -810.00 (FR1, inner face)",
    "to": 915.0
   }
  ],
  "sill": {
+  "end_plate": {
+   "inside_bend_corners": [
+    2,
+    4,
+    5
+   ],
+   "outline": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     118.5,
+     0.0
+    ],
+    [
+     118.5,
+     83.0
+    ],
+    [
+     101.5,
+     83.0
+    ],
+    [
+     101.5,
+     98.0
+    ],
+    [
+     2.0,
+     98.0
+    ],
+    [
+     2.0,
+     60.0
+    ],
+    [
+     0.0,
+     60.0
+    ]
+   ]
+  },
   "legs_outside": {
    "drop": 17.0,
    "flange": 40.0,
