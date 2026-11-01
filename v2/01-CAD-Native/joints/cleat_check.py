@@ -59,7 +59,7 @@ FY = 215.0         # MPa, cleat design yield: assumption (EN 755-2 gives 225 for
                    # certificate gives the figure)
 GAMMA_M1 = 1.10    # material factor, EN 1999-1-1 recommended value, assumption until checked against the edition
 RHO = 2.70e-3      # g/mm3, 6005A and 6061, source
-T = 1.0            # mm, cleat walls, assumption: HOLD-20 asks the extruder for its minimum
+T = 1.0            # mm, cleat walls, assumption: HOLD-21 asks the extruder for its minimum
 FY_TUBE = 170.0    # MPa, 6063-T6 profiles to 10 mm, EN 755-2 minimum (source), for the slot's bearing
 
 # --- fit ---------------------------------------------------------------------------------------------------

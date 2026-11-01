@@ -49,11 +49,11 @@ CM = 0.1               # the API's lengths are cm
 RHO = 2.70e-3          # g/mm3, 6005A and 6061 (source)
 
 NOTE = ("UNITS MM; MATERIAL EN AW-6005A-T6 OR EN AW-6061-T6 EXTRUSION (Rp0.2 >= 215 MPa); FINISH MILL, DEBURRED; "
-        "ISO 2768-m; WALLS 1.0 (HOLD-20); glue faces clean and grease-free; joints register J-FRAME-01; PROPOSED")
+        "ISO 2768-m; WALLS 1.0 (HOLD-21); glue faces clean and grease-free; joints register J-FRAME-01; PROPOSED")
 
 COMMON = [  # name, expression, comment (status and source)
     ("wall_gap", "2.2 mm", "CALCULATION: the tube's 1.2 wall plus the 1.0 nominal glue line; the cleat's faces sit this far in from the members' outer faces (J-FRAME-01)"),
-    ("cl_t", "1 mm", "ASSUMPTION: cleat walls; the extruder confirms its minimum (HOLD-20)"),
+    ("cl_t", "1 mm", "ASSUMPTION: cleat walls; the extruder confirms its minimum (HOLD-21)"),
     ("rib_h", "0.6 mm", "ASSUMPTION: spacer ribs on each glue face set the smallest glue line, inside SikaFast's 0.5 to 3 mm (PDS, source)"),
     ("rib_w", "1 mm", "ASSUMPTION: rib width"),
     ("rib_in", "0.5 mm", "ASSUMPTION: each rib's edge from its leg's root or tip"),
