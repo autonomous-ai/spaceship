@@ -304,8 +304,17 @@ def profile_dims(sheet, view, step=6.0, gap=8.0):
             p, k = (a if x1 > x2 else b), round(y1, 2)
             if k not in ys or xy(p)[0] > xy(ys[k])[0]:
                 ys[k] = p
-    far_x = [x for x in sorted(xs, reverse=True) if abs(x - cx) > 0.05 and abs(x - e[0]) > 0.05]
-    far_y = [y for y in sorted(ys, reverse=True) if abs(y - cy) > 0.05 and abs(y - e[1]) > 0.05]
+    def distinct(keys):
+        # one face position once: Fusion can split a face's edge into collinear pieces whose ends differ in the
+        # last digits, so keys that round apart are merged within 0.01 sheet units (0.1 mm at 1:1; the sill's
+        # 103.5 and 118.5 were dimensioned twice on 2026-11-01)
+        out = []
+        for k in sorted(keys, reverse=True):
+            if not out or abs(k - out[-1]) > 0.01:
+                out.append(k)
+        return out
+    far_x = [x for x in distinct(xs) if abs(x - cx) > 0.05 and abs(x - e[0]) > 0.05]
+    far_y = [y for y in distinct(ys) if abs(y - cy) > 0.05 and abs(y - e[1]) > 0.05]
     for i, x in enumerate(far_x):
         try:
             dim(sheet, corner, xs[x], (x, e[1] - gap - step * i))
