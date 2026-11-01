@@ -44,10 +44,11 @@ HW = {
                    maker="HOLD: any maker to ISO 4762, picked at the RFQ", sku="ISO 4762 M6 x 25 - 8.8 - zinc plated",
                    torque="snugged, not torqued: a pin (register 2.10)", mass=0.0083, mstat="calculation",
                    basis="head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3"),
-    "838003": dict(name="HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", vi="Tán rút M6", kind="PI",
-                   material="aluminium 5056", finish="none (plain aluminium, as supplied)",
-                   maker="Sherex (PEM)", sku="CAH3-610-4.2", torque=TORQUE, mass=0.0023, mstat="calculation",
-                   basis="body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX sizes), 2640 kg/m3; "
+    "838003": dict(name="HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", vi="Tán rút M6 thép mạ kẽm",
+                   kind="PI", material="steel 1008/1010 (register H-03, SHX2; D-131 replaced the aluminium CAH3 with "
+                                       "the same head and grip)", finish="zinc plated, trivalent passivation",
+                   maker="Sherex (PEM)", sku="CAH2-610-4.2", torque=TORQUE, mass=0.0068, mstat="calculation",
+                   basis="body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX2 sizes), 7850 kg/m3; "
                          "the CAD body is the installed envelope"),
     "838004": dict(name="HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", vi="Long đen to M6 inox",
                    kind="PI", material="stainless steel A2", finish="none (plain stainless)",
@@ -60,13 +61,31 @@ HW = {
                    material="stainless steel A2 (EN 1.4301) bar", finish="bare stainless, as machined; threadlocker on the thread "
                    "when fitted (H-05)",
                    maker="made (register H-05)", sku="", torque="", mass="cad", mstat="calculation",
-                   basis="CAD body: Ø8 pin to 8 proud of the face, M6 x 10 thread, 7900 kg/m3 (H-05 sizes PROPOSED)",
-                   calc=0.0051, calc_basis="Ø8 x 7.24 above the rivnut head plus Ø6 x 10, 7900 kg/m3 (H-05 sizes)"),
+                   basis="CAD body: the Joints Engineer's STEP (one source, F-189): Ø8 pin to 8 proud of the "
+                         "face, M6 x 8 stud, lead-in and hex socket (H-05 sizes PROPOSED)",
+                   calc=0.00417, calc_basis="the Joints CAD's 0.00417 kg (BUILD-RECORD)"),
     "831002": dict(name="HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", vi="Long đen chặn nhôm", kind="MP",
                    material="aluminium sheet 1.5, 5000 or 6000 series", finish="mill finish (punched)",
                    maker="made (register H-08)", sku="", torque="", mass="cad", mstat="calculation",
-                   basis="CAD body: Ø10.5 x Ø20 x 1.5 (H-08), 2700 kg/m3",
-                   calc=0.00092, calc_basis="Ø10.5 x Ø20 x 1.5 (H-08), 2700 kg/m3"),
+                   basis="CAD body: the Joints Engineer's STEP (one source, F-189): Ø10.5 x Ø20 x 1.5 (H-08)",
+                   calc=0.000915, calc_basis="the Joints CAD's 0.000915 kg (BUILD-RECORD)"),
+    # the mitre plates (D-131, joints register H-40 to H-42): made hardware, welded into the frame's mitres
+    "831007": dict(name="HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL", vi="Tấm đệm góc vát 20 × 40 - 45° - thép 2.0",
+                   kind="MP", material="steel plate 2.0, galvanized, yield 280 MPa or more (as the frame tube)",
+                   finish="galvanized; zinc-painted with the welds", maker="made (register H-40)", sku="", torque="",
+                   mass="cad", mstat="calculation", basis="CAD body: 28.3 x 40 x 2.0 (H-40), 7850 kg/m3",
+                   calc=0.0178, calc_basis="28.3 x 40 x 2.0 at 7850 kg/m3 (register: 17.8 g)"),
+    "831008": dict(name="HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL",
+                   vi="Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0", kind="MP",
+                   material="steel plate 2.0, galvanized, yield 280 MPa or more (as the frame tube)",
+                   finish="galvanized; zinc-painted with the welds", maker="made (register H-41)", sku="", torque="",
+                   mass="cad", mstat="calculation", basis="CAD body: 44.7 x 40 x 2.0 (H-41), 7850 kg/m3",
+                   calc=0.0281, calc_basis="44.7 x 40 x 2.0 at 7850 kg/m3 (register: 28.1 g)"),
+    "831009": dict(name="HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL", vi="Tấm đệm góc vát 40 × 40 - 45° - thép 2.0",
+                   kind="MP", material="steel plate 2.0, galvanized, yield 280 MPa or more (as the frame tube)",
+                   finish="galvanized; zinc-painted with the welds", maker="made (register H-42)", sku="", torque="",
+                   mass="cad", mstat="calculation", basis="CAD body: 56.6 x 40 x 2.0 (H-42), 7850 kg/m3",
+                   calc=0.0355, calc_basis="56.6 x 40 x 2.0 at 7850 kg/m3 (register: 35.5 g)"),
     "848001": dict(name="SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", vi="Gioăng mối nối 3.97",
                    kind="PI", material="PORON 4701-40 Soft polyurethane foam with PSA",
                    finish="none (foam, PSA liner one side)",
@@ -367,6 +386,14 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                                mass_status="calculation: CAD at 7850 kg/m3 (steel; zinc not counted)", status="DRAFT",
                                source="CAD; number from the master BOM's allocation (D-120); steel D-131",
                                note="%s; cut length outer to outer" % mitre_ends(key, prm, upper, back)))
+    for pc in sorted((c for c in rep["components"] if c["part_number"] in ("831007", "831008", "831009")),
+                     key=lambda c: c["part_number"]):
+        q = pc.get("copies", 1)
+        r = hw_row(pc["part_number"], q, "pc", "welded into the frame's mitres, one at each corner where its members "
+                   "meet (the Joints Engineer's corner detail, D-131)", bodies=pc["bodies"])
+        r["level"] = 2
+        fm += r["mass_total_kg"]
+        member_rows.append(r)
     rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame),
                     name_vi=vi_name(frame["description"], frame["part_number"]), kind="BS",
                     material="the steel box tube members below and the 4 mitre plates, welded (D-131)",

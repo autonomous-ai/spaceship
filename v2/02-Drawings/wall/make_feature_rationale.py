@@ -29,7 +29,7 @@ FAMILIES_BACK = {
     ("RAIL - TOP", 9.53, "z"): (
         "F05", "Top rail rivnuts, nut side: J-WALL-01 to the upper panel (B1, B2: 4 at the 220 rule, with stop washers) "
         "and 2 spigot rivnuts 100 from the ends (B1, B2 for the upper panel; B3, B4 for the ceiling's back spigots)",
-        "Sherex CAH3-610-4.2 (838003), stop washer H-08 (831002) under the bolt ones; spigots H-05 (831001)",
+        "Sherex CAH2-610-4.2 (838003, steel zinc since D-131), stop washer H-08 (831002) under the bolt ones; spigots H-05 (831001)",
         "on the frame's centre line Y 824; bolts 220, 473.00, 725.99, 978.99 from the frame's ends (register 2.9)",
         "%s 2.9, 3.1, 3.4" % REG, "15.2 to each side wall of the 40 face", "Ø0.4 from F03", "CNC or jig; T-01, T-02",
         "source (hole); DECIDED (positions)"),
@@ -62,7 +62,7 @@ FAMILIES_BACK = {
         "coaxial with the pin rivnut within ±0.2 (R-J6)", "CNC or jig", "DECIDED (register)"),
     ("STILE - CENTRE", 9.53, "x"): (
         "F29", "Closing-seam pin rivnut, bolt side (B2, B4): holds the factory-fitted M6 x 25 pin bolt; no stop washer, "
-        "the gap is set by the spigots", "Sherex CAH3-610-4.2 (838003); M6 x 25 ISO 4762 (838002) with its washer",
+        "the gap is set by the spigots", "Sherex CAH2-610-4.2 (838003, steel zinc since D-131); M6 x 25 ISO 4762 (838002) with its washer",
         "3 at F28's positions", "%s 2.10" % REG, "15.2 to each side wall", "±0.2 to F28 (R-J6)",
         "CNC or jig; T-01, T-02", "DECIDED (register)"),
     ("STILE - CENTRE", 19.0, "x"): (
@@ -200,7 +200,7 @@ FAMILIES = {
     ("RAIL - BOTTOM", 7.0, "z"): (
         "F01", "J-BASE-01 bolt clearance, bolt side: the panel's captive bolt goes down through the rail's bottom wall "
         "into the base band's rivnut (lower panel) or the lower panel's rivnut (upper panel)",
-        "M6 x 16 ISO 4762 8.8 (838001) with its ISO 7093-1 head washer (838004), into Sherex CAH3-610-4.2 (838003) "
+        "M6 x 16 ISO 4762 8.8 (838001) with its ISO 7093-1 head washer (838004), into Sherex CAH2-610-4.2 (838003, steel zinc) "
         "over the 1.5 mm stop washer (831002)",
         "4 holes on the frame's centre line: end bolts 220 in from the panel's ends, evenly spaced (R-J14)",
         "%s 3.1, 3.3, FR-02; PM rulings F-009 (Ø7.0) and R-J14 (220 rule)" % REG,
@@ -223,7 +223,7 @@ FAMILIES = {
         "CNC or jig; this hole is the drill jig's locating point", "PROPOSED (register); sizes assumption"),
     ("RAIL - TOP", 9.53, "z"): (
         "F05", "J-WALL-01 rivnuts, nut side (4, one per bay) and 2 spigot rivnuts: the upper panel bolts down into "
-        "these, and its spigots stand in the 2 end ones", "Sherex CAH3-610-4.2 with the 1.5 mm stop washer H-08 "
+        "these, and its spigots stand in the 2 end ones", "Sherex CAH2-610-4.2 (steel zinc) with the 1.5 mm stop washer H-08 "
         "(sets the 2.26 seam gap); spigots H-05 in the 2 end ones",
         "bolt rivnuts at the 220 rule, coaxial with the upper panel's F01 holes (R-J14); spigot rivnuts 100 from each "
         "end (R-J13), not at a bolt", "%s 3.1, FR-01, FR-04" % REG,
@@ -243,14 +243,14 @@ FAMILIES = {
         "drilled with F07", "calculation"),
     ("RAIL - TOP", 9.53, "x"): (
         "F06", "J-CEIL-01 rivnuts, nut side (upper side panels): the ceiling's side tube bolts across the 2.26 gap "
-        "into these", "Sherex CAH3-610-4.2 with the stop washer H-08 in the room-side wall of the 40 x 40 top member",
+        "into these", "Sherex CAH2-610-4.2 (steel zinc) with the stop washer H-08 in the room-side wall of the 40 x 40 top member",
         "4 on the ceiling's bolt line Z 2374 (R-J15), at the ceiling's rule: from Y -645 (its front edge), 220 in, "
         "pitch 351.67, so CEILING drills the same (PM ruling 2026-10-31 16:55)",
         "%s 3.4, 2.9; PM rulings R-J3, R-J15" % REG, "hole edge 15.2 from each side wall; Ø20 washer on the 40 face",
         "Ø0.4 from F03, matched by the ceiling's holes", "CNC or jig; T-01, T-02", "source (hole); DECIDED (positions)"),
     ("STILE - BACK", 9.53, "x"): (
         "F09", "J-WALL-02 corner rivnuts, nut side: the back panel's edge tube bolts across the corner gap into these",
-        "Sherex CAH3-610-4.2 with the stop washer H-08 in the room-side wall of the 40 x 40 back stile",
+        "Sherex CAH2-610-4.2 (steel zinc) with the stop washer H-08 in the room-side wall of the 40 x 40 back stile",
         "3 per panel height at F07's heights, on the back panel's bolt line Y 824 (its tube centre, R-J15)",
         "%s 3.2, FR-01, FR-06, FR-07; PM rulings R-J3 (40 x 40), R-J15" % REG,
         "hole edge 11 from the inner wall; the Ø20 stop washer (Y 814 to 834) lies on the 40 mm face",

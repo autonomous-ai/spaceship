@@ -243,7 +243,9 @@ def build_frame_back(design, frame, out, yf, zs):
         tri_cut_y(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), "MITRE")
         tri_cut_y(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile),
                   "MITRE")
-    mitre_plates(design, frame, [(c[0], "top_h" if "TOP" in c[0] else "tube_w", "tube_w") for c in back_corners()])
+    mitre_plates(design, frame, [(c[0], c[3], c[4], "top_h" if "TOP" in c[0] else "tube_w", "tube_w")
+                                 for c in back_corners()], "y", Y_FRAME_OUT,
+                 1 if ev(design, Y_FRAME_IN) > ev(design, Y_FRAME_OUT) else -1)
     if ev(design, "stile_pitch") > ev(design, "stile_pitch_max") + 1e-6:
         raise RuntimeError("stud pitch %.2f over stile_pitch_max %.2f: the panel needs another stud (stile_n_mid)" % (
             ev(design, "stile_pitch"), ev(design, "stile_pitch_max")))

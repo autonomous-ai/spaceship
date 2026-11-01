@@ -94,9 +94,20 @@ def evaluate(expr, vals):
 
 
 # joints register V2-ENG-JNT-01 table 2.1 (main, PR #47): numbers and names of the hardware WALL models
-REGISTER_HW = {"838003": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
-               "831002": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
-               "831001": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS"}
+def register_hw():
+    """{part number: English name} of the joints register's hardware rows (| H-nn | **NNNNNN** | NAME · Vietnamese |),
+    so WALL's hardware names are checked against the register itself."""
+    path = os.path.join(HERE, "..", "..", "05-Engineering", "joints", "joints-register.md")
+    out = {}
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            m = re.match(r"\|\s*H-\d+\s*\|\s*\*\*(\d{6})\*\*\s*\|\s*([^·|]+?)\s*·", line)
+            if m:
+                out[m.group(1)] = m.group(2).strip()
+    return out
+
+
+REGISTER_HW = register_hw()
 
 
 class WallSidePanelTest(unittest.TestCase):

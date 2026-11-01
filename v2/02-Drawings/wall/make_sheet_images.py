@@ -176,7 +176,7 @@ def frame_blocks(pn, src=None):
                                                                 seam_x, "left" if pos["right"] else "right", bx[4]))
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer): bottom rail, outer "
-                 "stile (corner)%s. Ø19 = key access and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut: "
+                 "stile (corner)%s. Ø19 = key access and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH2-610-4.2 rivnut (steel, zinc plated): "
                  "top rail%s. %s Ø8.5 round by the closing seam and the 8.5 × 14 slot along the edge at the corner end "
                  "= locating spigots (ST-02). Bolts at 220, 473.00, 725.99, 978.99 from the frame's ends; corner bolts "
                  "at 220, 559.31, 898.61 on Y 824. Reasons: FEATURE-RATIONALE-%s.md." % (
@@ -193,7 +193,7 @@ def frame_blocks(pn, src=None):
                                             "right" if pos["right"] else "left", bx[0] if not pos["right"] else bx[3]))
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access "
-                 "and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut over a 1.5 mm stop washer. Ø8.5 "
+                 "and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH2-610-4.2 rivnut (steel, zinc plated) over a 1.5 mm stop washer. Ø8.5 "
                  "and the 8.5 × 14 slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner "
                  "rivnuts on the bolt line Y 824 (pod)%s. Reasons: FEATURE-RATIONALE-%s.md." % (
                      "; ceiling rivnuts on Z 2374 from Y -645 at 351.67 (the ceiling's rule)" if pos["row"] == 2 else "",

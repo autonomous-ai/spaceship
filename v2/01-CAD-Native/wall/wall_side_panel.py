@@ -48,6 +48,7 @@ with its part number (conventions.md section 6, DECIDED by the PM).
 
 import ast
 import math
+import glob
 import os
 import re
 
@@ -106,9 +107,16 @@ PARTS = {
 # joint hardware the panel carries from the factory, numbered by the joints register (V2-ENG-JNT-01, table 2.1;
 # PROPOSED numbers, D-63): one component each in the panel assembly
 HW_PARTS = {
-    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6"),
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm"),
     "stopw": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm"),
     "spigot": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8"),
+    # the mitre plates (D-131; joints register H-40 to H-42, made hardware numbered by the Joints Engineer)
+    "plate28": ("831007", "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL",
+                "Tấm đệm góc vát 20 × 40 - 45° - thép 2.0"),
+    "plate45": ("831008", "HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL",
+                "Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0"),
+    "plate57": ("831009", "HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL",
+                "Tấm đệm góc vát 40 × 40 - 45° - thép 2.0"),
 }
 PARTS.update(HW_PARTS)
 RESERVED = {"110006", "110002", "120001", "211000", "210001", "210003", "210005",
@@ -170,7 +178,8 @@ WALL_PARAMS = [
      "register R-J15, FR-07)"),
     ("fill_t", "tube_d", "mm", "calculation", "40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"),
     # site joints, joints register V2-ENG-JNT-01 P01 (ce1f415): M6 x 20 ISO 4762 captive bolts into Sherex
-    # CAH3-610-4.2 rivnuts, bolts and corner members DECIDED by the PM (2026-10-31); positions PROPOSED there
+    # CAH2-610-4.2 rivnuts (steel since D-131; the CAH3 before), bolts and corner members DECIDED by the PM
+    # (2026-10-31); positions PROPOSED there
     ("bolt_d", "7 mm", "mm", "confirmed", "PM ruling on F-009: bolt holes 7.0 (0.51 float), position tolerance "
      "0.4 (+-0.2) from the spigot hole, CNC or drill jig (joints register FR-02)"),
     ("access_d", "19 mm", "mm", "calculation",
@@ -178,7 +187,8 @@ WALL_PARAMS = [
      "grommet retainer (H-02)"),
     ("bolt_line_y", "pod_d / 2 - skin_t - bond_t - tube_d / 2", "mm", "confirmed",
      "J-WALL-02 bolt line on the back panel's tube centre, Y 824 (joints register R-J15, FR-07)"),
-    ("rivnut_d", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03)"),
+    ("rivnut_d", "9.53 mm", "mm", "source",
+     "Sherex CAH2-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03, SHX2: as the CAH3 it replaced, D-131)"),
     ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
     ("spigot_slot", "14 mm", "mm", "assumption", "register FR-05: slot length for the second spigot"),
     ("spigot_edge", "spigot_inset", "mm", "calculation",
@@ -233,11 +243,11 @@ WALL_PARAMS = [
     ("stopw_od", "20 mm", "mm", "source", "joints register H-08: stop washer Ø10.5 x Ø20 x 1.5 (PROPOSED part)"),
     ("stopw_id", "10.5 mm", "mm", "source", "joints register H-08"),
     ("stopw_t", "1.5 mm", "mm", "source", "joints register H-08: rivnut head 0.76 + washer 1.5 = the 2.26 stop (R-J5)"),
-    ("rivnut_head_d", "12.96 mm", "mm", "source", "Sherex CAH3-610-4.2 head Ø12.96 (joints register H-03, SHX)"),
-    ("rivnut_head_t", "0.76 mm", "mm", "source", "Sherex CAH3-610-4.2 head 0.76 ±0.08 (H-03, SHX)"),
-    ("rivnut_body_d", "9.5 mm", "mm", "source", "Sherex CAH3-610-4.2 body Ø9.50 max (H-03, SHX)"),
+    ("rivnut_head_d", "12.96 mm", "mm", "source", "Sherex CAH2-610-4.2 head Ø12.96 (joints register H-03, SHX2)"),
+    ("rivnut_head_t", "0.76 mm", "mm", "source", "Sherex CAH2-610-4.2 head 0.76 ±0.08 (H-03, SHX2)"),
+    ("rivnut_body_d", "9.5 mm", "mm", "source", "Sherex CAH2-610-4.2 body Ø9.50 max (H-03, SHX2)"),
     ("rivnut_len", "10.16 mm", "mm", "source",
-     "Sherex CAH3-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not "
+     "Sherex CAH2-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not "
      "modelled"),
     ("m6_d", "6 mm", "mm", "calculation", "M6 threads shown at their 6 mm major diameter (no modelled thread)"),
     ("spigot_pin_d", "8 mm", "mm", "source", "joints register H-05: Ø8 stainless pin; the part itself is Joints' "
@@ -355,9 +365,11 @@ DENSITY = {
     "tray": (7850.0, "source", "steel 7850 kg/m3 (EN 10346 DX51D+Z)"),
     "felt": (1.8 / 0.009, "source", "Polyx Board 9: 1.8 kg/m2 at 9 mm (HW-SEL A3 opt 2); the factory felt is unverified"),
     "zone": (1.0, "assumption", "reserved zone, not a part: near-zero density so it adds no mass"),
-    "rivnut": (2640.0, "source", "aluminium 5056 (Sherex CAH3 series): 2.64 g/cm3"),
+    "rivnut": (7850.0, "source", "steel 1008/1010, zinc plated (Sherex CAH2-610-4.2, register H-03, SHX2; D-131 "
+                                 "replaced the aluminium CAH3 with the same head and grip): 7.85 g/cm3"),
     "stopw": (2700.0, "calculation", "5000- or 6000-series aluminium sheet (H-08): 2.70 g/cm3 (5052 2.68, 6061 2.70)"),
     "spigot": (7900.0, "source", "stainless steel (H-05): 7.9 g/cm3"),
+    "plate": (7850.0, "source", "joints register H-40 to H-42: 2.0 steel plate, galvanized (17.8 / 28.1 / 35.5 g)"),
 }
 
 # ---------------------------------------------------------------- helpers
@@ -1280,7 +1292,8 @@ def build_frame(design, frame, out, xf, yf, zs):
         rt, st = plated_mitre_triangles(design, o, i, w_rail, w_stile)
         mitre(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), x_lo)
         mitre(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile), x_lo)
-    mitre_plates(design, frame, [(c[0], c[5], c[6]) for c in side_corners()])
+    mitre_plates(design, frame, [(c[0], c[3], c[4], c[5], c[6]) for c in side_corners()], "x", X_FRAME_OUT,
+                 1 if ev(design, X_FRAME_IN) > ev(design, X_FRAME_OUT) else -1)
     studs = ["stud_c%d" % k for k in range(1, int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1)]
     yr = lambda c: ("(%s) + %s - tube_w / 2" % (Y_FRONT, c), "(%s) + %s + tube_w / 2" % (Y_FRONT, c))  # noqa: E731
     make("STILE - MID", yr(studs[0]), zs, "z", "stud_t")
@@ -1302,21 +1315,90 @@ def build_frame(design, frame, out, xf, yf, zs):
     return members
 
 
-def mitre_plates(design, frame, corners):
-    """The 2 mm plate welded into each mitre (the Joints Engineer's corner detail): shared register parts numbered
-    by the Joints Engineer (Lead, 2026-11-01), placed from his STEPs like the spigot. Until their numbers and STEPs
-    are in the repo a real build stops here rather than guess their shape; a dry run (never saved) notes it and goes
-    on. corners: [(label, w_rail, w_stile)] with the widths' parameter names."""
-    need = sorted({"%.1f x 40" % (ev(design, w1) ** 2 + ev(design, w2) ** 2) ** 0.5 for _l, w1, w2 in corners})
-    have = [r for r in allocation(ARGS["repo_root"]) if "MITRE PLATE" in r["name"].upper()]
-    if not have:
-        msg = "the mitre plates %s (Joints' register parts) have no numbers or STEPs in the repo yet" % ", ".join(need)
-        if ARGS.get("dry") == "1":
-            print("PLATES|skipped in this dry run: %s" % msg)
-            return []
-        raise RuntimeError(msg + "; the frame waits for them (Lead, 2026-11-01)")
-    raise RuntimeError("the mitre plates are allocated (%s) but placing them waits for their origin and axes in the "
-                       "Joints README" % ", ".join(r["part_number"] for r in have))
+PLATES_BUILT = {}
+
+
+def plate_part(design, frame, key, length):
+    """One component per mitre plate (D-120), in the frame (welded into it): Joints' STEP when it is in the repo,
+    else the plain 2.0 box that the Joints Engineer says it matches (2026-11-01), built about the joints README's
+    origin and axes: the origin at the plate's corner on the frame's outer corner, on the skin-side face, on the
+    plate's mid-plane; +X along the mitre (its length), +Y across the frame (tube_d), Z the thickness (+-plate_t/2).
+    Returns (component, body, the reference point at its origin)."""
+    if key in PLATES_BUILT:
+        return PLATES_BUILT[key]
+    pn = PARTS[key][0]
+    steps = glob.glob(os.path.join(ARGS["repo_root"], "v2/03-Manufacturing/joints/%s_P01_*_STEP.step" % pn))
+    if steps:
+        JOINTS_STEP[key] = os.path.relpath(steps[0], ARGS["repo_root"])
+        JOINTS_BODY[key] = "MITRE PLATE"
+        c, b = import_joints_part(design, frame, key)
+    else:
+        c = new_comp(frame, key)
+        b = box(design, c, "MITRE PLATE", ("0 mm", length), ("0 mm", "tube_d"),
+                ("-plate_t / 2", "plate_t / 2")).bodies.item(0)
+        b.name = "MITRE PLATE"
+        set_material(design, [b], "plate", "STEEL PLATE 2.0 GALVANIZED")
+    ref = sketch_points(design, c, "y", "0 mm", [("0 mm", "0 mm")], "PLATE ORIGIN")[0]
+    PLATES_BUILT[key] = (c, b, ref)
+    return PLATES_BUILT[key]
+
+
+def mitre_plates(design, frame, corners, axis, face, toward_room):
+    """The 2 mm plate welded into each mitre (the Joints Engineer's corner detail, D-131; register H-40 to H-42):
+    831007 where two 20 x 40 members meet, 831008 where a 20 x 40 meets a 40 x 40, 831009 where two 40 x 40 meet.
+    Each placed as the joints README says: its origin on the corner's outer point on the skin-side face, +X along the
+    mitre to the inner corner, +Y into the frame toward the room. One component per plate, every copy held by a rigid
+    joint to a sketch point at its corner (it follows an edit), turned until its box matches the corner's.
+    corners: [(label, outer corner, inner corner, w_rail, w_stile)] in the frame plane's (along, up) expressions;
+    axis: the frame plane's normal ('x' side walls, 'y' back walls); face: the skin-side face's coordinate;
+    toward_room: +1 or -1 along that axis."""
+    import math
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    t, depth, f = ev(design, "plate_t"), ev(design, "tube_d"), ev(design, face)
+    placed = []
+    for label, o, i, w_r, w_s in corners:
+        widths = (round(ev(design, w_r)), round(ev(design, w_s)))
+        key = {(20, 20): "plate28", (20, 40): "plate45", (40, 20): "plate45", (40, 40): "plate57"}[widths]
+        length = "sqrt((%s) * (%s) + (%s) * (%s))" % (w_r, w_r, w_s, w_s)
+        c, _b, ref = plate_part(design, frame, key, length)
+        mine = [oc for oc in frame.occurrences if oc.component == c]
+        occ = mine[0] if not any(p[1] == key for p in placed) else frame.occurrences.addExistingComponent(
+            c, adsk.core.Matrix3D.create())
+        ou, ov, iu, iv = (ev(design, e) for e in (o[0], o[1], i[0], i[1]))
+        ln = math.hypot(iu - ou, iv - ov)
+        du, dv = (iu - ou) / ln, (iv - ov) / ln
+        pts = []
+        for a in (0.0, ln):
+            for b in (0.0, depth):
+                for k in (-t / 2, t / 2):
+                    u, v, w = ou + a * du - k * dv, ov + a * dv + k * du, f + toward_room * b
+                    pts.append((w, u, v) if axis == "x" else (u, w, v))
+        want = [min(q[j] for q in pts) for j in range(3)] + [max(q[j] for q in pts) for j in range(3)]
+        tgt = sketch_points(design, frame, axis, face, [(o[0], o[1])], "PLATE PLACE %s" % label)[0]
+        theta = math.degrees(math.atan2(abs(dv), abs(du)))
+        angles = sorted({round((sg * theta + q * 90.0) % 360.0, 4) for sg in (1, -1) for q in range(4)})
+        done = False
+        for flip in (False, True):
+            for ang in angles:
+                jin = frame.joints.createInput(adsk.fusion.JointGeometry.createByPoint(ref.createForAssemblyContext(occ)),
+                                               adsk.fusion.JointGeometry.createByPoint(tgt))
+                jin.setAsRigidJointMotion()
+                jin.angle = vi("%g deg" % ang)
+                jin.isFlipped = flip
+                j = frame.joints.add(jin)
+                if j.healthState == healthy and all(abs(x - y) < 0.05 for x, y in zip(bbox(occ.bRepBodies.item(0)), want)):
+                    j.name = "JOINT - MITRE PLATE %s %s" % (PARTS[key][0], label)
+                    done = True
+                    break
+                j.deleteMe()
+            if done:
+                break
+        if not done:
+            raise RuntimeError("mitre plate %s at %s: no joint turn puts it in the mitre %s" % (key, label, want))
+        placed.append((label, key))
+    print("step 3b: %d mitre plates (%s), each held in its mitre by a joint" % (
+        len(placed), ", ".join("%s %s" % (PARTS[k][0], lb) for lb, k in placed)))
+    return placed
 
 
 def side_bays(design):
@@ -1575,7 +1657,7 @@ def hw_part(design, root, key):
         shank = cyl(design, c, "RIVNUT BODY", "z", "0 mm", -1, o, "rivnut_body_d", "rivnut_len", "m6_d")
         b = join_bodies(c, head, [shank], "RIVNUT")
         b.name, ring = "RIVNUT", "rivnut_head_d"
-        set_material(design, [b], key, "ALUMINIUM 5056 RIVNUT")
+        set_material(design, [b], key, "STEEL ZINC RIVNUT")
     HW_PARTS_BUILT[key] = (c, b, ring)
     return HW_PARTS_BUILT[key]
 
@@ -1729,9 +1811,28 @@ def placed_clashes(placed):
             vol = tmp[0].volume * 1000.0 if tmp[0] else 0.0
             if vol > 1.0:
                 hits.append((items[i][0], items[j][0], round(vol)))
-                if not allowed_overlap(items[i][0], items[j][0]):
+                if not allowed_overlap(items[i][0], items[j][0]) and not plate_end(items[i][0], items[j][0], vol):
                     bad.append(hits[-1])
     return hits, bad
+
+
+PLATE_END_MAX = 30.0      # mm3
+
+
+def plate_end(na, nb, vol):
+    """A mitre plate modelled as the plain 2.0 box (the Joints Engineer's STEP, 2026-11-01): its square ends stand
+    0.71 past the mitre's faces, so at the outer corner it touches the side skin's back return and at the inner
+    corner it presses into the soft fill's corner. Allowed up to PLATE_END_MAX each, printed; the made plate's
+    outer end is ground flush (register J-FRAME-01)."""
+    def part(n):
+        return n.split(" / ")[0].split("+")[-1].split(" ")[0]
+    pa, pb = part(na), part(nb)
+    plate = {"831007", "831008", "831009"} & {pa, pb}
+    other = (pb if pa in plate else pa)[:4]
+    ok = bool(plate) and other in ("2113", "2115", "2116") and vol <= PLATE_END_MAX
+    if ok:
+        print("PLATE END|%s with %s: %.1f mm3 (allowed: a plain box's square end)" % (na, nb, vol))
+    return ok
 
 
 def allowed_overlap(na, nb):
