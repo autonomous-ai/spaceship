@@ -169,6 +169,8 @@ class Feature:
 
 def wall_word(f, body):
     """'1 wall' for a hole through one wall of a hollow member, 'thru' through a solid, or the depth."""
+    if getattr(f, "shape", None):       # a bent part's cut-out: through its sheet
+        return "THRU (%s)" % fmt(f.depth)
     if not f.through:
         # ISO 15786: the depth of the full diameter; a drill point in the model is named with its angle
         return "%s deep%s" % (fmt(f.depth), (", drill point %s°" % fmt(f.point_angle))
@@ -190,6 +192,10 @@ def size_text(feat):
         return "Ø%s" % fmt(f.dia)
     if feat.kind == "keyhole":
         return "KEYHOLE Ø%s + SLOT %s, %s TO END" % (fmt(f.entry_dia), fmt(f.width), fmt(f.neck))
+    if feat.kind == "cutout":
+        if f.shape == "slot":
+            return "SLOT %s x %s OVERALL, R%s ENDS" % (fmt(f.width), fmt(f.length), fmt(f.r))
+        return "CUT-OUT %s x %s%s" % (fmt(f.length), fmt(f.width), (", R%s CORNERS" % fmt(f.r)) if f.r > 1e-6 else "")
     if feat.kind == "open_slot":
         return "OPEN SLOT %s, R%s END %s FROM THE EDGE%s" % (
             fmt(f.width), fmt(f.r), fmt(f.edge),
@@ -326,6 +332,18 @@ class Part:
                                                along=along)
                 if r:
                     ft.reg = {"id": r["id"], "function": r["title"], "mating": r["function"], "file": r["file"]}
+        # a bent part's cut-outs that aren't round holes, matched to its DXF (sheetmetal): in the hole tables too; a
+        # slot is one of them (its size, place and DXF shape are the cut-out's)
+        if self.flat:
+            self.features = [ft for ft in self.features if ft.kind != "slot"]
+        cut_rows = inputs.cutout_rows(pn, team) if self.flat and self.flat.cutouts else []
+        for c in (self.flat.cutouts if self.flat else []):
+            ft = Feature(c, "cutout")
+            ft.body = self.bodies[0]
+            box = tuple(min(q[k] for q in c.boundary) for k in range(3)) + tuple(max(q[k] for q in c.boundary)
+                                                                               for k in range(3))
+            ft.reg = inputs.match_cutout(cut_rows, c.length, c.width, box)     # its register row (F44, F45...)
+            self.features.append(ft)
 
     def _to_pod(self):
         """A part file in its own system (as BASE exports its tubes) is drawn where it sits in the pod: the
@@ -604,16 +622,17 @@ def bent_flat(part, team, bent):
     if not dxfs:
         raise NotDrawable("%s: a bent part needs its flat pattern's DXF in v2/03-Manufacturing/%s" % (part.pn, team))
     holes = [ft.f for ft in part.features if ft.body is b and ft.kind == "hole"]
-    slots = [ft.f for ft in part.features if ft.body is b and ft.kind != "hole"]
-    if slots:
-        # the flat's check matches round holes only: a slot's DXF outline would go unchecked
-        raise NotDrawable("%s: a bent part's slots aren't matched to its DXF yet (%d in the model)" % (part.pn, len(slots)))
+    slots = [ft.f for ft in part.features if ft.body is b and ft.kind == "slot"]
+    others = [ft for ft in part.features if ft.body is b and ft.kind not in ("hole", "slot")]
+    if others:
+        # a keyhole or an open slot: the flat's check doesn't read them yet
+        raise NotDrawable("%s: a bent part's %s isn't matched to its DXF yet" % (part.pn, others[0].kind.replace("_", " ")))
     try:
         fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes,
                                 vgroove=cfg.get("vgroove"), outside_radius=cfg.get("outside_radius"))
     except ValueError as e:
         raise NotDrawable("%s: %s" % (part.pn, e))
-    odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots)
+    odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots, fl.cutouts)
     if odd:
         raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (part.pn, b.name, ", ".join(odd[:3])))
     fl.path = dxfs[0]
@@ -1153,7 +1172,8 @@ def plan_views(part, spec):
         r = Plan()
         r.feats, r.all, r.body, r.chain = [], [], b, ch
         r.n, r.y = vn.n, vn.y
-        r.point = vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 - vdot(b.centroid, ch.axis)))
+        r.point = getattr(ch, "point", None) or vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 -
+                                                                       vdot(b.centroid, ch.axis)))
         pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
@@ -1629,6 +1649,13 @@ def draw(part, spec, out_path, today=None):
             if marks:
                 if ft.kind == "hole":
                     sh.centre_mark(c2, r, ext=1.5)
+                elif ft.kind == "cutout":
+                    # its centre lines, 2 mm past its edges: the centre the table gives
+                    a2 = vd.view.to2d(ft.f.along)
+                    b2 = (-a2[1], a2[0])
+                    hl, hw = ft.f.length / 2 * vd.scale + 2.0, ft.f.width / 2 * vd.scale + 2.0
+                    sh.centre_line((c2[0] - a2[0] * hl, c2[1] - a2[1] * hl), (c2[0] + a2[0] * hl, c2[1] + a2[1] * hl))
+                    sh.centre_line((c2[0] - b2[0] * hw, c2[1] - b2[1] * hw), (c2[0] + b2[0] * hw, c2[1] + b2[1] * hw))
                 elif ft.kind == "open_slot":
                     a2 = vd.view.to2d(ft.f.along)
                     sh.centre_mark(c2, ft.f.width / 2 * vd.scale, ext=1.2)
@@ -2493,7 +2520,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         vd.title_drop = 14.0
         if getattr(vd, "profile", None):
             pr = vd.profile
-            words = "across the bends, at the middle" + (
+            ch_ = vd.r.chain
+            at = "at the middle" if abs(getattr(ch_, "frac", 0.5) - 0.5) < 1e-9 else \
+                "at %s %s, clear of holes and cut-outs" % ((axis_name(ch_.axis) or "  ")[1:], fmt(vdot(ch_.point, ch_.axis)))
+            words = "across the bends, " + at + (
                 "; one end, the other end the same" if pr.get("ends") == "both" else
                 "; at its folded end" if pr["window"] else "") + (
                 "; typical at every side" if getattr(vd, "typical", False) else "")
@@ -2698,8 +2728,9 @@ TB_ROOM = 120.0     # the title block's height and the gap over it, which the ri
 def table_name(g):
     """A hole table's title start: HOLES H01-H07, or HOLE H19 / SLOT H19 for a table of one."""
     if len(g.feats) == 1:
-        return "%s %s" % ("HOLE" if g.feats[0].kind == "hole" else "SLOT", g.feats[0].tag)
-    return "HOLES %s-%s" % (g.feats[0].tag, g.feats[-1].tag)
+        return "%s %s" % ({"hole": "HOLE", "cutout": "CUT-OUT"}.get(g.feats[0].kind, "SLOT"), g.feats[0].tag)
+    return "%s %s-%s" % ("CUT-OUTS" if all(f.kind == "cutout" for f in g.feats) else "HOLES", g.feats[0].tag,
+                         g.feats[-1].tag)
 
 
 def hole_cols(tw):
@@ -2713,7 +2744,8 @@ def tables_height(sh, part, groups, tw):
     total = 0.0
     for g in groups:
         rows = [[ft.tag, "-0000.00", "-0000.00",
-                 size_text(ft) + (" along X" if ft.kind == "slot" else " toward +X" if ft.kind == "keyhole" else ""),
+                 size_text(ft) + (" along X" if ft.kind in ("slot", "cutout") else " toward +X" if ft.kind == "keyhole"
+                                  else ""),
                  wall_word(ft.f, ft.body), feature_text(ft)] for ft in g.feats]
         head = ["%s: %s" % (table_name(g), face_title(part, g)),
                 "far wall, coaxial with H00-H00: hidden in the view from below, shown in section D-D, E-E; origin O0; "
@@ -2790,6 +2822,11 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
             size_t = size_text(ft)
             if ft.kind == "slot":
                 a2 = v.to2d(ft.f.along)
+                size_t += " along %s" % ("X" if abs(a2[0]) > 0.5 else "Y")
+            if ft.kind == "cutout":
+                a2 = v.to2d(ft.f.along)
+                if min(abs(abs(a2[0]) - 1), abs(abs(a2[1]) - 1)) > 1e-6:
+                    raise NotDrawable("%s: a cut-out at an angle to its view's axes isn't sized yet" % part.pn)
                 size_t += " along %s" % ("X" if abs(a2[0]) > 0.5 else "Y")
             if ft.kind == "keyhole":
                 a2 = v.to2d(ft.f.along)
@@ -3188,6 +3225,9 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                           "depth": ft.f.depth, "body": ft.body.name, "table_origin": vd.origin_name,
                           "drawn_in": vd.origin_name if _end_on(ft, vd.view) else None,
                           "register": ft.reg["id"] if ft.reg else None})
+            if ft.kind == "cutout":
+                feats[-1].update({"shape": ft.f.shape, "width": ft.f.width, "length": ft.f.length, "r": ft.f.r,
+                                  "along": ft.f.along})
             if ft.kind == "open_slot":
                 feats[-1].update({"r": ft.f.r, "edge": ft.f.edge, "mouth": ft.f.mouth, "taper": ft.f.taper,
                                   "along": ft.f.along, "size": size_text(ft),
