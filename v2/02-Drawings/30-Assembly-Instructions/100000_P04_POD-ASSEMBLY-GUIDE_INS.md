@@ -204,7 +204,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 15. Air parts in DR: the intake riser with its supply fan box
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **2-17** AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS (12.9 kg).
+- **Parts:** **2-17** AIR - SUPPLY FAN BOX (12.9 kg).
 - **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
 - **Person A:** Lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
 - **Person B:** Mates the fan box's plug-in connector; refits the inner face.
@@ -213,7 +213,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 16. Air column and supply cartridge
 
 - **Time:** about 7 min for 2 people.
-- **Parts:** **2-11** AIR - AIR COLUMN (8.1 kg), **2-18** AIR - CARTRIDGE - SUPPLY (10.6 kg).
+- **Parts:** **2-11** AIR - AIR COLUMN (8.1 kg), **2-18** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02).
 - **Person A:** With B, hangs the air column (2.1 m) on its tool-free hooks in the front-right corner (D-87), its back on DR's inner face and its right side on R1's and R2's linings; lifts its front face off.
 - **Person B:** With A, slides the supply cartridge into the column; plugs the hub into the cable chase; A refits the front face.
@@ -222,7 +222,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 17. Soffit and exhaust cartridge
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-10** AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS (15.4 kg), **2-19** AIR - CARTRIDGE - EXHAUST (10.6 kg).
+- **Parts:** **2-10** AIR - SOFFIT (15.4 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** 2 × 838002 M6 × 25 (J-AIR-01). Tool: the 5 mm hex key.
 - **Person A:** With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.
 - **Person B:** Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.
