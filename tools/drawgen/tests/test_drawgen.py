@@ -864,10 +864,10 @@ def test_a_lettered_views_arrow_keeps_clear_of_dimensions():
     read-back passes, with the letter clear of that dimension (main's code: a line runs through the letter)."""
     d = os.path.join(TMP, "rear")
     os.makedirs(d, exist_ok=True)
-    step = _mitred_member(os.path.join(d, "219995_P01_TEST-MEMBER-MITRED_STEP.step"))
-    p = os.path.join(d, "219995.pdf")
-    compose.make("219995", "none", dict(SPEC, principal={"look": "+X", "x": "-Y"}), p, step=step,
-                 row=dict(ROW, part_number="219995", name="TEST - MEMBER - MITRED"))
+    step = _mitred_member(os.path.join(d, "219986_P01_TEST-MEMBER-MITRED_STEP.step"))
+    p = os.path.join(d, "219986.pdf")
+    compose.make("219986", "none", dict(SPEC, principal={"look": "+X", "x": "-Y"}), p, step=step,
+                 row=dict(ROW, part_number="219986", name="TEST - MEMBER - MITRED"))
     fails, _st = readback.check(p, step)
     assert not fails, fails
     doc = fitz.open(p)
