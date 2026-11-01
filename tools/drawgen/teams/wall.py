@@ -95,14 +95,24 @@ def _tray(hand):
                             "C": "front face (at the cassette's front end)"}}
 
 
-def _back_tray(end, tolerance=TRAY_TOLERANCE):
-    """A back tray's entry: its back at +Y, its end return at the side wall (B1's at -X, B2's at +X). Datums as WALL's
-    cassette sheets, so one part reads one datum system on all its sheets (the Lead's ruling, 2026-11-01): B the end
-    return, C the bottom return; A the back face once the generator places a datum on a section (#385)."""
-    return {"bent": True, "notes": TRAY_NOTES, "tolerance": tolerance,
-            "corner": end + "+Y-Z", "datum_faces": {"B": end, "C": "-Z"},
-            "datum_words": {"B": "end return's outer face (at the side wall)",
-                            "C": "bottom return's outer face (on the ledge's pad)"}}
+# The flat pattern is the DXF as it draws it: the blank seen from the room side, its returns folding toward the viewer
+# (UP). The principal view looks from the rear, as WALL's cassette sheets do (Reviewer 13 on #398), so the note says so.
+BACK_TRAY_FLAT = ("FLAT PATTERN: the blank as seen from the room side, the side its returns fold toward; the principal "
+                  "view looks at the tray from the rear, so the flat pattern is its mirror image.")
+
+
+def _back_tray(end, tolerance=TRAY_TOLERANCE, datum_a=False):
+    """A back tray's entry: its back at +Y, its end return at the side wall (B1's at -X, B2's at +X), seen from the rear
+    as WALL's cassette sheets are (Reviewer 13 on #398). Datums as those sheets, so one part reads one datum system on
+    all its sheets (the Lead's ruling, 2026-11-01): B the end return, C the bottom return, and A the back face on a tray
+    with holes, where its view from the left shows that face edge on (B2's); B1's tray has no holes and needs no A."""
+    faces = {"B": end, "C": "-Z"}
+    words = {"B": "end return's outer face (at the side wall)", "C": "bottom return's outer face (on the ledge's pad)"}
+    if datum_a:
+        faces["A"] = "+Y"
+        words["A"] = "back face (toward the panel frame)"
+    return {"bent": True, "principal": "rear", "notes": TRAY_NOTES + [BACK_TRAY_FLAT], "tolerance": tolerance,
+            "corner": end + "+Y-Z", "datum_faces": faces, "datum_words": words}
 
 
 PARTS = {
@@ -114,10 +124,12 @@ PARTS = {
     "211303": _skin("LH"),
     "211304": _skin("RH"),
     "511201": _back_tray("-X"),
-    # B2's tray carries ELECTRICAL's features (feature rationale F39, F44, F45, with their tolerances)
-    "511202": _back_tray("+X", TRAY_TOLERANCE + "; F39's bushing hole Ø19.1 ±0.2, F44's power unit cut-out "
-                         "304 x 268 and F45's corner slot 11 x 80 ±0.5 (the feature rationale's tolerances, "
-                         "assumptions)"),
+    # B2's tray carries ELECTRICAL's features (feature rationale F39, F44, F45). With datum A on, their table
+    # positions are exact from O, so the register's ±0.2 is their size and its ±0.5 a Ø1.0 position zone (the
+    # Lead's ruling on #398)
+    "511202": _back_tray("+X", TRAY_TOLERANCE + "; F39's bushing hole Ø19.1, F44's power unit cut-out 304 x 268 "
+                         "and F45's corner slot 11 x 80: sizes ±0.2, positions Ø1.0 to A|B|C (the feature "
+                         "rationale's ±0.2 and ±0.5, as the Lead ruled on #398; assumptions)", datum_a=True),
 }
 
 _FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with a full parts-list row (WALL's D-123 "
