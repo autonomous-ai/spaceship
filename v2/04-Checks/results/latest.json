@@ -1,5 +1,5 @@
 {
- "rev": "2f76545",
+ "rev": "a8d75f6",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -1243,18 +1243,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|811204"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811205",
-   "severity": "severe",
-   "message": "811205 INTERIOR - LIGHT SHELF - DIFFUSER RH has no drawing PDF (811205_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811205"
   }
  ],
  "stacks": [
@@ -1390,26 +1378,26 @@
   {
    "id": "1-03",
    "name": "WALL - PANEL ASSY - BACK LOWER - LH",
-   "kg": 8.756,
+   "kg": 8.641,
    "dims": [
     1200.61,
     1118.61,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation; fill provisional"
+   "status": "calculation (part CAD); fill provisional"
   },
   {
    "id": "1-04",
    "name": "WALL - PANEL ASSY - BACK LOWER - RH",
-   "kg": 11.644,
+   "kg": 11.529,
    "dims": [
     1200.61,
     1118.61,
     84.0
    ],
    "ships_as": "upright",
-   "status": "calculation (CAD); calculation; fill provisional"
+   "status": "calculation (CAD); calculation (part CAD); fill provisional"
   },
   {
    "id": "1-05",
@@ -1438,26 +1426,26 @@
   {
    "id": "1-07",
    "name": "WALL - PANEL ASSY - BACK UPPER - LH",
-   "kg": 8.756,
+   "kg": 8.641,
    "dims": [
     1200.61,
     1118.61,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation; fill provisional"
+   "status": "calculation (part CAD); fill provisional"
   },
   {
    "id": "1-08",
    "name": "WALL - PANEL ASSY - BACK UPPER - RH",
-   "kg": 8.756,
+   "kg": 8.641,
    "dims": [
     1200.61,
     1118.61,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation; fill provisional"
+   "status": "calculation (part CAD); fill provisional"
   },
   {
    "id": "1-09",
@@ -1558,26 +1546,26 @@
   {
    "id": "1-17",
    "name": "LINING - CASSETTE - BACK LOWER - LH",
-   "kg": 8.411,
+   "kg": 8.013,
    "dims": [
     1166.0,
     1118.61,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-18",
    "name": "LINING - CASSETTE - BACK LOWER - RH",
-   "kg": 8.411,
+   "kg": 8.013,
    "dims": [
     1166.0,
     1118.61,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-19",
@@ -2976,6 +2964,40 @@
    "engagement": "not measured yet (Fusion check)"
   },
   {
+   "part_number": "831001",
+   "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2 (EN 1.4301) bar",
+   "finish": "bare stainless, as machined; threadlocker on the thread when fitted (H-05)",
+   "torque_nm": "",
+   "qty_parts_list": "2",
+   "qty_cad": 15,
+   "where_cad": "; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:3; 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:4; 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:5; 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:6; 110103 BASE - BAND",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: CAD body: Ø8 pin to 8 proud of the face, M6 x 10 thread, 7900 kg/m3 (H-05 sizes PROPOSED)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831001",
+   "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2 (EN 1.4301) bar",
+   "finish": "bare stainless, as machined; threadlocker on the thread when fitted (H-05)",
+   "torque_nm": "",
+   "qty_parts_list": "2",
+   "qty_cad": 15,
+   "where_cad": "; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:3; 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:4; 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:5; 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:6; 110103 BASE - BAND",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: CAD body: Ø8 pin to 8 proud of the face, M6 x 10 thread, 7900 kg/m3 (H-05 sizes PROPOSED)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
    "part_number": "831002",
    "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
    "size": "",
@@ -3103,6 +3125,40 @@
    "finish": "mill finish (punched)",
    "torque_nm": "",
    "qty_parts_list": "7",
+   "qty_cad": 49,
+   "where_cad": "; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:5; 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:10; 110103 BASE ",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: CAD body: Ø10.5 x Ø20 x 1.5 (H-08), 2700 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831002",
+   "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium sheet 1.5, 5000 or 6000 series",
+   "finish": "mill finish (punched)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": 49,
+   "where_cad": "; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:5; 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:10; 110103 BASE ",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: CAD body: Ø10.5 x Ø20 x 1.5 (H-08), 2700 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831002",
+   "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium sheet 1.5, 5000 or 6000 series",
+   "finish": "mill finish (punched)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
    "qty_cad": 49,
    "where_cad": "; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:5; 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:10; 110103 BASE ",
    "maker": "",
@@ -3248,6 +3304,40 @@
    "engagement": "not measured yet (Fusion check)"
   },
   {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
    "part_number": "838002",
    "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
    "size": "",
@@ -3261,6 +3351,23 @@
    "maker": "",
    "sku": "",
    "status": "calculation",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838002",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
+   "qty_parts_list": "3",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3",
    "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },
@@ -3418,6 +3525,40 @@
    "engagement": "not measured yet (Fusion check)"
   },
   {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "",
+   "qty_parts_list": "6",
+   "qty_cad": 65,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX sizes), 2640 kg/m3; the CAD body is the installed envelope",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "",
+   "qty_parts_list": "9",
+   "qty_cad": 65,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX sizes), 2640 kg/m3; the CAD body is the installed envelope",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
    "part_number": "838004",
    "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
    "size": "",
@@ -3537,6 +3678,40 @@
    "engagement": "not measured yet (Fusion check)"
   },
   {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: 6.4 x 18 x 1.6 (ISO 7093-1), 7900 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "10",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "calculation: 6.4 x 18 x 1.6 (ISO 7093-1), 7900 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
    "part_number": "838005",
    "name": "HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE",
    "size": "",
@@ -3567,6 +3742,40 @@
    "maker": "",
    "sku": "",
    "status": "assumption",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838005",
+   "name": "HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE",
+   "size": "",
+   "length_mm": "",
+   "grade": "elastomer (HOLD-02)",
+   "finish": "as supplied (elastomer)",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "assumption: a small grommet; part not chosen (HOLD-02)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838005",
+   "name": "HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE",
+   "size": "",
+   "length_mm": "",
+   "grade": "elastomer (HOLD-02)",
+   "finish": "as supplied (elastomer)",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "assumption: a small grommet; part not chosen (HOLD-02)",
    "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },
