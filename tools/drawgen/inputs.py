@@ -101,7 +101,7 @@ def cut_list_rows(team, cfg, pn):
     part used in four rings would print one ring's; the cut list's own name only for a member with no parts-list
     row). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty, ends (holes when
     present). With FRONT's end_a_deg and end_b_deg, the end angles the model check uses come from them (see
-    column_angles), and an ends text that gives both angles must agree with them. Welded-in made parts the entry names
+    column_cuts), and an ends text that gives both angles must agree with them. Welded-in made parts the entry names
     (a frame's mitre plates) follow, from their parts-list rows, as having their own drawing."""
     path = os.path.join(MANUF, team, cfg["file"])
     with open(path, newline="", encoding="utf-8") as fh:
@@ -113,10 +113,11 @@ def cut_list_rows(team, cfg, pn):
         if not num:
             raise ValueError("cut list %s: a row of %s has no member number" % (base, pn))
         length, ends = (r.get("length_mm") or "").strip(), (r.get("ends") or "").strip()
-        angles = column_angles(r.get("end_a_deg"), r.get("end_b_deg"))
-        if angles is False:
+        cuts = column_cuts(r.get("end_a_deg"), r.get("end_b_deg"))
+        if cuts is False:
             raise ValueError("cut list %s: member %s's end angle columns '%s' and '%s' don't give a number each" % (
                 base, num, (r.get("end_a_deg") or "").strip(), (r.get("end_b_deg") or "").strip()))
+        angles = sorted(max(c) for c in cuts) if cuts else None
         said = ends_angles(ends)
         if angles and said is not None and any(abs(a - b) > 1e-6 for a, b in zip(said, angles)):
             raise ValueError("cut list %s: member %s's ends text gives %s, its end angle columns %s" % (
@@ -124,7 +125,7 @@ def cut_list_rows(team, cfg, pn):
         q = float((r.get("qty") or "1").strip() or 1)
         if num in by:
             o = by[num]
-            if (o["cut_length_mm"], o["note"], o.get("angles")) != (length, ends, angles):
+            if (o["cut_length_mm"], o["note"], o.get("cuts")) != (length, ends, cuts):
                 raise ValueError("cut list %s: member %s has two lengths or two ends texts or two pairs of end "
                                  "angles (D-120)" % (base, num))
             o["_q"] += q
@@ -134,8 +135,8 @@ def cut_list_rows(team, cfg, pn):
              "size_mm": (r.get("section") or "").strip(), "material": (r.get("section") or "").strip(),
              "cut_length_mm": length, "tolerance": cfg.get("tolerance", ""), "note": ends,
              "holes": (r.get("holes") or "").strip(), "_q": q}
-        if angles:
-            o["angles"] = angles
+        if cuts:
+            o["angles"], o["cuts"] = angles, cuts
         by[num] = o
         out.append(o)
     if not out:
@@ -160,20 +161,20 @@ ANGLE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:°|deg\b)")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 
 
-def column_angles(a, b):
-    """A cut list row's two end angles from square, sorted, from its end_a_deg and end_b_deg columns (FRONT's): each
-    cell's steepest cut, as the model check measures each end ('50.9 and 0.0 (two cuts)' is 50.9; that end's other
-    cut is on the tube's own sheet). None when the file has neither column or both cells are blank; False when only
-    one gives a number."""
+def column_cuts(a, b):
+    """A cut list row's end cuts from its end_a_deg and end_b_deg columns (FRONT's): [end A's angles from square,
+    end B's], each sorted ('50.9 and 0.0 (two cuts)' is a 50.9° cut and a square one at that end). The model check
+    takes each end's steepest as the body's steepest there and finds every angle among that end's cut faces. None
+    when the file has neither column or both cells are blank; False when only one gives a number."""
     if a is None and b is None:
         return None
     cells = [(c or "").strip() for c in (a, b)]
     if not any(cells):
         return None
-    got = [[float(x) for x in NUMBER.findall(c)] for c in cells]
+    got = [sorted(float(x) for x in NUMBER.findall(c)) for c in cells]
     if not all(got):
         return False
-    return sorted(max(g) for g in got)
+    return got
 
 
 def ends_cell(note, tol=""):

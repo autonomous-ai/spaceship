@@ -2701,9 +2701,47 @@ def member_ends(body):
     return hi - lo, sorted(ends)
 
 
+def member_end_cuts(body):
+    """Each end's cuts on a straight member, for a cut list that gives each end's angles (FRONT's two columns):
+    [(the steepest cut, as member_ends finds it, [every cut face's angle from square])] for its low and its high end
+    along its axis. Every flat face counts here whatever its size (DR's second cuts at the back ring are 2.1 mm across
+    the way they slope): a sloped one by the half it sits in, a square one only where it is the end itself (not a
+    notch's wall). None when the body isn't a straight member."""
+    ax = geom.member_axis(body)
+    if ax is None:
+        return None
+    pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(body.shape)]
+    lo, hi = min(vdot(q, ax) for q in pts), max(vdot(q, ax) for q in pts)
+    mid = (lo + hi) / 2
+    steep, faces = [0.0, 0.0], [[], []]
+    for n, _off, _area, f in geom.planes(body):
+        c = abs(vdot(n, ax))
+        if c < 0.019:
+            continue
+        fp = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(f)]
+        if not fp:
+            continue
+        s = [vdot(q, ax) for q in fp]
+        if c >= 0.9998:
+            k = 0 if abs(min(s) - lo) <= 0.05 else 1 if abs(max(s) - hi) <= 0.05 else None
+            if k is not None:
+                faces[k].append(0.0)
+            continue
+        a = math.degrees(math.acos(c))
+        k = 0 if sum(s) / len(s) < mid else 1
+        faces[k].append(a)
+        u = vnorm(vcross(ax, n))
+        w = vnorm(vcross(u, ax))
+        if max(vdot(q, w) for q in fp) - min(vdot(q, w) for q in fp) >= 6.0:
+            steep[k] = max(steep[k], a)
+    return [(steep[k], sorted(faces[k])) for k in (0, 1)]
+
+
 def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
     """Why a member's body and its cut list row disagree (length within 0.05 mm, end angles within 0.05°), or
-    None."""
+    None. With each end's angles from the row's two columns (FRONT's), an end that gives two cuts has both checked
+    (the generator's owner on #404): its steepest is the body's steepest at that end, every angle it gives is one of
+    that end's cut faces, and every cut face there is one it gives."""
     got = member_ends(body)
     if got is None:
         return "its body isn't a straight member, so its cut length can't be checked"
@@ -2714,6 +2752,21 @@ def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
         return "its cut length '%s' isn't a number" % row["cut_length_mm"]
     if abs(length - want_l) > tol_mm:
         return "its cut list says %s long, its body is %.2f" % (row["cut_length_mm"], length)
+    cuts = row.get("cuts")
+    if cuts:
+        model = member_end_cuts(body)
+
+        def near(a, xs):
+            return any(abs(a - x) <= tol_deg for x in xs)
+
+        def fits(end, cell):
+            return (abs(end[0] - max(cell)) <= tol_deg and all(near(a, end[1]) for a in cell)
+                    and all(near(f, cell) for f in end[1]))
+        if not any(fits(model[i], cuts[0]) and fits(model[1 - i], cuts[1]) for i in (0, 1)):
+            return "its cut list's ends give %s, its body's end cuts %s from square" % (
+                "; ".join(" and ".join("%g°" % a for a in cell) for cell in cuts),
+                "; ".join(" and ".join("%.2f°" % a for a in end[1]) or "none" for end in model))
+        return None
     want_a = row.get("angles") or inputs.ends_angles(row.get("note"))     # FRONT's angle columns, else the text
     if want_a is None:
         return "its cut list's ends '%s' don't give both ends' angles" % row.get("note", "")
