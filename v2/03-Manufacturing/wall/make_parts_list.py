@@ -16,6 +16,7 @@ frame's own cut list; the master BOM skips them.
 """
 
 import csv
+import glob
 import json
 import os
 import re
@@ -116,6 +117,30 @@ HW = {
                    sku="HOLD-13: no more than about 2 kPa at 20% compression", torque="", mass=0.002,
                    mstat="assumption", basis="per metre: 10 x 2.1 at about 100 kg/m3 (assumption)"),
 }
+
+
+def joints_plates(root=os.path.normpath(os.path.join(HERE, "..", "..", ".."))):
+    """The mitre plates' sizes from the Joints Engineer's own STEPs (one source: the blanks may change, as the
+    Lead's shorter blank of 2026-11-01 does): each plate's mass basis and its calculated mass made from its
+    STEP's box, read with the repo's STEP reader (mm). A plate whose STEP isn't in the repo keeps the register's
+    text above."""
+    sys.path.insert(0, os.path.join(root, "tools", "checks"))
+    import stepfile                                       # noqa: E402  (the repo's own reader)
+    for pn, reg in (("831007", "H-40"), ("831008", "H-41"), ("831009", "H-42")):
+        paths = glob.glob(os.path.join(root, "v2", "03-Manufacturing", "joints", "%s_P01_*_STEP.step" % pn))
+        if not paths:
+            continue
+        sf = stepfile.StepFile(paths[0])
+        pts = [i["frame"].point(q) for i in sf.instances() for q in sf.solid(i["solid"]).points()]
+        # in the README's axes: X along the mitre, Y across the frame (its depth), Z the thickness
+        size = [max(q[k] for q in pts) - min(q[k] for q in pts) for k in range(3)]
+        HW[pn]["basis"] = "CAD body: the Joints Engineer's STEP, %.2f x %.2f x %.2f (%s), 7850 kg/m3" % (
+            size[0], size[1], size[2], reg)
+        HW[pn]["calc"] = round(size[0] * size[1] * size[2] * 7850e-9, 5)
+        HW[pn]["calc_basis"] = "%.2f x %.2f x %.2f at 7850 kg/m3 (the Joints Engineer's STEP)" % tuple(size)
+
+
+joints_plates()
 
 
 def load(pn):
