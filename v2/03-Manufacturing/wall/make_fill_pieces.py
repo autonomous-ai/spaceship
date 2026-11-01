@@ -214,8 +214,10 @@ def numbers():
 
 
 def dxf_name(pn, name):
-    """conventions section 7: PARTNO_REV_DESCRIPTIVE-NAME_DOCTYPE.ext, the name in capitals joined by hyphens."""
-    words = re.sub(r"[^A-Z0-9.]+", "-", name.upper()).strip("-")
+    """conventions section 7: PARTNO_REV_DESCRIPTIVE-NAME_DOCTYPE.ext, the name in capitals joined by hyphens. A size's
+    decimal point becomes a hyphen too (1102.7 -> 1102-7): the name field takes letters, digits and hyphens only, and
+    the checks find a part's files by that pattern (a DXF named 1102.7 wasn't read as the piece's DXF)."""
+    words = re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-")
     return "%s_P01_%s_DXF.dxf" % (pn, words)
 
 
