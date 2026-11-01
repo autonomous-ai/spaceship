@@ -106,10 +106,10 @@ def render_label(text, path):
     f = font(3.5)
     scratch = ImageDraw.Draw(Image.new("L", (10, 10)))
     pad = int(1 * PX_MM)
-    W = int(text_w(scratch, text, f)) + 2 * pad
-    H = int(6 * PX_MM)
+    left, top, right, bottom = scratch.textbbox((0, 0), text, font=f)   # the glyphs' own box (the first label's
+    W, H = (right - left) + 2 * pad, (bottom - top) + 2 * pad            # fixed height cut its foot off)
     img = Image.new("L", (W, H), 255)
-    ImageDraw.Draw(img).text((pad, int(1 * PX_MM)), text, font=f, fill=0)
+    ImageDraw.Draw(img).text((pad - left, pad - top), text, font=f, fill=0)
     img.save(path, dpi=(PX_MM * 25.4, PX_MM * 25.4))
     return img.size
 

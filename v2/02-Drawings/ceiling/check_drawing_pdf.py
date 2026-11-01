@@ -63,8 +63,18 @@ def segments(page, layer, height):
             continue
         for it in d["items"]:
             if it[0] == "l":
-                a = (round(it[1].x * MM, 1), round(height - it[1].y * MM, 1))
-                b = (round(it[2].x * MM, 1), round(height - it[2].y * MM, 1))
+                pairs = [(it[1], it[2])]
+            elif it[0] == "qu":         # PyMuPDF reads a closed 4-point path as one quad
+                q = it[1]
+                pairs = [(q.ul, q.ur), (q.ur, q.lr), (q.lr, q.ll), (q.ll, q.ul)]
+            elif it[0] == "re":
+                r = it[1]
+                pairs = [(r.tl, r.tr), (r.tr, r.br), (r.br, r.bl), (r.bl, r.tl)]
+            else:
+                continue
+            for p0, p1 in pairs:
+                a = (round(p0.x * MM, 1), round(height - p0.y * MM, 1))
+                b = (round(p1.x * MM, 1), round(height - p1.y * MM, 1))
                 if a != b:
                     out.add(tuple(sorted((a, b))))
     return sorted(out)

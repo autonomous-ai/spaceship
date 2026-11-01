@@ -99,6 +99,25 @@ class Symbol(unittest.TestCase):
         bad[0] = bad[-1] = (20.0, 10.0)
         self.assertTrue(any("outline" in p for p in self.read(bad)))
 
+    def test_outline_as_one_quad_passes(self):
+        """Fusion's export of the outline alone in its sketch (the second rib sample): one closed 4-point path,
+        which PyMuPDF reads as a single quad item, not four lines."""
+        x0, y0 = S.symbol_place("A2")
+        doc = fitz.open()
+        page = doc.new_page(width=594 * PT, height=420 * PT)
+        pt = lambda x, y: fitz.Point(x * PT, (420 - y) * PT)
+        ocg = doc.add_ocg(C.SYMBOL)
+        quad = fitz.Quad(pt(x0, y0 + 2.5), pt(x0 + 10, y0 + 5), pt(x0, y0 - 2.5), pt(x0 + 10, y0 - 5))
+        page.draw_quad(quad, oc=ocg)
+        occ = doc.add_ocg(C.SYMBOL + " CIRCLES")
+        for r in (5.0, 2.5):
+            page.draw_circle(pt(x0 + 19, y0), r * PT, oc=occ)
+        path = os.path.join(self.tmp, "q.pdf")
+        doc.save(path)
+        page = fitz.open(path)[0]
+        self.assertTrue(any(it[0] == "qu" for d in page.get_drawings() for it in d["items"]), "the test draws a quad")
+        self.assertEqual(C.symbol_problems(page, 420.0, (x0, y0)), [])
+
     def test_missing_circles_fail(self):
         self.assertTrue(any("circle" in p for p in self.read(outline_at(*S.symbol_place("A2")), with_circles=False)))
 
