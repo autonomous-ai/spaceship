@@ -96,6 +96,10 @@ CATCH_X = "(%s - st_end - st_l / 2)" % latch_x("leaf_zt")      # the catch's cen
 
 OWN = [
     ("dt_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
+    ("dt_fo", "dt_skin_t + bond_t", "mm", "calculation",
+     "a frame tube's face from the skin's outer face: the 3 mm ACP and the 3 mm bond line (skeleton bond_t; the bond "
+     "spec's joint, at least 12 wide x 3 thick, D-137), so every tube that bonds to the skin stands 3 mm off it "
+     "(PM ruling 2026-11-01)"),
     ("dt_back_t", "2 mm", "mm", "confirmed",
      "back plate 2 mm aluminium: J-FRONT-03 puts the ceiling bolts' rivnuts in it, 1.0 to 2.7 thick at each bolt "
      "(HOLD-10: 2 mm; PM ruling 2026-11-01)"),
@@ -196,7 +200,7 @@ def frame_members():
     """DT's welded tube frame as data (as DR's): a back ring just in front of the back plate, a tube along the lower
     front facet, a tube under the top chamfer, the rail over the door's catch and top stop, and cross tubes."""
     yb0, yb1 = "(%s - dt_back_t - fr_w)" % YBP, "(%s - dt_back_t)" % YBP
-    zb3 = "(%s + dt_skin_t)" % ZT
+    zb3 = "(%s + dt_fo)" % ZT          # the underside tubes, the bond line over the underside skin
     bot, top = FL.line(0, 1, ZT), FL.line(0, -1, "-pod_h")
     right = FL.line(-1, 0, "-(%s + dt_xr)" % XL)
     # DT stands on the slope over DL: z - dt_zb = dt_m (XL + dl_w - x), DT's skin directly on DL's (no gap); the
@@ -209,7 +213,9 @@ def frame_members():
                   "section": S40 if key == "B03" else S20, "axis": axis, "lengthwise": lengthwise,
                   "ends": ends or "mitred to its neighbours (angles on the frame drawing)"})
 
-    back = FL.ring([(bot, "dt_skin_t", "fr_w"), (right, "0 mm", "fr_w"), (top, "dt_skin_t", "fr_wtop"),
+    # the tubes on a skin stand the bond line off it (dt_fo); DT is open at DR and over DL's slope, where its skins'
+    # edges rest on DL's (D-152), so the slope tube stays a skin thickness in from the slope
+    back = FL.ring([(bot, "dt_fo", "fr_w"), (right, "0 mm", "fr_w"), (top, "dt_fo", "fr_wtop"),
                     (slope, "dt_skin_t", "fr_w")])
     for k, (key, nm) in enumerate((("B01", "BACK RING BOTTOM"), ("B02", "BACK RING DR JOINT"), ("B03", "BACK RING TOP"),
                                    ("B04", "BACK RING SLOPE OVER DL"))):
@@ -217,13 +223,13 @@ def frame_members():
     # a post in the middle of the back ring, as v1
     xm = "((%s + dl_w + %s + dt_xr) / 2 - fr_w / 2)" % (XL, XL)
     add("B05", "BACK RING POST", ("x", "z"), [(xm, "%s + fr_w" % zb3), ("%s + fr_w" % xm, "%s + fr_w" % zb3),
-                                             ("%s + fr_w" % xm, "pod_h - dt_skin_t - fr_wtop"), (xm, "pod_h - dt_skin_t - fr_wtop")],
+                                             ("%s + fr_w" % xm, "pod_h - dt_fo - fr_wtop"), (xm, "pod_h - dt_fo - fr_wtop")],
         "y", yb0, yb1, axis=(1, 2), ends="square both ends")
     # along the lower front facet (plan), on the underside skin
     fac = FL.line("dt_fnx", "dt_fny", "dt_fc")
-    f3, f23 = FL.push(fac, "dt_skin_t"), FL.push(fac, "dt_skin_t + fr_w")
+    f3, f23 = FL.push(fac, "dt_fo"), FL.push(fac, "dt_fo + fr_w")
     joint = FL.line("dt_jnx", "dt_jny", "dt_jc")
-    xl_bot = "(%s + dl_w - (dt_skin_t - dt_skin_t * dt_k) / dt_m)" % XL     # the pushed slope at the underside skin
+    xl_bot = "(%s + dl_w - (dt_fo - dt_skin_t * dt_k) / dt_m)" % XL         # the pushed slope at the underside tubes
     left = FL.line(1, 0, "(%s + dt_x2)" % XL)                       # starts at the facet's corner
     add("F01", "FRONT FACET TUBE", ("x", "y"), [FL.meet(f3, left), FL.meet(f3, joint), FL.meet(f23, joint),
                                                 FL.meet(f23, left)], "z", zb3, "%s + fr_w" % zb3,
@@ -237,8 +243,8 @@ def frame_members():
         "z", zb3, "%s + fr_w" % zb3, ends="left end square, right end cut to the DR joint line")
     # under the top chamfer, along X (side view: a square laid on the chamfer)
     chl = FL.line("-dt_cny", "-dt_cnz", "-dt_cc")
-    c3, c23 = FL.push(chl, "dt_skin_t"), FL.push(chl, "dt_skin_t + fr_w")
-    yf_in = "(-dt_y2 + dt_skin_t / dt_fny)"                       # the facet's inside face at its left end
+    c3, c23 = FL.push(chl, "dt_fo"), FL.push(chl, "dt_fo + fr_w")
+    yf_in = "(-dt_y2 + dt_fo / dt_fny)"                           # the facet's bond face at its left end
     pf = FL.meet(c3, FL.line(1, 0, yf_in))                         # its top front corner, the most forward point
     t0 = FL.line("dt_cnz", "-dt_cny", "dt_cnz * %s - dt_cny * %s" % pf)
     t1 = FL.push(t0, "fr_w")
@@ -253,7 +259,7 @@ def frame_members():
         x1 = "(%s + fr_w)" % x0
         add(key, nm, ("x", "y"), [FL.meet(f23, FL.line(1, 0, x0)), FL.meet(f23, FL.line(1, 0, x1)), (x1, yr0), (x0, yr0)],
             "z", zb3, "%s + fr_w" % zb3, axis=(1, 2), ends="front end cut to the facet tube, back end square to the rail")
-    ch_pts = [FL.meet(c3, t1), FL.meet(c3, FL.line(0, 1, "pod_h - dt_skin_t")), (yb0, "pod_h - dt_skin_t"),
+    ch_pts = [FL.meet(c3, t1), FL.meet(c3, FL.line(0, 1, "pod_h - dt_fo")), (yb0, "pod_h - dt_fo"),
               FL.meet(c23, FL.line(1, 0, yb0)), FL.meet(c23, t1)]
     for key, nm, x0 in (("C01", "CHAMFER CROSS TUBE LEFT", "(%s + dt_x2 + 280 mm)" % XL),
                         ("C02", "CHAMFER CROSS TUBE MIDDLE", "(%s - fr_w / 2)" % CATCH_X),
@@ -412,7 +418,7 @@ def build(app):
     L.extrude_span(mc, sk, "y", yb1 + " - fr_t - 1 mm", yb1 + " + 0.5 mm", CUT, [native["B03"]],
                    "CUT - J-FRONT-03 RIVNUT TAILS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     # J-FRONT-03: the spigot hole and slot in the bottom back tube's bottom wall, over DR's ledge (in 352201)
-    zb3 = ZT + " + dt_skin_t"
+    zb3 = ZT + " + dt_fo"
     mc = mcomps["B01"]
     sk = L.circles(design, mc, mc.xYConstructionPlane, ("x", "y"), 0, "HOLES - SPIGOT ROUND AND SLOT ENDS",
                    [("sp_x1", "sp_y"), ("sp_x1 + sp_dx - (sp_slot - sp_hole) / 2", "sp_y"),
@@ -476,7 +482,7 @@ ANCHORS = [
     ("BACK", 3, "dt_xr - pod_w / 2"), ("CATCH", 5, "dt_zb"), ("CATCH", 2, "dt_zb - ca_h"),
     ("PS", 1, "-glass_y + glass_t / 2"), ("STOP", 2, "dt_zb - stop_h"),
     # the frame's sides, each on the tube that reaches it (every tube its own component, D-120)
-    ("B02", 3, "dt_xr - pod_w / 2"), ("B01", 2, "dt_zb + dt_skin_t"), ("B03", 5, "pod_h - dt_skin_t"),
+    ("B02", 3, "dt_xr - pod_w / 2"), ("B01", 2, "dt_zb + dt_fo"), ("B03", 5, "pod_h - dt_fo"),
     ("B04", 4, "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t"),
 ]
 
@@ -527,7 +533,8 @@ def export_all(app):
         ("351201", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1, bonded to "
          "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
          "D-12, D-49; skeleton DT shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
-         "; bond to the frame per the joints register's ACP bond spec"),
+         "; bond to the frame per the joints register's ACP bond spec (D-137): one 12 x 3 joint on every tube, the "
+         "tubes 3 mm off the skin"),
         (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "weldment assembly: welded frame, %d tubes as %d parts (parts list %s; cut list %s), "
          "TIG-welded" % (len(members), len(member_rows), WELD_BOM_REL.split("/")[-1], CUT_REL.split("/")[-1]),
          "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5, finish: mill finish (hidden, D-79)", None, "",
