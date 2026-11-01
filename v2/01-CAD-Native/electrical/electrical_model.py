@@ -59,6 +59,8 @@ PARAMS = [
     ("grm_d", "19.1 mm", "mm", "source",
      "Heyco 2836 Shorty Bushing SB 750-625: 19.1 mm hole, panels to 1.6 mm, passes 15.9 mm (maker page, read 2026-10-31); 0.5 mm fit HOLD H-ELE-01"),
     ("grm_s", "12 mm", "mm", "assumption", "felt-only hole for a single cable (no steel, so no bushing)"),
+    # F-188 (2026-11-01): CEILING's tray 513101 back hole reads this same expression from the skeleton's values;
+    # test_ceiling_crossing_heights_drift fails if the skeleton's numbers move it
     ("z_xc", "z_cf + cass_t - lip_w - grm_s / 2 - 2 mm", "mm", "calculation",
      "the ceiling route's crossing out of B4-CASS, Z 2330: its felt-only Ø12 hole 2 mm below the cassette's 12 mm top lip (no hole through a lip, D-69; WALL's fit check) and level with the hole in the ceiling cassette's back return"),
     ("cs_h", "5.5 mm", "mm", "calculation",
