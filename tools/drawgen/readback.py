@@ -212,6 +212,21 @@ def all_strokes(page, sheet_h):
     return segs
 
 
+MAKER = re.compile(r"\b(made|created|drawn|designed|generated|produced|prepared)\s+by\s+([^\s,;]+)", re.I)
+
+
+def note_makers(doc):
+    """[(sheet, phrase)] for each 'made by X' and the like on the sheets, other than the title block's CREATED BY
+    Autonomous: the Lead's ruling (2026-11-01) is that a note names the source, never an agent, a role or a script as
+    the maker."""
+    out = []
+    for n, page in enumerate(doc, start=1):
+        for m in MAKER.finditer(page.get_text()):
+            if m.group(2).strip(":.") != "Autonomous":
+                out.append((n, " ".join(m.group(0).split())))
+    return out
+
+
 def clashes(doc):
     """On every page: texts that touch each other, texts that touch a part outline, and lines that run through a
     text's letters (a leader or a dimension line that stops at the text doesn't): [(page, what)]."""
@@ -255,9 +270,11 @@ def step_holes(step_path, pn):
         if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")):
             continue
         s = sf.solid(inst["solid"])
+        fr = inst["frame"]
+        occ = tuple(round(v, 3) for v in tuple(fr.o) + tuple(fr.x) + tuple(fr.y))   # the occurrence's placement
         for h in s.holes:
-            hm = h.moved(inst["frame"])
-            out.append({"c": tuple(hm.center), "axis": tuple(hm.axis), "dia": hm.diameter})
+            hm = h.moved(fr)
+            out.append({"c": tuple(hm.center), "axis": tuple(hm.axis), "dia": hm.diameter, "occ": occ})
     return out
 
 
@@ -369,8 +386,13 @@ def check(pdf_path, step_path=None, verbose=False):
         used.update(j for j, h in enumerate(holes) if abs(h["dia"] - f["dia"]) < 0.011 and
                     abs(abs(dot(h["axis"], v["n"])) - 1) < 1e-6 and
                     math.hypot(dot(sub(h["c"], O), v["x"]) - best[2], dot(sub(h["c"], O), v["y"]) - best[3]) < TOL)
+    if data.get("occurrences", 1) > 1 and used:
+        drawn_occ = {holes[j].get("occ") for j in used}
+        skip = {j for j, h in enumerate(holes) if h.get("occ") not in drawn_occ}
+    else:
+        skip = set()
     for j, h in enumerate(holes):
-        if j not in used:
+        if j not in used and j not in skip:
             fails.append("STEP hole Ø%.2f at (%.2f, %.2f, %.2f) is in no hole table" % ((h["dia"],) + h["c"]))
     # 2. drawn circles
     circles = pdf_circles(page, data["sheet_h"])
@@ -425,6 +447,8 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("PDF author is not Autonomous")
     if not re.search(r"CREATED BY\s+Autonomous\b", page.get_text()):
         fails.append("the title block's CREATED BY is not Autonomous")
+    for pg, phrase in note_makers(doc):
+        fails.append("sheet %d: a note names a maker ('%s')" % (pg, phrase))
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
     two_wall = bool(two_wall_pairs(data["features"]))
