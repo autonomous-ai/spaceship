@@ -34,7 +34,7 @@ Built by `electrical_parts_cad.py` in one Fusion run (`--arg parts=front,hub,bod
 
 **HOLD features** (PM ruling 2026-11-01: model and draw now, mark what waits on module data):
 - 711001: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data) aren't cut yet.
-- 711002: the two 86-plate openings (UTEN codes, H-ELE-04).
+- 711002: the GFCI receptacle's decorator opening and the two keystone openings (D-133: the picked parts' drawings set them, H-ELE-04).
 - 711005: the hub window, the button and knob holes (ISS-060) and the fixing holes (CEILING's column).
 
-**Bought items** (supplies, RCBO, inlet, sockets, plugs and so on) aren't modelled, by guideline §4.4's rule for bought parts. They are in the parts list with maker and SKU, or HOLD.
+**Bought items** (supplies, breaker, inlet, GFCI receptacle, plugs and so on) aren't modelled, by guideline §4.4's rule for bought parts. They are in the parts list with maker and SKU, or HOLD.
