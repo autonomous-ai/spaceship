@@ -179,12 +179,13 @@ def frame_spec(key, half):
         "with the bond prep (D-79). Frame %s, %.2f wide (skeleton half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
         "Datums: A = the closing face (the seam member's outer face, %.2f from X 0); B = the front member's front "
         "face (Y %.2f); C = the frame's underside (Z %.2f)." % (v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)),
-        "Members, each its own part (D-120; cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side %s and seam %s "
-        "%.2f; front %s and back %s %.2f, at the outer face; cross member 1 %s and the plain cross members 412001 "
-        "(X2, X3) %.2f, square cut; cross members at %.2f pitch from B." % (
-            M.PARTS["m_side_" + half.lower()][0], M.PARTS["m_seam_" + half.lower()][0], v["wall_depth"],
+        "Members, each its own part (D-120; cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side %s (common: "
+        "C2's is C1's turned upside down) and seam %s %.2f; front %s and back %s %.2f, at the outer face; cross "
+        "member 1 %s (common: C2's is C1's turned end for end) and the plain cross members 412001 (X2, X3) %.2f, "
+        "square cut; cross members at %.2f pitch from B." % (
+            M.PARTS["m_side"][0], M.PARTS["m_seam_" + half.lower()][0], v["wall_depth"],
             M.PARTS["m_front_" + half.lower()][0], M.PARTS["m_back_" + half.lower()][0], v["half_fw"],
-            M.PARTS["m_x1_" + half.lower()][0], v["half_fw"] - 2 * v["tube_w"], v["fr_pitch"]),
+            M.PARTS["m_x1"][0], v["half_fw"] - 2 * v["tube_w"], v["fr_pitch"]),
         "Corners mitred from the outer corner to the inner corner (D-117): 45 deg at the front; at the back the "
         "back member is cut 26.57 deg off square and the side and seam members 63.43 deg. Member joints: internal "
         "corner cleats and plug cleats in the T joints (831003 to 831006), crimped, with structural adhesive; "
@@ -223,27 +224,6 @@ def skin_spec(key, half):
     return spec(key, 0.2, notes, views=FRAME_VIEWS, scales={"iso": 0.1})
 
 
-def fill_table():
-    """D-89 tabulated drawing: the three fill strips (one drawing, drawn from 513301)."""
-    v = _vals()
-    rows, seen = [], set()
-    for key, bay, box, notches in M.fill_strips(v):
-        if key in seen:
-            continue
-        seen.add(key)
-        b = [M.ev(v, e) for e in box]
-        ns = []
-        for _n, nb in notches:
-            n = [M.ev(v, e) for e in nb]
-            if M.overlap(tuple(b), tuple(n)):
-                ns.append("%.1f x %.1f at X' %.1f, %s edge" % (min(n[1], b[1]) - max(n[0], b[0]), min(n[3], b[3]) - max(n[2], b[2]),
-                                                             (max(n[0], b[0]) + min(n[1], b[1])) / 2,
-                                                             "front" if abs(max(n[2], b[2]) - b[2]) < 1e-6 else "back"))
-        rows.append("%s %s: %.1f x %.1f x %.0f, notches %s." % (
-            M.PARTS[key][0], M.PARTS[key][1].split(" - ")[-1], b[1] - b[0], b[3] - b[2], v["fill_t"], "; ".join(ns) or "none"))
-    return rows
-
-
 def tabulated(sp, drawing, covers, extra_notes):
     sp = dict(sp)
     sp["drawing"] = drawing
@@ -262,9 +242,8 @@ SPECS.update({
 SPECS["skins"] = tabulated(skin_spec("skin_c2", "C2"), "411302_P01_CEILING-SKIN-C1-C2_DWG", ["411301"], [
     "TABULATED (D-89): drawn as 411302 C2. 411301 C1 is the same outline mirrored about X 0, with no roof slot.",
 ])
-SPECS["fills"] = tabulated(SPECS["fill_a"], "513301_P01_LINING-FILL-CEILING-BAYS-A-B-C_DWG", ["513302", "513303"], [
-    "TABULATED (D-89): drawn as 513301. Sizes X' x Y' x thickness and notches (X' from the strip's centre):",
-] + fill_table())
+# D-128 (PM ruling 2026-11-01): the notched fill strips 513301 to 513303 need no drawing either: each DXF gives the
+# full outline with every notch, and the parts-list row the material, density, thickness, tolerance and number
 
 # D-89 part 4 (PM ruling 2026-11-01): flat parts cut from sheet with no bends or machined
 # features (the two skins) need no drawing: their DXF and parts-list rows define them
@@ -290,4 +269,4 @@ _ga = spec("ceiling", 0.1, [
 ], views={"front": (300, 470), "top": (300, 250), "left": (620, 470), "iso": (620, 240)}, scales={"iso": 0.05})
 _ga["design"] = "410000_P01_CEILING_CAD"
 SPECS["ga"] = _ga
-ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib", "fills"]
+ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib"]

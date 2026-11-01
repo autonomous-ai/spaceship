@@ -627,15 +627,41 @@ def cross_member(parent, ctx):
     return occ, comp
 
 
+def place_turned(parent, occ, key, name, ctx):
+    """C2's copy of a common member (M.TURNED): a rigid joint takes the copy's origin to M.turned_origin and turns
+    it 180 deg about the pod's Y axis (the side member, upside down) or Z axis (cross member 1, end for end). Which
+    of the joint's flip and angle gives that turn is read back from the copy's transform, not assumed; a turn none
+    of them gives stops the build."""
+    j = place(parent, occ, M.turned_origin(key), name, ctx)
+    want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[M.TURNED[key]]
+    tried = []
+    for flip, angle in ((False, "180 deg"), (True, "0 deg"), (True, "180 deg")):
+        j.isFlipped = flip
+        j.angle.expression = angle
+        m = occ.transform2
+        got = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
+        tried.append((flip, angle, got))
+        if all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
+            print("%s: turned about %s by the joint's flip %s, angle %s" % (name, M.TURNED[key].upper(), flip, angle))
+            return j
+    raise RuntimeError("no joint flip and angle turns %s about %s: %s" % (name, M.TURNED[key], tried))
+
+
 def build_frame_members(fcomp, half, ctx):
     """The members of one frame as their own components under fcomp (D-120), each its outline in plan
     with the mitred corners (D-117) extruded and shelled into a tube; then the site-joint holes
     (J-CEIL-01, J-CEIL-02, joints register 2.9), the spigot hole and slot, the cross members'
     cleat slots (D-117) and the 1 x 45 lead-in on the closing face, each cut in its own member.
     The cleats themselves (831003 to 831006) are placed by reference when the Joints Engineer's
-    models land. Returns {code: (component, body)}."""
+    models land. The side member and cross member 1 are one part each for both frames (Control's allocation):
+    built in C1, and in C2 placed as C1's turned copy when C1 is in the same design (place_turned); a C2-only
+    design builds them in place. A copy carries C1's holes and slots, so none are cut in it here.
+    Returns {code: (component, body or None for a copy)}."""
     s = M.side_sign(half)
     members = {}
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
     for code, key, bname, axis, pts, z0, z1 in M.member_shapes(half):
         label = "%s %s" % (half, bname)
         if key == "m_cross":
@@ -644,14 +670,23 @@ def build_frame_members(fcomp, half, ctx):
             place(fcomp, occ, (M.xr(half, "tube_w", "half_fw - tube_w")[0], M.cross_y0(k), z0), label, ctx)
             members[code] = (comp, None)
             continue
+        if key in M.TURNED and key in shared:
+            occ = fcomp.occurrences.addExistingComponent(shared[key], adsk.core.Matrix3D.create())
+            place_turned(fcomp, occ, key, label, ctx)
+            members[code] = (shared[key], None)
+            continue
         _occ, comp = new_comp(fcomp, key, ctx)
         body = poly_xy_body(comp, label, pts, z0, z1, ctx)
         hollow_ends(comp, body, axis, label)
         set_material(comp, ctx, "al")
+        if key in M.TURNED:
+            shared[key] = comp
         members[code] = (comp, body)
     into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
     for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
         comp, body = members[member]
+        if body is None:
+            continue                     # a turned copy: its holes are C1's
         label = "%s %s" % (half, name)
         # one sketch per hole: hole k at the row's first centre + k pitches (the start, pitch and
         # count are the skeleton's named values, so a rebuild follows them; Fusion's identical
@@ -682,6 +717,8 @@ def build_frame_members(fcomp, half, ctx):
                    "%s + 2 * tube_t" % sz, ctx)
     for name, member, xf, yc, zc, wy, hz in M.cleat_slots(half):
         comp, body = members[member]
+        if body is None:
+            continue                     # a turned copy: its slots are C1's
         slot_cut_x(comp, body, "%s %s %s" % (half, member, name), xf, yc, zc, wy, hz, "2 * tube_t",
                    into[(member, "in")], ctx)
     # the closing face's lead-in runs the seam member's full length now that its corners are mitred

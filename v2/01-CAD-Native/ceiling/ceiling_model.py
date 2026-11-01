@@ -146,7 +146,8 @@ CEILING_PARAMS = [
 # Part numbers: CEILING 41xxxx, ceiling cassette 5103xx (assemblies) and
 # 513xxx (parts), LINING bought items 518xxx (PM ruling 2026-10-31,
 # conventions section 6). Checked against the reserved list by the tests.
-RESERVED = {"110006", "110002", "120001", "211000", "210001", "210003", "210005", "350011", "830001", "830005"}
+RESERVED = {"110006", "110002", "120001", "211000", "210001", "210003", "210005", "350011", "830001", "830005",
+            "412201", "412205"}   # the last two: cancelled by Control (C2's side and cross member 1 are C1's), never reused
 
 # key: part number, name, Vietnamese name, kind (MP made, PI bought, HS
 # assembly, HOLD envelope), material key
@@ -158,16 +159,14 @@ PARTS = {
     # member numbers from the master BOM's allocation (v2/04-BOM/number-allocation.csv)
     "frame_c1": ("411101", "CEILING - PANEL FRAME - C1", "Trần trái - khung nhôm", "HS", None),
     "frame_c2": ("411102", "CEILING - PANEL FRAME - C2", "Trần phải - khung nhôm", "HS", None),
-    "m_side_c1": ("412101", "CEILING - FRAME SIDE MEMBER - C1", "Trần trái - thanh cạnh của khung", "MP", "al"),
+    "m_side": ("412101", "CEILING - FRAME SIDE MEMBER - COMMON", "Trần - thanh cạnh của khung (dùng chung)", "MP", "al"),
     "m_seam_c1": ("412102", "CEILING - FRAME SEAM MEMBER - C1", "Trần trái - thanh mối nối của khung", "MP", "al"),
     "m_front_c1": ("412103", "CEILING - FRAME FRONT MEMBER - C1", "Trần trái - thanh trước của khung", "MP", "al"),
     "m_back_c1": ("412104", "CEILING - FRAME BACK MEMBER 40 X 40 - C1", "Trần trái - thanh sau 40x40 của khung", "MP", "al"),
-    "m_x1_c1": ("412105", "CEILING - FRAME CROSS MEMBER 1 - C1", "Trần trái - thanh ngang 1 của khung", "MP", "al"),
-    "m_side_c2": ("412201", "CEILING - FRAME SIDE MEMBER - C2", "Trần phải - thanh cạnh của khung", "MP", "al"),
+    "m_x1": ("412105", "CEILING - FRAME CROSS MEMBER 1 - COMMON", "Trần - thanh ngang 1 của khung (dùng chung)", "MP", "al"),
     "m_seam_c2": ("412202", "CEILING - FRAME SEAM MEMBER - C2", "Trần phải - thanh mối nối của khung", "MP", "al"),
     "m_front_c2": ("412203", "CEILING - FRAME FRONT MEMBER - C2", "Trần phải - thanh trước của khung", "MP", "al"),
     "m_back_c2": ("412204", "CEILING - FRAME BACK MEMBER 40 X 40 - C2", "Trần phải - thanh sau 40x40 của khung", "MP", "al"),
-    "m_x1_c2": ("412205", "CEILING - FRAME CROSS MEMBER 1 - C2", "Trần phải - thanh ngang 1 của khung", "MP", "al"),
     "m_cross": ("412001", "CEILING - FRAME CROSS MEMBER - PLAIN - COMMON", "Trần - thanh ngang trơn của khung (dùng chung)", "MP", "al"),
     "skin_c1": ("411301", "CEILING - SKIN - C1", "Trần trái - tấm ốp alu", "MP", "acp"),
     "skin_c2": ("411302", "CEILING - SKIN - C2", "Trần phải - tấm ốp alu (có khe thoát gió)", "MP", "acp"),
@@ -183,15 +182,33 @@ PARTS = {
     "catch": ("518002", "LINING - CEILING SAFETY CATCH", "Dây an toàn cassette trần", "HOLD", "hold"),
 }
 
+# the frame members' part keys (D-120): the side member and cross member 1 are one part each for both
+# frames (Control's allocation 2026-11-01: C2's is C1's turned over; 412201 and 412205 cancelled)
+MEMBER_KEYS = ("m_side", "m_x1", "m_seam_c1", "m_front_c1", "m_back_c1", "m_seam_c2", "m_front_c2", "m_back_c2", "m_cross")
+# The common members' C2 copies: C1's part turned 180 deg about the pod's Y axis (the side member, upside down:
+# every feature is centred across its 40 face and the mitres are vertical) or Z axis (cross member 1, end for
+# end: its one hanger hole is centred across its width, at the same distance from the seam end). The copy's
+# origin (the pod's, as the part is built in place in C1) goes to turned_origin(key); test_ceiling_offline.py
+# proves every feature of C2's own layout lands on C1's turned.
+TURNED = {"m_side": "y", "m_x1": "z"}
+
+
+def turned_origin(key):
+    """Where C2's copy of a common member takes the pod origin: turning about Y through the frame's mid
+    depth sends it to Z = 2 x (ZF0 + frame_t / 2); about Z through cross member 1's centre line, to
+    Y = 2 x its centre."""
+    if TURNED[key] == "y":
+        return ("0 mm", "0 mm", "2 * %s + frame_t" % ZF0)
+    return ("0 mm", "2 * (%s) + tube_w" % cross_y0(1), "0 mm")
+
+
 # finish and process per part (master BOM columns); bought HOLD items' masses come from
 # the joints register (H-10, H-11)
 FINISH = {
     "frame_c1": "", "frame_c2": "",
     "skin_c1": "ACP EV3038 Dark Yellow (D-12)", "skin_c2": "ACP EV3038 Dark Yellow (D-12)", "tray": "galvanised (Z coating, grade to confirm)",
     "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
-    **{k: "mill finish with the bond prep (D-79)" for k in ("m_side_c1", "m_seam_c1", "m_front_c1", "m_back_c1", "m_x1_c1",
-                                                             "m_side_c2", "m_seam_c2", "m_front_c2", "m_back_c2", "m_x1_c2",
-                                                             "m_cross")},
+    **{k: "mill finish with the bond prep (D-79)" for k in MEMBER_KEYS},
 }
 PROCESS = {
     "frame_c1": "members joined with internal cleats per D-115 and D-117 (corner and T cleats, crimped, with structural adhesive; no welds), in a jig",
@@ -200,9 +217,7 @@ PROCESS = {
     "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
     # the members (D-120): cut from 6063-T6 tube; mitres per D-117; holes and slots CNC or jig drilled
     **{k: "tube cut to length (mitred ends per D-117 where it meets the corners), CNC or jig drilled and slotted "
-          "(holes +/-0.2 from the spigot hole, R-J6)" for k in ("m_side_c1", "m_seam_c1", "m_front_c1", "m_back_c1", "m_x1_c1",
-                                                              "m_side_c2", "m_seam_c2", "m_front_c2", "m_back_c2", "m_x1_c2",
-                                                              "m_cross")},
+          "(holes +/-0.2 from the spigot hole, R-J6)" for k in MEMBER_KEYS},
 }
 HOLD_MASS = {   # kg each, status, source
     "clip": (0.040, "assumption", "joints register H-10 and PM ruling 2026-10-31: 0.040 kg each (D-81's working figure) until a named clip is weighed (HOLD-08)"),
@@ -358,7 +373,7 @@ def member_shapes(half):
     ybo, ybi = YB, "%s - back_w" % YB                    # back member: back and front faces
     h = half.lower()
     out = [
-        ("SIDE", "m_side_" + h, "SIDE MEMBER", "y", [(xso, yfo), (xso, ybo), (xsi, ybi), (xsi, yfi)]),
+        ("SIDE", "m_side", "SIDE MEMBER", "y", [(xso, yfo), (xso, ybo), (xsi, ybi), (xsi, yfi)]),
         ("SEAM", "m_seam_" + h, "SEAM MEMBER", "y", [(xmo, yfo), (xmo, ybo), (xmi, ybi), (xmi, yfi)]),
         ("FRONT", "m_front_" + h, "FRONT MEMBER", "x", [(xso, yfo), (xmo, yfo), (xmi, yfi), (xsi, yfi)]),
         ("BACK", "m_back_" + h, "BACK MEMBER 40X40", "x", [(xso, ybo), (xmo, ybo), (xmi, ybi), (xsi, ybi)]),
@@ -366,7 +381,7 @@ def member_shapes(half):
     for k in range(1, 4):
         y0 = cross_y0(k)
         y1 = "%s + tube_w" % y0
-        out.append(("X%d" % k, ("m_x1_" + h) if k == 1 else "m_cross", "CROSS MEMBER %d" % k, "x",
+        out.append(("X%d" % k, "m_x1" if k == 1 else "m_cross", "CROSS MEMBER %d" % k, "x",
                     [(xsi, y0), (xmi, y0), (xmi, y1), (xsi, y1)]))
     return [(code, key, name, axis, pts, ZF0, ZF1) for code, key, name, axis, pts in out]
 

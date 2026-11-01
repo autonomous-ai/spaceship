@@ -205,7 +205,9 @@ def _sizes():
             for k, _bay, box, _n in M.fill_strips(v):
                 if k == key:
                     b = [M.ev(v, e) for e in box]
-                    return "%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]), "cut +/-2 (assumption); notches per the tabulated drawing"
+                    return ("%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]),
+                            "cut +/-2 (assumption); no drawing (D-128): %s gives the full outline with every notch"
+                            % fname(key, "DXF", "dxf"))
             return "", ""
         return f
     return {
@@ -220,9 +222,8 @@ def _sizes():
                                                   "cut length +/-0.5, mitre angles +/-0.25 deg (assumption); holes and slots +/-0.2 "
                                                   "from the round spigot hole (R-J6)")
                                                  for c, _k, _n, sec, L, ends, _x in member_rows(v, h) if c == code)))(code, h)
-           for h in ("C1", "C2") for code, key in (("SIDE", "m_side_" + h.lower()), ("SEAM", "m_seam_" + h.lower()),
-                                                    ("FRONT", "m_front_" + h.lower()), ("BACK", "m_back_" + h.lower()),
-                                                    ("X1", "m_x1_" + h.lower()))},
+           for h, code, key in [("C1", "SIDE", "m_side"), ("C1", "X1", "m_x1")]
+           + [(h, code, "m_%s_%s" % (code.lower(), h.lower())) for h in ("C1", "C2") for code in ("SEAM", "FRONT", "BACK")]},
         "m_cross": lambda v: ("20 x 40 x 1.2 tube, %.2f long, square cut, no holes" % (v["half_fw"] - 2 * v["tube_w"]),
                               "cut length +/-0.5 (assumption)"),
         "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
@@ -248,7 +249,8 @@ def parts_list(v, mass):
     q = {  # quantity per parent, parent
         "ceiling": (1, None), "assy_c1": (1, "ceiling"), "assy_c2": (1, "ceiling"),
         "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin_c1": (1, "assy_c1"), "skin_c2": (1, "assy_c2"),
-        **{"m_%s_%s" % (m, h): (1, "frame_" + h) for h in ("c1", "c2") for m in ("side", "seam", "front", "back", "x1")},
+        **{"m_%s_%s" % (m, h): (1, "frame_" + h) for h in ("c1", "c2") for m in ("seam", "front", "back")},
+        "m_side": (1, "frame_c1|frame_c2"), "m_x1": (1, "frame_c1|frame_c2"),     # one part each for both frames
         "m_cross": (2, "frame_c1|frame_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
         "clip": (6, "cassette"), "catch": (2, "cassette"),
@@ -256,8 +258,8 @@ def parts_list(v, mass):
     for key, _bay, _b, _n in M.fill_strips():
         q[key] = (q.get(key, (0, "cassette"))[0] + 1, "cassette")
     per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin_c1": 1, "skin_c2": 1,
-               "cassette": 2, "m_cross": 4,
-               **{"m_%s_%s" % (m, h): 1 for h in ("c1", "c2") for m in ("side", "seam", "front", "back", "x1")}}
+               "cassette": 2, "m_cross": 4, "m_side": 2, "m_x1": 2,
+               **{"m_%s_%s" % (m, h): 1 for h in ("c1", "c2") for m in ("seam", "front", "back")}}
     for k in [k for k in q if k not in per_pod]:
         per_pod[k] = q[k][0] * 2
     rows = []
@@ -376,7 +378,8 @@ def cut_list(v):
 def flat_cut_list(v):
     """Felt and fill pieces with size, material, tolerance and part number: D-89 (PM ruling
     2026-11-01) lets a plain knife-cut felt or fill rectangle go without a drawing when this
-    list gives them; the notched fill strips also have their tabulated drawing."""
+    list gives them, and D-128 (PM ruling 2026-11-01) the notched fill strips too: their DXF gives the full outline
+    with every notch, and this row the material, density, thickness, tolerance and part number."""
     rows = []
     fw = v["cs_w"] - 2 * (v["tray_t"] + v["felt_c"])
     fd = v["cs_d"] - 2 * (v["tray_t"] + v["felt_c"])
@@ -396,7 +399,8 @@ def flat_cut_list(v):
         n = sum(1 for _n, nb in notches if M.overlap(tuple(b), tuple(M.ev(v, e) for e in nb)))
         rows.append({"part_number": pn, "name": name, "name_vi": vn, "material": M.MATERIALS[mat][0],
                      "size_mm": "%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]), "qty_per_pod": 2,
-                     "tolerance": "cut +/-2 (assumption)", "drawing": "513301_P01_LINING-FILL-CEILING-BAYS-A-B-C_DWG (tabulated, D-89)",
+                     "tolerance": "cut +/-2 (assumption)",
+                     "drawing": "none (D-128: its DXF gives the full outline with every notch)",
                      "cut_file": fname(key, "DXF", "dxf"), "note": "%d notches clearing clips and catches by fill_c" % n})
     return rows
 

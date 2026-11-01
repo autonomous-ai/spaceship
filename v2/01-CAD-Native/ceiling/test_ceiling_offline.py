@@ -454,6 +454,45 @@ class Frames(unittest.TestCase):
         self.assertAlmostEqual(x1["C1"], x1["C2"])
 
 
+class TurnedCopies(unittest.TestCase):
+    """Control's allocation (2026-11-01): the side member 412101 and cross member 1 412105 are one part each for
+    both frames, C2's being C1's turned over (412201 and 412205 cancelled). The build places C2's as C1's part
+    turned 180 deg about Y or Z with the pod origin sent to M.turned_origin: every feature of C2's own layout must
+    land on C1's moved that way (outline, joint holes, cleat slots), or the copy would be the wrong part."""
+
+    def move(self, key, p):
+        x, y, z = p
+        tx, ty, tz = (ev(e) for e in M.turned_origin(key))
+        return (-x + tx, y + ty, -z + tz) if M.TURNED[key] == "y" else (-x + tx, -y + ty, z + tz)
+
+    def features(self, half, code):
+        out = []
+        for c, _k, _n, _a, pts, z0, z1 in M.member_shapes(half):
+            if c == code:
+                out += [("corner", (ev(x), ev(y), ev(z))) for x, y in pts for z in (z0, z1)]
+        names = {n for n, m, *_rest in M.joint_holes(half) if m == code}
+        out += [("hole %s %.2f" % (n, d), xyz) for n, d, xyz in M.hole_positions(VALS, half) if n in names]
+        out += [("slot %s" % n, (ev(xf), ev(yc), ev(zc))) for n, m, xf, yc, zc, _w, _h in M.cleat_slots(half) if m == code]
+        return out
+
+    def test_c2_is_c1_turned(self):
+        for key, code in (("m_side", "SIDE"), ("m_x1", "X1")):
+            c1, c2 = self.features("C1", code), self.features("C2", code)
+            self.assertEqual(len(c1), len(c2), code)
+            self.assertGreater(len([f for f in c1 if f[0] != "corner"]), 0, "%s has features to compare" % code)
+            for kind, p in c1:
+                q = self.move(key, p)
+                hits = [f for f in c2 if f[0].split()[0] == kind.split()[0] and
+                        max(abs(a - b) for a, b in zip(f[1], q)) < 1e-6]
+                self.assertTrue(hits, "%s: C1's %s at %s turned is %s, not on C2's" % (code, kind, p, q))
+
+    def test_one_number_each(self):
+        for key in M.TURNED:
+            self.assertEqual([c for h in ("C1", "C2") for c, k, *_r in M.member_shapes(h) if k == key],
+                             ["SIDE", "SIDE"] if key == "m_side" else ["X1", "X1"])
+        self.assertFalse({"412201", "412205"} & {v[0] for v in M.PARTS.values()})
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()
