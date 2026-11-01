@@ -550,6 +550,13 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                       for k in range(c.get("copies", 1))]
             comps_flat[hp] = dict(c, bodies=copies)
     rows += hardware_rows(frame_flat, comps_flat, back, lower, prm)
+    rows += ledge_rows(rep, prm)
+    # every part in the CAD gets a row: a component this list doesn't know is refused, never dropped
+    listed = {r["part_number"] for r in rows[1:]}
+    unlisted = sorted({c["part_number"] for c in rep["components"] if not c["is_root"] and c["bodies"]
+                       and not c["part_number"].startswith("NO-PN")} - listed - {pn})
+    if unlisted:
+        raise SystemExit("%s: components in the CAD with no parts-list row: %s" % (pn, ", ".join(unlisted)))
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
                   material="see the parts below", qty=1, unit="pc",
@@ -558,6 +565,70 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                   status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
                   note="outer panel, bonded and hardware-fitted at the factory; every part its own component (D-120); "
                        "the lining cassette is a separate part (D-17)")
+    return rows
+
+
+LEDGE_RULING = "the Lead's ruling of 2026-11-01 (WALL group): a wall cassette's weight sits on a ledge, not on clip shear"
+# the load strip on a lower cassette's top edge (Joints' pick): its register number and name once Control and Joints
+# post them; until then the edge keeps the 848012 row it had
+STRIP = None
+
+
+def ledge_rows(rep, prm):
+    """The cassette ledge's rows (LEDGE_RULING), read from the CAD's own components: the angle (made by WALL), the
+    pad on its leg and the blind rivets that hold it to the bottom rail (bought; HOLD until Joints picks them).
+    None on an upper panel or a report from before the ledge."""
+    comps = [c for c in rep["components"] if not c["is_root"] and c["bodies"]]
+    ledge = [c for c in comps if "CASSETTE LEDGE" in c["name"] and "PAD" not in c["name"]]
+    if not ledge:
+        return []
+    lg, pad = ledge[0], [c for c in comps if "LEDGE PAD" in c["name"]]
+    rv = [c for c in comps if "BLIND RIVET" in c["name"]]
+    b = lg["bodies"][0]
+    bx = b["box"]
+    dims = sorted(round(bx[i + 3] - bx[i], 2) for i in range(3))
+    rows = [row(level=1, part_number=lg["part_number"], name=en_name(lg), name_vi=vi_name(lg["description"],
+                                                                                          lg["part_number"]),
+                kind="MP", material="galvanized steel sheet %g, DX51D+Z (EN 10346), Z100" % prm.get("ledge_t", 1.0),
+                finish="pre-galvanized sheet, Z100; cut edges as cut (assumption)",
+                process="laser cut from its DXF, folded 90 degrees on a press brake (inside radius 1 x t); riveted to "
+                        "the bottom rail's room face with %d blind rivets after the frame's welding and touch-up "
+                        "(J-FRAME-01); its pad bonded on the leg" % int(round(prm.get("ledge_rivet_n", 6))),
+                qty=1, unit="pc", size_mm="%g x %g x %g" % tuple(dims[::-1]),
+                tolerance="length ±0.5, fold 90° ±1°, rivet hole positions ±0.2 from the ends (assumption)",
+                mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"], 3),
+                mass_status="calculation: CAD at 7850 kg/m3 (steel; zinc not counted)", status="DRAFT",
+                source="CAD; " + LEDGE_RULING,
+                note="carries the lower cassette and the upper one standing on it; the clips only hold; its leg "
+                     "%g under the frame's bottom, 6 inboard of the base band's inner face" % (
+                         prm.get("ledge_pad_t", 2.26)))]
+    if pad:
+        p = pad[0]
+        pb = p["bodies"][0]["box"]
+        length = round(max(pb[i + 3] - pb[i] for i in range(3)), 1)
+        rows.append(row(level=1, part_number=p["part_number"], name=en_name(p),
+                        name_vi=vi_name(p["description"], p["part_number"]), kind="PI",
+                        material="a soft resilient pad, %g wide and %g thick (HOLD: Joints picks it)" % (
+                            prm.get("ledge_pad_w", 18.0), prm.get("ledge_pad_t", 2.26)),
+                        finish="as supplied", maker="HOLD: Joints picks it", qty=round(length / 1000.0, 3), unit="m",
+                        mass_each_kg=round(p["bodies"][0]["mass_kg"] / (length / 1000.0), 4),
+                        mass_total_kg=round(p["bodies"][0]["mass_kg"], 4),
+                        mass_status="calculation: CAD envelope at an assumed 240 kg/m3 (HOLD)", status="DRAFT",
+                        source="CAD; " + LEDGE_RULING,
+                        note="bonded on the ledge's leg under the tray's bottom return: the cassette rests on it, so "
+                             "the lining stays where it was and floats (D-17)"))
+    if rv:
+        r = rv[0]
+        n = r.get("copies", 1)
+        m = r["bodies"][0]["mass_kg"]
+        rows.append(row(level=1, part_number=r["part_number"], name=en_name(r),
+                        name_vi=vi_name(r["description"], r["part_number"]), kind="PI",
+                        material="steel, zinc plated (HOLD: Joints picks the rivet)", finish="zinc plated",
+                        maker="HOLD: Joints picks it", qty=n, unit="pc", mass_each_kg=round(m, 5),
+                        mass_total_kg=round(m * n, 4),
+                        mass_status="calculation: CAD envelope (HOLD)", status="DRAFT", source="CAD; " + LEDGE_RULING,
+                        note="hold the ledge to the bottom rail's room face, set after the frame's welding and "
+                             "touch-up (J-FRAME-01)"))
     return rows
 
 
@@ -697,7 +768,18 @@ def cassette_rows(rep):
         hw_row("848011", 0.2, "m", "4 pads of 50 mm to line the cassette up (assumption); carries no load (D-47)"),
     ]
     seal, where = 0.0, []
-    if lower:
+    if lower and STRIP:
+        # the upper cassette stands on this one's top edge through the load strip (the Lead's ledge ruling of
+        # 2026-11-01; Joints' pick: PORON 4701-40, 320 grade, 2.36 slit 10, about 2.31 under the upper cassette)
+        rows.append(row(level=1, part_number=STRIP["pn"], name=STRIP["name"], name_vi=STRIP["vi"], kind="PI",
+                        material=STRIP["material"], finish="as supplied", maker=STRIP["maker"],
+                        qty=round(length / 1000.0, 3), unit="m", mass_each_kg=STRIP["kg_per_m"],
+                        mass_total_kg=round(STRIP["kg_per_m"] * length / 1000.0, 4),
+                        mass_status="calculation: 10 x 2.36 at 320 kg/m3", status="DRAFT",
+                        source="joints register (Joints' pick, 2026-11-01); " + LEDGE_RULING,
+                        note="on the top edge (%g), PSA side down: the upper cassette stands on it across the 2.26 "
+                             "joint, so its weight goes down to the ledge and the clips only hold" % length))
+    elif lower:
         seal += length
         where.append("the top edge against the upper cassette (%g)" % length)
     if back and pn[-2:] in ("01", "03"):

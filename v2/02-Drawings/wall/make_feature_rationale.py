@@ -264,7 +264,22 @@ FAMILIES = {
         "%s 3.2, FR-01, FR-06, FR-07; PM rulings R-J3 (40 x 40), R-J15" % REG,
         "hole edge 15.2 from each side face of the 40 mm wall; the Ø20 stop washer (Y 814 to 834) lies on it",
         "Ø0.4 from F03, matched by the back panel's FR-07 holes", "CNC or jig; T-01, T-02", "source (hole); PROPOSED (positions)"),
+    # the cassette ledge (the Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge, not on clip shear)
+    ("RAIL - BOTTOM", 4.1, "x"): (
+        "F50", "Cassette ledge rivet holes: the ledge's blind rivets through the bottom rail's room-side wall",
+        "Ø4 steel blind rivets (HOLD: Joints picks them) through the ledge's F51 holes",
+        "6 on a line 9 above the frame's bottom, the end ones 40 in from the ledge's ends and the rest evenly between, so the "
+        "pattern is symmetric and L1's and R1's ledges are one part", "the Lead's ruling of 2026-11-01 (WALL group)",
+        "inside the tube clear of the J-BASE-01 bolt heads and washers (centre line, Ø18) by 4 or more",
+        "±0.2 (assumption); drilled with the ledge held in place as the jig", "drilled after welding and the "
+        "touch-up (J-FRAME-01)", "assumption (positions); DECIDED (the ledge)"),
 }
+LEDGE_BODY = "LEDGE - STEEL 1.0 ANGLE UNDER THE CASSETTE"
+FAMILIES[(LEDGE_BODY, 4.1, "x")] = (
+    "F51", "The ledge's own rivet holes, matching F50", "Ø4 steel blind rivets (HOLD)",
+    "as F50: 6, symmetric about the ledge's middle", "the Lead's ruling of 2026-11-01 (WALL group)",
+    "centre 9.0 from the upright's top edge (2.2 x d), hole edge 8.2 from its bend (calculation)", "±0.2 (assumption)",
+    "laser cut in the flat blank (DXF)", "assumption")
 
 OTHER = [
     ("F10", "{frame}", "Five studs (0.8 wall, D-131 start; perimeter 1.0), set from the bolts: 50 past the 1st, "
@@ -366,6 +381,8 @@ def main(argv):
             if c["part_number"].startswith("212"):
                 for b in c["bodies"]:
                     body_part[b["name"]] = c["part_number"]
+            if any(b["name"] == LEDGE_BODY for b in c["bodies"]):
+                pns["ledge"] = c["part_number"]
     pns["assy"] = assy
     d117 = bool(body_part)
     back = pns["frame"].startswith("2112")
@@ -402,7 +419,7 @@ def main(argv):
         # a frame member's holes are the welded frame's: J-FRAME-01 makes every joint hole after welding, in the frame
         # (the drawing generator reads them under the frame's number, 211101 and so on)
         part = pns["felt"] if body == FELT else pns["tray"] if body == TRAY else pns["skin"] if body.startswith("SKIN") \
-            else pns["frame"]
+            else pns.get("ledge", "") if body == LEDGE_BODY else pns["frame"]
         lines.append("| %s | %s %s | Ø%g along %s, %d: %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             fam[0], part, body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7],
             fam[8]))

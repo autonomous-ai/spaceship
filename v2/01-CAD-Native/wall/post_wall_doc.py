@@ -33,6 +33,6 @@ def run(_context):
     name = adsk.core.Application.get().activeDocument.name
     step("export_wall_doc.py")
     step("report_wall_doc.py", out="v2/03-Manufacturing/wall/out/%s.json" % pn)
-    if pn.startswith("51"):
+    if pn.startswith("51") or pn in ("210101", "210102", "210201", "210202"):   # trays; the lower panels' ledges
         step("export_flat_dxf.py")
     step("edit_test_wall.py", f3d="%s/%s.f3d" % (HERE, name), out="%s/out/edit-%s.md" % (HERE, pn))

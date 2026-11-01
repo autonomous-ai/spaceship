@@ -158,6 +158,84 @@ def dry_post(app, design, spec, note=""):
     print("DRY|post %s: edit test written to edit-%s.md" % (spec, pn))
 
 
+def probe_ledge(design, repo_root, position):
+    """probe:ledge:L1 - the cassette ledge's fold tried every way in a blank unsaved design (dry run 10 found no
+    edge-flange setting that landed the leg on its outline): the side builder's parameters and helpers, the upright's
+    base flange as build_ledge makes it, then for each long bottom edge of the upright, each height datum, bend
+    position and flip, the edge flange's box and health printed (PROBE|...) and the flange deleted."""
+    path = os.path.join(repo_root, BUILDERS["side"])
+    sargs = dict(builder_args("side", "panel", position), repo_root=repo_root, dry="1", link="parse")
+    ns = {"__name__": "__fusion_script__", "__file__": path, "SCRIPT_ARGS": sargs}
+    with open(path, "r", encoding="utf-8") as fh:
+        exec(compile(fh.read(), path, "exec"), ns)
+    root = design.rootComponent
+    ns["add_params"](design, repo_root)
+    ev, vi, sx, bbox = ns["ev"], ns["vi"], ns["sx"], ns["bbox"]
+    s_, z0, xf_e, y0 = ns["S"], ns["Z0"], ns["X_FRAME_IN"], ns["LEDGE_Y0"]
+    ledge = ns["new_comp"](root, "ledge", sheet_metal=True)
+    rule = design.designSheetMetalRules.addByCopy(ledge.activeSheetMetalRule, "PROBE - LEDGE RULE")
+    rule.thickness.expression = "%.4f mm" % ev(design, "ledge_t")
+    rule.bendRadius.expression = "Thickness"
+    rule.kFactor = 0.44
+    ledge.activeSheetMetalRule = rule
+    occ = [o for o in root.occurrences if o.component == ledge][0]
+    occ.activate()
+    yr = (y0, "%s + ledge_len" % y0)
+    zr = ("(%s) - ledge_pad_t - ledge_t" % z0, "(%s) + ledge_up" % z0)
+    xf, t = ev(design, xf_e), ev(design, "ledge_t")
+    zb = ev(design, zr[0])
+    print("PROBE|want X %.2f to %.2f, Y %.2f to %.2f, Z %.2f to %.2f" % (
+        xf, ev(design, sx("pod_w / 2 - outer_t - ledge_out")), ev(design, yr[0]), ev(design, yr[1]), zb,
+        ev(design, zr[1])))
+    sk = ns["rect_on_x"](design, ledge, xf_e, yr, zr, "PROBE UPRIGHT")
+    ff = ledge.features.flangeFeatures
+    base = None
+    for orient in (adsk.fusion.FlangeOrientations.SideOneFlangeOrientation,
+                   adsk.fusion.FlangeOrientations.SideTwoFlangeOrientation):
+        bfi = ff.createBaseFlangeInput([sk.profiles.item(0)])
+        bfi.orientation = orient
+        f = ff.add(bfi)
+        b = bbox(f.bodies.item(0))
+        print("PROBE|base orientation %s: box %s" % (orient, b))
+        back, room = (b[0], b[3]) if s_ < 0 else (b[3], b[0])
+        if abs(back - xf) < 0.01 and abs(room - (xf - s_ * t)) < 0.01:
+            base = f
+            break
+        f.deleteMe()
+    if base is None:
+        print("PROBE|no base flange orientation on the room side")
+        design.activateRootComponent()
+        return
+    datums = [n for n in dir(adsk.fusion.FlangeHeightDatumTypes) if n.endswith("Type")]
+    positions = [n for n in dir(adsk.fusion.BendPositionTypes) if n.endswith("Type")]
+    print("PROBE|height datums %s; bend positions %s" % (datums, positions))
+    for xe in (xf - s_ * t, xf):                       # the upright's room-side and frame-side bottom edges
+        for dn in datums:
+            for pn_ in positions:
+                for flip in (False, True):
+                    tag = "edge x %.2f, %s, %s, flip %s" % (xe, dn, pn_, flip)
+                    body = ledge.bRepBodies.item(0)
+                    eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
+                           and e.length * 10 > 100
+                           and all(abs(v.geometry.x * 10 - xe) < 0.01 and abs(v.geometry.z * 10 - zb) < 0.01
+                                   for v in (e.startVertex, e.endVertex))]
+                    if len(eds) != 1:
+                        print("PROBE|%s: %d edges found" % (tag, len(eds)))
+                        continue
+                    try:
+                        efi = ff.createEdgeFlangeInput([], vi("ledge_out - ledge_t - ledge_r"))
+                        efi.edgeDefinitions.addFullLengthEdge(eds[0])
+                        efi.heightDatumType = getattr(adsk.fusion.FlangeHeightDatumTypes, dn)
+                        efi.bendPositionType = getattr(adsk.fusion.BendPositionTypes, pn_)
+                        efi.isFlipped = flip
+                        f = ff.add(efi)
+                        print("PROBE|%s: health %s, box %s" % (tag, f.healthState, bbox(ledge.bRepBodies.item(0))))
+                        f.deleteMe()
+                    except Exception as exc:              # noqa: BLE001  (print, go on)
+                        print("PROBE|%s: FAILED %s" % (tag, str(exc).splitlines()[0][:160]))
+    design.activateRootComponent()
+
+
 def run(_context):
     app = adsk.core.Application.get()
     before = app.activeDocument
@@ -175,7 +253,10 @@ def run(_context):
             doc.activate()
             if builder == "probe":
                 print("DRY|start %s (unsaved document)" % spec)
-                probe_import(app, design, ARGS["repo_root"], position)
+                if part == "ledge":
+                    probe_ledge(design, ARGS["repo_root"], position)
+                else:
+                    probe_import(app, design, ARGS["repo_root"], position)
                 done.append(spec)
                 print("DRY|done %s" % spec)
                 continue

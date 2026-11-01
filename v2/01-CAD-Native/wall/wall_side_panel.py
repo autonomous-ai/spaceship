@@ -118,6 +118,23 @@ HW_PARTS = {
     "plate57": ("831009", "HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL",
                 "Tấm đệm góc vát 40 × 40 - 45° - thép 2.0"),
 }
+# the cassette ledge (the Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge, not on clip shear,
+# since no clip maker publishes shear; the clips only hold): a galvanized steel angle riveted to the lower frame's
+# bottom rail, a pad on its leg under the tray's bottom return; the upper cassette stands on the lower one through a
+# strip in the 2.26 joint (on the cassette's list). Numbers from Control, the pad, strip and rivet picked by Joints;
+# until a number is posted the build stops, except a dry run, which labels the part DRY.
+LEDGE_PN = {"ledge": None, "pad": None, "rivet": None}
+LEDGE_NAMES = {
+    "ledge": ("WALL - CASSETTE LEDGE - SIDE LOWER - COMMON", "Vách - gờ đỡ cassette dưới (dùng chung)"),
+    "pad": ("SEALS - CASSETTE LEDGE PAD - 18 X 2.26 - HOLD", "Đệm gờ đỡ cassette (chờ)"),
+    "rivet": ("HARDWARE - BLIND RIVET - Ø4 - STEEL ZINC - HOLD", "Đinh tán rút Ø4 thép mạ kẽm (chờ)"),
+}
+if ROW == 1:
+    for _k, (_n, _v) in LEDGE_NAMES.items():
+        _pn = LEDGE_PN[_k] or ("DRY-LEDGE-%s" % _k.upper() if ARGS.get("dry") == "1" else "NO-PN-LEDGE-%s" % _k.upper())
+        if not LEDGE_PN[_k]:                  # unnumbered: marked HOLD, and build_ledge builds it only in a dry run
+            _n = "HOLD - %s (NO NUMBER YET)" % _n
+        (PARTS if _k == "ledge" else HW_PARTS)[_k] = (_pn, _n, _v)
 PARTS.update(HW_PARTS)
 RESERVED = {"110006", "110002", "120001", "211000", "210001", "210003", "210005",
             "350011", "830001", "830005"}          # D-28
@@ -370,6 +387,44 @@ def el_params(code, kind):
 
 EL_KIND = "frame" if PART == "frame" else ("panel" if PANEL_SIDE else "cass")    # a frame has none of them
 WALL_PARAMS = WALL_PARAMS + el_params(CODE, EL_KIND)
+# the cassette ledge (the Lead's ruling of 2026-11-01, WALL's sizes accepted the same day): lower panels only
+_LG = "the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted)"
+LEDGE_PARAMS = [
+    ("ledge_t", "1 mm", "mm", "assumption", _LG + ": galvanized steel sheet 1.0, DX51D+Z (EN 10346), Z100"),
+    ("ledge_r", "ledge_t", "mm", "assumption", "inside bend radius 1 x t, as the trays (the sheet metal rule's)"),
+    ("ledge_out", "28 mm", "mm", "assumption", _LG + ": the leg from the rail's room face, under the tray's 34 deep "
+                                                    "bottom return; its tip 10 short of the lining's room face, out of sight"),
+    ("ledge_up", "tube_w - 2 mm", "mm", "assumption", _LG + ": the upright reaches 2 under the bottom rail's top face"),
+    ("ledge_pad_t", "2.31 mm", "mm", "calculation",
+     "Joints' pick (WALL group, 2026-11-01): Rogers PORON 4701-40, the 320 kg/m3 grade, 2.36 thick (a standard "
+     "size), PSA one side, slit 18 wide; the ledge's 7.7 kPa squeezes it about 2%, to about 2.31, so the leg sits "
+     "2.31 under the frame's bottom and the cassette's bottom stays level with it (the foam is ±10% thick)"),
+    ("ledge_pad_w", "18 mm", "mm", "source", "Joints' pick: the pad slit 18 wide, on the leg's flat past its bend"),
+    ("ledge_front_dy", "5 mm", "mm", "confirmed",
+     "both sides' ledges start where the right-hand cassettes do (lin_front_dy on R: the Lead's ruling on F-308 and "
+     "F-309), so L1's and R1's are one part"),
+    ("ledge_end", "5 mm", "mm", "assumption", _LG + ": the ledge's ends 5 inside the right-hand cassette's"),
+    ("ledge_len", "wall_depth - stack_t + cass_t - ledge_front_dy - 2 * ledge_end", "mm", "calculation",
+     "1430: the right-hand cassette's length less 5 at each end"),
+    ("ledge_rivet_d", "4.1 mm", "mm", "source", "Joints' pick: the hole for the ISO 15979 Ø4.0 blind rivet"),
+    ("ledge_rivet_n", "6", "", "assumption", _LG + ": 6 rivets for the two cassettes' 20.2 kg, about 33 N each"),
+    ("ledge_rivet_e", "40 mm", "mm", "assumption", "the end rivets 40 in from the ledge's ends"),
+    ("ledge_rivet_z", "tube_w / 2 - 1 mm", "mm", "calculation",
+     "the rivet line 9 above the frame's bottom: 9.0 from the upright's top edge (2.2 x the Ø4 rivet) and the hole's "
+     "edge 8.2 from the bend"),
+    ("ledge_rivet_pitch", "(ledge_len - 2 * ledge_rivet_e) / (ledge_rivet_n - 1)", "mm", "calculation",
+     "even, so the pattern is symmetric and the turned copy (RH) matches: one part"),
+    ("rivet_d", "4 mm", "mm", "source", "Joints' pick: blind rivet ISO 15979, open end, steel/steel, zinc plated, "
+                                         "Ø4.0 x 6, grip 1.0 to 3.0 (the stack 1.0 + 1.2 = 2.2); tensile 2200 N, "
+                                         "shear 1700 N (Keller & Kalmbach 580000130040060)"),
+    ("rivet_head_d", "8 mm", "mm", "source", "Joints' pick: the dome head Ø8"),
+    ("rivet_head_t", "1 mm", "mm", "source", "Joints' pick: the dome head 1.0 high"),
+    ("rivet_len", "6 mm", "mm", "source", "Joints' pick: the body 6 long as supplied (its envelope; set, it is "
+                                           "shorter and bulged inside the tube)"),
+]
+if ROW == 1:
+    WALL_PARAMS = WALL_PARAMS + LEDGE_PARAMS
+LEDGE_Y0 = "(pod_d / 2 - wall_depth + ledge_front_dy + ledge_end)"     # the ledge's front end
 
 # kg/m3, status, source; used for body materials (mass properties)
 DENSITY = {
@@ -385,6 +440,9 @@ DENSITY = {
     "stopw": (2700.0, "calculation", "5000- or 6000-series aluminium sheet (H-08): 2.70 g/cm3 (5052 2.68, 6061 2.70)"),
     "spigot": (7900.0, "source", "stainless steel (H-05): 7.9 g/cm3"),
     "plate": (7850.0, "source", "joints register H-40 to H-42: 2.0 steel plate, galvanized (17.8 / 28.1 / 35.5 g)"),
+    "ledge": (7850.0, "source", "galvanized steel sheet DX51D+Z (EN 10346), 7.85 g/cm3 (the zinc not counted)"),
+    "rivet": (7850.0, "source", "ISO 15979 steel blind rivet, zinc plated: 7.85 g/cm3 on its solid envelope"),
+    "pad": (320.0, "source", "Rogers PORON 4701-40, the 320 kg/m3 grade (Joints' pick, 2026-11-01)"),
 }
 
 # ---------------------------------------------------------------- helpers
@@ -761,12 +819,13 @@ HW_SITES = []          # rivnut sites recorded by the joint features, given thei
 ALLOWED_CLASH = []     # body name pairs that overlap by design (a spigot's thread in its rivnut's bore)
 
 
-def hw_site(label, axis, face, into, pos, pat=None, washer=True, spigot=False, member=None):
+def hw_site(label, axis, face, into, pos, pat=None, washer=True, spigot=False, member=None, kind="rivnut"):
     """Record a rivnut hole for the hardware: the same plane, centre and pattern as the hole, and the frame
     member it is in (D-120: the hardware's copies are jointed to that member's hole).
-    into: the hole's direction into the tube; the head and any washer stand the other way, in the joint gap."""
+    into: the hole's direction into the tube; the head and any washer stand the other way, in the joint gap.
+    kind "rivet": a ledge rivet's hole, its head on the ledge (ledge_t out from the member's face)."""
     HW_SITES.append({"label": label, "axis": axis, "face": face, "out": -into, "pos": pos, "pat": pat,
-                     "washer": washer, "spigot": spigot, "member": member})
+                     "washer": washer, "spigot": spigot, "member": member, "kind": kind})
 
 
 def cyl(design, comp, label, axis, plane_expr, out, pos, od, length, bore=None):
@@ -1301,6 +1360,8 @@ def build_panel(design, root):
         build_fill(design, root, out, xf, zs)
     if frame:
         joint_features(design, members, out)
+    if PART == "panel" and ROW == 1:
+        build_ledge(design, root, out)
     if PART == "panel":
         place_hardware(design, root, members, out)
     set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
@@ -1633,6 +1694,14 @@ def joint_features(design, members, out):
         hole(design, bc, bc.bRepBodies.item(0), "z", zb0, +1, {"x": "(%s) %s %s" % (xc, sgn, half), "y": ys},
              "spigot_d", t, "BOTTOM RAIL SPIGOT SLOT END %d" % (i + 1))
     if ROW == 1:
+        # the cassette ledge's rivet holes (the Lead's ruling of 2026-11-01): through the bottom rail's room-side
+        # wall at its mid-height, made after welding (J-FRAME-01); the ledge's own holes match them (build_ledge)
+        pl = {"y": "%s + ledge_rivet_e" % LEDGE_Y0, "z": "(%s) + ledge_rivet_z" % Z0}
+        r = hole(design, bc, bc.bRepBodies.item(0), "x", X_FRAME_IN, S, pl, "ledge_rivet_d", t,
+                 "BOTTOM RAIL LEDGE RIVET 1")
+        pattern_feat(bc, [r], "y", "ledge_rivet_n", "ledge_rivet_pitch", "BOTTOM RAIL LEDGE RIVETS")
+        hw_site("BOTTOM RAIL LEDGE RIVET", "x", X_FRAME_IN, S, pl, ("y", "ledge_rivet_n", "ledge_rivet_pitch"),
+                washer=False, member="RAIL - BOTTOM", kind="rivet")
         # top rail, nut side of J-WALL-01: rivnut at each bay (FR-01) and 2 spigot rivnuts (FR-04)
         r = hole(design, tc, top, "z", zt1, -1, {"x": xc, "y": y_b1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
         pattern_feat(tc, [r], "y", n_b, p_b, "TOP RAIL RIVNUTS")
@@ -1732,6 +1801,16 @@ def hw_part(design, root, key):
     if key in JOINTS_STEP:
         c, b = import_joints_part(design, root, key)
         ring = {"stopw": "stopw_od", "spigot": "spigot_pin_d"}[key]
+    elif key == "rivet":
+        # the ledge's blind rivet as its set envelope (HOLD until Joints picks it): the head from Z 0 up, the body
+        # down through the ledge and the rail's wall (Z 0 = the underside of the head, on the ledge)
+        c = new_comp(root, key)
+        o = {"x": "0 mm", "y": "0 mm"}
+        head = cyl(design, c, "RIVET HEAD", "z", "0 mm", +1, o, "rivet_head_d", "rivet_head_t")
+        shank = cyl(design, c, "RIVET BODY", "z", "0 mm", -1, o, "rivet_d", "rivet_len")
+        b = join_bodies(c, head, [shank], "RIVET")
+        b.name, ring = "BLIND RIVET", "rivet_head_d"
+        set_material(design, [b], key, "STEEL ZINC BLIND RIVET (HOLD)")
     else:
         c = new_comp(root, key)
         o = {"x": "0 mm", "y": "0 mm"}
@@ -1764,7 +1843,8 @@ def circle_edge(body, dia_mm, centre=None, axis=None):
     return found
 
 
-OUTWARD = {"stopw": "stopw_t", "rivnut": "rivnut_head_t", "spigot": "spigot_proud - rivnut_head_t"}
+OUTWARD = {"stopw": "stopw_t", "rivnut": "rivnut_head_t", "spigot": "spigot_proud - rivnut_head_t",
+           "rivet": "rivet_head_t"}
 
 
 def place_one(design, root, key, site, offset_expr, member_body_proxy, hole_d):
@@ -1831,9 +1911,12 @@ def place_hardware(design, root, members, out):
         proxy = mc.bRepBodies.item(0).createForAssemblyContext(mo)
         hd = ev(design, "rivnut_d")
         seeds = []
-        if s["washer"]:
+        if s.get("kind") == "rivet":
+            seeds.append(place_one(design, root, "rivet", s, "ledge_t", proxy, ev(design, "ledge_rivet_d")))
+        elif s["washer"]:
             seeds.append(place_one(design, root, "stopw", s, "0 mm", proxy, hd))
-        seeds.append(place_one(design, root, "rivnut", s, "stopw_t" if s["washer"] else "0 mm", proxy, hd))
+        if s.get("kind") != "rivet":
+            seeds.append(place_one(design, root, "rivnut", s, "stopw_t" if s["washer"] else "0 mm", proxy, hd))
         if s["spigot"]:
             seeds.append(place_one(design, root, "spigot", s,
                                    "stopw_t + rivnut_head_t" if s["washer"] else "rivnut_head_t", proxy, hd))
@@ -2045,6 +2128,111 @@ def build_tray(design, root, tray, yc, zc):
     finally:
         design.activateRootComponent()
     return tray.bRepBodies.item(0)
+
+
+def build_ledge(design, root, out):
+    """The cassette ledge (the Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge, not on clip
+    shear): a 1.0 galvanized steel angle in sheet metal, its upright on the bottom rail's room face (riveted through
+    the rail's LEDGE RIVET holes, after welding), its leg ledge_pad_t under the frame's bottom and reaching ledge_out
+    toward the room, under the tray's bottom return; the pad on the leg fills the 2.26 to the cassette, so the lining
+    doesn't move. One part for L1 and R1 (ledge_front_dy, a symmetric rivet pattern). The bend and the leg's side are
+    tried both ways and kept only when the outer faces land on the ledge's outline."""
+    unnumbered = [k for k in ("ledge", "pad", "rivet") if not LEDGE_PN[k] and ARGS.get("dry") != "1"]
+    if unnumbered:
+        raise RuntimeError("the cassette ledge's %s has no number yet (Control posts it in WALL's group): only a "
+                           "dry run builds it" % ", ".join(unnumbered))
+    ledge = new_comp(root, "ledge", sheet_metal=True)
+    rule = design.designSheetMetalRules.itemByName("GALV STEEL 1.0 - CASSETTE LEDGE")
+    if rule is None:
+        rule = design.designSheetMetalRules.addByCopy(ledge.activeSheetMetalRule, "GALV STEEL 1.0 - CASSETTE LEDGE")
+    rule.thickness.expression = "%.4f mm" % ev(design, "ledge_t")   # a rule takes values only (Fusion 2706)
+    rule.bendRadius.expression = "Thickness"                         # = ledge_r (1 x t)
+    rule.kFactor = 0.44
+    ledge.activeSheetMetalRule = rule
+    occ = [o for o in root.occurrences if o.component == ledge][0]
+    occ.activate()
+    yr = (LEDGE_Y0, "%s + ledge_len" % LEDGE_Y0)
+    zr = ("(%s) - ledge_pad_t - ledge_t" % Z0, "(%s) + ledge_up" % Z0)
+    want_y = sorted(ev(design, e) for e in yr)
+    want_z = sorted(ev(design, e) for e in zr)
+    xf, t = ev(design, X_FRAME_IN), ev(design, "ledge_t")
+    want_x = sorted((xf, ev(design, sx("pod_w / 2 - outer_t - ledge_out"))))
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    try:
+        sk = rect_on_x(design, ledge, X_FRAME_IN, yr, zr, "LEDGE UPRIGHT OUTLINE")
+        ff = ledge.features.flangeFeatures
+        base = None
+        for orient in (adsk.fusion.FlangeOrientations.SideOneFlangeOrientation,
+                       adsk.fusion.FlangeOrientations.SideTwoFlangeOrientation):
+            bfi = ff.createBaseFlangeInput([sk.profiles.item(0)])
+            bfi.orientation = orient
+            f = ff.add(bfi)
+            b = bbox(f.bodies.item(0))
+            back, room = (b[0], b[3]) if S < 0 else (b[3], b[0])     # the room is toward -S
+            if abs(back - xf) < 0.01 and abs(room - (xf - S * t)) < 0.01:
+                base = f
+                break
+            f.deleteMe()
+        if base is None:
+            raise RuntimeError("ledge: no base flange side lies on the room side of the rail's face")
+        base.name = "BASE - LEDGE UPRIGHT ON THE BOTTOM RAIL"
+        body = ledge.bRepBodies.item(0)
+        xr = xf - S * t                       # the upright's room-side face
+        eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
+               and all(abs(v.geometry.x * 10 - xr) < 0.01 and abs(v.geometry.z * 10 - want_z[0]) < 0.01
+                       for v in (e.startVertex, e.endVertex))]
+        if len(eds) != 1:
+            raise RuntimeError("ledge: expected 1 bottom edge on the upright's room face, got %d" % len(eds))
+        leg = None
+        for pos in (adsk.fusion.BendPositionTypes.InsideBendPositionType,
+                    adsk.fusion.BendPositionTypes.OutsideBendPositionType):
+            for flip in (False, True):
+                # outer-faces datum: the height runs from the upright's outer (frame-side) face to the leg's tip,
+                # so it is the leg's whole reach (probe of 2026-11-01: 26 gave the tip at 26; Inside keeps the bottom)
+                efi = ff.createEdgeFlangeInput([], vi("ledge_out"))
+                efi.edgeDefinitions.addFullLengthEdge(eds[0])
+                efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
+                efi.bendPositionType = pos
+                efi.isFlipped = flip
+                f = ff.add(efi)
+                b = bbox(ledge.bRepBodies.item(0))
+                fits = all(abs(g - w) < 0.05 for g, w in zip((b[0], b[3], b[1], b[4], b[2], b[5]),
+                                                             want_x + want_y + want_z))
+                if fits and f.healthState == healthy:
+                    leg = f
+                    break
+                f.deleteMe()
+            if leg:
+                break
+        if leg is None:
+            raise RuntimeError("ledge: no bend position or side keeps the leg's outer faces on the outline")
+        leg.name = "FLANGE - LEDGE LEG UNDER THE CASSETTE"
+        body = ledge.bRepBodies.item(0)
+        body.name = "LEDGE - STEEL 1.0 ANGLE UNDER THE CASSETTE"
+        pl = {"y": "%s + ledge_rivet_e" % LEDGE_Y0, "z": "(%s) + ledge_rivet_z" % Z0}
+        h = hole(design, ledge, body, "x", X_FRAME_IN, -S, pl, "ledge_rivet_d", "ledge_t", "LEDGE RIVET HOLE 1")
+        pattern_feat(ledge, [h], "y", "ledge_rivet_n", "ledge_rivet_pitch", "LEDGE RIVET HOLES")
+        body = ledge.bRepBodies.item(0)
+        big = max((fc for fc in body.faces if fc.geometry.objectType == adsk.core.Plane.classType()
+                   and abs(adsk.core.Plane.cast(fc.geometry).normal.x) > 0.99), key=lambda fc: fc.area)
+        fp = ledge.flatPattern or ledge.createFlatPattern(big)
+        print("FLAT|%s|%s" % (ledge.partNumber, size(bbox(fp.flatBody))))
+    finally:
+        design.activateRootComponent()
+    body = ledge.bRepBodies.item(0)
+    set_material(design, [body], "ledge", "GALVANIZED STEEL 1.0")
+    out[body.name] = body
+    # the pad on the leg's flat, from 0.5 past the bend to ledge_pad_w, the cassette's bottom on its top (Z0)
+    pad = new_comp(root, "pad")
+    px = (sx("pod_w / 2 - outer_t - ledge_t - ledge_r - 0.5 mm"),
+          sx("pod_w / 2 - outer_t - ledge_t - ledge_r - 0.5 mm - ledge_pad_w"))
+    pb = box(design, pad, "LEDGE PAD", px, yr, ("(%s) - ledge_pad_t" % Z0, Z0)).bodies.item(0)
+    pb.name = "PAD - ON THE LEDGE UNDER THE CASSETTE (HOLD)"
+    set_material(design, [pb], "pad", "SOFT PAD (HOLD)")
+    out[pb.name] = pb
+    print("step 6b: cassette ledge %s, %s long, its leg at Z %.2f, with the pad (%s) and %d rivet holes" % (
+        ledge.partNumber, "%.2f" % (want_y[1] - want_y[0]), want_z[0] + t, pad.partNumber,
+        int(round(design.userParameters.itemByName("ledge_rivet_n").value))))
 
 
 def el_inside(design, label, lo_hi, keep):

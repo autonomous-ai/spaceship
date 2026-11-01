@@ -91,6 +91,17 @@ def main(argv):
     dst = os.path.join(HERE, os.path.basename(raws[0]).replace("_flat-fusion.dxf", "_DXF.dxf"))
     seen = dxf_tools.relayer(raws[0], dst)
     out.append((dst, "Fusion flat pattern, layers %s" % seen))
+    # a lower panel's cassette ledge (the Lead's ruling of 2026-11-01): Fusion's flat pattern too, relayered; L1 and
+    # R1 share the part, so either panel's export writes the same file
+    ledge = [c for c in panel["components"] if "CASSETTE LEDGE" in c["name"] and "PAD" not in c["name"]]
+    if ledge and not ledge[0]["part_number"].startswith(("DRY", "NO-PN")):
+        raws = glob.glob(os.path.join(HERE, ".raw", "%s_P01_*_flat-fusion.dxf" % ledge[0]["part_number"]))
+        if len(raws) != 1:
+            raise SystemExit("expected one raw flat pattern for the ledge %s in .raw/, found %d (run "
+                             "export_flat_dxf.py)" % (ledge[0]["part_number"], len(raws)))
+        dst = os.path.join(HERE, os.path.basename(raws[0]).replace("_flat-fusion.dxf", "_DXF.dxf"))
+        seen = dxf_tools.relayer(raws[0], dst)
+        out.append((dst, "the ledge's Fusion flat pattern, layers %s" % seen))
     # skin blank from the CAD sizes
     skin = [c for c in panel["components"] if c["part_number"].startswith(("2113", "2114"))][0]
     b = skin["bodies"][0]["box"]

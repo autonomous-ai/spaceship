@@ -545,6 +545,41 @@ class FillDxfTest(unittest.TestCase):
         self.assertNotIn("BAD ", out.getvalue())
 
 
+class CassetteLedgeTest(unittest.TestCase):
+    """The Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge on the lower frame's bottom rail
+    (WALL's sizes, accepted): one part for L1 and R1, its leg the 2.26 seam gap under the frame, lower panels only."""
+
+    def test_l1_and_r1_get_the_same_ledge(self):
+        vl, vr = resolve(load(side="L")), resolve(load(side="R"))
+        for k in ("ledge_len", "ledge_rivet_pitch", "ledge_rivet_e", "ledge_rivet_z", "ledge_out", "ledge_up",
+                  "ledge_t", "ledge_rivet_d", "ledge_rivet_n"):
+            self.assertAlmostEqual(vl[k], vr[k], places=6, msg=k)
+        self.assertAlmostEqual(vl["ledge_len"], 1430.0, places=2)
+        # the ledge starts where R1's cassette does, 5 in, on both sides
+        y0 = vl["pod_d"] / 2 - vl["wall_depth"] + vl["ledge_front_dy"] + vl["ledge_end"]
+        self.assertAlmostEqual(y0, -635.0, places=2)
+        self.assertAlmostEqual(vr["pod_d"] / 2 - vr["wall_depth"] + vr["lin_front_dy"] + vr["ledge_end"], y0, places=2)
+
+    def test_rivet_pattern_is_symmetric_and_clear_of_the_ends(self):
+        v = resolve(load())
+        first = v["ledge_rivet_e"]
+        last = first + (v["ledge_rivet_n"] - 1) * v["ledge_rivet_pitch"]
+        self.assertAlmostEqual(v["ledge_len"] - last, first, places=6)
+        # centre to the upright's top edge at least 2 x the rivet (edge distance), the hole clear of the bend
+        top = v["ledge_pad_t"] + v["ledge_t"] + v["ledge_up"]            # the upright's top above the leg's bottom
+        centre = v["ledge_pad_t"] + v["ledge_t"] + v["ledge_rivet_z"]
+        self.assertGreaterEqual(top - centre, 2 * v["rivet_d"])
+        self.assertGreaterEqual(centre - v["ledge_rivet_d"] / 2 - (v["ledge_t"] + v["ledge_r"]), 2 * v["ledge_t"])
+
+    def test_the_leg_sits_the_squeezed_pad_under_the_frame_and_lower_panels_only(self):
+        """Joints' pad (PORON 4701-40, 320 grade, 2.36 standard) squeezed about 2% to 2.31 under the cassettes, so
+        the leg sits that far under the frame and the lining doesn't move; inside the foam's ±10% of 2.36."""
+        v = resolve(load())
+        self.assertAlmostEqual(v["ledge_pad_t"], 2.31, places=6)
+        self.assertTrue(2.36 * 0.9 <= v["ledge_pad_t"] <= 2.36 * 1.1)
+        self.assertNotIn("ledge_len", resolve(load(row="2")))
+
+
 class MemberEndsTest(unittest.TestCase):
     """The Lead's ruling of 2026-11-01: the frame drawing's cut list is each member's drawing, so every member row
     names each end's angle by its end and the long points' face, and they are the STEP's (check_member_ends.py)."""
