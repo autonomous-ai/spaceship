@@ -282,8 +282,20 @@ def step_p02_fl2(design):
             and abs(mm(fc.pointOnFace.y) - yb) < 0.01 and abs(mm(fc.pointOnFace.x) - xm) < v("fep_t") / 2 + 0.01]
     if len(ends) != 1:
         raise RuntimeError("FL2: the door-end plate's back end face: found %d, want 1" % len(ends))
+    # the two side faces, each touching the end face along one of its edges: the door face (X = DL's door face) and the
+    # plate's pod-side face (X_FEP); Fusion wants one of each (2026-11-01 dry run: empty lists are refused)
+    xs = {}
+    for e in ends[0].edges:
+        for fc in e.faces:
+            if fc == ends[0] or fc.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
+                continue
+            if abs(abs(adsk.core.Plane.cast(fc.geometry).normal.x) - 1.0) < 1e-6:
+                xs[round(mm(fc.pointOnFace.x), 2)] = fc
+    if len(xs) != 2:
+        raise RuntimeError("FL2: the plate's back end has %d side faces square to X, want 2" % len(xs))
+    side_door, side_pod = xs[max(xs)], xs[min(xs)]
     fr = c.features.filletFeatures.createFullRoundFilletInput()
-    fr.faceSets.add(ends[0], [], [], True)
+    fr.faceSets.add(ends[0], [side_door], [side_pod], True)
     ff = c.features.filletFeatures.addFullRoundFillet(fr)
     ff.name = "FULL ROUND - FL2 DOOR-END PLATE'S BACK EDGE (ON THE KICK STRIP'S BACK LINE)"
     if c.bRepBodies.count != 1:
