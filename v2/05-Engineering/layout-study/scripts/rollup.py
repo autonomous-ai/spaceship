@@ -821,12 +821,14 @@ def rollup_md(rows):
               "change reaches it on the next run. The linings and the floor panels aren't named in the skeleton and come from "
               "its build record. The 13 mm threshold profile and the bolt counts (86 in the joints register) follow BASE's CAD "
               "and the register.")
-    md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls "
-              "other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 "
-              "bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit "
-              "is recounted once the register gives masses.")
+    md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (the table of "
+              "CAD masses above lists those already in; the back panels and their cassettes, the decor blocks, AIR's parts and "
+              "a few allowances are still estimates). The fixings kit counts the joints register's hardware at the parts lists' "
+              "masses (D-116), so it follows the register.")
+    d60 = AA.d60_paths()
     md.append(f"- **BASE's support behind the intake mesh:** if it leaves less than {AA.D60_FREE['intake']:.3f} m2 free, the air "
-              "report re-runs the fan noise (25.3 / 29.7 dB(A) now).")
+              f"report re-runs the fan noise ({AA.layout_noise12(d60, 53.0)[2]:.1f} / {AA.layout_noise12(d60, 65.0)[2]:.1f} "
+              "dB(A) at 53 / 65 l/s now).")
     md.append("- **D-83:** a 35 N magnetic catch in DT and a magnetic seal pair on the glass edges replace the door lock "
               "(0.84 kg in FRONT's door unit); the door line follows FRONT's CAD.")
     md.append("- **The tests:** T02 (fill), T07 (clips), T10 (weights) and the castor and edge tests on the floor sample "
