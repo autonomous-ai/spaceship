@@ -215,7 +215,8 @@ def test_numbers_match_the_master_bom():
     by_pn, _ = m.bom
     for tag, pn in (("1-06", "210102"), ("1-09", "210103"), ("1-10", "210104"), ("1-13", "510102"), ("1-14", "510104"),
                     ("1-16", "510103"), ("2-14", "810201"), ("2-16", "810101"), ("1-01", "110401"),
-                    ("1-03", "210201"), ("1-04", "210202"), ("1-17", "510201"), ("1-18", "510202")):
+                    ("1-03", "210201"), ("1-04", "210202"), ("1-17", "510201"), ("1-18", "510202"),
+                    ("2-09", "350001"), ("2-12", "350002"), ("2-03", "350003")):
         p = pack.PIECE[tag]
         assert p.pn == pn and by_pn[pn][0] == p.name, (tag, p.pn, p.name)
     assert "K13" not in failing(m)
@@ -226,16 +227,16 @@ def test_numbers_match_the_master_bom():
 
 def test_tbd_piece_takes_its_bom_number(tmp=Path(__file__).resolve().parent / "_bom_test.csv"):
     # when an owner's list lands with the piece's exact name, the label gets the number without a code change
-    dr = pack.PIECE["2-03"]
+    dr = pack.PIECE["2-11"]          # the air column: AIR's list hasn't landed
     assert dr.pn_declared.startswith("TBD")
 
     def add(rows):
-        rows.append(dict(rows[-1], part_number="350301", name=dr.name, name_vi="Khối trang trí phải (thử)"))
+        rows.append(dict(rows[-1], part_number="699999", name=dr.name, name_vi="Cột dẫn gió (thử)"))
     _bom_copy(add, tmp)
     try:
         m = pack.Model(bom_path=tmp)
-        assert dr.pn == "350301" and dr.vi == "Khối trang trí phải (thử)", (dr.pn, dr.vi)
-        assert "2-03" in m.filled and "K13" not in failing(m)
+        assert dr.pn == "699999" and dr.vi == "Cột dẫn gió (thử)", (dr.pn, dr.vi)
+        assert "2-11" in m.filled and "K13" not in failing(m)
     finally:
         tmp.unlink()
         pack.Model()   # back to the real BOM

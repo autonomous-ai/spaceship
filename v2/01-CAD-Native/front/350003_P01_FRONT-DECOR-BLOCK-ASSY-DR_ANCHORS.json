@@ -1,0 +1,146 @@
+{
+ "document": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD",
+ "f3d": "v2/01-CAD-Native/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD.f3d",
+ "anchors": [
+  {
+   "component": "351301 FRONT - DECOR SKIN - DR",
+   "index": 0,
+   "expression": "fix_xtr - pod_w / 2"
+  },
+  {
+   "component": "351301 FRONT - DECOR SKIN - DR",
+   "index": 3,
+   "expression": "pod_w / 2"
+  },
+  {
+   "component": "351301 FRONT - DECOR SKIN - DR",
+   "index": 2,
+   "expression": "fg_vis_zb"
+  },
+  {
+   "component": "351301 FRONT - DECOR SKIN - DR",
+   "index": 5,
+   "expression": "pod_h"
+  },
+  {
+   "component": "351301 FRONT - DECOR SKIN - DR",
+   "index": 1,
+   "expression": "-pod_d / 2"
+  },
+  {
+   "component": "351301 FRONT - DECOR SKIN - DR",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d"
+  },
+  {
+   "component": "351302 FRONT - DECOR BACK PLATE - DR",
+   "index": 0,
+   "expression": "dt_xr - pod_w / 2"
+  },
+  {
+   "component": "351302 FRONT - DECOR BACK PLATE - DR",
+   "index": 3,
+   "expression": "pod_w / 2 - dr_skin_t"
+  },
+  {
+   "component": "351302 FRONT - DECOR BACK PLATE - DR",
+   "index": 5,
+   "expression": "pod_h - dr_skin_t"
+  },
+  {
+   "component": "351305 FRONT - DECOR ACCESS PANEL - DR",
+   "index": 3,
+   "expression": "dr_strip_x0"
+  },
+  {
+   "component": "351305 FRONT - DECOR ACCESS PANEL - DR",
+   "index": 5,
+   "expression": "fg_vis_zt + dr_band_dz"
+  },
+  {
+   "component": "351305 FRONT - DECOR ACCESS PANEL - DR",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t"
+  },
+  {
+   "component": "351303 FRONT - DECOR INNER PANEL - DR",
+   "index": 3,
+   "expression": "dr_col_x0"
+  },
+  {
+   "component": "351303 FRONT - DECOR INNER PANEL - DR",
+   "index": 5,
+   "expression": "fg_vis_zt"
+  },
+  {
+   "component": "351304 FRONT - DECOR INNER PANEL FELT - DR",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_skin_t + felt_t"
+  },
+  {
+   "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
+   "index": 2,
+   "expression": "fg_vis_zb + dr_skin_t + ri_gap"
+  },
+  {
+   "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
+   "index": 5,
+   "expression": "ri_zt"
+  },
+  {
+   "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
+   "index": 0,
+   "expression": "ri_x0"
+  },
+  {
+   "component": "351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE",
+   "index": 0,
+   "expression": "fb_x0"
+  },
+  {
+   "component": "351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE",
+   "index": 2,
+   "expression": "fb_z0"
+  },
+  {
+   "component": "351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE",
+   "index": 5,
+   "expression": "fb_z0 + fb_h"
+  },
+  {
+   "component": "351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE",
+   "index": 5,
+   "expression": "op_z0 + op_h"
+  },
+  {
+   "component": "351306 FRONT - DECOR FRAME - DR",
+   "index": 0,
+   "expression": "((fg_dc + dr_skin_t - fg_dnz * (fg_vis_zt)) / fg_dnx)"
+  },
+  {
+   "component": "351306 FRONT - DECOR FRAME - DR",
+   "index": 3,
+   "expression": "pod_w / 2 - dr_skin_t"
+  },
+  {
+   "component": "351306 FRONT - DECOR FRAME - DR",
+   "index": 1,
+   "expression": "-pod_d / 2 + dr_skin_t"
+  },
+  {
+   "component": "351306 FRONT - DECOR FRAME - DR",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dr_back_t"
+  },
+  {
+   "component": "351306 FRONT - DECOR FRAME - DR",
+   "index": 2,
+   "expression": "fg_vis_zb"
+  },
+  {
+   "component": "351306 FRONT - DECOR FRAME - DR",
+   "index": 5,
+   "expression": "pod_h - dr_skin_t"
+  }
+ ]
+}

@@ -1,5 +1,5 @@
 {
- "next": 188,
+ "next": 189,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -817,7 +817,7 @@
    "subject": "211501",
    "severity": "major",
    "message": "211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step",
    "owner": "WALL",
    "evidence": {},
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1432,7 +1432,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111101",
    "id": "F-043",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1441,9 +1441,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -1488,7 +1494,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111211",
    "id": "F-045",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "Joints group 2026-11-01",
@@ -1497,9 +1503,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3082,7 +3094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3107,7 +3119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -3137,7 +3149,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -3192,7 +3204,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111212",
    "id": "F-100",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Joints group 2026-11-01",
@@ -3201,9 +3213,15 @@
      "date": "2026-11-01",
      "rev": "8c3aca4",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3217,7 +3235,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111213",
    "id": "F-101",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Joints group 2026-11-01",
@@ -3226,9 +3244,15 @@
      "date": "2026-11-01",
      "rev": "8c3aca4",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3242,7 +3266,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111214",
    "id": "F-102",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Joints group 2026-11-01",
@@ -3251,9 +3275,15 @@
      "date": "2026-11-01",
      "rev": "8c3aca4",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C01",
@@ -3377,7 +3407,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3402,7 +3432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3427,7 +3457,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3452,7 +3482,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3477,7 +3507,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3502,7 +3532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3527,7 +3557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3552,7 +3582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3577,7 +3607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3585,7 +3615,7 @@
    "subject": "211502",
    "severity": "major",
    "message": "211502 WALL - CAVITY FILL - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -3602,7 +3632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3610,7 +3640,7 @@
    "subject": "211503",
    "severity": "major",
    "message": "211503 WALL - CAVITY FILL - SIDE UPPER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -3627,7 +3657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3635,7 +3665,7 @@
    "subject": "211504",
    "severity": "major",
    "message": "211504 WALL - CAVITY FILL - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -3652,7 +3682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3677,7 +3707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3702,7 +3732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3727,7 +3757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3752,7 +3782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3777,7 +3807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3802,7 +3832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3816,7 +3846,7 @@
    "evidence": {},
    "key": "C05|no-drawing|511302",
    "id": "F-124",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 87586c1",
    "posted": "WALL group 2026-11-01",
@@ -3825,9 +3855,15 @@
      "date": "2026-11-01",
      "rev": "87586c1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -3841,7 +3877,7 @@
    "evidence": {},
    "key": "C05|no-drawing|511304",
    "id": "F-125",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 87586c1",
    "posted": "WALL group 2026-11-01",
@@ -3850,9 +3886,15 @@
      "date": "2026-11-01",
      "rev": "87586c1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C01",
@@ -4293,7 +4335,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C01",
@@ -4352,7 +4394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4377,7 +4419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4402,7 +4444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4427,7 +4469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4452,7 +4494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4477,7 +4519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4502,7 +4544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4527,7 +4569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4541,7 +4583,7 @@
    "evidence": {},
    "key": "C05|no-drawing|513301",
    "id": "F-146",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "CEILING group 2026-11-01",
@@ -4550,9 +4592,15 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4566,7 +4614,7 @@
    "evidence": {},
    "key": "C05|no-drawing|513302",
    "id": "F-147",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "CEILING group 2026-11-01",
@@ -4575,9 +4623,15 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4591,7 +4645,7 @@
    "evidence": {},
    "key": "C05|no-drawing|513303",
    "id": "F-148",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "CEILING group 2026-11-01",
@@ -4600,9 +4654,15 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4627,7 +4687,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -4682,7 +4742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4707,7 +4767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4732,7 +4792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4757,7 +4817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4782,7 +4842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4807,7 +4867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4832,7 +4892,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -4867,7 +4927,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd",
+   "last_seen": "2026-11-01 f3013d7",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4893,7 +4953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -4922,7 +4982,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -4951,7 +5011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -4980,7 +5040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5009,7 +5069,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5038,7 +5098,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5067,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5096,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5125,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5154,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5183,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5212,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5241,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5270,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5299,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5328,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5357,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C06",
@@ -5386,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5411,7 +5471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5436,7 +5496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5461,7 +5521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5486,7 +5546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5494,7 +5554,7 @@
    "subject": "211601",
    "severity": "major",
    "message": "211601 WALL - CAVITY FILL - BACK LOWER - B1 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "v2/03-Manufacturing/wall/211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_STEP.step",
    "owner": "WALL",
    "evidence": {},
@@ -5511,7 +5571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5519,7 +5579,7 @@
    "subject": "211602",
    "severity": "major",
    "message": "211602 WALL - CAVITY FILL - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -5536,7 +5596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5561,7 +5621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5586,7 +5646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5611,7 +5671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5636,7 +5696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 f3013d7"
   },
   {
    "check": "C05",
@@ -5650,7 +5710,7 @@
    "evidence": {},
    "key": "C05|no-drawing|511402",
    "id": "F-187",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 2f76545",
    "posted": "WALL group, 2026-11-01",
@@ -5659,9 +5719,44 @@
      "date": "2026-11-01",
      "rev": "2f76545",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "f3013d7",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 0d355cd"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 f3013d7"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 513101 LINING - TRAY - CEILING:2 x 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1",
+   "severity": "severe",
+   "message": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5 overlap by 69.7 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING; ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 69.74,
+    "a": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5"
+   },
+   "key": "C01|clash|assembly 513101 LINING - TRAY - CEILING:2 x 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1",
+   "id": "F-188",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 3d6c2af",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "3d6c2af",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
