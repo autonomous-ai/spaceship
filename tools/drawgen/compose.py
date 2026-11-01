@@ -187,6 +187,8 @@ def wall_word(f, body):
 def size_text(feat):
     f = feat.f
     if feat.kind == "hole":
+        if getattr(f, "csk", None):     # D-143: the hole, then its countersink's diameter and included angle
+            return "Ø%s, CSK Ø%s x %s°" % (fmt(f.dia), fmt(f.csk["dia"]), fmt(f.csk["angle"]))
         return "Ø%s" % fmt(f.dia)
     if feat.kind == "keyhole":
         return "KEYHOLE Ø%s + SLOT %s, %s TO END" % (fmt(f.entry_dia), fmt(f.width), fmt(f.neck))
@@ -259,6 +261,8 @@ class Part:
         self.features = []
         for b in self.bodies:
             hs, ss = geom.features(b)
+            if any(h.csk_both for h in hs):
+                raise NotDrawable("%s body %s has a hole countersunk from both sides: not called out yet" % (pn, b.name))
             bad = [] if bent else geom.unexplained_curved_faces(b, hs, ss)
             if bad:
                 raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (
@@ -3142,6 +3146,8 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             if ft.kind == "cutout":
                 feats[-1].update({"shape": ft.f.shape, "width": ft.f.width, "length": ft.f.length, "r": ft.f.r,
                                   "along": ft.f.along})
+            if ft.kind == "hole" and getattr(ft.f, "csk", None):
+                feats[-1]["csk"] = {"dia": ft.f.csk["dia"], "angle": ft.f.csk["angle"]}
             if ft.kind == "open_slot":
                 feats[-1].update({"r": ft.f.r, "edge": ft.f.edge, "mouth": ft.f.mouth, "taper": ft.f.taper,
                                   "along": ft.f.along, "size": size_text(ft),
