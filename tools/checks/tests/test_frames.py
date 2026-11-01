@@ -208,11 +208,12 @@ def test_the_cad_reads_each_members_role_from_where_it_sits_and_its_wall(tmp_pat
     assert c_frames.check_frame_cad("", spec, ["211101"], _l1_bodies(stud_wall=1.0), names, {"211101": False}) == []
     fs = c_frames.check_frame_cad("", spec, ["211101"], _l1_bodies(stud_wall=1.0), names, {"211101": True})
     assert [(f.rule, f.severity) for f in fs] == [("frame-cad-gauge", "minor")]
-    # a stud with a site joint (a Ø9.53 rivnut hole) takes the perimeter gauge
-    bodies = _l1_bodies()
-    bodies[4] = _tube(bodies[4].box, 0.8, holes=(9.53,))
-    fs = c_frames.check_frame_cad("", spec, ["211101"], bodies, names, {"211101": True})
-    assert fs and "with a site joint" in fs[0].message and fs[0].severity == "severe"
+    # a stud with a site joint (a rivnut hole: Ø9.53 before D-163, Ø10.00 since) takes the perimeter gauge
+    for dia in (9.53, 10.0, 10.1):
+        bodies = _l1_bodies()
+        bodies[4] = _tube(bodies[4].box, 0.8, holes=(dia,))
+        fs = c_frames.check_frame_cad("", spec, ["211101"], bodies, names, {"211101": True})
+        assert fs and "with a site joint" in fs[0].message and fs[0].severity == "severe", dia
 
 
 def test_the_real_joints_check_keeps_the_names_this_reads():

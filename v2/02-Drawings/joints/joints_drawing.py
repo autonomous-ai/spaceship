@@ -44,18 +44,22 @@ PARTS = {
         # views: name, Fusion orientation name, sheet centre (mm, A3 420 x 297, from the bottom left), style
         "views": [("front", "FrontViewOrientationType", (120.0, 185.0), "hidden"),
                   ("top", "TopViewOrientationType", (120.0, 85.0), "visible")],
+        # the two sizes the table varies, lettered on the front view in the finish (Reviewer 10 on #346: the view
+        # printed 831001's 7.24 and 15.24, which disagree with 831010's row): Fusion's value -> the letter
+        "letters": [("7.24", "L"), ("15.24", "L + 8")],
         "notes": [
             "NOTES (831001, 831010 P01, PROPOSED) - TABULATED",
             "1. UNITS MM. SCALE 5:1. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
             "2. MATERIAL STAINLESS STEEL A2 (1.4301 OR 1.4305). FINISH PASSIVATED, DEBURRED.",
-            "3. PIN Ø8 h9 (0 / -0.036), L ABOVE ITS SHOULDER (TABLE), LEAD-IN 1 x 45°. THE VIEWS SHOW 831001.",
+            "3. PIN Ø8 h9 (0 / -0.036), LEAD-IN 1 x 45°. THE FRONT VIEW'S L IS THE PIN ABOVE ITS SHOULDER AND "
+            "L + 8 IS ITS OVERALL LENGTH; THE TABLE GIVES BOTH FOR EACH PART.",
             {"indent": 5.0,
              "table": [["PART", "L", "PROUD", "OVERALL", "POD", "WHERE"],
-                       ["831001", "7.24", "8.00", "15.24", "28", "BAND, SEAMS, CEILING, DL, DR, FLOOR F2"],
+                       ["831001", "7.24", "8.00", "15.24", "26", "BAND, SEAMS, CEILING, DL, DR"],
                        ["831010", "10.24", "11.00", "18.24", "2", "DR'S LEDGE, UNDER DT"]]},
             "4. STUD M6x1-6g, 8 LONG (SHOWN AT THE 6g MEAN MAJOR Ø5.88). HEX SOCKET 4 AF x 3.5 DEEP.",
             "5. FITTED AT THE FACTORY INTO RIVNUT 838003 WITH THREADLOCKER; THE SHOULDER SITS ON THE RIVNUT'S "
-            "0.76 HEAD, SO THE PIN'S TOP STANDS THE TABLE'S PROUD ABOVE THE TUBE FACE.",
+            "0.76 HEAD, SO THE PIN'S TOP STANDS THE TABLE'S PROUD ABOVE THE FACE THE RIVNUT IS SET IN.",
             "6. JOINTS REGISTER H-05, H-45. ONE STEP PER PART NUMBER IN v2/03-Manufacturing/joints/.",
         ],
     },
@@ -457,6 +461,62 @@ def add_notes(pdf_in, pdf_out, notes, box=NOTES_BOX):
     return y
 
 
+# ------------------------------------------------------------------ letters for a tabulated sheet's sizes
+def view_spans(page, x_max=None):
+    """Every text span on the page left of x_max (sheet mm; the notes box's left edge by default):
+    [(text, direction, span)]. The views' dimension values are real text in Fusion's PDF (ArialMT)."""
+    k = page.rect.width / 420.0
+    x_max = NOTES_BOX[0] if x_max is None else x_max
+    out = []
+    for b in page.get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln["spans"]:
+                if sp["text"].strip() and sp["bbox"][2] / k < x_max:
+                    out.append((sp["text"].strip(), tuple(ln["dir"]), sp))
+    return out
+
+
+def letter_dims(pdf_in, pdf_out, letters):
+    """A tabulated sheet's varying sizes as letters: each (value, letter) takes the one dimension value Fusion
+    printed on the views (it must be there exactly once), removes its text from the page (a redaction; the
+    dimension's lines and arrows stay) and writes the letter on the same baseline, centred where the value was,
+    at its size and in its direction. Fails unless the re-read finds every letter and none of the values."""
+    import fitz
+    doc = fitz.open(pdf_in)
+    page = doc[0]
+    spans = view_spans(page)
+    todo = []
+    for value, letter in letters:
+        hits = [(d, sp) for t, d, sp in spans if t == value]
+        if len(hits) != 1:
+            raise SystemExit("letters: %r is on the views %d times (want once)" % (value, len(hits)))
+        todo.append((hits[0][0], hits[0][1], value, letter))
+    for _d, sp, _v, _l in todo:
+        page.add_redact_annot(fitz.Rect(sp["bbox"]), fill=False)
+    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_NONE)
+    font = fitz.Font(FONT)
+    for d, sp, _v, letter in todo:
+        size = sp["size"]
+        w = font.text_length(letter, fontsize=size)
+        x0, y0, x1, y1 = sp["bbox"]
+        ox, oy = sp["origin"]
+        if abs(d[0]) > 0.99:                      # left to right
+            page.insert_text(fitz.Point((x0 + x1) / 2 - w / 2, oy), letter, fontsize=size, fontname=FONT)
+        elif d[1] < -0.99:                        # bottom to top, as Fusion writes a vertical dimension's value
+            page.insert_text(fitz.Point(ox, (y0 + y1) / 2 + w / 2), letter, fontsize=size, fontname=FONT,
+                             rotate=90)
+        else:
+            raise SystemExit("letters: %r runs in direction %s, not handled" % (sp["text"], d))
+    doc.save(pdf_out)
+    doc.close()
+    got = view_spans(fitz.open(pdf_out)[0])
+    texts = [t for t, _d, _s in got]
+    for d, _sp, value, letter in todo:
+        if value in texts or [dd for t, dd, _s in got if t == letter] != [d]:
+            raise SystemExit("letters: after the re-read %r is still there or %r isn't, once, in its direction"
+                             % (value, letter))
+
+
 # ------------------------------------------------------------------ hole tags at the holes (guideline 6.2)
 def hole_circles(page, dia_on_sheet, tol=0.3):
     """Centres (sheet mm) of the circles of one diameter on the sheet: the solid ones Fusion writes as curves
@@ -605,6 +665,9 @@ def finish(part):
     if cfg.get("title"):
         cmd += ["--title", cfg["title"]]
     subprocess.run(cmd, check=True)
+    if cfg.get("letters"):                 # before the notes: the table repeats the values
+        letter_dims(clean, clean + ".tmp", cfg["letters"])
+        os.replace(clean + ".tmp", clean)
     end = add_notes(clean, out, cfg["notes"])
     doc = fitz.open(out)
     sheet = Sheet(doc[0])

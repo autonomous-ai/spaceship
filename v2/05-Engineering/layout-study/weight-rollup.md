@@ -55,8 +55,8 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Levelling glides: BASE's 9 against this study's 8 | 1 | 1.20 | 1.35 | +0.15 | BASE 118002 P02 batch 1 (S54) |
 | Corner keys, the 30 mm family | 6 | 0.15 | 0.21 | +0.06 | joints 111211 to 111214 P01, PR #139 |
 | Glide load blocks (D-86's 0.4 kg), now BASE's 9 blocks | 1 | 0.40 | 0.22 | -0.18 | BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6 |
-| Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.20 | +0.20 | joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157) |
-| **In all** | | | | **-0.31** | |
+| Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.19 | +0.19 | joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157) |
+| **In all** | | | | **-0.32** | |
 
 Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9 estimated.
 
@@ -104,7 +104,7 @@ Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9
 | ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.28 | 5.28 | calculation (CAD) | S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 2.87, the hub and controls zone 0.36, the cord set 0.53, the harnesses, cables and connectors, and the lights (6.38 m of shelf and down-light strip, the call light). The light shelf's strip is counted here only; the down-light profile parts listed under INTERIOR's shelf are in the shelf's line (S53) | CAD, main |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | 1.58 | calculation (CAD) | S46, CAD on main: INTERIOR parts list 810201 P01: the back and side shelves, with ELECTRICAL's down-light profile, cover, end caps and clips 718101 to 718104 (0.210), listed under 810201 (S53); the LED strips are in ELECTRICAL's line | CAD, main |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | 1.90 | calculation (CAD); brackets and screen rail HOLD | S46, CAD on main: INTERIOR parts list 810101 P01, the ledge and its 2 brackets (1.403), and 818102, the screen rail on HOLD (0.50); one line, as the packing plan ships them together | CAD, main |
-| WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.19 | 3.19 | calculation (part CAD); cleats assumption | part CAD on main: the joints register's counts (S48: 98 M6 x 16 and 12 M6 x 25 bolts, 126 rivnuts, 92 washers, 76 retainers, 26.9 m of joint gasket, 3.73 m of closing-seam seal) at the parts lists' masses (1.79 kg, D-116); 30 spigots (28 of 831001, 2 of 831010) and 76 stop washers from the joints' made hardware list (0.20 kg, S45); and a 1.2 kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and 6.7 g T plugs (D-117, S49), until their models land | CAD, main (part) |
+| WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.18 | 3.18 | calculation (part CAD); cleats assumption | part CAD on main: the joints register's counts (S48: 98 M6 x 16 and 12 M6 x 25 bolts, 126 rivnuts, 92 washers, 76 retainers, 26.9 m of joint gasket, 3.73 m of closing-seam seal) at the parts lists' masses (1.79 kg, D-116); 28 spigots (26 of 831001, 2 of 831010) and 76 stop washers from the joints' made hardware list (0.19 kg, S45); and a 1.2 kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and 6.7 g T plugs (D-117, S49), until their models land | CAD, main (part) |
 | LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | 4.00 | assumption | the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81) | estimate |
 
 Sources S33 to S39 are in section 10 of the report (`scripts/inputs.py`).

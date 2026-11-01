@@ -37,7 +37,9 @@ ZINC = re.compile(r"\bZ\s?(\d{2,3})\b")
 YIELD = re.compile(r"(\d{3})\s*MPa", re.I)
 GALV = re.compile(r"galvani[sz]|\bZ\s?\d{2,3}\b|\bzinc\b", re.I)
 TOUCH_UP = re.compile(r"zinc[- ]rich", re.I)
-SITE_HOLES = (8.5, 9.53, 9.63, 19.0)        # spigot, rivnut (838003's hole, +0.10), access hole (joints register)
+# spigot; rivnut 838003's hole, Ø10.00 +0.10 since D-163 (Sherex CAL2-610-4.2), and the Ø9.53 +0.10 the frames carry
+# until each team's next rebuild; access hole (joints register)
+SITE_HOLES = (8.5, 9.53, 9.63, 10.0, 10.1, 19.0)
 
 
 # ----------------------------------------------------------------- the spec
