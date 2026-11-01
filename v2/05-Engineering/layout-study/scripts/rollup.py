@@ -268,30 +268,60 @@ ELEC_LIST = os.path.join(MANUF, "electrical", "710000_P01_ELECTRICAL-PARTS-LIST_
 
 
 def electrical_cad(path=ELEC_LIST):
-    """ELECTRICAL from its merged parts list (PR #64): the total as shipped, the power unit, and the LED strip per metre."""
+    """ELECTRICAL from its merged parts list (PR #64): the total as shipped, the power unit, and the LED strip per metre;
+    and the parts it lists under another team's assembly, by host (S51: D-126's down-light profile, cover, end caps and
+    clips under INTERIOR's light shelf 810201). 710000's total leaves those out; the host's line carries them."""
     import csv
     with open(path, encoding="utf-8") as f:
         rows = {r["part_number"]: r for r in csv.DictReader(f)}
+    hosted = {}
+    for r in rows.values():
+        if r["parent"] and r["parent"] not in rows:          # its parent is another team's part
+            hosted.setdefault(r["parent"], []).append((r["part_number"], float(r["qty_per_parent"]), float(r["mass_each_kg"])))
     return dict(total=float(rows["710000"]["mass_each_kg"]), power_unit=float(rows["710001"]["mass_each_kg"]),
                 hub=float(rows["710041"]["mass_each_kg"]), cord=float(rows["719001"]["mass_each_kg"]),
-                strip_kgm=float(rows["718050"]["mass_each_kg"]), strip_m=float(rows["718050"]["qty_per_pod"]))
+                strip_kgm=float(rows["718050"]["mass_each_kg"]), strip_m=float(rows["718050"]["qty_per_pod"]),
+                hosted=hosted)
 
 
 ELEC = electrical_cad()
 INTERIOR_LIST = os.path.join(MANUF, "interior", "810000_P01_INTERIOR-PARTS-LIST_BOM.csv")     # PR #92 (S46)
 
 
-def interior_cad(path=INTERIOR_LIST):
+SHELF_REPLACED = ("811204", "811205")     # D-126 (S51): the down-light channel and diffuser, replaced by ELECTRICAL's bought profile
+
+
+def interior_cad(path=INTERIOR_LIST, hosted=None):
     """INTERIOR from its merged parts list (PR #92): the work-wall ledge, the light shelf (its LED strip is ELECTRICAL's)
-    and the screen rail (HOLD)."""
+    and the screen rail (HOLD). The shelf assembly 810201 also holds ELECTRICAL's down-light profile parts, listed in
+    ELECTRICAL's parts list under it (S51), and they ship with it; the channel and diffuser they replaced (D-126) are left
+    out while INTERIOR's list still carries them."""
     import csv
     with open(path, encoding="utf-8") as f:
         rows = {r["part_number"]: r for r in csv.DictReader(f)}
     kg = lambda pn: float(rows[pn]["mass_each_kg"])
-    return dict(ledge=kg("810101"), shelf=kg("810201"), rail=kg("818102"), total=kg("810000"))
+    gone = [pn for pn in SHELF_REPLACED if pn in rows and rows[pn]["parent"] == "810201"]
+    gone_kg = sum(float(rows[pn]["qty_per_parent"]) * kg(pn) for pn in gone)
+    elec = (hosted or {}).get("810201", [])
+    elec_kg = sum(q * m for _pn, q, m in elec)
+    return dict(ledge=kg("810101"), shelf=kg("810201") - gone_kg + elec_kg, rail=kg("818102"),
+                total=kg("810000") - gone_kg + elec_kg, shelf_listed=kg("810201"), shelf_gone=gone, shelf_gone_kg=gone_kg,
+                shelf_elec=[pn for pn, _q, _m in elec], shelf_elec_kg=elec_kg)
 
 
-INTERIOR = interior_cad()
+def shelf_note():
+    """What the light shelf's CAD mass holds beyond INTERIOR's 810201 (S51), for the line texts."""
+    it, out = INTERIOR, []
+    if it["shelf_elec"]:
+        out.append(f"with ELECTRICAL's down-light profile, cover, end caps and clips {it['shelf_elec'][0]} to "
+                   f"{it['shelf_elec'][-1]} ({it['shelf_elec_kg']:.3f}), listed under 810201 (S51)")
+    if it["shelf_gone"]:
+        out.append(f"less the channel and diffuser {' and '.join(it['shelf_gone'])} ({it['shelf_gone_kg']:.3f}) that D-126 "
+                   "replaced, which INTERIOR's list still carries")
+    return "; ".join(out)
+
+
+INTERIOR = interior_cad(hosted=ELEC["hosted"])
 KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
@@ -592,13 +622,14 @@ def lines(**adopt):
               "calculation (CAD)", f"S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 "
               f"{el['power_unit']:.2f}, the hub and controls zone {el['hub']:.2f}, the cord set {el['cord']:.2f}, the harnesses, "
               f"cables and connectors, and the lights ({el['strip_m']:.2f} m of shelf and down-light strip, the call light). "
-              "The light shelf's strip is counted here only"))
+              "The light shelf's strip is counted here only; the down-light profile parts listed under INTERIOR's shelf "
+              "are in the shelf's line (S51)"))
     it = INTERIOR
     strip = el["strip_kgm"] * shelf_m()                     # the shelf uplight's LED strip, in ELECTRICAL's line (S43)
     if a["budgets"]:
         L.append(("INTERIOR", "Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line)", 1,
                   it["shelf"], "calculation (CAD)", "S46, CAD on main: INTERIOR parts list 810201 P01: the back and side "
-                  "shelves, the right-wall down-light channel and its diffuser; the LED strips are in ELECTRICAL's line"))
+                  "shelves" + (", " + shelf_note() if shelf_note() else "") + "; the LED strips are in ELECTRICAL's line"))
         L.append(("INTERIOR", "Work-wall ledge, 1000 mm, with the screen rail", 1, it["ledge"] + it["rail"],
                   "calculation (CAD); brackets and screen rail HOLD",
                   f"S46, CAD on main: INTERIOR parts list 810101 P01, the ledge and its 2 brackets ({it['ledge']:.3f}), and "
@@ -691,7 +722,8 @@ def cad_swaps():
              "connectors that no longer exist and gasket at 60 g/m"),
             ("Light shelf (its LED strip in ELECTRICAL's line)", 1,
              SHELF_KGM * shelf_m() + SHELF_BRACKETS_KG - ELEC_LIGHTS_KG * shelf_m() / (shelf_m() + CALL_LIGHT_M),
-             INTERIOR["shelf"], "INTERIOR 810201 P01, PR #92 (the estimate: D-85's budget less the strip share)"),
+             INTERIOR["shelf"], "INTERIOR 810201 P01, PR #92" + (", " + shelf_note() if shelf_note() else "")
+             + " (the estimate: D-85's budget less the strip share)"),
             ("Work-wall ledge", 1, LEDGE_KG, INTERIOR["ledge"], "INTERIOR 810101 P01, PR #92 (the estimate: D-85's budget)"),
             ("Screen rail (not in the estimate)", 1, 0.0, INTERIOR["rail"], "INTERIOR 818102 P01, HOLD, PR #92")] + base_swaps()
 
