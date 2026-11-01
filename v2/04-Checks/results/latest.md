@@ -1,8 +1,8 @@
-# Mechanical check run: 5966c3e on 2026-11-01
+# Mechanical check run: 5fa198d on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `5966c3e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `5fa198d`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 157** (49 severe, 101 major, 7 minor). Register numbers in brackets.
+**Findings in this run: 161** (49 severe, 105 major, 7 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,7 +13,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `5966c3e`. The Fusion 
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 104 |
-| C06 BOM completeness | yes | 34 |
+| C06 BOM completeness | yes | 38 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 2 |
@@ -158,6 +158,10 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-251 | major | C06 | 838002 | 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC is one component holding 4 bodies of 2 different shapes (LOCK SCREW 1 HEAD, LOCK SCREW 1 SHANK, LOCK SCREW 2 HEAD, LOCK SCREW 2 SHANK) in 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | CEILING |
 | F-172 | major | C06 | 838003 | 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (9 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
 | F-189 | major | C06 | 831001 | 831001's body in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step isn't the part its own STEP 831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step holds: its sizes differ (own STEP: 0 holes, sizes ((2.94, 8.0), (4.0, 6.24)); the copy: 0 holes, sizes ((3.0, 10.0), (4.0, 7.24))), whichever way the copy is turned. The assembly's fits were set round the copy. | WALL; Joints Engineer |
+| F-269 | major | C06 | 110401 | 110401 BASE - FLOOR PANEL ASSY - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE |
+| F-270 | major | C06 | 111401 | 111401 BASE - FLOOR PANEL - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE |
+| F-271 | major | C06 | 111501 | 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE |
+| F-272 | major | C06 | the base seal lip on the band's inner face, pressing on the  | D-132 requires the base seal lip on the band's inner face, pressing on the room floor across the glides' range, but no parts list or CAD part in v2/03-Manufacturing/base/ names it yet. | BASE |
 | F-252 | major | C06 | 611301 | 611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-253 | major | C06 | 611302 | 611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-227 | major | C08 | assembly SOFFIT RAIL DOOR holes Ø6.60 | 610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig. | CEILING |
@@ -210,7 +214,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.294 | 1492.74 x 1142.74 x 48.5 | upright | calculation (CAD); fill provisional |
 | 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.294 | 1492.74 x 1142.74 x 48.5 | upright | calculation (CAD); fill provisional |
 | 1-11 CEILING - PANEL ASSY - C1 | 10.047 | 1495 x 1200.61 x 46 | upright | calculation (CAD) |
-| 1-12 CEILING - PANEL ASSY - C2 | 10.306 | 1495 x 1200.61 x 60 | upright | calculation (CAD) |
+| 1-12 CEILING - PANEL ASSY - C2 | 10.922 | 1495 x 1200.61 x 70 | upright | calculation (CAD) |
 | 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.341 | 1445 x 1142.74 x 38 | upright | calculation (CAD) |
 | 1-14 LINING - CASSETTE - SIDE UPPER - RH | 9.912 | 1445 x 1092.74 x 38 | upright | calculation (CAD) |
 | 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.341 | 1445 x 1142.74 x 38 | upright | calculation (CAD) |
@@ -228,16 +232,16 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.117 | 729 x 118 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2292 x 308 x 199 | long | calculation (CAD) |
-| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 15.388 | 2332 x 360 x 220 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
-| 2-11 AIR - AIR COLUMN | 8.147 | 2105 x 360 x 217 | long | calculation (CAD); fill provisional |
+| 2-10 AIR - SOFFIT | 14.772 | 2322 x 359 x 233 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
+| 2-11 AIR - AIR COLUMN | 8.147 | 2108 x 359 x 212 | long | calculation (CAD); fill provisional |
 | 2-12 FRONT - DECOR BLOCK ASSY - DT | 7.913 | 1699 x 306 x 203 | long | calculation (CAD); calculation (CAD); magnetic seal HOLD |
 | 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.28 | 600 x 250 x 200 | long | calculation (CAD) |
 | 2-14 INTERIOR - LIGHT SHELF ASSY | 1.585 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-15 BASE - SMALL PARTS CARTON | 1.14 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-16 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
-| 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 12.95 | 1845 x 460 x 199 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot and mesh assumption |
-| 2-18 AIR - CARTRIDGE - SUPPLY | 10.55 | 1750 x 314 x 173 | long | calculation (CAD) |
-| 2-19 AIR - CARTRIDGE - EXHAUST | 10.55 | 1750 x 314 x 173 | long | calculation (CAD) |
+| 2-17 AIR - SUPPLY FAN BOX | 13.45 | 2005 x 516 x 203 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption |
+| 2-18 AIR - SPLITTER CARTRIDGE - COMMON | 10.55 | 1750 x 314 x 173 | long | calculation (CAD) |
+| 2-19 AIR - SPLITTER CARTRIDGE - COMMON | 10.55 | 1750 x 314 x 173 | long | calculation (CAD) |
 | 2-20 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
 | 2-21 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
 | 2-22 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |

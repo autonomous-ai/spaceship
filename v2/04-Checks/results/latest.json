@@ -1,5 +1,5 @@
 {
- "rev": "5966c3e",
+ "rev": "5fa198d",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -855,6 +855,54 @@
     "files": 4
    },
    "key": "C06|copy-differs|831001"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "110401",
+   "severity": "major",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|110401"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "111401",
+   "severity": "major",
+   "message": "111401 BASE - FLOOR PANEL - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|111401"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "111501",
+   "severity": "major",
+   "message": "111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|111501"
+  },
+  {
+   "check": "C06",
+   "rule": "required-by-decision",
+   "subject": "the base seal lip on the band's inner face, pressing on the ",
+   "severity": "major",
+   "message": "D-132 requires the base seal lip on the band's inner face, pressing on the room floor across the glides' range, but no parts list or CAD part in v2/03-Manufacturing/base/ names it yet.",
+   "fix": "Model it and give it its row and number (D-132).",
+   "file": "v2/03-Manufacturing/base",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|required-by-decision|the base seal lip on the band's inner face, pressing on the "
   },
   {
    "check": "C06",
@@ -2370,11 +2418,11 @@
   {
    "id": "1-12",
    "name": "CEILING - PANEL ASSY - C2",
-   "kg": 10.306,
+   "kg": 10.922,
    "dims": [
     1495.0,
     1200.61,
-    60.0
+    70.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -2585,12 +2633,12 @@
   },
   {
    "id": "2-10",
-   "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 15.388,
+   "name": "AIR - SOFFIT",
+   "kg": 14.772,
    "dims": [
-    2332.0,
-    360.0,
-    220.0
+    2322.0,
+    359.0,
+    233.0
    ],
    "ships_as": "long",
    "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional"
@@ -2600,9 +2648,9 @@
    "name": "AIR - AIR COLUMN",
    "kg": 8.147,
    "dims": [
-    2105.0,
-    360.0,
-    217.0
+    2108.0,
+    359.0,
+    212.0
    ],
    "ships_as": "long",
    "status": "calculation (CAD); fill provisional"
@@ -2669,19 +2717,19 @@
   },
   {
    "id": "2-17",
-   "name": "AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS",
-   "kg": 12.95,
+   "name": "AIR - SUPPLY FAN BOX",
+   "kg": 13.45,
    "dims": [
-    1845.0,
-    460.0,
-    199.0
+    2005.0,
+    516.0,
+    203.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot and mesh assumption"
+   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption"
   },
   {
    "id": "2-18",
-   "name": "AIR - CARTRIDGE - SUPPLY",
+   "name": "AIR - SPLITTER CARTRIDGE - COMMON",
    "kg": 10.55,
    "dims": [
     1750.0,
@@ -2693,7 +2741,7 @@
   },
   {
    "id": "2-19",
-   "name": "AIR - CARTRIDGE - EXHAUST",
+   "name": "AIR - SPLITTER CARTRIDGE - COMMON",
    "kg": 10.55,
    "dims": [
     1750.0,
