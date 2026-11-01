@@ -1150,6 +1150,9 @@ BEFORE_WELD = re.compile(r"\bbefore\s+(?:the\s+)?weld", re.I)
 # the same (build_release_checklist.py, d162_rows), with these patterns: keep them in step
 END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
 SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends", re.I)
+# one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
+_ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
+BOTH_ENDS_ANGLE = re.compile(r"\bboth ends\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE), re.I)
 
 
 def member_row_lacks(row):
@@ -1161,7 +1164,8 @@ def member_row_lacks(row):
     return [what for what, ok in (
         ("its section", bool(cells.get("section"))),
         ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
-        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))),
+        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))
+         or bool(BOTH_ENDS_ANGLE.search(ends))),
         ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
 UNSTATED_END = re.compile(r"\b(?:cope[ds]?|coping|notch(?:ed|es)?|saddle|fish-?mouth|profile[- ]cut)\b", re.I)
 
