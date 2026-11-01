@@ -97,7 +97,7 @@ Read from: this working tree.
 - 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112: HOLD (source (product); bond to aluminium HOLD)
 - 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002): a question in the owner's quote request, dormakaba first (D-46): no published hinge meets the 8.76 laminate, 1176 wide, 60 kg, lift-off and holding the door closed (sourcing, PM ruling 2026-11-01))
 - 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD: HOLD (HOLD: a question in the owner's quote request: no published pair fits the 8.76 laminate with a 4 mm edge gap (Häfele, FHC or REHAU; sourcing, PM ruling 2026-11-01))
-- 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (HOLD: questions in the owner's quote request: US supply, the overall length (355 at most) and projection (70 at most), and the laminated glass)
+- 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (source (product kept, PM ruling 2026-11-01); US supply, the overall length (355 at most), the projection (70 at most) and the laminated glass: questions in the owner's quote request)
 - 368008: the list still names it 'FRONT - DOOR KICK STRIP END SEAL - BRUSH'; the joints register's H-43 now names it 'FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD: HOLD (source (products named, PM ruling 2026-11-01: closes HOLD-23))
 - 368009: the list still names it 'FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH'; the joints register's H-46 now names it 'FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
@@ -222,7 +222,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 157 numbers, 130 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 180 numbers, 152 not in a team's list yet, 5 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -383,6 +383,29 @@ From `v2/04-BOM/number-allocation.csv`: 157 numbers, 130 not in a team's list ye
 | 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
 | 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
 | 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
+| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | ALLOCATED |
+| 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | in use |
+| 412002 | CEILING - FRAME CLIP TAB | 411101 411102 | 12 | ALLOCATED |
+| 513103 | LINING - CATCH EYE BRACKET - CEILING | 510301 | 4 | ALLOCATED |
+| 611212 | AIR - SOFFIT UNDERSIDE HINGE - RIVETED PIN | 610201 | 4 | ALLOCATED |
+| 611213 | AIR - SOFFIT CARTRIDGE STRAP | 610201 | 2 | ALLOCATED |
+| 611214 | AIR - SOFFIT CARTRIDGE STRAP ANGLE | 610201 | 1 | ALLOCATED |
+| 618403 | AIR - FAN BOX MOUNT - EXHAUST - HOLD | 610402 | 4 | ALLOCATED |
+| 610403 | AIR - RISER TRANSITION | 610401 | 1 | ALLOCATED |
+| 610404 | AIR - SUPPLY TRANSITION | 610401 | 1 | ALLOCATED |
+| 611701 | AIR - RISER TRANSITION - LEFT WRAPPER | 610403 | 1 | ALLOCATED |
+| 611702 | AIR - RISER TRANSITION - RIGHT WRAPPER | 610403 | 1 | ALLOCATED |
+| 611703 | AIR - RISER TRANSITION - CHEEK | 610403 | 2 | ALLOCATED |
+| 611801 | AIR - SUPPLY TRANSITION - SHELL | 610404 | 1 | ALLOCATED |
+| 611802 | AIR - SUPPLY TRANSITION - FLOOR | 610404 | 1 | ALLOCATED |
+| 611803 | AIR - SUPPLY TRANSITION - VANE - OVER THE BOX | 610404 | 3 | ALLOCATED |
+| 611804 | AIR - SUPPLY TRANSITION - VANE - BESIDE THE BOX | 610404 | 2 | ALLOCATED |
+| 611215 | AIR - SOFFIT LATCH BRACKET | 610201 | 4 | ALLOCATED |
+| 611409 | AIR - FAN BOX MOUNT ANGLE | 610201 | 2 | ALLOCATED |
+| 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
+| 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
+| 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
 
 ## Rules
 
