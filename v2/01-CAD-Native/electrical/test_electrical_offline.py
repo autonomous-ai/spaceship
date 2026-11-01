@@ -158,22 +158,34 @@ class Parts(unittest.TestCase):
                 self.assertTrue(p["status"], k)
 
     def test_supplies_within_rating(self):
-        for sid, _k, _o, rated, _a, _f, _w in EP.SUPPLIES:
+        """Each supply carries its loads within its rating and the Class 2 limit at its voltage (NEC Chapter 9 Table
+        11(B): 60 VA at 12 V, 100 VA over 20 to 30 V)."""
+        for sid, _k, out, rated, _a, _f, _w in EP.SUPPLIES:
             w = sum(q * wm for (_i, _n, s, _fu, q, wm, _t, _st, _src, _no) in EP.LOADS if s == sid)
             self.assertLessEqual(w, rated, sid)
-            self.assertLessEqual(rated, 60.0, "a 12 V Class 2 source is at most 60 VA")
+            volts = EP.BUS_V[sid]
+            self.assertIn(volts, (12.0, 24.0), sid)
+            self.assertLessEqual(rated, 60.0 if volts <= 20 else 100.0, "%s exceeds the Class 2 limit at %s" % (sid, out))
 
-    def test_kit_feeds_at_80_percent_and_the_kit_at_its_peak(self):
-        """PM ruling 2026-11-01: the kit's 60 W peak on two Class 2 supplies, each at 80 % or less, never joined."""
-        feeds = [(s, w) for (i, _n, s, _fu, q, w, _t, _st, _src, _no) in EP.LOADS if i in ("LD06", "LD09")]
-        self.assertEqual(sorted(s for s, _w in feeds), ["PS1", "PS4"])
-        for sid, _k, _o, rated, _a, _f, _w in EP.SUPPLIES:
-            if sid in ("PS1", "PS4"):
-                w = sum(q * wm for (_i, _n, s, _fu, q, wm, _t, _st, _src, _no) in EP.LOADS if s == sid)
-                self.assertLessEqual(w, 0.8 * rated + 1e-9, sid)
-        self.assertLessEqual(EP.KIT_PEAK_W, sum(w for _s, w in feeds))       # the two feeds can carry the whole peak
+    def test_kit_on_one_24v_feed_under_its_cap(self):
+        """D-168: the kit takes one 24 V Class 2 feed (PS1, CLG-100-24), its 60 W peak under the 80 % cap; one
+        source, so no two Class 2 sources can share a 0 V. W30 carries it on two cores per pole."""
+        feeds = [(s, w) for (i, _n, s, _fu, q, w, _t, _st, _src, _no) in EP.LOADS if "Voice cockpit" in _n]
+        self.assertEqual(feeds, [("PS1", EP.KIT_PEAK_W)])
+        ps1 = next(x for x in EP.SUPPLIES if x[0] == "PS1")
+        self.assertEqual((ps1[1], ps1[2]), ("ps_kit", "24 V DC"))
+        self.assertLessEqual(EP.KIT_PEAK_W, EP.KIT_CAP_W)
+        self.assertAlmostEqual(EP.KIT_CAP_W, 0.8 * ps1[3])
+        self.assertEqual(EP.P["ps_kit"]["sku"], "CLG-100-24")
+        self.assertEqual([s[0] for s in EP.SUPPLIES], ["PS1", "PS2", "PS3"])     # PS4 is gone (D-168)
         w30 = [h for h in EP.harnesses(M.values()) if h["id"].startswith("W30")]
-        self.assertTrue(all(h.get("parallel", 1) == 1 and "16 AWG" in h["cable"] for h in w30))
+        self.assertTrue(w30 and all(h.get("parallel", 1) == 2 and "16 AWG" in h["cable"] for h in w30))
+
+    def test_light_strips_in_whole_sections(self):
+        """D-168: Häfele's 24 V strips cut every 50 mm, so every run is a whole number of sections."""
+        for run in EP.UP_RUNS + (EP.DOWN_ROW,):
+            self.assertAlmostEqual(run / EP.SECTION_M, round(run / EP.SECTION_M), places=9, msg=run)
+        self.assertAlmostEqual(EP.UP_M, sum(EP.UP_RUNS))
 
     def test_lights_inside_their_budget(self):
         typ = sum(q * t for (i, _n, _s, _fu, q, _wm, t, _st, _src, _no) in EP.LOADS if i in ("LD04", "LD05", "LD08"))
@@ -185,7 +197,7 @@ class Parts(unittest.TestCase):
         rows = {h["id"]: h for h in D.harness_rows(M.values())}
         for name, ids in EP.CIRCUIT_PATHS:
             d = sum(float(rows[i]["drop_v"]) for i in ids)
-            self.assertLessEqual(d / 12.0, 0.03, name)
+            self.assertLessEqual(d / D.circuit_v(rows[ids[0]]["circuit"]), 0.03, name)
 
     def test_connector_counts_match_the_harness_ends(self):
         rows = EP.harnesses(M.values())
@@ -292,11 +304,12 @@ class LoadTotal(unittest.TestCase):
         rows = D.load_rows()
         total = sum(float(r["w_total_max"]) for r in rows)
         sup = D.supply_summary()
-        want = sum(s[2] for s in sup) - max(0.0, 2 * EP.KIT_FEED_W - EP.KIT_PEAK_W)
-        self.assertAlmostEqual(total, want, places=2)
+        self.assertAlmostEqual(total, sum(s[2] for s in sup), places=2)
         kit = [r for r in rows if r["id"] in D.KIT_ROWS]
-        self.assertEqual([float(r["w_each_max"]) for r in kit], [EP.KIT_FEED_W] * 2)
+        self.assertEqual([float(r["w_each_max"]) for r in kit], [EP.KIT_PEAK_W])
         self.assertAlmostEqual(sum(float(r["w_total_max"]) for r in kit), EP.KIT_PEAK_W)
+        for r in rows:                                     # each load's current at its own supply's voltage (D-168)
+            self.assertAlmostEqual(float(r["a_total_max"]), float(r["w_total_max"]) / EP.BUS_V[r["supply"]], places=2)
 
 
 class Sheets(unittest.TestCase):
@@ -341,7 +354,7 @@ class Sheets(unittest.TestCase):
 
     def test_light_figures_from_the_parts_data(self):
         text = self.norm(self.fitz.open(WD_PDF)[0].get_text())
-        self.assertIn("uplight %.2f m and down-light 2 x %.3f m" % (EP.UP_M, EP.DOWN_ROW), text)
+        self.assertIn("uplight %.2f m and down-light 2 x %.2f m (24 V strips)" % (EP.UP_M, EP.DOWN_ROW), text)
 
     def test_saved_sheets_are_what_the_generators_make(self):
         import tempfile
