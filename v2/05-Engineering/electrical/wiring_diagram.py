@@ -211,7 +211,7 @@ def sheet1(doc, rows, harness, v):
     s.poly([(352, 174), (355.5, 174), (355.5, 187), (358, 187)], SIG, 0.3)   # the sensor's link starts on the hub
     s.line(262, 190, 264, 190, SIG, 0.3)
     s.boxf(264, 205, 403, 232, "SAFETY AND RESERVES",
-          ["SELF-TEST (D-87): TEST checks the 3 rails, runs both fan pairs (tach), steps each light channel (current), reads",
+          ["SELF-TEST (D-87): TEST reads the 3 rails' volts, runs both fan pairs (tach), steps each light channel (current), reads",
            "the sensors and shows PASS or the failing item. PWM fail-safe: an open PWM line runs the fans at full speed.",
            "Draw wires: W32 kit drop -> column -> soffit (mic, status light); W33 back wall top -> ceiling cassette (D-41,",
            "and the sprinkler or alarm wiring point, ISS-052). Nothing is cut on site later (REQ-VCK-03)."], INK, 1.8)

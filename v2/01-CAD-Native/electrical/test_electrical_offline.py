@@ -181,6 +181,26 @@ class Parts(unittest.TestCase):
         w30 = [h for h in EP.harnesses(M.values()) if h["id"].startswith("W30")]
         self.assertTrue(w30 and all(h.get("parallel", 1) == 2 and "16 AWG" in h["cable"] for h in w30))
 
+    def test_each_lead_at_its_supplys_voltage(self):
+        """Reviewer 7's P3 on #319 (the Lead, 2026-11-01): every lead that names a positive rail ("+24 V", "+12 V")
+        carries the voltage of the supply its circuit names first (D-168: PS1 and PS2 at 24 V, PS3 at 12 V), and every
+        circuit fed by a supply names one that exists. W12 once read "+12 V" on a 24 V circuit and only the stale-file
+        check caught it."""
+        import re
+        sids = {sid for sid, *_ in EP.SUPPLIES}
+        seen = 0
+        for h in EP.harnesses(M.values()):
+            rails = {float(x) for x in re.findall(r"\+(\d+(?:\.\d+)?) V", h["conductors"])}
+            first = h["circuit"].split()[0]
+            if first.startswith("PS"):
+                self.assertIn(first, sids, h["id"])
+            if not rails:
+                continue
+            seen += 1
+            self.assertTrue(first in sids, "%s names +V but no supply: %s" % (h["id"], h["circuit"]))
+            self.assertEqual(rails, {EP.BUS_V[first]}, "%s: %s on %s" % (h["id"], h["conductors"], h["circuit"]))
+        self.assertGreater(seen, 10)
+
     def test_light_strips_in_whole_sections(self):
         """D-168: Häfele's 24 V strips cut every 50 mm, so every run is a whole number of sections."""
         for run in EP.UP_RUNS + (EP.DOWN_ROW,):

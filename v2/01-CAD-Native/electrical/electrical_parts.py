@@ -280,7 +280,8 @@ def harnesses(v):
         end_b="hub I/O (HOLD H-ELE-05)", grommets="", amps_max=0.01,
         note="the hub sets the three light channels with DMX512 over RS-485, reads PS2's current and the 24 V rails PS1 and PS2 for the self-test (D-87); "
              "every core is isolated from PS1 and PS2 (the Lead's ruling, 2026-11-01): the RS-485 pair through an isolated "
-             "transceiver, the rail senses through optocouplers, PS2's current through an isolated sensor, so no two Class 2 "
+             "transceiver, the rail senses through isolated amplifiers (the self-test reads each rail's voltage, not just that it is live), "
+             "PS2's current through an isolated sensor, so no two Class 2 "
              "supplies share a 0 V")
     add(id="W40", harness_pn="710023", segment="COLUMN", function="supply fan pair", frm="F3a 2 A + hub PWM 1, tach 1",
         to="supply fan box, high in DR", route="CHASE, TO-DR", circuit="PS3 fan S",
@@ -760,9 +761,13 @@ part("fuse2", "718066", "ELECTRICAL - FUSE - ATO 2 A 32 V", "Điện - cầu ch�
      "assumption", maker="Littelfuse", sku="0287002 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F3a, F3b fans")
 part("fuse1", "718067", "ELECTRICAL - FUSE - ATO 1 A 32 V", "Điện - cầu chì 1 A", "PI", "710041", 1, "", "", 0.002,
      "assumption", maker="Littelfuse", sku="0287001 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F3c hub")
-part("isense", "718073", "ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A", "Điện - mô-đun đo dòng", "PI", "710001", 1,
-     "", "", 0.01, "assumption", sku="maker HOLD (H-ELE-13)", status=HOLD_BUY, source="",
-     note="on PS2's output in the power unit: the self-test steps each light channel and reads the current change (D-87)")
+part("isense", "718073", "ELECTRICAL - ISOLATED SENSE MODULE - 24 V RAILS AND LIGHT CURRENT", "Điện - mô-đun đo cách ly (điện áp 24 V, dòng đèn)",
+     "PI", "710001", 1, "", "", 0.01, "assumption", sku="maker HOLD (H-ELE-13)", status=HOLD_BUY, source="",
+     note="in the power unit, powered from PS3 on the hub's side: PS2's output current through an isolated (Hall) sensor, and the "
+          "PS1 and PS2 rail voltages through isolated amplifiers (for example TI AMC3330: 1 V input through a divider, reinforced "
+          "isolation, its own isolated supply from the low side; TI's product page, read 2026-11-01). The self-test (D-87) reads "
+          "each rail's voltage, so it sees a sagging supply and not only a live one (Reviewer 7's P3, the Lead 2026-11-01); "
+          "the hub's 0 V never meets PS1's or PS2's")
 part("ycable", "718068", "ELECTRICAL - FAN Y-CABLE - 4-PIN PWM", "Điện - cáp chia quạt", "PI", "710041", 2, "", "", 0.01,
      "assumption", maker="Noctua", sku="NA-SYC1 (unverified; harness end housing H-ELE-07)", status=HOLD_BUY,
      source="", note="one per fan pair, at the fan box")
