@@ -142,7 +142,7 @@ def text_block(pn):
         "Holes: %s" % HOLES[pn],
         "Sources: CAD 110000_P01_BASE_CAD and the part's own design; feature reasons in "
         "v2/02-Drawings/base/FEATURE-RATIONALE.md; status of every number in base_build.py.",
-        "Made by the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, 2026-11-01.",
+        "Sheet made from the design with v2/02-Drawings/base/base_drawings.py, 2026-11-01.",
     ]
     if is_asm:
         import csv
@@ -171,6 +171,8 @@ def fill_created_by(page):
     lh = lab.y1 - lab.y0
     row = [w for w in page.get_text("words")
            if lab.y1 - 0.5 < w[1] < lab.y1 + 3 * lh and lab.x0 - 1 <= w[0] < lab.x0 + 200]
+    if any(w[4].strip(",.") == AUTHOR for w in row):
+        return                  # the shared name strip (tools/fusion, PR #290) already wrote it
     ref = min(row, key=lambda w: w[1]) if row else None
     hgt = (ref[3] - ref[1]) if ref else 2 * lh
     base = (ref[3] if ref else lab.y1 + hgt) - 0.22 * hgt

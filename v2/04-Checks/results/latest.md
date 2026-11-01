@@ -1,8 +1,8 @@
-# Mechanical check run: 12d5825 on 2026-11-01
+# Mechanical check run: a8cd10a on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `12d5825`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `a8cd10a`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 194** (49 severe, 137 major, 8 minor). Register numbers in brackets.
+**Findings in this run: 192** (49 severe, 135 major, 8 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `12d5825`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 118 |
+| C05 drawing completeness | yes | 116 |
 | C06 BOM completeness | yes | 40 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -128,8 +128,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-151 | major | C05 | 810101 | 810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-152 | major | C05 | 810201 | 810201 INTERIOR - LIGHT SHELF ASSY has no drawing PDF (810201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-324 | major | C05 | 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG | 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | BASE |
-| F-325 | major | C05 | 111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG | 111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf: its MADE BY field reads 'tools/drawgen (D-112)' (sheet 1, 2); its MADE BY field reads 'tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF.' (sheet 2); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | Drawing Generator |
-| F-326 | major | C05 | 111103_P01_BASE-BAND-TUBE-BACK_DWG | 111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf: its MADE BY field reads 'tools/drawgen (D-112)' (sheet 1, 2); its MADE BY field reads 'tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF.' (sheet 2); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | Drawing Generator |
 | F-327 | major | C05 | 111401_P01_BASE-FLOOR-PANEL-F1_DWG | 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | BASE |
 | F-328 | major | C05 | 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG | 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
 | F-329 | major | C05 | 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG | 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
