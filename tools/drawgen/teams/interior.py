@@ -30,3 +30,33 @@ NO_DRAWING = {
     "811205": "cancelled (D-126: a bought LED profile's clip-in diffuser takes its place); before that, D-125 gave "
               "the plain strip a full parts-list line and no drawing",
 }
+
+# Assembly sheets (tools/drawgen/assembly.py; D-158). The light shelf is fitted on site along the wall tops (the
+# assembly guide's step 19); where each run sits, how it's fixed and what ELECTRICAL hangs on it come from INTERIOR's
+# feature rationale (F-8102-01 to -07). Two sections at 1:2 show how the parts meet: across the right run with
+# ELECTRICAL's LED profile under it (A-A), and in plan through the corner where the right run butts the back run (B-B).
+ASSEMBLIES = {
+    "810201": {
+        "sections": [
+            {"letter": "A", "point": [1136, 0, 2250], "normal": [0, -1, 0], "scale": 0.5, "slice": 10,
+             "window": [1090, 1180, 2205, 2280]},
+            # B-B looks up, as the view from below does, so its window is in that view's X and Y (pod +X and -Y); it
+            # cuts at mid-lip height, through both lips and both back flanges
+            {"letter": "B", "point": [1136, 736, 2240], "normal": [0, 0, -1], "scale": 0.5, "slice": 10,
+             "window": [1080, 1175, -775, -680]},
+        ],
+        "notes": [
+            "Fitted on site, after the ceiling cassettes, along the tops of the side and back walls (assembly guide, "
+            "step 19): the back run 811201 on the back wall's lining (Y 766), full width (X -1166 to 1166); the side "
+            "runs 811202 LH and 811203 RH on the side walls' linings, from the soffit's back face (Y -285) to the back "
+            "run, which they butt (INTERIOR feature rationale F-8102-03, F-8102-04). The underside at Z 2230, the back "
+            "flange's top at Z 2270 (F-8102-02).",
+            "HOLD: each run's back flange is screwed to the wall cassettes; the fixing and its spacing are on hold "
+            "with WALL's cassette tray (F-8102-07), and the parts list names no fixing yet.",
+            "ELECTRICAL's up-light strip runs on each run's bottom, inside the U, aimed at the felt ceiling; the U is "
+            "its wiring channel (F-8102-01). ELECTRICAL's down-light LED profile 718101 clips under the right run "
+            "(F-8102-05). The feed comes through the back run's Ø10 hole at X 355 and the call light's drop through "
+            "the right run's at Y -209.5, both at Z 2250 (F-8102-06); the feed is plugged in at step 19.",
+        ],
+    },
+}
