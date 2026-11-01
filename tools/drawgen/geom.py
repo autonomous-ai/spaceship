@@ -318,6 +318,8 @@ class Hole:
         self.partners = []       # other runs on the same axis (a hole through two tube walls)
         self.tag = None
         self.point_angle = None  # a blind hole's drill point (degrees), when its cone is in the model
+        self.csk = None          # a countersink at the entry: {"dia", "angle" (included, degrees), "depth"} (D-143)
+        self.csk_both = False
 
     @property
     def normal(self):
@@ -433,7 +435,8 @@ def features(body):
         if sf.GetType() == GeomAbs_Cone:
             cn = sf.Cone()
             dd = cn.Axis().Direction()
-            cones.append({"apex": pnt(cn.Apex()), "dir": canon_dir((dd.X(), dd.Y(), dd.Z())), "semi": abs(cn.SemiAngle())})
+            cones.append({"apex": pnt(cn.Apex()), "dir": canon_dir((dd.X(), dd.Y(), dd.Z())), "semi": abs(cn.SemiAngle()),
+                          "face": f})
 
     def point_at(d, a0, r, t_end, beyond):
         """A cone that is the drill point at this end of a run (beyond: +1 past t1, -1 before t0): its angle."""
@@ -447,6 +450,31 @@ def features(body):
             want = r / math.tan(cn["semi"]) if cn["semi"] > 1e-6 else 1e9
             if abs((t - t_end) * beyond - want) < max(0.02, 0.01 * r):
                 return 2 * math.degrees(cn["semi"])
+        return None
+    def csk_at(d, a0, r, t_end, outward):
+        """A countersink at this end of a run (outward: +1 the cone widens past t1, -1 before t0): its outer
+        diameter, included angle and depth along the axis, from the cone on the run's axis that starts at the hole's
+        circle and widens out of the material (D-143)."""
+        for cn in cones:
+            if abs(abs(vdot(cn["dir"], d)) - 1) > 1e-6 or cn["semi"] < 1e-6:
+                continue
+            off = vsub(cn["apex"], a0)
+            t = vdot(off, d)
+            if math.sqrt(max(0.0, vdot(off, off) - t * t)) > 0.02:
+                continue
+            if abs((t_end - t) * outward - r / math.tan(cn["semi"])) > max(0.02, 0.01 * r):
+                continue
+            rs = []
+            for v in _vertices_of(cn["face"]):
+                q = pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v)))
+                o = vsub(q, a0)
+                tt = vdot(o, d)
+                rs.append(math.sqrt(max(0.0, vdot(o, o) - tt * tt)))
+            R = max(rs) if rs else r
+            if R <= r + 1e-3:
+                continue
+            return {"dia": 2 * R, "angle": 2 * math.degrees(cn["semi"]), "depth": (R - r) / math.tan(cn["semi"]),
+                    "face": cn["face"]}
         return None
     holes, partial = [], []
     for g in groups:
@@ -488,9 +516,24 @@ def features(body):
                 else:
                     entry, axis = p0, d
             key = (tuple(round(x, 6) for x in d), tuple(round(x, 2) for x in a0))     # the axis line only
-            holes.append(Hole(body, entry, axis, 2 * h0["r"], run["t1"] - run["t0"], through, key,
-                              run["t0"], run["t1"]))
+            # a countersink (D-143): the hole is drilled from its side, the entry on the face where the cone opens,
+            # the depth the bore and the cone together
+            ck0 = csk_at(d, a0, h0["r"], run["t0"], -1) if not closed0 else None
+            ck1 = csk_at(d, a0, h0["r"], run["t1"], +1) if not closed1 else None
+            depth = run["t1"] - run["t0"]
+            csk = None
+            if ck1 and not ck0:
+                csk = ck1
+                entry, axis = vadd(p1, vmul(d, ck1["depth"])), vmul(d, -1.0)
+                depth += ck1["depth"]
+            elif ck0 and not ck1:
+                csk = ck0
+                entry, axis = vsub(p0, vmul(d, ck0["depth"])), d
+                depth += ck0["depth"]
+            holes.append(Hole(body, entry, axis, 2 * h0["r"], depth, through, key, run["t0"], run["t1"]))
             holes[-1].point_angle = pt1 if entry is p0 else pt0
+            holes[-1].csk = csk
+            holes[-1].csk_both = bool(ck0 and ck1)
     # partners: runs on one axis line (both walls of a tube)
     for h in holes:
         h.partners = [o for o in holes if o is not h and o.line_key == h.line_key]
@@ -645,6 +688,8 @@ def unexplained_curved_faces(body, holes, slots):
             continue
         if t == GeomAbs_Cone and drill_point_of(s, holes) is not None:
             continue
+        if t == GeomAbs_Cone and any(h.csk is not None and h.csk["face"].IsSame(f) for h in holes):
+            continue            # a countersink, called out with its hole (D-143)
         out.append(({GeomAbs_Cone: "cone"}.get(t, "surface type %s" % int(t)), None))
     return out
 
