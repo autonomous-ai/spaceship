@@ -937,23 +937,37 @@ def build_seal_envelopes(design):
     extruded up to seal_leg above the band's bottom: the room its leg and its fin, bent on the room floor, take. The
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
-    fins = globals()["p02_seal_fins"](design) if P02_ON else {}
+    sections = globals()["p02_seal_sections"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
-        sk = comp.sketches.add(comp.xYConstructionPlane)
-        sk.name = "PLAN - BASE SEAL LIP - ENVELOPE ON THE ROOM FLOOR"
-        polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
-        check_sketch(sk)
-        extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
-        if key in fins:
-            # a fin past the plan envelope, below the band's bottom line only (p02_seal_fins), joined to it
-            sk2 = comp.sketches.add(comp.xYConstructionPlane)
-            sk2.name = "PLAN - BASE SEAL LIP - FIN BELOW THE BAND'S BOTTOM"
-            polygon(design, sk2, [P(design, ex, ey) for ex, ey in fins[key]], X, Y)
-            check_sketch(sk2)
-            extrude(comp, one_profile(sk2), "glide_h", "EXTRUDE - BASE SEAL LIP - FIN UP TO glide_h, JOINED",
-                    adsk.fusion.FeatureOperations.JoinFeatureOperation, body=single_body(comp))
-        single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
+        if key in sections:
+            # a section across the run (p02_seal_sections), one extrude along +Y from its start to its end
+            y0, y1, sec = sections[key]
+            yv = ev(design, y0)
+            pl = offset_plane(comp, "xz", y0, yv, "PLANE - BASE SEAL LIP - SECTION AT THE RUN'S START")
+            sk = comp.sketches.add(pl)
+            sk.name = "SECTION - BASE SEAL LIP - LEG AND FIN"
+            polygon(design, sk, [(ex, ez, (ev(design, ex), yv, ev(design, ez))) for ex, ez in sec], X, Z)
+            check_sketch(sk)
+            ei = comp.features.extrudeFeatures.createInput(one_profile(sk),
+                                                           adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+            direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if pl.geometry.normal.y > 0 else \
+                adsk.fusion.ExtentDirections.NegativeExtentDirection
+            ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("%s - %s" % (y1, y0))), direc)
+            comp.features.extrudeFeatures.add(ei).name = "EXTRUDE - BASE SEAL LIP - SECTION ALONG THE RUN"
+        else:
+            sk = comp.sketches.add(comp.xYConstructionPlane)
+            sk.name = "PLAN - BASE SEAL LIP - ENVELOPE ON THE ROOM FLOOR"
+            polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
+            check_sketch(sk)
+            extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+        body = single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
+        if key in sections:
+            got = bbox_mm(body)
+            want_y = (ev(design, sections[key][0]), ev(design, sections[key][1]))
+            if abs(got[1] - want_y[0]) > 0.01 or abs(got[4] - want_y[1]) > 0.01:
+                raise RuntimeError("%s: section envelope runs Y %.2f..%.2f, not %.2f..%.2f" % (
+                    key, got[1], got[4], want_y[0], want_y[1]))
         n += 1
     print("step 6: base seal envelopes: %d runs (D-132)" % n)
 
