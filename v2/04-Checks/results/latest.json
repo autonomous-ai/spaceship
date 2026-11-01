@@ -1,5 +1,5 @@
 {
- "rev": "d86ddcb",
+ "rev": "6028cf8",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -12,7 +12,7 @@
    "right-base",
    "top"
   ],
-  "bodies_assembly": 507,
+  "bodies_assembly": 515,
   "shell_faces_assembly": [
    "left",
    "left-base",
@@ -638,18 +638,6 @@
     "dia_mm": 6.6
    },
    "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348"
-  },
-  {
-   "check": "C06",
-   "rule": "top-part-number",
-   "subject": "810000",
-   "severity": "major",
-   "message": "810000_P01_INTERIOR_STEP.step's top component carries part number '2026-11-01-02-34-22-890', not 810000 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
-   "fix": "Set the root component's part number to 810000 in the native design and export the STEP again.",
-   "file": "v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C06|top-part-number|810000"
   },
   {
    "check": "C06",
@@ -2376,6 +2364,18 @@
   {
    "check": "C05",
    "rule": "no-drawing",
+   "subject": "810000",
+   "severity": "major",
+   "message": "810000 INTERIOR has no drawing PDF (810000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|810000"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
    "subject": "810101",
    "severity": "major",
    "message": "810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings).",
@@ -2444,30 +2444,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|811203"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811204",
-   "severity": "severe",
-   "message": "811204 INTERIOR - LIGHT SHELF - DOWN CHANNEL RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811204"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811205",
-   "severity": "severe",
-   "message": "811205 INTERIOR - LIGHT SHELF - DIFFUSER RH has no drawing PDF (811205_REV_NAME_DWG.pdf under v2/02-Drawings). D-125 (a plain straight-cut strip or sheet on a full parts-list row) doesn't apply: its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811205"
   },
   {
    "check": "C05",
