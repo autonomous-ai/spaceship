@@ -187,6 +187,15 @@ def run(_context):
         # promote the drawing's first version (ga_promote.py) and run this again
         raise RuntimeError("the sheet is hatched already; promote the drawing's first version to redo it")
     # the form of Lines.add that draws a straight line, from this session's live probe
+    if ARGS.get("outline_only") == "1":
+        # PM ruling 2026-11-01 10:1x: no hatch on the GA sections at 1:20. Every cut face in them is 2.3 mm
+        # or less on the sheet, and Fusion moved hatch ends beside a view edge onto the edge's corner (two
+        # probes); the view shows every cut face in outline, and the note says so
+        if hatch_first:
+            raise RuntimeError("outline_only places the view itself; leave hatch_first out")
+        print("outline only (PM ruling 2026-11-01): no hatch; every cut face in outline")
+        place_note(sheet)
+        return
     probing = bool(ARGS.get("probe_insets"))
     mode = "own-sketch" if probing else read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
     if mode == "none":
@@ -308,8 +317,13 @@ def run(_context):
         json.dump({"drawing": doc.name, "form": mode, "thin": "outline", "thin_faces": filled, "inset_mm": gap,
                    "layers": record}, fh)
     print("hatch record: %s (%d sketch(es))" % (os.path.basename(out), len(record)))
+    place_note(sheet)
+
+
+def place_note(sheet):
+    """The sections' note (PM rulings 2026-11-01), if --arg notes_png is given: its lower-left corner at
+    notes_px, notes_py, NOTES_WIDTH wide."""
     if ARGS.get("notes_png"):
-        # the thin-layer note (PM ruling): its lower-left corner at notes_px, notes_py, NOTES_WIDTH wide
         scale = insert_image(sheet, ARGS["notes_png"], float(ARGS["notes_px"]), float(ARGS["notes_py"]), NOTES_WIDTH)
         print("note placed at (%s, %s) mm, %g mm wide (scale %.4f)" % (ARGS["notes_px"], ARGS["notes_py"],
                                                                      NOTES_WIDTH, scale))

@@ -214,6 +214,16 @@ class SheetCheckTests(unittest.TestCase):
         self.assertEqual(pc.check_hatch(path, "HATCH - SECTION AA", 5), [])
         self.assertTrue(pc.check_hatch(path, "HATCH - SECTION AA", 50))
 
+    def test_an_outline_only_section_has_its_view_and_no_hatch_or_probe_layer(self):
+        # PM ruling 2026-11-01 10:1x: the GA sections at 1:20 are in outline only
+        view = [seg_path((167.5, 170 + k), (292.5, 170 + k)) for k in range(36)]
+        self.assertEqual(pc.check_outline(self.write({"Visible": view, "BORDER": view[:4]}), 30), [])
+        left = self.write({"Visible": view, "HATCH - SECTION BB 001": [seg_path((1, 1), (3, 3))]})
+        self.assertTrue(any("hatch or probe" in p for p in pc.check_outline(left, 30)))
+        probe = self.write({"Visible": view, "PROBE INSET 0.00 001": [seg_path((1, 1), (3, 3))]})
+        self.assertTrue(pc.check_outline(probe, 30))
+        self.assertTrue(any("Visible" in p for p in pc.check_outline(self.write({"Visible": view[:3]}), 30)))
+
     def test_a_line_drawn_back_and_forth_is_one_line(self):
         # Fusion's export writes a 2-point line as m B l A l B l A
         twice = [[("m", (20, 20)), ("l", (10, 10)), ("l", (20, 20)), ("l", (10, 10))]]

@@ -4,6 +4,7 @@
     python3 ga_pdf_check.py probe PROBE.pdf OUT.json   # which point form Lines.add keeps
     python3 ga_pdf_check.py hatch DRAWING.pdf "HATCH - SECTION BB" [--min 200]
     python3 ga_pdf_check.py symbol DRAWING.pdf
+    python3 ga_pdf_check.py outline DRAWING.pdf [--min 30]   # a section in outline only, no hatch
     python3 ga_pdf_check.py need-mode OUT.json      # exit 0 if a hatch can be drawn
 
 Why: the drawing sketch Lines.add is a preview API, and what it keeps differs
@@ -317,6 +318,22 @@ SYMBOL = [((560.0, 37.5), (570.0, 35.0)), ((570.0, 35.0), (570.0, 45.0)),
           ((570.0, 45.0), (560.0, 42.5)), ((560.0, 42.5), (560.0, 37.5))]
 
 
+def check_outline(pdf_path, min_view_segments=1):
+    """A section sheet drawn in outline only (PM ruling 2026-11-01): no hatch or probe layer is left in the
+    PDF, and the view's visible edges are there."""
+    with open(pdf_path, "rb") as fh:
+        lay = layers(fh.read())
+    problems = []
+    stray = sorted(n for n in lay if n.startswith(("HATCH", "PROBE")))
+    if stray:
+        problems.append("%d hatch or probe layer(s) in an outline-only sheet: %s" % (len(stray), ", ".join(stray[:5])))
+    seen = len(drawn_lines(lay.get("Visible", [])))
+    if seen < min_view_segments:
+        problems.append("the view's Visible layer holds %d line(s), fewer than %d" % (seen, min_view_segments))
+    print("outline: %d view line(s), %d hatch or probe layer(s)" % (seen, len(stray)))
+    return problems
+
+
 def check_symbol(pdf_path, prefix="PROJECTION SYMBOL - FIRST ANGLE"):
     with open(pdf_path, "rb") as fh:
         lay = layers(fh.read())
@@ -348,6 +365,9 @@ def main(argv):
         problems = check_hatch(argv[1], argv[2], n)
     elif len(argv) >= 2 and argv[0] == "symbol":
         problems = check_symbol(argv[1])
+    elif len(argv) >= 2 and argv[0] == "outline":
+        n = int(argv[argv.index("--min") + 1]) if "--min" in argv else 1
+        problems = check_outline(argv[1], n)
     else:
         print(__doc__)
         return 2
