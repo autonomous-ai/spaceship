@@ -490,6 +490,21 @@ class FillPiecesInThePanelTest(unittest.TestCase):
         self.assertNotIn("fill", ns["PARTS"])
         self.assertIn("fill", ns["WANT"]["panel"])
 
+    def test_every_bay_gets_its_allocated_number(self):
+        """A real build takes each bay's number from the allocation by form and size; a size written "240.0" in
+        FILL-PIECES.csv must still find "F01 240 X 1102.7" (dry run 8 left F01 and F04 unnumbered)."""
+        import csv
+        ns = load("panel", "L", "1")
+        rows = list(csv.DictReader(open(os.path.join(REPO, "v2/03-Manufacturing/wall/FILL-PIECES.csv"),
+                                        encoding="utf-8")))
+        for code in sorted({r["position"] for r in rows}):
+            want = {int(r["bay"]): r["number"] for r in rows if r["position"] == code}
+            got = ns["fill_numbers"](REPO, code)
+            self.assertEqual({b: v[0] for b, v in got.items()}, want, code)
+            for bay, (pn, name, vn) in got.items():
+                self.assertIn(" FILL PIECE ", name, (code, bay))
+                self.assertTrue(vn, (code, bay))
+
 
 class FillDxfTest(unittest.TestCase):
     """D-128: each fill-piece form is cut from its own DXF (make_fill_pieces.py); the DXFs match the CAD."""

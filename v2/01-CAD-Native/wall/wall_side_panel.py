@@ -1022,7 +1022,9 @@ def fill_numbers(repo_root, code):
     sizes = {}
     with open(os.path.join(repo_root, "v2/03-Manufacturing/wall/FILL-PIECES.csv"), encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
-            sizes[r["form"]] = "%s X %s" % (r["w_mm"], r["h_mm"])
+            # as the allocation names them: "240 X 1102.7", not the list's "240.0" (dry run 8 found F01 and F04
+            # unnumbered for that)
+            sizes[r["form"]] = "%g X %g" % (float(r["w_mm"]), float(r["h_mm"]))
     byform = {}
     for r in allocation(repo_root):
         m = re.search(r"FILL PIECE (F\d\d) ", r["name"])
