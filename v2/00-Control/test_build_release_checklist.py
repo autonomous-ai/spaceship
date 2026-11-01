@@ -159,6 +159,12 @@ class BoughtParts(unittest.TestCase):
         _, bought = run([row("518001", "buy", "LINING - CASSETTE CLIP - ACME CL-20")], {})
         self.assertEqual((bought[0]["state"], bought[0]["tests"]), ("HOLD", ["T07"]))
 
+    def test_the_register_reads_hold_as_a_whole_word(self):
+        text = REGISTER + ("| H-30 | **838009** | HARDWARE - GROMMET | bought | 4 | part DECIDED; the strip holds the seal |\n"
+                           "| H-31 | **838010** | HARDWARE - CLIP | bought | 4 | number adopted; product on hold until T07 |\n")
+        got = rc.register_products(text, BOM)
+        self.assertEqual((got["838009"], got["838010"]), ("named", "hold"))   # "holds" is not HOLD; "on hold" is
+
     def test_register_leaves_it_to_the_list(self):
         _, bought = run([row("368102", "buy", "FRONT - DOOR STRIKE - HOLD", hold=True, team="FRONT")], {})
         self.assertEqual(bought[0]["state"], "HOLD")
@@ -525,46 +531,290 @@ class FlatPartColumns(unittest.TestCase):
         self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
 
 
+class D125PlainStrip(unittest.TestCase):
+    """D-125, read as C05 reads it: the checklist calls the mechanical check's own functions (tools/checks), so a
+    plain strip or sheet on a full parts-list row counts as drawn in both tools, or in neither."""
+    LIST = "v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv"
+
+    def strip_line(self, d125):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("811299", "make", "INTERIOR - TEST STRIP", "aluminium 5052-H32 sheet", team="CEILING (builds INTERIOR, D-80)", src=self.LIST)
+        part["finish"] = "mill finish"
+        file_map = files("811299_P01_INTERIOR-TEST-STRIP_CAD.f3d", "811299_P01_INTERIOR-TEST-STRIP_STEP.step",
+                         folder="v2/03-Manufacturing/interior/")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {}, {}, None, d125)
+        return made[0]
+
+    def test_it_uses_the_mechanical_checks_own_functions(self):
+        c_geometry, c_drawings = rc.load_checks()
+        here = Path(c_drawings.__file__).resolve()
+        self.assertEqual(here, (rc.ROOT / "tools/checks/c_drawings.py").resolve())
+        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape", "strip_sides"):
+            self.assertTrue(callable(getattr(c_drawings, name)), name)
+        self.assertTrue(callable(c_geometry.load_step))
+
+    def test_the_strip_list_is_c05s_shared_function(self):
+        # the checklist builds no list of its own: it gives c_drawings.strip_sides the per-part STEP files (PR #210)
+        seen = {}
+        _geometry, c_drawings = rc.load_checks()
+        old = c_drawings.strip_sides, c_drawings.strip_row_lacks
+        c_drawings.strip_sides = lambda paths, load=None: seen.setdefault("call", (list(paths), load)) and {"211199": (1.5, 28.0, 991.0)}
+        c_drawings.strip_row_lacks = lambda root, pn, sides: ([], "list.csv")
+        try:
+            got = rc.d125_strips()
+        finally:
+            c_drawings.strip_sides, c_drawings.strip_row_lacks = old
+        self.assertEqual(got, {"211199": ([], "list.csv")})
+        paths, load = seen["call"]
+        self.assertTrue(all(str(x).endswith((".step", ".stp")) for x in paths), paths[:3])
+        self.assertIs(load, _geometry.load_step)
+
+    def test_a_full_row_counts_as_drawn(self):
+        line = self.strip_line({"811299": ([], self.LIST)})
+        self.assertEqual((line["flat"], line["dwg"]), ("row (D-125)", "row: a plain strip or sheet (D-125)"))
+        self.assertNotIn("drawing", line["gaps"])
+
+    def test_a_short_row_keeps_the_drawing_and_says_why(self):
+        line = self.strip_line({"811299": (["finish", "tolerance"], self.LIST)})
+        self.assertTrue(line["dwg"].startswith("no: as a plain strip or sheet (D-125)"), line["dwg"])
+        self.assertIn("finish, tolerance", line["dwg"])
+        self.assertIn("drawing", line["gaps"])
+
+    def test_no_strip_no_change(self):
+        self.assertEqual(self.strip_line({})["dwg"], "no")
+        self.assertEqual(self.strip_line(None)["dwg"], "no")
+
+    def test_the_real_run_passes_the_strip_list_on(self):
+        # main() reads D-125 and hands that list to check_parts; a run that stops passing it fails here (Reviewer 6, #211)
+        import inspect
+        import tempfile as _tempfile
+        seen, strips = {}, {"811299": ([], self.LIST)}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["d125"] = inspect.signature(real).bind(*args, **kw).arguments.get("d125")
+            raise Stop
+
+        real, old = rc.check_parts, rc.d125_strips
+        rc.check_parts, rc.d125_strips = spy, (lambda root=None: strips)
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.check_parts, rc.d125_strips = real, old
+        self.assertIs(seen.get("d125"), strips)
+
+
+class D125SharedRows(unittest.TestCase):
+    """C05's D-125 row cases (tools/checks/tests), run through the function the checklist calls, plus three sizes
+    needed and a HOLD grade that counts as stated (PM, 2026-11-01)."""
+    ROW = {"part_number": "811205", "name": "INTERIOR - LIGHT SHELF - DIFFUSER RH", "kind": "MP",
+           "material": "Opal polycarbonate (grade HOLD: picked with ELECTRICAL's down-light strips)",
+           "finish": "opal, as supplied", "process": "cut to length",
+           "size_mm": "991.0 long, section 28.0 x 1.5, 1.5 sheet", "tolerance": "±0.5 on cut sizes (assumption)"}
+    SIDES = (1.5, 28.0, 991.0)
+
+    def lacks(self, **change):
+        import csv as _csv
+        import tempfile as _tempfile
+        _geometry, c_drawings = rc.load_checks()
+        row = {**self.ROW, **change}
+        with _tempfile.TemporaryDirectory() as d:
+            folder = Path(d, "v2/03-Manufacturing/interior")
+            folder.mkdir(parents=True)
+            with open(folder / "810000_P01_INTERIOR-PARTS-LIST_BOM.csv", "w", encoding="utf-8", newline="") as f:
+                w = _csv.DictWriter(f, fieldnames=list(row))
+                w.writeheader()
+                w.writerow(row)
+            got = c_drawings.strip_row_lacks(d, "811205", self.SIDES)
+        return " | ".join(got[0]) if got else None
+
+    def test_c05s_cases(self):
+        self.assertEqual(self.lacks(), "")                                       # the full row stands in for a drawing
+        self.assertIn("finish", self.lacks(finish=""))
+        self.assertIn("the material's grade", self.lacks(material="polycarbonate"))
+        self.assertIn("1.5 x 28 x 991", self.lacks(size_mm="980.0 long, section 28.0 x 1.5"))   # not the STEP's length
+        self.assertIn("tolerance on the length and the width", self.lacks(tolerance=""))
+        self.assertIn("hole", self.lacks(process="cut to length, one cable hole"))
+        self.assertIn("tolerance on the width", self.lacks(tolerance="cut length +/-1 (assumption)"))  # 811205's line
+        self.assertEqual(self.lacks(tolerance="cut length +/-1, width as supplied (assumption)"), "")  # a bought strip
+        self.assertEqual(self.lacks(tolerance="ISO 2768-m"), "")
+        self.assertEqual(self.lacks(tolerance="length ±1; width ±0.5"), "")
+
+    def test_three_sizes_needed(self):
+        self.assertIn("1.5 x 28 x 991", self.lacks(size_mm="991.0 long, 28.0 wide"))
+
+    def test_a_hold_grade_counts_as_stated_and_shows_hold(self):
+        self.assertEqual(self.lacks(), "")          # its grade is on HOLD, and the row still passes D-125
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("211199", "make", "WALL - TEST STRIP", "opal polycarbonate (grade HOLD)", team="WALL")
+        part["finish"] = "opal, as supplied"
+        file_map = files("211199_P01_WALL-TEST-STRIP_CAD.f3d", "211199_P01_WALL-TEST-STRIP_STEP.step")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {}, {}, None, {"211199": ([], WALL)})
+        self.assertEqual((made[0]["dwg"], made[0]["state"]), ("row: a plain strip or sheet (D-125)", "HOLD"))
+
+
+class MadeHold(unittest.TestCase):
+    """A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD, not done
+    (PM, 2026-11-01); open gaps show first; the totals count it under Made: HOLD."""
+    LIST = WALL
+    HEAD = "part_number,name,material,grade,finish,status,mass_status"
+
+    def line(self, material="aluminium 5052-H32 sheet", rows="", drawn=True, head=None):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("211199", "make", "WALL - TEST STRIP", material, team="WALL", src=self.LIST)
+        part["finish"] = "mill finish"
+        file_map = files("211199_P01_WALL-TEST-STRIP_CAD.f3d", "211199_P01_WALL-TEST-STRIP_STEP.step")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {self.LIST: (head or self.HEAD) + "\n" + rows} if rows else {}, {}, None,
+                                 {"211199": ([], self.LIST)} if drawn else {})
+        return made[0]
+
+    def test_a_grade_on_hold_shows_hold(self):
+        self.assertEqual(self.line(material="opal polycarbonate (grade HOLD)")["state"], "HOLD")
+        own = "211199,WALL - TEST STRIP,polycarbonate,HOLD,mill finish,DRAFT,calculation\n"
+        self.assertEqual(self.line(rows=own)["state"], "HOLD")                     # a grade column
+        status = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,HOLD,calculation\n"
+        self.assertEqual(self.line(rows=status)["state"], "HOLD")                  # its status
+        self.assertEqual(self.line()["state"], "done")
+
+    def test_gaps_show_first(self):
+        self.assertEqual(self.line(material="aluminium (alloy HOLD)", drawn=False)["state"], "open: drawing")
+
+    def test_only_its_own_columns_count(self):
+        massnote = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT,real kg/m2 HOLD\n"
+        self.assertEqual(self.line(rows=massnote)["state"], "done")
+
+    def test_another_parts_row_naming_it_is_not_read(self):
+        # a bracket's row with 211199 in its parent cell reaches 211199's rows (cut_rows); only its own row counts
+        head = "part_number,parent,name,material,grade,finish,status,mass_status"
+        other = "218101,211199,WALL - BRACKET,aluminium (alloy HOLD),HOLD,mill finish,HOLD,calculation\n"
+        reached = rc.cut_rows({self.LIST: head + "\n" + other}).get("211199", [])
+        self.assertEqual([cells["part_number"] for cells, _path in reached], ["218101"])
+        self.assertEqual(self.line(rows=other, head=head)["state"], "done")
+        own = "211199,210101,WALL - TEST STRIP,polycarbonate,HOLD,mill finish,DRAFT,calculation\n"
+        self.assertEqual(self.line(rows=other + own, head=head)["state"], "HOLD")
+
+    def test_hold_is_a_whole_word(self):
+        for material in ("aluminium 5052-H32, the lip holds the felt", "aluminium 5052-H32 threshold trim",
+                         "aluminium 5052-H32 (HOLDER bracket)"):
+            self.assertEqual(self.line(material=material)["state"], "done", material)
+        own = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT (holds its shape),calculation\n"
+        self.assertEqual(self.line(rows=own)["state"], "done")
+        for material in ("aluminium (alloy on hold)", "aluminium 5052 (HOLD-02)"):
+            self.assertEqual(self.line(material=material)["state"], "HOLD", material)
+
+    def test_the_totals_count_made_hold(self):
+        held = self.line(material="aluminium (alloy HOLD)")
+        text = rc.render([held], [], [], [], "main", "unlocked", {}, ([], [], []), "2026-11-01")
+        self.assertIn("| Made: HOLD |", text)
+        self.assertIn("| WALL | 0 | 0 | 0 | 1 | 0 | 0 | 0 |", text)
+
+
 class OpenPrFiles(unittest.TestCase):
     """A branch stacked on a PR that squash-merged since keeps that PR's older copies; main's newer files win."""
+    SKIN = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+    CUT = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv"
+    OWN = "v2/03-Manufacturing/air/611101_P01_AIR-COLUMN-FACE-FRONT_DXF.dxf"
 
-    def test_a_stacked_branch_old_copies_do_not_hide_main_newer_files(self):
+    def stacked(self, d, rebased=False):
+        """main, then CEILING's PR (01:00), AIR stacked on it (02:00), then CEILING squash-merged on main (05:00).
+        rebased: AIR's copy of CEILING's commit carries a 06:00 committer time, as a rebase gives it, but keeps its
+        01:00 author time."""
         import os
         import subprocess
-        import tempfile
-        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
-        own = "v2/03-Manufacturing/air/611101_P01_AIR-COLUMN-FACE-FRONT_DXF.dxf"
-        with tempfile.TemporaryDirectory() as d:
-            def g(*a, when):
-                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
-                subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
-                               check=True, capture_output=True, text=True, env=env)
 
-            def put(path, text, when):
+        def g(*a, when="2026-11-01T00:00:00", committed=None):
+            env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": committed or when}
+            subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                           check=True, capture_output=True, text=True, env=env)
+
+        def put(files, when, committed=None):
+            for path, text in files.items():
                 Path(d, path).parent.mkdir(parents=True, exist_ok=True)
                 Path(d, path).write_text(text, encoding="utf-8")
-                g("add", "-A", when=when)
-                g("commit", "-q", "-m", path, when=when)
+            g("add", "-A", when=when)
+            g("commit", "-q", "-m", ", ".join(files), when=when, committed=committed)
 
-            g("init", "-q", when="2026-11-01T00:00:00")
-            g("checkout", "-q", "-b", "main", when="2026-11-01T00:00:00")
-            put("v2/01-CAD-Native/README.md", "start", "2026-11-01T00:00:00")
-            g("checkout", "-q", "-b", "ceiling", when="2026-11-01T01:00:00")
-            put(skin, "old outline", "2026-11-01T01:00:00")
-            g("checkout", "-q", "-b", "air", when="2026-11-01T02:00:00")
-            put(own, "AIR's face", "2026-11-01T02:00:00")
-            g("checkout", "-q", "main", when="2026-11-01T05:00:00")
-            put(skin, "merged outline", "2026-11-01T05:00:00")
+        g("init", "-q")
+        g("checkout", "-q", "-b", "main")
+        put({"v2/01-CAD-Native/README.md": "start"}, "2026-11-01T00:00:00")
+        g("checkout", "-q", "-b", "ceiling")
+        put({self.SKIN: "old outline", self.CUT: "part_number,cut\n411101,old\n"}, "2026-11-01T01:00:00",
+            "2026-11-01T06:00:00" if rebased else None)
+        g("checkout", "-q", "-b", "air")
+        put({self.OWN: "AIR's face"}, "2026-11-01T02:00:00", "2026-11-01T06:00:00" if rebased else None)
+        g("checkout", "-q", "main")
+        put({self.SKIN: "merged outline", self.CUT: "part_number,cut\n411101,merged\n"}, "2026-11-01T05:00:00")
+
+    def files_and_texts(self, rebased=False):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self.stacked(d, rebased)
             old = rc.ROOT, BOM.ROOT
             rc.ROOT = BOM.ROOT = Path(d)
+            BOM.FELL_BACK.clear()
             try:
                 files = rc.list_files(["main", "air"], BOM)
-                text = rc.text_at(skin, files[skin], ["main", "air"])
+                return files, rc.cut_list_texts(files, ["main", "air"]), list(BOM.FELL_BACK)
             finally:
                 rc.ROOT, BOM.ROOT = old
-        self.assertEqual(files[skin], "main")
-        self.assertEqual(text, "merged outline")
-        self.assertEqual(files[own], "air")
+                BOM.FELL_BACK.clear()
+
+    def test_a_stacked_branch_old_copies_do_not_hide_main_newer_files(self):
+        files, _, _ = self.files_and_texts()
+        self.assertEqual(files[self.SKIN], "main")
+        self.assertEqual(files[self.OWN], "air")
+
+    def test_a_rebase_does_not_make_an_old_copy_new(self):
+        # the rule reads author times: a rebase gives AIR's copy of CEILING's commit a new committer time only
+        files, _, fell = self.files_and_texts(rebased=True)
+        self.assertEqual(files[self.SKIN], "main")
+        self.assertEqual(files[self.OWN], "air")
+        self.assertIn(("air", self.SKIN), fell)
+
+    def test_cut_lists_are_read_from_the_ref_that_listed_them(self):
+        # not from the newest branch that has a copy: AIR's old copy of CEILING's cut list must not be read
+        files, cuts, _ = self.files_and_texts()
+        self.assertEqual(files[self.CUT], "main")
+        self.assertIn("merged", cuts[self.CUT])
+
+    def test_the_checklist_names_the_files_read_from_main(self):
+        _, _, fell = self.files_and_texts()
+        self.assertEqual(sorted(fell), [("air", self.CUT), ("air", self.SKIN)])
+        BOM.FELL_BACK[:] = fell
+        try:
+            lines = BOM.fell_back_lines({"air": "PR #91"})
+        finally:
+            BOM.FELL_BACK.clear()
+        self.assertTrue(lines[1].startswith(f"`{self.SKIN}`: PR #91 changed it, but main changed it later"), lines)
+        text = rc.render([], [], [], [], "main (abc1234)", "unlocked", {}, ([], [], []), "2026-11-01", fell_back=lines)
+        self.assertIn("Read from main although an open PR changed them", text)
+        self.assertIn(self.SKIN, text)
+        self.assertNotIn("Read from main although", rc.render([], [], [], [], "main", "unlocked", {}, ([], [], []), "2026-11-01"))
+
+
+class FallBackFilter(unittest.TestCase):
+    def test_the_list_names_only_files_the_checklist_reads(self):
+        self.assertTrue(rc.read_by_checklist("v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf", BOM))
+        self.assertTrue(rc.read_by_checklist("v2/01-CAD-Native/ceiling/410000_P01_CEILING_CAD.f3d", BOM))
+        self.assertTrue(rc.read_by_checklist("v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv", BOM))   # the BOM reads it
+        self.assertTrue(rc.read_by_checklist(BOM.REGISTER, BOM))
+        self.assertFalse(rc.read_by_checklist("v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md", BOM))
+        self.assertFalse(rc.read_by_checklist("v2/07-Packaging/910001_P01_PALLET-1-48X40_PKG.svg", BOM))
+
+    def test_the_notes_leave_out_files_it_never_reads(self):
+        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+        BOM.FELL_BACK[:] = [("origin/air", skin), ("origin/air", "v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md")]
+        try:
+            notes = rc.fell_back_notes(BOM, {"origin/air": "PR #91"})
+        finally:
+            BOM.FELL_BACK.clear()
+        self.assertEqual(notes, [f"`{skin}`: PR #91 changed it, but main changed it later"])
 
 
 class Render(unittest.TestCase):
@@ -572,10 +822,10 @@ class Render(unittest.TestCase):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
         b = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16", team="BASE")], {}, tests=[("T06", "838001")])[1]
         text = rc.render([], a + b, [], ["ELECTRICAL"], "this working tree", "locked", {}, rc.fai_plan(PLAN, BOM), "2026-11-01")
-        self.assertIn("| BASE | 0 | 0 | 0 | 1 | 0 | 0 |", text)
-        self.assertIn("| WALL | 0 | 0 | 0 | 1 | 0 | 0 |", text)
-        self.assertIn("| **All, each number once** | 0 | 0 | 0 | 1 | 0 | 0 |", text)
-        self.assertIn("| ELECTRICAL | — | — | — | — | — | — |", text)
+        self.assertIn("| BASE | 0 | 0 | 0 | 0 | 1 | 0 | 0 |", text)
+        self.assertIn("| WALL | 0 | 0 | 0 | 0 | 1 | 0 | 0 |", text)
+        self.assertIn("| **All, each number once** | 0 | 0 | 0 | 0 | 1 | 0 | 0 |", text)
+        self.assertIn("| ELECTRICAL | — | — | — | — | — | — | — |", text)
         self.assertIn("**locked**", text)
 
 
