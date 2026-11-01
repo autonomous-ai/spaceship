@@ -6,7 +6,7 @@
 
 Why every feature is where it is (guideline §7). Decisions: D-70 (interior principles, light shelf, work wall ledge and screen), D-85 (budgets: the light shelf 0.4 kg/m with its strip, the 1000 mm ledge in 1.5 mm folded aluminium) and ELECTRICAL's input through the PM (2026-11-01). Every value is a named parameter in `v2/01-CAD-Native/interior/interior_model.py`. Coordinates: the pod system (conventions §4), mm.
 
-INTERIOR parts sit on the floating linings or stand off them (D-17): the light shelf is light and screws to the wall cassettes; the ledge and the screen rail take people's weight, so they stand on stand-offs through clearance holes in the lining, fixed to the wall frame's stiles, 2 mm off the felt so nothing touches the floating leaf.
+INTERIOR parts sit on the floating linings or stand off them (D-17): the light shelf is light and screws to the wall cassettes; the ledge and the screen rail take people's weight, so they stand on stand-offs through clearance holes in the lining, fixed to the wall frame's stiles, 5 mm off the felt so nothing touches the floating leaf (D-57's 4 mm plus 1 for the felt's tolerance).
 
 ## Light shelf 810201 (1.0 mm folded aluminium U along the side and back wall tops)
 
