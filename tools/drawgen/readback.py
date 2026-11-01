@@ -403,6 +403,11 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("the text layer has non-breaking spaces or soft hyphens (search breaks)")
     if (doc.metadata or {}).get("creator") != "drawgen":
         fails.append("PDF Creator is not drawgen")
+    # the owner's rule: every drawing names "Autonomous" as its creator, never a person
+    if (doc.metadata or {}).get("author") != "Autonomous":
+        fails.append("PDF author is not Autonomous")
+    if not re.search(r"CREATED BY\s+Autonomous\b", page.get_text()):
+        fails.append("the title block's CREATED BY is not Autonomous")
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
     two_wall = any(f["kind"] == "hole" and sum(1 for g in data["features"] if g["kind"] == "hole" and g["body"] == f["body"]

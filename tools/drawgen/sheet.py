@@ -45,6 +45,12 @@ def _font_file(kind):
     return None
 
 
+# The owner's rule (2026-11-01): every drawing names "Autonomous" as its creator, never a person: in the title
+# block's "created by" field and as the PDF's author. The PDF's Creator stays "drawgen", the program that made it
+# (the mechanical check and the overwrite guard read it).
+AUTHOR = "Autonomous"
+
+
 class _SegGrid:
     """Segments bucketed in square cells, so 'does any line cross this box' asks only the lines nearby."""
 
@@ -76,7 +82,7 @@ class Sheet:
         self.W, self.H = SIZES[size]
         self.doc = fitz.open()
         self.meta = {"creator": creator, "producer": "drawgen (tools/drawgen, PyMuPDF %s)" % fitz.VersionBind,
-                     "title": title, "subject": subject, "keywords": keywords, "author": ""}
+                     "title": title, "subject": subject, "keywords": keywords, "author": AUTHOR}
         self.pages = []
         self.fonts = {}
         for k in ("reg", "bold"):

@@ -33,7 +33,7 @@ import inputs
 import project
 from geom import axis_name, vadd, vcross, vdot, vmul, vnorm, vsub
 from project import View
-from sheet import Sheet, W_HID, W_THIN, W_VIS, DASH_HID
+from sheet import AUTHOR, Sheet, W_HID, W_THIN, W_VIS, DASH_HID
 
 GENERATOR = "drawgen"
 TOOL_REV = "drawgen 1.0"
@@ -1913,7 +1913,7 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
         [(180, "FINISH", "FINISH: " + ((row.get("finish") or "").strip() or "none (as supplied)"), VAL, False)],
         [(62, "SCALE", sc, VAL, False), (18, "SIZE", sh.size, VAL, False), (32, "UNITS", "UNITS: mm", VAL, True),
          (68, "MASS", ("%s kg (calculation)" % mass) if mass else "see parts list", VAL, False)],
-        [(62, "MADE BY", "tools/drawgen (D-112)", VAL, False), (40, "APPROVED", "not released", VAL, False),
+        [(62, "CREATED BY", AUTHOR, VAL, False), (40, "APPROVED", "not released", VAL, False),
          (78, "TOLERANCES", "TOLERANCE: see the notes; not ISO 2768", VAL, False)],
     ]
     proj_h = 12.0

@@ -142,7 +142,7 @@ def test_model_change_regenerates():
     step = os.path.join(d, os.path.basename(src))
     shutil.copy(src, step)
     p1 = os.path.join(d, "v1.pdf")
-    compose.make("211101", "wall", specs.WALL_FRAME, p1, step=step)
+    compose.make("211101", "wall", specs.SPECS["211101"][2], p1, step=step)
     f1, _ = readback.check(p1, step)
     assert not f1, f1
     rows1 = readback.table_rows(fitz.open(p1)[0])
@@ -153,7 +153,7 @@ def test_model_change_regenerates():
     why = drawgen.stale(p1)
     assert any("changed" in w and w.endswith("STEP.step changed") for w in why), why     # the drawing knows
     p2 = os.path.join(d, "v2.pdf")
-    compose.make("211101", "wall", specs.WALL_FRAME, p2, step=step)
+    compose.make("211101", "wall", specs.SPECS["211101"][2], p2, step=step)
     f2, _ = readback.check(p2, step)
     assert not f2, f2
     rows2 = readback.table_rows(fitz.open(p2)[0])

@@ -9,7 +9,7 @@ drawgen refuses.
 
 ```
 tools/drawgen/run.sh generate --sample          # the sample the PM reviewed first (#202), into v2/02-Drawings/<team>/
-tools/drawgen/run.sh generate 211101 111101     # registered parts (tools/drawgen/specs.py)
+tools/drawgen/run.sh generate 211101 111101     # registered parts (each team's tools/drawgen/teams/<team>.py)
 tools/drawgen/run.sh check v2/02-Drawings/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG.pdf
 tools/drawgen/run.sh stale                      # generated drawings whose STEP, parts list or register changed
 ```
@@ -28,7 +28,8 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
 - The team parts list row: name, Vietnamese name, material, finish, process, tolerance, mass, cut list.
 - The feature rationale registers (`v2/02-Drawings/<team>/FEATURE-RATIONALE*.md`, both layouts in use): each
   hole's register ID, function and mating parts, in the hole tables.
-- `specs.py`: the choices a STEP can't give (datums, extra notes, the tolerance note).
+- Each team's entries in `teams/<team>.py` (D-139: every part drawing comes from drawgen; each team keeps its
+  own entries): the choices a STEP can't give (datums, extra notes, the tolerance note). See `teams/README.md`.
 
 ## What a drawing has (guideline 3.2, 3.3, 6; D-113)
 
@@ -46,7 +47,7 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   the one 3D origin seen in each view), +X right and +Y up, size, depth, the register's feature and fits. The view
   titles give each view's mapping to the pod axes.
 - Datums: WALL frames sit on a spigot hole and slot (R-J13), so A is the seat face, B the round hole, C the slot,
-  and every hole position is from B (R-J6). Other parts name their datum faces in `specs.py`.
+  and every hole position is from B (R-J6). Other parts name their datum faces in their team's entry.
 - Mitred ends: the angle from square and the true length along each face.
 - Frames: member balloons, the cut list from the parts list, stile positions, the D-115 joint note.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
@@ -55,8 +56,9 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   origin names and datum symbols each go where they touch no line and no other text.
 - Title block: UNITS: mm, the first-angle symbol, part number, name (English and Vietnamese), revision of the
   part's STEP (or of its parts list when it lives in an assembly STEP), DRAFT, material, finish, mass, scale,
-  sheet; the tolerance note is the project's (joints register, parts lists), never a blanket ISO 2768. No
-  personal names. The PDF's Creator is `drawgen`; its catalog key `/DrawgenData` lists every source with its
+  sheet; the tolerance note is the project's (joints register, parts lists), never a blanket ISO 2768. CREATED BY
+  and the PDF's author are "Autonomous", never a person (the owner's rule; the read-back checks both). The PDF's
+  Creator is `drawgen`, the program; its catalog key `/DrawgenData` lists every source with its
   hash, the views and the tagged features.
 
 ## What it refuses (the part stays with Fusion)
@@ -64,7 +66,7 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
 A cylinder that is neither a hole, a slot nor a keyhole (a bend, a fillet, a round), a cone (a countersink), any
 other curved face, holes on a face at an angle to every principal view, a part that fits no ISO scale on its
 sheet. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
-`specs.py` with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
+their team's file with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
 make: a Fusion drawing stays.
 
 ## Checks
