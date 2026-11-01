@@ -382,21 +382,33 @@ def profile_section(part, r, v, kept, letters):
     s_full = next((s_ for s_ in scales if size * s_ <= 120.0 and shortest * s_ >= 8.0), None)
     window = None
     shown = list(range(len(ch.flanges)))
+    ends = None
     if s_full is None:
-        # its start end: the flanges before the longest, and 20 into the longest
-        d = ch.flanges[longest][1]
-        stop = marks[longest]
-        stop = (stop[0] + d[0] * 20.0, stop[1] + d[1] * 20.0)
-        pts = [v.to2d(P3(q)) for q in ch.skins["A"][:1] + ch.skins["B"][:1] + marks[1:longest + 1] + [stop]]
-        pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds[:longest]]
+        nfl = len(ch.flanges)
+        if longest == nfl - 1 or 0 < longest < nfl - 1:
+            # its start end: the flanges before the longest, and 20 into the longest
+            d = ch.flanges[longest][1]
+            stop = marks[longest]
+            stop = (stop[0] + d[0] * 20.0, stop[1] + d[1] * 20.0)
+            pts = [v.to2d(P3(q)) for q in ch.skins["A"][:1] + ch.skins["B"][:1] + marks[1:longest + 1] + [stop]]
+            pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds[:longest]]
+            shown = list(range(longest))
+            ends = "start" if longest == nfl - 1 else "both"
+        else:
+            # folds at its far end only: 20 back along the first flange from its fold, to the end
+            d = ch.flanges[0][1]
+            back = (marks[1][0] - d[0] * 20.0, marks[1][1] - d[1] * 20.0)
+            pts = [v.to2d(P3(q)) for q in ch.skins["A"][-1:] + ch.skins["B"][-1:] + marks[1:] + [back]]
+            pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds]
+            shown = list(range(1, nfl))
+            ends = "end"
         window = (min(q[0] for q in pts) - 3.0, max(q[0] for q in pts) + 3.0,
                   min(q[1] for q in pts) - 3.0, max(q[1] for q in pts) + 3.0)
-        shown = list(range(longest))
         sym = [round(L, 3) for L, _d in ch.flanges] == [round(L, 3) for L, _d in ch.flanges][::-1] and \
             [round(f.angle, 3) for f in ch.folds] == [round(f.angle, 3) for f in ch.folds][::-1]
-        if not sym:
+        if ends == "both" and not sym:
             raise NotDrawable("%s: a long run of bends whose two ends differ isn't drawn yet" % part.pn)
-        key = tuple(round(ch.flanges[i][0], 3) for i in shown) + tuple(round(f.angle, 3) for f in ch.folds[:longest])
+        key = tuple(round(ch.flanges[i][0], 3) for i in shown) + tuple(round(f.angle, 3) for f in ch.folds)
         prev = getattr(part, "_profile_keys", {})
         if key in prev:
             prev[key].typical = True
@@ -422,13 +434,14 @@ def profile_section(part, r, v, kept, letters):
     vd.letter = next(letters)
     vd.name = "removed"
     vd.r = r
-    vd.profile = {"chain": ch, "shown": shown, "window": window, "P3": P3, "marks": marks + [None], "typical": False}
+    vd.profile = {"chain": ch, "shown": shown, "window": window, "P3": P3, "marks": marks + [None], "typical": False,
+                  "ends": ends}
     vd.typical = False
     r.vd = vd
     r.letter = vd.letter
     if window:
         part.__dict__.setdefault("_profile_keys", {})[tuple(round(ch.flanges[i][0], 3) for i in shown) +
-                                                     tuple(round(f.angle, 3) for f in ch.folds[:longest])] = vd
+                                                     tuple(round(f.angle, 3) for f in ch.folds)] = vd
     return vd
 
 
@@ -530,6 +543,7 @@ def flat_data(part, pl):
         return None
     fv = (getattr(pl, "flats", None) or [None])[0]
     return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
+            "vgroove": bool(fl.vgroove),
             "chains": [{"t": ch.t, "flanges": [L for L, _d in ch.flanges], "angles": [f.angle for f in ch.folds],
                         "radii": [f.r for f in ch.folds], "dxf_axis": m["dxf_axis"], "reversed": m["reversed"]}
                        for ch, m in zip(fl.chains, fl.matches)],
@@ -552,7 +566,8 @@ def bent_flat(part, team, bent):
     holes = [ft.f for ft in part.features if ft.body is b and ft.kind == "hole"]
     slots = [ft.f for ft in part.features if ft.body is b and ft.kind != "hole"]
     try:
-        fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes)
+        fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes,
+                                vgroove=cfg.get("vgroove"))
     except ValueError as e:
         raise NotDrawable("%s: %s" % (part.pn, e))
     odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots)
@@ -2359,7 +2374,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         if getattr(vd, "profile", None):
             pr = vd.profile
             words = "across the bends, at the middle" + (
-                "; one end, the other end the same" if pr["window"] else "") + (
+                "; one end, the other end the same" if pr.get("ends") == "both" else
+                "; at its folded end" if pr["window"] else "") + (
                 "; typical at every side" if getattr(vd, "typical", False) else "")
             title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)), words,
                   extra=mapping_words(vd.view, part.pod_system))
@@ -2674,7 +2690,17 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
         y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
     fl = getattr(part, "flat", None)
-    if fl:
+    if fl and fl.vgroove:
+        gcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
+                 ("GROOVE", tw - 118, "l")]
+        grows = [[row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
+                                                           "left" if row["axis"] == "x" else "lower"),
+                  row["dir"], "%s°" % fmt(row["angle"]), str(fl.vgroove)] for row in fl.rows]
+        head = ["FOLDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
+                "V-groove and fold: UP, the fold closes toward the viewer of the flat pattern as drawn; each line at the "
+                "outside corner (the flat is the sum of the outside lengths)"]
+        y = sh.table(right_x0, y, gcols, grows, size=2.5, title=head, title_size=2.5) - 5.0
+    elif fl:
         bcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
                  ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 148, "l")]
         brows = []
@@ -2751,7 +2777,12 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
             "Coaxial holes in two walls of one member are shown in section%s %s." % (
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     fl = getattr(part, "flat", None)
-    if fl:
+    if fl and fl.vgroove:
+        notes.append("V-grooved and folded from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the "
+                     "folds' outside corners. The outer skin runs round each fold unstretched, so the flat is the sum of "
+                     "the outside lengths (the DXF checked against the model's flanges, every line within 0.05). Groove: "
+                     "%s. Flange lengths are outside sizes." % (inputs.rel(fl.path), inputs.sha12(fl.path), fl.vgroove))
+    elif fl:
         import sheetmetal
         rad = "R%s from %s" % (fmt(fl.radius), fl.radius_from)
         notes.append("Bent from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the bend centre lines%s. "

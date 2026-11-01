@@ -75,7 +75,9 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   come from the model's own section; the DXF's bend lines must sit where the model's flanges put them at one K-factor
   (solved from the DXF's flat size, and stated); the DXF's holes must sit where the model's holes unfold to; a model
   that folds sharp takes its inside radius from the entry. Anything else is refused with the reason (INTERIOR's
-  811201: a hole the DXF cuts in a bend zone).
+  811201: a hole the DXF cuts in a bend zone). A V-grooved and folded panel (ACP; its entry says `vgroove` with the
+  groove) lays flat at the sum of its outside lengths, each fold line at its outside corner, no K-factor; its folds
+  table names the groove.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
 - Labels: every line is drawn first (views, cutting planes, dimensions), then hole callouts, view titles, tags,

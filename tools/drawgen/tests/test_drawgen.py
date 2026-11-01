@@ -416,6 +416,37 @@ def test_bent_sheet_from_step_and_dxf():
         assert "its DXF has 1 holes, its model none" in str(e), str(e)
 
 
+def test_v_grooved_panel_from_step_and_dxf():
+    """WALL's ACP skin 211301 is V-grooved and folded (its entry says so, with the groove): its flat is the sum of the
+    outside lengths, the fold line at the outside corner, no K-factor. It draws from main's STEP and DXF with a folds
+    table naming the groove, reads back, and the same sheet fails against a DXF whose fold line moved 0.5 mm."""
+    d = os.path.join(TMP, "vgroove")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "211301.pdf")
+    spec = {"tolerance": "test", "bent": {"vgroove": "90° V on the back, leaving the outer skin (test)"}}
+    compose.make("211301", "wall", spec, p)
+    doc = fitz.open(p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    text = " ".join(doc[0].get_text().split())
+    assert "FOLDS B1-B1" in text and "90° V on the back" in text and "K-factor" not in text, text[:400]
+    data = readback.read_data(doc)
+    assert data["flat"]["vgroove"] and data["flat"]["k"] is None and len(data["flat"]["rows"]) == 1, data["flat"]
+    src = os.path.join(readback.REPO, data["flat"]["dxf"])
+    with open(src) as fh:
+        dtext = fh.read()
+    import dxf as dxfmod
+    (a, b), = dxfmod.Dxf(src).bend_lines()
+    key = "%.4f" % a[0] if ("%.4f" % a[0]) in dtext else repr(a[0])
+    assert key in dtext, key
+    moved = os.path.join(d, "211301_moved_DXF.dxf")
+    with open(moved, "w") as fh:
+        fh.write(dtext.replace(key, "%.4f" % (a[0] + 0.5)))
+    data["flat"]["dxf"] = moved
+    f2 = readback.flat_fails(data, readback.text_boxes(doc[0], data["sheet_h"]), doc[0].get_text())
+    assert any("V-groove" in x for x in f2), f2
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
