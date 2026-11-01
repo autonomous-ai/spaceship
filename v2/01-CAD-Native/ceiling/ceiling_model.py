@@ -475,6 +475,65 @@ def plate_corners(half):
             ("PLATE BACK SEAM", "mp_sb", (X("0 mm"), ybo), (X("tube_w"), ybi))]
 
 
+PLATE_HW = {"mp45": "plate45", "mp_sb": "plate_sb"}     # plate_corners' keys -> the HARDWARE rows (831007, 831008)
+
+
+def plate_length(pkey):
+    """The mitre plate's length along its mitre: 28.28 (831007, two 20 x 40) or 44.72 (831008, 20 x 40 to 40 x 40)."""
+    return ("sqrt(2 * tube_w * tube_w)" if pkey == "mp45" else "sqrt(tube_w * tube_w + back_w * back_w)")
+
+
+def plate_outline(vals, half, name):
+    """The mitre plate at one corner, in plan (mm): the register's plate, mp_t thick across its mitre and the mitre's
+    length along it from the outer corner to the inner corner (H-40, H-41), with its two tips at the outer corner ground
+    flush with the frame's outer faces, so nothing stands proud of the outside (the seams' gaps stay; the weld fills the
+    two small gaps the members' cut-backs leave at the inner corner). [(x, y)], a pentagon."""
+    import math
+    _n, _k, o, i = next(c for c in plate_corners(half) if c[0] == name)
+    ox, oy, ix, iy = (ev(vals, e) for e in (o[0], o[1], i[0], i[1]))
+    L, t = math.hypot(ix - ox, iy - oy), vals["mp_t"] / 2
+    ux, uy = (ix - ox) / L, (iy - oy) / L
+    nx, ny = -uy, ux
+    rect = [(ox - t * nx, oy - t * ny), (ix - t * nx, iy - t * ny), (ix + t * nx, iy + t * ny), (ox + t * nx, oy + t * ny)]
+    sx, sy = (1 if ix > ox else -1), (1 if iy > oy else -1)      # the frame's inside from this outer corner
+
+    def clip(poly, axis, bound, sign):
+        def inside(p):
+            return (p[axis] - bound) * sign >= -1e-9
+
+        def cut(a, b):
+            f = (bound - a[axis]) / (b[axis] - a[axis])
+            return (a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1]))
+        out = []
+        for k in range(len(poly)):
+            a, b = poly[k], poly[(k + 1) % len(poly)]
+            if inside(a):
+                out.append(a)
+            if inside(a) != inside(b):
+                out.append(cut(a, b))
+        return out
+    poly = clip(clip(rect, 0, ox, sx), 1, oy, sy)
+    clean = []
+    for p in poly:
+        q = (round(p[0], 6), round(p[1], 6))
+        if not clean or q != clean[-1]:
+            clean.append(q)
+    if clean[0] == clean[-1]:
+        clean.pop()
+    return clean
+
+
+def plate_boxes(vals, half):
+    """[(name, plate key, (x0, x1, y0, y1, z0, z1))] in mm: each mitre plate's box, its plan outline (plate_outline)
+    over the frame's depth: the corner's rectangle from its outer to its inner corner."""
+    out = []
+    for name, pkey, _o, _i in plate_corners(half):
+        pts = plate_outline(vals, half, name)
+        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+        out.append((name, pkey, (min(xs), max(xs), min(ys), max(ys), ev(vals, ZF0), ev(vals, ZF1))))
+    return out
+
+
 def cross_y0(k):
     """Front face Y of cross member k. X1 sits x1_ov over the soffit's back edge (D-87 hangers);
     X2 and X3 keep the fr_pitch spacing from the front member."""

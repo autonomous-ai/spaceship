@@ -444,6 +444,31 @@ class Frames(unittest.TestCase):
                     d = abs((ix - ox) * (y - oy) - (iy - oy) * (x - ox)) / L
                     self.assertAlmostEqual(d, VALS["mp_t"] / 2, places=6, msg="%s %s" % (half, name))
 
+    def test_plates_in_the_corner_gaps(self):
+        """Each plate (the register's L x 2.0 plate, its outer tips ground flush) lies in the gap the two members'
+        cut-backs leave at its corner: overlapping neither member, nothing proud of the frame's outside, and filling
+        the gap but for the weld's small triangles at the inner corner (under 2 mm2 a corner)."""
+        import math
+        for half in ("C1", "C2"):
+            sh = self.shapes(half)
+            ring = sum(poly_area(pts) for c, (_k, pts) in sh.items() if c in ("SIDE", "SEAM", "FRONT", "BACK"))
+            inner = (VALS["half_fw"] - 2 * VALS["tube_w"]) * (VALS["wall_depth"] - VALS["tube_w"] - VALS["back_w"])
+            gap_total = VALS["half_fw"] * VALS["wall_depth"] - inner - ring
+            plates = 0.0
+            for name, pkey, o, i in M.plate_corners(half):
+                pl = M.plate_outline(VALS, half, name)
+                self.assertEqual(len(pl), 5, (half, name, pl))
+                plates += poly_area(pl)
+                for c, (_k, pts) in sh.items():
+                    self.assertLess(clip_area(pl, pts), 1e-4, "%s %s overlaps %s" % (half, name, c))
+            self.assertTrue(0 < gap_total - plates < 4 * 2.0, (half, gap_total, plates))
+            boxes = {c: b for c, b in M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)])}
+            xs = [x for b in boxes.values() for x in b[:2]]
+            ys = [y for b in boxes.values() for y in b[2:4]]
+            for name, _k, b in M.plate_boxes(VALS, half):
+                self.assertTrue(min(xs) - 1e-6 <= b[0] and b[1] <= max(xs) + 1e-6, name)
+                self.assertTrue(min(ys) - 1e-6 <= b[2] and b[3] <= max(ys) + 1e-6, name)
+
     def test_identical_in_both_halves(self):
         """For Control (D-120: identical parts share one number): C2's side member is C1's turned upside
         down (every feature centred across its 40 face, the mitres vertical), and C2's cross member 1 is
