@@ -203,8 +203,7 @@ class Part:
         if not self.step:
             # a part that lives only in its team's assembly STEP: that file's geometry, and the revision of its
             # parts list (the mechanical check reads it so)
-            import tabulated
-            self.step = tabulated.find_step(pn, team)
+            self.step = find_step(pn, team)
             if not self.step:
                 raise NotDrawable("%s has no STEP under v2/03-Manufacturing/%s" % (pn, team))
             self.rev = inputs.parse_name(self.list_file)["rev"]
@@ -408,6 +407,25 @@ def two_wall_sets(part):
 
 
 # ------------------------------------------------------------------ datum scheme
+
+def find_step(pn, team):
+    """The part's own STEP, else the team assembly STEP that holds it."""
+    own = inputs.own_step(pn)
+    if own:
+        return own
+    folder = os.path.join(inputs.MANUF, team)
+    for f in sorted(os.listdir(folder)):
+        nm = inputs.parse_name(os.path.join(folder, f))
+        if not nm or nm["doc"] != "STEP":
+            continue
+        try:
+            for name, solids in geom.read_step(os.path.join(folder, f)):
+                if geom.part_number_of(name) == pn and solids:
+                    return os.path.join(folder, f)
+        except RuntimeError:
+            continue
+    return None
+
 
 def spigot_origin(part, spec=None):
     """Parts that locate on spigots (joints register R-J13; R-J6 positions every bolt hole from the round spigot

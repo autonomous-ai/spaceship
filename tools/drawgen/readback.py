@@ -267,8 +267,6 @@ def check(pdf_path, step_path=None, verbose=False):
     data = read_data(doc)
     fails = []
     stats = {"rows": 0, "holes": 0, "circles": 0, "worst_table": 0.0, "worst_drawn": 0.0}
-    if data.get("tabulated"):
-        return check_tabulated(doc, data, fails, stats)
     step_path = step_path or os.path.join(REPO, [s for s in data["sources"] if s["role"] == "STEP"][0]["path"])
     views = {v["origin"]: v for v in data["views"] if v["origin"]}
     O = data["origin"]
@@ -369,65 +367,6 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("holes through two walls but no SECTION label")
     if verbose:
         print(json.dumps(stats))
-    return fails, stats
-
-
-def check_tabulated(doc, data, fails, stats):
-    """A TABULATED drawing: every part it covers is in its table, each piece's W, H and T in the table text equal
-    that piece's box in its STEP as the repo's reader sees it (within 0.05), and the text says TABULATED."""
-    page = doc[0]
-    text = page.get_text()
-    if "TABULATED" not in text.upper():
-        fails.append("text lacks TABULATED")
-    for pn in data["tabulated"]:
-        if pn not in text:
-            fails.append("%s is not in the table" % pn)
-    # table rows: PART ... PIECE W H T
-    words = sorted(page.get_text("words"), key=lambda w: ((w[1] + w[3]) / 2, w[0]))
-    lines, cur, cy = [], None, None
-    for w in words:
-        y = (w[1] + w[3]) / 2
-        if cy is None or abs(y - cy) > 0.6:
-            lines.append([])
-            cy = y
-        lines[-1].append(w)
-    rows = {}
-    for ln in lines:
-        ws = [w[4] for w in sorted(ln, key=lambda w: w[0])]
-        if ws and re.fullmatch(r"\d{6}", ws[0]) and "BAY" in ws:
-            i = ws.index("BAY")
-            bay = ws[i + 1]
-            nums = []
-            for t in ws[i + 2:i + 5]:
-                try:
-                    nums.append(float(t))
-                except ValueError:
-                    pass
-            rows[(ws[0], bay)] = nums if len(nums) == 3 else None
-    sf = _stepfile()
-    for src in data["sources"]:
-        st = sf.StepFile(os.path.join(REPO, src["path"]))
-        for inst in st.instances():
-            nm = (inst["name"] or "") + " " + (inst["part_number"] or "")
-            if src["pn"] not in nm and not os.path.basename(src["path"]).startswith(src["pn"] + "_"):
-                continue
-            sol = st.solid(inst["solid"])
-            pts = [inst["frame"].point(q) for q in sol.points()]
-            ext = sorted(max(q[k] for q in pts) - min(q[k] for q in pts) for k in range(3))
-            bay = (sol.name or "").split()[-1]
-            got = rows.get((src["pn"], bay))
-            stats["rows"] += 1
-            if not got:
-                fails.append("%s %s: no table row" % (src["pn"], sol.name))
-                continue
-            if any(abs(a - b) > TOL for a, b in zip(sorted(got), ext)):
-                fails.append("%s %s: table W/H/T %s vs STEP box %s" % (src["pn"], sol.name, got,
-                                                                      [round(v, 2) for v in ext]))
-            stats["worst_table"] = max([stats["worst_table"]] + [abs(a - b) for a, b in zip(sorted(got), ext)])
-    if (doc.metadata or {}).get("creator") != "drawgen":
-        fails.append("PDF Creator is not drawgen")
-    for pg, what in clashes(doc):
-        fails.append("sheet %d: %s" % (pg, what))
     return fails, stats
 
 

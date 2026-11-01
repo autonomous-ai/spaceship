@@ -5,7 +5,7 @@
     <venv>/bin/python tools/drawgen/tests/test_drawgen.py          # prints "N of N passed"
     <venv>/bin/python -m pytest -q tools/drawgen/tests              # the same with pytest, if installed
 
-1. The five sample drawings regenerate from their STEPs on this tree and read back: every STEP hole (the repo's own
+1. The sample drawings (#202) regenerate from their STEPs on this tree and read back: every STEP hole (the repo's own
    reader, no OCC) is in a hole table within 0.05 mm, drawn as a true circle at its place, the text carries what
    the mechanical check reads, and the PDF's Creator is drawgen.
 2. Making a drawing twice from the same sources gives the same bytes (so an unchanged model never shows a diff).

@@ -48,22 +48,24 @@ BASE_BACK_BAND = {
                  "anodised faces.",
 }
 
-# pn: (team, kind, spec). kind "part" = one part on its sheet; "tabulated" = D-89 part 1, the listed numbers on
-# the first one's sheet.
+# pn: (team, kind, spec). kind "part": one part on its own drawing.
 SPECS = {
     "211101": ("wall", "part", WALL_FRAME),
     "211102": ("wall", "part", WALL_FRAME),
-    "211501": ("wall", "tabulated", {"covers": ["211501", "211502", "211503", "211504"]}),
     "111101": ("base", "part", BASE_SIDE_BAND),
     "111103": ("base", "part", BASE_BACK_BAND),
 }
 
 # Parts that need no drawing at all, and why (drawgen won't make one).
+_FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with a full parts-list row (WALL's D-123 "
+         "piece split), so no drawing; D-123 cancels this set number")
 NO_DRAWING = {
+    "211501": _FILL, "211502": _FILL, "211503": _FILL, "211504": _FILL, "211601": _FILL, "211602": _FILL,
     "811205": "cancelled (D-126: a bought LED profile's clip-in diffuser takes its place); before that, D-125 gave "
               "the plain strip a full parts-list line and no drawing",
 }
 
-# The sample the Lead reviews before anything else is generated (brief): frame, its RH pair, the table drawing,
-# the tube. The plate of the first sample (811205) needed no drawing under D-125 and is cancelled by D-126.
-SAMPLE = ["211101", "211102", "211501", "111101"]
+# The sample the PM reviewed before anything else was generated (#202): the frame, its RH pair, the tube. The
+# sample's table drawing of the fills was dropped by D-128 (the fill pieces go on DXFs), and its plate (811205)
+# needed no drawing under D-125, then D-126 cancelled it.
+SAMPLE = ["211101", "211102", "111101"]
