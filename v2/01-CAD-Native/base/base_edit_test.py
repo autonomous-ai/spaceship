@@ -65,7 +65,9 @@ def expected_boxes(b, design):
     if "fl1" in b["PARTS"]:     # batch 2: DL's two facets (FL2 with its welded door-end block)
         XL_, IL2X, IL2Y = b["XL_"], b["IL2_X"], b["IL2_Y"]
         out["fl1"] = (v(XL_), v("-dl_y2"), v("glide_h"), v(IL2X), v(b["Y_MITRE_IN"]), v("wall_z0"))
-        out["fl2"] = (v("%s + dl_x2" % XL_), v("-dl_y3"), v("glide_h"), v("%s + dl_w" % XL_), v(IL2Y), v("wall_z0"))
+        # FL2's door-end plate (the hinge-side ruling) runs inward to the kick strip's back line
+        out["fl2"] = (v("%s + dl_x2" % XL_), v("-dl_y3"), v("glide_h"), v("%s + dl_w" % XL_),
+                      max(v(IL2Y), v(b["Y_KICK_BACK"])), v("wall_z0"))
     return out
 
 

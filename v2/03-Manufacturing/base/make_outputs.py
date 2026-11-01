@@ -98,12 +98,15 @@ PART_INFO = {
                "calculation", "DRAFT", "CAD; joints register J-BASE-02 (keyhole piece of the front left corner, carrier of "
                "the knee key 111214), J-FRONT-02 (DL's round spigot)",
                "DL's first facet; no glide (112 long between two keyed ends)"),
-    "111105": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm knee end plate and a welded 7 mm "
-               "door-end block (alloy: assumption)", AA20,
-               "saw cut (knee mitre, door end square to X), weld the knee end plate and the door-end block, grind flush, "
-               "CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
-               "CAD; joints register J-BASE-02 (keyhole piece of the knee), J-FRONT-02 (DL's slot spigot)",
-               "DL's second facet, its block out to DL's door face (in view at the door opening, D-132); one glide"),
+    "111105": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm knee end plate, a welded 7 mm "
+               "door-end block and a welded 2 mm door-end plate (alloy: assumption)", AA20,
+               "saw cut (knee mitre, door end square to X), weld the knee end plate, the door-end block and the door-end "
+               "plate, grind flush, CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
+               "CAD; joints register J-BASE-02 (keyhole piece of the knee), J-FRONT-02 (DL's slot spigot); the door-end "
+               "plate: the PM's ruling of 2026-11-01 on the door's hinge side (as D-150)",
+               "DL's second facet, its block out to DL's door face (in view at the door opening, D-132); the door-end plate "
+               "carries that face on inward to the kick strip's back line, from the band's bottom line up, with the lip "
+               "118001 under it: the face FRONT's hinge-side brush closes on; one glide"),
     "111212": ("aluminium EN AW-6061 T6 block (joints register J-BASE-02)", "mill finish (hidden)",
                "the Joints Engineer's part", "calculation", "DRAFT",
                "joints register J-BASE-02; the Joints Engineer's part (model, STEP and tabulated drawing 111211 to 111214), "

@@ -52,6 +52,9 @@ P02_PARAMS = [
     ("ch_screw_x4", "x_fr_joint - 10 mm", "mm", "confirmed",
      "the last channel screw at X 905, tied to FR1's joint: 2 hole diameters from FR1's end (joints register J-FRONT-04, "
      "the Lead 2026-11-01; FRONT's gs_x4 = FR1's joint - 10)"),
+    ("fep_t", "2 mm", "mm", "assumption",
+     "FL2's door-end plate: 2 mm aluminium, welded into FL2's door end flush with DL's door face, from FL2's inner face "
+     "to the kick strip's back line (the PM's ruling of 2026-11-01 on the door's hinge side, as D-150)"),
     ("gl_fl2", "145 mm", "mm", "calculation",
      "FL2's glide along its centre line from the knee face's centre: the support under DL and the door's hinges "
      "(about 650 N, DL 12.3 kg and the 48.6 kg door, FRONT's lists), 60 from DL's slot spigot rivnut (40 needed) "
@@ -70,6 +73,7 @@ P02_PARTS = {
     "fl2": ("111105", "BASE - BAND TUBE - FRONT - FACET 2 - LH", "Viền chân trước - mặt vát 2", "MP", "front_l"),
     "seal_fl1": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_l"),
     "seal_fl2": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_l"),
+    "seal_fe": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_l"),
     # the Joints Engineer's keys (J-BASE-02), imported from their STEPs and placed by reference (D-95)
     "key_f": ("111212", "BASE - CORNER KEY - FRONT - LH", "Ke góc đế trước - trái", "MP", None),
     "key_k": ("111214", "BASE - CORNER KEY - KNEE - LH", "Ke góc đế - gối trái", "MP", None),
@@ -94,6 +98,11 @@ IL2_Y = "(-dl_y2 + band_t * (%s / %s + %s / %s) / (1 + %s))" % (A1, L1, A2, L2, 
 # FL2's inner line at X = -pod_w/2 + dl_x3 (its square end), and at DL's door face (cap)
 Y_FL2_IN_END = "(%s - (%s + dl_x3 - %s) * %s / %s)" % (IL2_Y, XL_, IL2_X, B2, A2)
 Y_CAP_IN = "(%s - (%s + dl_w - %s) * %s / %s)" % (IL2_Y, XL_, IL2_X, B2, A2)
+# FL2's door-end plate (the PM's hinge-side ruling, 2026-11-01): its pod-side face X_FEP, FL2's inner line there, and
+# the kick strip's back line it runs to
+X_FEP = "(%s + dl_w - fep_t)" % XL_
+Y_FEP_IN = "(%s - (%s - %s) * %s / %s)" % (IL2_Y, X_FEP, IL2_X, B2, A2)
+Y_KICK_BACK = "(-glass_y + kick_d / 2)"
 DXR, DYR = "dr_xc", "(pod_d / 2 - dr_yc)"
 LR = "sqrt(%s ^ 2 + %s ^ 2)" % (DXR, DYR)
 Y_MITRE_IN_R = "(-dr_yc + band_t * (%s - %s) / %s)" % (LR, DYR, DXR)
@@ -110,7 +119,7 @@ BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "seal_r", "seal_fr1
 
 
 # batch 2: the front-left pieces under DL (with --arg batch2=1; its method sample first: --arg part=fl1)
-BATCH2 = ("front_l", "fl1", "fl2", "seal_fl1", "seal_fl2", "key_f", "key_k")
+BATCH2 = ("front_l", "fl1", "fl2", "seal_fl1", "seal_fl2", "seal_fe", "key_f", "key_k")
 
 P02_BATCH_KEYS = BATCH1 + (BATCH2 if ARGS.get("batch2") == "1" else ())
 
@@ -127,7 +136,7 @@ def p02_setup(keys=P02_BATCH_KEYS):
                                                     "key_f", "key_k")}
     mats.update({"mesh": ("Aluminum", "Expanded mesh 80% free, 540 kg/m3 (ASSUMPTION)", 540.0),
                  "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"], "seal_se": MATERIALS["seal_l"],
-                 "seal_fl1": MATERIALS["seal_l"], "seal_fl2": MATERIALS["seal_l"]})
+                 "seal_fl1": MATERIALS["seal_l"], "seal_fl2": MATERIALS["seal_l"], "seal_fe": MATERIALS["seal_l"]})
     MATERIALS.update({k: m for k, m in mats.items() if k in keys})
     SUB_DESIGNS = tuple(SUB_DESIGNS) + tuple(k for k in ("band_r", "front_r", "front_l") if k in keys)
     if "fl1" in keys:             # batch 2: the front keys come from their owner's STEPs (D-95), held at the root and copied
@@ -228,17 +237,22 @@ def step_p02_fl2(design):
     c = find_comp(design, "fl2")
     body = c.bRepBodies.item(0)
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
-    # the door-end block, welded on: joined to the tube, it closes FL2's open end
+    # the door-end block, welded on: joined to the tube, it closes FL2's open end. The door-end plate (fep_t, the PM's
+    # ruling of 2026-11-01 on the hinge side, as D-150) is welded into it, flush with DL's door face: it carries the
+    # face on inward from FL2's inner face to the kick strip's back line, from the band's bottom line up, so the space
+    # under DL in front of the door plane is closed and FRONT's brush on the kick strip's hinge end closes on it.
+    # One profile, one extrude: the block and the plate are one weldment with the tube.
     sk = c.sketches.add(bot)
-    sk.name = "PLAN - FL2 DOOR-END BLOCK (WELDED ON) - TO DL'S DOOR FACE"
+    sk.name = "PLAN - FL2 DOOR-END BLOCK AND PLATE (WELDED ON) - TO DL'S DOOR FACE, THE PLATE TO THE KICK STRIP'S BACK LINE"
     polygon(design, sk, [P(design, "%s + dl_x3" % XL_, "-dl_y3"), P(design, "%s + dl_w" % XL_, "-dl_y3"),
-                         P(design, "%s + dl_w" % XL_, Y_CAP_IN), P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END)], X, Y)
+                         P(design, "%s + dl_w" % XL_, Y_KICK_BACK), P(design, X_FEP, Y_KICK_BACK),
+                         P(design, X_FEP, Y_FEP_IN), P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END)], X, Y)
     check_sketch(sk)
     ei = c.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.JoinFeatureOperation)
     ei.setDistanceExtent(False, vi("band_h"))
     ei.participantBodies = [body]
     f = c.features.extrudeFeatures.add(ei)
-    f.name = "EXTRUDE - FL2 DOOR-END BLOCK band_h, JOINED (WELDED)"
+    f.name = "EXTRUDE - FL2 DOOR-END BLOCK AND PLATE band_h, JOINED (WELDED)"
     if c.bRepBodies.count != 1:
         raise RuntimeError("FL2: the door-end block didn't join the tube (%d bodies)" % c.bRepBodies.count)
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
@@ -572,7 +586,7 @@ def p02_seal_runs(design):
         s0x, s0y = "(%s + %s * %s)" % (xc, t0, D1X), "(%s + %s * %s)" % (yc, t0, D1Y)
         qx = "(%s + seal_t * (%s + %s) / (1 + %s))" % (IL2_X, p1x, p2x, DOT)
         qy = "(%s + seal_t * (%s + %s) / (1 + %s))" % (IL2_Y, p1y, p2y, DOT)
-        xe, ye = "(%s + dl_w)" % XL_, Y_CAP_IN
+        xe, ye = X_FEP, Y_FEP_IN          # FL2's lip stops at its door-end plate's pod side (the hinge-side ruling)
         l1 = "sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)" % (IL2_X, xc, IL2_Y, yc)
         l2 = "sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)" % (xe, IL2_X, ye, IL2_Y)
         # FL1's envelope starts at the inner corner and wraps round the side band envelope's front corner
@@ -580,8 +594,16 @@ def p02_seal_runs(design):
         runs.append(("seal_fl1", "front_l", "FL1, inner face", "0 mm", l1,
                      [(xc, yc), (IL2_X, IL2_Y), (qx, qy), ("(%s + seal_t * %s)" % (s0x, p1x), "(%s + seal_t * %s)" % (s0y, p1y)),
                       ("(%s + seal_t)" % xc, yc)]))
-        runs.append(("seal_fl2", "front_l", "FL2, inner face, to DL's door face", "0 mm", l2,
+        runs.append(("seal_fl2", "front_l", "FL2, inner face, to its door-end plate", "0 mm", l2,
                      [(IL2_X, IL2_Y), (xe, ye), (xe, "(%s + seal_t / %s)" % (ye, p2y)), (qx, qy)]))
+        # FL2's door-end plate's lip (the PM's hinge-side ruling, as D-150): along the plate's bottom edge from FL2's
+        # inner face to the kick strip's back line. Its fin sits under the plate, flush with DL's door face, and meets
+        # FL2's lip's end; its leg is on the plate's pod side, starting where FL2's lip envelope leaves room for it
+        # (FL2 runs at an angle). p02_seal_cuts takes the envelope's top off where the plate stands on the fin.
+        xo, xl = "(%s + dl_w)" % XL_, "(%s - seal_t)" % X_FEP
+        yl0 = "(%s - (%s - %s) * %s / %s + seal_t / %s)" % (IL2_Y, xl, IL2_X, B2, A2, p2y)
+        runs.append(("seal_fe", "front_l", "X = %.2f (FL2's door-end plate, its bottom edge)" % v(xo), Y_FEP_IN, Y_KICK_BACK,
+                     [(xo, Y_FEP_IN), (xo, Y_KICK_BACK), (xl, Y_KICK_BACK), (xl, yl0), (X_FEP, yl0), (X_FEP, Y_FEP_IN)]))
     if "sill" in PARTS:
         # the sill's door-end plate (D-150, Reviewer 8's P1 on #303): its lip runs the plate's bottom edge from FR1's
         # lip (Y -pod_d/2 + band_t + seal_t, where FR1's lip envelope ends: the two only touch) to the kerb. Its leg is
@@ -597,6 +619,16 @@ def p02_seal_runs(design):
         runs.append(("seal_fr1", "front_r", "Y = %.2f (FR1, inner face)" % v(yf), x0, X_FR_JOINT,
                      [(x0, yf), (X_FR_JOINT, yf), (X_FR_JOINT, "%s + seal_t" % yf), (x0, "%s + seal_t" % yf)]))
     return runs
+
+
+def p02_seal_cuts(design):
+    """Where a plate stands on a lip's fin: {run key: (plan rectangle, z from)}; the run's envelope is cut there from
+    z from up through its top. FL2's door-end plate stands on its lip's fin (X_FEP to DL's door face), from glide_h."""
+    if "fl2" not in PARTS:
+        return {}
+    xo = "(%s + dl_w + 1 mm)" % XL_
+    return {"seal_fe": ([(X_FEP, "(%s - 1 mm)" % Y_FEP_IN), (xo, "(%s - 1 mm)" % Y_FEP_IN), (xo, "(%s + 1 mm)" % Y_KICK_BACK),
+                         (X_FEP, "(%s + 1 mm)" % Y_KICK_BACK)], "glide_h")}
 
 
 def p02_seal_sections(design):
@@ -651,8 +683,9 @@ def p02_export(design, out):
             "outer_face_length": dist(ok_, od), "inner_face_length": dist(ik, idd),
             "front_end": "mitre to FL1, %.2f deg from square, closed by a welded 1.5 end plate with 2 keyholes for the "
                          "knee key 111214's studs" % ang(d2, n_k),
-            "back_end": "cut square to X (%.2f deg from square), the door-end block welded on, %.1f to DL's door face"
-                        % (ang(d2, (1.0, 0.0)), v("dl_w - dl_x3"))}
+            "back_end": "cut square to X (%.2f deg from square), the door-end block welded on, %.1f to DL's door face, "
+                        "and the 2 mm door-end plate welded into it, flush with that face, %.1f wide to the kick strip's "
+                        "back line" % (ang(d2, (1.0, 0.0)), v("dl_w - dl_x3"), v("%s - %s" % (Y_KICK_BACK, Y_FEP_IN)))}
     if "sill" in keys:
         out["sill"] = {"t": v("sl_t"), "length": round(v("sl_x1 - %s" % X_FR0), 2), "x0": v(X_FR0),
                        "legs_outside": {"flange": v("sl_flange"), "ledge": round(v("(-glass_y - ch_w / 2) - (-pod_d / 2 + band_t)"), 2),

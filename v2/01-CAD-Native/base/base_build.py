@@ -938,6 +938,7 @@ def build_seal_envelopes(design):
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
     sections = globals()["p02_seal_sections"](design) if P02_ON else {}
+    cuts = globals()["p02_seal_cuts"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
         if key in sections:
@@ -961,6 +962,21 @@ def build_seal_envelopes(design):
             polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
             check_sketch(sk)
             extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+            if key in cuts:
+                # where a plate stands on the lip's fin (p02_seal_cuts): the envelope is cut from z_from up through its
+                # top; the fin under the plate stays joined to the leg below it, so the body stays one
+                pts_c, z_from = cuts[key]
+                skc = comp.sketches.add(comp.xYConstructionPlane)
+                skc.name = "PLAN - BASE SEAL LIP - WHERE THE PLATE STANDS ON THE FIN"
+                polygon(design, skc, [P(design, ex, ey) for ex, ey in pts_c], X, Y)
+                check_sketch(skc)
+                ci = comp.features.extrudeFeatures.createInput(one_profile(skc),
+                                                               adsk.fusion.FeatureOperations.CutFeatureOperation)
+                ci.startExtent = adsk.fusion.OffsetStartDefinition.create(vi(z_from))
+                ci.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(
+                    vi("glide_h + seal_leg - (%s) + 1 mm" % z_from)), adsk.fusion.ExtentDirections.PositiveExtentDirection)
+                ci.participantBodies = [single_body(comp)]
+                comp.features.extrudeFeatures.add(ci).name = "CUT - BASE SEAL LIP - ABOVE THE FIN, WHERE THE PLATE STANDS"
         body = single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
         if key in sections:
             got = bbox_mm(body)
