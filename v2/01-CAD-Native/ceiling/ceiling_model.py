@@ -158,13 +158,40 @@ CEILING_PARAMS = [
     ("fill_min", "100 mm", "mm", "assumption", "a fill strip shorter than this isn't made (a bay mostly over the soffit)"),
     ("fill_hw", "inner_w / 4 - close_gap / 2 - tube_w - fill_c", "mm", "calculation",
      "half length of a fill strip, set by the seam member over the cassette's inner edge and used on both sides, so both cassettes stay the same part"),
-    # ---- HOLD envelopes: space kept for parts not yet named (guideline 4.3)
-    ("clip_w", "40 mm", "mm", "assumption", "clip space along X; HOLD H03 / ISS-076 until a clip is named with its rating"),
-    ("clip_d", "30 mm", "mm", "assumption", "clip space out from the member face; HOLD H03 / ISS-076"),
-    ("clip_h", "30 mm", "mm", "assumption", "clip space above the tray; HOLD H03 / ISS-076"),
-    ("catch_w", "40 mm", "mm", "assumption", "safety catch space along X; HOLD H04 / ISS-076"),
-    ("catch_d", "30 mm", "mm", "assumption", "safety catch space out from the member face; HOLD H04 / ISS-076"),
-    ("catch_h", "40 mm", "mm", "assumption", "safety catch space above the tray, up the member face; HOLD H04 / ISS-076"),
+    # ---- the cassette's clips 518001, a Fastmount PC-SF1 female on a tab 412002 welded to the cross member's back face
+    #      and a PC-SVMX male screwed to the tray (the Lead's ruling 2026-11-01, joints register H-10); its safety
+    #      catches 518002, a Gripple Loop No.3 from an eye tab welded to cross member 2's front face to an eye bracket
+    #      513103 riveted to the rib and the tray (the Lead's rulings 2026-11-01, H-11: nothing crosses the bond line)
+    ("clip_w", "48 mm", "mm", "source", "the Fastmount catalogue 2023 (FMT, the joints register's source), p.4-5: the clip set's length along the member, PC-SF1's plate 48 x 25"),
+    ("clip_d", "35 mm", "mm", "source", "the Fastmount catalogue 2023 (FMT, the joints register's source), p.4-5: the clip set's width across the member, PC-SVMX's base Ø35"),
+    ("clip_h", "15.5 mm", "mm", "assumption", "the engaged set from the male's base on the tray to the female's mounting "
+     "face: the Fastmount catalogue 2023 (FMT, the joints register's source), p.4-5 prints 15.5 for PC-SF1 with its surface-mount males; HOLD-08's sample (T07) confirms it for PC-SVMX"),
+    ("clip_y", "20 mm", "mm", "calculation", "the clip set's axis behind the cross member's back face: PC-SVMX's Ø35 base "
+     "keeps 2.5 off the member, whose underside is 4 over the tray"),
+    ("tab_t", "2 mm", "mm", "assumption", "the clip tab 412002 and the eye tab: 2.0 galvanized steel plate, as J-FRAME-01's "
+     "mitre plates, welded to the member"),
+    ("tab_l", "60 mm", "mm", "calculation", "the clip tab along the member: PC-SF1's 48 plate and 6 each side"),
+    ("tab_w", "40 mm", "mm", "calculation", "the clip tab's reach behind the member: the set's axis at 20 and half PC-SF1's "
+     "25 plate, 7.5 beyond it"),
+    ("tab_hole", "3 mm", "mm", "assumption", "the clip tab's two pierced holes for PC-SF1's #6 thread-forming screws (the "
+     "Lead's ruling 2026-11-01: no drill chips); Joints names the screw and its pilot"),
+    ("tab_pitch", "36 mm", "mm", "source", "the Fastmount catalogue 2023 (FMT, the joints register's source), p.4-5: PC-SF1's two Ø4 holes 36 apart"),
+    ("eye_w", "30 mm", "mm", "assumption", "the eye tab across X (the Lead's ruling 2026-11-01: a welded 2 mm steel eye under "
+     "cross member 2 at each catch, 2 a frame)"),
+    ("eye_r", "30 mm", "mm", "assumption", "the eye tab's reach in front of cross member 2"),
+    ("eye_z", "36 mm", "mm", "assumption", "the eye tab's underside over the tray base, 6 under the member's top for its weld"),
+    ("eye_hole", "8 mm", "mm", "assumption", "the eye for the Gripple No.3's 3 mm rope loop"),
+    ("eye_hy", "18 mm", "mm", "assumption", "the eye's centre in front of cross member 2's front face"),
+    ("eb_t", "1.5 mm", "mm", "assumption", "the eye bracket 513103: bent 1.5 galvanized steel"),
+    ("eb_l", "rib_crown + 2 * rib_fl", "mm", "calculation", "the eye bracket across X: the rib's width, so a rivet goes "
+     "through each of its flanges"),
+    ("eb_w", "24 mm", "mm", "assumption", "the eye bracket's base along Y, its upright at the eye's line"),
+    ("eb_h", "16 mm", "mm", "assumption", "the eye bracket's upright: the Gripple runs up 20 from its top to the eye tab"),
+    ("eb_hole", "6 mm", "mm", "assumption", "the eye bracket's eye for the Gripple No.3's hanger end"),
+    ("eb_ez", "9 mm", "mm", "calculation", "the eye's centre over the tray base: 4.5 of upright under it over the base's 1.5, "
+     "4 over it (the opening rule: 2 x the sheet and 3 or more)"),
+    ("eb_rv", "4.1 mm", "mm", "source", "D-166's closed-end rivet Ø4.0 (the joints register): its hole through the bracket, the "
+     "tray and the rib's flange"),
     # ---- cables, sprinkler reserve (no lights in the cassettes: PM ruling 2026-10-31, the lights
     #      move to a light shelf along the tops of the side and back walls)
     ("cable_hole", "19.1 mm", "mm", "confirmed",
@@ -711,27 +738,77 @@ def member_back_cs(k):
 
 
 def clip_boxes():
-    """6 clips: on the back faces of cross members 1..3, over the ribs. The back face keeps
-    every clip over the cassette for any soffit up to about 385 mm (D-60)."""
+    """6 clip sets 518001 (PC-SF1 + PC-SVMX), engaged: behind the back faces of cross members 1..3, over the ribs, from
+    the male's base on the tray base to the female's mounting face under its tab. The back face keeps every clip over
+    the cassette for any soffit up to about 385 mm (D-60)."""
+    out = []
+    for k in (1, 2, 3):
+        for side in (-1, 1):
+            xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
+            ya = "%s + clip_y" % member_back_cs(k)
+            out.append(("CLIP X%d %s" % (k, "L" if side < 0 else "R"),
+                        ("%s - clip_w / 2" % xc, "%s + clip_w / 2" % xc, "%s - clip_d / 2" % ya, "%s + clip_d / 2" % ya,
+                         "0 mm", "clip_h")))
+    return out
+
+
+def clip_tab_boxes():
+    """The clip tabs 412002 (welded to the frame, given here in CS-510301 over the clip they carry): on cross members
+    1..3's back faces over the ribs, their underside on the clip set's top. [(name, box, [(hole x, hole y)])]."""
     out = []
     for k in (1, 2, 3):
         for side in (-1, 1):
             xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
             yb = member_back_cs(k)
-            out.append(("CLIP X%d %s" % (k, "L" if side < 0 else "R"),
-                        ("%s - clip_w / 2" % xc, "%s + clip_w / 2" % xc, yb, "%s + clip_d" % yb, "0 mm", "clip_h")))
+            ya = "%s + clip_y" % yb
+            out.append(("CLIP TAB X%d %s" % (k, "L" if side < 0 else "R"),
+                        ("%s - tab_l / 2" % xc, "%s + tab_l / 2" % xc, yb, "%s + tab_w" % yb, "clip_h", "clip_h + tab_t"),
+                        [("%s - tab_pitch / 2" % xc, ya), ("%s + tab_pitch / 2" % xc, ya)]))
+    return out
+
+
+def eye_tab_boxes():
+    """The eye tabs (welded to cross member 2's front face, given in CS-510301 over the catch they carry), one over each
+    rib: [(name, box, (eye x, eye y))]."""
+    out = []
+    yf = member_front_cs(2)
+    for side in (-1, 1):
+        xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
+        out.append(("EYE TAB %s" % ("L" if side < 0 else "R"),
+                    ("%s - eye_w / 2" % xc, "%s + eye_w / 2" % xc, "%s - eye_r" % yf, yf, "eye_z", "eye_z + tab_t"),
+                    (xc, "%s - eye_hy" % yf)))
+    return out
+
+
+def eye_bracket_boxes():
+    """The eye brackets 513103 on the tray base, one over each rib under its eye tab: an L, its upright's back face on
+    the eye's line, its base forward. [(name, box)]."""
+    out = []
+    ye = "%s - eye_hy" % member_front_cs(2)
+    for side in (-1, 1):
+        xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
+        out.append(("EYE BRACKET %s" % ("L" if side < 0 else "R"),
+                    ("%s - eb_l / 2" % xc, "%s + eb_l / 2" % xc, "%s - eb_w" % ye, ye, "0 mm", "eb_h")))
     return out
 
 
 def catch_boxes():
-    """2 safety catches: on the front face of cross member 2, over the ribs (the clips use its back face)."""
+    """2 safety catches 518002 (Gripple Loop No.3): the space in front of cross member 2 over each rib, from the eye
+    bracket's top up to its eye tab, where the rope runs from the bracket's eye to the tab's."""
     out = []
+    yf = member_front_cs(2)
     for side in (-1, 1):
         xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
-        yf = member_front_cs(2)
         out.append(("CATCH %s" % ("L" if side < 0 else "R"),
-                    ("%s - catch_w / 2" % xc, "%s + catch_w / 2" % xc, "%s - catch_d" % yf, yf, "0 mm", "catch_h")))
+                    ("%s - eye_w / 2" % xc, "%s + eye_w / 2" % xc, "%s - eye_r" % yf, "%s - lin_gap" % yf, "eb_h", "eye_z")))
     return out
+
+
+def keep_out_boxes():
+    """Everything the cassette's fill keeps fill_c from besides the frame members: the clip sets, the catches, the eye
+    brackets and the frame's tabs over them."""
+    return (clip_boxes() + catch_boxes() + eye_bracket_boxes() + [(n, b) for n, b, _h in clip_tab_boxes()]
+            + [(n, b) for n, b, _e in eye_tab_boxes()])
 
 
 FILL_KEYS = ("fill_a", "fill_b", "fill_c", "fill_d")
@@ -752,7 +829,7 @@ def fill_strips(vals=None):
         box = ("-fill_hw", "fill_hw", y0, y1, "0 mm", "fill_t")
         bv = tuple(ev(vals, e) for e in box)
         notches, sig = [], []
-        for name, b in clip_boxes() + catch_boxes():
+        for name, b in keep_out_boxes():
             nb = ("%s - fill_c" % b[0], "%s + fill_c" % b[1], "%s - fill_c" % b[2], "%s + fill_c" % b[3], "0 mm", "fill_t")
             nv = tuple(ev(vals, e) for e in nb)
             if overlap(bv, nv):

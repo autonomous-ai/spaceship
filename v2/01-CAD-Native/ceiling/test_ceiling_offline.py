@@ -307,7 +307,7 @@ class Cassette(unittest.TestCase):
 
     def parts(self):
         """Every cassette body we can describe as a box, in CS-510301."""
-        out = M.boxes_mm(VALS, M.clip_boxes() + M.catch_boxes() + M.rib_boxes())
+        out = M.boxes_mm(VALS, M.clip_boxes() + M.catch_boxes() + M.eye_bracket_boxes() + M.rib_boxes())
         for key, bay, b, _n in M.fill_strips():
             out.append(("FILL %d" % bay, tuple(ev(e) for e in b)))
         out.append(("TRAY", self.cassette_outer()))
@@ -330,19 +330,74 @@ class Cassette(unittest.TestCase):
                         self.assertGreaterEqual(g, VALS["lin_gap"] - 1e-9, "%s %s too close to %s" % (half, name, mc))
 
     def test_clips_on_members_over_ribs(self):
+        """Each clip set (PC-SF1 + PC-SVMX) over a rib, its axis clip_y behind its cross member's back face, its male's
+        Ø35 base 2 or more off the member (whose underside is 4 over the tray), inside the cassette."""
         for name, b in M.boxes_mm(VALS, M.clip_boxes()):
             xc = (b[0] + b[1]) / 2
             self.assertAlmostEqual(abs(xc), VALS["rib_off"], msg=name)
             k = int(name.split()[1][1])
-            self.assertAlmostEqual(b[2], ev(M.member_back_cs(k)), msg=name + " on the member's back face")
+            yb = ev(M.member_back_cs(k))
+            self.assertAlmostEqual((b[2] + b[3]) / 2, yb + VALS["clip_y"], msg=name + ": its axis")
+            self.assertGreaterEqual(b[2] - yb, 2.0, name + " off the member")
+            self.assertAlmostEqual(b[3] - b[2], VALS["clip_d"])
+            self.assertAlmostEqual(b[1] - b[0], VALS["clip_w"])
             self.assertGreaterEqual(b[2], ev(M.CS_Y0))
             self.assertLessEqual(b[3], ev(M.CS_Y1))
         self.assertEqual(len(M.clip_boxes()), 6)
         self.assertEqual(len(M.catch_boxes()), 2)
 
+    def test_tabs_eyes_and_brackets(self):
+        """The clip tabs 412002 on the cross members' back faces, each under its set's female (the set's top), inside the
+        member's 40 face, its two holes on the set's axis at PC-SF1's 36; the eye tabs on cross member 2's front face, 6
+        under its top for the weld; the eye brackets 513103 under them, their rivets through the rib's flanges; the
+        catch's space from a bracket's top to its eye tab (the Lead's rulings 2026-11-01)."""
+        v = VALS
+        z0, z1 = ev(M.ZF0) - ev(M.CASSETTE_CS["C1"][2]), ev(M.ZF1) - ev(M.CASSETTE_CS["C1"][2])   # the members' 40 face
+        self.assertAlmostEqual(z0, 4.0)
+        sets = dict(M.boxes_mm(v, M.clip_boxes()))
+        tabs = M.clip_tab_boxes()
+        self.assertEqual(len(tabs), 6)
+        for name, b, holes in tabs:
+            tb = tuple(ev(e) for e in b)
+            cs = sets[name.replace("CLIP TAB", "CLIP")]
+            k = int(name.split()[2][1])
+            self.assertAlmostEqual(tb[2], ev(M.member_back_cs(k)), msg=name + " on the member's back face")
+            self.assertAlmostEqual(tb[4], cs[5], msg=name + " on its set's top")
+            self.assertTrue(z0 < tb[4] and tb[5] < z1, name + " inside the member's face")
+            self.assertTrue(tb[0] <= cs[0] and cs[1] <= tb[1] and tb[3] >= (cs[2] + cs[3]) / 2 + 12.5, name + " carries PC-SF1")
+            hx = sorted(ev(x) for x, _y in holes)
+            self.assertAlmostEqual(hx[1] - hx[0], v["tab_pitch"])
+            for x, y in holes:
+                self.assertAlmostEqual(ev(y), (cs[2] + cs[3]) / 2, msg=name + " hole on the set's axis")
+                self.assertGreaterEqual(min(ev(x) - tb[0], tb[1] - ev(x)), 2 * v["tab_hole"], name + " hole's edge")
+        yf2 = ev(M.member_front_cs(2))
+        eyes = M.eye_tab_boxes()
+        brackets = dict(M.boxes_mm(v, M.eye_bracket_boxes()))
+        catches = dict(M.boxes_mm(v, M.catch_boxes()))
+        self.assertEqual((len(eyes), len(brackets)), (2, 2))
+        for name, b, (ex, ey) in eyes:
+            tb = tuple(ev(e) for e in b)
+            side = name.split()[-1]
+            self.assertAlmostEqual(tb[3], yf2, msg=name + " on cross member 2's front face")
+            self.assertAlmostEqual(z1 - tb[5], 6.0, msg=name + " 6 under the member's top")
+            self.assertGreaterEqual(min(ev(ey) - tb[2], tb[3] - ev(ey)) - v["eye_hole"] / 2, v["eye_hole"] / 2, name)
+            br, ca = brackets["EYE BRACKET " + side], catches["CATCH " + side]
+            self.assertAlmostEqual(br[3], ev(ey), msg="the bracket's upright on the eye's line")
+            self.assertGreaterEqual(yf2 - br[3], v["lin_gap"], "the bracket off cross member 2")
+            self.assertAlmostEqual((br[0] + br[1]) / 2, ev(ex))
+            for dx in (-1, 1):            # the rivets through the rib's flanges (crown 20, flanges 12 each side)
+                rx = dx * (v["rib_crown"] / 2 + v["rib_fl"] / 2)
+                self.assertTrue(v["rib_crown"] / 2 + v["eb_rv"] / 2 <= abs(rx) <= v["rib_crown"] / 2 + v["rib_fl"] - v["eb_rv"] / 2)
+            rim_lo = v["eb_ez"] - v["eb_hole"] / 2 - v["eb_t"]          # over the base's top face
+            rim_hi = v["eb_h"] - (v["eb_ez"] + v["eb_hole"] / 2)
+            self.assertGreaterEqual(min(rim_lo, rim_hi), max(2 * v["eb_t"], 3.0) - 1e-9, "the bracket's eye rims")
+            self.assertAlmostEqual(ca[4], br[5])
+            self.assertAlmostEqual(ca[5], tb[4])
+            self.assertTrue(ca[2] <= ev(ey) <= ca[3])
+
     def test_fill_clear_of_clips_after_notches(self):
         """The fill keeps fill_c from every clip and catch once its notches are cut."""
-        hold = M.boxes_mm(VALS, M.clip_boxes() + M.catch_boxes())
+        hold = M.boxes_mm(VALS, M.keep_out_boxes())
         for key, bay, b, notches in M.fill_strips():
             sb = tuple(ev(e) for e in b)
             nbs = [tuple(ev(e) for e in nb) for _n, nb in notches]
@@ -359,7 +414,8 @@ class Cassette(unittest.TestCase):
         """Mirror about the cassette centre line maps every feature onto another."""
         def mirror(b):
             return (-b[1], -b[0]) + tuple(b[2:])
-        for group in (M.clip_boxes(), M.catch_boxes(), M.rib_boxes()):
+        for group in (M.clip_boxes(), M.catch_boxes(), M.rib_boxes(), M.eye_bracket_boxes(),
+                      [(n, b) for n, b, _h in M.clip_tab_boxes()], [(n, b) for n, b, _e in M.eye_tab_boxes()]):
             boxes = [b for _n, b in M.boxes_mm(VALS, group)]
             for b in boxes:
                 self.assertTrue(any(all(abs(p - q) < 1e-9 for p, q in zip(mirror(b), c)) for c in boxes))
@@ -414,7 +470,7 @@ class Sprinkler(unittest.TestCase):
     def test_zones_clear(self):
         r = VALS["sprk_d"] / 2
         ribs = M.boxes_mm(VALS, M.rib_boxes())
-        hold = M.boxes_mm(VALS, M.clip_boxes() + M.catch_boxes())
+        hold = M.boxes_mm(VALS, M.keep_out_boxes())
         for x, y in M.sprinkler_points():
             cx, cy = ev(x), ev(y)
             zone = (cx - r, cx + r, cy - r, cy + r, -1e9, 1e9)
