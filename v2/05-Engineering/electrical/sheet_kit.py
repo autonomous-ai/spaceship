@@ -24,7 +24,7 @@ TB_H = 8 * TB_ROW                # 8 rows
 
 INK = (0.1, 0.1, 0.1)
 MAINS = (0.75, 0.1, 0.1)         # mains in red
-SELV = (0.05, 0.25, 0.6)         # Class 2 12 V in blue
+SELV = (0.05, 0.25, 0.6)         # Class 2 24 V and 12 V in blue
 SIG = (0.2, 0.45, 0.2)           # signals and data in green
 GREY = (0.45, 0.45, 0.45)        # text in grey stays dark enough to print
 LIGHT = (0.92, 0.92, 0.92)
