@@ -278,7 +278,10 @@ def harnesses(v):
         conductors="RS-485 A, B, 0 V, light current, PS1 and PS2 rail senses", cable="6 x 24 AWG screened",
         area_mm2=AWG24, length_mm=LOOP + hub_rise + 150, end_a="shares W20d's 10-way plug",
         end_b="hub I/O (HOLD H-ELE-05)", grommets="", amps_max=0.01,
-        note="the hub sets the three light channels with DMX512 over RS-485, reads PS2's current and the 24 V rails PS1 and PS2 for the self-test (D-87)")
+        note="the hub sets the three light channels with DMX512 over RS-485, reads PS2's current and the 24 V rails PS1 and PS2 for the self-test (D-87); "
+             "every core is isolated from PS1 and PS2 (the Lead's ruling, 2026-11-01): the RS-485 pair through an isolated "
+             "transceiver, the rail senses through optocouplers, PS2's current through an isolated sensor, so no two Class 2 "
+             "supplies share a 0 V")
     add(id="W40", harness_pn="710023", segment="COLUMN", function="supply fan pair", frm="F3a 2 A + hub PWM 1, tach 1",
         to="supply fan box, high in DR", route="CHASE, TO-DR", circuit="PS3 fan S",
         conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
@@ -309,10 +312,10 @@ def harnesses(v):
         note="boost by hand (D-33); TEST runs the self-test (D-87)")
     add(id="W12", harness_pn="710024", segment="R2-CASS", function="call light drop",
         frm="the shelf's call branch at FX-CALL0 (behind the shelf, Y -209.5)", to="call light bar (Y -209.5, Z 1450)",
-        route="FX-CALL0, P7, CALL-R2, FX-CALL2", circuit="PS2 lights", conductors="+12 V, CALL-",
+        route="FX-CALL0, P7, CALL-R2, FX-CALL2", circuit="PS2 lights", conductors="+24 V, CALL-",
         cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=TAIL + LOOP + L("CALL-R2", "FX-CALL2") + 300,
         end_a="Mini-Fit Jr 2-way plug (mates W11c's call branch in P7)", end_b="strip feed of the call bar",
-        grommets="FX-CALL0, FX-CALL2 (felt only)", amps_max=CALL_W / 12.0, note="")
+        grommets="FX-CALL0, FX-CALL2 (felt only)", amps_max=CALL_W / BUS_V["PS2"], note="")
     # ---- draw wires (REQ-VCK-03): a cord in each cassette or column segment, tied off at its holes
     add(id="W32", harness_pn="710031", segment="R1-CASS + COLUMN", function="draw wire: kit zone to the soffit (mic, status light)",
         frm="kit drop P3-KIT", to="soffit right end", route="T1-R1B, FX-COL, CHASE, TO-SOFFIT", circuit="reserve",
@@ -392,10 +395,11 @@ part("ps_kit", "718082", "ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT", 
           "inrush 40 A 1030 us at 230 VAC")
 part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 5 CHANNEL 12-24 V PWM - DMX512", "Điện - bộ điều khiển đèn 5 kênh",
      "PI", "710001", 1, "", "", 0.40, "assumption (550 g packed, LTECH)", sku="maker HOLD (H-ELE-14)", status=HOLD_BUY,
-     size="169 x 80 x 39", source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W)",
+     size="169 x 80 x 39", source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W); D-168",
      note="constant-voltage PWM dimmer for the 24 V strips (D-168): 5 channels, 3 used (uplight, down-light, call; 2 "
-          "spare), at least 3 A per channel, common +V, set by the hub with DMX512 over its RS-485 line (no Modbus); on a "
-          "lost link it holds its last level or goes dark, never brighter")
+          "spare), at least 3 A per channel, common +V, set by the hub with DMX512 over RS-485 into its opto-isolated "
+          "input, so PS2's 0 V never meets the hub's (PS3); on a lost link it holds its last level or goes dark, never "
+          "brighter")
 part("rcbo", "718003", "ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489", "Điện - CB 1 cực 15 A (UL 489)", "PI", "710001", 1,
      "", "", 0.12, "assumption", maker="Eaton", sku="FAZ-C15/1-NA-L (UL 489, 1 pole, 15 A, C curve; or equal)",
      size="17.7 W x 70.5 D, DIN rail", status=HOLD_BUY, source=EATON_FAZ,
@@ -853,8 +857,10 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             "on 3-pin XLR, RJ45 or a screw terminal, opto-isolated; 8 or 16 bit; short-circuit, overheat and over-current "
             "protection; -30 to +65 °C; cURus E500585 mark, FCC; 169 x 80 x 39 mm, 550 g packed",
             'https://www.ltech.cn/uploads/pdf/LT-995.pdf (LTECH, 06/01/2021_A2, pp. 1-3)',
-            "3 of its 5 channels used; the hub's RS-485 line lands on its screw terminal; what it does when the data "
-            "stops isn't on its sheet: the bench test (H-ELE-14) must show it holds or goes dark, never brighter"),
+            "3 of its 5 channels used; the hub's RS-485 line lands on its screw terminal, whose DMX input is "
+            "opto-isolated (its sheet: 'photoelectric isolation'), so PS2's 0 V stays apart from the hub's; what it does "
+            "when the data stops isn't on its sheet: the bench test (H-ELE-14) must show it holds or goes dark, never "
+            "brighter"),
  '718004': ('NEUTRIK NAC3MPX-TOP',
             'Neutrik',
             'NAC3MPX-TOP: UL 498 20 A 250 V AC (Recognized, file E343813); 1/4 in flat tabs',
