@@ -453,6 +453,18 @@ class BoughtParts(unittest.TestCase):
         _, bought = run([row("518001", "buy", "LINING - CASSETTE CLIP - ACME CL-20")], {})
         self.assertEqual((bought[0]["state"], bought[0]["tests"]), ("HOLD", ["T07"]))
 
+    def test_an_fai_check_counts_as_a_bought_parts_test(self):
+        # the Lead (2026-11-01): the soffit latch's acceptance is the FAI plan's check K-A07 (each latch holds 25 N), so
+        # the test column takes a check's ID as it takes a test plan's
+        plan = PLAN + "| `618106` | Soffit underside latch | K-A07 | each latch holds 25 N |\n"
+        fai = rc.fai_plan(plan, BOM)
+        self.assertTrue(any(ids == ["K-A07"] and any(p.fullmatch("618106") for p in pats) for pats, ids in fai[2]), fai[2])
+        latch = row("618106", "buy", "AIR - SOFFIT UNDERSIDE LATCH - SOUTHCO E4-10-201-10", team="CEILING")
+        made, bought = rc.check_parts([latch], BOM.parse_register(REGISTER, "test"), rc.files_by_pn({}), [], fai, fai[1],
+                                      rc.register_products(REGISTER, BOM), "unlocked", BOM, {}, {}, {})
+        self.assertEqual(bought[0]["tests"], ["K-A07"])
+        self.assertNotIn("test", bought[0]["state"])
+
     def test_the_register_reads_hold_as_a_whole_word(self):
         text = REGISTER + ("| H-30 | **838009** | HARDWARE - GROMMET | bought | 4 | part DECIDED; the strip holds the seal |\n"
                            "| H-31 | **838010** | HARDWARE - CLIP | bought | 4 | number adopted; product on hold until T07 |\n")
