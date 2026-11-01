@@ -160,10 +160,12 @@ SPECS = {
         "drawing": doc("360001", "FRONT - DOOR UNIT", "DWG"),
         "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (150, 250), "top": (150, 120),
                                                                          "left": (290, 250), "iso": (340, 95)},
-        "box": {"front": (v["hinge_x0"], KZB, X1, ZT + v["st_top"])},
+        # the front view's model box: from the hinge spaces to the brush seal 368008 on the strip's end, and from the
+        # room floor (the brush reaches it, D-150) to the strike over the leaf
+        "box": {"front": (v["hinge_x0"], 0.0, X1 + v["kbrush_gap"], ZT + v["st_top"])},
         "dims": [
             ("front", (X0, KZB), (X1, KZB), "below", 12), ("front", (X0, KZB), (X0, ZT), "left", 18),
-            ("front", (X1, KZB), (X1, ZB), "right", 10),
+            ("front", (X1, KZB), (X1, ZB), "right", 10), ("front", (X1, 0.0), (X1, KZB), "right", 10),
         ],
         "notes": [
             "Door unit (D-56): leaf 361001, kick strip 361002 with the drop seal 368001 in its cavity and the U-seal "
