@@ -200,10 +200,12 @@ def frame_blocks(pn, src=None):
         "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009).",
         "5. Cut list (square ends, tube 6063-T6; studs 1.0 wall, D-85): " + "; ".join(
             "%s %s × %g × %d" % (k[0], k[1], k[2], q) for k, q in sorted(cut.items())) + ".",
-        "6. Member joints HOLD (H11): butt joints shown, rails run the full length. %sCut lengths ±0.5 "
-        "(assumption) until the frame maker's capability is known (guideline 6.3)." % extra,
-        "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: member joints (H11), "
-        "captive bolt retainer (HOLD-02), torque (HOLD-01). P01 DRAFT.",
+        "6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
+        "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
+        "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's capability "
+        "is known (guideline 6.3)." % extra,
+        "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
+        "(HOLD-02), torque (HOLD-01). P01 DRAFT.",
     ]
     return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
 
@@ -514,7 +516,8 @@ def assembly_blocks(pn, kind, src=None):
             "left open beside every bolt this panel drives." % (
                 ", the closing-seam bulb seal (HOLD-12)" if pos["code"] in ("B2", "B4") else ""),
             "5. Bond: panel bonded face down on a flat table; no standing, stacking or shipping before 72 h (bond spec).",
-            "6. HOLD: member joints (H11), retainer (HOLD-02), torque (HOLD-01), gasket converter (HOLD-05).",
+            "6. Member joints: internal cleats per D-115. HOLD: retainer (HOLD-02), torque (HOLD-01), gasket "
+            "converter (HOLD-05).",
         ]
     else:
         tray = pns.get("5112") or pns.get("5111")

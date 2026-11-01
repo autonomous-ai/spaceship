@@ -223,12 +223,14 @@ def panel_rows(rep):
                         "20 x 40" if back else "20 x 40 and 40 x 40", t, ts),
                     finish="mill finish with the bond prep (D-79)",
                     process="saw cut square, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6), rivnuts and "
-                            "stop washers set at the factory, member joints HOLD (H11)",
+                            "stop washers set at the factory, member joints: internal cleats per D-115 (crimped, "
+                            "structural adhesive; no welds)",
                     qty=1, unit="pc", size_mm=size_of(box_of(frame["bodies"])), tolerance="per its drawing",
                     mass_each_kg=fm, mass_total_kg=fm,
                     mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
                     source="CAD; tube confirmed (D-34, D-54, D-85%s)" % ("" if back else "; 40 x 40 R-J3"),
-                    note="members butt-jointed, rails full length" + (
+                    note="member joints: internal cleats per D-115 (the Joints Engineer's register parts, placed when "
+                         "they land); rails full length" + (
                         "; 1 x 45 lead-in on the closing-seam face's top edge (R-J9)" if back else "")))
     cut = Counter()
     for b in frame["bodies"]:

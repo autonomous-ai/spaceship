@@ -1038,7 +1038,7 @@ def build_panel(design, root):
 
 
 def build_frame(design, frame, out, xf, yf, zs):
-    # rails run the full frame length; stiles fit between them (butt joints, member joint method HOLD H11)
+    # rails run the full frame length; stiles fit between them, butt cut: internal cleats join them (D-115)
     out["RAIL - BOTTOM"] = tube(design, frame, "RAIL - BOTTOM", xf, yf, (Z0, "(%s) + tube_w" % Z0), "y")
     out["RAIL - TOP"] = tube(design, frame, "RAIL - TOP", xf, yf, ("(%s) - top_h" % Z1, Z1), "y")
     print("step 2: rails", [(k, size(bbox(v))) for k, v in out.items()])
