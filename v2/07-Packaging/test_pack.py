@@ -267,6 +267,16 @@ def test_export_wood_is_ispm15():
     assert all("ISPM 15" in it["name"] for it in wood), [it["name"] for it in wood]
 
 
+def test_roof_grille_bolts_counted_once():
+    # J-AIR-03 (#275): step 18 drives the grille's 4 register bolts; no outside-fixing row and no second timing for them
+    st = next(s for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
+    assert st["joints"] == {"J-AIR-03": 4}, st["joints"]
+    assert not [f for f in pack.OTHER_FIXINGS if f["step"] == st["n"]]
+    assert not [o for o in st["ops"] if "screw" in o["text"] or "drive" in o["text"]], st["ops"]
+    ops, bolts, other = pack.step_ops(st, pack.OTHER_FIXINGS)
+    assert bolts == 4 and other == 0 and sum(o["n"] for o in ops if o["src"] == "t_bolt_captive_s") == 4
+
+
 def test_lanes_follow_the_parts():
     # a lane is as wide as its widest part plus the wrap a side; nothing in a tier passes the deck
     m = pack.Model()

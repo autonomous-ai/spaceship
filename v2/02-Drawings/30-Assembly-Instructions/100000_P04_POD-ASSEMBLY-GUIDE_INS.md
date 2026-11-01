@@ -10,7 +10,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ## Result
 
 1. **Two people, one 5 mm hex key, 23 steps: about 135 minutes (4.5 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
-2. **88 bolts of the joints register, each captive in its part: 76 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
+2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
 5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
@@ -42,9 +42,9 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 3. How the joints work (read once)
 
-- **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the key goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay.
+- **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the key goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay. The one exception is the roof grille: its 4 bolts go in from the roof with their washers (step 18, J-AIR-03).
 - **Spigots.** Every wall and ceiling part stands on two Ø8 spigots, a round hole at one end and a slot at the other, before its first bolt (REQ-ASM-04). If a part doesn't drop on, lift it and seat it again; never force it.
-- **Two bolts, one key.** 838001 (M6 × 16) for the 76 other bolts: each pulls its joint onto its 2.26 mm metal stop or its seat. 838002 (M6 × 25) pins at the 10 closing-seam positions (B1–B2, B3–B4, C1–C2): snug only, they hold the faces level and pull nothing (joints register 2.10). Two more lock the soffit on its hanger studs (J-AIR-01).
+- **Two bolts, one key.** 838001 (M6 × 16) for the 80 other bolts: each pulls its joint onto its 2.26 mm metal stop or its seat. 838002 (M6 × 25) pins at the 10 closing-seam positions (B1–B2, B3–B4, C1–C2): snug only, they hold the faces level and pull nothing (joints register 2.10). Two more lock the soffit on its hanger studs (J-AIR-01).
 - **Order of tightening** (joints register 2.7, R-J9): closing-seam pins first, then the stopped seams; the side walls' top corner bolts and the ceiling's side bolts last, once both ceiling halves are in.
 - **Linings last.** Every bolt is driven through a bay that a lining cassette covers later, so check each wall's bolts before its cassette goes on.
 
@@ -232,11 +232,11 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 18. Roof sleeve and grille
 
 - **Time:** about 3 min for 2 people.
-- **Parts:** the roof sleeve 611601 and the roof grille 611602, which came off C2 (1-12) at unpacking.
-- **Fasteners:** the roof grille's screws (AIR's parts list names none yet; #263).
-- **Person A:** From a step stool outside the front right corner, drops the roof sleeve down through C2's roof slot onto the soft gasket on the exhaust fan box's top, its flange on the roof (#263); then screws the roof grille on over it.
+- **Parts:** the roof sleeve 611601 and the roof grille 611602 with its 4 bolts and washers in their bag, which came off C2 (1-12) at unpacking.
+- **Fasteners:** 4 × 838001 M6 × 16 (J-AIR-03). Tool: the 5 mm hex key.
+- **Person A:** From a step stool outside the front right corner, drops the roof sleeve down through C2's roof slot onto the soft gasket on the exhaust fan box's top, its flange on the roof (#263); then lays the roof grille on over it and drives its 4 bolts, each with its washer, into the rivnuts in the sleeve's flange with the 5 mm key, snug (J-AIR-03).
 - **Person B:** Inside, opens the soffit's hinged underside and checks from below that the sleeve sits square on its gasket all round; closes the underside.
-- **Check before the next step:** Sleeve square on its gasket all round; grille flat and screwed down; no light through the slot with the pod lit.
+- **Check before the next step:** Sleeve square on its gasket all round; grille flat on the flange, its 4 bolts snug; no light through the slot with the pod lit.
 
 ### Step 19. Ceiling linings: 2 cassettes
 
@@ -294,6 +294,7 @@ The guide's register bolts, joint by joint, against `v2/05-Engineering/joints/jo
 | --- | --- | --- | ---: | ---: | --- |
 | J-AIR-01 | 838002 M6 × 25 | step 17: 2 | 2 | 2 | yes |
 | J-AIR-02 | 838001 M6 × 16 |  | 0 | 0 | yes |
+| J-AIR-03 | 838001 M6 × 16 | step 18: 4 | 4 | 4 | yes |
 | J-BASE-01 | 838001 M6 × 16 | step 4: 8, step 5: 8 | 16 | 16 | yes |
 | J-BASE-02 |  M6 × 12 |  | 0 | 0 | yes |
 | J-CEIL-01 | 838001 M6 × 16 | step 8: 16 | 16 | 16 | yes |
@@ -305,7 +306,7 @@ The guide's register bolts, joint by joint, against `v2/05-Engineering/joints/jo
 | J-WALL-01 | 838001 M6 × 16 | step 6: 8, step 7: 8 | 16 | 16 | yes |
 | J-WALL-02 | 838001 M6 × 16 | step 5: 6, step 7: 6 | 12 | 12 | yes |
 | J-WALL-03 | 838002 M6 × 25 | step 4: 3, step 6: 3 | 6 | 6 | yes |
-| **Total** | 76 × M6 × 16, 12 × M6 × 25 |  | **88** | **88** | yes |
+| **Total** | 80 × M6 × 16, 12 × M6 × 25 |  | **92** | **92** | yes |
 
 Joints with no site bolts, and the fixings still on hold or not designed (the joints register's section 3.9 and its HOLD list):
 
@@ -317,7 +318,6 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
 | 15 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
 | 16 | Air column on DR and the floor | AIR | 0 | none on site: 2 hook studs set in the factory, 2 spigots | registered: J-AIR-02 (0 on site) | D-87: the column hangs on its hook studs |
-| 18 | Roof grille over the sleeve | AIR | 0 | screws not listed yet (AIR) | HOLD | time is in the step |
 | 20 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
 | 23 | Ledge and screen rail | INTERIOR | 0 | brackets and rail on HOLD; screws not listed yet | HOLD (D-70, IF-16) | time is in the step |
 
@@ -342,13 +342,13 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 15 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
 | 16 | Air column and supply cartridge | 2 | 0 | 0 | 4.7 | 2.3 | **6.7** |
 | 17 | Soffit and exhaust cartridge | 2 | 2 | 0 | 4.7 | 1.9 | **6.5** |
-| 18 | Roof sleeve and grille | 0 | 0 | 0 | 0.0 | 5.5 | **3.2** |
+| 18 | Roof sleeve and grille | 0 | 4 | 0 | 0.0 | 5.7 | **3.3** |
 | 19 | Ceiling linings: 2 cassettes | 2 | 0 | 0 | 4.0 | 4.7 | **7.3** |
 | 20 | Light shelf | 1 | 0 | 0 | 0.3 | 10.0 | **6.1** |
 | 21 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
 | 22 | Final check and film | 0 | 0 | 0 | 10.0 | 1.5 | **12.4** |
 | 23 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
-|  | **Clock, steps 1 to 22** |  | 88 | 0 |  |  | **135** |
+|  | **Clock, steps 1 to 22** |  | 92 | 0 |  |  | **135** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
@@ -369,7 +369,7 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 The fifth, moving the film peeling after the clock, was rejected so the number stays honest. Instead the film covers only the 15 faces that show (the 8 wall skins, the 3 decor blocks and both faces of both glass panes; none on the roof skins) and each panel has a quick-release tab. Peeling now takes about 0.9 minutes of the clock, against 3.3 for film on all 17 faces without tabs: 2.4 minutes saved. The layout study's 168 minutes didn't count film at all, so this is time the clock now carries honestly.
 
-The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 88 register bolts alone take about 15 minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
+The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 92 register bolts alone take about 16 minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
 
@@ -405,7 +405,7 @@ Unit times used:
 | `t_stay_off_s` | 30 s | assumption | this plan (design review) | take one glass stay off |
 | `t_packer_s` | 30 s | assumption | this plan (design review) | lay the setting packers under the door, or slide them out |
 | `t_sleeve_s` | 90 s | assumption | this plan (#263) | from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box |
-| `t_grille_s` | 120 s | assumption | this plan (#263) | screw the roof grille on over the sleeve (AIR's screws not listed yet) |
+| `t_grille_set_s` | 60 s | assumption | this plan (#263, J-AIR-03) | lay the roof grille on the sleeve's flange, holes on the rivnuts, and start its 4 bolts by hand; driving them is the register bolts' time |
 | `t_selftest_s` | 180 s | assumption | this plan (D-87) | power on and the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail |
 | `t_peel_tab_s` | 6 s | assumption | this plan (D-87) | pull one film panel off by its quick-release tab |
 | `t_peel_s` | 20 s | assumption | this plan | find the edge of a film panel with no tab and peel it, for comparison |
@@ -414,7 +414,7 @@ Unit times used:
 
 - [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the threshold's land when closed.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
-- [ ] Bolts: all 88 register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
+- [ ] Bolts: all 92 register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
 - [ ] Linings: all 10 cassettes on their clips, both ceiling cassettes on their safety catches, none touching anything but its clips.
 - [ ] Air: both fan pairs run; air leaves the kick grille at the column's foot and enters the soffit grille; boost works; the hub shows CO2.
 - [ ] Lights: the light shelf works in every scene, including 'call' (D-70).
