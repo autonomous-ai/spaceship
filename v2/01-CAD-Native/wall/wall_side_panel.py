@@ -446,7 +446,7 @@ LEDGE_PARAMS = [
     ("ledge_rivet_n", "6", "", "assumption", _LG + ": 6 rivets for the two cassettes' 20.2 kg, about 33 N each"),
     ("ledge_rivet_e", "40 mm", "mm", "assumption", "the end rivets 40 in from the ledge's ends"),
     ("ledge_rivet_z", "tube_w / 2 - 1 mm", "mm", "calculation",
-     "the rivet line 9 above the frame's bottom: 9.0 from the upright's top edge (2.2 x the Ø4 rivet) and the hole's "
+     "the rivet line 9 above the frame's bottom: 9.0 from the upright's top edge (2.8 x the Ø3.2 rivet) and the hole's "
      "edge 8.2 from the bend"),
     ("ledge_rivet_pitch", "(ledge_len - 2 * ledge_rivet_e) / (ledge_rivet_n - 1)", "mm", "calculation",
      "even, so the pattern is symmetric and the turned copy (RH) matches: one part"),
