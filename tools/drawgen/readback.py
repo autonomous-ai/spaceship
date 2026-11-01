@@ -520,6 +520,9 @@ def flat_fails(data, texts, page_text, tol=TOL):
             fails.append("bend %s's tag is not printed on its line" % row["tag"])
     if ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
         fails.append("the K-factor %s is not printed" % _fmt3(k))
+    t = fl["chains"][0]["t"] if fl.get("chains") else None
+    if t is not None and ("sheet %s thick" % _fmtv(t)) not in " ".join(page_text.split()):
+        fails.append("the sheet's thickness %s is not printed (guideline 6.1)" % _fmtv(t))
     return fails
 
 

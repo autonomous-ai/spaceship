@@ -481,6 +481,70 @@ def test_bent_sheet_from_step_and_dxf():
     assert doc1 is not None
 
 
+def _angle(path):
+    """A 600 long angle of 1 mm sheet folded sharp: legs 30 and 20 outside."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.gp import gp_Pnt
+    f = BRepAlgoAPI_Fuse(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 600, 30, 1).Shape(),
+                         BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 600, 1, 20).Shape())
+    f.SetFuzzyValue(1e-6)
+    f.Build()
+    u = ShapeUpgrade_UnifySameDomain(f.Shape(), True, True, True)
+    u.Build()
+    w = STEPControl_Writer()
+    w.Transfer(u.Shape(), STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_bent_sheet_p3s():
+    """Reviewer 12 on INTERIOR's sheets: (1) the flat pattern at the largest scale that fits: a 600 long angle's flat
+    (600 x 48.26) comes out at 1:2, where a fixed 200 mm box put it at 1:5; (2) a profile section cut short (811101's
+    long base) ends in a thin zigzag break line; (3) every bent sheet prints its sheet's thickness (the read-back fails
+    one that doesn't), and an entry with no tolerance takes its parts list's."""
+    d = os.path.join(TMP, "bent_p3")
+    os.makedirs(d, exist_ok=True)
+    step = _angle(os.path.join(d, "219986_P01_TEST-ANGLE_STEP.step"))
+    W, BA = 30.0 + 20.0 - 4.0 + math.radians(90) * (1.0 + 0.44), math.radians(90) * (1.0 + 0.44)
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    pts = [(0.0, 0.0), (600.0, 0.0), (600.0, W), (0.0, W)]
+    for i, p in enumerate(pts):
+        q = pts[(i + 1) % 4]
+        out += ["0", "LINE", "8", "CUT", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
+    y = 28.0 + BA / 2
+    out += ["0", "LINE", "8", "BEND", "10", "0.0", "20", repr(y), "11", "600.0", "21", repr(y), "0", "ENDSEC", "0", "EOF"]
+    dxf_path = os.path.join(d, "219986_DXF.dxf")
+    with open(dxf_path, "w") as fh:
+        fh.write("\n".join(out) + "\n")
+    row = dict(ROW, part_number="219986", name="TEST - ANGLE", process="laser cut, brake bend", tolerance="±0.5 (test list)")
+    spec = {k: v for k, v in SPEC.items() if k != "tolerance"}
+    spec["bent"] = {"radius": 1.0, "radius_why": "test", "dxf": dxf_path}
+    p = os.path.join(d, "219986.pdf")
+    compose.make("219986", "none", spec, p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    assert data["flat"]["view"]["scale"] == 0.5, data["flat"]["view"]
+    text = " ".join(" ".join(pg.get_text().split()) for pg in doc)
+    assert "sheet 1 thick" in text and "±0.5 (test list) (its parts list)" in text, text[-900:]
+    # 811101: its section is cut short across the long base, so a zigzag break line marks the cut
+    p2 = os.path.join(d, "811101.pdf")
+    compose.make("811101", "interior", {"tolerance": "test", "bent": {"radius": 1.5, "radius_why": "test"}}, p2)
+    assert not readback.check(p2)[0]
+    MM = 72 / 25.4
+    lens = []
+    for dr in fitz.open(p2)[0].get_drawings():
+        for it in dr["items"]:
+            if it[0] == "l":
+                lens.append(round(math.dist(it[1], it[2]) / MM, 2))
+    assert lens.count(1.26) + lens.count(1.27) >= 2 and lens.count(2.53) >= 1, sorted(set(lens))[:40]
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")

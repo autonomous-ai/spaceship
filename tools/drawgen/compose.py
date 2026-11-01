@@ -51,11 +51,13 @@ def fmt(v, nd=2):
 
 
 class _Smaller(Exception):
-    """The sheet's row of removed sections and flat pattern ran off the sheet at this scale: draw again smaller."""
+    """The sheet's row of removed sections and flat pattern ran off the sheet at this scale: draw again smaller (the
+    flat pattern first, when it is what runs off and can go smaller)."""
 
-    def __init__(self, scale):
+    def __init__(self, scale, flat=None):
         Exception.__init__(self, scale)
         self.scale = scale
+        self.flat = flat
 
 
 class NotDrawable(Exception):
@@ -415,7 +417,7 @@ def profile_section(part, r, v, kept, letters):
         for p_ in prims:
             if p_.kind == "line" and all(min(abs(q[0] - window[0]), abs(q[0] - window[1])) < 1e-4 or
                                          min(abs(q[1] - window[2]), abs(q[1] - window[3])) < 1e-4 for q in (p_.p, p_.q)):
-                p_.src = "boundary"
+                p_.src = "break"            # cut short here: a break line (ISO 128-20, Reviewer 12 on 811101)
         e = project.extent(prims)
         size = max(e[2] - e[0], e[3] - e[1])
         s_full = next((s_ for s_ in scales if size * s_ <= 120.0 and min(ch.flanges[i][0] for i in shown) * s_ >= 8.0),
@@ -440,9 +442,14 @@ def profile_section(part, r, v, kept, letters):
     return vd
 
 
-def flat_view(part):
+FLAT_W, FLAT_H = 480.0, 300.0       # the most a flat pattern takes on the sheet
+
+
+def flat_view(part, cap=None):
     """The flat pattern as the team's DXF draws it, in its own x and y: the cut outline thick, the bend lines thin
-    chain (ISO 128-20 type 05), the bend zones' edges thin; at the largest ISO scale (1:1 down) that fits 200 mm."""
+    chain (ISO 128-20 type 05), the bend zones' edges thin; at the largest ISO scale (1:1 down) at which it fits
+    FLAT_W x FLAT_H and the cap (the layout lowers it where the flat's row would run off the sheet; Reviewer 12:
+    811201's flat came out at 1:20 with its Ø10 a dot where 1:5 fits)."""
     import sheetmetal
     dx = part.flat.dxf
     prims = []
@@ -476,8 +483,8 @@ def flat_view(part):
             pr.src = "sharp"
             prims.append(pr)
     e = project.extent(prims)
-    size = max(e[2] - e[0], e[3] - e[1])
-    fs = next((s_ for s_ in (1.0, 0.5, 0.2, 0.1, 0.05) if size * s_ <= 200.0), 0.05)
+    fs = next((s_ for s_ in (1.0, 0.5, 0.2, 0.1, 0.05) if (e[2] - e[0]) * s_ <= FLAT_W and (e[3] - e[1]) * s_ <= FLAT_H
+               and (cap is None or s_ <= cap + 1e-9)), 0.05)
     vd = VD(View("flat", (0.0, 0.0, 1.0), (1.0, 0.0, 0.0)), prims, fs, "flat")
     vd.name = "flat"
     return vd
@@ -1466,7 +1473,7 @@ def draw(part, spec, out_path, today=None):
     if any(id(nt) not in sized for nt in part.notches):
         raise NotDrawable("%s: a notch no drawn view sizes" % part.pn)
     pl.details = details
-    flats = [flat_view(part)] if getattr(part, "flat", None) else []
+    flats = [flat_view(part, spec.get("_flat_cap"))] if getattr(part, "flat", None) else []
     place = removed + auxs + details + flats
     # removed sections and details: a column between the views and the tables when it is wide enough, else a row
     # under the views
@@ -1503,8 +1510,9 @@ def draw(part, spec, out_path, today=None):
         if vd.kind in ("detail", "aux") or getattr(vd, "dropped", False):
             continue
         b_ = vd.box()
-        if b_[1] < 20 or b_[0] < 20 or b_[2] > right_edge:
-            raise _Smaller(scale)
+        # a flat pattern's title (three lines) goes under it, clear of the sheet's zone numbers
+        if b_[1] < (38 if vd.kind == "flat" else 20) or b_[0] < 20 or b_[2] > right_edge:
+            raise _Smaller(scale, flat=vd.scale if vd.kind == "flat" and vd.scale > 0.05 + 1e-9 else None)
     for dv in [d_ for d_ in details if getattr(d_, "dropped", False)]:
         if pl.notch_views.get(dv.parent_name, (None, None, False))[2]:
             raise NotDrawable("%s: no room on the sheet for the detail that sizes the notch" % part.pn)
@@ -1522,6 +1530,19 @@ def draw(part, spec, out_path, today=None):
             d = None if p.vis else DASH_HID
             if p.src == "boundary":
                 w = W_THIN
+            elif p.src == "break" and p.kind == "line":
+                # a thin zigzag across the cut, 2 past the sheet each side (ISO 128-20 type 01.1 with a zigzag)
+                a, b = vd.S(p.p), vd.S(p.q)
+                L = math.dist(a, b) or 1.0
+                u = ((b[0] - a[0]) / L, (b[1] - a[1]) / L)
+                nrm = (-u[1], u[0])
+                a2, b2 = (a[0] - u[0] * 2.0, a[1] - u[1] * 2.0), (b[0] + u[0] * 2.0, b[1] + u[1] * 2.0)
+                m = ((a2[0] + b2[0]) / 2, (a2[1] + b2[1]) / 2)
+                z = [a2, (m[0] - u[0] * 0.8, m[1] - u[1] * 0.8), (m[0] - u[0] * 0.4 + nrm[0] * 1.2, m[1] - u[1] * 0.4 + nrm[1] * 1.2),
+                     (m[0] + u[0] * 0.4 - nrm[0] * 1.2, m[1] + u[1] * 0.4 - nrm[1] * 1.2), (m[0] + u[0] * 0.8, m[1] + u[1] * 0.8), b2]
+                for k_ in range(len(z) - 1):
+                    sh.line(z[k_], z[k_ + 1], W_THIN)
+                continue
             elif p.src == "bend":       # ISO 128-20 type 05, thin: a bend line in a flat pattern
                 w, d = W_THIN, (12.0, 1.5, 1.0, 1.5, 1.0, 1.5)
             elif p.src == "zone":       # a bend zone's edge, thin
@@ -2773,7 +2794,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                                                                     "left" if row["axis"] == "x" else "lower"),
                           row["dir"], "%s°" % fmt(row["angle"]), "R%s" % fmt(row["r"]),
                           fmt(sheetmetal.bend_allowance(f, row["r"], ch.t, fl.k), 3)])
-        head = ["BENDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
+        head = ["BENDS B1-B%d: %s; sheet %s thick" % (len(fl.rows), os.path.basename(fl.path), fmt(fl.chains[0].t)),
                 "UP: the flange folds toward the viewer of the flat pattern as drawn; K-factor %s, inside radius from %s"
                 % (fmt(fl.k, 3), fl.radius_from)]
         y = sh.table(right_x0, y, bcols, brows, size=2.5, title=head, title_size=2.5) - 5.0
@@ -2842,13 +2863,18 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
         import sheetmetal
         rad = "R%s from %s" % (fmt(fl.radius), fl.radius_from)
         notes.append("Bent from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the bend centre lines%s. "
-                     "Inside radius %s; K-factor %s (calculation: the DXF's bend lines and flat size against the "
+                     "Sheet %s thick (the model). Inside radius %s; K-factor %s (calculation: the DXF's bend lines and "
+                     "flat size against the "
                      "model's flanges at that radius, every bend within 0.05). Flange lengths are outside sizes, to "
                      "each fold's outside sharp; the bend table gives each bend's direction, angle and allowance." % (
                          inputs.rel(fl.path), inputs.sha12(fl.path),
-                         ", its MARK lines the bend zones' edges" if fl.dxf.zone_lines() else "", rad, fmt(fl.k, 3)))
+                         ", its MARK lines the bend zones' edges" if fl.dxf.zone_lines() else "", fmt(fl.chains[0].t), rad,
+                         fmt(fl.k, 3)))
     if spec.get("tolerance"):
         notes.append("TOLERANCES (PROPOSED until the shop confirms; not ISO 2768): " + spec["tolerance"])
+    elif (part.row.get("tolerance") or "").strip():     # the entry gives none: its parts list's (Reviewer 12)
+        notes.append("TOLERANCES (PROPOSED until the shop confirms; not ISO 2768): %s (its parts list)" %
+                     part.row["tolerance"].strip())
     src = "Source: %s (sha256 %s; declared unit %s, read in mm and checked against tools/checks/stepfile.py, " \
           "worst box difference %s mm)" % (inputs.rel(part.step), inputs.sha12(part.step), part.unit["declared"],
                                           fmt(part.unit["box_check_mm"], 3))
@@ -2974,6 +3000,9 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
             sh, pl, vds, secs, removed, dat, scale, report, groups = draw(part, spec, None, today)
             break
         except _Smaller as e:
+            if e.flat is not None:          # the flat pattern a step smaller first
+                spec = dict(spec, _flat_cap=max(s_ for s_ in (1.0, 0.5, 0.2, 0.1, 0.05) if s_ < e.flat - 1e-9))
+                continue
             smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
             if not smaller:
                 raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
