@@ -213,7 +213,9 @@ def run(_context):
     print("dimensions %d made, %d skipped" % (made, len(skipped)))
     for s_ in skipped:
         print("SKIPPED|%s|%s|%s|%s" % s_)
-    first_angle_symbol(sheet, 20.0, 20.0)
+    # 6 mm inside the border: drawn at X 20 its left edge lay on the border's line and the PDF pulled both left
+    # corners onto the border's corner (20, 10), so the outline printed as a triangle (DR frame sample, 2026-11-01)
+    first_angle_symbol(sheet, 26.0, 21.0)
     notes_dir = os.path.join(HERE, ".notes")
     insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"), sp["images"]["notes"])
     insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"), sp["images"]["title"])
