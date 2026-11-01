@@ -25,6 +25,7 @@
     surface on its sight line (the read-back fails one on the felt under the tray).
 """
 
+import csv
 import json
 import os
 import shutil
@@ -37,6 +38,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 import fitz  # noqa: E402
 
 import assembly  # noqa: E402
+import inputs  # noqa: E402
 import readback  # noqa: E402
 from compose import NotDrawable  # noqa: E402
 from sheet import Sheet  # noqa: E402
@@ -189,6 +191,53 @@ def test_units_join_and_printed_widths():
             for sp in ln["spans"]:
                 assert (sp["bbox"][2] - sp["bbox"][0]) / mm <= 72.0 + 0.05, (sp["text"], sp["bbox"])
     assert assembly._join(lines) == t
+
+
+def test_a_count_in_sets_is_counted_as_pieces():
+    """WALL's #343 lists its cassette clips as 518003, '4 set' (a female and a male part each): a count in sets is
+    counted as pieces are (the Lead, 2026-11-01), so the one placement holding the four clip zones splits into its
+    four bodies, the interface sizes go to each zone and the sheet reads back; the table prints '4 set' as the list
+    says; and a set count the STEP doesn't hold is refused. Here on main's 510101, its clip row given in sets in a
+    copy of WALL's list, which both the drawing and the read-back read."""
+    team, entry = assembly.assemblies()["510101"]
+    _own, _kids, src = assembly.list_rows("510101", team)
+    real = inputs.team_lists
+
+    def in_sets(qty):
+        with open(src, newline="", encoding="utf-8") as fh:
+            rd = csv.DictReader(fh)
+            cols, rows = rd.fieldnames, list(rd)
+        _me, kids = assembly.children_of(rows, "510101", {"510101"}, src)
+        clip = [r for r in kids if (r.get("part_number") or "").strip() == "518001"]
+        assert len(clip) == 1, clip
+        clip[0].update(unit="set", qty=qty)
+        dst = os.path.join(TMP, "sets-%s" % qty, os.path.basename(src))
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with open(dst, "w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, cols)
+            w.writeheader()
+            w.writerows(rows)
+        inputs.team_lists = lambda t: [dst if p == src else p for p in real(t)] if t == team else real(t)
+
+    try:
+        in_sets("4")
+        assy = assembly.Assy("510101", team, entry)
+        clip = next(it for it in assy.table_items if it.pn == "518001")
+        assert len(clip.occs) == 1 and getattr(clip.occs[0], "pieces", False), "the four clip zones weren't split"
+        final, rep = assembly.generate("510101", team, entry, os.path.join(TMP, "sets"))
+        fails, st = assembly.check(final)
+        assert not fails, fails
+        assert st["interfaces"] == 8, st
+        text = " ".join(fitz.open(final)[0].get_text().split())
+        assert "4 set" in text, "the table doesn't print the list's '4 set'"
+        in_sets("3")
+        try:
+            assembly.Assy("510101", team, entry)
+            raise AssertionError("3 sets drawn where the STEP holds 4 clip zones")
+        except NotDrawable as e:
+            assert "the list has 3 of 518001 under it, the STEP 4" in str(e), e
+    finally:
+        inputs.team_lists = real
 
 
 def test_shafts_cut_along_their_axis_are_drawn_whole():
