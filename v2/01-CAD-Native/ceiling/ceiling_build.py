@@ -6,8 +6,9 @@
 Builds one new design, 410000 CEILING (pod coordinates, conventions.md s4):
 
   410101 CEILING - PANEL ASSY - C1 (-X half)
-      411101 CEILING - PANEL FRAME - C1: aluminium 20 x 40 x 1.2 members and a 40 x 40 x 1.2
-             back member, half_fw wide, with the site-joint holes (J-CEIL-01, J-CEIL-02)
+      411101 CEILING - PANEL FRAME - C1: galvanized steel 20 x 40 members (1.0, cross members 2 and 3 0.8)
+             and a 40 x 40 x 1.0 back member, welded with a 2.0 mitre plate in each corner (D-131,
+             J-FRAME-01), half_fw wide, with the site-joint holes (J-CEIL-01, J-CEIL-02)
       411301 CEILING - SKIN - C1: ACP 3 mm, half_pw wide
   410102 CEILING - PANEL ASSY - C2 (+X half): 411102 frame + 411302 skin with the roof slot
   510301 LINING - CASSETTE - CEILING - COMMON, at C1-CASS and at C2-CASS:
@@ -671,7 +672,9 @@ def build_frame_members(fcomp, half, ctx):
     if shared is None:
         shared = ctx.shared = {}
     for code, key, bname, axis, pts, z0, z1 in M.member_shapes(half):
-        label = "%s %s" % (half, bname)
+        # a part shared by both frames (M.TURNED) is named without a half: its body in C2 is the C1 build's, and a
+        # name saying C1 there read as a C1 part in the mechanical checks' seam rule (SEAM-CEILING-CENTRE)
+        label = bname if key in M.TURNED else "%s %s" % (half, bname)
         if key == "m_cross":
             occ, comp = cross_member(fcomp, ctx)
             k = int(code[1:])

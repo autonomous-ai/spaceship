@@ -71,6 +71,14 @@ CEILING_PARAMS = [
     ("back_w", "40 mm", "mm", "confirmed",
      "R-J3 (joints register 2.4): the ceiling's back member is 40 x 40, so the back panel's top tube overlaps it by 34 and its rivnuts sit on a 40 mm face"),
     ("mp_t", "2 mm", "mm", "source", "J-FRAME-01 (D-131): the mitre plates 831007 and 831008, 2.0 thick, welded into every frame corner"),
+    # each plate is a square-ended laser blank a little shorter than its mitre, so both ends sit 0.5 inside the frame's
+    # faces on both plate faces (the Lead's steer 2026-11-01, #308: a plate the mitre's full length poked out at the
+    # outer corner); the weld fills the step and is ground flush. Start and length along the mitre from the frame's
+    # outer corner, as the joints register gives them (and joints/frame_steel_check.py's PLATE_BLANKS checks them)
+    ("mp45_x0", "1.75 mm", "mm", "source", "the joints register's H-40 (831007, #308): its blank starts 1.75 along the mitre from the frame's outer corner"),
+    ("mp45_l", "26.5 mm", "mm", "source", "the joints register's H-40 (831007, #308): its blank is 26.5 long (the mitre is 28.28)"),
+    ("mp_sb_x0", "3.15 mm", "mm", "source", "the joints register's H-41 (831008, #308): its blank starts 3.15 along the mitre from the frame's outer corner"),
+    ("mp_sb_l", "41.5 mm", "mm", "source", "the joints register's H-41 (831008, #308): its blank is 41.5 long (the mitre is 44.72)"),
     ("cb45", "mp_t / 2 * sqrt(2)", "mm", "calculation", "J-FRAME-01: each 20 x 40 member at a 45 deg corner is cut back 1.41 along "
      "its length, so the plate fits and the outside sizes stay"),
     ("cb_sb", "mp_t / 2 * sqrt(tube_w * tube_w + back_w * back_w) / tube_w", "mm", "calculation",
@@ -227,8 +235,10 @@ def turned_origin(key):
 
 # finish and process per part (master BOM columns); bought HOLD items' masses come from
 # the joints register (H-10, H-11)
+FRAME_FINISH = ("its members pre-galvanized Z100; every weld's burnt zone wire-brushed and coated with 2-component "
+                "zinc-rich epoxy (J-FRAME-01); the bond prep on the skin face (D-137)")
 FINISH = {
-    "frame_c1": "", "frame_c2": "",
+    "frame_c1": FRAME_FINISH, "frame_c2": FRAME_FINISH,
     "skin_c1": "ACP EV3038 Dark Yellow (D-12)", "skin_c2": "ACP EV3038 Dark Yellow (D-12)", "tray": "galvanised (Z coating, grade to confirm)",
     "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
     **{k: "pre-galvanized Z100; each weld's burnt zone wire-brushed and coated with 2-component zinc-rich epoxy "
@@ -279,10 +289,10 @@ HARDWARE = {
               "MP", "pc", "n_ceil_back_bolt", "n_ceil_back_bolt", 0.0009, "calculation: 10.5 x 20 x 1.5, 2700 kg/m3"),
     # the mitre plates welded into the frames' corners (D-131, J-FRAME-01; the joints register's H-40 and H-41)
     "plate45": ("831007", "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL", "Tấm đệm góc vát 20 × 40 - 45° - thép 2.0",
-                "MP", "pc", "2", "2", 0.0178, "source: joints register H-40, 28.3 x 40 x 2.0 steel, 17.8 g"),
+                "MP", "pc", "2", "2", 0.0166, "source: joints register H-40 (#308), 26.5 x 40 x 2.0 steel, 16.6 g"),
     "plate_sb": ("831008", "HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL",
-                 "Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0", "MP", "pc", "2", "2", 0.0281,
-                 "source: joints register H-41, 44.7 x 40 x 2.0 steel, 28.1 g"),
+                 "Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0", "MP", "pc", "2", "2", 0.0261,
+                 "source: joints register H-41 (#308), 41.5 x 40 x 2.0 steel, 26.1 g"),
     "gasket": ("848001", "SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", "Gioăng mối nối 3.97",
                "PI", "m", "half_fw / 1000 mm", "half_fw / 1000 mm", 0.0076,
                "calculation: per metre, 8 x 3.97 at 240 kg/m3 (assumption for the foam's density)"),
@@ -479,32 +489,42 @@ PLATE_HW = {"mp45": "plate45", "mp_sb": "plate_sb"}     # plate_corners' keys ->
 
 
 def plate_length(pkey):
-    """The mitre plate's length along its mitre: 28.28 (831007, two 20 x 40) or 44.72 (831008, 20 x 40 to 40 x 40)."""
-    return ("sqrt(2 * tube_w * tube_w)" if pkey == "mp45" else "sqrt(tube_w * tube_w + back_w * back_w)")
+    """The mitre plate blank's length along its mitre (the joints register, #308): 26.5 (831007, two 20 x 40) or 41.5
+    (831008, 20 x 40 to 40 x 40)."""
+    return "mp45_l" if pkey == "mp45" else "mp_sb_l"
+
+
+def plate_start(pkey):
+    """Where the blank starts along its mitre from the frame's outer corner (the joints register, #308): 1.75 (831007)
+    or 3.15 (831008)."""
+    return "mp45_x0" if pkey == "mp45" else "mp_sb_x0"
 
 
 def plate_outline(vals, half, name):
-    """The mitre plate at one corner, in plan (mm): the Joints Engineer's plate (831007, 831008: native model and STEP,
-    #294), the mitre's length along it from the outer corner to the inner corner and mp_t thick, centred on the mitre
-    line. Its outer tips stand a little proud of the frame's outer faces (0.71 at a 45 deg corner, up to 0.89 at a back
-    corner) until the welder grinds them flush with the beads (J-FRAME-01); the weld fills the small gaps at the inner
-    corner. [(x, y)], a rectangle."""
+    """The mitre plate at one corner, in plan (mm): the Joints Engineer's blank (831007, 831008: native model and STEP,
+    #294, shortened in #308), from plate_start to plate_start + plate_length along the mitre from the outer corner and
+    mp_t thick, centred on the mitre line. Both square ends sit 0.5 or more inside the frame's faces on both plate
+    faces; the weld fills the steps at both ends and is ground flush (J-FRAME-01). [(x, y)], a rectangle."""
     import math
-    _n, _k, o, i = next(c for c in plate_corners(half) if c[0] == name)
+    _n, k, o, i = next(c for c in plate_corners(half) if c[0] == name)
     ox, oy, ix, iy = (ev(vals, e) for e in (o[0], o[1], i[0], i[1]))
     L, t = math.hypot(ix - ox, iy - oy), vals["mp_t"] / 2
     ux, uy = (ix - ox) / L, (iy - oy) / L
     nx, ny = -uy, ux
-    return [(round(x, 6), round(y, 6)) for x, y in ((ox - t * nx, oy - t * ny), (ix - t * nx, iy - t * ny),
-                                                    (ix + t * nx, iy + t * ny), (ox + t * nx, oy + t * ny))]
+    a = ev(vals, plate_start(k))
+    b = a + ev(vals, plate_length(k))
+    ax, ay, bx, by = ox + a * ux, oy + a * uy, ox + b * ux, oy + b * uy
+    return [(round(x, 6), round(y, 6)) for x, y in ((ax - t * nx, ay - t * ny), (bx - t * nx, by - t * ny),
+                                                    (bx + t * nx, by + t * ny), (ax + t * nx, ay + t * ny))]
 
 def plate_local(pkey):
     """The plate's outline in its own frame [(x, y) expressions], as the Joints Engineer models it: X along its mitre
-    from the outer corner (0) to the inner corner, Y across its mp_t thickness, centred (a rectangle: one shape for every
-    corner, never turned over)."""
+    from the frame's outer corner (0), the blank from plate_start for plate_length, Y across its mp_t thickness, centred
+    (a rectangle: one shape for every corner, never turned over)."""
     t = "mp_t / 2"
-    L = plate_length(pkey)
-    return [("0 mm", "-(%s)" % t), (L, "-(%s)" % t), (L, t), ("0 mm", t)]
+    x0, L = plate_start(pkey), plate_length(pkey)
+    x1 = "(%s + %s)" % (x0, L)
+    return [(x0, "-(%s)" % t), (x1, "-(%s)" % t), (x1, t), (x0, t)]
 
 def plate_places(vals, half):
     """[(name, plate key, origin (x, y, z) mm, angle about Z in degrees, turned over)] for the build: each plate's origin
@@ -535,7 +555,7 @@ def plate_places(vals, half):
 
 def plate_boxes(vals, half):
     """[(name, plate key, (x0, x1, y0, y1, z0, z1))] in mm: each mitre plate's box, its plan outline (plate_outline)
-    over the frame's depth: the corner's rectangle from its outer to its inner corner."""
+    over the frame's depth: the blank's rectangle along the corner's mitre."""
     out = []
     for name, pkey, _o, _i in plate_corners(half):
         pts = plate_outline(vals, half, name)

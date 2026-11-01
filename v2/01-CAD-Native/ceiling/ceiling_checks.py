@@ -70,9 +70,10 @@ def actual(design):
             pn = c.partNumber
             half = "C1" if (box[0] + box[3]) / 2 < 0 else "C2"
             if pn in MEMBER_PNS and pn != CROSS_PN:
-                # "C1 SIDE MEMBER" and so on, keyed by the half the body sits in: C2's side member and cross
-                # member 1 are C1's turned copies (one part each, M.TURNED), so their bodies carry C1's names
-                out["%s %s" % (half, b.name.split(" ", 1)[1])] = box
+                # "C1 SIDE MEMBER" and so on, keyed by the half the body sits in: the side member and cross member 1
+                # are one part each for both frames (M.TURNED), their bodies named without a half ("SIDE MEMBER")
+                nm = b.name.split(" ", 1)
+                out["%s %s" % (half, nm[1] if nm[0] in ("C1", "C2") and len(nm) > 1 else b.name)] = box
             elif pn == CROSS_PN:
                 out.setdefault("%s|%s" % (pn, half), []).append(box)
             elif pn in ("411301", "411302"):

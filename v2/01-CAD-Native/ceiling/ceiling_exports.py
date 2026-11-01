@@ -228,7 +228,8 @@ def _sizes():
                                                  for c, _k, _n, sec, L, ends, _x in member_rows(v, h) if c == code)))(code, h)
            for h, code, key in [("C1", "SIDE", "m_side"), ("C1", "X1", "m_x1")]
            + [(h, code, "m_%s_%s" % (code.lower(), h.lower())) for h in ("C1", "C2") for code in ("SEAM", "FRONT", "BACK")]},
-        "m_cross": lambda v: ("20 x 40 x 1.2 tube, %.2f long, square cut, no holes" % (v["half_fw"] - 2 * v["tube_w"]),
+        "m_cross": lambda v: ("20 x 40 x %.1f tube, %.2f long, square cut, no holes"
+                              % (M.ev(v, M.member_wall("m_cross")), v["half_fw"] - 2 * v["tube_w"]),
                               "cut length +/-0.5 (assumption)"),
         "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
                               "ISO 2768-m; no drawing (D-89 part 4): its DXF is the outline"),
@@ -280,6 +281,9 @@ def parts_list(v, mass):
         else:
             mass_txt, status = ("%.3f" % each) if each is not None else "", "calculation (Fusion, CAD geometry x density)"
         matname = M.MATERIALS[mat][0] if mat else ""
+        if key in ("frame_c1", "frame_c2"):
+            # the welded frame's own row names its steel (D-131, J-FRAME-01); its members' rows carry the gauges
+            matname = "%s: the members below, welded" % M.MATERIALS["steel_fr"][0]
         size, tol = SIZE_TOL.get(key, (lambda vv: ("", "")))(v)
         src = {
             "frame_c1": "D-16, D-34, D-55; D-131 and J-FRAME-01 (welded galvanized steel, the mitre plates, the gauges); D-117 (mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
@@ -374,11 +378,13 @@ def parts_list(v, mass):
 
 def cut_list(v):
     """The tube cut list: one row per member of each frame (D-120's member parts), with the outer
-    length, the end cuts (D-117) and the holes and slots."""
+    length, the end cuts (D-117) and the holes and slots. The member's number goes in member_part, as FRONT's cut
+    lists key it: a part_number column with a qty makes the checks read the file as a parts list (C06, C11), and the
+    parts list already carries each member's row."""
     rows = []
     for half, fkey in (("C1", "frame_c1"), ("C2", "frame_c2")):
         for code, key, name, sec, L, ends, extra in member_rows(v, half):
-            rows.append({"frame": M.PARTS[fkey][0], "half": half, "member": code, "part_number": M.PARTS[key][0],
+            rows.append({"frame": M.PARTS[fkey][0], "half": half, "member": code, "member_part": M.PARTS[key][0],
                          "name": M.PARTS[key][1],
                          "section": "galvanized steel %s (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)" % sec,
                          "length_mm": "%.2f" % L, "qty": 1,

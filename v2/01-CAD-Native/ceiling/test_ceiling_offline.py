@@ -420,6 +420,16 @@ class Frames(unittest.TestCase):
                 self.assertTrue(pn.startswith("412"), k)
             self.assertEqual(keys.count("m_cross"), 2, "X2 and X3 are one common part (412001)")
 
+    def test_parts_list_walls_follow_the_model(self):
+        """The parts list's size text and the tube cut list's section carry each member's own wall (D-131: 1.0, the
+        plain cross members 0.8); the plain cross member's text once kept the aluminium frame's 1.2."""
+        import ceiling_exports as E
+        for half in ("C1", "C2"):
+            for code, key, _name, sec, _L, _ends, _x in E.member_rows(VALS, half):
+                wall = "x %.1f" % ev(M.member_wall(key))
+                self.assertIn(wall, sec, (half, code))
+                self.assertIn(wall + " tube", E.SIZE_TOL[key](VALS)[0], (half, code, key))
+
     def test_welded_with_plates_no_cleats(self):
         """D-131 cancels the cleats: no slots; a 2.0 plate in every corner, each member's mitred end cut back half the
         plate's thickness square to the mitre (J-FRAME-01: 1.41, 2.24 and 1.12 along the members)."""
@@ -445,28 +455,40 @@ class Frames(unittest.TestCase):
                     self.assertAlmostEqual(d, VALS["mp_t"] / 2, places=6, msg="%s %s" % (half, name))
 
     def test_plates_in_the_corner_gaps(self):
-        """Each plate (the Joints Engineer's L x 2.0 rectangle on the mitre line, #294) lies in the gap the two members'
-        cut-backs leave at its corner: overlapping neither member; only its outer tips stand proud of the frame's
-        outside, under 1 mm, till they're ground flush (J-FRAME-01); it fills the gap but for the weld's triangles."""
+        """Each plate (the Joints Engineer's blank, #294, shortened in #308) lies in the gap the two members' cut-backs
+        leave at its corner, overlapping neither member, and every corner of it sits 0.5 or more inside the frame's
+        outside (the Lead's steer 2026-11-01: nothing stands proud, so the frame's outline is its packing box); the weld
+        fills the steps at its ends."""
         for half in ("C1", "C2"):
             sh = self.shapes(half)
-            ring = sum(poly_area(pts) for c, (_k, pts) in sh.items() if c in ("SIDE", "SEAM", "FRONT", "BACK"))
-            inner = (VALS["half_fw"] - 2 * VALS["tube_w"]) * (VALS["wall_depth"] - VALS["tube_w"] - VALS["back_w"])
-            gap_total = VALS["half_fw"] * VALS["wall_depth"] - inner - ring
-            plates = 0.0
-            for name, pkey, o, i in M.plate_corners(half):
-                pl = M.plate_outline(VALS, half, name)
-                self.assertEqual(len(pl), 4, (half, name, pl))
-                plates += poly_area(pl)
-                for c, (_k, pts) in sh.items():
-                    self.assertLess(clip_area(pl, pts), 1e-4, "%s %s overlaps %s" % (half, name, c))
-            self.assertAlmostEqual(plates, gap_total, places=3, msg="the rectangles' area is the cut-backs' gap's")
             boxes = {c: b for c, b in M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)])}
             xs = [x for b in boxes.values() for x in b[:2]]
             ys = [y for b in boxes.values() for y in b[2:4]]
-            for name, _k, b in M.plate_boxes(VALS, half):
-                proud = max(min(xs) - b[0], b[1] - max(xs), min(ys) - b[2], b[3] - max(ys))
-                self.assertLess(proud, 0.9, "%s stands %.2f proud" % (name, proud))
+            for name, pkey, o, i in M.plate_corners(half):
+                pl = M.plate_outline(VALS, half, name)
+                self.assertEqual(len(pl), 4, (half, name, pl))
+                self.assertAlmostEqual(poly_area(pl), VALS["mp_t"] * ev(M.plate_length(pkey)), places=4)
+                for c, (_k, pts) in sh.items():
+                    self.assertLess(clip_area(pl, pts), 1e-4, "%s %s overlaps %s" % (half, name, c))
+                inside = min(min(x - min(xs), max(xs) - x, y - min(ys), max(ys) - y) for x, y in pl)
+                self.assertGreaterEqual(inside, 0.5 - 1e-6, "%s %s: a corner %.3f inside the frame's outside" % (half, name, inside))
+
+    def test_plate_blanks_are_the_registers(self):
+        """The plates' start and length along the mitre are the Joints Engineer's (frame_steel_check.PLATE_BLANKS, the
+        register's H-40 and H-41), read from its file so a change there fails here."""
+        import importlib.util
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "joints", "frame_steel_check.py")
+        spec = importlib.util.spec_from_file_location("frame_steel_check_for_ceiling_test", path)
+        J = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(J)
+        want = {"831007": J.PLATE_BLANKS["20x40 to 20x40, 45 deg"], "831008": J.PLATE_BLANKS["rail to 40x40, 63.43 / 26.57 deg"]}
+        for pkey, hw in M.PLATE_HW.items():
+            pn = M.HARDWARE[hw][0]
+            a, b, x0, length = want[pn]
+            self.assertAlmostEqual(ev(M.plate_start(pkey)), x0, msg=pn)
+            self.assertAlmostEqual(ev(M.plate_length(pkey)), length, msg=pn)
+            self.assertAlmostEqual(VALS["mp_t"], J.PLATE_T, msg=pn)
+            self.assertEqual((a, b), (VALS["tube_w"], VALS["tube_w" if pkey == "mp45" else "back_w"]), pn)
 
     def test_identical_in_both_halves(self):
         """For Control (D-120: identical parts share one number): C2's side member is C1's turned upside
