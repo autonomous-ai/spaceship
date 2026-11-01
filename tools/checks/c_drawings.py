@@ -950,6 +950,8 @@ def _by_values(page):
             lab = next((l for l in BY_LABELS if tuple(toks[i:i + len(l)]) == l), None)
             if lab is None:
                 continue
+            if i > 0 and ws[i][0] - ws[i - 1][2] < 0.8 * h:
+                continue        # inside a sentence ('... .md. Made by tools/drawgen ...'): a note, not a field
             j = i + len(lab)
             k = next((m for m in range(j, len(toks)) if toks[m] in CELL_WORDS or
                       any(tuple(toks[m:m + len(l)]) == l for l in BY_LABELS)), len(toks))

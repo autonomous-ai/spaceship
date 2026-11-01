@@ -41,6 +41,11 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   a reference arrow.
 - A view of every drilled face. A face nothing shows (inside a frame bay) gets a section in front of it, unless
   its holes are the far-wall twins of holes a view shows: then the removed section through the pair shows them.
+- Holes square to a face that no principal view looks at straight: a lettered view square to that face (ISO
+  128-30, "VIEW D"), with an arrow in a view that shows the face edge on, its own origin and its own hole table.
+  It keeps the principal view's up where it can. A through hole that leaves its part at an angle is drawn from
+  the face it is square to.
+- Blind holes: their depth (of the full diameter) and, when the model has it, the drill point's angle.
 - Holes through two walls of one member: a removed section through their axis, hatched per ISO 128-50 (filled
   solid under 1.6 mm on paper), each wall's hole sized across its gap.
 - One hole table per face: tags H01... on the views, `X (mm)` and `Y (mm)` from that view's origin (O1, O2...,
@@ -63,9 +68,9 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
 
 ## What it refuses (the part stays with Fusion)
 
-A cylinder that is neither a hole, a slot nor a keyhole (a bend, a fillet, a round), a cone (a countersink), any
-other curved face, holes on a face at an angle to every principal view, a part that fits no ISO scale on its
-sheet. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
+A cylinder that is neither a hole, a slot nor a keyhole (a bend, a fillet, a round), a cone that isn't a blind
+hole's drill point (a countersink), any other curved face, holes on an angled face that the part itself hides, a
+part that fits no ISO scale on its sheet. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
 their team's file with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
 make: a Fusion drawing stays.
 
