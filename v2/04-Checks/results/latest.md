@@ -1,15 +1,15 @@
-# Mechanical check run: 6f2bff3 on 2026-11-01
+# Mechanical check run: cf96ecc on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `6f2bff3`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `cf96ecc`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 180** (53 severe, 121 major, 6 minor). Register numbers in brackets.
+**Findings in this run: 183** (56 severe, 121 major, 6 minor). Register numbers in brackets.
 
 ## What ran
 
 | Check | Ran on this revision | Findings |
 |---|---|---|
 | C01 clash and minimum gaps (Fusion) | yes | 1 |
-| C02 tolerance stack-ups | yes | 1 |
+| C02 tolerance stack-ups | yes | 4 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 103 |
@@ -28,6 +28,9 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 |---|---|---|---|---|---|
 | F-136 | severe | C01 | assembly shell left-base Y 847..850 Z 10..110 | The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes. | BASE |
 | F-342 | severe | C02 | assembly KICK-OVER-FLOOR | KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it | FRONT |
+| F-343 | severe | C02 | assembly 351101 FRONT - DECOR SKIN - DL:1 | 351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 .... | FRONT |
+| F-344 | severe | C02 | assembly 351201 FRONT - DECOR SKIN - DT:1 | 351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 .... | FRONT |
+| F-345 | severe | C02 | assembly 351301 FRONT - DECOR SKIN - DR:1 | 351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 .... | FRONT |
 | F-045 | severe | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step. | Joints Engineer |
 | F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | Joints Engineer |
 | F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | Joints Engineer |
@@ -267,5 +270,5 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 
 ## Fastener schedule (C07)
 
-131 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+132 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 
