@@ -62,7 +62,7 @@ PART_INFO = {
                "Ø12.96 x 0.76, M6 bore, steel 7850 kg/m3), as AIR's and CEILING's lists; joints register H-03; "
                "Sherex CAH2-610-4.2 (steel, D-131)",
                "set at the factory; torque HOLD-01"),
-    "111211": ("aluminium EN AW-6061 T6 block 25 x 35 x 75 (joints register J-BASE-02; sizes from the Joints Engineer 2026-11-01)",
+    "111211": ("aluminium EN AW-6061 T6 block 30 x 35 x 75 (joints register J-BASE-02; sizes from the Joints Engineer 2026-11-01)",
                "mill finish (hidden)",
                "saw, mill; drill and tap 2 x M6 through the end face and 2 x M6 with 15 of full thread in the bottom (PM ruling on F-017)",
                "calculation", "DRAFT", "joints register J-BASE-02 (PR #99); the Joints Engineer's part (model, STEP and "
@@ -119,15 +119,21 @@ PART_INFO = {
                "saw cut square, weld the end plate, CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
                "CAD; joints register J-BASE-02 (keyhole piece of the inline joint at x_fr_joint)",
                "X 218.5 to x_fr_joint; its glides are levelled by turning their base (no key holes on its visible top)"),
-    "111301": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
-               "laser cut, press brake (4 bends), insert 4 M3 flush rivnuts, anodise", "calculation", "DRAFT",
-               "CAD; FRONT's answer and the PM ruling of 2026-11-01",
+    "111301": ("aluminium sheet EN AW-5005 H14, 2 mm, its door-end plate from the same sheet (assumption)", AA20,
+               "laser cut, press brake (4 bends); weld the door-end plate in all round (filler 5356: assumption), grind "
+               "its outer face flush; insert 4 M3 flush rivnuts, anodise", "calculation", "DRAFT",
+               "CAD; FRONT's answer and the PM ruling of 2026-11-01; the door-end plate: the PM's ruling of 2026-11-01 on "
+               "Reviewer 8's P1 (#303)",
                "ledge flush with the band top, seat under the U-channel, kerb down to the band's bottom line; the glass's "
-               "load goes into FR1 (D-132; seat detail with FRONT); flange riveted to FR1 (rivets HOLD)"),
+               "load goes into FR1 (D-132; seat detail with FRONT); flange riveted to FR1 (rivets HOLD). Its door end is "
+               "closed by the welded plate down to the band's bottom line, the lip 118001 along its bottom edge: the face "
+               "FRONT's brush seal closes on. Its other end (X 965) is closed by the intake's closing plate (batch 3)"),
     "118003": ("flat end cap for the 100 x 40 x 1.5 tube's bore, black, no deeper than 2 (D-129; PE assumed, product HOLD)",
-               "black", "bonded into the side band's back end at the factory, flush with the back face (adhesive HOLD)",
-               "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the end)",
-               "closes the side band's back end, face flush with Y = pod_d / 2"),
+               "black", "bonded into the band tube's open end at the factory, flush with its end face (adhesive HOLD)",
+               "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the "
+               "side band's end); FR1's door end: D-132",
+               "closes an open band end: a side band's back end (face flush with Y = pod_d / 2) or FR1's door end (face "
+               "flush with X 218.5, at the door opening)"),
     "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad, static rating 3.5 kN or more "
                "(PM ruling 2026-11-01: the worst glide carries about 1.7 kN with two people leaning on one wall); base 6.5 mm or "
                "taller, so that screwed fully home against the M10 rivnut's head it holds the band at 8.5 mm: a hard stop "
@@ -389,6 +395,29 @@ def _dxf(ezdxf, layers):
     return doc
 
 
+END_PLATE_RELIEF = 3.0   # mm, 45 deg chamfer: clears an inside bend radius of up to 3 (the sill's is t = 2: assumption)
+
+
+def end_plate_blank(outline, relieve, c):
+    """The door-end plate's cut outline: the CAD outline (u, w in mm) with a c x 45 deg chamfer at each corner listed in
+    relieve (indices into outline), the point toward the previous corner first. A chamfer of c clears an inside bend
+    radius r <= c: the bend's fillet meets each face r from the corner, and between those points it lies inside the
+    chamfer line."""
+    out = []
+    n = len(outline)
+    for i, (u, w) in enumerate(outline):
+        if i not in relieve:
+            out.append((u, w))
+            continue
+        for j in (i - 1, (i + 1) % n):
+            pu, pw = outline[j]
+            dl = math.hypot(pu - u, pw - w)
+            if dl < c * (2 if j % n in relieve else 1) + 1:
+                raise ValueError("end plate: edge %d-%d (%.1f) too short for a C%g relief" % (i, j % n, dl, c))
+            out.append((u + (pu - u) / dl * c, w + (pw - w) / dl * c))
+    return out
+
+
 def make_dxf_p02(d, ezdxf):
     """P02 batch 1 cut files: the sill's flat pattern (bend lines on BEND, inside radius = t, K 0.4: an
     assumption until the bender confirms)."""
@@ -418,6 +447,20 @@ def make_dxf_p02(d, ezdxf):
             msp.add_circle((x - sl["x0"], seat_mid), sl["rivnut_hole"] / 2, dxfattribs={"layer": "CUT"})
         msp.add_text("111301 P01 SILL - 2 mm, 4 bends 90 deg on BEND (inside radius %g, K %.1f: assumption) - flat %.2f x %.2f"
                      % (r, k, ln, width), dxfattribs={"layer": "MARK", "height": 5}).set_placement((5, width + 5))
+        ep = sl.get("end_plate")
+        if ep:
+            # the door-end plate's blank, 1 off, welded in: its outline is the profile's inner faces (from the CAD), with
+            # a 45 deg relief at each corner that meets an inside bend, so it clears the bend radius r; the weld closes
+            # the small gap at the bend it wraps round
+            pts = end_plate_blank(ep["outline"], ep["inside_bend_corners"], END_PLATE_RELIEF)
+            x0, y0 = ln + 40.0, 0.0
+            msp.add_lwpolyline([(x0 + u, y0 + w) for u, w in pts], close=True, dxfattribs={"layer": "CUT"})
+            u_max = max(u for u, _w in ep["outline"])
+            w_max = max(w for _u, w in ep["outline"])
+            msp.add_text("111301 DOOR-END PLATE - 2 mm, 1 off, welded in all round - %.1f x %.1f, reliefs C%g"
+                         % (u_max, w_max, END_PLATE_RELIEF), dxfattribs={"layer": "MARK", "height": 5}).set_placement(
+                (x0, w_max + 5))
+            print("  and its door-end plate's blank: %.1f x %.1f, %d corners relieved" % (u_max, w_max, len(ep["inside_bend_corners"])))
         doc.saveas(os.path.join(HERE, "111301_%s_BASE-SILL-FIXED-GLASS_DXF.dxf" % REV))
         print("wrote the sill's flat pattern: %.2f x %.2f, bend deduction %.3f" % (ln, width, bd))
 

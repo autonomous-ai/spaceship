@@ -51,6 +51,7 @@ P02_PARTS = {
     "band_r_tube": ("111102", "BASE - BAND TUBE - SIDE - RH", "Viền chân nhôm 100x40 - cạnh phải", "MP", "band_r"),
     "seal_r": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_r"),
     "seal_fr1": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_r"),
+    "seal_se": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_r"),
     "front_l": ("110104", "BASE - BAND ASSY - FRONT - LH", "Viền chân trước - trái (cụm)", "HS", None),
     "fl1": ("111104", "BASE - BAND TUBE - FRONT - FACET 1 - LH", "Viền chân trước - mặt vát 1", "MP", "front_l"),
     "fl2": ("111105", "BASE - BAND TUBE - FRONT - FACET 2 - LH", "Viền chân trước - mặt vát 2", "MP", "front_l"),
@@ -92,7 +93,7 @@ X_FR0 = "(%s + fix_xbl)" % XL_                       # FR1's left end at the doo
 X_FR_JOINT = "x_fr_joint"
 
 
-BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "seal_r", "seal_fr1")   # F2, its foam and spigots, the threshold went (D-132)
+BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "seal_r", "seal_fr1", "seal_se")   # F2, its foam and spigots, the threshold went (D-132)
 
 
 # batch 2: the front-left pieces under DL (with --arg batch2=1; its method sample first: --arg part=fl1)
@@ -111,7 +112,7 @@ def p02_setup(keys=P02_BATCH_KEYS):
     mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "fr1", "rail", "cplate", "sill",
                                                     "key_f", "key_k")}
     mats.update({"mesh": ("Aluminum", "Expanded mesh 80% free, 540 kg/m3 (ASSUMPTION)", 540.0),
-                 "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"],
+                 "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"], "seal_se": MATERIALS["seal_l"],
                  "seal_fl1": MATERIALS["seal_l"], "seal_fl2": MATERIALS["seal_l"]})
     MATERIALS.update({k: m for k, m in mats.items() if k in keys})
     SUB_DESIGNS = tuple(SUB_DESIGNS) + tuple(k for k in ("band_r", "front_r", "front_l") if k in keys)
@@ -367,6 +368,17 @@ def step_p02_intake(design):
     print("P02: DR intake: mesh, support rail flange, closing plate")
 
 
+def sill_end_plate_pts():
+    """The sill's door-end plate outline on the plane X = X_FR0, as (y expr, z expr): the profile's inner faces (kerb,
+    seat, drop, ledge, flange) and its bottom edge on the band's bottom line, from FR1's inner face to the kerb. Corners
+    2, 4 and 5 meet an inside bend (relieved on the blank, make_outputs.py); corner 3 wraps the drop-to-seat bend."""
+    y_fr, y_fl = "-pod_d / 2 + band_t", "-pod_d / 2 + band_t + sl_t"
+    y_dw, y_c1 = "-glass_y - ch_w / 2 - sl_t", "-glass_y + ch_w / 2"
+    z_lb, z_sb = "wall_z0 - sl_t", "wall_z0 - ch_h - sl_t"
+    z_fl, z_kb = "wall_z0 - sl_flange", "glide_h"
+    return [(y_fr, z_kb), (y_c1, z_kb), (y_c1, z_sb), (y_dw, z_sb), (y_dw, z_lb), (y_fl, z_lb), (y_fl, z_fl), (y_fr, z_fl)]
+
+
 def step_p02_sill(design):
     """The fixed glass's sill (FRONT's answer and the PM ruling of 2026-11-01): a bent 2 mm
     profile, black AA20, from the door opening's right edge to sl_x1. A flange down FR1's inner
@@ -412,7 +424,28 @@ def step_p02_sill(design):
     seat4 = offset_plane(comp, "xy", z_st, v(z_st), "PLANE - SILL SEAT TOP (LAST SCREW)")
     hole(design, "sill", seat4, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 4", (v("ch_screw_x4"), v("-glass_y"), v(z_st)),
          [(X, "ch_screw_x4"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down)
-    print("P02: sill %s" % fmt_box(bbox_mm(single_body(comp))))
+    # the door-end plate (Reviewer 8's P1 on #303; the PM's ruling of 2026-11-01): welded into the sill's door end, it
+    # closes the space under the ledge and seat, from FR1's inner face to the kerb and down to the band's bottom line,
+    # so the seal line turns this corner: FR1's lip, this plate's lip along its bottom edge to the floor, then FRONT's
+    # seal at the kick strip's end. Its outline is the sill's inner faces; one part with the sill (welded, ground flush).
+    sk2 = comp.sketches.add(pl)
+    sk2.name = "SECTION - SILL DOOR-END PLATE (WELDED IN): FR1'S INNER FACE TO THE KERB, DOWN TO glide_h"
+    polygon(design, sk2, [pt(ey, ez) for ey, ez in sill_end_plate_pts()], Y, Z)
+    check_sketch(sk2)
+    body = single_body(comp)
+    # a new body, then combined: an extrude join that only touches the body along faces makes a second body (extrude())
+    ej = comp.features.extrudeFeatures.createInput(one_profile(sk2), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ej.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("sl_t")), direc)
+    fj = comp.features.extrudeFeatures.add(ej)
+    fj.name = "EXTRUDE - SILL DOOR-END PLATE sl_t (WELDED IN)"
+    tools = adsk.core.ObjectCollection.create()
+    tools.add(fj.bodies.item(0))
+    ci = comp.features.combineFeatures.createInput(body, tools)
+    ci.operation = adsk.fusion.FeatureOperations.JoinFeatureOperation
+    ci.isKeepToolBodies = False
+    comp.features.combineFeatures.add(ci).name = "COMBINE - SILL DOOR-END PLATE INTO THE SILL (WELDED)"
+    single_body(comp, PARTS["sill"][1])
+    print("P02: sill %s (its door end closed by the welded plate)" % fmt_box(bbox_mm(single_body(comp))))
 
 
 P02_STEPS = [step_p02_band_r, step_p02_fr1, step_p02_sill]   # batch 1 (F2 and the threshold went, D-132)
@@ -535,11 +568,33 @@ def p02_seal_runs(design):
                       ("(%s + seal_t)" % xc, yc)]))
         runs.append(("seal_fl2", "front_l", "FL2, inner face, to DL's door face", "0 mm", l2,
                      [(IL2_X, IL2_Y), (xe, ye), (xe, "(%s + seal_t / %s)" % (ye, p2y)), (qx, qy)]))
+    if "sill" in PARTS:
+        # the sill's door-end plate (Reviewer 8's P1 on #303): its lip runs the closed end's whole bottom edge, from
+        # FR1's inner face to the kerb's outer face. Its leg is bonded on the plate's pod side; its envelope there starts
+        # where FR1's lip envelope ends (Y -pod_d/2 + band_t + seal_t), so the two only touch. Its fin sits under the
+        # plate, flush with the plate's outer face (p02_seal_fins), so FRONT's brush on the kick strip's end closes on
+        # one flat face from the floor up and the seal line has no gap at the corner.
+        xp, yr, yk = "(%s + sl_t)" % X_FR0, "(-pod_d / 2 + band_t)", "(-glass_y + ch_w / 2)"
+        runs.append(("seal_se", "front_r", "X = %.2f (the sill's door-end plate, its bottom edge)" % v(X_FR0), yr,
+                     "(%s + sl_t)" % yk,
+                     [(xp, "(%s + seal_t)" % yr), ("(%s + seal_t)" % xp, "(%s + seal_t)" % yr), ("(%s + seal_t)" % xp, yk),
+                      (xp, yk)]))
     if "fr1" in PARTS:
-        yf = "-pod_d / 2 + band_t"
-        runs.append(("seal_fr1", "front_r", "Y = %.2f (FR1, inner face)" % v(yf), X_FR0, X_FR_JOINT,
-                     [(X_FR0, yf), (X_FR_JOINT, yf), (X_FR_JOINT, "%s + seal_t" % yf), (X_FR0, "%s + seal_t" % yf)]))
+        # with the sill's door-end plate, FR1's lip starts at the plate's pod side (the plate's lip turns the corner)
+        yf, x0 = "-pod_d / 2 + band_t", ("(%s + sl_t)" % X_FR0 if "sill" in PARTS else X_FR0)
+        runs.append(("seal_fr1", "front_r", "Y = %.2f (FR1, inner face)" % v(yf), x0, X_FR_JOINT,
+                     [(x0, yf), (X_FR_JOINT, yf), (X_FR_JOINT, "%s + seal_t" % yf), (x0, "%s + seal_t" % yf)]))
     return runs
+
+
+def p02_seal_fins(design):
+    """Fins of a lip that reach past its plan envelope, below the band's bottom line only: {run key: plan rectangle}.
+    The sill's door-end plate's lip has its fin under the plate (2 mm), flush with the plate's outer face X_FR0, from
+    FR1's inner face to the kerb's outer face; it is joined to that run's envelope, from the room floor to glide_h."""
+    if "sill" not in PARTS:
+        return {}
+    xp, yr, yk = "(%s + sl_t)" % X_FR0, "(-pod_d / 2 + band_t)", "(-glass_y + ch_w / 2 + sl_t)"
+    return {"seal_se": [(X_FR0, yr), (xp, yr), (xp, yk), (X_FR0, yk)]}
 
 def p02_export(design, out):
     """The batch's facts for make_outputs.py: tube cuts, the sill's section (for its flat pattern) and length."""
@@ -588,7 +643,11 @@ def p02_export(design, out):
                                         "drop": v("ch_h + sl_t"), "seat": v("ch_w + 2 * sl_t"),
                                         "kerb": round(v("wall_z0 - ch_h - glide_h"), 2)},
                        "screws_x": [v("ch_screw_x1 + %d * ch_screw_p" % i) for i in range(3)] + [v("ch_screw_x4")],
-                       "rivnut_hole": v("ch_rn_hole")}
+                       "rivnut_hole": v("ch_rn_hole"),
+                       # the welded door-end plate, as cut: u along Y from FR1's inner face, w up from the band's bottom
+                       "end_plate": {"outline": [[round(v(ey) - v("-pod_d / 2 + band_t"), 2), round(v(ez) - v("glide_h"), 2)]
+                                                 for ey, ez in sill_end_plate_pts()],
+                                     "inside_bend_corners": [2, 4, 5]}}
 
 
 # ---------------------------------------------------------------- batch 2: the front-left pieces under DL

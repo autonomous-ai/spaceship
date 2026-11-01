@@ -937,6 +937,7 @@ def build_seal_envelopes(design):
     extruded up to seal_leg above the band's bottom: the room its leg and its fin, bent on the room floor, take. The
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
+    fins = globals()["p02_seal_fins"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
         sk = comp.sketches.add(comp.xYConstructionPlane)
@@ -944,6 +945,14 @@ def build_seal_envelopes(design):
         polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
         check_sketch(sk)
         extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+        if key in fins:
+            # a fin past the plan envelope, below the band's bottom line only (p02_seal_fins), joined to it
+            sk2 = comp.sketches.add(comp.xYConstructionPlane)
+            sk2.name = "PLAN - BASE SEAL LIP - FIN BELOW THE BAND'S BOTTOM"
+            polygon(design, sk2, [P(design, ex, ey) for ex, ey in fins[key]], X, Y)
+            check_sketch(sk2)
+            extrude(comp, one_profile(sk2), "glide_h", "EXTRUDE - BASE SEAL LIP - FIN UP TO glide_h, JOINED",
+                    adsk.fusion.FeatureOperations.JoinFeatureOperation, body=single_body(comp))
         single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
         n += 1
     print("step 6: base seal envelopes: %d runs (D-132)" % n)
