@@ -6,10 +6,10 @@ comes from the drawing generator (`tools/drawgen`, from the part's STEP); bent s
 generator can't draw yet, said first with why. Every drawing needs the reviewer's D-114 visual pass before it counts.
 Fusion cloud files live in Default Project / FocusPod v2.
 
-| Drawing | Part | Made in | State (2026-11-01, 13:00 UTC) |
+| Drawing | Part | Made in | State (2026-11-01, 14:50 UTC) |
 |---|---|---|---|
-| `513102_P01_LINING-RIB-CEILING_DWG` | 513102 rib | the generator's bent sheet mode | Fusion's sheet is out of this PR (D-147: Reviewer 5's Hold stood). The generator draws it in #348, which carries the rib's DXF fix (the blank was 1 mm short) and its real folds; it reads back PASS on a scratch run. It waits for the generator's count check to take a part placed in two cassettes. |
-| `513101_P01_LINING-TRAY-CEILING_DWG` | 513101 tray | the generator's bent sheet mode | Waits for the generator to take a second fold on a flange: each return turns in again as the 12 mm lip (8 folds), in the Drawing Generator Engineer's queue. |
+| `513102_P01_LINING-RIB-CEILING_DWG` | 513102 rib | the generator's bent sheet mode | Fusion's sheet is out of this PR (D-147: Reviewer 5's Hold stood). The CEILING Drawings Engineer draws it with the tray, from build v12's STEP (#348: the rib's real folds and its fixed DXF, 89.52 wide), once the generator's count check takes a part placed in two cassettes. |
+| `513101_P01_LINING-TRAY-CEILING_DWG` | 513101 tray | the generator's bent sheet mode | The CEILING Drawings Engineer draws it: it waits for #355 (the folds read from a section clear of the tray's Ø19.1 holes, so all 8 bends match its DXF) and the count check for parts placed twice. |
 | `510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG` | 510301 cassette | the generator's assembly mode | A sub-assembly sheet needs its parts table with balloons, fixings and order (guideline 5.2), which Fusion's API can't draw (the Lead's ruling on Reviewer 5's D-114 pass); the cassette's entry facts went to the Air Engineer. |
 | `410101` | the C1 panel assembly | the generator's assembly mode | In #348, on its build v10 STEP: read-back PASS. |
 | `411101`, `411102` | the two frames, welded (D-131), with their cut lists | the generator's weldment sheet | Each member's drawing is its row in its frame's cut list, and the holes made after welding go on the frame's sheet (D-162); no member has a sheet of its own, since none has a before-weld feature. These wait for the generator's weldment hooks. |
