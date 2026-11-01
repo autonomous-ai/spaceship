@@ -71,6 +71,7 @@ How to load it (factory): crate first, then tier by tier, each lane against the 
 | Roof sleeve and grille (AIR), with C2 | The sleeve seated loose in C2's roof slot, taped on both faces; the grille taped flat over it; both labelled with C2's label number | They go on only after the soffit hangs (#263); seated in their own slot they can't slide or scratch C2's skin |
 | Kits and cartons | Cartons with the contents list on the side | One place for small parts |
 | The whole load | Straps over edge protectors, cap board, three layers of stretch film, "DO NOT STACK" on both pallets | Fork and stacking damage |
+| Export wood | Every solid-wood part (both pallets, the crate's runners, end rails and lid slats, the tier separators' battens and posts) is heat-treated and carries the ISPM 15 stamp; the crate's plywood and the fibreboard edge and cap boards are processed wood, outside ISPM 15 | US ports refuse untreated solid wood (ISPM 15; the US review, 2026-11-01) |
 
 ## 5. Labels
 
