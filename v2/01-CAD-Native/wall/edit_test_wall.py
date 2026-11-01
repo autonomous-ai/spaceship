@@ -301,6 +301,7 @@ def record(design, rel):
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
              "cass_len", "cass_h", "pnl_h") + EL_BACK.get(root_pn, ()) if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
                                          "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "cass_len", "cass_h",
+                                         "lin_front_dy",
                                          "top_h", "pod_h", "panel_z0",
                                          "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
@@ -341,7 +342,7 @@ def record(design, rel):
         checks = []
         seam = 2.26
         y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
-        y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
+        y0c = 850.0 - after_p["wall_depth"] + after_p.get("lin_front_dy", 0.0)   # the cassette's front end
         # rows as the builder makes them: the lower panel from panel_z0, side_h high; the upper one from one seam
         # gap above it up to the roof datum pod_h (its cassette floats lin_gap under the roof frame)
         upper = root_pn[4:6] in ("03", "04")
@@ -417,7 +418,8 @@ def record(design, rel):
         if trays:
             tr = trays[0]
             checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
-                       ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
+                       ("tray starts lin_front_dy behind the decor back plate (R: 5, clear of DR's panel)",
+                        abs(tr[1] - y0c) < 0.01),
                        ("tray height follows the row (cass_h)", abs((tr[5] - tr[2]) - (zc1 - z0)) < 0.01 and
                         abs(after_p["cass_h"] - (zc1 - z0)) < 0.01)]
         if felts:

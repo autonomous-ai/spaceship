@@ -232,8 +232,15 @@ WALL_PARAMS = [
     ("felt_c", "1 mm", "mm", "assumption", "felt edge clearance inside the returns, as the ceiling cassette"),
     ("gap_h", "tray_h - felt_t - 2 * tray_t", "mm", "calculation",
      "air gap between the tray base and the felt (24): the acoustic gap (D-17) and the cable path (D-26)"),
-    ("cass_len", "wall_depth - stack_t + cass_t", "mm", "calculation",
-     "= 1448: from the decor back plate to past the back cassette's face, closing the inside corner (D-57)"),
+    ("lin_front_dy", "5 mm" if SIDE == "R" else "0 mm", "mm", "confirmed",
+     "Lead ruling 2026-11-01 (F-308, F-309): the right-hand cassettes start at Y -640, 1 mm off DR's inner panel "
+     "(its room face at Y -641.14, FRONT's measurement; the panel stays), and the service steps unclip R1's and "
+     "R2's cassettes before that panel comes off; the left-hand ones start at the decor back plate (Y -645)"
+     if SIDE == "R" else "the left-hand cassettes start at the decor back plate (D-57); the right-hand ones 5 mm "
+     "behind it, clear of DR's inner panel (Lead ruling 2026-11-01)"),
+    ("cass_len", "wall_depth - stack_t + cass_t - lin_front_dy", "mm", "calculation",
+     "from the cassette's front end (lin_front_dy behind the decor back plate) to past the back cassette's face, "
+     "closing the inside corner (D-57): 1445 on the left, 1440 on the right"),
     ("cass_h", "side_h" if ROW == 1 else "pod_h - outer_t - lin_gap - (panel_z0 + side_h + seam_gap)", "mm",
      "calculation",
      "lower: the panel height; upper: stops lin_gap under the roof frame so it floats (D-57)"),
@@ -960,7 +967,8 @@ X_FELT_BACK = sx("pod_w / 2 - stack_t + tray_t + felt_t")
 Y_FRONT = "pod_d / 2 - wall_depth + seam_gap"    # panel front end: 2.26 behind the decor back plate (F-008)
 Y_BACK = "pod_d / 2"                             # outer face of the back wall
 Y_FRAME_BACK = "pod_d / 2 - skin_t"              # inside of the skin's back return
-Y_CASS_FRONT = "pod_d / 2 - wall_depth"          # the lining starts at the decor back plate (skeleton P04)
+Y_CASS_FRONT = "pod_d / 2 - wall_depth"          # the decor back plate (skeleton P04): the ceiling's front edge too
+Y_LIN_FRONT = "pod_d / 2 - wall_depth + lin_front_dy"   # the cassette's front end (R side 5 behind, clear of DR)
 Y_CASS_BACK = "pod_d / 2 - stack_t + cass_t"     # side lining end, past the back lining (D-57)
 
 # rows as skeleton P04: panel_z0 = the walls' bottom, one seam_gap above the band top (F-008)
@@ -2026,7 +2034,7 @@ def build_cassette(design, root):
     print("step 1: components %s" % ", ".join(c.name for c in (root, tray, felt, clip) if c))
     if STOP_AFTER <= 1:
         return out
-    yc = (Y_CASS_FRONT, Y_CASS_BACK)
+    yc = (Y_LIN_FRONT, Y_CASS_BACK)
     zc = (Z0, Z_CASS1)
     if tray:
         pan = build_tray(design, root, tray, yc, zc)

@@ -147,6 +147,9 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["tray_h"], 34)                # returns the full cassette depth, lips hold the felt
         self.assertEqual(v["gap_h"], 24)                 # air gap behind the felt (D-17's 25 less the lip sheet)
         self.assertAlmostEqual(v["cass_len"], 1445)      # decor back plate to past the back cassette's face (D-57)
+        r = resolve(load("cassette", "R", "1"))           # the right side starts at Y -640, clear of DR's panel
+        self.assertAlmostEqual(r["pod_d"] / 2 - r["wall_depth"] + r["lin_front_dy"], -640.0)
+        self.assertAlmostEqual(r["cass_len"], 1440)
         self.assertAlmostEqual(v["cass_h"], 1142.74)
         self.assertEqual(v["stack_t"], v["outer_t"] + 4 + v["cass_t"])  # 46 + 4 gap + 34 = 84 (PM ruling)
         self.assertEqual(v["outer_t"], v["skin_t"] + v["bond_t"] + v["tube_d"])
@@ -368,7 +371,7 @@ class ElectricalInterfaceSideTest(unittest.TestCase):
         for row in ("1", "2"):
             for over in (None, {"wall_depth": 1300.0, "side_h": 1120.0}):
                 v = resolve(load("cassette", "R", row), over)
-                fy = (850.0 - v["wall_depth"] + 1.5, v["pod_d"] / 2 - v["stack_t"] + v["cass_t"] - 1.5)
+                fy = (850.0 - v["wall_depth"] + v["lin_front_dy"] + 1.5, v["pod_d"] / 2 - v["stack_t"] + v["cass_t"] - 1.5)
                 z0 = v["panel_z0"] + (0.0 if row == "1" else v["side_h"] + v["seam_gap"])
                 z1 = v["panel_z0"] + v["side_h"] if row == "1" else v["pod_h"] - v["outer_t"] - v["lin_gap"]
                 fz = (z0 + 1.5, z1 - 1.5)
