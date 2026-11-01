@@ -338,11 +338,41 @@ def cyl_join(comp, body, name, cx, cy, d, z0, z1, ctx):
     return f
 
 
-def place_turned(parent, occ, axis, xyz, name, ctx):
+def world_rotation(root, occ):
+    """The occurrence's turn (3 x 3) in the design: a root-level occurrence's own, a nested one's through its proxy
+    in root (an occurrence's own transform inside a sub-component misled turned-copy probes 6 and 7)."""
+    m = occ.transform2
+    if occ.assemblyContext is None:
+        tok = occ.entityToken
+        for o in root.allOccurrences:
+            nat = o.nativeObject
+            if nat is not None and nat.entityToken == tok:
+                m = o.transform2
+                break
+    return tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
+
+
+def relative_rotation(root, parent_occ, occ):
+    """occ's turn relative to its parent component's occurrence (identity when the parent is the root)."""
+    ro = world_rotation(root, occ)
+    if parent_occ is None:
+        return ro
+    rp = world_rotation(root, parent_occ)
+    return tuple(tuple(sum(rp[k][r] * ro[k][c] for k in range(3)) for c in range(3)) for r in range(3))
+
+
+# the joint's (flip, angle) that gives each turn, as turned-copy probe 9 measured it in the design (2026-11-01 08:33):
+# a rigid joint from the copy's origin to a sketch point on an XY plane of the parent; flip with angle 0 turns about X
+TURN_SETTINGS = {"z": [(False, "180 deg")], "y": [(True, "180 deg")]}
+
+
+def place_turned(parent, occ, axis, xyz, name, ctx, parent_occ=None):
     """A copy turned 180 deg about the pod's Y or Z axis (D-120: one part, turned): a rigid joint takes the copy's
-    origin to xyz. Which joint flip and angle give the turn is read back from the copy's transform, not assumed; each
-    try is a fresh joint with the setting on its input (Fusion refuses to edit a made joint without rolling the
-    timeline back, as the ceiling's turned-copy probe found), and a turn none gives stops the build."""
+    origin to xyz, with the flip and angle turned-copy probe 9 measured for that turn on the joint's input (Fusion
+    refuses to edit a made joint without rolling the timeline back). The copy's ground-to-parent flag goes off first:
+    Fusion grounds the first occurrence made in a component, and copies of it, and a joint then conflicts (probes 8
+    and 9). The turn is read back in the design after a full compute; a copy that doesn't land turned stops the
+    build."""
     plane = CB.offset_plane(parent, parent.xYConstructionPlane, xyz[2], "PLANE - PLACE %s" % name)
     sk = parent.sketches.add(plane)
     sk.name = "PLACE - " + name
@@ -350,9 +380,12 @@ def place_turned(parent, occ, axis, xyz, name, ctx):
     CB.dim_point(sk, pt, xyz[0], xyz[1], ctx)
     if not sk.isFullyConstrained:
         raise RuntimeError("placement sketch not fully constrained: " + name)
+    if occ.isGroundToParent:
+        occ.isGroundToParent = False
     want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[axis]
+    root = ctx.design.rootComponent
     tried = []
-    for flip, angle in ((False, "180 deg"), (True, "0 deg"), (True, "180 deg")):
+    for flip, angle in TURN_SETTINGS[axis]:
         g_occ = adsk.fusion.JointGeometry.createByPoint(occ.component.originConstructionPoint.createForAssemblyContext(occ))
         ji = parent.joints.createInput(g_occ, adsk.fusion.JointGeometry.createByPoint(pt))
         ji.setAsRigidJointMotion()
@@ -360,14 +393,15 @@ def place_turned(parent, occ, axis, xyz, name, ctx):
         ji.angle = adsk.core.ValueInput.createByString(angle)
         j = parent.joints.add(ji)
         j.name = "PLACE - " + name
-        m = occ.transform2
-        got = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
-        tried.append((flip, angle, got))
-        if all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
-            print("%s: turned about %s by the joint's flip %s, angle %s" % (name, axis.upper(), flip, angle))
+        ctx.design.computeAll()
+        got = relative_rotation(root, parent_occ, occ)
+        healthy = j.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+        tried.append((flip, angle, healthy, tuple(tuple(round(v, 4) for v in row) for row in got)))
+        if healthy and all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
+            print("%s: turned about %s by the joint's flip %s, angle %s (read in the design)" % (name, axis.upper(), flip, angle))
             return j
         j.deleteMe()
-    raise RuntimeError("no joint flip and angle turns %s about %s: %s" % (name, axis, tried))
+    raise RuntimeError("the joint didn't turn %s about %s: %s" % (name, axis, tried))
 
 
 def build_cartridge(parent, design, ctx, bx, along, tag):
@@ -689,7 +723,7 @@ def run(_context):
         def units_of(key):
             return [n for k, n, _b in A.units() if k == key]
         # ---- column: foot plate, faces, kick grille, plenum plates, fill, hub zone, angles, cartridge
-        _o, col = new_comp(root, "column")
+        col_occ, col = new_comp(root, "column")
         for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
                     "kick_l", "hub"):
             comp_with(col, key, names_of(key))
@@ -712,7 +746,7 @@ def run(_context):
             set_material(design, angr, "col_ang")
         else:
             occ_fr = col.occurrences.addExistingComponent(ang, adsk.core.Matrix3D.create())
-            place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx)
+            place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx, parent_occ=col_occ)
         # the back-left angle (611109), in place, with its keyholes (features below)
         x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE BL"][1]
         _ob, angb = new_comp(col, "col_ang_b")

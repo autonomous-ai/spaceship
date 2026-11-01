@@ -269,8 +269,11 @@ class D87(unittest.TestCase):
             self.assertLessEqual(bx[1], xir - 5.0 + 1e-9, name)
             self.assertGreaterEqual(bx[0], -xir + 5.0 - 1e-9, name)
 
-    def test_foot_on_the_mat(self):
-        self.assertAlmostEqual(b6("COLUMN FOOT PLATE")[4], 12.0)
+    def test_foot_on_the_floor_top(self):
+        """The foot plate stands on the skeleton's floor top: the mat at Z 12 today; BASE's D-132 (#303) takes the
+        floor out (Z 0), and the column's support and locator then move to BASE's bracket on the band (D-132, HOLD
+        until its faces are posted), so this follows the floor top rather than a number."""
+        self.assertAlmostEqual(b6("COLUMN FOOT PLATE")[4], V["floor_top"])
 
     def test_studs_and_locks_on_the_ceiling_rivnuts(self):
         cv = CM.evaluate(CM.all_params())
@@ -402,10 +405,14 @@ class FrontScrews(unittest.TestCase):
                 self.assertGreaterEqual(A.ev(V, wb[4]) - top, V["fr_scr_clr"] - 1e-9, sname)
 
     def test_cartridge_over_b01(self):
+        """4 over B01's washers (the Lead's ruling), its top 5 under the column's opening, and the base plenum under
+        it at least the air report's 120 (126 on today's floor, 138 once D-132 takes the floor out)."""
         c = b6("CARTRIDGE SUPPLY")
         for sname, wb, _hb in A.front_screw_boxes():
             if sname.startswith("B01"):
                 self.assertAlmostEqual(c[4] - A.ev(V, wb[5]), 4.0, msg=sname)
+        self.assertAlmostEqual(V["op_z0"] - c[5], 5.0)
+        self.assertGreaterEqual(c[4] - b6("COLUMN FOOT PLATE")[5], V["plen_lo"] - 1e-9)
 
 
 class PlaceCheck(unittest.TestCase):

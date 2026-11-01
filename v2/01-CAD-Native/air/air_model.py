@@ -41,7 +41,7 @@ AIR_PARAMS = [
     # ---- column (front-right inside corner)
     ("col_x0", "949 mm", "mm", "source", R7E + ": the column's left face, X 949 (220 wide on P03, 217 on P04)"),
     ("col_d", "360 mm", "mm", "confirmed", "D-61: the room face 360 from the side walls' front end (Y -285), flush with the soffit's face; the column itself starts at DR's access-panel face, so it is 358.5 deep"),
-    ("plen_lo", "126 mm", "mm", "confirmed", "PM ruling 2026-11-01 (the Air Engineer's fix): the base plenum under the supply cartridge, 120 in the air report (7e) plus 6, so the cartridge clears the two socket heads of DR's panel on FRONT's B01 (7.6 proud); the cartridge is Z 140 to 1890, 5 under the column's opening (Z 1895)"),
+    ("plen_lo", "120 mm", "mm", "source", R7E + ": the base plenum under the cartridge, 120 tall; now the least it may be, since the cartridge's foot follows FRONT's B01 screws (cart_b01_clr)"),
     ("grille_h", "100 mm", "mm", "confirmed", "D-61: a 100 mm kick grille at the column's foot"),
     ("grille_z", "10 mm", "mm", "source", R7E + ": kick grille Z 25 to 125, 10 mm above the column's foot"),
     ("grille_l", "312 mm", "mm", "source", R7E + ": 529 along the front and left faces, 217 of it on the front"),
@@ -120,6 +120,7 @@ AIR_PARAMS = [
     ("b01_x1", "997.2 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's first screw, under the supply cartridge"),
     ("b01_x2", "1148.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's second screw, under the supply cartridge"),
     ("b01_z", "130.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's two screws' height (washers to Z 136; the cartridge from Z 140)"),
+    ("cart_b01_clr", "4 mm", "mm", "confirmed", "the Lead's ruling 2026-11-01: the supply cartridge, lifted 6 (the Air Engineer's fix), stands 4 over the washers of B01's two screws; tied to them, so it holds when BASE's D-132 takes the floor out (floor top Z 12 to 0)"),
     ("b07_x", "939.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw, moved 4 clear of the column's left face"),
     ("b07_z", "259.8 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw's height"),
     ("blk_t", "2 mm", "mm", "source", "the air report's sizing (calc.py, D-121): each fan box's 2 mm aluminium bulkhead, the fans mounted on it"),
@@ -498,7 +499,7 @@ def layout():
     cx1 = XR
     cx0 = "%s - cart_w" % cx1
     cy0, cy1 = "%s + clr" % YD, "%s + clr + cart_d" % YD
-    cz0 = "%s + plen_lo" % ZCB
+    cz0 = "b01_z + fr_wsh_d / 2 + cart_b01_clr"      # 4 over B01's washers (the Lead's ruling): Z 140
     cz1 = "%s + cart_l" % cz0
     b.append(("cart", "CARTRIDGE SUPPLY", box(cx0, cx1, cy0, cy1, cz0, cz1)))
     # the column's right side at the two plenums (the cartridge closes the rest)
