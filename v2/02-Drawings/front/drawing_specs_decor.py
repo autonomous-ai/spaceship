@@ -261,7 +261,7 @@ SPECS["dt_stop"] = {
     "design": doc("351203", "FRONT - DOOR TOP STOP - DT", "CAD"),
     "drawing": doc("351203", "FRONT - DOOR TOP STOP - DT", "DWG"),
     "sheet": "A2", "scale": 0.2, "scales": {"left": 2.0, "iso": 0.2},
-    "views": {"front": (200, 300), "top": (200, 230), "left": (440, 300), "iso": (200, 110)},
+    "views": {"front": (200, 300), "top": (200, 230), "left": (440, 260), "iso": (200, 110)},
     "box": {"front": (_sx0, _sz0, _sx1, _sz1), "top": (_sx0, _sy0, _sx1, _sy1), "left": (-_sy1, _sz0, -_sy0, _sz1)},
     "dims": [("front", (_sx0, _sz0), (_sx1, _sz0), "below", 10),
              ("left", (-_sy1, _sz1), (-_sy0, _sz1), "above", 8), ("left", (-_sy0, _sz0), (-_sy0, _sz1), "right", 8)],
