@@ -886,6 +886,27 @@ def test_a_repeated_part_is_drawn_once():
     assert want > 1 and len(bodies) == 1 and unit["occurrences"] == want, (want, len(bodies), unit)
 
 
+def test_count_per_parent_or_per_pod():
+    """CEILING (#348): a part shared by two parents (its side member 412101, 1 per frame, 2 per pod) or whose parent
+    sits twice (the tray, 1 per cassette, 2 per pod) is held by the team's STEP as often as the pod has it. The count
+    passes when it is the row's quantity per parent or per pod, and its note says which; any other count is refused,
+    naming both."""
+    step = "/x/410000_P01_CEILING_STEP.step"
+    w = compose.step_count_words("412101", 2, {"qty_per_parent": "1", "qty_per_pod": "2"}, step, None)
+    assert w.startswith("2 per pod (its parts list); the assembly STEP 410000_P01_CEILING_STEP.step holds 2"), w
+    w = compose.step_count_words("412001", 2, {"qty_per_parent": "2", "qty_per_pod": "4"}, step, None)
+    assert w.startswith("2 per assembly (its parts list)"), w
+    assert compose.step_count_words("412001", 4, {"qty_per_parent": "2", "qty_per_pod": "4"}, step, None).startswith(
+        "4 per pod")
+    for row, occ, want in (({"qty_per_parent": "1", "qty_per_pod": "2"}, 3, "says 1 per parent and 2 per pod"),
+                           ({"qty": "2"}, 3, "holds it 3 times, its parts list says 2")):
+        try:
+            compose.step_count_words("219999", occ, row, step, None)
+            raise AssertionError("passed %d against %s" % (occ, row))
+        except compose.NotDrawable as e:
+            assert want in str(e), e
+
+
 def _notched_band(path, length=1000.0, notch_w=12.0, window=False):
     """A test back band like BASE's D-129 111103: a 100 x 40 x 1.5 tube closed by 1.5 end plates, each plate with an
     open slot (12 wide at the bottom edge, 6.5 from 6 up, its R3.25 end centred 63.5 up), a notch_w x 9 notch

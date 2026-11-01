@@ -202,6 +202,32 @@ VIEW_WORDS = {"principal": "PRINCIPAL VIEW", "above": "VIEW FROM ABOVE", "below"
 POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right": (-1, 0), "rear": (2, 0)}
 
 
+def step_count_words(pn, occurrences, row, step, list_file):
+    """The quantity note for a part its STEP holds several times, checked against its parts list. The count must be
+    its quantity per parent (a parent's own STEP), or per pod when the row gives one (the team's STEP: a part shared by
+    two parents, or its parent placed twice: CEILING's frame members 412101, 412105, 412001, its tray and ribs);
+    otherwise NotDrawable."""
+    q = (row.get("qty") or row.get("qty_per_parent") or "").strip()
+    qp = (row.get("qty_per_pod") or "").strip()
+
+    def num(x):
+        try:
+            return int(float(x))
+        except ValueError:
+            return None
+    qn, qpn = num(q), num(qp)
+    if qn is not None and qn != occurrences:
+        if qpn == occurrences:
+            return "%s per pod (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+                qp, os.path.basename(step), occurrences)
+        raise NotDrawable("%s: %s holds it %d times, its parts list says %s%s" % (
+            pn, os.path.basename(step), occurrences, q, (" per parent and %s per pod" % qp) if qp else ""))
+    par = inputs.parse_name(list_file) if list_file else None
+    return "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+        q or occurrences, ("%s %s" % (par["pn"], par["name"])) if par else "assembly", os.path.basename(step),
+        occurrences)
+
+
 class Part:
     """Everything one drawing needs, read from the sources."""
 
@@ -233,18 +259,7 @@ class Part:
         self.occurrences = self.unit.get("occurrences", 1)
         self.qty_words = None
         if self.occurrences > 1:
-            q = (self.row.get("qty") or self.row.get("qty_per_parent") or "").strip()
-            try:
-                qn = int(float(q))
-            except ValueError:
-                qn = None
-            if qn is not None and qn != self.occurrences:
-                raise NotDrawable("%s: %s holds it %d times, its parts list says %s" % (
-                    pn, os.path.basename(self.step), self.occurrences, q))
-            par = inputs.parse_name(self.list_file) if self.list_file else None
-            self.qty_words = "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
-                q or self.occurrences, ("%s %s" % (par["pn"], par["name"])) if par else "assembly",
-                os.path.basename(self.step), self.occurrences)
+            self.qty_words = step_count_words(pn, self.occurrences, self.row, self.step, self.list_file)
         self.placement = None
         if pod_system:
             self._to_pod()
