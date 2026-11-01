@@ -199,8 +199,12 @@ def load_part(path, pn):
     """The bodies of part pn in a STEP file (its own file, or a team assembly holding it), with their names and
     a unit check against the repo's reader. Raises when the file holds no solid of that part."""
     bodies = []
+    occurrences = 0
     for name, solids in read_step(path):
         if part_number_of(name) != pn:
+            continue
+        occurrences += 1
+        if occurrences > 1:     # the same part used again in the assembly: one is drawn (FRONT's 352211, 3 off)
             continue
         for s in solids:
             bodies.append(Body("", s))
@@ -221,7 +225,7 @@ def load_part(path, pn):
             best = min(names.items(), key=lambda kv: sum(abs(x - y) for x, y in zip(kv[0], key)), default=None)
             if best and sum(abs(x - y) for x, y in zip(best[0], key)) < 0.6:
                 b.name = best[1]
-    unit = {"declared": sf.unit_name, "scale_to_mm": sf.scale}
+    unit = {"declared": sf.unit_name, "scale_to_mm": sf.scale, "occurrences": max(occurrences, 1)}
     # unit check (D-13): the repo reader scales by the declared unit; OCC converts on its own. They must agree.
     worst = 0.0
     for b in bodies:
@@ -594,6 +598,37 @@ def planes(body):
         BRepGProp.SurfaceProperties_s(f, props)
         out.append((n, vdot(o, n), props.Mass(), f))
     return out
+
+
+def _vertices_of(shape):
+    from OCP.TopAbs import TopAbs_VERTEX
+    e = TopExp_Explorer(shape, TopAbs_VERTEX)
+    while e.More():
+        yield e.Current()
+        e.Next()
+
+
+def member_axis(body):
+    """The axis of a straight member (a tube or bar): square to its two largest side faces that aren't parallel
+    (their normals' cross product). None when the body isn't a long prism (no such pair, or the body isn't
+    longest along that axis)."""
+    fs = sorted(planes(body), key=lambda t: -t[2])
+    if not fs:
+        return None
+    n1 = fs[0][0]
+    n2 = next((t[0] for t in fs[1:] if abs(vdot(t[0], n1)) < 0.5), None)
+    if n2 is None:
+        return None
+    a = vnorm(vcross(n1, n2))
+    a = canon_dir(a)
+    # long along it: the body's extent along the axis beats its extent along both normals
+    pts = [pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in _vertices_of(body.shape)]
+    if not pts:
+        return None
+    ext = lambda d: max(vdot(q, d) for q in pts) - min(vdot(q, d) for q in pts)
+    if ext(a) < 1.5 * max(ext(n1), ext(n2)):
+        return None
+    return a
 
 
 def half_space_keep(shape, point, normal, big=1e5):
