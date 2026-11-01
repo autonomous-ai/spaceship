@@ -858,7 +858,8 @@ def rollup_md(rows):
     ap, op = applied(), parked()
     model_l1 = final_outer_kg(P04["side_w"], P04["side_h"], P04["frame_d"], FINAL)
     shipped = [r for r in rows if r[0] != "LATER" and "glass" not in r[1].lower() and "door unit" not in r[1].lower()]
-    heavy = max(shipped, key=lambda r: r[3])
+    ship_kg = lambda r: r[3] + (dr_channels_kg() if r[1].startswith("Decor block - right") else 0.0)  # DR with its channels
+    heavy = max(shipped, key=ship_kg)
     loose = sum(r[3] for r in rows if r[0] == "AIR" and (r[1].startswith("Intake riser") or r[1].startswith("Supply fan box")))
     gap = lambda x: f"{abs(x):.1f} kg {'over' if x > 0 else 'under'}"
     md = []
@@ -890,8 +891,8 @@ def rollup_md(rows):
               f"{dr_ship - dr:.2f} kg of the fixed glass's right and diagonal channels fitted in it); fitted in the factory it "
               f"would be about {dr_ship + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
               f"({sof + fan2:.1f} kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The "
-              f"heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the door unit and the fixed glass unit "
-              "are glass and exempt.")
+              f"heaviest piece apart from the glass is the {nm} at {ship_kg(heavy):.1f} kg as shipped, against D-108's 19.0 kg "
+              "for the right block; the door unit and the fixed glass unit are glass and exempt.")
     allow = {r[1].split(",")[0].split(" along")[0]: r[2] * r[3] for r in rows
              if "Light shelf" in r[1] or "ledge" in r[1] or "Named clips" in r[1]}
     md.append(f"- **Interior and allowances.** The light shelf ({allow['Light shelf']:.1f} kg) and the work-wall ledge with "
