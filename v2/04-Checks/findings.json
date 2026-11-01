@@ -1,5 +1,5 @@
 {
- "next": 366,
+ "next": 367,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -1393,7 +1393,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -1459,7 +1459,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e",
+   "last_seen": "2026-11-01 78a2d51e",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -1526,7 +1526,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e",
+   "last_seen": "2026-11-01 78a2d51e",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3110,7 +3110,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3135,7 +3135,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -3247,7 +3247,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e",
+   "last_seen": "2026-11-01 78a2d51e",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3283,7 +3283,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e",
+   "last_seen": "2026-11-01 78a2d51e",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3319,7 +3319,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e",
+   "last_seen": "2026-11-01 78a2d51e",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3444,7 +3444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3469,7 +3469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3494,7 +3494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3519,7 +3519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3544,7 +3544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3569,7 +3569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3594,7 +3594,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3619,7 +3619,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3644,7 +3644,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3669,7 +3669,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3694,7 +3694,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3719,7 +3719,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3744,7 +3744,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3769,7 +3769,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3794,7 +3794,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3819,7 +3819,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3844,7 +3844,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -3869,7 +3869,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4436,7 +4436,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4492,7 +4492,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4517,7 +4517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4542,7 +4542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4567,7 +4567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4592,7 +4592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4617,7 +4617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4796,7 +4796,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4821,7 +4821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4846,7 +4846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4871,7 +4871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4896,7 +4896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -4921,7 +4921,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5053,7 +5053,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5082,7 +5082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5111,7 +5111,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5140,7 +5140,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5169,7 +5169,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5198,7 +5198,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5227,7 +5227,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5256,7 +5256,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5285,7 +5285,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5314,7 +5314,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5343,7 +5343,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5372,7 +5372,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5401,7 +5401,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5430,7 +5430,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5459,7 +5459,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5488,7 +5488,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5517,7 +5517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5542,7 +5542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5567,7 +5567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5592,7 +5592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5617,7 +5617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5642,7 +5642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5667,7 +5667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5692,7 +5692,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5717,7 +5717,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5742,7 +5742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5767,7 +5767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -5856,7 +5856,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5885,7 +5885,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5914,7 +5914,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5943,7 +5943,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -5972,7 +5972,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -6001,7 +6001,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6026,7 +6026,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6051,7 +6051,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6076,7 +6076,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6101,7 +6101,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6126,7 +6126,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6151,7 +6151,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6176,7 +6176,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6201,7 +6201,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6226,7 +6226,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6251,7 +6251,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6276,7 +6276,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6301,7 +6301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6326,7 +6326,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6351,7 +6351,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6376,7 +6376,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6401,7 +6401,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -6889,7 +6889,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C08",
@@ -6918,7 +6918,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -6943,7 +6943,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -6968,7 +6968,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -6993,7 +6993,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7018,7 +7018,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7043,7 +7043,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7068,7 +7068,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7093,7 +7093,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7118,7 +7118,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7143,7 +7143,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7168,7 +7168,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7193,7 +7193,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7218,7 +7218,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7243,7 +7243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7268,7 +7268,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -7293,7 +7293,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7318,7 +7318,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -7346,7 +7346,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -7374,7 +7374,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7403,7 +7403,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7432,7 +7432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7461,7 +7461,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7490,7 +7490,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7519,7 +7519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7548,7 +7548,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7573,7 +7573,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -7598,7 +7598,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7623,7 +7623,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7679,7 +7679,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7704,7 +7704,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7729,7 +7729,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7754,7 +7754,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7779,7 +7779,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7804,7 +7804,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7829,7 +7829,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7854,7 +7854,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7879,7 +7879,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7904,7 +7904,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7929,7 +7929,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7954,7 +7954,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -7979,7 +7979,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -8131,7 +8131,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -8159,7 +8159,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -8187,7 +8187,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -8215,7 +8215,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -8243,7 +8243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -8271,19 +8271,23 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
    "rule": "name-mismatch",
    "subject": "838003",
    "severity": "major",
-   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
-   "fix": "Use the register's name, with the material and finish it gives, in each file above (6 CAD, 7 parts lists).",
-   "file": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' and 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH2-610-4.2 (gone), CAH3-610-4.2 (gone), CAL2-610-4.2 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 10 parts lists).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "owner": "BASE; ELECTRICAL; WALL",
    "evidence": {
     "files": [
+     "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+     "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
@@ -8298,7 +8302,7 @@
      "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
      "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step"
     ],
-    "register": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
+    "register": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2"
    },
    "key": "C06|name-mismatch|838003",
    "id": "F-279",
@@ -8318,7 +8322,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -9677,7 +9681,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9705,7 +9709,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9733,7 +9737,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9761,7 +9765,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9789,7 +9793,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9817,7 +9821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9845,7 +9849,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9873,7 +9877,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9900,7 +9904,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9927,7 +9931,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C11",
@@ -9954,7 +9958,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -10497,7 +10501,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -10522,7 +10526,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -10547,7 +10551,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -10572,7 +10576,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C02",
@@ -10607,7 +10611,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C02",
@@ -10636,7 +10640,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C02",
@@ -10665,7 +10669,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C02",
@@ -10694,7 +10698,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C06",
@@ -10730,7 +10734,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -10758,7 +10762,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -10786,7 +10790,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C09",
@@ -10814,7 +10818,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -10839,7 +10843,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -10864,7 +10868,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -10889,7 +10893,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C05",
@@ -10914,7 +10918,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -10969,7 +10973,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11027,7 +11031,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11087,7 +11091,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11142,7 +11146,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11199,7 +11203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11255,7 +11259,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11310,7 +11314,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11364,7 +11368,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11418,7 +11422,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11473,7 +11477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11529,7 +11533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
   },
   {
    "check": "C01",
@@ -11584,7 +11588,36 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e75b16e"
+   "last_seen": "2026-11-01 78a2d51e"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "838006",
+   "severity": "major",
+   "message": "838006 is named 'HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD' in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9', and hardware names come from the register (D-99). The names differ in CAL2-1015-7.9 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv"
+    ],
+    "register": "HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9"
+   },
+   "key": "C06|name-mismatch|838006",
+   "id": "F-366",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 78a2d51e",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "78a2d51e",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
