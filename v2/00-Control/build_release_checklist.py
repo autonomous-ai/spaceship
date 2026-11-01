@@ -477,12 +477,12 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 flat = "yes"
             elif strip_ok:
                 flat = "row (D-125)"
-            elif SHEET.search(text):
-                flat = "no"
-            elif TUBE.search(text):
+            elif TUBE.search(text):     # tube words first: D-131's tubes are galvanized steel, which alone reads as sheet
                 team_dir = src.rsplit("/", 1)[0] + "/"
                 listed = any(c.startswith(team_dir) and pn in cut_texts.get(c, "") for c in cut_lists)
                 flat = "yes" if listed or r.get("cut_rows") else "no"
+            elif SHEET.search(text):
+                flat = "no"
             else:
                 flat = "n/a"
             if any("WIRING-DIAGRAM" in d.rsplit("/", 1)[-1] for d in by_pn.get(pn, {}).get("DWG", [])):
