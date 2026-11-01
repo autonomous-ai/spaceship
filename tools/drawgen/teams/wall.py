@@ -95,8 +95,27 @@ def _tray(hand):
                             "C": "front face (at the cassette's front end)"}}
 
 
+# WALL's cassette ledges (D-170): a 1.5 galvanized steel angle under each lower cassette, riveted to the bottom rail's
+# room face after welding with closed-end countersunk blind rivets, the heads flush in countersinks machined in the upright
+LEDGE_NOTES = [
+    "LEDGE (D-170): galvanized steel sheet 1.5, DX51D+Z (EN 10346), Z100. Blank laser cut from its DXF with its 6 rivet "
+    "holes Ø3.3; each hole countersunk Ø6.7 x 120° by machining on the upright's room face; then folded 90° on a press "
+    "brake, inside radius 1 x t (the model's; K 0.44 in the DXF, an assumption until the factory's bend table).",
+    "Fitted after the frame is welded and touched up (J-FRAME-01): held on the bottom rail's room face as the drill jig "
+    "for the rail's plain Ø3.3 holes, then riveted with 6 closed-end countersunk blind rivets 838012 (ISO 15974, Ø3.2 x 8; "
+    "D-166), the heads flush, 0 to 0.3 under the face, so they stay clear of the cassette's tray.",
+    "The pad 848015 (PORON 4701-40, 18 wide, PSA) goes on the leg's flat past its bend; the cassette's bottom return rests "
+    "on it (D-170).",
+]
+LEDGE_TOLERANCE = ("blank ±0.5; fold 90° ±1° (assumption); rivet holes ±0.2 to each other and to the ends (assumption: "
+                   "the ledge is the rail's drill jig); countersinks Ø6.7 +0.2/0 at 120° ±1°, so every head (Ø5.8 to "
+                   "6.7) sits flush or under, with 0.52 of the upright left under it")
+LEDGE = {"bent": True, "notes": LEDGE_NOTES, "tolerance": LEDGE_TOLERANCE,
+         "rivet_holes": {3.3: "blind rivet 838012, closed end, countersunk, Ø3.2 (ISO 15974)"}}
+
 PARTS = {
     "511101": _tray("LH"),
+    "211701": LEDGE,
     "211101": WALL_FRAME,
     "211102": WALL_FRAME,
     "211301": _skin("LH"),
