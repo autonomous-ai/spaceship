@@ -93,3 +93,41 @@ At the 53 l/s normal flow that adds **0.25 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 
 **B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.47 kg = **12.6 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
 
+## 6. Heat inside the power unit (711001)
+
+The supplies, the breaker, the GFCI receptacle and the light controller share the closed box; its air sets each part's temperature. A steady heat balance (`unit_heat.py`): the supplies sit flat on the shell's back wall; heat leaves through the front plate to the pod, through the vent slots by stack flow, and through the shell into B2's skin and members to the room. The last path carries most of it and is the least certain, so the worst case takes it at half (assumption). Case: room 28 °C (assumption: a warm office), the pod 4 K over it (D-50); the voice kit at its 40 W average (D-88), the lights at the hub's 22 W (PM ruling), the fans at the 65 l/s boost with the hub, 19.2 W (calculation).
+
+| Supply | Model | Load W | Efficiency at 115 V | Loss W | Basis |
+|---|---|---:|---:|---:|---|
+| PS1 | CLG-100-24 | 40.0 | 84.2 % | 7.5 | source: Mean Well CLG-100 sheet, its 115 V curve (48 V model; the 24 V has the same 88.5 %) |
+| PS2 | LPV-60-24 | 22.0 | 80.2 % | 5.4 | assumption: LPV-60-24's 86 % (sheet, 230 V) less one point at 115 V, on the CLG-100's curve shape |
+| PS3 | LPV-60-12 | 19.2 | 76.7 % | 5.8 | assumption: LPV-60-12's 83 % (sheet, 230 V) less one point at 115 V, on the CLG-100's curve shape |
+
+Other heat in the box: the light controller 2.0 W (assumption), the breaker 2.0 W per pole at 15 A (Eaton), the GFCI receptacle about 1.5 W at 12 A (assumption), the receptacle's mains wiring and the fuses (calculation); with the user outlets at 3 A (laptops, a monitor, chargers: assumption) that is 2.3 W, at their 12 A continuous limit 6.0 W.
+
+| Inside air, °C | the plate before (2 rows of 5 slots) | this plate (8 rows of 3 slots, right side) |
+|---|---:|---:|
+| outlets at 3 A, shell path as estimated | 52.6 | 46.1 |
+| outlets at 3 A, shell path at half | 59.1 | 49.5 |
+| **worst:** outlets at 12 A, shell path at half | 64.9 | 52.9 |
+
+**Worst case, each part against its own limit:** the box's air at 52.9 °C, 3 K more for the upper part (no fan inside, assumption): **55.9 °C**.
+
+| Part | Its limit | Margin at 56 °C |
+|---|---|---:|
+| light controller LTECH LT-995 | 65 °C (LTECH LT-995 sheet: -30 to +65 °C) | 9 K |
+| GFCI receptacle P&S 1597TRW | 66 °C (Legrand CS3339: -35 to +66 °C) | 10 K |
+| Mean Well supplies, the units themselves | 70 °C (LPV-60 and CLG-100 sheets: -30 to +70 °C, by their derating curves) | 14 K |
+| LAN keystone jacks Panduit NK688MWH | 75 °C (Panduit COSP588: -10 to +75 °C) | 19 K |
+| Cat6 cable Belden 3612 | 75 °C (Belden 3612 sheet: 75 °C) | 19 K |
+| 12 and 24 V leads, Southwire CL3R (the PU segments) | 60 °C (Southwire spec 13060 and 13066: 60 °C) | 4 K |
+| lever connectors WAGO 221-415 | 85 °C (WAGO: T85, surrounding air 85 °C at most) | 29 K |
+| fuse holders Littelfuse FHAC0001ZXJ | 105 °C (Littelfuse OL-FHAC0001ZXJ: 105 °C) | 49 K |
+| bushings Heyco 2836N | 105 °C (Heyco: -18 to +105 °C) | 49 K |
+| mains wire Alpha Wire 461419 (UL 1015) | 105 °C (Alpha Wire: UL 1015 AWM 105 °C) | 49 K |
+| PS1 CLG-100-24 at its peak load, 60.0 W | 85 W at 56 °C (88 % of 96 W, its maker's derating) | 25 W |
+| PS2 LPV-60-24 at its peak load, 40.5 W | 50 W at 56 °C (83 % of 60 W, its maker's derating) | 9 W |
+| PS3 LPV-60-12 at its peak load, 31.4 W | 50 W at 56 °C (83 % of 60 W, its maker's derating) | 18 W |
+
+The breaker is calibrated at 40 °C and carries 0.5 % less per K above (Eaton): 13.8 A at 56 °C, over the outlets' 12 A continuous limit. These figures are a calculation; the prototype's test measures the box's air with the kit at 40 W (a dummy load) and the outlets loaded.
+
