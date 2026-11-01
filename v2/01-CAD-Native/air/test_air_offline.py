@@ -640,7 +640,7 @@ class SupplyBoxRest(unittest.TestCase):
 
     def test_box_where_ruled(self):
         b = b6("SUPPLY FAN BOX")
-        self.assertEqual((b[0], b[1], b[2]), (677.0, 977.0, -819.0))
+        self.assertEqual((b[0], b[1], b[2]), (680.0, 980.0, -819.0))
         self.assertAlmostEqual(F08["y1"] - b[2], -5.0, msg="5 mm from F08's back face to the box's front")
 
     def test_lip_reaches_f08(self):

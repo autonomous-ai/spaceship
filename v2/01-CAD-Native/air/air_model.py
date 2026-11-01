@@ -130,9 +130,10 @@ AIR_PARAMS = [
     ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
     ("e_lin_gap", "50 mm", "mm", "source", "D-121, the Air Engineer: the exhaust box's far-end lining stops 50 mm under the fans"),
     # ---- supply fan box and intake riser, inside the right decor block (D-61, D-62)
-    ("sb_x0", "677 mm", "mm", "source", "PM ruling 2026-11-01 (FRONT's fan box points): the supply fan box X 677 to 977, "
-     "4 mm clear of DR's back ring diagonal tube B06 (with #313's glue line and the box 3 mm back, X 673 left 1.0 mm to it "
-     "in FRONT's STEP; CEILING's proposal to FRONT, 2026-11-01) and 5 of the front ring's diagonal (was X 645 in report 7e)"),
+    ("sb_x0", "680 mm", "mm", "source", "PM ruling 2026-11-01 (the AIR Transitions Engineer's find, the Lead's ruling): the "
+     "supply fan box X 680 to 980, 6.3 mm off DR's back ring diagonal tube B06 on FRONT's #313 STEP (at X 673, with the glue "
+     "line and the box 3 mm back, it was 1.0) and 8.1 off the front ring's diagonal (FRONT's fan box points had X 673; "
+     "report 7e X 645)"),
     ("sb_w", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
     ("sb_d", "155 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
     ("sb_h", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
