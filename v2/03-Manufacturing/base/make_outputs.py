@@ -57,8 +57,8 @@ PART_INFO = {
                "screwed into its rivnut with threadlocker at the factory"),
     "831002": ("aluminium sheet 1.5, 5000 or 6000 series (joints register H-08)", "mill finish (hidden)", "punch",
                "calculation", "DRAFT", "CAD; joints register H-08", "under each J-BASE-01 bolt rivnut's head"),
-    "838003": ("aluminium 5056 (maker)", "plain aluminium, as supplied (maker)", "", "calculation", "DRAFT",
-               "CAD envelope; joints register H-03; Sherex CAH3-610-4.2", "set at the factory; torque HOLD-01"),
+    "838003": ("steel 1008/1010 (maker)", "zinc plated, trivalent passivation (maker)", "", "calculation", "DRAFT",
+               "CAD envelope; joints register H-03; Sherex CAH2-610-4.2 (steel, D-131)", "set at the factory; torque HOLD-01"),
     "111211": ("aluminium EN AW-6061 T6 block 25 x 35 x 75 (joints register J-BASE-02; sizes from the Joints Engineer 2026-11-01)",
                "mill finish (hidden)",
                "saw, mill; drill and tap 2 x M6 through the end face and 2 x M6 with 15 of full thread in the bottom (PM ruling on F-017)",
@@ -115,7 +115,7 @@ PART_INFO = {
 # product isn't named yet (its issue in the status and note). Standard fasteners are ordered by
 # their standard designation from any maker; the catalogue number comes with the RFQ.
 BOUGHT = {
-    "838003": ("Sherex", "CAH3-610-4.2", "HOLD-01: set and torque from the rivnut test (D-48)"),
+    "838003": ("Sherex", "CAH2-610-4.2", "HOLD-01: set and torque from the rivnut test (D-48)"),
     "838001": ("standard part, any maker (catalogue number at RFQ)", "ISO 4762 M6 x 16 - 8.8, zinc plated",
                "HOLD: into the corner key's M6 threads, from the joint test J-T6 (joints register)"),
     "838004": ("standard part, any maker (catalogue number at RFQ)", "ISO 7093-1 - 6 - 200 HV - A2", ""),

@@ -70,10 +70,12 @@ BASE_PARAMS = [
     ("jb_x", "outer_t - frame_t / 2", "mm", "calculation",
      "J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)"),
     # J-BASE-01, wall to base band
-    ("rn_hole", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)"),
-    ("rn_flange", "12.96 mm", "mm", "source", "CAH3-610-4.2 head diameter 12.96 (hardware selection A5)"),
-    ("rn_inst", "10.16 mm", "mm", "source", "CAH3-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)"),
-    ("rn_head_t", "0.76 mm", "mm", "source", "CAH3-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)"),
+    ("rn_hole", "9.53 mm", "mm", "source",
+     "Sherex CAH2-610-4.2 M6 rivet nut, steel, zinc plated (joints register H-03, D-131): hole 9.53 +0.10/0, as the aluminium "
+     "part's it replaced (unverified for the steel part, HOLD-04)"),
+    ("rn_flange", "12.96 mm", "mm", "source", "CAH2-610-4.2 head diameter 12.96 (joints register H-03)"),
+    ("rn_inst", "10.16 mm", "mm", "source", "CAH2-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)"),
+    ("rn_head_t", "0.76 mm", "mm", "source", "CAH2-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)"),
     ("sw_hole", "10.5 mm", "mm", "source", "stop washer bore (joints register H-08, PROPOSED)"),
     ("sw_d", "20 mm", "mm", "source", "stop washer outside diameter (joints register H-08, PROPOSED)"),
     ("sw_t", "1.5 mm", "mm", "source",
@@ -185,7 +187,7 @@ PARTS = {
     "bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", None),
     "bscrew": ("838010", "HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2", "Vít đầu tròn có vành M6 × 12 inox",
                "PI", None),
-    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", "PI", None),
     "cap": ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD", "Nút bịt đầu ống 100x40", "PI", None),
     # the base seal's envelopes (D-132), one per band piece; the parts list counts the seal in metres (its runs)
     "seal_l": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_l"),
@@ -960,7 +962,7 @@ def PZ(design, er, ez):
 
 def build_rivnut(design):
     comp = find_comp(design, "rivnut")
-    revolve_section(design, comp, "RIVET NUT M6 CAH3-610-4.2 - ENVELOPE", [
+    revolve_section(design, comp, "RIVET NUT M6 CAH2-610-4.2 - ENVELOPE", [
         PZ(design, "3 mm", "-(rn_inst - rn_head_t)"),           # thread bore, M6 (envelope)
         PZ(design, "rn_hole / 2 - 0.065 mm", "-(rn_inst - rn_head_t)"),
         PZ(design, "rn_hole / 2 - 0.065 mm", "0 mm"),
@@ -1237,7 +1239,7 @@ MATERIALS = {
     "band_b_tube": ("Aluminum", None, None),
     "pin": ("Steel", None, None),
     "washer": ("Aluminum", None, None),
-    "rivnut": ("Aluminum", None, None),
+    "rivnut": ("Steel", None, None),
     "doubler": ("Aluminum", None, None),
     "key": ("Aluminum", None, None),
     "bolt": ("Steel", None, None),

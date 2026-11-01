@@ -69,7 +69,7 @@ PARAMS = [
     ("glass_t", "8.76 mm", "mm", "decided", "D-46 (4+4 laminate)"),
     ("glass_y", "699 mm", "mm", "source", "v1 STEP solid 238 centre Y = -699 (layout study data)"),
     ("kick_d", "20 mm", "mm", "assumption", "kick strip envelope depth (D-40 gives the height only)"),
-    ("kick_gap", "7 mm", "mm", "source", "FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); over the room floor since D-132"),
+    ("kick_gap", "7 mm", "mm", "source", "FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); since D-132 the PM puts the kick strip's bottom on the band's bottom line, glide_h, so the skeleton's kick envelope no longer uses it"),
     # stage B: the faceted front, measured from the v1 STEP (V1-FRONT-FACETS.md), Z shifted
     # -17 mm so v1's top (2417) meets the 2400 datum (D-21); X offsets from the side faces
     ("fr_dz", "17 mm", "mm", "calculation", "v1 front top 2417 (v2 frame) - pod_h 2400"),
@@ -215,7 +215,7 @@ DROPPED = [
 ]
 env("GLAZING", "KICK", "FRONT - DOOR KICK STRIP", "D-40",
     (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - kick_d / 2", "-glass_y + kick_d / 2"),
-    ("thresh_h + kick_gap", "door_zb"))
+    ("glide_h", "door_zb"))          # the PM's ruling (2026-11-01, D-132): its bottom on the band's bottom line
 
 # Stage B bodies have no box expressions; the edit test checks these anchors
 # (code, bounding-box index 0..5 = xmin ymin zmin xmax ymax zmax, expression).
