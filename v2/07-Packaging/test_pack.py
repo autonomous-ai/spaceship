@@ -142,8 +142,8 @@ def test_d87_in_the_steps():
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
     assert pack.PIECE["2-10"].kg <= 20 and pack.PIECE["2-17"].kg <= 20
     assert len(tags) == 42
-    step20 = next(s for s in pack.STEPS if s["n"] == 20)
-    assert all(o["secs"] < 600 for o in step20["ops"])
+    power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
+    assert all(o["secs"] < 600 for o in power["ops"])
 
 
 def test_step_picture_script_and_data():
@@ -212,6 +212,18 @@ def test_d129_keys_on_the_side_bands():
     tiers, _ = m.tiers2()
     lane = next(ln for t in tiers for ln in t["lanes"] if any(i["tag"] == "2-04" for i in ln["items"]))
     assert lane["length"] <= pack.MINE["pal_long_l_exact"].value, lane["length"]
+
+
+def test_roof_sleeve_goes_on_after_the_soffit():
+    # #263: the roof sleeve and grille ride loose with C2 and go on in their own step, after the soffit hangs
+    m = pack.Model()
+    kind, c2, _ = m.cad["1-12"]
+    assert kind == "box" and c2[2] > 60, c2                 # C2 with the sleeve seated in its slot
+    assert m.cad["2-10"][1][2] < 240, m.cad["2-10"]          # the soffit without it
+    soffit = next(s["n"] for s in pack.STEPS if "2-10" in s["tags"])
+    sleeve = next(s for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
+    assert sleeve["n"] == soffit + 1 and sleeve["n"] <= pack.CLOCK_LAST_STEP
+    assert [s["n"] for s in pack.STEPS] == list(range(1, len(pack.STEPS) + 1))
 
 
 def test_lanes_follow_the_parts():

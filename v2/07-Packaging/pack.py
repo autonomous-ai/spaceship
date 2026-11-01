@@ -141,6 +141,8 @@ TIME = {
     "t_carry_staged_s": N(20, "s", "assumption", "this plan (D-87)", "carry a pallet 2 part that step 1 set down at its place: a few steps"),
     "t_level_preset_s": N(240, "s", "assumption", "this plan (D-87)", "check the band with the spirit level and turn only the glides that are out; glides preset at the factory"),
     "t_hook_s": N(120, "s", "assumption", "this plan (D-87)", "hang a part on its tool-free hooks and check it"),
+    "t_sleeve_s": N(90, "s", "assumption", "this plan (#263)", "from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box"),
+    "t_grille_s": N(120, "s", "assumption", "this plan (#263)", "screw the roof grille on over the sleeve (AIR's screws not listed yet)"),
     "t_selftest_s": N(180, "s", "assumption", "this plan (D-87)", "power on and the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail"),
     "t_peel_tab_s": N(6, "s", "assumption", "this plan (D-87)", "pull one film panel off by its quick-release tab"),
     "t_peel_s": N(20, "s", "assumption", "this plan", "find the edge of a film panel with no tab and peel it, for comparison"),
@@ -166,9 +168,11 @@ OTHER_FIXINGS = [
     dict(step=16, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
          status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
          text="the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02)"),
-    dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not in INTERIOR's parts list yet (HOLD)", status="HOLD (D-70)",
+    dict(step=18, where="Roof grille over the sleeve", owner="AIR", count=0, size="screws not listed yet (AIR)",
+         status="HOLD", note="time is in the step", text="the roof grille's screws (AIR's parts list names none yet; #263)"),
+    dict(step=20, where="Light shelf", owner="INTERIOR", count=0, size="not in INTERIOR's parts list yet (HOLD)", status="HOLD (D-70)",
          note="time is in the step", text="the light shelf's fixings (INTERIOR's parts list 810201 names none yet)"),
-    dict(step=22, where="Ledge and screen rail", owner="INTERIOR", count=0, size="brackets and rail on HOLD; screws not listed yet",
+    dict(step=23, where="Ledge and screen rail", owner="INTERIOR", count=0, size="brackets and rail on HOLD; screws not listed yet",
          status="HOLD (D-70, IF-16)", note="time is in the step",
          text="the ledge's 2 brackets 818101 on R1's stiles, on stand-offs through R1's cassette, and the screen rail 818102 on stand-offs to R2's stiles (INTERIOR; both HOLD)"),
 ]
@@ -324,8 +328,8 @@ PIECES = [
     Piece("1-11", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 8, "CEILING"),
     Piece("1-12", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(sk("wall_depth"), sk("half_pw"), 48), "CEILING 410000 P01 STEP with AIR's roof grille 611602 on its roof slot (AIR 610000 P01 STEP): 46 + 2", 1, 8, "CEILING",
-          note="roof slot grille fitted at the factory (PROPOSED); the roof sleeve rides in the soffit (roll-up)"),
+          S(sk("wall_depth"), sk("half_pw"), 70), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame) and the grille 611602 over it (AIR 610000 P01 STEP): 70 thick", 1, 8, "CEILING",
+          note="the roof sleeve and grille ride loose with C2 (#263): the sleeve seated in C2's roof slot and taped, the grille taped flat over it; both come off at unpacking and go on after the soffit hangs (guide step 18)"),
     Piece("1-13", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
           S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
     Piece("1-14", "510104", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
@@ -371,9 +375,9 @@ PIECES = [
           "FRONT 350001 P01 STEP: its hinge-side stops stand 30 mm past the skin", 2, 9, "FRONT",
           note="the hinge halves that sit in DL ship fitted in it (PM ruling); stands on its outer side, stops and seals up"),
     Piece("2-10", "610201", "AIR - SOFFIT", "Hộp gió trên cửa", "-",
-          [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2322, 359, 280),
-          "AIR 610000 P01 STEP: the soffit 610201 with its exhaust fan box and fans, 2322 x 359 x 233, and the roof sleeve 611601 standing on the fan box up to Z 2400 (the roll-up puts it in the soffit; AIR to confirm)", 2, 17, "AIR",
-          note="exhaust fan box 610402 with its 2 fans fitted inside the soffit's right end at the factory (D-87); the roof sleeve on it; the exhaust cartridge ships on its own (2-19)"),
+          [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2322, 359, 233),
+          "AIR 610000 P01 STEP: the soffit 610201 with its exhaust fan box and fans (the roof sleeve ships with C2, #263)", 2, 17, "AIR",
+          note="exhaust fan box 610402 with its 2 fans fitted inside the soffit's right end at the factory (D-87), the roof sleeve's gasket on its top; the exhaust cartridge ships on its own (2-19)"),
     Piece("2-11", "610101", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2108, 359, 212),
           "AIR 610000 P01 STEP: the column 610101 with its faces, angles, plates, fill and kick grille, without the supply cartridge", 2, 16, "AIR"),
     Piece("2-12", "350002", "FRONT - DECOR BLOCK ASSY - DT", "Khối trang trí trên (cụm)", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1699, 306, 203),
@@ -382,14 +386,14 @@ PIECES = [
           S(600, 250, 200), "carton (assumption)", 2, 13, "ELECTRICAL", carton=True),
     Piece("2-14", "810201", "INTERIOR - LIGHT SHELF ASSY", "Kệ đèn hắt (cụm)", "-", [("SHELF", 1)], S(2332, 80, 60),
           "bundle (assumption): INTERIOR's parts list 810201, the 2332 back shelf and the two 991 side shelves (60 x 40 sections) "
-          "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
+          "two high, the down channel and the diffuser inside them", 2, 20, "INTERIOR"),
     Piece("2-15", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
           [("BAND_FL", 1), ("BAND_FR", 0.337), ("KEY", 2)], S(600, 400, 150),
           "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111211",
           2, 2, "BASE", carton=True, note="mesh piece share of the front-r line by length, 371 of 1100 mm (calculation); the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
     Piece("2-16", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
           "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "
-          "and the screen rail 818102 (HOLD)", 2, 22, "INTERIOR", carton=True,
+          "and the screen rail 818102 (HOLD)", 2, 23, "INTERIOR", carton=True,
           note="one carton with the screen rail 818102 (HOLD), as the roll-up's ledge line carries both"),
     Piece("2-17", "610401", "AIR - SUPPLY FAN BOX", "Hộp quạt cấp", "-",
           [("RISER", 1), ("FANBOX_S", 1), ("FANS", 0.5)], S(2005, 516, 203),
@@ -400,9 +404,9 @@ PIECES = [
     Piece("2-19", "610301", "AIR - SPLITTER CARTRIDGE - COMMON", "Ống tiêu âm (dùng chung)", "-", [("CART_E", 1)], S(1750, 314, 173),
           "AIR 610000 P01 STEP: the same part, as it sits in the soffit", 2, 17, "AIR", note="the exhaust path's cartridge"),
     Piece("2-20", "510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung)", "C1", [("CC", 1)], S(1163, 1048, 74),
-          "CEILING 410000 P01 STEP: 1160 x 1045 x 74, the tray with its ribs, felt, fill bays, clips and catches; returns 1163 x 1048 (PR #32)", 2, 18, "LINING"),
+          "CEILING 410000 P01 STEP: 1160 x 1045 x 74, the tray with its ribs, felt, fill bays, clips and catches; returns 1163 x 1048 (PR #32)", 2, 19, "LINING"),
     Piece("2-21", "510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung)", "C2", [("CC", 1)], S(1163, 1048, 74),
-          "as 2-22", 2, 18, "LINING"),
+          "as 2-20", 2, 19, "LINING"),
     Piece("2-22", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(300, 150, 80),
           "carton (assumption)", 2, 1, "KIT", carton=True, extra_kg=0.5,
           extra_note="not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, this guide, the label map (assumption)"),
@@ -443,7 +447,7 @@ SKEL = {
 # Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
 # "inside" from above with the ceiling and the front hidden, to show the linings.
 STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "back", 9: "front", 10: "front", 11: "front",
-             12: "front", 14: "inside", 18: "inside"}
+             12: "front", 14: "inside", 19: "inside"}
 OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
 
 
@@ -659,41 +663,50 @@ STEPS = [
               op("plug the hub", 1, lay("t_connector_s"), 1, "t_connector_s")],
          joints={}),
     dict(n=17, title="Soffit and exhaust cartridge", tags=["2-10", "2-19"],
-         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.",
+         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof slot.",
          B="Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
-         check="Soffit underside at Z 2120, level; the fan box meets the roof sleeve; the door still clears.",
+         check="Soffit underside at Z 2120, level; the fan box's top gasket square under the roof slot; the door still clears.",
          ops=[carry("2-10"), op("hang the soffit on its hanger studs", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
               carry("2-19"), op("lift the cartridge in", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s"),
               op("close the hinged underside", 1, TIME["t_face_s"].value, 1, "t_face_s")],
          joints={"J-AIR-01": 2}),
-    dict(n=18, title="Ceiling linings: 2 cassettes", tags=["2-20", "2-21"],
+    dict(n=18, title="Roof sleeve and grille", tags=[],
+         parts="the roof sleeve 611601 and the roof grille 611602, which came off C2 (1-12) at unpacking",
+         A="From a step stool outside the front right corner, drops the roof sleeve down through C2's roof slot onto the soft gasket on the exhaust fan box's top, its flange on the roof (#263); then screws the roof grille on over it.",
+         B="Inside, opens the soffit's hinged underside and checks from below that the sleeve sits square on its gasket all round; closes the underside.",
+         check="Sleeve square on its gasket all round; grille flat and screwed down; no light through the slot with the pod lit.",
+         ops=[op("drop the roof sleeve onto its gasket", 1, TIME["t_sleeve_s"].value, 1, "t_sleeve_s"),
+              op("screw the grille on", 1, TIME["t_grille_s"].value, 1, "t_grille_s"),
+              op("soffit underside open and closed, to check the sleeve", 1, TIME["t_face_s"].value, 2, "t_face_s")],
+         joints={}),
+    dict(n=19, title="Ceiling linings: 2 cassettes", tags=["2-20", "2-21"],
          A="With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.",
          B="Hooks the 2 safety catches of each cassette before A lets go.",
          check="Both catches on each cassette; front edges 3 mm behind the soffit.",
          ops=[carry("2-20"), carry("2-21"), op("lift each cassette onto its clips", 2, lay("t_place_overhead_s"), 2, "t_place_overhead_s"),
               op("hook a safety catch", 1, TIME["t_catch_s"].value, 4, "t_catch_s")],
          joints={}),
-    dict(n=19, title="Light shelf", tags=["2-14"],
+    dict(n=20, title="Light shelf", tags=["2-14"],
          A="Fits the light shelf along the tops of the side and back walls: the back shelf, the two side shelves, and the down-light channel with its diffuser on the right wall (INTERIOR 810201).",
          B="Plugs the light shelf feed.",
          check="Shelves straight; no cable shows.",
          ops=[carry("2-14"), op("fit and plug the light shelf", 1, TIME["t_light_shelf_s"].value, 1, "t_light_shelf_s")],
          joints={}),
-    dict(n=20, title="Power on and self-test: fans run", tags=[],
+    dict(n=21, title="Power on and self-test: fans run", tags=[],
          A="A qualified electrician connects the mains inlet (220 V for the prototype, REQ-SCP-02) and switches on.",
          B="Presses the hub's self-test button: both fan pairs, the lights and the sensors run, and it shows pass or fail (D-87). Then checks air out at the kick grille and into the soffit grille, and the CO2 reading.",
-         check="Self-test passes and the fans run on both paths. The clock stops after step 21's final check (REQ-ASM-01: closed, powered, fans running).",
+         check="Self-test passes and the fans run on both paths. The clock stops after the final check, the next step (REQ-ASM-01: closed, powered, fans running).",
          ops=[op("power on and self-test", 2, TIME["t_selftest_s"].value, 1, "t_selftest_s")],
          joints={}),
-    dict(n=21, title="Final check and film", tags=[],
+    dict(n=22, title="Final check and film", tags=[],
          A="Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the threshold land when closed.",
          B="Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.",
          check="Every check in the final check list is ticked.",
          ops=[op("check door, seals and fans; clean", 2, lay("t_final_min") * 60, 1, "t_final_min"),
               op("pull one film panel by its tab", 1, TIME["t_peel_tab_s"].value, int(MINE["film_faces"].value), "t_peel_tab_s")],
          joints={}),
-    dict(n=22, title="Work-wall ledge and screen rail", tags=["2-16"],
+    dict(n=23, title="Work-wall ledge and screen rail", tags=["2-16"],
          A="Holds the 1000 mm ledge on the right (work) wall's lower panel R1, on its 2 brackets.",
          B="Fixes the ledge's brackets to R1's stiles and the screen rail to R2's stiles (INTERIOR 810101 and 818102, D-70).",
          check="Ledge level and firm.",
@@ -701,7 +714,7 @@ STEPS = [
               op("fix the ledge and the screen rail", 1, TIME["t_ledge_one_s"].value, 1, "t_ledge_one_s")],
          joints={}),
 ]
-CLOCK_LAST_STEP = 21     # REQ-ASM-01 clock: steps 1 to 21; step 22 is fit-out after it (PROPOSED)
+CLOCK_LAST_STEP = 22     # REQ-ASM-01 clock: steps 1 to 22; step 23 is fit-out after it (PROPOSED)
 
 # The joints register's bolt count (section 3.9), pinned from PR #23 at aed1590 for when the file isn't on this branch.
 REGISTER_PINNED = {"J-WALL-01": (16, "M6 x 16"), "J-WALL-02": (12, "M6 x 16"), "J-WALL-03": (6, "M6 x 25"),
@@ -798,7 +811,7 @@ CAD = {
     "1-05": dict(step="wall/210101_P01_*_STEP.step"), "1-06": dict(step="wall/210102_P01_*_STEP.step"),
     "1-09": dict(step="wall/210103_P01_*_STEP.step"), "1-10": dict(step="wall/210104_P01_*_STEP.step"),
     "1-11": dict(step=CEIL_STEP, sub="410101"),
-    "1-12": dict(step=CEIL_STEP, sub="410102", plus=[dict(step=AIR_STEP, sub="611602")]),
+    "1-12": dict(step=CEIL_STEP, sub="410102", plus=[dict(step=AIR_STEP, sub="611601"), dict(step=AIR_STEP, sub="611602")]),
     "1-13": dict(step="wall/510102_P01_*_STEP.step"), "1-14": dict(step="wall/510104_P01_*_STEP.step"),
     "1-15": dict(step="wall/510101_P01_*_STEP.step"), "1-16": dict(step="wall/510103_P01_*_STEP.step"),
     "1-17": dict(step="wall/510201_P01_*_STEP.step"), "1-18": dict(step="wall/510202_P01_*_STEP.step"),
@@ -817,8 +830,7 @@ CAD = {
     "2-12": dict(step="front/350002_P01_*_STEP.step"),
     "2-14": dict(parts=[dict(step=INT_STEP, sub="810201")]),
     "2-16": dict(parts=[dict(step=INT_STEP, sub="810101"), dict(step=INT_STEP, sub="818102")]),
-    "2-10": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-19)"},
-                 plus=[dict(step=AIR_STEP, sub="611601")]),
+    "2-10": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-19)"}),
     "2-11": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-18)"}),
     "2-17": dict(step=AIR_STEP, sub="610401"),
     "2-18": dict(step=AIR_STEP, sub="610101", keep={"610301"}),
@@ -1287,6 +1299,9 @@ def gen_tables(m):
     T["HEAVIEST"] = f"{heaviest.name} ({heaviest.tag}) at {heaviest.kg:.1f} kg"
     T["PN16"], T["PN25"], T["PNW"], T["PNKEY"] = m.pn["M6 x 16"], m.pn["M6 x 25"], m.pn["washer"], m.pn["key"]
     T["KIT_TAG"] = next(p.tag for p in m.shipped() if p.pn == "109000")
+    T["STEP_POWER"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Power on")))
+    T["STEP_FINAL"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Final check")))
+    T["STEP_LEDGE"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Work-wall ledge")))
     T["WRAP"] = f"{MINE['wrap'].value:g}"
     T["DR_BED"] = f"{MINE['dr_bed'].value:g}"
     none = [p for p in m.shipped() if m.cad.get(p.tag, (None,))[0] is None]
@@ -1419,7 +1434,7 @@ def guide_tables(m, T):
     steps_md = []
     srow = []
     for st, tr in zip(STEPS, m.steps):
-        parts = ", ".join(f"**{t}** {ux(PIECE[t].name)} ({PIECE[t].kg:.1f} kg)" for t in st["tags"]) or "none"
+        parts = ", ".join(f"**{t}** {ux(PIECE[t].name)} ({PIECE[t].kg:.1f} kg)" for t in st["tags"]) or st.get("parts") or "none"
         bolts = []
         for j, c in st["joints"].items():
             size = m.register.get(j, (0, 'M6 x 16'))[1]
@@ -1443,7 +1458,7 @@ def guide_tables(m, T):
         srow.append([st["n"], st["title"], len(st["tags"]), tr["bolts"], tr["other"], f"{tr['two'] / 60:.1f}", f"{tr['one'] / 60:.1f}",
                      f"**{tr['elapsed'] / 60:.1f}**" + ("" if st["n"] <= CLOCK_LAST_STEP else " (after)")])
     G["STEPS"] = "\n".join(steps_md)
-    G["AIR_MIN"] = f0(sum(tr["elapsed"] for st, tr in zip(STEPS, m.steps) if st["n"] in (15, 16, 17)) / 60)
+    G["AIR_MIN"] = f0(sum(tr["elapsed"] for st, tr in zip(STEPS, m.steps) if st["n"] in (15, 16, 17, 18)) / 60)
     G["LEVEL_MIN"] = f0(lay("t_level_min"))
     G["COLUMN_FITTED_KG"] = f1(PIECE["2-11"].kg + PIECE["2-18"].kg)
     G["COLUMN_OVER_KG"] = f1(PIECE["2-11"].kg + PIECE["2-18"].kg - MINE["part_limit_kg"].value)
