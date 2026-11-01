@@ -254,8 +254,9 @@ def team_of(path):
 
 
 RESERVED_AIR = re.compile(r"\breserved air space\b", re.I)
-# HOLD as a whole word, in capitals as before: "SEAL HOLDER", "HOLDS" and "THRESHOLD" are not HOLD (Reviewer 6, #211)
-HOLD_WORD = re.compile(r"\bHOLD\b")
+# HOLD as a whole word in any case, as the release checklist reads it: "on hold" counts; "SEAL HOLDER", "holds" and
+# "threshold" don't (Reviewer 6, #211 and #217)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
 RESERVED_SEEN = []  # the rows build() skipped as reserved air spaces, for the report (D-105)
 
 
