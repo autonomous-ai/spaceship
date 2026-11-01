@@ -18,6 +18,8 @@
 6. The read-back fails a sheet where two texts touch, a text touches a part outline, or a line runs through a text.
 7. A long tube keeps a legible scale: 111103 (2420 mm) fits A1 at 1:5 with a narrower table column instead of
    dropping to 1:10, with datum B on B1's round-spigot rivnut (joints register 2.11).
+8. Keys fitted in a part's ends: each key in Joints' corner-keys.csv gets its orientation note, and the read-back
+   fails a missing note or one that names holes away from the key's screw positions.
 """
 
 import os
@@ -277,6 +279,23 @@ def test_long_tube_keeps_its_scale():
         data = readback.read_data(d)
     b = [f for f in data["features"] if f["tag"] == data["datums"]["B"]]
     assert len(b) == 1 and abs(b[0]["entry"][0] - (-102.75)) < 0.01, b
+
+
+def test_key_notes_name_the_screw_holes():
+    """The band tubes carry a note for each key Joints' file puts in their ends (both read back clean: the sample
+    test and the long tube test), and the read-back's key check fails a missing note or a wrong hole."""
+    import inputs
+    rows = inputs.key_rows("111103") + inputs.key_rows("111101")
+    assert rows, "no keys in the band tubes' ends in corner-keys.csv"
+    row = dict(rows[0])
+    row.update({"fix_hole_1_x": "0", "fix_hole_1_y": "0", "fix_hole_2_x": "0", "fix_hole_2_y": "14"})
+    good = {"H03": (0.0, 0.0, 10.0), "H04": (0.0, 14.0, 10.0), "H09": (50.0, 0.0, 10.0)}
+    note = "Key %s, %s, fitted at the factory: stud face flush with this end. Only this way round do its bottom " \
+           "holes meet %s and %s; turned round they are 9 mm off."
+    assert readback.key_note_fails(note % (row["part_number"], row["joint"], "H03", "H04"), good, [row]) == []
+    bad = readback.key_note_fails(note % (row["part_number"], row["joint"], "H03", "H09"), good, [row])
+    assert bad and "H09" in bad[0], bad
+    assert readback.key_note_fails("no notes here", good, [row])[0].startswith("no orientation note")
 
 
 def main():

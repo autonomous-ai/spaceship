@@ -15,6 +15,7 @@ circles miss the STEP centres, so it can't hide an error.
 """
 
 import json
+import csv
 import math
 import os
 import re
@@ -260,6 +261,30 @@ def step_holes(step_path, pn):
     return out
 
 
+def key_note_fails(text, matched, krows, tol=0.1):
+    """Each key row (corner-keys.csv) needs its note on the sheet ("Key PN, JOINT, ... meet Hxx and Hyy;"), and the
+    two holes it names must be the part's holes at the key's screw positions there (centres from the STEP)."""
+    flat = re.sub(r"\s+", " ", text)
+    out = []
+    for r in krows:
+        m = re.search(r"Key %s, %s, .*?meet (H\d+) and (H\d+);" % (r["part_number"], re.escape(r["joint"])), flat)
+        if not m:
+            out.append("no orientation note for key %s (%s)" % (r["part_number"], r["joint"]))
+            continue
+        want = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
+        got = []
+        for tg in m.groups():
+            c = matched.get(tg)
+            d = min(math.dist((c[0], c[1]), w) for w in want) if c else None
+            if d is None or d > tol:
+                out.append("key %s (%s): its note names %s, which is not at one of the key's screw positions %s" % (
+                    r["part_number"], r["joint"], tg, want))
+            got.append(c)
+        if all(got) and math.dist(got[0][:2], got[1][:2]) < tol:
+            out.append("key %s (%s): its note names the same hole twice" % (r["part_number"], r["joint"]))
+    return out
+
+
 def check(pdf_path, step_path=None, verbose=False):
     """Run every check on one drawing; returns (failures, stats)."""
     doc = fitz.open(pdf_path)
@@ -289,6 +314,7 @@ def check(pdf_path, step_path=None, verbose=False):
     stats["holes"] = len(holes)
     # 1. table rows against the STEP
     used = set()
+    matched = {}            # tag -> the STEP hole centre its table row matched (the independent reader's)
     for tag, f in feats.items():
         if tag not in rows:
             fails.append("%s: no row in the hole tables" % tag)
@@ -311,6 +337,7 @@ def check(pdf_path, step_path=None, verbose=False):
                 tag, x, y, f["dia"], TOL, "" if best is None else " (nearest %.3f away)" % best[0]))
             continue
         stats["worst_table"] = max(stats["worst_table"], best[0])
+        matched[tag] = holes[best[1]]["c"]
         # the same axis can carry runs in two walls of different sizes; mark every run on this axis of this size
         used.update(j for j, h in enumerate(holes) if abs(h["dia"] - f["dia"]) < 0.011 and
                     abs(abs(dot(h["axis"], v["n"])) - 1) < 1e-6 and
@@ -355,6 +382,13 @@ def check(pdf_path, step_path=None, verbose=False):
     for need, pat in needs:
         if not re.search(pat, up):
             fails.append("text lacks %s" % need)
+    # 4. keys fitted in the part's ends: a note for each key Joints' file puts there, naming the two holes that sit
+    # where that file puts the key's screws
+    ksrc = [s_ for s_ in data["sources"] if s_["role"] == "key positions"]
+    if ksrc:
+        with open(os.path.join(REPO, ksrc[0]["path"]), newline="", encoding="utf-8") as fh:
+            krows = [r for r in csv.DictReader(fh) if data["pn"] in (r.get("carrier_key_in_its_end") or "")]
+        fails += key_note_fails(text, matched, krows)
     if " " in text or "­" in text:
         fails.append("the text layer has non-breaking spaces or soft hyphens (search breaks)")
     if (doc.metadata or {}).get("creator") != "drawgen":

@@ -21,7 +21,7 @@ WALL_FRAME = {
 # datum B as on the frames (joints register R-J6, R-J13, 2.11; Reviewer 5's D-114 pass on #202).
 BASE_SIDE_BAND = {
     "datums": "spigot", "spigot_dia": 9.53, "spigot_pick": "-Y", "spigot_slot": False,
-    "c_face": "-X",
+    "c_face": "-X", "key_notes": True,
     "a_words": "top face (the wall seat, Z 110)",
     "c_words": "the outer face (X -1250, flush with the ACP)",
     "notes": ["Front end: mitre to the DL decor block's outer facet band piece, 24.14° from square, long point on "
@@ -38,7 +38,7 @@ BASE_SIDE_BAND = {
 # same).
 BASE_BACK_BAND = {
     "datums": "spigot", "spigot_dia": 9.53, "spigot_near": {"X": -102.75}, "spigot_slot": False,
-    "c_face": "+Y",
+    "c_face": "+Y", "key_notes": True,
     "a_words": "top face (the wall seat, Z 110)",
     "c_words": "the outer face (Y 850, flush with the ACP)",
     "notes": ["Both ends square (BASE tube cut list)."],
