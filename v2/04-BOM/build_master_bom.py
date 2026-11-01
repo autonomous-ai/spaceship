@@ -10,7 +10,8 @@ It reads every team's parts list and the joints register's hardware set:
   - v2/05-Engineering/joints/joints-register.md: the hardware set table (ID H-nn) and any table
     with a "Part number" column. The joints register owns every fastener and hardware number (D-63);
   - v2/04-BOM/number-allocation.csv: numbers this master BOM gives out before a team's list uses them
-    (D-120: frame members and fill pieces). Each row is ALLOCATED or CANCELLED and never reused.
+    (D-120: frame members and fill pieces). Each row is ALLOCATED or CANCELLED and never reused;
+  - v2/04-BOM/register-name-todo.csv: the team rows still waiting to take a register rename (D-99).
 
 and writes, into v2/04-BOM/ unless --out says otherwise:
   100000_P01_POD-MASTER_BOM.csv               POD, then each assembly with its parts, then the hardware
@@ -39,8 +40,11 @@ rows with no number) is listed per team as "missing", without failing the check.
 
 A number the joints register owns takes the register's name in every output (D-99: hardware names come
 from the joints register). A parts-list row that still words the same item the old way (for example 838003
-after its re-spec to the steel rivnut) is listed as its team's to-do; a row whose item isn't the register's
-keeps its name and fails as a duplicate number (2 above).
+after its re-spec to the steel rivnut) fails the check, unless register-name-todo.csv lists it (its number,
+list and wording) as waiting for its team's rename; then it is that team's to-do. The to-do list only shrinks
+(the Lead's ruling of 2026-11-01): a row whose list now has the register's name, or has no such row, fails
+until it is removed, and a row without the PM's ruling fails. A row whose item isn't the register's keeps its
+name and fails as a duplicate number (2 above).
 
 "Hardware" means every bought item except AIR (61), ELECTRICAL (71) and PACKAGING (91) items,
 whose numbers their own teams give (reading of D-63 and the PM's brief, 2026-10-31).
@@ -61,6 +65,12 @@ BOM_GLOBS = ["v2/03-Manufacturing", "v2/07-Packaging"]
 REGISTER = "v2/05-Engineering/joints/joints-register.md"
 ALLOCATION = "v2/04-BOM/number-allocation.csv"  # numbers given out before a team's list uses them (D-120)
 ALLOCATED = []  # its rows, read by build()
+# D-99's renames still waiting in a team's list: a register-owned row whose list words it differently fails the build
+# unless it is listed here (Reviewer 7 on #337), and a row here whose list now has the register's name fails too, so
+# each team's rename drops its row
+NAME_TODO = "v2/04-BOM/register-name-todo.csv"
+NAME_TODO_ROWS = []  # its rows, read by build()
+EXTRAS = (REGISTER, ALLOCATION, NAME_TODO)  # the files read beside the parts lists
 BANDS = {"MP": (1000, 7999), "HS": (1, 999), "BS": (1, 999), "PI": (8000, 8999)}  # NNNN per kind (conventions section 6)
 TREE = "v2/00-Control/assembly-tree.md"
 # Families with no node in the assembly tree: Vietnamese added by the control pack (conventions.md section 6).
@@ -144,7 +154,7 @@ def fell_back_lines(labels=None, keep=None):
 
 
 def wanted(path):
-    if path in (REGISTER, ALLOCATION):
+    if path in EXTRAS:
         return True
     return path.endswith("_BOM.csv") and any(path.startswith(g + "/") for g in BOM_GLOBS) and "/proof/" not in path
 
@@ -160,19 +170,19 @@ def load_sources(refs):
                     rel = p.relative_to(ROOT).as_posix()
                     if wanted(rel):
                         found[rel] = (p.read_text(encoding="utf-8"), "working tree")
-        for extra in (REGISTER, ALLOCATION):
+        for extra in EXTRAS:
             if (ROOT / extra).exists():
                 found[extra] = ((ROOT / extra).read_text(encoding="utf-8"), "working tree")
         return found
     base = refs[0]
     for i, ref in enumerate(refs):
         short = git("rev-parse", "--short", ref).strip()
-        names = git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, REGISTER, ALLOCATION).splitlines()
+        names = git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, *EXTRAS).splitlines()
         if i:
             # A later ref adds only the files its own branch changed: an old, untouched copy of a file
             # (the joints register on a branch cut before the register moved on) never overrides the first ref,
             # and neither does a stacked branch's old copy of a file the first ref has replaced since.
-            changed = set(branch_changes(base, ref, *BOM_GLOBS, REGISTER, ALLOCATION))
+            changed = set(branch_changes(base, ref, *BOM_GLOBS, *EXTRAS))
             names = [n for n in names if n in changed]
         for rel in names:
             if wanted(rel):
@@ -537,10 +547,24 @@ def parse_allocation(text, where):
     return out
 
 
+def parse_name_todo(text, where):
+    """NAME_TODO's rows: part_number, list (the parts list's path), listed_name (the wording the list still has),
+    register_id, team, and ruling: the PM's say that let the row join (the list only shrinks otherwise)."""
+    out = []
+    for r in csv.DictReader(io.StringIO(text)):
+        pn = (r.get("part_number") or "").strip()
+        if pn:
+            out.append({"part_number": pn, "list": (r.get("list") or "").strip(),
+                        "listed_name": (r.get("listed_name") or "").strip(), "team": (r.get("team") or "").strip(),
+                        "ruling": (r.get("ruling") or "").strip(), "where": where})
+    return out
+
+
 def build(sources):
     parts, skipped, register, reg_where = [], [], [], None
     RESERVED_SEEN.clear()
     ALLOCATED.clear()
+    NAME_TODO_ROWS.clear()
     for path in sorted(sources):
         text, where = sources[path]
         if path == REGISTER:
@@ -548,6 +572,9 @@ def build(sources):
             continue
         if path == ALLOCATION:
             ALLOCATED.extend(parse_allocation(text, where))
+            continue
+        if path == NAME_TODO:
+            NAME_TODO_ROWS.extend(parse_name_todo(text, where))
             continue
         rows, why = parse_parts_list(path, text, where)
         if why:
@@ -578,6 +605,8 @@ def check(parts, register, reg_where, read_paths=()):
     reg_numbers = {i["part_number"] for i in register if i["part_number"]}
     reg_by_pn = {i["part_number"]: i for i in register if i["part_number"]}
     names_by_pn = {}
+    todo_keys = {(r["part_number"], r["list"], norm(r["listed_name"])): r for r in NAME_TODO_ROWS}
+    todo_seen = set()
     for r in parts:
         pn, where = r["part_number"], r["source_file"]
         label = f"{pn or '(no number)'} {r['name']}"
@@ -596,11 +625,18 @@ def check(parts, register, reg_where, read_paths=()):
             fails.append(f"duplicate number {pn}: '{r['name']}' in {where} is not the joints register's {ri['id']} '{ri['name']}'")
         elif r.get("listed_name"):
             ri = reg_by_pn[pn]
-            msg = (f"{pn}: the list still names it '{r['listed_name']}'; the joints register's {ri['id']} now names it "
-                   f"'{ri['name']}', which the master BOM uses (D-99): change the list's name, and its material, finish and "
-                   f"mass to match the register")
-            if msg not in missing.get(r["team"], []):
-                miss(r["team"], msg)
+            key = (pn, where.split(" @ ")[0], norm(r["listed_name"]))
+            if key in todo_keys:
+                todo_seen.add(key)
+                msg = (f"{pn}: the list still names it '{r['listed_name']}'; the joints register's {ri['id']} now names it "
+                       f"'{ri['name']}', which the master BOM uses (D-99): change the list's name, and its material, finish "
+                       f"and mass to match the register, and drop its row from {NAME_TODO}")
+                if msg not in missing.get(r["team"], []):
+                    miss(r["team"], msg)
+            else:
+                fails.append(f"register name: {pn} in {key[1]} is named '{r['listed_name']}', not the joints register's "
+                             f"{ri['id']} '{ri['name']}' (D-99): take the register's name, or list the row in {NAME_TODO} "
+                             f"until the team renames it")
         if is_hardware(r) and re.fullmatch(r"\d{6}", pn) and pn not in reg_numbers:
             fails.append(f"hardware with no joints-register row: {label} in {where}")
         if r["make_buy"] == "":
@@ -640,6 +676,13 @@ def check(parts, register, reg_where, read_paths=()):
             continue
         if not any(family_of(r["part_number"]) == fam for r in parts) and team in listed_teams:
             miss(team, f"no {node or fam + 'xxxx'} {name} parts listed yet")
+    for key, row in sorted(todo_keys.items()):
+        if not row["ruling"]:
+            fails.append(f"register name: {NAME_TODO}'s row for {row['part_number']} in {row['list']} names no ruling: "
+                         f"a row joins the list only with the PM's say")
+        if key not in todo_seen:
+            fails.append(f"register name: {NAME_TODO} waits for {row['part_number']} in {row['list']} to drop "
+                         f"'{row['listed_name']}', but no row there has that wording now: remove the row")
     fails += check_allocation(parts, reg_by_pn)
     return fails, missing
 
@@ -840,7 +883,7 @@ def report(parts, skipped, register, reg_where, fails, missing, sources, refs):
     lines += [f"**Result: {'FAIL' if fails else 'OK'}.** {len(fails)} failure(s) on the five rules; "
               f"{n_parts} part lines ({sum(r['make_buy'] == 'make' for r in parts)} made, {sum(r['make_buy'] == 'buy' for r in parts)} bought, "
               f"{sum(r['hold'] for r in parts)} on HOLD) and {sum(r['make_buy'] == 'assembly' for r in parts)} sub-assembly lines from "
-              f"{len([p for p in sources if p not in (REGISTER, ALLOCATION)]) - len(skipped)} parts list(s); {len(register)} hardware items in the joints register "
+              f"{len([p for p in sources if p not in EXTRAS]) - len(skipped)} parts list(s); {len(register)} hardware items in the joints register "
               f"({sum(1 for i in register if i['part_number'])} with a part number). "
               f"Listed parts weigh {mass:.1f} kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).", ""]
     lines += ["## Files read", ""]
@@ -894,7 +937,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     sources = load_sources(a.ref)
     parts, skipped, register, reg_where = build(sources)
-    read_paths = [p for p in sources if p not in (REGISTER, ALLOCATION) and p not in {s[0] for s in skipped}]
+    read_paths = [p for p in sources if p not in EXTRAS and p not in {s[0] for s in skipped}]
     fails, missing = check(parts, register, reg_where, read_paths)
     if not a.no_write:
         out = Path(a.out)
@@ -907,7 +950,7 @@ def main(argv=None):
                   ["part_number", "name", "qty_per_pod", "qty_status", "material", "mass_total_kg", "mass_status", "hardware", "register_id", "product_status", "team", "source_file"],
                   bought_rows(parts, register))
         (out / "BOM-CHECK.md").write_text(report(parts, skipped, register, reg_where, fails, missing, sources, a.ref), encoding="utf-8")
-    print(f"master BOM: {len(parts)} lines from {len([p for p in sources if p not in (REGISTER, ALLOCATION)]) - len(skipped)} parts list(s), "
+    print(f"master BOM: {len(parts)} lines from {len([p for p in sources if p not in EXTRAS]) - len(skipped)} parts list(s), "
           f"{len(register)} register hardware items; {sum(len(v) for v in missing.values())} missing items in {len(missing)} teams")
     print_fell_back()
     if fails:
