@@ -101,7 +101,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   radius has every fold checked against it; its folds table gives each fold's outside radius and the groove.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
-  Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.
+  Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale. A bent part's
+  flat pattern takes the largest scale at which it fits, and goes on a sheet of its own (sheet 2, the notes then on
+  sheet 3), at the largest scale that sheet holds, when sheet 1 can't hold it legibly: no room for it at any scale, no
+  clear place for a bend's tag, or bend lines closer than the tags' line pitch (3.5 mm: ISO 3098 puts lines of
+  2.5 mm lettering 1.4 x 2.5 apart) (the Lead: CEILING's tray 513101, BASE's sill 111302). Each bend's tag sits by its
+  line, nearer its own line than any other and at least 1 mm from the other tags; a tag that would crowd goes to its
+  line's other end, so close lines' tags stagger.
 - Labels: every line is drawn first (views, cutting planes, dimensions), then hole callouts, view titles, tags,
   origin names and datum symbols each go where they touch no line and no other text.
 - Title block: UNITS: mm, the first-angle symbol, part number, name (English and Vietnamese), revision of the
@@ -144,5 +150,6 @@ into a void) unfolds onto one of the DXF's cut shapes point for point both ways,
 size as the STEP has them; every run of bends has its section on the sheet, titled, with each flange it
 shows sized, or is the same as a drawn one (the same flanges shown, the same folds), whose title then says typical
 (Reviewer 10 on #380: a sheet drawn again at a smaller scale once lost them all); and the flat's size, the K-factor,
-the sheet's thickness and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+the sheet's thickness and every bend tag are printed, each tag (read from the page) nearer its own BEND line (put on
+paper by the flat's record) than any other and clear of the other tags by ISO 3098's 1 mm. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.
