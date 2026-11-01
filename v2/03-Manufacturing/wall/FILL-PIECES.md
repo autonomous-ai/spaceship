@@ -26,7 +26,7 @@ The pockets go right through the 40 mm batt, so they are edge notches: each form
 | F16 | to allocate | 98.2 x 1102.7 |  | R1 bay 3 | when numbered |
 | F17 | to allocate | 100 x 1102.7 | u 10-70, v 0-60 | R1 bay 7 | when numbered |
 | F18 | to allocate | 94 x 1102.7 |  | R1 bay 8 | when numbered |
-| F19 | to allocate | 274.7 x 717 | u 0-60, v 170-230; u 0-60, v 509.3-569.3; u 0-77.2, v 146.7-677; u 0-100.2, v 677-717; u 43.2-125.2, v 146.7-214.7; u 77.2-163.2, v 214.7-258.7; u 77.2-192.2, v 258.7-717; u 170-230, v 0-60 (ELECTRICAL's cut-outs: the inlet's box, the jack, the mains and LAN channels) | B2 bay 1 | when numbered |
+| F19 | to allocate | 274.7 x 717 | u 0-60, v 170-230; u 0-60, v 509.3-569.3; u 0-77.2, v 146.7-617.7; u 0-114.2, v 617.7-717; u 43.2-125.2, v 146.7-214.7; u 77.2-163.2, v 214.7-258.7; u 77.2-192.2, v 258.7-717; u 170-230, v 0-60 (ELECTRICAL's cut-outs: the inlet's box, the jack, the mains and LAN channels) | B2 bay 1 | when numbered |
 | F20 | to allocate | 274.7 x 717 | u 128.2-188.2, v 0-60 | B2 bay 2 | when numbered |
 | F21 | to allocate | 274.7 x 60.1 |  | B2 bay 3, B2 bay 4 | when numbered |
-| F22 | to allocate | 99 x 458.2 | u 0-23, v 418.2-458.2; u 62-99, v 0-16 (between the mains and LAN channels) | B2 bay 7 | when numbered |
+| F22 | to allocate | 99 x 458.2 | u 0-37, v 359-458.2; u 62-99, v 0-49 (between the mains and LAN channels) | B2 bay 7 | when numbered |

@@ -178,13 +178,16 @@ OTHER_EL = {
             "covers it by 8 all round, 2 off the felt on four nylon spacers (ELECTRICAL)",
             "ELECTRICAL via the PM 2026-10-31 21:20 UTC", "", "±1", "source (ELECTRICAL)"),
            ("F47", "{fill}", "Fill cut behind the skin in bay 1 below the unit, right through the batt: the inlet's rear "
-            "box and cord grip (X 66 to 148, Z 279 to 347), the strip by the centre stile to X 100 up to 40 under the lower "
-            "cross member (the mains cord's channel X 80 to 100), its jog to the mains passage (to X 123), the jack and the "
-            "band under it, and the LAN's 16 band along the jack's top and channel X 199 to 215 up to its passage; the "
-            "fill between the channels is its own piece (bay 7); no fill in the unit's space between the cross members",
-            "room for ELECTRICAL's connectors and cables, the two kept 50 or more apart everywhere (62 at the band, 76 "
-            "at the jogs; ELECTRICAL's rule), with no thin bridge of batt left; knife cut (D-128)",
-            "ELECTRICAL's envelopes and channels (WALL group, 2026-11-01); WALL's cut, agreed the same day",
+            "box and cord grip (X 66 to 148, Z 279 to 347), the strip by the centre stile to X 100 up to Z 750 (the "
+            "mains cord's channel X 80 to 100), its jog from Z 750 to the lower cross member over to the mains passage "
+            "(to X 137), the jack and the band under it, and the LAN's band along the jack's top (Z 391 to 440) and "
+            "channel X 199 to 215 up to its passage; the fill between the channels is its own piece (bay 7); no fill in "
+            "the unit's space between the cross members",
+            "room for ELECTRICAL's connectors and cables, the two kept 50 or more apart everywhere (62 at the band and "
+            "at the jog; ELECTRICAL's rule), each with room for its bend (the mains cord's S-bend about 70 of radius "
+            "against its 56, the Cat6's 24 in the band), with no thin bridge of batt left; knife cut (D-128)",
+            "ELECTRICAL's envelopes and channels (WALL group, 2026-11-01), its passage move (17:47 UTC) and bend check "
+            "(18:05 UTC); WALL's cut, agreed the same day",
             "fixed at ELECTRICAL's places", "±2 (knife, assumption)", "source (ELECTRICAL); DECIDED (the cut)"),
            ("F48", "NO-PN-HOLD-H03", "The top-front clip zone on the first stud's 60 stub above the unit (Z 1150.87 to "
             "1210.87), its centre 50.06 under the cassette's top", "the first stud stops under the unit (the Lead's "
@@ -342,7 +345,8 @@ for _d, _what in ((15.9, "the mains passage's bottom wall, for the Heyco SB 625-
     FAMILIES_BACK[("CROSS - LOWER", _d, "z")] = (
         "F58", "Cable passages through the lower cross member: the mains cord (SJOOW 14/3) and the LAN cable rise from "
         "the inlet and the jack into the unit, apart (%s)" % _what, "ELECTRICAL's bushings and the unit's",
-        "the mains at X 113, the LAN at X 207, on the tube's centre line Y 824", B2F,
+        "the mains at X 127 (moved from 113 so the unit's Ø15.9 entry keeps 2 diameters from its bottom wall's free "
+        "edge, ELECTRICAL 2026-11-01 17:47 UTC), the LAN at X 207, on the tube's centre line Y 824", B2F,
         "32 or more from the unit's rivnuts; left of the first stud's T joint below", "±0.5 (assumption)",
         "drilled after welding (J-FRAME-01)", "source (ELECTRICAL)")
 FAMILIES_BACK[("SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM", 3.2, "y")] = (

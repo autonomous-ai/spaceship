@@ -400,10 +400,13 @@ EL_BACK_EXPECT = {("B2", "cassette"): {"el_cut_x0": 91.0, "el_cut_x1": 395.0, "e
                                        "el_lt_x": 346.0, "el_y_bg": 787.5, "el_y_xc": 781.5, "el_grm_d": 19.1},
                   ("B4", "cassette"): {"el_lt_x": 346.0, "el_shelf_z": 2250.0, "el_ceil_x": 583.0, "el_ceil_z": 2330.0,
                                        "el_grm_s": 12.0, "el_shelf_d": 16.0},
-                  # ELECTRICAL's B2 inputs (2026-11-01): the jack moved to X 170 for 50 from the mains everywhere
+                  # ELECTRICAL's B2 inputs (2026-11-01): the jack moved to X 170 for 50 from the mains everywhere; the
+                  # mains passage moved to X 127 (17:47 UTC); the bend room: the mains jog from Z 750 to X 137, the LAN
+                  # band Z 391 to 440 (18:05 UTC)
                   ("B2", "panel"): {"el_inlet_x": 120.0, "el_inlet_z": 313.0, "el_lan_x": 170.0, "el_lan_z": 375.0,
                                     "el_inlet_d": 24.0, "el_cut_x0": 91.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0,
-                                    "el_ps_mains_x": 113.0, "el_ps_lan_x": 207.0, "el_rn_xl1": 160.0, "el_rn_xu1": 110.0}}
+                                    "el_ps_mains_x": 127.0, "el_ps_lan_x": 207.0, "el_rn_xl1": 160.0, "el_rn_xu1": 110.0,
+                                    "el_ch_jog_z": 750.0, "el_ch_jog_x1": 137.0, "el_ch_l_band": 49.0}}
 
 
 class ElectricalInterfaceBackTest(unittest.TestCase):
@@ -450,8 +453,14 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
             self.assertGreater(x - d / 2 - x_lo, 10)
             self.assertGreater(x_hi - x - d / 2, 10)
         holes.sort()
-        for (xa, da), (xb, db) in zip(holes, holes[1:]):                   # the lower member's top wall
-            self.assertGreater(xb - db / 2 - (xa + da / 2), 20, (xa, xb))
+        # the lower member's top wall: a ligament of at least one rivnut hole (Ø10) between hole edges (assumption);
+        # 18 between the mains passage and the first rivnut since ELECTRICAL moved the passage to X 127
+        for (xa, da), (xb, db) in zip(holes, holes[1:]):
+            self.assertGreaterEqual(xb - db / 2 - (xa + da / 2), v["rivnut_d"], (xa, xb))
+        # and a rivnut's head (CAL2-610-4.2: Ø12.95 at most, D-163) sits flat, clear of each passage's edge
+        for xr in (v["el_rn_xl1"], v["el_rn_xl2"]):
+            for xp, dp in ((v["el_ps_mains_x"], v["el_ps_mains_dt"]), (v["el_ps_lan_x"], v["el_ps_lan_dt"])):
+                self.assertGreater(abs(xr - xp) - 12.95 / 2 - dp / 2, 10, (xr, xp))
         # the first stud (below the unit) stays clear of the passages under the lower member
         stud = (v["close_gap"] / 2 + v["stile_pitch"], v["close_gap"] / 2 + v["stile_pitch"] + v["tube_w"])
         for x, d in ((v["el_ps_mains_x"], v["el_ps_mains_db"]), (v["el_ps_lan_x"], v["el_ps_lan_db"])):
@@ -466,15 +475,29 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
     def test_b2_fill_cut_keeps_the_cables_apart(self):
         """B2's fill cut behind the skin (ELECTRICAL's envelopes and channels, 2026-11-01): the mains side of the cut
         (the cleared strip and its jog) stays 50 or more from the LAN side (the band along the jack's top and its channel
-        up to the passage), as ELECTRICAL's rule asks; the jack sits right of the inlet's box."""
+        up to the passage), as ELECTRICAL's rule asks; the jack sits right of the inlet's box; and each cable has room
+        for its bend (ELECTRICAL's bend check, 2026-11-01 18:05 UTC)."""
         ns = load_back("B2", "panel")
         v = resolve(ns)
         cuts = {lab: [evaluate(e, v) for e in xr + zr] for lab, xr, zr in ns["B2_CUTS"]}
         mains_right = max(cuts["MAINS CHANNEL"][1], cuts["MAINS JOG"][1])
-        lan = [evaluate(e, v) for e in ns["B2_ISLAND_NOTCHES"][0][1]]              # the LAN band's x range
-        self.assertGreaterEqual(lan[0] - cuts["MAINS CHANNEL"][1], 50.0)                 # at the band (62)
-        self.assertGreaterEqual(v["el_ps_lan_x"] - v["el_ch_l_w"] / 2 - mains_right, 50.0)   # at the jogs (76)
+        band = dict((lab, [evaluate(e, v) for e in xr + zr]) for lab, xr, zr in ns["B2_ISLAND_NOTCHES"])["LAN BAND"]
+        self.assertGreaterEqual(band[0] - cuts["MAINS CHANNEL"][1], 50.0)                # at the band (62)
+        self.assertGreaterEqual(v["el_ps_lan_x"] - v["el_ch_l_w"] / 2 - mains_right, 50.0)   # at the jog (62)
         self.assertGreater(v["el_lan_x"] - v["el_jack_h"], v["el_inlet_x"] + v["el_box_r"])  # the jack clear of the box
+        # ELECTRICAL's numbers: the jog from Z 750 to X 137, the band Z 391 to 440
+        self.assertAlmostEqual(cuts["MAINS JOG"][2], 750.0, places=6)
+        self.assertAlmostEqual(cuts["MAINS JOG"][1], 137.0, places=6)
+        self.assertAlmostEqual(cuts["MAINS CHANNEL"][3], 750.0, places=6)
+        self.assertAlmostEqual(band[2], 391.0, places=6)
+        self.assertAlmostEqual(band[3], 440.0, places=6)
+        # the mains cord's S-bend (two equal arcs) from its channel's middle up to the passage: about 6 x its 9.3
+        # diameter, 56 (ELECTRICAL's assumption until the maker's sheet), fits in the jog's height
+        d, h = v["el_ps_mains_x"] - (v["el_ch_m_x1"] - 10.0), cuts["MAINS JOG"][3] - cuts["MAINS JOG"][2]
+        self.assertGreaterEqual(((h / 2) ** 2 + (d / 2) ** 2) / d, 56.0)
+        # the Cat6's S-bend at 4 x its diameter, 24, from the jack's centre over to its riser's, fits in the band
+        d, r = v["el_ps_lan_x"] - v["el_lan_x"], 24.0
+        self.assertLessEqual(2 * (r ** 2 - (r - d / 2) ** 2) ** 0.5, band[3] - band[2])
 
     def test_b2_frame_members_and_bays(self):
         """B2's frame: the perimeter, studs 2 and 3, and the four members round the unit, each with a number key the
@@ -607,6 +630,29 @@ class FillDxfTest(unittest.TestCase):
         # c sorts between a and b by panel, but takes F04: after the last list's labels and the live F03
         self.assertEqual(got, [("F01", 240.0), ("F02", 230.9), ("F04", 100.0)])
 
+    def test_an_unnumbered_form_recut_keeps_its_label(self):
+        """A form not yet numbered (no allocation row, no DXF) whose pieces are re-cut in the same bays keeps its label,
+        as B2's F19 and F22 did when ELECTRICAL moved the mains passage and widened the bend room (2026-11-01); a
+        numbered form never does (a new shape is a new form), nor one re-cut into other bays."""
+        mf = self.mf()
+
+        def pc(pos, bay, w, pockets=()):
+            return {"panel": "2102%02d" % int(pos[1]), "position": pos, "bay": bay, "w": w, "h": 717.0,
+                    "pockets": sorted(pockets)}
+        old19, new19 = pc("B2", 1, 274.7, [(0.0, 100.2, 677.0, 717.0)]), pc("B2", 1, 274.7, [(0.0, 114.2, 617.8, 717.0)])
+        old22, new22 = pc("B2", 7, 99.0, [(0.0, 23.0, 418.2, 458.2)]), pc("B2", 7, 99.0, [(0.0, 37.0, 359.0, 458.2)])
+        num, renum = pc("B1", 1, 274.7, [(0.0, 60.0, 0.0, 60.0)]), pc("B1", 1, 274.7, [(0.0, 70.0, 0.0, 60.0)])
+        prev = {"F09": (mf.form_key(num), "211614", tuple(num["pockets"]), {("B1", 1)}),
+                "F19": (mf.form_key(old19), "", tuple(old19["pockets"]), {("B2", 1)}),
+                "F22": (mf.form_key(old22), "", tuple(old22["pockets"]), {("B2", 7)})}
+        groups = {mf.form_key(x): [x] for x in (new19, new22, renum)}
+        got = {m[0]["position"] + str(m[0]["bay"]): f for f, _k, m in mf.label_forms(groups, prev, {"F09": []})}
+        self.assertEqual(got, {"B21": "F19", "B27": "F22", "B11": "F23"})
+        # re-cut into another bay: a new label
+        moved = pc("B2", 2, 274.7, [(0.0, 114.2, 617.8, 717.0)])
+        got = [f for f, _k, _m in mf.label_forms({mf.form_key(moved): [moved]}, prev, {})]
+        self.assertEqual(got, ["F23"])
+
     def test_the_list_is_current(self):
         """FILL-PIECES.csv reads back as exactly the forms the build scripts give now (rerun make_fill_pieces.py
         after a layout change), so each form keeps its label on the next run."""
@@ -631,7 +677,7 @@ class TrayCableTieTest(unittest.TestCase):
     """ELECTRICAL's 20 cable-tie holes (the Lead's relay of 2026-11-01 11:37 UTC): Ø6.4 in R1's, R2's, B4's and B2's tray
     backs at ELECTRICAL's places, each inside its tray's back with room round it; none in L1, L2, B1 or B3."""
 
-    WANT = {"R1": ("y", [767.0, 657.0, 476.2, 295.5, 185.5, 23.8, -268.4], "el_trunk_z", 1100.0),
+    WANT = {"R1": ("y", [767.0, 657.0, 476.2, 295.5, 185.5, 23.8, -150.0], "el_trunk_z", 1100.0),
             "R2": ("z", [1476.0, 1688.7, 1901.3, 2114.0, 2224.0], "el_call_y", -209.5)}
 
     def test_side_trays_carry_electricals_ties(self):

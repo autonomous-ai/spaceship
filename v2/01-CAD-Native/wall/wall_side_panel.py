@@ -430,7 +430,9 @@ EL_PARAMS = [
     ("el_rn_xl1", "160 mm", "mm", "source",
      _ELB2 + ": the lower cross member's first unit rivnut, in its top (not 110: that clashed with the mains passage)"),
     ("el_rn_xl2", "376 mm", "mm", "source", _ELB2 + ": the lower cross member's second unit rivnut, in its top"),
-    ("el_ps_mains_x", "113 mm", "mm", "source", _ELB2 + ": the mains cord's passage through the lower cross member"),
+    ("el_ps_mains_x", "127 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 17:47 UTC): the mains cord's passage through the lower cross member, moved "
+     "from X 113 so the unit's Ø15.9 entry keeps 2 diameters (31.8) from the free edge at its bottom wall's open corner"),
     ("el_ps_mains_db", "15.9 mm", "mm", "source",
      _ELB2 + ": the mains passage in the member's bottom wall, for the Heyco SB 625-7 bushing snapped in from below"),
     ("el_ps_mains_dt", "20 mm", "mm", "source",
@@ -450,8 +452,16 @@ EL_PARAMS = [
     ("el_jack_h", "16 mm", "mm", "source", _ELB2 + ": the jack's body X 154 to 186, Z 359 to 391: 16 round its centre"),
     ("el_ch_m_x1", "100 mm", "mm", "source", _ELB2 + ": the mains cord's channel up at X 80 to 100, 20 wide; WALL "
                                              "clears the fill from the centre stile to X 100 (no strip by its notches)"),
-    ("el_ch_jog", "40 mm", "mm", "assumption", "the cables' jog to their passages in the 40 under the lower cross member"),
+    ("el_ch_jog_z", "750 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 18:05 UTC): the mains cord's jog over to its passage starts at Z 750, not "
+     "809, so its S-bend has about 70 of radius; the 9.3 cord bends no tighter than about 6 x its diameter, 56 "
+     "(ELECTRICAL's assumption until it reads the maker's sheet)"),
+    ("el_ch_jog_x1", "el_ps_mains_x + 10 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 17:47 UTC): the mains cord's jog ends 10 past its passage, at X 137"),
     ("el_ch_l_w", "16 mm", "mm", "source", _ELB2 + ": the LAN cable's channel 16 wide, up from the jack's top"),
+    ("el_ch_l_band", "49 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 18:05 UTC): the LAN band along the jack's top, Z 391 to 440, not 407: the "
+     "Cat6 bends no tighter than 4 x its diameter, 24, so it needs about 46 of height to move the 37 over to its riser"),
     ("el_scr_d", "3.2 mm", "mm", "source",
      _ELB2 + ": each connector's two screw holes for M3 screws with nuts (Neutrik's own drawings: powerCON TRUE1 "
              "TOP NAC3MPX-TOP, etherCON NE8FDY-C6-B; D-133)"),
@@ -465,7 +475,7 @@ EL_PARAMS = [
     ("el_tie_r1_y4", "295.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 4 along the trunk (Z el_trunk_z)"),
     ("el_tie_r1_y5", "185.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 5 along the trunk (Z el_trunk_z)"),
     ("el_tie_r1_y6", "23.8 mm", "mm", "source", "ELECTRICAL in WALL's group (2026-11-01, the column route agreed with CEILING): R1-CASS tie 6 along the trunk (Z el_trunk_z), moved from -41.5"),
-    ("el_tie_r1_y7", "-268.4 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 7 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y7", "-150 mm", "mm", "source", "ELECTRICAL in WALL's group (2026-11-01 17:37 UTC, WALL's ask): R1-CASS tie 7 along the trunk (Z el_trunk_z), moved from -268.4 (the column route) to -150, not -138.0, so its hole's edge keeps 15 from the face of R1's stud at Y -121.8; 162 from FX-COL's centre, inside ELECTRICAL's 150 rule"),
     ("el_tie_r2_z1", "1476 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 1 along the call light feed (Y el_call_y)"),
     ("el_tie_r2_z2", "1688.7 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 2 along the call light feed (Y el_call_y)"),
     ("el_tie_r2_z3", "1901.3 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 3 along the call light feed (Y el_call_y)"),
@@ -497,7 +507,7 @@ EL_USE = {
                     + tuple("el_tie_b2_x%d" % i for i in range(1, 4)),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
                       "el_lan_x", "el_pu_zc", "el_pu_h", "el_scr_d", "el_scr_dx", "el_scr_dz", "el_box_l", "el_box_r",
-                      "el_box_h", "el_jack_h", "el_ch_m_x1", "el_ch_jog", "el_ch_l_w")
+                      "el_box_h", "el_jack_h", "el_ch_m_x1", "el_ch_jog_z", "el_ch_jog_x1", "el_ch_l_w", "el_ch_l_band")
                      + B2_FRAME_EL,
     # B2's frame carries the unit: its cross members' heights, rivnuts and cable passages (ELECTRICAL, 2026-11-01)
     ("B2", "frame"): ("el_pu_zc", "el_pu_h") + B2_FRAME_EL,
