@@ -7,7 +7,8 @@ Fusion queue; fold work into fewer, bigger runs).
 Each spec is MODE:BUILDER:PART:POSITION. MODE is new (make the document), rebuild (open it and rebuild
 the design the script made), auto (rebuild it if it is in the folder, else make it) or front (only save the
 drawings' Front, seen from inside the pod); BUILDER is side (wall_side_panel.py, positions L1 R1 L2 R2) or back
-(wall_back_panel.py, positions B1-B4); PART is panel, cassette, frame, skin, fill, tray or felt. The document
+(wall_back_panel.py, positions B1-B4); PART is panel, cassette, frame, skin, tray or felt (a fill spec is skipped:
+D-123 cancels the panels' fill numbers, the pieces are built in the panel). The document
 name is the builder's own (`<pn>_P01_<NAME>_CAD`) in Default Project / FocusPod v2, opened the way
 run_script.py --doc opens one. For each spec the builder runs in a fresh namespace with post=1, so it
 builds, checks, saves (holding the part number and description), exports, reports and edit-tests, and then
@@ -173,6 +174,10 @@ def run(_context):
             mode, builder, part, position = spec.split(":")
             if mode not in ("new", "rebuild", "front", "auto") or builder not in BUILDERS:
                 raise RuntimeError("bad spec %r" % spec)
+            if part == "fill":           # D-123: no fill part any more; its pieces are built in the panel
+                print("BATCH|skip %s: the panel's fill number is cancelled (D-123); the fill pieces are built "
+                      "straight into the panel and cut from their DXFs (D-128)" % spec)
+                continue
             name = doc_name(app, builder, part, position)
             print("BATCH|start %s -> %s" % (spec, name))
             doc, opened, existed = open_or_make(app, name, mode in ("new", "auto"), allow_existing=mode == "auto")

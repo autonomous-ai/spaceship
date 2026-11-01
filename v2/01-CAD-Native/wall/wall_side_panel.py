@@ -4,7 +4,7 @@ Native, parameter-driven Fusion design, built by script into the ACTIVE
 document (open your own document first, for example with the runner's
 --doc-new NAME). One run builds one document:
 
-    part=panel     the outer panel assembly: frame, ACP skin, PET fill
+    part=panel     the outer panel assembly: frame, ACP skin, PET fill pieces (straight in the panel, D-123)
     part=cassette  the lining cassette: steel tray, felt, clip zones (HOLD)
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/wall/wall_side_panel.py \
@@ -13,7 +13,8 @@ document (open your own document first, for example with the runner's
 
 Options (--arg KEY=VALUE):
     part=panel|cassette   which document to build (default panel): the outer panel assembly, or the cassette
-    part=frame|skin|fill|tray|felt   one manufactured part alone in its own design, for its part drawing
+    part=frame|skin|tray|felt   one manufactured part alone in its own design, for its part drawing (the fill
+                   pieces have no design of their own: they are built in the panel and cut from their DXFs, D-128)
                           (a Fusion drawing view always shows the whole design); same code, same parameters
     side=L|R              left (-X) or right (+X) wall, seen from outside facing the door
     row=1|2               lower (1) or upper (2) panel
@@ -64,11 +65,14 @@ INSIDE = "+x" if SIDE == "L" else "-x"   # the room side, for the drawings' Fron
 SKELETON_REL = "v2/01-CAD-Native/skeleton/pod_skeleton.py"
 MM = 0.1                               # Fusion API lengths are cm
 
-WANT = {"panel": ("frame", "skin", "fill"), "frame": ("frame",), "skin": ("skin",), "fill": ("fill",),
+WANT = {"panel": ("frame", "skin", "fill"), "frame": ("frame",), "skin": ("skin",),
         "cassette": ("tray", "felt", "clip"), "tray": ("tray",), "felt": ("felt",)}
+if PART == "fill":
+    raise ValueError("part=fill is gone: D-123 cancels the panels' fill numbers; the fill pieces go straight into "
+                     "the panel assembly (part=panel) and are cut from their DXFs (D-128)")
 if SIDE not in ("L", "R") or ROW not in (1, 2) or PART not in WANT:
     raise ValueError("side must be L or R, row 1 or 2, part one of %s" % sorted(WANT))
-PANEL_SIDE = PART in ("panel", "frame", "skin", "fill")
+PANEL_SIDE = PART in ("panel", "frame", "skin")
 
 # ---------------------------------------------------------------- part numbers and names
 
@@ -90,8 +94,6 @@ PARTS = {
               "%s - khung %s" % (VN_SIDE, VN_LEVEL)),
     "skin": ("2113%02d" % POS, "WALL - SKIN - SIDE %s - %s" % (LEVEL, HAND),
              "%s - tấm ốp alu %s" % (VN_SIDE, VN_LEVEL)),
-    "fill": ("2115%02d" % POS, "WALL - CAVITY FILL - SIDE %s - %s" % (LEVEL, HAND),
-             "%s - bông PET %s" % (VN_SIDE, VN_LEVEL)),
     "cass": ("5101%02d" % POS, "LINING - CASSETTE - SIDE %s - %s" % (LEVEL, HAND),
              "Cassette lót %s %s (khay thép + tấm tiêu âm)" % (VN_SIDE.lower(), VN_LEVEL)),
     "tray": ("5111%02d" % POS, "LINING - TRAY - SIDE %s - %s" % (LEVEL, HAND),
@@ -1015,11 +1017,12 @@ MEMBER_WORDS = {"RAIL - BOTTOM": "RAIL BOTTOM", "RAIL - TOP": "RAIL TOP", "STILE
 
 
 def allocation(repo_root):
-    """The master BOM's number allocation (v2/04-BOM/number-allocation.csv): frame members and fill pieces."""
+    """The master BOM's number allocation (v2/04-BOM/number-allocation.csv): frame members and fill pieces. Rows
+    marked CANCELLED are left out (never reused, D-123), so a number moved to another row can't be picked twice."""
     if not _ALLOC:
         import csv
         with open(os.path.join(repo_root, "v2/04-BOM/number-allocation.csv"), encoding="utf-8") as fh:
-            _ALLOC.extend(csv.DictReader(fh))
+            _ALLOC.extend(r for r in csv.DictReader(fh) if (r.get("status") or "").strip().upper() != "CANCELLED")
     return _ALLOC
 
 
@@ -1152,8 +1155,8 @@ def cleat_slots(design, comp, body, z_face, into, xc, label):
 def build_panel(design, root):
     out = {}
     want = WANT[PART]
-    frame, skin, fill = (new_comp(root, k) if k in want else None for k in ("frame", "skin", "fill"))
-    print("step 1: components %s" % ", ".join(c.name for c in (root, frame, skin, fill) if c))
+    frame, skin = (new_comp(root, k) if k in want else None for k in ("frame", "skin"))
+    print("step 1: components %s" % ", ".join(c.name for c in (root, frame, skin) if c))
     if STOP_AFTER <= 1:
         return out
     xf = (X_FRAME_OUT, X_FRAME_IN)
@@ -1164,8 +1167,8 @@ def build_panel(design, root):
         members = build_frame(design, frame, out, xf, yf, zs)
     if skin:
         build_skin(design, skin, out)
-    if fill:
-        build_fill(design, fill, out, xf, zs)
+    if "fill" in want:
+        build_fill(design, root, out, xf, zs)
     if frame:
         joint_features(design, members, out)
     if PART == "panel":
@@ -1228,10 +1231,11 @@ def build_frame(design, frame, out, xf, yf, zs):
     return members
 
 
-def build_fill(design, fill, out, xf, zs):
-    """D-120: each bay's piece its own component with its number (D-123, WALL's FILL-PIECES list): the box of its
-    bay with the pockets beside every bolt this panel drives that fall in it (FR-10), each pocket cut in the
-    piece it falls in."""
+def build_fill(design, parent, out, xf, zs):
+    """D-120: each bay's piece its own component with its number, straight in the panel assembly (D-123 cancels
+    the panel's fill number; WALL's FILL-PIECES list gives each bay's form): the box of its bay with the pockets
+    beside every bolt this panel drives that fall in it (FR-10), each pocket cut right through the piece it falls
+    in (an edge notch, D-128)."""
     nums = fill_numbers(ARGS["repo_root"], CODE)
     n = int(round(design.userParameters.itemByName("stile_n_mid").value))
     bays = [("(%s) + tube_w + %d * stile_pitch" % (Y_FRONT, k), "(%s) + %d * stile_pitch" % (Y_FRONT, k + 1))
@@ -1240,7 +1244,7 @@ def build_fill(design, fill, out, xf, zs):
         raise RuntimeError("fill numbers for %s cover bays %s; the frame has %d bays" % (CODE, sorted(nums), len(bays)))
     pieces = []
     for k, yr in enumerate(bays):
-        c = child(fill, *nums[k + 1])[0]
+        c = child(parent, *nums[k + 1])[0]
         b = box(design, c, "FILL PIECE BAY %d" % (k + 1), xf, yr, zs).bodies.item(0)
         b.name = "FILL - BAY %d" % (k + 1)
         pieces.append((c, yr))

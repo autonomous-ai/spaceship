@@ -205,11 +205,11 @@ def hw_bodies(comps, pn):
 FILL_TOL = "±2 on length, width and the notches' positions, thickness as supplied (assumption: knife-cut PET batt)"
 
 
-def fill_bays(fill_pn):
-    """WALL's FILL-PIECES.csv rows of one fill set, in bay order: each bay's form, number, DXF and fit (D-123,
+def fill_bays(panel_pn):
+    """WALL's FILL-PIECES.csv rows of one panel, in bay order: each bay's form, number, DXF and fit (D-123,
     D-128; make_fill_pieces.py writes them, check_fill_dxfs.py checks the DXFs against the CAD)."""
     with open(os.path.join(HERE, "FILL-PIECES.csv"), encoding="utf-8") as fh:
-        rows = [r for r in csv.DictReader(fh) if r["fill"] == fill_pn]
+        rows = [r for r in csv.DictReader(fh) if r["panel"] == panel_pn]
     return sorted(rows, key=lambda r: int(r["bay"]))
 
 
@@ -227,14 +227,15 @@ def panel_rows(rep):
     pn = rep["document"].split("_")[0]
     frame = [c for p, c in comps.items() if p.startswith(("2111", "2112"))][0]
     skin = [c for p, c in comps.items() if p.startswith(("2113", "2114"))][0]
-    # the fill set is the 2115/2116 part under the panel itself; D-120's pieces sit under the fill set
-    fill = [c for p, c in comps.items() if p.startswith(("2115", "2116")) and pn in c.get("parents", [pn])][0]
     back = frame["part_number"].startswith("2112")
     lower = "LOWER" in frame["name"]
     members = [c for c in rep["components"] if frame["part_number"] in c.get("parents", [])
                and c["part_number"].startswith("212")]
+    fills = [c for c in rep["components"] if c["part_number"].startswith(("2115", "2116"))]
     if members:
-        return panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back, lower)
+        # D-120: the fill pieces go straight into the panel (D-123 cancels the panel's own fill number)
+        return panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fills, members, back, lower)
+    fill = fills[0]                                        # before D-120: the panel's fill, one part
     name_en, name_vi = root_names(root, frame, lambda n: n.replace("PANEL FRAME", "PANEL ASSY"),
                                   lambda n: n.replace("khung", "cụm tấm"))
     rows.append(None)                                      # the assembly row, once its parts are summed
@@ -284,7 +285,7 @@ def panel_rows(rep):
     fl = round(sum(b["mass_kg"] for b in fill["bodies"]), 3)
     pieces = Counter(tuple(sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)[:2])
                      for b in fill["bodies"])
-    bays = fill_bays(fill["part_number"])
+    bays = fill_bays(pn)
     rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"], fill["part_number"]),
                     kind="MP", material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
                     process="knife cut, one piece per bay, each from its form's DXF: the full outline with every notch "
@@ -330,9 +331,10 @@ def mitre_ends(key, prm, upper):
     return "both ends mitred: %s and %s degrees off square (D-117)" % tuple(angles)
 
 
-def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back, lower):
+def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, back, lower):
     """The parts list of a panel built as D-120 asks (every part its own component): the frame an assembly of
-    its member parts (D-117 mitred corners, D-115 cleats), the fill a set of numbered pieces, the hardware copies
+    its member parts (D-117 mitred corners, D-115 cleats), the fill pieces straight in the panel, each with its
+    number (D-123) and its DXF (D-128), the hardware copies
     counted from the CAD."""
     rows = [None]
     upper = not lower
@@ -385,16 +387,13 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
                     source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
                                         if back else "blank and fold line in the skin DXF")))
-    pieces = [c for c in rep["components"] if fill["part_number"] in c.get("parents", [])]
-    fl = round(sum(c["bodies"][0]["mass_kg"] * c.get("copies", 1) for c in pieces), 3)
-    rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill),
-                    name_vi=vi_name(fill["description"], fill["part_number"]), kind="set",
-                    material="the PET fill pieces below, 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
-                    process="the pieces below, friction fit in the bays", qty=1, unit="set",
-                    size_mm="%d pieces" % sum(c.get("copies", 1) for c in pieces), tolerance="per its pieces",
-                    mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: the pieces below (CAD)",
-                    status="DRAFT", source="CAD; D-120", note="one numbered piece per bay (D-123, FILL-PIECES.md)"))
-    bays = fill_bays(fill["part_number"])
+    bays = fill_bays(pn)
+    if sorted(r["number"] for r in bays) != sorted(c["part_number"] for c in pieces for _ in range(c.get("copies", 1))):
+        raise SystemExit("%s: fill pieces in the CAD %s, in FILL-PIECES.csv %s" % (
+            pn, sorted(c["part_number"] for c in pieces), sorted(r["number"] for r in bays)))
+    for c in pieces:
+        if c.get("parents") and pn not in c["parents"]:
+            raise SystemExit("%s sits in %s, not straight in the panel %s (D-123)" % (c["part_number"], c["parents"], pn))
     for c in sorted(pieces, key=lambda c: c["part_number"]):
         b = c["bodies"][0]
         dims = sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)
@@ -402,7 +401,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back,
         mine = [r for r in bays if r["number"] == c["part_number"]]
         if len(mine) != q or len({r["dxf"] for r in mine}) != 1:
             raise SystemExit("%s: %d copies in the CAD, %d bays in FILL-PIECES.csv" % (c["part_number"], q, len(mine)))
-        rows.append(row(level=2, part_number=c["part_number"], name=en_name(c),
+        rows.append(row(level=1, part_number=c["part_number"], name=en_name(c),
                         name_vi=vi_name(c["description"], c["part_number"]), kind="MP",
                         material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
                         process=fill_cut(mine[0]["dxf"], bool(mine[0]["note"])),

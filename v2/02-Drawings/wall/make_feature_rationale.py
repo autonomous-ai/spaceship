@@ -186,9 +186,10 @@ D117_ROW = ("F12", "{frame}", "The 4 perimeter members run to the frame's outer 
             "D-117; the Joints Engineer's corner details (2026-11-01)", "follows the frame (edit test)",
             "mitre angle per the frame drawing", "DECIDED (D-117)")
 D120_ROW = ("F49", "{frame}", "Every member is its own part with its own number, the studs copies of one; the frame is "
-            "their assembly and keeps its number; the fill is a set of numbered pieces; the hardware copies of one part "
-            "each", "the build plan's rule 2: every part a component, never a body", "D-120, D-123; numbers from the "
-            "master BOM's allocation", "copies follow their pattern and their holes", "", "DECIDED (D-120)")
+            "their assembly and keeps its number; the fill pieces, each numbered, go straight into the panel (D-123 cancels "
+            "the panel's own fill number) and are cut from their DXFs (D-128); the hardware copies of one part each", "the build plan's rule 2: every part a component, never a body", "D-120, D-123; numbers from the "
+            "master BOM's allocation; D-128 for the fill pieces", "copies follow their pattern and their holes", "",
+            "DECIDED (D-120)")
 FAMILIES_D117 = {
     ("RAIL - BOTTOM", 8.0, "z"): (
         "F50", "T-joint plug cleat slot, round ends: one per stud end in the rail's bay-side wall", "the plug cleat "
@@ -332,9 +333,9 @@ def main(argv):
         for c in rep["components"]:
             for key, pre in (("frame", ("2111", "2112")), ("skin", ("2113", "2114")), ("fill", ("2115", "2116")),
                              ("tray", ("5111", "5112")), ("felt", ("5113", "5114"))):
-                # the fill set is the 2115/2116 part under the panel itself, not one of its pieces
-                if c["part_number"].startswith(pre) and (key != "fill" or assy in c.get("parents", [assy])):
-                    pns[key] = c["part_number"]
+                if c["part_number"].startswith(pre):
+                    # D-120: the fill is several numbered pieces straight in the panel (D-123), all of them named
+                    pns[key] = (pns[key] + " " + c["part_number"]) if key == "fill" and key in pns else c["part_number"]
             if c["part_number"].startswith("212"):
                 for b in c["bodies"]:
                     body_part[b["name"]] = c["part_number"]

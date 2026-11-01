@@ -327,7 +327,7 @@ class ElectricalInterfaceSideTest(unittest.TestCase):
 
     def test_only_the_right_cassettes_carry_them(self):
         for part, side, row in (("cassette", "L", "1"), ("cassette", "L", "2"), ("panel", "R", "1"),
-                                ("frame", "R", "2"), ("fill", "R", "1")):
+                                ("frame", "R", "2"), ("skin", "R", "1")):
             ns = load(part, side, row)
             self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (part, side, row))
 
@@ -415,6 +415,17 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
         self.assertGreater(v["el_cut_x0"] - 8, v["seam_gap"] / 2 + v["lip_w"])
         self.assertLess(v["el_cut_z1"] + 8, v["panel_z0"] + v["back_ph"] - v["lip_w"])
         self.assertGreater(v["el_cut_z0"] - 8, v["panel_z0"] + v["lip_w"])
+
+
+class FillPiecesInThePanelTest(unittest.TestCase):
+    """D-123: the panels' fill numbers are cancelled; the pieces go straight into the panel assembly."""
+
+    def test_no_fill_part_or_number(self):
+        with self.assertRaises(ValueError):
+            load("fill", "L", "1")
+        ns = load("panel", "L", "1")
+        self.assertNotIn("fill", ns["PARTS"])
+        self.assertIn("fill", ns["WANT"]["panel"])
 
 
 class FillDxfTest(unittest.TestCase):

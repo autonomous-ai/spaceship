@@ -42,13 +42,13 @@ def rows():
             ("511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG", ["511201", "511202", "511203", "511204"],
              "tabulated: the back trays (LH = RH; upper ones shorter)")]
     forms = fill_forms()
-    out.append(("(no drawing, D-128)", [pn for pn, _dxf in forms] + ["2115%02d" % i for i in range(1, 5)] +
-                ["2116%02d" % i for i in range(1, 5)],
+    out.append(("(no drawing, D-128)", [pn for pn, _dxf in forms],
                 "fill pieces: 40 mm PET batt, each of the %d forms knife cut from its own DXF, the full outline with every "
                 "notch (the 60 x 60 notches beside the bolts go right through the batt; B2's piece also has "
                 "ELECTRICAL's cut-outs), with material, density, thickness, tolerance and part number in its parts-list "
-                "row; the sets 211501-211504 and 211601-211604 are each panel's pieces, shown in place on the panel "
-                "assembly drawings (FILL-PIECES.md)" % len(forms)))
+                "row; the pieces go straight into the panel assemblies, whose drawings show each in place "
+                "(FILL-PIECES.md); the panels' own fill numbers 211501-211504 and 211601-211604 are cancelled (D-123)"
+                % len(forms)))
     out.append(("(no drawing, D-89 part 4)", ["211401", "211402", "211403", "211404"],
                 "back skins: flat ACP cut by CNC router from their DXFs (outline and holes, B2's inlet and LAN "
                 "holes included); material, thickness, finish and ISO 2768-m in the parts-list rows"))
