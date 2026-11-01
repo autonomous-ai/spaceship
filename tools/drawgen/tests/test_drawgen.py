@@ -15,7 +15,9 @@
 4. drawgen never overwrites a PDF it didn't make (a Fusion drawing).
 5. A part with a feature it can't dimension (here a fillet) is refused, not drawn; so is a folded sheet, even
    with a sharp fold (D-113).
-6. The read-back fails a sheet where two texts touch, or a text touches a part outline.
+6. The read-back fails a sheet where two texts touch, a text touches a part outline, or a line runs through a text.
+7. A long tube keeps a legible scale: 111103 (2420 mm) fits A1 at 1:5 with a narrower table column instead of
+   dropping to 1:10, with datum B on B1's round-spigot rivnut (joints register 2.11).
 """
 
 import os
@@ -259,6 +261,22 @@ def test_clash_check_catches_a_line_through_text():
     found = [w for _p, w in readback.clashes(fitz.open(os.path.join(d, "l.pdf")))]
     assert any("through text 'O2'" in w for w in found), found
     assert not any("H09" in w for w in found), found
+
+
+def test_long_tube_keeps_its_scale():
+    """111103 is 2420 long: beside the default table column only 1:10 fits (the 40 mm tube 4 mm on paper); a
+    narrower column keeps 1:5, the tables still end above the title block, and it reads back with B where the
+    joints register puts it (the spigot rivnut under B1's round spigot hole, X -102.75)."""
+    out = os.path.join(TMP, "long")
+    os.makedirs(out, exist_ok=True)
+    final, rep = drawgen.generate("111103", out)
+    assert abs(rep["scale"] - 0.2) < 1e-9, rep["scale"]
+    fails, st = readback.check(final)
+    assert not fails, fails
+    with fitz.open(final) as d:
+        data = readback.read_data(d)
+    b = [f for f in data["features"] if f["tag"] == data["datums"]["B"]]
+    assert len(b) == 1 and abs(b[0]["entry"][0] - (-102.75)) < 0.01, b
 
 
 def main():

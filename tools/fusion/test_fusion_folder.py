@@ -199,6 +199,22 @@ class OneListingTests(unittest.TestCase):
         self.assertEqual((sorted(files), unknown), (["A_CAD", "B_CAD"], []))
         self.assertEqual(files_obj.arrays, 2)
 
+    def test_a_count_that_cant_be_read_is_one_unreadable_entry(self):
+        # Reviewer 5, P3 on #220
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d")])
+        type(folder.dataFiles).count = property(lambda _s: (_ for _ in ()).throw(Unreadable("count failed")))
+        try:
+            files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+            self.assertEqual(sorted(files), ["A_CAD"])
+            self.assertEqual(len(unknown), 1)
+            self.assertIn("count can't be read", unknown[0])
+            self.assertEqual(sum(c.sleeps), 60.0)                  # read again for the minute
+            with self.assertRaises(RuntimeError):                   # and never taken as free
+                ff.safe_to_create(folder, "NEW_CAD", "f3d", sleep=c.sleep, now=c.now)
+        finally:
+            del type(folder.dataFiles).count
+
     def test_a_full_listing_adds_nothing(self):
         c = Clock()
         files, unknown, others = ff.read_folder(self.folder([File("A_CAD", "f3d")]), sleep=c.sleep, now=c.now)
