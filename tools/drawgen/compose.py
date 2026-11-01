@@ -458,7 +458,12 @@ def plan_views(part, spec):
     """Decide the views: principal, the plain related views that show a drilled face, sections in front of
     the faces nothing shows, and removed sections through two-wall holes. Returns a Plan."""
     pl = Plan()
-    if spec.get("principal"):
+    if isinstance(spec.get("principal"), dict):
+        # {"look": "+Z", "x": "-X"}: the way the viewer looks and the view's X, as pod axes
+        ax = lambda a: tuple((1.0 if a[0] == "+" else -1.0) if i == "XYZ".index(a[1]) else 0.0 for i in range(3))
+        pl.principal = View("principal", vmul(ax(spec["principal"]["look"]), -1.0), ax(spec["principal"]["x"]))
+        pl.principal.pod_name = "custom"
+    elif spec.get("principal"):
         vn, vx, vy = project.POD_VIEWS[spec["principal"]]
         pl.principal = View("principal", vn, vx, vy)
         pl.principal.pod_name = spec["principal"]

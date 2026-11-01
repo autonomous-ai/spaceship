@@ -169,7 +169,13 @@ def feature_rows_b(team, pn=None):
                 named = re.findall(r"(?<!\d)\d{6}(?!\d)", section)
                 if pn and named and pn not in named:
                     continue        # a section about other parts
-                get = lambda key: next((cells[i] for i, c in enumerate(cols) if c.startswith(key) and i < len(cells)), "")
+                def get(key):
+                    """The cell of the column named key (exactly, else the first that starts with it)."""
+                    for exact in (True, False):
+                        for i, c in enumerate(cols):
+                            if i < len(cells) and (c == key if exact else c.startswith(key)):
+                                return cells[i]
+                    return ""
                 title, fn, size = get("feature"), get("function"), get("size")
                 both = title + " " + size
                 dias = [float(d.rstrip(".")) for d in DIA.findall(both)]
