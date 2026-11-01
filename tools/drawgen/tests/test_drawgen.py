@@ -631,6 +631,59 @@ def test_flat_goes_to_its_own_sheet_only_when_crowded():
         compose._make = real
 
 
+def test_bend_tags_stay_clear_and_by_their_own_lines():
+    """The Lead on BASE's sill 111302: its tags B2 to B4 crowded under 3 mm apart in the flat at 1:5. Bend lines
+    closer on sheet 1 than ISO 3098's line pitch for the 2.5 mm tags (3.5 mm) put the flat on a sheet of its own at a
+    larger scale; there every tag sits nearer its own line than any other and at least 1 mm from the others (a tag
+    that would crowd goes to its line's other end). WALL's tray 511101 (main's STEP and DXF), whose tags at 1:10 sat
+    among the other run's lines, draws that way and reads back PASS; planted on its sheet, a tag crowding another and
+    a tag by another line both fail the read-back."""
+    d = os.path.join(TMP, "tags")
+    os.makedirs(d, exist_ok=True)
+    real, errs = compose._make, []
+
+    def rec(*a, **k):
+        try:
+            return real(*a, **k)
+        except compose.NotDrawable as e:
+            errs.append(e)
+            raise
+    compose._make = rec
+    try:
+        p = os.path.join(d, "511101.pdf")
+        compose.make("511101", "wall", {"tolerance": "test", "bent": True}, p)
+    finally:
+        compose._make = real
+    assert len(errs) == 1 and isinstance(errs[0], compose.FlatCrowded) and \
+        "mm apart on sheet 1, under their tags' line pitch (3.5 mm, ISO 3098)" in str(errs[0]), errs
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    assert doc.page_count == 3 and data["flat"]["view"]["page"] == 1, (doc.page_count, data["flat"]["view"])
+    tb = readback.text_boxes(doc[1], data["sheet_h"])
+    assert readback.bend_tag_fails(data, tb) == []
+    at = {r["tag"]: r["printed_at"] for r in data["flat"]["rows"]}
+    rows = {r["tag"]: r for r in data["flat"]["rows"]}
+    # B2's tag printed 2.7 above B1's, as B2 to B4 were on 111302: they crowd
+    b1 = next(t for t in tb if t[4] == "B1")
+    crowd = [x for x in tb if x[4] != "B2"] + [(b1[0], b1[1] + 2.7, b1[2], b1[3] + 2.7, "B2", b1[5])]
+    p1 = at["B1"]
+    dd = dict(data, flat=dict(data["flat"], rows=[rows["B1"], dict(rows["B2"], printed_at=(p1[0], p1[1] + 2.7, p1[2],
+                                                                                            p1[3] + 2.7))]))
+    f = readback.bend_tag_fails(dd, crowd)
+    assert any("bend tags B1 and B2 crowd each other" in x for x in f), f
+    # B1's tag set where B3's is printed: it reads for B3's line
+    b3 = next(t for t in tb if t[4] == "B3")
+    by3 = [x for x in tb if x[4] != "B3"]
+    by3 = [x if x[4] != "B1" else (b3[0], b3[1], b3[2], b3[3], "B1", b3[5]) for x in by3]
+    dd = dict(data, flat=dict(data["flat"], rows=[dict(r, printed_at=at["B3"]) if r["tag"] == "B1" else
+                                                    dict(r, printed_at=None) if r["tag"] == "B3" else r
+                                                    for r in data["flat"]["rows"]]))
+    f = readback.bend_tag_fails(dd, by3)
+    assert any("bend B1's tag is as near bend B3's line as its own" in x for x in f), f
+
+
 def test_a_sheet_drawn_again_keeps_its_sections():
     """Reviewer 10 on #380: make() draws a sheet again when its flat runs off (the flat a step smaller) or its
     sections do (a scale smaller), and the second draw took the first attempt's sections across the bends as drawn
@@ -651,7 +704,8 @@ def test_a_sheet_drawn_again_keeps_its_sections():
     try:
         p = os.path.join(d, "511101.pdf")
         compose.make("511101", "wall", {"tolerance": "test", "bent": True}, p)
-        assert len(calls) == 2 and calls[1].get("_flat_cap") and not calls[0].get("_flat_cap"), calls
+        # drawn again with its flat a step smaller (then on a sheet of its own: its bend lines crowd at that scale)
+        assert len(calls) >= 2 and calls[1].get("_flat_cap") and not calls[0].get("_flat_cap"), calls
         calls.clear()
         force.append(True)
         p2 = os.path.join(d, "811101.pdf")

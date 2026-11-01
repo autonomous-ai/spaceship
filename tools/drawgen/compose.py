@@ -603,12 +603,66 @@ def profile_dims(sh, vd):
         sh.dim_linear(a, b, side, gap, fmt(ch.flanges[i][0]), 2.5)
 
 
-def flat_dims(sh, part, fv):
-    """The flat pattern's overall size, and each bend line's tag by its end (outside the outline where clear)."""
+TAG_PITCH = 3.5     # ISO 3098: lines of 2.5 mm lettering 1.4 x 2.5 apart, baseline to baseline
+TAG_CLEAR = 1.0     # so two bend tags keep at least the space between such lines, across or along
+
+
+def _bend_segments(rows, fv):
+    """Each bend row's line on paper: [(tag, start, end)]."""
+    return [(r["tag"], fv.S(r["line"][0]), fv.S(r["line"][1])) for r in rows]
+
+
+def _closest_bends(segs):
+    """The two parallel bend lines nearest each other on paper, where their spans overlap: (gap, tag, tag) or None."""
+    best = None
+    for i in range(len(segs)):
+        t1, pa, pb = segs[i]
+        L = math.hypot(pb[0] - pa[0], pb[1] - pa[1]) or 1.0
+        u = ((pb[0] - pa[0]) / L, (pb[1] - pa[1]) / L)
+        s1 = sorted((pa[0] * u[0] + pa[1] * u[1], pb[0] * u[0] + pb[1] * u[1]))
+        for t2, qa, qb in segs[i + 1:]:
+            M = math.hypot(qb[0] - qa[0], qb[1] - qa[1]) or 1.0
+            if abs(u[0] * (qb[1] - qa[1]) / M - u[1] * (qb[0] - qa[0]) / M) > 0.02:
+                continue
+            s2 = sorted((qa[0] * u[0] + qa[1] * u[1], qb[0] * u[0] + qb[1] * u[1]))
+            if s2[1] < s1[0] or s2[0] > s1[1]:
+                continue
+            gap = abs((qa[0] - pa[0]) * -u[1] + (qa[1] - pa[1]) * u[0])
+            if best is None or gap < best[0]:
+                best = (gap, t1, t2)
+    return best
+
+
+def _seg_dist(c, a, b):
+    """Distance on paper from point c to the segment a-b."""
+    d = (b[0] - a[0], b[1] - a[1])
+    L2 = d[0] ** 2 + d[1] ** 2 or 1.0
+    t = max(0.0, min(1.0, ((c[0] - a[0]) * d[0] + (c[1] - a[1]) * d[1]) / L2))
+    return math.hypot(c[0] - a[0] - t * d[0], c[1] - a[1] - t * d[1])
+
+
+def _box_clear(a, b):
+    """How far apart two boxes (x0, y0, x1, y1) are: the larger of their gaps across and along (0 when they overlap)."""
+    return max(max(0.0, max(a[0], b[0]) - min(a[2], b[2])), max(0.0, max(a[1], b[1]) - min(a[3], b[3])))
+
+
+def flat_dims(sh, part, fv, own_sheet=False):
+    """The flat pattern's overall size, and each bend line's tag by its end (outside the outline where clear). Every
+    tag sits nearer its own bend line than any other and at least TAG_CLEAR from the tags before it, so a tag that
+    would crowd its neighbour's goes to its line's other end (the tags stagger). Bend lines closer than a tag's line
+    pitch on sheet 1 put the flat on a sheet of its own at a larger scale (the Lead on BASE's sill 111302: B2 to B4
+    under 3 mm apart at 1:5); where even there no tag finds such a place, the sheet is refused."""
     x0, y0, x1, y1 = fv.box()
     box = part.flat.dxf.cut_box()
     sh.dim_linear((x0, y0), (x1, y0), "down", 8.0, fmt(box[2] - box[0]), 2.5)
     sh.dim_linear((x0, y0), (x0, y1), "left", 8.0, fmt(box[3] - box[1]), 2.5)
+    segs = _bend_segments(part.flat.rows, fv)
+    if not own_sheet:
+        cb = _closest_bends(segs)
+        if cb and cb[0] < TAG_PITCH - 1e-9:
+            raise FlatCrowded("%s: bend lines %s and %s are %s mm apart on sheet 1, under their tags' line pitch (%s mm, "
+                              "ISO 3098)" % (part.pn, cb[1], cb[2], fmt(cb[0]), fmt(TAG_PITCH)))
+    placed = []
     for row in part.flat.rows:
         a, b = row["line"]
         pa, pb = fv.S(a), fv.S(b)
@@ -631,11 +685,18 @@ def flat_dims(sh, part, fv):
                     an = "left" if nx_ > 0.5 else ("right" if nx_ < -0.5 else "center")
                     cands.append((q[0] + nx_ * 1.5, q[1] + ny_ * 1.5 - (1.25 if abs(ny_) < 0.5 else (0.0 if ny_ > 0 else 2.5)),
                                   an))
-        pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), None)
+        def fits(c):
+            tb = sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True)
+            mid = ((tb[0] + tb[2]) / 2, (tb[1] + tb[3]) / 2)
+            own = next(_seg_dist(mid, a_, b_) for t_, a_, b_ in segs if t_ == row["tag"])
+            return sh.is_free(tb) and all(_box_clear(tb, p_) >= TAG_CLEAR - 1e-9 for p_ in placed) and \
+                all(_seg_dist(mid, a_, b_) > own for t_, a_, b_ in segs if t_ != row["tag"])
+        pick = next((c for c in cands if fits(c)), None)
         if pick is None:
             raise FlatCrowded("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
         sh.text(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
         row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
+        placed.append(row["printed_at"])
 
 
 def flat_data(part, pl, removed=()):
@@ -3279,7 +3340,7 @@ def _make(pn, team, spec, out_path, today=None, step=None, row=None):
         _draw_flat(sh, fv)
         sh.add_obstacles(outline_segments(fv))
         sh.flush()
-        flat_dims(sh, part, fv)
+        flat_dims(sh, part, fv, own_sheet=True)
         bx = fv.box()
         sh.text((bx[0] + bx[2]) / 2, bx[1] - 22.0, "FLAT PATTERN  %s" % scale_text(fv.scale), 3.5, "center", bold=True)
         sh.text((bx[0] + bx[2]) / 2, bx[1] - 27.0, "from %s, as its x and y draw it: the side it shows faces you; bend "

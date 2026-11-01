@@ -609,6 +609,69 @@ def flat_fails(data, texts, page_text, tol=TOL):
     return fails
 
 
+def _seg_dist(c, a, b):
+    """Distance from point c to the segment a-b (2D)."""
+    d = (b[0] - a[0], b[1] - a[1])
+    L2 = d[0] ** 2 + d[1] ** 2 or 1.0
+    t = max(0.0, min(1.0, ((c[0] - a[0]) * d[0] + (c[1] - a[1]) * d[1]) / L2))
+    return math.hypot(c[0] - a[0] - t * d[0], c[1] - a[1] - t * d[1])
+
+
+def _box_clear(a, b):
+    """How far apart two boxes (x0, y0, x1, y1) are: the larger of their gaps across and along (0 when they overlap)."""
+    return max(max(0.0, max(a[0], b[0]) - min(a[2], b[2])), max(0.0, max(a[1], b[1]) - min(a[3], b[3])))
+
+
+def bend_tag_fails(data, texts, clear=0.6):
+    """Each bend's tag in the flat pattern, read from the page against the DXF's BEND lines (read again here), put on
+    paper by the flat view's record (its offset and scale): nearer its own line than any other, and clear of every
+    other bend's tag across or along (ISO 3098: lines of 2.5 mm lettering 3.5 apart, 1 mm between them; measured on
+    the PDF's ink boxes, which stand about 0.4 taller than the lettering, so `clear` is 0.6), so no tag reads for its
+    neighbour (the Lead on BASE's sill 111302: B2 to B4 crowded under 3 mm apart at 1:5)."""
+    fl = data.get("flat")
+    if not fl or not fl.get("view") or not fl.get("rows"):
+        return []
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    box = d.cut_box()
+    bends = d.bend_lines()
+    off, sc = fl["view"]["off"], fl["view"]["scale"]
+    S = lambda q: (off[0] + sc * q[0], off[1] + sc * q[1])
+    segs = {}
+    for row in fl["rows"]:
+        if row.get("axis") not in ("x", "y"):
+            continue
+        ax = 0 if row["axis"] == "x" else 1
+        at = box[ax] + row["at"]
+        seg = next(((a, b) for a, b in bends if abs(a[ax] - b[ax]) < 1e-6 and abs(a[ax] - at) < 0.01), None)
+        if seg is not None:
+            segs[row["tag"]] = (S(seg[0]), S(seg[1]))
+    tags = {}
+    for row in fl["rows"]:
+        pa = row.get("printed_at")
+        cand = [t for t in texts if t[4] == row["tag"]]
+        if not pa or not cand:
+            continue            # flat_fails reports a tag that isn't printed
+        c0 = ((pa[0] + pa[2]) / 2, (pa[1] + pa[3]) / 2)
+        tags[row["tag"]] = min(cand, key=lambda t: math.dist(((t[0] + t[2]) / 2, (t[1] + t[3]) / 2), c0))
+    fails = []
+    for tag, t in sorted(tags.items()):
+        if tag not in segs:
+            continue
+        mid = ((t[0] + t[2]) / 2, (t[1] + t[3]) / 2)
+        own = _seg_dist(mid, *segs[tag])
+        near = min((k for k in sorted(segs) if k != tag), key=lambda k: _seg_dist(mid, *segs[k]), default=None)
+        if near is not None and _seg_dist(mid, *segs[near]) <= own:
+            fails.append("bend %s's tag is as near bend %s's line as its own" % (tag, near))
+    keys = sorted(tags)
+    for i, a in enumerate(keys):
+        for b in keys[i + 1:]:
+            if _box_clear(_ink_box(tags[a])[:4], _ink_box(tags[b])[:4]) < clear - 1e-6:
+                fails.append("bend tags %s and %s crowd each other: under ISO 3098's 1 mm between lines of 2.5 mm "
+                             "lettering" % (a, b))
+    return fails
+
+
 def profile_fails(data, texts, page_text):
     """A bent part's sections across its runs of bends (Reviewer 10 on #380: a sheet drawn again lost them all, and
     the read-back passed): every run the sheet records must have a section on the sheet, titled, with each flange it
@@ -1344,9 +1407,12 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fpage = ((data.get("flat") or {}).get("view") or {}).get("page", 0)
     if fpage:       # the flat pattern on a sheet of its own (a big bent part)
-        fails += flat_fails(data, text_boxes(doc[fpage], data["sheet_h"]), page.get_text() + " " + doc[fpage].get_text())
+        ftb = text_boxes(doc[fpage], data["sheet_h"])
+        fails += flat_fails(data, ftb, page.get_text() + " " + doc[fpage].get_text())
+        fails += bend_tag_fails(data, ftb)
     else:
         fails += flat_fails(data, tb, page.get_text())
+        fails += bend_tag_fails(data, tb)
     fails += profile_fails(data, tb, page.get_text())   # the sections stay on sheet 1
     fails += flat_hole_fails(data, holes, faces)
     fails += csk_fails(data, faces, holes, page)
