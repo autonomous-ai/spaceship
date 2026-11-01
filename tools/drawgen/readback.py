@@ -261,17 +261,27 @@ def step_holes(step_path, pn):
     return out
 
 
-def key_note_fails(text, matched, krows, tol=0.1):
+def key_note_fails(text, matched, krows, tol=0.1, holes=None):
     """Each key row (corner-keys.csv) needs its note on the sheet ("Key PN, JOINT, ... meet Hxx and Hyy;"), and the
-    two holes it names must be the part's holes at the key's screw positions there (centres from the STEP)."""
+    two holes it names must be the part's holes at the key's screw positions there (centres from the STEP). A HOLD
+    note for the key stands in only while the STEP really has no hole at either screw position (holes: the STEP's
+    hole centres, from the independent reader)."""
     flat = re.sub(r"\s+", " ", text)
     out = []
     for r in krows:
+        want = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
         m = re.search(r"Key %s, %s, .*?meet (H\d+) and (H\d+);" % (r["part_number"], re.escape(r["joint"])), flat)
         if not m:
+            held = re.search(r"HOLD: Joints' key file puts key %s, %s, in this end" % (
+                r["part_number"], re.escape(r["joint"])), flat)
+            if held and holes is not None:
+                there = [h for h in holes if min(math.dist((h["c"][0], h["c"][1]), w) for w in want) < 0.5]
+                if there:
+                    out.append("key %s (%s): a HOLD note, but the STEP has a hole at its screw position %s: draw the "
+                               "key note" % (r["part_number"], r["joint"], tuple(round(v, 2) for v in there[0]["c"][:2])))
+                continue
             out.append("no orientation note for key %s (%s)" % (r["part_number"], r["joint"]))
             continue
-        want = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
         got = []
         for tg in m.groups():
             c = matched.get(tg)
@@ -388,7 +398,7 @@ def check(pdf_path, step_path=None, verbose=False):
     if ksrc:
         with open(os.path.join(REPO, ksrc[0]["path"]), newline="", encoding="utf-8") as fh:
             krows = [r for r in csv.DictReader(fh) if data["pn"] in (r.get("carrier_key_in_its_end") or "")]
-        fails += key_note_fails(text, matched, krows)
+        fails += key_note_fails(text, matched, krows, holes=holes)
     if " " in text or "­" in text:
         fails.append("the text layer has non-breaking spaces or soft hyphens (search breaks)")
     if (doc.metadata or {}).get("creator") != "drawgen":

@@ -1600,7 +1600,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
 def key_notes(sh, part, pl, vds):
     """For each key in the part's ends: a leader to the key's stud face on the end, in the view (or its detail)
     that shows the part's holes for the key's screws, and a note: which key, which face goes on this end, and
-    that only this way round do its bottom holes meet the part's (and how far off they are turned round)."""
+    that only this way round do its bottom holes meet the part's (and how far off they are turned round). When the
+    part's STEP has no holes where Joints' file puts the key's screws (the two teams' files between changes, D-129),
+    the end gets a HOLD note naming those positions instead, and the read-back checks that the holes really are
+    missing; regenerating once the STEP has them gives the full note."""
     for r in inputs.key_rows(part.pn):
         fc = (float(r["face_centre_x"]), float(r["face_centre_y"]))
         bk = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]))
@@ -1611,10 +1614,12 @@ def key_notes(sh, part, pl, vds):
         d_hole = abs((mid[0] - bk[0]) * u[0] + (mid[1] - bk[1]) * u[1])
         fts = sorted([ft for ft in part.features if ft.tag and any(math.dist((ft.f.entry[0], ft.f.entry[1]), h) < 0.5
                                                                     for h in hs)], key=lambda f: f.tag)
-        if len(fts) != 2:
-            raise NotDrawable("%s: key %s (%s): %d of its 2 screw holes found in the part" % (
-                part.pn, r["part_number"], r["joint"], len(fts)))
-        vd = vds.get(fts[0].group.view) if fts[0].group.view else None
+        hold = len(fts) != 2
+        if hold:
+            # the view that looks at the key's bottom (its screws go up through the part's bottom wall)
+            vd = next((v_ for v_ in vds.values() if abs(v_.view.n[2]) > 0.99), None)
+        else:
+            vd = vds.get(fts[0].group.view) if fts[0].group.view else None
         if vd is None:
             continue
         z = (float(r["key_bottom_z"]) + float(r["key_top_z"])) / 2
@@ -1626,9 +1631,20 @@ def key_notes(sh, part, pl, vds):
                 vd = dv
         a = vd.S(c2)
         cut = abs(float(r["cut_deg_signed"] or 0))
-        text = ("Key %s, %s, fitted at the factory (J-BASE-02): stud face%s flush with this end, back face %s mm "
+        if hold:
+            text = ("HOLD: Joints' key file puts key %s, %s, in this end, its screws at X %s Y %s and X %s Y %s (pod), "
+                    "but this STEP has no holes there yet; the key note follows when the model has them." % (
+                        r["part_number"], r["joint"], fmt(hs[0][0]), fmt(hs[0][1]), fmt(hs[1][0]), fmt(hs[1][1])))
+        else:
+            text = None
+        # where the stud face sits: on the part's end (its normal along the part) or against its inner wall (across)
+        k = max(range(2), key=lambda i: part.size[i])
+        sn = (float(r["stud_normal_x"]), float(r["stud_normal_y"]))
+        on_end = abs(sn[k]) / (math.hypot(*sn) or 1.0) > 0.7
+        text = text or ("Key %s, %s, fitted at the factory (J-BASE-02): stud face%s %s, back face %s mm "
                 "inside. Only this way round do its bottom holes meet %s; turned round they are %s mm off (Joints' "
                 "key sheet 111211)." % (r["part_number"], r["joint"], (" (cut %s°)" % fmt(cut)) if cut > 0.01 else "",
+                                        "flush with this end" if on_end else "against the inner wall",
                                         fmt(L), " and ".join(f.tag for f in fts), fmt(abs(L - 2 * d_hole))))
         lines = sh.wrap(text, 2.5, 78.0)
         w = max(sh.text_width(t, 2.5) for t in lines)

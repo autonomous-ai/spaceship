@@ -296,6 +296,11 @@ def test_key_notes_name_the_screw_holes():
     bad = readback.key_note_fails(note % (row["part_number"], row["joint"], "H03", "H09"), good, [row])
     assert bad and "H09" in bad[0], bad
     assert readback.key_note_fails("no notes here", good, [row])[0].startswith("no orientation note")
+    # a HOLD note stands in only while the STEP has no hole at the key's screw positions
+    held = "HOLD: Joints' key file puts key %s, %s, in this end, its screws at ... yet." % (row["part_number"], row["joint"])
+    assert readback.key_note_fails(held, good, [row], holes=[{"c": (50.0, 0.0, 10.0)}]) == []
+    late = readback.key_note_fails(held, good, [row], holes=[{"c": (0.0, 14.0, 10.0)}])
+    assert late and "draw the key note" in late[0], late
 
 
 def main():
