@@ -17,6 +17,7 @@
    its printed width.
 6. A sheet never goes over a PDF drawgen didn't make (a Fusion drawing).
 7. Spigots and glide stems a section cuts along are drawn whole (ISO 128-50); one the plane misses isn't drawn.
+8. A sub-assembly's number owns every solid under it in the STEP (the read-back's rule, as drawing's).
 """
 
 import json
@@ -197,6 +198,16 @@ def test_shafts_cut_along_their_axis_are_drawn_whole():
     assert drawn(secs["A"], "118002") and drawn(secs["B"], "831001")
     assert not drawn(secs["C"], "831001"), "a spigot in front of section C is drawn in it"
     assert {assy.occs[i].item.pn for i, _l in secs["A"].hatch} >= {"111101", "111601"}
+
+
+def test_a_sub_assemblys_number_owns_its_parts_solids():
+    """The read-back finds a sub-assembly item's balloon on any part under it (CEILING's D-120 welded frame 411101,
+    whose bodies sit in its member parts): its number owns every solid below it in the STEP, as drawing takes it as
+    one item. Here CEILING's cassette 510301 owns its tray's, ribs' and felt's solids."""
+    sols = assembly._solids_by_pn(assembly.team_step("ceiling"))
+    own = {id(x) for x in sols.get("510301", [])}
+    for pn in ("513101", "513102", "513201"):
+        assert sols.get(pn) and {id(x) for x in sols[pn]} <= own, pn
 
 
 def test_never_goes_over_a_fusion_drawing():
