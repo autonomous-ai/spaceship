@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 337 part lines (159 made, 178 bought, 137 on HOLD) and 49 sub-assembly lines from 20 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 359.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -18,9 +18,6 @@ Read from: this working tree.
 - `v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
-- `v2/03-Manufacturing/front/351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv` @ working tree
-- `v2/03-Manufacturing/front/351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv` @ working tree
-- `v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv` @ working tree
@@ -86,7 +83,6 @@ Read from: this working tree.
 
 **FRONT**
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
-- 848013 SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA: HOLD (HOLD: product (HOLD-19))
 - 361001 FRONT - DOOR LEAF - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
 - 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112: HOLD (source (product); bond to aluminium HOLD)
 - 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002))
@@ -119,34 +115,33 @@ Read from: this working tree.
 
 **ELECTRICAL**
 - 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data))
-- 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04))
+- 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133))
 - 718001 ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718002 ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718003 ELECTRICAL - RCBO - 1P+N C10 30 MA TYPE A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718004 ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718005 ELECTRICAL - INLET SEALING CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718006 ELECTRICAL - LAN FEED-THROUGH - ETHERCON: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718007 ELECTRICAL - USER SOCKET - UTEN S300 UNIVERSAL: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718008 ELECTRICAL - LAN SOCKET - UTEN S300 TWO PORT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718009 ELECTRICAL - BACK BOX - 86 PLATE: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718007 ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718010 ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718011 ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718012 ELECTRICAL - FUSE - ATO 5 A 32 V: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718013 ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718019 ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718049 ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718054 ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718047 ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718014 ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718015 ELECTRICAL - BONDING WASHER - SERRATED M6 A2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718016 ELECTRICAL - RING TERMINAL - INSULATED 1.5-2.5 MM2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718017 ELECTRICAL - CONDUIT - PVC FLEXIBLE - 20 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718016 ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718017 ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718020 ELECTRICAL - WIRE - H07V-K 1.5 MM2 (BROWN, BLUE, GREEN-YELLOW): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718021 ELECTRICAL - WIRE - H05V-K 1.0 MM2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718022 ELECTRICAL - WIRE - H07V-K 2.5 MM2 GREEN-YELLOW: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718020 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718021 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718022 ELECTRICAL - WIRE - UL 1015 14 AWG GREEN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718073 ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718026 ELECTRICAL - CABLE - 4 X 20 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718027 ELECTRICAL - CABLE - 4 X 24 AWG SCREENED: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -166,8 +161,8 @@ Read from: this working tree.
 - 718067 ELECTRICAL - FUSE - ATO 1 A 32 V: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718068 ELECTRICAL - FAN Y-CABLE - 4-PIN PWM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718070 ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718071 ELECTRICAL - CORD - H05VV-F 3G1.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718072 ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718071 ELECTRICAL - CORD - SJT 14/3: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718072 ELECTRICAL - MAINS PLUG - NEMA 5-15P: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718023 ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718024 ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718029 ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -190,6 +185,7 @@ Read from: this working tree.
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718053 ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718102 ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718103 ELECTRICAL - LED PROFILE END CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -210,7 +206,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 146 numbers, 68 not in a team's list yet, 56 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 147 numbers, 121 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -278,58 +274,58 @@ From `v2/04-BOM/number-allocation.csv`: 146 numbers, 68 not in a team's list yet
 | 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | 810201 | 1 | in use |
 | 718103 | ELECTRICAL - LED PROFILE END CAP | 810201 | 2 | in use |
 | 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | 810201 |  | in use |
-| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | 351306 | 1 | in use |
-| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | 351306 | 1 | in use |
-| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | 351306 | 1 | in use |
-| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | 351306 | 1 | in use |
-| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | 351306 | 1 | in use |
-| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | 351306 | 1 | in use |
-| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | 351306 | 1 | in use |
-| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | 351306 | 1 | in use |
-| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | 351306 | 1 | in use |
-| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | 351306 | 1 | in use |
-| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | 351306 | 1 | in use |
-| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | 351306 | 1 | in use |
-| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | 351306 | 1 | in use |
-| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | 351306 | 1 | in use |
-| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | 351306 | 1 | in use |
-| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | 351306 | 1 | in use |
-| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | 351306 | 3 | in use |
-| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | 351306 | 1 | in use |
-| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | 351306 | 2 | in use |
-| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | in use |
-| 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | in use |
-| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | in use |
-| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | in use |
-| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | in use |
-| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | in use |
-| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | 351204 | 1 | in use |
-| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | 351204 | 1 | in use |
-| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | 351204 | 1 | in use |
-| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | 351204 | 1 | in use |
-| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | 351204 | 1 | in use |
-| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | 351204 | 1 | in use |
-| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | 351204 | 1 | in use |
-| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | 351204 | 3 | in use |
-| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | 351104 | 1 | in use |
-| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | 351104 | 1 | in use |
-| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | 351104 | 1 | in use |
-| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | 351104 | 1 | in use |
-| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | 351104 | 4 | in use |
-| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | 351104 | 4 | in use |
-| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | 351104 | 1 | in use |
-| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | 351104 | 1 | in use |
-| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | 351104 | 3 | in use |
-| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | 351104 | 3 | in use |
-| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | 351104 | 1 | in use |
-| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | 351104 | 1 | in use |
-| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | 351104 | 1 | in use |
-| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | 351104 | 1 | in use |
-| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | 351104 | 1 | in use |
-| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | 351104 | 1 | in use |
-| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | in use |
-| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | in use |
-| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | in use |
+| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | 351306 | 1 | ALLOCATED |
+| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | 351306 | 1 | ALLOCATED |
+| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | 351306 | 1 | ALLOCATED |
+| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | 351306 | 1 | ALLOCATED |
+| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | 351306 | 1 | ALLOCATED |
+| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | 351306 | 1 | ALLOCATED |
+| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | 351306 | 1 | ALLOCATED |
+| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | 351306 | 1 | ALLOCATED |
+| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | 351306 | 1 | ALLOCATED |
+| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | 351306 | 1 | ALLOCATED |
+| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | 351306 | 1 | ALLOCATED |
+| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | 351306 | 1 | ALLOCATED |
+| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | 351306 | 1 | ALLOCATED |
+| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | 351306 | 1 | ALLOCATED |
+| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | 351306 | 1 | ALLOCATED |
+| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | 351306 | 1 | ALLOCATED |
+| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | 351306 | 3 | ALLOCATED |
+| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | 351306 | 1 | ALLOCATED |
+| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | 351306 | 2 | ALLOCATED |
+| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | ALLOCATED |
+| 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | ALLOCATED |
+| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | ALLOCATED |
+| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | ALLOCATED |
+| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | ALLOCATED |
+| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | ALLOCATED |
+| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | 351204 | 1 | ALLOCATED |
+| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | 351204 | 1 | ALLOCATED |
+| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | 351204 | 1 | ALLOCATED |
+| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | 351204 | 1 | ALLOCATED |
+| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | 351204 | 1 | ALLOCATED |
+| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | 351204 | 1 | ALLOCATED |
+| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | 351204 | 1 | ALLOCATED |
+| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | 351204 | 3 | ALLOCATED |
+| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | 351104 | 1 | ALLOCATED |
+| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | 351104 | 1 | ALLOCATED |
+| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | 351104 | 1 | ALLOCATED |
+| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | 351104 | 1 | ALLOCATED |
+| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | 351104 | 4 | ALLOCATED |
+| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | 351104 | 4 | ALLOCATED |
+| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | 351104 | 1 | ALLOCATED |
+| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | 351104 | 1 | ALLOCATED |
+| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | 351104 | 3 | ALLOCATED |
+| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | 351104 | 3 | ALLOCATED |
+| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | 351104 | 1 | ALLOCATED |
+| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | 351104 | 1 | ALLOCATED |
+| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | 351104 | 1 | ALLOCATED |
+| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | 351104 | 1 | ALLOCATED |
+| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | 351104 | 1 | ALLOCATED |
+| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | 351104 | 1 | ALLOCATED |
+| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | ALLOCATED |
+| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | ALLOCATED |
+| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | ALLOCATED |
 | 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | 610402 | 1 | ALLOCATED |
 | 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | 610401 | 1 | ALLOCATED |
 | 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | ALLOCATED |
@@ -360,6 +356,7 @@ From `v2/04-BOM/number-allocation.csv`: 146 numbers, 68 not in a team's list yet
 | 211634 | WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | ALLOCATED |
 | 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | ALLOCATED |
 | 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
+| 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
 
 ## Rules
 
