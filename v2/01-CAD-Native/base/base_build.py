@@ -1373,9 +1373,15 @@ EXPECTED_OWN = [
 
 def timeline_problems(design):
     """The timeline items that are not healthy, with their messages. A group (such as the one a STEP import makes,
-    "Group1" on 2026-11-01) has no health of its own: each of its members is checked instead."""
+    "Group1" on 2026-11-01) has no health of its own: each of its members is checked instead. A member's index
+    can't be read (Fusion raised InternalValidationError on it, 2026-11-01), so nothing here reads one; a line
+    that comes twice is listed once. A member whose health can't be read counts as a problem."""
     healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
-    out, seen = [], set()
+    out = []
+
+    def note(line):
+        if line not in out:
+            out.append(line)
 
     def walk(item):
         if item.isGroup:
@@ -1383,11 +1389,13 @@ def timeline_problems(design):
             for j in range(g.count):
                 walk(g.item(j))
             return
-        if item.index in seen:
+        try:
+            state, msg = item.healthState, item.errorOrWarningMessage
+        except RuntimeError as e:
+            note("%s: its health can't be read (%s)" % (item.name, e))
             return
-        seen.add(item.index)
-        if item.healthState != healthy:
-            out.append("%s: %s" % (item.name, item.errorOrWarningMessage))
+        if state != healthy:
+            note("%s: %s" % (item.name, msg))
     tl = design.timeline
     for i in range(tl.count):
         walk(tl.item(i))
@@ -1529,11 +1537,24 @@ def _folder_reader():
     return fusion_folder
 
 
+def superseded_name(names, name, day):
+    """The name an older copy of `name` takes when a new one replaces it: NAME_SUPERSEDED-<day>, or with -2, -3...
+    when the folder already has that name (`names`: the names in the folder)."""
+    base = "%s_SUPERSEDED-%s" % (name, day)
+    if base not in names:
+        return base
+    n = 2
+    while "%s-%d" % (base, n) in names:
+        n += 1
+    return "%s-%d" % (base, n)
+
+
 def replace_own(app, folder, name):
-    """Before saving `name`: delete our own previous cloud copy (BASE's files only, each made by this
-    script; no drawing links them yet), closing it first if it is open; then check, with the shared reader,
-    that a new file of that name can be made without a second copy (it raises if an unreadable entry could
-    be it)."""
+    """Before saving `name`: rename our own previous cloud copy (BASE's files only, each made by this script)
+    to NAME_SUPERSEDED-<date>, closing it first if it is open. Cloud files are never deleted (PM rule,
+    2026-11-01: a deleted file can't come back). Then check, with the shared reader, that a new file of that
+    name can be made without a second copy (it raises if an unreadable entry could be it)."""
+    import time
     ff = _folder_reader()
     files, _unknown, _others = ff.read_folder(folder, stop_when=lambda fs, u, o: name in fs)
     found = files.get(name, [])
@@ -1543,9 +1564,19 @@ def replace_own(app, folder, name):
         d = app.documents.item(i)
         if d.name == name and d.isSaved:
             d.close(False)
+    names = set(files)
     for df in found:
-        df.deleteMe()
-        print("save: deleted the previous cloud file %s (our own)" % name)
+        new = superseded_name(names, name, time.strftime("%Y-%m-%d", time.gmtime()))
+        df.name = new
+        names.add(new)
+        print("save: renamed our previous cloud file %s to %s (superseded, not deleted)" % (name, new))
+    if found:                       # the listing may lag the rename by a moment
+        for _ in range(10):
+            files, _unknown, _others = ff.read_folder(folder, wait_s=0)
+            if name not in files:
+                break
+            adsk.doEvents()
+            time.sleep(3)
     for w in ff.safe_to_create(folder, name):
         print("save: warning: %s" % w)
 
