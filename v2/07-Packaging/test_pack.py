@@ -216,11 +216,13 @@ def _run_step_pictures(args, fail_save=False, locked=False):
             log["fits"] += 1
             self.fitted = True
 
-        def saveAsImageFile(self, out, w, h):
+        def saveAsImageFileWithOptions(self, opts):
+            assert opts.isBackgroundTransparent and (opts.width, opts.height) == (1600, 1000), vars(opts)
             if fail_save:
                 return False
-            Path(out).write_bytes(b"png")
-            log["saved"].append(dict(path=out, shown=sorted(b.name for b in bodies if b.isLightBulbOn), fitted=self.fitted))
+            Path(opts.filename).write_bytes(b"png")
+            log["saved"].append(dict(path=opts.filename, shown=sorted(b.name for b in bodies if b.isLightBulbOn),
+                                     fitted=self.fitted))
             return True
 
     folder = Obj(name="FocusPod v2", dataFiles=Coll([Obj(name="100000_P04_POD-SKELETON_CAD", versionNumber=7)]))
@@ -233,6 +235,7 @@ def _run_step_pictures(args, fail_save=False, locked=False):
     adsk.core.Application = Obj(get=lambda: app)
     adsk.core.Point3D = Obj(create=lambda x, y, z: (x, y, z))
     adsk.core.Vector3D = Obj(create=lambda x, y, z: (x, y, z))
+    adsk.core.SaveImageFileOptions = Obj(create=lambda fn: Obj(filename=fn, width=0, height=0, isBackgroundTransparent=False))
     adsk.fusion.Design = Obj(cast=lambda d: d)
     keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
     sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.fusion": adsk.fusion})
@@ -261,21 +264,21 @@ def test_step_pictures_sample_then_full_offline():
     with tempfile.TemporaryDirectory() as tmp:
         repo, out = Path(tmp) / "repo", Path(tmp) / "sample"
         stem = "100000_P04_POD-ASSEMBLY-GUIDE-STEP-%02d"
-        # a sample: only the named steps, each with its grid-alone twin, into the scratch folder; Fusion's settings untouched
+        # a sample: only the named steps, each saved once with a transparent background (no layout grid, axes or origin
+        # mark), into the scratch folder; Fusion's settings untouched
         log, data = _run_step_pictures({"repo_root": str(repo), "steps": "2,12,14", "out_dir": str(out)})
         assert "error" not in log, log.get("error")
-        assert log["files"] == sorted([stem % n + "_IMG.png" for n in (2, 12, 14)] + [stem % n + "_GRID.png" for n in (2, 12, 14)]), log["files"]
+        assert log["files"] == sorted(stem % n + "_IMG.png" for n in (2, 12, 14)), log["files"]
         assert not repo.exists(), "a sample wrote into the repository"
-        steps, twins = log["saved"][0::2], log["saved"][1::2]
+        steps = log["saved"]
         assert all(x["shown"] and x["fitted"] for x in steps), steps        # the step: its bodies, camera fitted to them
-        assert all(not x["shown"] and not x["fitted"] for x in twins), twins  # the twin: nothing shown, the same camera
         assert log["fits"] == 3 and log["closed"] is False, log
         first = next(s for s in data["steps"] if s["step"] == 2)
         assert set(first["new"]) <= set(steps[0]["shown"]), steps[0]
         # the full set: every step and its twin
         log, data = _run_step_pictures({"repo_root": str(repo), "out_dir": str(out)})
         assert "error" not in log, log.get("error")
-        assert len(log["files"]) == 2 * len(data["steps"]) and log["closed"] is False, log["files"]
+        assert len(log["files"]) == len(data["steps"]) and log["closed"] is False, log["files"]
         # refused before Fusion opens anything: a step with no picture, or no scratch folder
         for args in ({"repo_root": str(repo), "steps": "13", "out_dir": str(out)}, {"repo_root": str(repo), "steps": "2"},
                      {"repo_root": str(repo)}):
@@ -289,8 +292,9 @@ def test_step_pictures_sample_then_full_offline():
         assert "error" in log and log["closed"] is False, log
 
 
-def test_clean_pictures_keeps_parts_and_drops_the_grid():
-    # every pixel the step picture shares with its grid-alone twin turns white; a part, solid or faded, stays
+def test_clean_pictures_puts_parts_on_white():
+    # a transparent capture laid on white: the background turns white, a solid part stays, a faded part keeps its light
+    # tone; a picture without a transparent background (its grid would come through) is refused
     try:
         import numpy as np
         from PIL import Image
@@ -301,23 +305,26 @@ def test_clean_pictures_keeps_parts_and_drops_the_grid():
     spec = importlib.util.spec_from_file_location("clean_pictures", pack.GUIDE_DIR / "clean_pictures.py")
     cp = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cp)
-    grid = np.full((6, 8, 3), 255, np.uint8)
-    grid[2, :, :] = 229                              # a grid line
-    grid[:, 5, :] = (230, 120, 120)                  # a red axis
-    step = grid.copy()
-    step[1:4, 1:3, :] = 90                           # a solid part over the grid line
-    step[4:6, 6:8, :] = (197, 197, 197)              # a faded part over white
-    step[0, 0, :] = 240                              # renderer noise: 15 off, under TOL
+    px = np.zeros((6, 8, 4), np.uint8)                 # all clear: the background
+    px[1:4, 1:3] = (90, 90, 90, 255)                   # a solid part
+    px[4:6, 6:8] = (128, 128, 128, 90)                 # a faded part
     with tempfile.TemporaryDirectory() as tmp:
-        a, b = Path(tmp) / "x-STEP-01_IMG.png", Path(tmp) / "x-STEP-01_GRID.png"
-        Image.fromarray(step).save(a)
-        Image.fromarray(grid).save(b)
-        assert cp.pairs(tmp) == [(a, b)]
-        out, kept = cp.clean(a, b)
+        a = Path(tmp) / "x-STEP-01_IMG.png"
+        Image.fromarray(px, "RGBA").save(a)
+        assert cp.pictures(tmp) == [a]
+        out, kept = cp.on_white(a)
         o = np.asarray(out)
-    assert (o[2, 0] == 255).all() and (o[0, 5] == 255).all() and (o[0, 0] == 255).all()   # grid, axis, noise gone
-    assert (o[2, 1] == 90).all() and (o[5, 7] == 197).all()                              # the parts stay
-    assert abs(kept - 10 / 48) < 1e-9, kept
+        b = Path(tmp) / "y-STEP-02_IMG.png"
+        Image.fromarray(px[..., :3], "RGB").save(b)
+        try:
+            cp.on_white(b)
+            refused = False
+        except ValueError:
+            refused = True
+    assert out.mode == "RGB" and (o[0, 0] == 255).all() and (o[2, 1] == 90).all(), o[:3, :3]
+    want = round(255 - (255 - 128) * 90 / 255)
+    assert abs(int(o[5, 7, 0]) - want) <= 1, (o[5, 7], want)
+    assert abs(kept - 10 / 48) < 1e-9 and refused, (kept, refused)
 
 
 def test_sizes_follow_the_skeleton():

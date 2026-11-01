@@ -5,8 +5,8 @@
     python3 v2/02-Drawings/30-Assembly-Instructions/clean_pictures.py /some/scratch/folder   # writes img/
     python3 v2/07-Packaging/pack.py                     # puts each picture under its step in the guide
 
-A sample first (AGENTS.md: prove a method on a sample before using it at scale): add --arg steps=2,12,14 to the run,
-and clean_pictures.py --check-only to look at the result before the full set.
+A sample first (AGENTS.md: prove a method on a sample before using it at scale): add --arg steps=2,11,14 to the run,
+and look at what clean_pictures.py writes (with --out to a scratch folder) before the full set.
 
 Reads 100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json, which v2/07-Packaging/pack.py writes from its label map.
 Opens the skeleton's cloud design 100000_P04_POD-SKELETON_CAD from "Default Project/FocusPod v2" itself, because a STEP
@@ -14,11 +14,12 @@ import drops the body names (first run, 2026-10-31). It refuses to start when th
 it never touches anyone's session; it changes only what shows (light bulbs, opacity, the camera), never saves, and
 closes the design without saving. For each step it shows the bodies fitted so far (the step's new bodies solid, the
 earlier ones faded), turns the camera (from behind for the shell, from the front for the decor and the glass, from
-above with the ceiling and front hidden for the linings) and saves two pictures into out_dir: the step itself
-(...-STEP-NN_IMG.png) and, with the same camera and every body hidden, the grid alone (...-STEP-NN_GRID.png).
-clean_pictures.py then turns every pixel the two share white, so the layout grid, the axes and the origin mark go
-without changing any of Fusion's settings: the first sample (2026-11-01) showed the layout grid isn't an on/off switch
-the API can set, and the grid setting is shared by everyone using this Fusion.
+above with the ceiling and front hidden for the linings) and saves the step into out_dir (...-STEP-NN_IMG.png) with a
+transparent background. That capture leaves out Fusion's layout grid, the axes and the origin mark and keeps every
+part, solid or faded (probe, 2026-11-01, steps 2, 11 and 14), so none of Fusion's settings change: the API has no
+switch for the layout grid, and that setting is shared by everyone using this Fusion. A picture with every body hidden
+is no help either, as Fusion then draws a different, smaller grid (sample 2b). clean_pictures.py puts each picture on
+white for the guide.
 
 Fusion draws pictures only on a live screen, so run it when the screen is unlocked (D-84). The bodies are the
 skeleton's envelopes; pictures of the parts themselves replace these as each part's CAD merges.
@@ -48,7 +49,6 @@ TARGET = (0.0, 0.0, 1100.0)
 FADED = 0.35
 INSIDE_HIDE = ("C1 ENVELOPE", "C2 ENVELOPE", "DL FACETED", "DR FACETED", "DT FACETED", "DOOR GLASS", "FIXED GLASS",
                "KICK ENVELOPE")
-GRID_SUFFIX = "_GRID.png"
 
 
 def screen_locked():
@@ -131,7 +131,10 @@ def point_cm(p_mm):
 
 
 def save(vp, path, step):
-    if not vp.saveAsImageFile(path, WIDTH, HEIGHT):
+    """The viewport as a PNG with a transparent background: no layout grid, axes or origin mark, the parts as drawn."""
+    opts = adsk.core.SaveImageFileOptions.create(path)
+    opts.width, opts.height, opts.isBackgroundTransparent = WIDTH, HEIGHT, True
+    if not vp.saveAsImageFileWithOptions(opts):
         raise RuntimeError("Fusion saved no picture for step %d; is the screen unlocked?" % step)
 
 
@@ -186,14 +189,8 @@ def run(_context):
             vp.fit()
             out = os.path.join(out_dir, os.path.basename(s["image"]))
             save(vp, out, s["step"])
-            fitted = vp.camera              # the same camera for the grid alone: no fit with nothing shown
-            for name in shown:
-                for body in named[name]:
-                    body.isLightBulbOn = False
-            vp.camera = fitted
-            save(vp, out[:-len("_IMG.png")] + GRID_SUFFIX if out.endswith("_IMG.png") else out + GRID_SUFFIX, s["step"])
             made += 1
-            print("STEP %d: %s and its grid-alone twin (%d new bodies, %s view)" % (s["step"], out, len(s["new"]), s["view"]))
-        print("PICTURES: %d of %d, each with its twin" % (made, len(only) if only else len(data["steps"])))
+            print("STEP %d: %s (%d new bodies, %s view)" % (s["step"], out, len(s["new"]), s["view"]))
+        print("PICTURES: %d of %d" % (made, len(only) if only else len(data["steps"])))
     finally:
         doc.close(False)
