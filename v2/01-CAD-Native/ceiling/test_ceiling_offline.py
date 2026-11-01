@@ -396,7 +396,8 @@ class Cassette(unittest.TestCase):
             self.assertTrue(ca[2] <= ev(ey) <= ca[3])
 
     def test_fill_clear_of_clips_after_notches(self):
-        """The fill keeps fill_c from every clip and catch once its notches are cut."""
+        """The fill keeps fill_c from every clip, catch, bracket and tab once its notches are cut: where each one's
+        space, grown by fill_c, lies over a strip, the strip's notches together cover it."""
         hold = M.boxes_mm(VALS, M.keep_out_boxes())
         for key, bay, b, notches in M.fill_strips():
             sb = tuple(ev(e) for e in b)
@@ -404,11 +405,32 @@ class Cassette(unittest.TestCase):
             for hn, hb in hold:
                 grown = (hb[0] - VALS["fill_c"], hb[1] + VALS["fill_c"], hb[2] - VALS["fill_c"], hb[3] + VALS["fill_c"],
                          hb[4], hb[5])
-                if not M.overlap(sb, grown):
+                if not M.overlap(sb[:4] + (-1e9, 1e9), grown[:4] + (-1e9, 1e9)):
                     continue
-                self.assertTrue(any(M.overlap(grown, nb) and all(
-                    nb[2 * i] <= grown[2 * i] + 1e-9 and nb[2 * i + 1] >= grown[2 * i + 1] - 1e-9 for i in range(2))
-                    for nb in nbs), "bay %d: no notch clears %s" % (bay, hn))
+                part = (max(sb[0], grown[0]), min(sb[1], grown[1]), max(sb[2], grown[2]), min(sb[3], grown[3]))
+                self.assertTrue(M.covered_in_plan(part, nbs), "bay %d: the notches leave fill in %s's space" % (bay, hn))
+
+    def test_every_fill_notch_cuts(self):
+        """Each notch the build cuts takes fill no earlier notch has taken: Fusion marks an empty cut unhealthy (v13's
+        dry run, 2026-11-01: the eye tabs' notches lay inside the catches' within the strip)."""
+        for key, bay, b, notches in M.fill_strips():
+            sb = tuple(ev(e) for e in b)
+            done = []
+            for name, nb in notches:
+                nv = tuple(ev(e) for e in nb)
+                self.assertTrue(M.cuts_more(sb, done, nv), "bay %d: %s cuts nothing new" % (bay, name))
+                done.append(nv)
+
+    def test_plan_cover_helpers(self):
+        """cuts_more and covered_in_plan on known cases."""
+        strip = (0.0, 100.0, 0.0, 50.0)
+        a, b, c = (10.0, 30.0, 40.0, 60.0), (10.0, 30.0, 40.0, 70.0), (20.0, 40.0, 30.0, 60.0)
+        self.assertTrue(M.cuts_more(strip, [], a))
+        self.assertFalse(M.cuts_more(strip, [a], b), "b is a inside the strip")
+        self.assertTrue(M.cuts_more(strip, [a], c))
+        self.assertFalse(M.cuts_more(strip, [a, c], (12.0, 38.0, 42.0, 50.0)))
+        self.assertTrue(M.covered_in_plan((10.0, 40.0, 40.0, 50.0), [a, c]))
+        self.assertFalse(M.covered_in_plan((10.0, 40.0, 30.0, 50.0), [a, c]), "x 10..20, y 30..40 is left")
 
     def test_common_part_symmetry(self):
         """Mirror about the cassette centre line maps every feature onto another."""

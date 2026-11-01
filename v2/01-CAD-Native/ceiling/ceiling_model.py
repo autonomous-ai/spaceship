@@ -875,12 +875,15 @@ def fill_strips(vals=None):
             continue
         box = ("-fill_hw", "fill_hw", y0, y1, "0 mm", "fill_t")
         bv = tuple(ev(vals, e) for e in box)
-        notches, sig = [], []
+        notches, sig, cut = [], [], []
         for name, b in keep_out_boxes():
             nb = ("%s - fill_c" % b[0], "%s + fill_c" % b[1], "%s - fill_c" % b[2], "%s + fill_c" % b[3], "0 mm", "fill_t")
             nv = tuple(ev(vals, e) for e in nb)
-            if overlap(bv, nv):
+            # a notch that would cut only fill an earlier one has cut is left out: Fusion marks an empty cut unhealthy
+            # (v13's dry run: inside the strip the eye tabs' notches are the catches' own)
+            if overlap(bv, nv) and cuts_more(bv, cut, nv):
                 notches.append((name, nb))
+                cut.append(nv)
                 sig.append((round(nv[0], 3), round(nv[1], 3), round(nv[2] - bv[2], 3), round(nv[3] - bv[2], 3)))
         key = (round(bv[3] - bv[2], 3), tuple(sorted(sig)))
         if key not in kinds:
@@ -914,6 +917,30 @@ def boxes_mm(vals, boxes):
 
 def overlap(a, b, tol=1e-6):
     return all(a[2 * i] < b[2 * i + 1] - tol and b[2 * i] < a[2 * i + 1] - tol for i in range(3))
+
+
+def plan_cells(region, boxes, tol=1e-6):
+    """The centres of the cells that the boxes' X and Y edges cut region (x0, x1, y0, y1, ...) into: in plan, a box
+    covers a cell whole or not at all."""
+    xs = sorted({region[0], region[1]} | {min(max(b[i], region[0]), region[1]) for b in boxes for i in (0, 1)})
+    ys = sorted({region[2], region[3]} | {min(max(b[i], region[2]), region[3]) for b in boxes for i in (2, 3)})
+    return [((xa + xb) / 2, (ya + yb) / 2) for xa, xb in zip(xs, xs[1:]) if xb - xa > tol
+            for ya, yb in zip(ys, ys[1:]) if yb - ya > tol]
+
+
+def in_plan(p, b):
+    return b[0] < p[0] < b[1] and b[2] < p[1] < b[3]
+
+
+def cuts_more(region, earlier, box):
+    """True if box, a full-depth cut, takes some of region (in plan) that none of the earlier cuts has taken."""
+    return any(in_plan(c, box) and not any(in_plan(c, e) for e in earlier)
+               for c in plan_cells(region, list(earlier) + [box]))
+
+
+def covered_in_plan(region, boxes):
+    """True if the boxes together cover region in plan."""
+    return all(any(in_plan(c, b) for b in boxes) for c in plan_cells(region, boxes))
 
 
 # ---------------------------------------------------------------- flat pattern of the tray
