@@ -256,12 +256,21 @@ def plan_tube(design, key, label, outline, _note, closed_near=None):
     f = extrude(comp, one_profile(sk), "band_h", "EXTRUDE - %s - TUBE OUTSIDE" % label)
     body = f.bodies.item(0)
     body.name = "%s - TUBE" % PARTS[key][1]
-    # the bore: shell the prism's side faces (2 long faces and open ends)
+    # the bore: shell the prism's side faces (2 long faces and open ends). The top and bottom faces are told by
+    # their normals (along Z), not by their heights: every side face reaches the same top and bottom, and on a
+    # short piece (FL1, 4469 mm2 in plan) the top and bottom were as small as an end face and were shelled
+    # away too, leaving no bottom wall for the knee key's screws (FL1 sample, 2026-11-01)
     faces = adsk.core.ObjectCollection.create()
-    top_face = max(body.faces, key=lambda fc: fc.boundingBox.maxPoint.z)
-    bot_face = min(body.faces, key=lambda fc: fc.boundingBox.minPoint.z)
-    ends = [fc for fc in body.faces if fc != top_face and fc != bot_face and
+
+    def flat(fc):
+        g = fc.geometry
+        if g.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
+            return False
+        return abs(abs(adsk.core.Plane.cast(g).normal.z) - 1.0) < 1e-6
+    ends = [fc for fc in body.faces if not flat(fc) and
             fc.area * 100.0 < (ev(design, "band_t") + 1.0) * ev(design, "band_h") * 1.2]   # the short faces
+    if len(ends) != 2:
+        raise RuntimeError("%s: expected 2 end faces, found %d" % (label, len(ends)))
     if closed_near:
         def dist(fc):
             c = fc.boundingBox
