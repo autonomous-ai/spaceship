@@ -40,7 +40,7 @@ the STEP; the drawing generator reads these rows into its hole tables). Every jo
 
 | Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
-| F-4111-11 | Closing seam pins, J-CEIL-02 | C1: Ø7.0 in the closing face; C2: Ø9.53 rivnut in the closing face and Ø19 access in the inner wall; 4 at Y −425, −73.33, 278.33, 630 (the side bolts' Y), Z 2374 | The M6 × 25 pin from C2's rivnut crosses the 5.5 gap into C1's hole: holds the faces flush, pulls nothing | Joints register 2.10, 3.6 | confirmed |
+| F-4111-11 | Closing seam pins, J-CEIL-02 | C1: Ø7.0 in the closing face; C2: Ø9.53 rivnut in the closing face and Ø19 access in the face toward the frame's bay; 4 at Y −425, −73.33, 278.33, 630 (the side bolts' Y), Z 2374 | The M6 × 25 pin from C2's rivnut crosses the 5.5 gap into C1's hole: holds the faces flush, pulls nothing | Joints register 2.10, 3.6 | confirmed |
 | F-4111-12 | Lead-in | 1 × 45° on the closing face's lower edge (seam member and back member end) | C2 drops past C1 without catching the bulb seal | R-J9 | confirmed |
 
 ### Back members 40 × 40, 412104 (C1) and 412204 (C2)
