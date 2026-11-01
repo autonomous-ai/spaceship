@@ -245,6 +245,22 @@ def test_design_review_glass_handling():
     assert "up to %g mm" % pack.MINE["glide_max"].value in kit.extra_note, kit.extra_note
 
 
+
+def test_d132_no_floor():
+    # D-132: no floor panels, no foam, no threshold; the room floor is the pod's floor, so it is covered while the pod
+    # goes together and uncovered at the end, both in the clock
+    names = " ".join(p.name for p in pack.PIECES)
+    assert "FLOOR PANEL" not in names and "THRESHOLD" not in names, names
+    assert not {"FLOOR", "MAT", "THRESH"} & set(pack.R), sorted(pack.R)
+    assert not [s for s in pack.STEPS if "Floor" in s["title"] or "threshold" in s["title"].lower()]
+    bodies = {b for v in pack.SKEL.values() for b in v}
+    assert not [b for b in bodies if b.startswith(("F1", "F2", "THRESHOLD"))], bodies
+    band = next(s for s in pack.STEPS if s["title"] == "Base band")
+    final = next(s for s in pack.STEPS if s["title"].startswith("Final check"))
+    assert [o for o in band["ops"] if o["src"] == "t_floor_film_s"] and "soft lip" in band["check"], band
+    assert [o for o in final["ops"] if o["src"] == "t_floor_film_off_s"], final["ops"]
+    assert final["n"] <= pack.CLOCK_LAST_STEP
+
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
     outs = pack.outputs(pack.Model())

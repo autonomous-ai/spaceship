@@ -9,7 +9,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## Result
 
-1. **Two people, one 5 mm hex key, 22 steps: about 132 minutes (4.4 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
+1. **Two people, one 5 mm hex key, 22 steps: about 133 minutes (4.4 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
@@ -63,13 +63,13 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ![Step 2](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-02_IMG.png)
 
-- **Time:** about 8 min for 2 people.
+- **Time:** about 10 min for 2 people.
 - **Parts:** **2-04** BASE - BAND ASSY - BACK (3.2 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.4 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.4 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.1 kg), **2-14** BASE - SMALL PARTS CARTON (1.1 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
 - **Person A:** Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: FL1, then FL2 at the knee (under DL), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).
-- **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).
+- **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03). Then, with A, lays a PE sheet from the packing over the room floor inside the band, clear of the soft lip, for the rest of the work: the room floor is the pod's floor now (D-132).
 - **Caution:** Nobody lifts the back band or stands on it until B1 and B2 bolt through its top wall in step 3: until then only its weight holds it on the studs (J-BASE-02).
-- **Check before the next step:** Band level within the spirit level's bubble; the back band resting on its glides with both end caps down over the studs; every front piece hooked home; the soft lip on the band's inner face touches the room floor all round (D-132); the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged. Cover the room floor inside the band with the packing film for the rest of the work: it is the pod's floor (D-132).
+- **Check before the next step:** Band level within the spirit level's bubble; the back band resting on its glides with both end caps down over the studs; every front piece hooked home; the soft lip on the band's inner face touches the room floor all round (D-132); the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.
 
 ### Step 3. Lower back wall: B1, B2
 
@@ -258,11 +258,11 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 21. Final check and film
 
-- **Time:** about 12 min for 2 people.
+- **Time:** about 13 min for 2 people.
 - **Parts:** none.
 - **Fasteners:** none.
 - **Person A:** Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the room floor when closed (D-132).
-- **Person B:** Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.
+- **Person B:** Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); lifts the floor sheet; cleans.
 - **Check before the next step:** Every check in the final check list is ticked.
 
 ### Step 22. Work-wall ledge and screen rail, after the clock
@@ -315,7 +315,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | Step | What | Pieces | Register bolts | Other fixings | 2-person min | 1-person min (shared) | Elapsed min |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1 | Unpack and set the parts down at their places | 1 | 0 | 0 | 10.0 | 0.0 | **11.5** |
-| 2 | Base band | 5 | 0 | 0 | 6.7 | 1.3 | **8.4** |
+| 2 | Base band | 5 | 0 | 0 | 7.7 | 1.3 | **9.6** |
 | 3 | Lower back wall: B1, B2 | 2 | 11 | 0 | 0.7 | 4.8 | **3.5** |
 | 4 | Lower side walls: L1, R1 | 2 | 14 | 0 | 0.7 | 5.7 | **4.0** |
 | 5 | Upper back wall: B3, B4 | 2 | 11 | 0 | 0.7 | 4.8 | **3.5** |
@@ -334,19 +334,19 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 18 | Ceiling linings: 2 cassettes | 2 | 0 | 0 | 4.0 | 4.7 | **7.3** |
 | 19 | Light shelf | 1 | 0 | 0 | 0.3 | 10.0 | **6.1** |
 | 20 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
-| 21 | Final check and film | 0 | 0 | 0 | 10.0 | 1.5 | **12.4** |
+| 21 | Final check and film | 0 | 0 | 0 | 10.0 | 2.0 | **12.6** |
 | 22 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
-|  | **Clock, steps 1 to 21** |  | 92 | 0 |  |  | **132** |
+|  | **Clock, steps 1 to 21** |  | 92 | 0 |  |  | **133** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
 1. Step 9 (Fixed glass, then the right decor block DR): 13 min.
-2. Step 21 (Final check and film): 12 min.
+2. Step 21 (Final check and film): 13 min.
 3. Step 1 (Unpack and set the parts down at their places): 12 min.
 4. Step 7 (Ceiling: C1, C2): 10 min.
-5. Step 10 (Door (before DT)): 9 min.
+5. Step 2 (Base band): 10 min.
 
-**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 132 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
+**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 133 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
 
 | Fix | Steps | Priced on the 168-minute model | Owner |
 |---|---|---:|---|
@@ -396,6 +396,8 @@ Unit times used:
 | `t_sleeve_s` | 90 s | assumption | this plan (#263) | from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box |
 | `t_grille_set_s` | 60 s | assumption | this plan (#263, J-AIR-03) | lay the roof grille on the sleeve's flange, holes on the rivnuts, and start its 4 bolts by hand; driving them is the register bolts' time |
 | `t_selftest_s` | 180 s | assumption | this plan (D-87) | power on and the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail |
+| `t_floor_film_s` | 60 s | assumption | this plan (D-132) | both people lay a PE sheet from the packing over the room floor inside the band, clear of the soft lip |
+| `t_floor_film_off_s` | 30 s | assumption | this plan (D-132) | lift the floor sheet and fold it with the packaging |
 | `t_peel_tab_s` | 6 s | assumption | this plan (D-87) | pull one film panel off by its quick-release tab |
 | `t_peel_s` | 20 s | assumption | this plan | find the edge of a film panel with no tab and peel it, for comparison |
 
