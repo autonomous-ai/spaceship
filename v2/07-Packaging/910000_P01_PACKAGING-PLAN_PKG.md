@@ -221,7 +221,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 15 |
 | **2-11** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.91 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 11 |
 | **2-12** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.40 | calculation (CAD) | 600 × 250 × 200 | 12 |
-| **2-13** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.58 | calculation (CAD) | 2332 × 80 × 60 | 19 |
+| **2-13** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.57 | calculation (CAD) | 2332 × 80 × 60 | 19 |
 | **2-14** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.14 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-15** | 810101 | INTERIOR - WORK WALL LEDGE ASSY | Bàn tựa vách làm việc (cụm) | - | 1.90 | calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 22 |
 | **2-16** | 610401 | AIR - SUPPLY FAN BOX | Hộp quạt cấp (cụm) | - | 13.45 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption | 2005 × 516 × 203 | 13 |
@@ -283,7 +283,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | BASE | Base seal: BASE's soft lip along the band pieces' inner faces | 6.129 | 0.49 | calculation (CAD); kg/m source | 2-04 × 2.4, 2-05 × 1.462, 2-06 × 1.464, 2-07 × 0.803 |
 | BASE | Cable grommets: the sealed cable holes | 1 | 0.10 | source | A-4 |
 | ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.28 | calculation (CAD) | 1-02 × 0.544682, 2-12 × 0.455318 |
-| INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | calculation (CAD) | 2-13 |
+| INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.57 | calculation (CAD) | 2-13 |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-15 |
 | WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers | 1 | 2.49 | calculation (part CAD) | A-3 |
 | LATER | Voice cockpit kit reserve, outside the 460 kg cap | 1 | 4.00 | assumption | L-1 |

@@ -47,6 +47,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   It keeps the principal view's up where it can. A through hole that leaves its part at an angle is drawn from
   the face it is square to.
 - Blind holes: their depth (of the full diameter) and, when the model has it, the drill point's angle.
+- Countersinks (D-143): a cone on a hole's axis at its open end, widening out of the material, is called out with
+  its hole, `Ø5.5, CSK Ø10.4 x 90°` (the outer diameter at the face and the included angle); the hole is drilled
+  from that face. A hole countersunk from both sides is refused for now. In bent sheet mode a countersink is called
+  out the same way (the DXF cuts the bore), and any other cone is refused, never taken for a corner relief's end.
+  The read-back finds each countersink in the STEP itself (a cone with two circles on a hole's axis, the smaller the
+  hole's: its outer diameter, and its angle from the circles' radii and spacing) and checks the printed callout,
+  both ways.
 - Holes through two walls of one member: a removed section through their axis, hatched per ISO 128-50 (filled
   solid under 1.6 mm on paper), each wall's hole sized across its gap.
 - One hole table per face: tags H01... on the views, `X (mm)` and `Y (mm)` from that view's origin (O1, O2...,
