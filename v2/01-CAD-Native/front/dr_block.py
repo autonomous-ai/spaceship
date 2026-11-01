@@ -85,7 +85,7 @@ CUT_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.cs
 WELD_BOM_REL = "v2/03-Manufacturing/front/351306_%s_FRONT-DECOR-FRAME-DR_BOM.csv" % REV   # the weldment's own parts list (D-120)
 # flat parts cut from sheet: their DXF gives the outline and every hole, so they need no drawing (D-89 part 4)
 DXF_FLAT = {"BACK": "351302_%s_FRONT-DECOR-BACK-PLATE-DR_DXF.dxf" % REV,
-            "ACCESS": "351305_%s_FRONT-DECOR-ACCESS-PANEL-DR_DXF.dxf" % REV,
+            "ACCESS": "351305_%s_FRONT-DECOR-INNER-FACE-PANEL-DR-REMOVABLE_DXF.dxf" % REV,
             "FELT": "351304_%s_FRONT-DECOR-INNER-PANEL-FELT-DR_DXF.dxf" % REV}
 
 XL, XR = "-pod_w / 2", "pod_w / 2"
@@ -265,7 +265,8 @@ RESERVED_STATUS = "HOLD: reserved air space; AIR designs and lists the part (PM 
 PARTS = {
     "SKIN": ("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải"),
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
-    "ACCESS": ("351305", "FRONT - DECOR ACCESS PANEL - DR", "Tấm thăm khối phải"),
+    # D-130's notes (the PM, 2026-11-01): 351305 renamed DR's removable inner face panel, the one panel since D-130
+    "ACCESS": ("351305", "FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE", "Tấm mặt trong tháo được khối phải"),
     "FELT": ("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải"),
     "SEAL": ("848013", "SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA",
              "Gioăng tấm thăm - xốp rất mềm dày 4.0, keo dán sẵn"),
@@ -429,7 +430,7 @@ def frame_members():
 
 # part-only designs for the part drawings (a base view shows its whole design): the full block is built and checked,
 # then every other component is removed
-SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN", "felt": "FELT"}
+SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN", "felt": "FELT", "panel": "ACCESS"}
 
 
 def scope_part(scope):

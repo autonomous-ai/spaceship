@@ -7,7 +7,13 @@ V_DL, G_DL = _evaluate("dl_block.py")
 _XL, _XR, _YF = -v["pod_w"] / 2, v["pod_w"] / 2, -v["pod_d"] / 2
 _YB = _YF + v["decor_d"]
 _drx0 = V_DR["fix_xtr"] + _XL                       # DR's leftmost point, at DT's underside
-_drfelt = _YB - V_DR["dr_back_t"] + V_DR["dr_skin_t"] + V_DR["felt_t"]   # the felt's back face, DR's rearmost point
+_drfelt = V_DR["dr_acc_face_y"] + V_DR["felt_t"]     # the felt on the inner face panel's room face, DR's rearmost point
+def _evr_dr(e):
+    import math as _m
+    return eval(re.sub(r"(\d)\s*mm\b", r"\1", str(e)).replace("^", "**"), {"__builtins__": {}, "sqrt": _m.sqrt, "abs": abs},
+                V_DR)
+
+
 SPECS["dr"] = {
     "design": doc("350003", "FRONT - DECOR BLOCK ASSY - DR", "CAD"),
     "drawing": doc("350003", "FRONT - DECOR BLOCK ASSY - DR", "DWG"),
@@ -21,22 +27,30 @@ SPECS["dr"] = {
         ("left", (-_YB, V_DR["wall_z0"]), (-_YF, V_DR["wall_z0"]), "below", 10),
     ],
     "notes": [
-        "DR (the decor detail sample): 3 mm ACP skin 351301 (EV3038 Dark Yellow) from the skeleton's measured v1 "
-        "shape, bonded to the welded 6063-T6 tube frame 351306 (26 tubes, cut list in the parts list's folder); fixed "
-        "back plate 351302 on the right wall's bolt line; removable access panel 351305 and felt-covered inner panel "
-        "351303/351304 (D-59); reserved air spaces 351402 to 351405 for AIR's supply fan box 610401, its intake riser "
-        "and transitions, its two fans included (AIR designs and lists them, PM rulings 2026-11-01).",
+        "DR: 3 mm ACP skin 351301 (EV3038 Dark Yellow) from the skeleton's measured v1 shape, bonded to the welded "
+        "tube frame 351306 (%d tubes as %d parts, its own parts list and cut list: D-120); fixed back plate 351302 on "
+        "the right wall's bolt line and the band behind the soffit; one removable inner face panel 351305 with the felt "
+        "351304 glued on its room face (D-130); reserved air spaces 351402 to 351405 for AIR's supply fan box 610401, "
+        "its intake riser and transitions (AIR designs and lists them, PM rulings 2026-11-01)." % (
+            len(G_DR["frame_members"]()), len(set(G_DR["MP"].DR_MEMBERS.values())) if "F09" in G_DR["MP"].DR_MEMBERS
+            else len(set(G_DR["MP"].DR_MEMBERS.values())) + 1),
         "Base open inside the skins over the mesh band piece, back to the closing plate: 0.042 m2 gross less the "
         "frame's bottom tubes (PM ruling: at least 0.028 free). Air goes band, block, riser; the riser's open foot "
         "stands 140 above the base.",
         "Slot along the inner edge for the fixed pane's hidden channel: 17 wide at the glass plane (PM ruling).",
-        "Opening 203 x 215 in the access panel into the air column's top (D-60 table). After the column, the inner "
-        "panel and the access panel come off so the air supply assembly (14.9 kg, plug-in connectors) slides in from "
-        "inside the pod (D-87); no frame tube crosses that opening.",
-        "Access panel: 3 mm, 10 bolts M6 x 16 into rivnuts in the frame; the air column hangs on 2 hook studs at X 971, "
-        "Z 1700 and 1850, and starts at the panel's room-side face, Y -643.5 (PM rulings 2026-11-01). The inner panel "
-        "and its felt stop at the soffit's underside, Z 2120. Flat sheet parts (back plate 1.5, access panel 3.0, "
-        "inner panel) are cut from their DXFs (D-89 part 4); the felt has its own drawing.",
+        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads with head washers into rivnuts "
+        "838003 in the frame's tubes under its edges, about 400 apart; a washer 838004 on each rivnut head holds it "
+        "%.2f off the frame, its room face at Y %.2f (AIR's named value); the seal 848013 runs round its edge, squeezed "
+        "to %.2f, cut round each washer. Opening %.0f wide into the air column's top (X %.0f to %.0f); the column hangs "
+        "on 2 hook studs at X 971, Z 1700 and 1850. Ships loose and goes on after the air unit; to take it off, the "
+        "column comes off first, then the panel drops %.0f and tilts out under the soffit (checked in the model)." % (
+            len(G_DR["panel_screws"]()), V_DR["dr_pnl_gap"], V_DR["dr_acc_face_y"], V_DR["dr_pnl_gap"], V_DR["op_w"],
+            V_DR["op_x0"], V_DR["op_x0"] + V_DR["op_w"], V_DR["dr_drop"]),
+        "D-131 skin spans: the front ring's cross tube F09 (Z %.0f to %.0f) holds the front skin over the fan box, "
+        "1.72 mm under 100 N (SKIN-SPANS.md); AIR's fan box stands %.0f back from the skin's inside (Y %.0f), %.0f behind F09 "
+        "(PM ruling 2026-11-01)." % (_evr_dr("((fb_z0 + ((dr_cc - dr_skin_t - dr_cny * (%s)) / dr_cnz) - fr_w) / 2 - fr_w / 2)" % (
+            "(-pod_d / 2 + dr_skin_t)")), _evr_dr("((fb_z0 + ((dr_cc - dr_skin_t - dr_cny * (%s)) / dr_cnz) - fr_w) / 2 + fr_w / 2)" % (
+            "(-pod_d / 2 + dr_skin_t)")), V_DR["fb_y0"] - _YF - V_DR["dr_skin_t"], V_DR["fb_y0"], V_DR["fb_gap"]),
         "J-FRONT-02: DR stands on 2 spigots on BASE's support behind the mesh piece: hole 8.5 at X 1050 and slot "
         "8.5 x 14 along X at X 1147, Y -656.5, in the bottom back tube. J-FRONT-03: rivnuts for DT's two spigots in "
         "the ledge tube's top at X 270 and 410, Y -657.9 (PM rulings 2026-11-01).",
@@ -105,10 +119,14 @@ def _cut_notes(G, V):
                         {"__builtins__": {}, "sqrt": _m.sqrt, "abs": abs}, V)
     rows = FLx.cut_list_rows(G["frame_members"](), ev, "")
     total = sum(float(r[4]) for r in rows) / 1000.0
-    lines = ["CUT LIST (6063-T6 tube, mill finish, D-79), %d tubes, %.1f m: " % (len(rows), total) +
-             "; ".join("%s %s %s L %s" % (r[1], re.sub(r"\b(Dt|Dr|Dl)\b", lambda m_: m_.group(0).upper(),
-                                                        r[2].capitalize().replace("dt ", "Dt ")),
-                                         r[3].replace("6063-T6 aluminium tube ", ""), r[4]) for r in rows) + "."]
+    MPx = G["MP"]
+    pns = {MPx.DL_FRAME: MPx.DL_MEMBERS, MPx.DT_FRAME: MPx.DT_MEMBERS, MPx.DR_FRAME: MPx.DR_MEMBERS}.get(G["FRAME_PN"], {})
+    lines = ["CUT LIST (6063-T6 tube, mill finish, D-79), %d tubes, %.1f m, each tube's part number after its key "
+             "(D-120; the frame's own parts list gives names and masses): " % (len(rows), total) +
+             "; ".join("%s %s%s %s L %s" % (r[1], (pns.get(r[1], "number HOLD") + " ") if pns else "",
+                                            re.sub(r"\b(dt|dr|dl|x|y|z)\b", lambda m_: m_.group(0).upper(),
+                                                   r[2].capitalize(), flags=re.I),
+                                            r[3].replace("6063-T6 aluminium tube ", ""), r[4]) for r in rows) + "."]
     return lines
 
 
@@ -134,10 +152,13 @@ SPECS["dr_frame"] = _frame_spec(
     ["DR's welded frame: a ring 20 inside the front skin, a ring in front of the back plates with the 80 x 20 "
      "bolt-line tube (6 holes 14 in its back wall round the J-FRONT-01 rivnut tails) and the 60 x 20 band tube, "
      "facet, chamfer and DT-joint tubes between the rings. No back-ring tube crosses the opening the air unit slides "
-     "through (D-87). Rivnuts 838003 set at the factory: 10 for the access panel's bolts (6 on X 1188, 2 at "
-     "Z 130, 2 at Z 2140), and 2 in the ledge tube's top for DT's spigots (X 270 and 410). Walls: 1.0 on the tubes "
-     "that only hold the skin, 1.2 on the tubes with rivnuts, 1.5 on the fan-box shelf tubes (PM ruling 2026-11-01). "
-     "J-FRONT-02: spigot hole 8.5 (X 1050) and slot 8.5 x 14 (X 1147) in the bottom back tube's bottom wall."])
+     "through (D-87). Rivnuts 838003 set at the factory: %d for the inner face panel's screws, on the middles of the "
+     "bottom, bolt-line, band, ledge, diagonal and glass-edge tubes, about 400 apart and 40 clear of the corners "
+     "(D-130), each with its stop washer 838004 on the head; and 2 in the ledge tube's top for DT's spigots (X 270 and "
+     "410). The front ring's cross tube F09 over the fan box holds the front skin (D-131 skin spans). Walls: 1.0 on "
+     "the tubes that only hold the skin, 1.5 on the tubes with the panel's rivnuts and on the fan-box shelf tubes "
+     "(PM rulings 2026-11-01). J-FRONT-02: spigot hole 8.5 (X 1050) and slot 8.5 x 14 (X 1147) in the bottom back "
+     "tube's bottom wall." % len(G_DR["panel_screws"]())])
 SPECS["dr_skin"] = {
     "design": doc("351301", "FRONT - DECOR SKIN - DR", "CAD"), "drawing": doc("351301", "FRONT - DECOR SKIN - DR", "DWG"),
     "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
@@ -234,16 +255,54 @@ SPECS["dr_felt"] = {
     "notes": [
         "PET acoustic felt 9 mm, Dark Gray (D-79), the factory's felt (D-31; hardware selection A3); emission "
         "certificate HOLD. Laser-cut from 351304_P01_FRONT-DECOR-INNER-PANEL-FELT-DR_DXF.dxf (1:1, mm). Outline +/-2.",
-        "Its outline follows the inner panel 351303 (the glass's slanted edges on the left, the air column's edge on "
-        "the right, the soffit's underside at the top), so it is not a plain rectangle and keeps a drawing (D-89).",
-        "Glued to the inner panel 351303 at the factory over its whole face: the bond area is the full outline. "
-        "Surface prep: the panel's face clean, dry and dust-free, wiped with isopropyl alcohol; adhesive per the felt "
-        "maker (product HOLD).",
+        "Its outline: the glass's slanted edges on the left, the air column's edge on the right (X %.0f), the soffit's "
+        "underside at the top, so it is not a plain rectangle and keeps a drawing (D-89). Holes %.0f over the inner "
+        "face panel's screw heads under it (their places in the DXF), each closed with a plug cut from the same felt "
+        "(D-130: no bare socket heads on the room side)." % (V_DR["dr_col_x0"], V_DR["dr_felt_hole"]),
+        "Glued at the factory to the room face of DR's removable inner face panel 351305 (D-130), over its whole face: "
+        "the bond area is the full outline less the holes. Surface prep: the panel's face clean, dry and dust-free, "
+        "wiped with isopropyl alcohol; adhesive per the felt maker (product HOLD).",
         "Seen from inside the pod between the fixed glass and the air column; its top meets the soffit's underside at "
         "Z 2120 (PM ruling 2026-11-01).",
     ],
     "title": title("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải", "PET felt 9 mm",
                    "Dark Gray, as supplied (D-79)", "1:10", "A2", [("MASS", "0.74 kg (calculation)")]),
+}
+
+# 351305 DR's removable inner face panel (D-130): laser-cut 3 mm sheet; it keeps a drawing for its flatness, its
+# holes' purpose and its service notes (PM ruling 2026-11-01: note the flatness on the panel's drawing)
+_pzs = V_DR["fg_vis_zb"] + V_DR["dr_skin_t"]
+_pzb = V_DR["fg_vis_zt"] + V_DR["dr_band_dz"]
+_pxr = V_DR["dr_strip_x0"]
+_pxl = _evr(_LR.diag_x("fg_vis_zt", "dr_skin_t"))
+_pxb = _evr(_LR.right_x("(%s)" % _pzs, "dr_skin_t")) if False else _evr(_LR.right_x("fg_vis_zb + dr_skin_t", "dr_skin_t"))
+_PNL_SCREWS = [(_evr(x), _evr(z)) for _t, (x, z) in G_DR["panel_screws"]()]
+SPECS["dr_panel"] = {
+    "design": doc("351305", G_DR["PARTS"]["ACCESS"][1], "CAD"),
+    "drawing": doc("351305", G_DR["PARTS"]["ACCESS"][1], "DWG"),
+    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (150, 230), "iso": (330, 95)},
+    "box": {"front": (_pxl, _pzs, _pxr, _pzb)},
+    "dims": [("front", (_pxb, _pzs), (_pxr, _pzs), "below", 10), ("front", (_pxr, _pzs), (_pxr, _pzb), "right", 12),
+             ("front", (_pxl, V_DR["fg_vis_zt"]), (_pxr, V_DR["fg_vis_zt"]), "above", 25)],
+    "notes": [
+        "Aluminium EN AW-5754-H22 sheet 3.0 mm, laser-cut from 351305_P01_FRONT-DECOR-INNER-FACE-PANEL-DR-REMOVABLE_DXF.dxf "
+        "(1:1, mm: the outline and every hole). Outline +/-0.5; hole positions +/-0.3 (PROPOSED).",
+        "Flat within about 0.5 mm between any two neighbouring screws (PM ruling 2026-11-01): it seals on the very "
+        "soft seal 848013 squeezed to %.2f, so a bow over that would open the seal; check on a flat table before the "
+        "felt goes on." % V_DR["dr_pnl_gap"],
+        "%d clearance holes 7.0 for M6 x 16 ISO 4762 socket heads with head washers, about 400 apart along its edges "
+        "(D-130; screws and rivnuts in the frame per the joints register); 2 holes 9.53 +0.10/0 at X 971, Z 1700 and "
+        "1850 for the rivnuts of the air column's hook studs (J-AIR-02); the opening %.0f wide into the column's top "
+        "(X %.0f to %.0f)." % (len(_PNL_SCREWS), V_DR["op_w"], V_DR["op_x0"], V_DR["op_x0"] + V_DR["op_w"]),
+        "Room face at Y %.2f (AIR's named value dr_acc_face_y): its column and the soffit follow it. The felt 351304 "
+        "is glued on its room face at the factory; its holes over the screw heads take felt plugs." % V_DR["dr_acc_face_y"],
+        "Ships loose and goes on after the air unit (D-130). To take it off: the air column first, then the panel drops "
+        "%.0f and tilts out under the soffit (checked in the model); two people, about %.1f kg with its felt." % (
+            V_DR["dr_drop"], 7.7 + 0.74),
+        "Finish: mill finish, deburred; hidden behind the felt and the air column (D-79).",
+    ],
+    "title": title("351305", G_DR["PARTS"]["ACCESS"][1], G_DR["PARTS"]["ACCESS"][2], "aluminium EN AW-5754-H22 3.0",
+                   "mill finish, deburred (hidden, D-79)", "1:10", "A2", [("MASS", "7.7 kg (calculation)")]),
 }
 
 # 351203 DT top stop: a 20 x 20 x 2 angle, screwed up into DT's rail F02
