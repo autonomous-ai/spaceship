@@ -32,14 +32,22 @@ entry} (D-139). An entry holds only what the STEP and the list can't give:
 - views: the related first-angle views ('above', 'below', 'from_left', 'from_right'); else as many as it takes to
   show every part, at least one;
 - sections: [{letter, point, normal (toward the viewer), scale, slice (depth kept behind the plane), window (x0, x1,
-  y0, y1 in the section's view), around (a part number: the plane through its first placement, the window the
-  assembly's full thickness by that part +- half), stack (the layers' faces as ordinates and a balloon on each layer: a build-up,
-  D-147 (2)), on (the view its plane is drawn on)}]; when a part is hidden in every view and no section is given, a
-  section across the parts that hide it is added;
-- interfaces: [{view, of: [part numbers], along: 'x' or 'y', origin: {pn, pick: '-Y'...} or {assembly: True} (its
-  centre), at: 'centre', 'min' or 'max', side, sign ('view': signed along the view's axis, for an origin in the middle), words}]: ordinates of those parts from the origin part (guideline 5.1's interface sizes);
+  y0, y1 in the section's view), around (a part number: the plane through its first placement or body, the window
+  the assembly's full thickness by that part +- half), stack (the layers' faces as ordinates and a balloon on each
+  layer: a build-up, D-147 (2)), stack_from ({pn, face}: the build-up's 0 on that datum face, positive the way it
+  looks), on (the view its plane is drawn on)}]; with no sections given, a section across a part hidden in every
+  view is added; a part still hidden in every view and every section the entry gives stops the sheet with a message
+  naming it;
+- interfaces: [{view, of: [part numbers], along: 'x' or 'y', origin: {pn, pick: '-Y'...}, {pn, face: '-Y'} (a datum
+  face) or {assembly: True} (its centre), at: 'centre', 'min' or 'max' (or a list), side, sign ('view': signed along
+  the view's axis, for an origin in the middle), origin_line (the origin is a centre plane: its chain line across
+  the view), list (the notes give each part's values), words}]: ordinates of those parts from the origin (guideline
+  5.1's interface sizes);
 - centre_lines: [{view, of: [part numbers]}]: a chain line along each of those parts (a cassette's ribs);
-- datums: [{letter, pn, face ('+Z'...), view, words}]: a part's outer face seen edge on, named (ISO 5459);
+- datums: [{letter, pn, face ('+Z'...), view, words}]: a part's outer face seen edge on, named (ISO 5459); or
+  {letter, pn, median: 'x' or 'y', view, words}: the part's centre plane, on the view's overall size of it;
+- balloon_views: {part number: view}: where that item's balloon goes (a cassette's clips and catches on its plan);
+- overall_sides: {'x': 'up' or 'down', 'y': 'left' or 'right'}: the principal's overall sizes on those sides;
 - envelopes: {name start: part number}: a held part the STEP models as a named shape without a number (WALL's
   'NO-PN-HOLD-H03' clip zones for the clip 518001), drawn and ballooned as that part;
 - unhatched: part numbers a section leaves whole (ISO 128-50: shafts, pins, studs and the like cut along their
@@ -1047,7 +1055,7 @@ class Side:
         self.overall = {}       # axis: (p1, p2, side, gap) of the overall size drawn on this view
 
 
-def overall_dims(sh, views, sides):
+def overall_dims(sh, views, sides, entry=None):
     """The three overall sizes (true mm, read from the exact projection): the principal's width and height, and
     the depth on the first related view; each on a side no neighbouring view uses."""
     P = views["principal"]
@@ -1069,8 +1077,10 @@ def overall_dims(sh, views, sides):
         sides[av.name].overall[axis] = (p1, p2, side, 10.0)
         out.append({"view": av.name, "axis": axis, "value": round(val, 3), "text": txt})
 
-    put(P, "x", "up" if "below" not in views else ("down" if "above" not in views else "up"))
-    put(P, "y", "left" if "from_right" not in views else ("right" if "from_left" not in views else "left"))
+    want = (entry or {}).get("overall_sides", {})     # the entry may move one (a datum's leader goes that way)
+    put(P, "x", want.get("x") or ("up" if "below" not in views else ("down" if "above" not in views else "up")))
+    put(P, "y", want.get("y") or ("left" if "from_right" not in views else ("right" if "from_left" not in views
+                                                                             else "left")))
     for nm, axis, side in (("above", "y", "left"), ("from_left", "x", "down"), ("below", "y", "left"),
                            ("from_right", "x", "down")):
         if nm in views:
@@ -1293,7 +1303,9 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
             raise NotDrawable("%s: item %d's balloon view %s is not drawn" % (assy.pn, it.no, want))
         it_order = [want] if (want and not only) else order
         done = None
-        for style in ("arrow", "dot"):
+        # an arrow first, in a section one whose leader crosses no drawn line (not through another layer's cut face,
+        # its hatching or a dimension: WALL's felt); then any arrow; then a dot
+        for style, clear in (("arrow", True), ("arrow", False), ("dot", False)):
             cands = []
             for k, nm in enumerate(it_order):
                 av = views[nm]
@@ -1326,6 +1338,8 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                         continue
                     if any(_cross(a, S, p, q) for p, q in leaders):
                         continue
+                    if clear and av.kind == "section" and _crossings(sh, a, S, u):
+                        continue
                     if any(seg_dist(cc, a, S) < r + 1.5 for cc in centres):
                         continue
                     t3 = c[6] if kind == "dot" else edge_tip3d(av, i, assy, pt)
@@ -1338,7 +1352,9 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
             if done:
                 break
         if not done:
-            raise NotDrawable("%s: no free place for the balloon of item %d (%s)" % (assy.pn, it.no, it.pn))
+            hint = ("; it is hidden in every view and every section the entry gives, so the entry needs a section "
+                    "through it" if it in getattr(assy, "missing", ()) else "")
+            raise NotDrawable("%s: no free place for the balloon of item %d (%s)%s" % (assy.pn, it.no, it.pn, hint))
         nm, kind, i, pt, S, ctr, a, u, t3 = done
         if kind == "arrow":
             sh.line(a, (S[0] - u[0] * 0.5, S[1] - u[1] * 0.5), W_THIN)
@@ -1355,6 +1371,13 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                      "centre": ctr, "r": B_R})
         sh.flush()
     return recs
+
+
+def _crossings(sh, a, S, u):
+    """How many drawn lines a leader from a to its tip S crosses, short of the last 1.5 mm (the edge it lands on)."""
+    e = (S[0] - u[0] * 1.5, S[1] - u[1] * 1.5)
+    box = (min(a[0], e[0]), min(a[1], e[1]), max(a[0], e[0]), max(a[1], e[1]))
+    return sum(1 for p, q in sh.grid.near(box, 0.0) if _cross(a, e, p, q))
 
 
 def _bbox_near(p, pt, pad):
@@ -1402,8 +1425,9 @@ def notes_for(assy, views, ifaces=None, datums=None):
         keys = sorted({getattr(o, "envelope", None) for o in it.occs} - {None})
         if keys:
             out.append("Item %d %s is shown by the STEP's held envelope%s %s: the part isn't named yet (%s); its "
-                       "places and count are the envelope's." % (it.no, it.pn, "s" if len(it.occs[0].solids) > 1 else "",
-                                                                  ", ".join(keys), (it.row.get("status") or "HOLD").strip()))
+                       "places and count are the envelope's." % (
+                           it.no, it.pn, "s" if len(it.occs[0].solids) > 1 else "", ", ".join(keys),
+                           (it.row.get("status") or "HOLD").strip()))
     for it in assy.refs:
         r, _k, _f = list_rows(it.pn, assy.team)
         par = (r or {}).get("parent", "").strip() if r else ""
@@ -1492,7 +1516,7 @@ def make(pn, team, entry, out_path, today=None, step=None):
     cuts = cutting_planes(sh, views)
     clines = centre_lines(sh, assy, views)
     sides = {nm: Side() for nm in views}
-    dims = overall_dims(sh, views, sides)
+    dims = overall_dims(sh, views, sides, entry)
     ifaces = interface_dims(sh, assy, views, sides)
     stacks = stack_dims(sh, assy, views, sides)
     datums = datum_symbols(sh, assy, views, sides)
@@ -1557,17 +1581,19 @@ def make(pn, team, entry, out_path, today=None, step=None):
                         {"role": "parts list", "path": inputs.rel(assy.list_file),
                          "sha256_12": inputs.sha12(assy.list_file)}],
             "parent_keys": list(entry.get("parent_keys", ())), "unhatched": list(entry.get("unhatched", ())),
-            "envelopes": dict(entry.get("envelopes", {})),
             "views": [{"name": nm, "kind": v.kind, "n": v.view.n, "x": v.view.x, "y": v.view.y, "scale": v.scale,
                        "off": v.off, "box": v.box(), "letter": v.letter,
                        "cut": ({"point": v.cut[0], "normal": v.cut[1], "slice": v.spec.get("slice")} if v.cut else None)}
                       for nm, v in views.items()],
             "cutting_planes": cuts,
-            "balloons": balloons, "dims": dims, "interfaces": ifaces, "stacks": stacks, "datums": datums,
-            "centre_lines": clines,
+            "balloons": balloons, "dims": dims, "interfaces": ifaces, "stacks": stacks,
             "table": {"x": xs, "y_top": ty, "y_bot": y_bot,
                       "rows": [{"no": r["no"], "pn": r["pn"], "top": a, "bottom": b} for r, (a, b) in zip(rows, row_spans)]},
             "refs": [it.pn for it in assy.refs], "unmodelled": [it.pn for it in assy.table_items if not it.occs]}
+    # what only some sheets have goes in only when they have it (a sheet without it keeps its bytes)
+    for k, v in (("envelopes", dict(entry.get("envelopes", {}))), ("datums", datums), ("centre_lines", clines)):
+        if v:
+            data[k] = v
     sh.meta["creationDate"] = "D:%s000000Z" % today.replace("-", "")
     sh.meta["modDate"] = sh.meta["creationDate"]
     sh.data = data
@@ -1761,9 +1787,9 @@ def stack_dims(sh, assy, views, sides):
         cuts = sorted({round(c, 3) for lo, hi in ext.values() for c in (lo, hi)})
         if len(cuts) < 2:
             continue
-        i0 = 0                      # the origin: the lowest face, or a datum face the entry names ('stack_from')
-        o_spec = sv.spec.get("stack_from")
-        if o_spec:
+        i0, sgn = 0, 1.0            # the origin: the lowest face, or a datum face the entry names ('stack_from'),
+        o_spec = sv.spec.get("stack_from")      # then positive the way that face looks (out of the part), so
+        if o_spec:                              # mirrored assemblies read alike
             cand = [x for o in assy.occs if o.item.pn == o_spec["pn"] for x in o.solids]
             if not cand:
                 raise NotDrawable("%s: section %s's stack origin %s is not in the STEP" % (assy.pn, sv.letter,
@@ -1773,6 +1799,7 @@ def stack_dims(sh, assy, views, sides):
             if abs(cuts[i0] - c0) > 0.01:
                 raise NotDrawable("%s: section %s: %s's %s face is not a layer face of the build-up" % (
                     assy.pn, sv.letter, o_spec["pn"], o_spec["face"]))
+            sgn = 1.0 if vdot(AXES[o_spec["face"]], sv.view.y if axis == "y" else sv.view.x) > 0 else -1.0
         x0, y0, x1, y1 = sv.box()
         if axis == "y":
             pts = [(x1, sv.S((0.0, c))[1]) for c in cuts]
@@ -1780,13 +1807,13 @@ def stack_dims(sh, assy, views, sides):
         else:
             pts = [(sv.S((c, 0.0))[0], y1) for c in cuts]
             level = y1 + sides[sv.name].dims["up"] + 12.0
-        vals = [fmt(c - cuts[i0], 2) for c in cuts]
+        vals = [fmt(sgn * (c - cuts[i0]), 2) for c in cuts]
         draw_ordinates(sh, pts[i0], [p for i, p in enumerate(pts) if i != i0], axis, level,
                        [v_ for i, v_ in enumerate(vals) if i != i0])
         sides[sv.name].dims["right" if axis == "y" else "up"] += 12.0 + 4.0 + max(sh.text_width(v_, 2.5) for v_ in vals)
         out.append({"view": sv.name, "axis": axis, "faces": cuts, "values": vals})
         if o_spec:
-            out[-1].update({"origin": i0, "from": dict(o_spec)})
+            out[-1].update({"origin": i0, "from": dict(o_spec), "sign": sgn})
     return out
 
 
@@ -2087,12 +2114,12 @@ def check(pdf_path):
         v = views[st["view"]]
         ax = v["y"] if st["axis"] == "y" else v["x"]
         planes = _planes_along([x for p_ in items_pns for x in solids.get(p_, [])], ax)
-        i0 = st.get("origin", 0)
+        i0, sgn = st.get("origin", 0), st.get("sign", 1.0)
         for c, val in zip(st["faces"], st["values"]):
             stats["stack faces"] = stats.get("stack faces", 0) + 1
-            if fmt(c - st["faces"][i0], 2) != val:
+            if fmt(sgn * (c - st["faces"][i0]), 2) != val:
                 fails.append("section %s: stack value %s is not its face's distance %s" % (
-                    st["view"], val, fmt(c - st["faces"][i0], 2)))
+                    st["view"], val, fmt(sgn * (c - st["faces"][i0]), 2)))
             if not any(abs(c - q) <= TOL_ON for q in planes):
                 fails.append("section %s: stack face at %.3f is no plane face of the parts" % (st["view"], c))
         if st.get("from"):
@@ -2392,7 +2419,8 @@ def _datum_clear(sh, S, n2, lead):
            (S[0] + d[0] * 0.6 - nx * 1.6, S[1] + d[1] * 0.6 - ny * 1.6), (S[0] + d[0] * 2.56, S[1] + d[1] * 2.56)]
     e = (S[0] + d[0] * lead, S[1] + d[1] * lead)
     tb = (min(p[0] for p in tri), min(p[1] for p in tri), max(p[0] for p in tri), max(p[1] for p in tri))
-    lb = (min(tri[2][0], e[0]) - 0.1, min(tri[2][1], e[1]) - 0.1, max(tri[2][0], e[0]) + 0.1, max(tri[2][1], e[1]) + 0.1)
+    lb = (min(tri[2][0], e[0]) - 0.1, min(tri[2][1], e[1]) - 0.1,
+          max(tri[2][0], e[0]) + 0.1, max(tri[2][1], e[1]) + 0.1)
     return sh.is_free(tb) and sh.is_free(lb)
 
 

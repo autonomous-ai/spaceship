@@ -17,6 +17,9 @@
    its printed width.
 6. A sheet never goes over a PDF drawgen didn't make (a Fusion drawing).
 7. Spigots and glide stems a section cuts along are drawn whole (ISO 128-50); one the plane misses isn't drawn.
+8. The cassettes (CEILING's 510301, WALL's six) read back with the positions their teams gave, named datums A, B and
+   C (C a median plane on a size), and a build-up from A that reads the same on a left- and a right-hand cassette;
+   the read-back fails a datum off its face or size, a wrong build-up value or face, and a centre line off its part.
 """
 
 import json
@@ -197,6 +200,83 @@ def test_shafts_cut_along_their_axis_are_drawn_whole():
     assert drawn(secs["A"], "118002") and drawn(secs["B"], "831001")
     assert not drawn(secs["C"], "831001"), "a spigot in front of section C is drawn in it"
     assert {assy.occs[i].item.pn for i, _l in secs["A"].hatch} >= {"111101", "111601"}
+
+
+def _iface_values(rep):
+    """{(axis, part number): sorted values} of a sheet's interface ordinates."""
+    out = {}
+    for g in rep["data"]["interfaces"]:
+        for p_ in g["points"]:
+            vals = out.setdefault((g["axis"], p_["pn"]), [])
+            if float(p_["value"]) not in vals:
+                vals.append(float(p_["value"]))
+    return {k: sorted(v) for k, v in out.items()}
+
+
+def test_cassettes_draw_with_their_teams_facts():
+    """The cassette sheets read back, with the positions their teams gave: CEILING's ribs, clips and catches at
+    +-193.33 across from datum C, the clips at 16, 409.5 and 778.25 and the catches at 359.5 along from datum B
+    (CEILING's entry facts); WALL's clips 100 from the cassette's bottom and top (feature rationale F23)."""
+    for pn in ("510301", "510101", "510202"):
+        final, _rep = _made(pn)
+        fails, _st = assembly.check(final)
+        assert not fails, (pn, fails)
+    v = _iface_values(_made("510301")[1])
+    for pn in ("513102", "518001", "518002"):
+        assert v[("x", pn)] == [-193.33, 193.33], (pn, v[("x", pn)])
+    assert v[("y", "518001")] == [16.0, 409.5, 778.25] and v[("y", "518002")] == [359.5], v
+    data = _made("510301")[1]["data"]
+    assert {d["letter"] for d in data["datums"]} == {"A", "B", "C"}
+    assert [d for d in data["datums"] if d["letter"] == "C"][0]["size"] == 1160.0
+    v = _iface_values(_made("510101")[1])
+    assert v[("y", "518001")] == [100.0, 1042.74], v
+    text = " ".join(fitz.open(_made("510301")[0])[0].get_text().split())
+    assert "518001 at 16, 409.5, 778.25; 518002 at 359.5" in text and "H10" in text and "(HOLD)" in text
+
+
+def test_mirrored_cassettes_build_up_alike():
+    """A build-up's faces run from datum A, positive the way A looks: a left-hand and a right-hand cassette give the
+    same values (the felt 24.5 to 33.5 on the room side, the clip 4 behind)."""
+    a = _made("510101")[1]["data"]["stacks"][0]["values"]
+    b = _made("510102")[1]["data"]["stacks"][0]["values"]
+    assert sorted(a, key=float) == sorted(b, key=float) == ["-33.5", "-24.5", "-0.5", "0", "4"], (a, b)
+
+
+def test_readback_fails_a_datum_off_its_face_or_size():
+    final, _rep = _made("510301")
+
+    def move(letter, dx, dy):
+        def change(d):
+            for x in d["datums"]:
+                if x["letter"] == letter:
+                    x["at"] = [x["at"][0] + dx, x["at"][1] + dy]
+        return change
+    bad = _with_data(final, os.path.join(TMP, "t_datum_b.pdf"), move("B", 0.0, 2.0))
+    fails, _st = assembly.check(bad)
+    assert any(f.startswith("datum B is") for f in fails), fails
+    bad = _with_data(final, os.path.join(TMP, "t_datum_c.pdf"), move("C", 3.0, 0.0))
+    fails, _st = assembly.check(bad)
+    assert any(f.startswith("datum C is") for f in fails), fails
+
+
+def test_readback_fails_a_wrong_build_up_value_or_centre_line():
+    final, _rep = _made("510301")
+
+    def value(d):
+        d["stacks"][0]["values"][1] = "-30"
+    fails, _st = assembly.check(_with_data(final, os.path.join(TMP, "t_stack.pdf"), value))
+    assert any("stack value -30" in f for f in fails), fails
+
+    def face(d):
+        d["stacks"][0]["faces"][1] += 2.0
+    fails, _st = assembly.check(_with_data(final, os.path.join(TMP, "t_face.pdf"), face))
+    assert any("no plane face" in f for f in fails), fails
+
+    def line(d):
+        for c in d["centre_lines"]:
+            c["p"], c["q"] = [c["p"][0] + 5.0, c["p"][1]], [c["q"][0] + 5.0, c["q"][1]]
+    fails, _st = assembly.check(_with_data(final, os.path.join(TMP, "t_cline.pdf"), line))
+    assert any("centre line of 513102" in f for f in fails), fails
 
 
 def test_never_goes_over_a_fusion_drawing():

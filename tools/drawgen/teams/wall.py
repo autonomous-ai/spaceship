@@ -57,13 +57,14 @@ _ORDER = ("Fitting order (WALL's feature rationale F20, F22, F23 and the parts l
           "carry no load (D-47); the edge seal 848012 only touches across the 2.26 gap (R-J18).")
 
 
-def _cassette(tray, back, end):
-    return {
+def _cassette(tray, back, end, **more):
+    return dict(more, **{
         "envelopes": {"NO-PN-HOLD-H03": "518001"},
         "datums": [
             {"letter": "A", "pn": tray, "face": back, "view": "section_D",
              "words": "the tray's back face, toward the panel frame"},
-            {"letter": "B", "pn": tray, "face": end, "view": "principal", "words": "the tray's end return, its outer face"},
+            {"letter": "B", "pn": tray, "face": end, "view": "principal",
+             "words": "the tray's end return, its outer face"},
             {"letter": "C", "pn": tray, "face": "-Z", "view": "principal",
              "words": "the tray's bottom return, its outer face"},
         ],
@@ -73,10 +74,10 @@ def _cassette(tray, back, end):
             {"view": "principal", "of": ["518001"], "along": "y", "origin": {"pn": tray, "face": "-Z"}, "list": True,
              "words": "the clip centres up the cassette, from datum C (principal view)"},
         ],
-        "sections": [{"letter": "D", "around": "518001", "normal": [0, 0, -1], "half": 70, "scale": 0.5,
+        "sections": [{"letter": "D", "around": "518001", "normal": [0, 0, -1], "half": 70, "scale": 0.5, "slice": 10,
                       "stack": True, "stack_from": {"pn": tray, "face": back}}],
         "notes": [_ORDER],
-    }
+    })
 
 
 ASSEMBLIES = {
@@ -85,5 +86,6 @@ ASSEMBLIES = {
     "510103": _cassette("511103", "-X", "-Y"),      # L2
     "510104": _cassette("511104", "+X", "-Y"),      # R2
     "510201": _cassette("511201", "+Y", "-X"),      # B1: back face toward +Y, its end at the left side wall
-    "510202": _cassette("511202", "+Y", "+X"),      # B2: its end at the right side wall
+    # B2: its end at the right side wall, the left edge of its rear view, so the overall height goes on the right
+    "510202": _cassette("511202", "+Y", "+X", overall_sides={"y": "right"}),
 }

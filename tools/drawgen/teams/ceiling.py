@@ -37,7 +37,8 @@ ASSEMBLIES = {
         "balloon_views": {"518001": "principal", "518002": "principal"},
         "sections": [
             {"letter": "D", "point": [-583, -266, 2353], "normal": [0, -1, 0], "scale": 0.5,
-             "window": [-1165, -740, 2310, 2395], "stack": True, "stack_from": {"pn": "513101", "face": "+Z"}},
+             "window": [-1165, -740, 2310, 2395], "slice": 10, "stack": True,
+             "stack_from": {"pn": "513101", "face": "+Z"}},
         ],
         "notes": [
             "Fitting and fixing order (CEILING): (1) the tray 513101, its lips turned in; (2) the two ribs 513102 "
