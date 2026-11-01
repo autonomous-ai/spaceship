@@ -240,3 +240,18 @@ python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350001_P01_FRONT-DE
 | Door unit | The hinges' frame halves screw into the hinge post behind the three pockets (holes when the hinge is named, HOLD H01); the stop 351103 and the seal 368005 close the hinge side. |
 | WALL | J-FRONT-01: 6 bolts from the left wall into rivnuts in the back plate on X -1224. |
 | BASE, DT | J-FRONT-02 and J-FRONT-03 spigots: built into the blocks on the drawings branch (PM ruling 2026-11-01). |
+
+## 350001 DL, 350002 DT, 350003 DR: final builds for #105 (2026-11-01, supersede the stage-2 runs above)
+
+Rebuilt from their scripts through the shared lock, each in one run (build, save, export, pictures, edit test), with the PM rulings of 2026-11-01 applied: every air part is AIR's (DR keeps reserved air spaces only); DR under 19 kg as shipped (tube walls 1.0 / 1.2 / 1.5 by role, back plate 1.5 mm, two redundant tubes dropped, ACP at the selected sheet's 3.5 kg/m²); J-FRONT-02 and 03 (spigot holes and slots, DT's 2 mm aluminium back plate 2.26 off the ceiling with 4 rivnuts at Z 2374, DT's spigots on DR's ledge); the door stops as standard angles; the hinge-top corner butting instead of crossing; DT's underside notched and DL open at the bottom instead of skin holes near an edge (C09).
+
+| Block | Bodies | Clashes | Frame | Unit mass (calculation) | STEP box (re-read in Fusion: 0.000 mm) | Edit test |
+|---|---|---|---|---|---|---|
+| DR 350003 | 34 | 0 | 24 tubes, 4.16 kg | 18.32 kg; 18.87 shipped with its right and diagonal glass channels | X 230 to 1250, Y −850 to −634.5, Z 110 to 2400 | PASS, 28 anchors |
+| DT 350002 | 18 | 0 | 13 tubes, 2.76 kg | 7.84 kg | X −1250 to 449, Y −850 to −647.26, Z 2094 to 2400 | PASS, 17 anchors |
+| DL 350001 | 36 | 0 | 26 tubes, 4.67 kg | 12.30 kg | X −1250 to −942, Y −844 to −645, Z 105 to 2397 | PASS, 15 anchors |
+
+- DR's base: 0.0424 m² gross, 0.0128 m² under the frame's bottom tubes, 0.0296 m² free (0.028 or more: PM ruling).
+- The FRONT combined check (door unit, fixed glass unit, DR, DT, DL imported together): 0 overlaps between sub-assemblies; gaps as ruled (door leaf to the fixed pane 4.00, leaf top to DT 6.00, seals 0 on the leaf, DR's slot 1.00 each side of the channel).
+- Pictures checked by eye; no names in any export (f3d entries, STEP, CSV, DXF, picture metadata).
+- Run commands: `tools/fusion/run_script.py <late loader> --arg target=v2/01-CAD-Native/front/dX_block.py --doc 35000N_P01_FRONT-DECOR-BLOCK-ASSY-DX_CAD --arg step=all --arg edits=... --close`, the edits as in `EDIT-TEST-RECORD.md`.

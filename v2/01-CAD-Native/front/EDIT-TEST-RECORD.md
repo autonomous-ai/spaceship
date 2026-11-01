@@ -61,3 +61,15 @@ Same method and run as its build:
 | Reverted | 304.0 x 199.0 x 2292.0 | 0 | 0 | none | 0.020 |
 
 RESULT: PASS. 15 anchors follow the three skeleton edits at once and return exactly.
+
+## 350001 DL, 350002 DT, 350003 DR: final builds for #105 (2026-11-01)
+
+Same method, in the same run as each build:
+
+| Block | Edits | Before (box mm) | After the edits | Reverted | Anchors off | Result |
+|---|---|---|---|---|---|---|
+| DR | decor_d 215; fix_xk 511; fix_zk 1531 | 1020.0 x 215.5 x 2290.1 | 1020.0 x 225.5 x 2290.1 | 1020.0 x 215.5 x 2290.1 | none (worst 0.020) | PASS, 28 anchors |
+| DT | decor_d 215; dt_xr 1690; dl_w 283 | 1699.0 x 202.8 x 306.0 | 1690.0 x 212.8 x 306.0 | 1699.0 x 202.8 x 306.0 | none (worst 0.020) | PASS, 17 anchors |
+| DL | decor_d 215; dl_w 283; dl_y3 848 | 308.0 x 199.0 x 2292.0 | 313.0 x 213.0 x 2292.0 | 308.0 x 199.0 x 2292.0 | none (worst 0.020) | PASS, 15 anchors |
+
+0 unhealthy items and 0 loose sketches in every state.
