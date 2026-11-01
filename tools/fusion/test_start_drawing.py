@@ -459,6 +459,60 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(f.cancels, 0)                          # never touched while busy
 
     @unittest.skipUnless(shutil.which("osacompile"), "osacompile is macOS only")
+    def run_main(self, make_fake, timed_out_after_queue):
+        """start_drawing's main() with a fake Fusion and a lock in a temporary folder;
+        returns (exit code, the wait call seen or None, lock dir)."""
+        import signal
+        import tempfile
+        lockdir = os.path.join(tempfile.mkdtemp(prefix="sdlock-"), "fusion.lock")
+        seen = {}
+
+        def fake_steps(url, timeout, mcp=None):
+            f = make_fake()
+            if timed_out_after_queue:
+                def _mcp():                             # Fusion stops answering in time
+                    if f.queued:
+                        mcp.timed_out = True
+                        raise rs.McpTimeout("Fusion MCP didn't answer within 1 s (fake)")
+                f._mcp = _mcp
+            return f
+
+        def fake_wait(url, lock, wait_s, poll_s, log=None, **_kw):
+            seen["wait"] = (os.path.isdir(lockdir), wait_s, poll_s)
+            return True
+
+        keep = (sd.Steps, rs.wait_for_fusion, sd.run_with_cleanup, sd.cancel_dialogs,
+                signal.getsignal(signal.SIGTERM), signal.getsignal(signal.SIGHUP))
+        orig_run, orig_cancel = sd.run_with_cleanup, sd.cancel_dialogs
+        sd.Steps, rs.wait_for_fusion = fake_steps, fake_wait
+        sd.run_with_cleanup = lambda *a, **k: orig_run(*a, waits=FAST)
+        sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: orig_cancel(steps, log, 2, 0.001)
+        env_token = os.environ.pop(rs.TOKEN_ENV, None)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                code = sd.main(["100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG", "--lock", lockdir,
+                                "--busy-wait", "60", "--busy-poll", "2"])
+        finally:
+            (sd.Steps, rs.wait_for_fusion, sd.run_with_cleanup, sd.cancel_dialogs) = keep[:4]
+            signal.signal(signal.SIGTERM, keep[4])
+            signal.signal(signal.SIGHUP, keep[5])
+            if env_token is not None:
+                os.environ[rs.TOKEN_ENV] = env_token
+        return code, seen.get("wait"), lockdir
+
+    def test_a_timed_out_call_keeps_the_lock_until_fusion_answers(self):
+        # as run_script.py (#181): the lock is given back only after Fusion answers again
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=True)
+        self.assertIn(code, (2, 4))
+        self.assertEqual(wait, (True, 60.0, 2.0))             # waited while still holding the lock
+        self.assertFalse(os.path.exists(lockdir))              # then gave it back
+
+    def test_a_start_without_a_timeout_gives_the_lock_back_at_once(self):
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=False)
+        self.assertEqual(code, 0)
+        self.assertIsNone(wait)
+        self.assertFalse(os.path.exists(lockdir))
+
     def test_every_applescript_compiles(self):
         # Reviewer 5 / WALL, 2026-10-31: AX_CLICK used the reserved word "named" and
         # never compiled, which the offline fakes could not see.
