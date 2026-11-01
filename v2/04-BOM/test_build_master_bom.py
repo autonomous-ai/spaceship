@@ -435,6 +435,21 @@ class NumberAllocation(unittest.TestCase):
                      "family 99 is not in conventions", "allocated twice", "status 'TAKEN'"):
             self.assertTrue(any(want in f for f in fails), (want, fails))
 
+    def test_a_joints_register_number_is_never_given_out(self):
+        # the register's H-01 renumbered 838001 here, so as a bought item it sits in its band and only the clash fires
+        row = self.ROW.replace("412101", "838001").replace(",MP,", ",PI,")
+        _, _, _, fails, _ = run({bom.ALLOCATION: self.HDR + row, bom.REGISTER: REGISTER.replace("830101", "838001")})
+        self.assertEqual(fails, ["allocated 838001 'CEILING - FRAME SIDE MEMBER - C1': the joints register already has 838001 (H-01)"])
+
+    def test_a_number_must_have_six_digits(self):
+        for bad in ("41210", "4121011", "41210A"):
+            _, _, _, fails, _ = self.go(self.ROW.replace("412101", bad))
+            self.assertEqual(fails, [f"allocated {bad} 'CEILING - FRAME SIDE MEMBER - C1': not a 6-digit number"], bad)
+
+    def test_the_kind_must_be_one_of_the_four(self):
+        _, _, _, fails, _ = self.go(self.ROW.replace(",MP,", ",XX,"))
+        self.assertEqual(fails, ["allocated 412101 'CEILING - FRAME SIDE MEMBER - C1': kind 'XX' is not MP, HS, BS or PI"])
+
     def test_the_real_list_is_clean(self):
         path = bom.ROOT / bom.ALLOCATION
         text = path.read_text(encoding="utf-8")
