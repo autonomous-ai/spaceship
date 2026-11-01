@@ -110,8 +110,10 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut",
            "col_ang_b": "extruded angle, cut, keyholes milled", "kick_l": "perforated sheet, cut",
            "col_fill_l": "knife cut", "sof_fill_f": "knife cut",
-           "blk_e": "laser cut, two fan bores; sealed to the casing (sealant HOLD)",
-           "blk_s": "laser cut, two fan bores; sealed to the casing (sealant HOLD)",
+           "blk_e": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
+                    "(sealant HOLD), its fixing to the casing HOLD",
+           "blk_s": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
+                    "(sealant HOLD), its fixing to the casing HOLD",
            "lin_es": "knife cut; bonded to the casing (adhesive HOLD)", "lin_ee": "knife cut; bonded to the casing (adhesive HOLD)",
            "lin_s": "knife cut; bonded to the casing (adhesive HOLD)",
            "lip": "laser cut, folded to an angle; 3 closed-end blind rivets to the casing's front wall (rivet HOLD, with "
@@ -172,7 +174,8 @@ def write_dxfs(v):
                         ("col_front", ["COLUMN FACE FRONT"]), ("col_left", ["COLUMN FACE LEFT"]),
                         ("sof_under", ["SOFFIT UNDERSIDE LEFT"]), ("sof_under_r", ["SOFFIT UNDERSIDE RIGHT"]),
                         ("sof_under_f", ["SOFFIT UNDERSIDE FIXED"]), ("sof_front", ["SOFFIT FACE FRONT"]),
-                        ("egrille", ["EXHAUST GRILLE"]), ("rgrille", ["ROOF GRILLE"])):
+                        ("egrille", ["EXHAUST GRILLE"]), ("rgrille", ["ROOF GRILLE"]),
+                        ("blk_e", ["FAN BOX BULKHEAD EXHAUST"]), ("blk_s", ["FAN BOX BULKHEAD SUPPLY"])):
         b = L[bodies[0]]
         pl = plane_of(b)
         w, h = to2d(b, pl, b[1], b[3], b[5])

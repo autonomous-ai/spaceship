@@ -148,10 +148,12 @@ class Fits(unittest.TestCase):
         boxes = {"SUPPLY": b6("SUPPLY FAN BOX"), "EXHAUST": b6("EXHAUST FAN BOX")}
         for name, x, y, z in A.fan_points():
             bx = boxes[name.split()[0]]
+            opens = dict(A.FAN_BOX_OPEN[name.split()[0] + " FAN BOX"])
             cx, cy, cz = A.ev(V, x), A.ev(V, y), A.ev(V, z)
             h = V["fan_s"] / 2
-            self.assertGreaterEqual(cx - h, bx[0] + V["fbox_t"] - 1e-9, name)
-            self.assertLessEqual(cx + h, bx[1] - V["fbox_t"] + 1e-9, name)
+            # inside the walls; on an open face (the exhaust box's left, where the cartridge's air comes in) inside the box
+            self.assertGreaterEqual(cx - h, bx[0] + (0.0 if opens.get("x") == -1 else V["fbox_t"]) - 1e-9, name)
+            self.assertLessEqual(cx + h, bx[1] - (0.0 if opens.get("x") == 1 else V["fbox_t"]) + 1e-9, name)
             self.assertGreaterEqual(cy - h, bx[2] + V["fbox_t"] - 1e-9, name)
             self.assertLessEqual(cy + h, bx[3] - V["fbox_t"] + 1e-9, name)
             if name.startswith("EXHAUST"):
@@ -208,8 +210,8 @@ class FanBoxInside(unittest.TestCase):
         self.assertAlmostEqual(s_, 0.046, delta=0.002)
 
     def test_bores_on_the_fans(self):
-        bores = [(n, a) for n, kind, a in A.features() if n.startswith("FAN BOX BULKHEAD")]
-        self.assertEqual(len(bores), 4)
+        bores = [(n, a) for n, kind, a in A.features() if n.startswith("FAN BOX BULKHEAD") and A.ev(V, a[4]) > 20]
+        self.assertEqual(len(bores), 4)                 # (the fans' screw holes: BulkheadOpenings)
         for (bn, a), (fn, x, y, _z) in zip(bores, A.fan_points()):
             self.assertIn(fn.split()[0], bn)
             self.assertAlmostEqual(A.ev(V, a[0]), A.ev(V, x))
@@ -365,6 +367,51 @@ class SleeveOneSolid(unittest.TestCase):
         self.assertAlmostEqual(oy0 - sy0, t)
         self.assertAlmostEqual(sy0 + sd - oy1, t)
         self.assertTrue(fx0 < sx0 and fx1 > sx0 + sw and fy0 < sy0 and fy1 > sy0 + sd)   # the flange reaches past the walls
+
+
+class BulkheadOpenings(unittest.TestCase):
+    """The fan bulkheads (611403, 611404), by the Lead's rule (2026-11-01): a fan bore is an opening, and keeps at least
+    2 x the sheet and 3 mm of material to every edge and to the next bore; the fans' screw holes are fasteners and keep
+    2 diameters to every edge and to each other. The exhaust bulkhead's left edge is free (the box is open on that
+    face); every other edge meets the casing."""
+
+    def holes(self, tag):
+        out = {"bore": [], "screw": []}
+        for n, k, a in A.features():
+            if n == "FAN BOX BULKHEAD " + tag:
+                d = A.ev(V, a[4])
+                out["bore" if d > 20 else "screw"].append((A.ev(V, a[0]), A.ev(V, a[1]), d))
+        return out
+
+    def test_bores_webs(self):
+        need = max(2 * V["blk_t"], 3.0)
+        for tag in ("EXHAUST", "SUPPLY"):
+            b = b6("FAN BOX BULKHEAD " + tag)
+            h = self.holes(tag)
+            self.assertEqual(len(h["bore"]), 2, tag)
+            for x, y, d in h["bore"]:
+                r = d / 2
+                for edge in (x - r - b[0], b[1] - x - r, y - r - b[2], b[3] - y - r):
+                    self.assertGreaterEqual(edge, need - 1e-9, tag)
+            (x1, y1, d1), (x2, y2, d2) = h["bore"]
+            self.assertGreaterEqual(((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 - (d1 + d2) / 2, need - 1e-9, tag)
+
+    def test_screw_holes_two_diameters(self):
+        for tag in ("EXHAUST", "SUPPLY"):
+            b = b6("FAN BOX BULKHEAD " + tag)
+            h = self.holes(tag)
+            self.assertEqual(len(h["screw"]), 8, tag)
+            for x, y, d in h["screw"]:
+                for edge in (x - b[0], b[1] - x, y - b[2], b[3] - y):
+                    self.assertGreaterEqual(edge, 2 * d - 1e-9, "%s screw at %.1f, %.1f" % (tag, x, y))
+            s = h["screw"]
+            for i in range(len(s)):
+                for j in range(i + 1, len(s)):
+                    c2c = ((s[i][0] - s[j][0]) ** 2 + (s[i][1] - s[j][1]) ** 2) ** 0.5
+                    self.assertGreaterEqual(c2c, 2 * max(s[i][2], s[j][2]) - 1e-9, tag)
+            for x, y, d in h["screw"]:              # each screw clear of the bores
+                for bx, by, bd in h["bore"]:
+                    self.assertGreater(((x - bx) ** 2 + (y - by) ** 2) ** 0.5 - bd / 2 - d / 2, 2 * V["blk_t"], tag)
 
 
 class FrontScrews(unittest.TestCase):

@@ -125,6 +125,8 @@ AIR_PARAMS = [
     ("b07_z", "259.8 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw's height"),
     ("blk_t", "2 mm", "mm", "source", "the air report's sizing (calc.py, D-121): each fan box's 2 mm aluminium bulkhead, the fans mounted on it"),
     ("fan_bore", "135 mm", "mm", "source", "the air report's fan bore (calc.py FAN_BORE 0.135 m): the bulkhead's opening at each fan"),
+    ("fan_hp", "124.5 mm", "mm", "source", "Noctua NF-A14 (140 mm frame): its 4 mounting holes on a 124.5 mm square (the maker's data sheet, selection F1)"),
+    ("fan_hole", "4.5 mm", "mm", "assumption", "clearance in the bulkhead for each fan screw into the fan's corner hole (the screw HOLD with the fan's mounting)"),
     ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
     ("e_lin_gap", "50 mm", "mm", "source", "D-121, the Air Engineer: the exhaust box's far-end lining stops 50 mm under the fans"),
     # ---- supply fan box and intake riser, inside the right decor block (D-61, D-62)
@@ -675,6 +677,10 @@ def features():
         tag = "EXHAUST" if name.startswith("EXHAUST") else "SUPPLY"
         z0, z1 = ("%s + fan_t" % z, "%s + fan_t + blk_t" % z) if tag == "EXHAUST" else ("%s - blk_t" % z, z)
         out.append(("FAN BOX BULKHEAD %s" % tag, "zcircle", (x, y, z0, z1, "fan_bore")))
+        for sx in ("-", "+"):           # the fan's 4 screws (fasteners: the 2-diameter rule holds for them)
+            for sy in ("-", "+"):
+                out.append(("FAN BOX BULKHEAD %s" % tag, "zcircle", ("%s %s fan_hp / 2" % (x, sx), "%s %s fan_hp / 2" % (y, sy),
+                                                                    z0, z1, "fan_hole")))
     # the riser buffer's rivnut hole in the riser's front wall, over F07 (PM ruling 2026-11-01)
     out.append(("INTAKE RISER", "ycircle", (BUF_X, "dr_f07_zc", "rs_y0", "rs_y0 + rs_t", "hole_rvn")))
     # the grille's rivnuts in the sleeve's flange, and the grille's bolt holes over them (J-AIR-03, R-J6's 7.0)
@@ -776,8 +782,10 @@ def fan_points():
     bulkhead 50 above the box's floor; the exhaust fans hang under a sealed bulkhead at the box's top and blow
     straight into the roof sleeve (D-121: low fans let the cartridge's upper passages short-circuit)."""
     pts = []
-    for tag, x0, w, y0, d, z0 in (("SUPPLY", "sb_x0", "sb_w", "%s + sb_yf" % YF, "sb_d", "sb_z0 + lin_t"),
-                                  ("EXHAUST", "%s - fb_w" % XR, "fb_w", "%s + clr" % YD, "cart_d",
+    # each pair at the quarter points of its bulkhead's own span (inside the casing's walls), so the two bores keep equal
+    # rims to the bulkhead's edges (the Lead's web rule for openings, 2026-11-01: at least 2 x the sheet and 3 mm)
+    for tag, x0, w, y0, d, z0 in (("SUPPLY", "(sb_x0 + fbox_t)", "(sb_w - 2 * fbox_t)", "%s + sb_yf" % YF, "sb_d", "sb_z0 + lin_t"),
+                                  ("EXHAUST", "(%s - fb_w)" % XR, "(fb_w - fbox_t)", "%s + clr" % YD, "cart_d",
                                    "%s + face_t + sof_fill_t + cart_w - blk_t - fan_t" % ZS0)):
         for k in (1, 3):
             pts.append(("%s FAN %d" % (tag, (k + 1) // 2), "%s + %s * %d / 4" % (x0, w, k), "%s + %s / 2" % (y0, d), z0))
