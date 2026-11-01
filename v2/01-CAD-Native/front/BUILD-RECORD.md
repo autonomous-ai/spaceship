@@ -2,6 +2,15 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-11-01 12:24 UTC in one lock hold with its sheet and the FRONT combined check, for D-154: the second brush seal 368009 on the kick strip's hinge end, X −972 to −961 (the 11 mm slot to BASE's FL2 end plate, flush with DL's door face), Y −709 to −689, from the room floor to Z 105, 13 mm on the slot (2 mm overlap), open over the drop seal's cavity end (Y −705 to −693, Z 10 to 75) so the release button reaches the plate, where BASE adds a strike pad (HOLD-sized, at most 8). Modelled as fitted; fitted on site like 368008 (PM rulings 2026-11-01).
+
+- bodies 13, timeline 44 items, unhealthy 0, loose sketches 0, parameters 157; clash pairs 4, all listed
+- unit box unchanged (X −1132.02 to 218.52, Y −773.40 to −624.59, Z −0.02 to 2115.52); STEP re-read in Fusion, box equal (0.000 mm)
+- parts list: 11 rows, the unit 48.75 kg (368009 0.02, assumption)
+- edit test PASS, 43 anchors (`EDIT-TEST-RECORD.md`)
+- swing: with the hinge pivot on or outside the kick strip's outer face, the strip's hinge end and this brush only move away from BASE's plate as the door opens, and the pile lets go within 3° to 32° (`door_swing.py`, 0 to 110°); the rule is in the hinge HOLD
+- FRONT combined check: 0 overlaps between sub-assemblies
+
 Rebuilt 2026-11-01 10:27 UTC in one lock hold with the door unit sheet and the FRONT combined check after it, through the late-bound loader, for D-150: the brush seal 368008 on the kick strip's end, X 214 to 218.5 (the 4.5 mm slot to BASE's sill end plate), Y −709 to −689, from the room floor to Z 105, its outer edge following the fixed pane's free edge near the top. It is modelled as fitted; it ships in the door's kit bag and is fitted on site, pressed onto the real floor (PM ruling 2026-11-01, D-150 changed), so the packing piece leaves it out.
 
 - bodies 12, timeline 39 items, unhealthy 0, loose sketches 0, parameters 156; clash pairs 4, all listed (H1 to H3 and the strike on the leaf, as below)

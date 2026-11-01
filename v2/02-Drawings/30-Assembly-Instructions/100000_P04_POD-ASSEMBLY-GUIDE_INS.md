@@ -11,7 +11,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 1. **Two people, one 5 mm hex key, 23 steps: about 135 minutes (4.5 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
-3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.7 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
+3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.8 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
 5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
 
@@ -32,7 +32,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 2. Safety
 
-- **Glass.** The door unit is 48.7 kg and the fixed glass 28.7 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Get each pane upright by tilting it up in the crate on its padded long edge, both lifters at its top edge, onto the padded glass rest; never lift a pane flat and never turn it on a corner. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
+- **Glass.** The door unit is 48.8 kg and the fixed glass 28.7 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Get each pane upright by tilting it up in the crate on its padded long edge, both lifters at its top edge, onto the padded glass rest; never lift a pane flat and never turn it on a corner. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
 - **Weight.** Every other part is 20 kg or less (D-03); parts longer than 1.6 m or heavier than 15 kg are carried by both people.
 - **Height.** One person on a step stool at a time, the other hands up. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people.
 - **Hands.** Keep fingers off the joint faces while a panel is lowered onto its spigots and while a bolt pulls a seam shut.
@@ -165,7 +165,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 11](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-11_IMG.png)
 
 - **Time:** about 9 min for 2 people.
-- **Parts:** **2-02** FRONT - DOOR UNIT (48.7 kg).
+- **Parts:** **2-02** FRONT - DOOR UNIT (48.8 kg).
 - **Fasteners:** the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named).
 - **Person A:** Lays the 2 setting packers from the kit (7 mm) on the threshold where the door's bottom corners land. With B, tilts the door unit up in the crate on its padded long edge, both suction lifters at its top edge (each lifts about 12 kg at the start), onto the padded glass rest; then both carry it upright (about 25 kg each) and stand it on the packers, so its hinge halves meet DL's at their height, and lower them on.
 - **Person B:** Secures the hinges as the named set requires (HOLD), slides the packers out, then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold. The hinges hold the door at its closed position; there is no lock (D-83).

@@ -86,6 +86,10 @@ OWN = [
     ("kbrush_gap", "4.5 mm", "mm", "source",
      "the slot from the kick strip's end to BASE's sill end plate (its face at X 218.5, BASE 2026-11-01), closed by the "
      "brush seal 368008 (D-150), modelled compressed to that face"),
+    ("kbrushh_gap", "kick_x0 - (" + XL + " + dl_w)", "mm", "calculation",
+     "the slot from DL's door face, where BASE welds its FL2 end plate flush (X -972; PM ruling 2026-11-01, D-154), to "
+     "the kick strip's hinge end, closed by the brush seal 368009 (13 mm on the 11 mm slot), modelled compressed to "
+     "that face"),
     ("door_top_cut", "2 mm", "mm", "decided",
      "PM ruling 2026-10-31: the leaf is 2 mm shorter at the top, so the gap to DT is 6 mm, inside the 5 to 10 mm the "
      "Sugatsune HT-MSG62 door-stop catch needs (datasheet)"),
@@ -158,6 +162,8 @@ PARTS = {
     "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
     "PULL": ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)"),
     "KBRUSH": ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD", "Gioăng chổi mép cuối tấm chắn chân cửa (chờ)"),
+    "KBRUSHH": ("368009", "FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+                "Chổi chặn khe đầu bản lề thanh chắn chân cửa (chờ)"),
 }
 
 # Overlaps made on purpose, with the reason; any other clash over 1 mm3 fails the build.
@@ -183,6 +189,8 @@ ANCHORS = [
     ("PULL", 1, GY0 + " - pull_stand"), ("PULL", 4, GY1 + " + pull_stand"), ("PULL", 5, "pull_zc + pull_len / 2"),
     ("KBRUSH", 0, "kick_x1"), ("KBRUSH", 3, "kick_x1 + kbrush_gap"), ("KBRUSH", 2, "0 mm"), ("KBRUSH", 5, "door_zb"),
     ("KBRUSH", 1, KY0), ("KBRUSH", 4, KY1),
+    ("KBRUSHH", 0, "kick_x0 - kbrushh_gap"), ("KBRUSHH", 3, "kick_x0"), ("KBRUSHH", 2, "0 mm"), ("KBRUSHH", 5, "door_zb"),
+    ("KBRUSHH", 1, KY0), ("KBRUSHH", 4, KY1),
 ]
 
 ENVELOPE_MAT = "ENVELOPE - mass carried in the parts list (1 kg/m3)"
@@ -285,6 +293,25 @@ def build(app):
             "y", KY0, KY1, "KICK STRIP END BRUSH SEAL (HOLD PRODUCT)", "OUTLINE - KICK STRIP END BRUSH SEAL",
             "EXTRUDE - KICK STRIP END BRUSH SEAL")
 
+    # 368009 brush seal on the kick strip's hinge end (D-154; PM rulings 2026-11-01: the hinge side closed as D-150, against
+    # BASE's FL2 end plate flush with DL's door face; fitted on site): the 11 mm slot from the room floor to the door's
+    # bottom edge, less the drop seal's cavity end, so the seal's release button keeps its way to BASE's plate
+    if want("KBRUSHH"):
+        c = comp("KBRUSHH")
+        for lo, hi in (("0 mm", "kick_zb"), ("kick_zb + kick_cav_h", "door_zb"), (KY0, UY0), (UY1, KY1)):
+            if not L.ev(design, lo) < L.ev(design, hi):
+                raise RuntimeError("the hinge end brush: the drop seal's cavity end (%s to %s) isn't inside the strip's end "
+                                   "face" % (lo, hi))
+        xh0 = "(kick_x0 - kbrushh_gap)"
+        bodies["KBRUSHH"] = L.prism(design, c, "KBRUSHH", ("y", "z"), [
+            (KY0, "0 mm"), (KY1, "0 mm"), (KY1, "door_zb"), (KY0, "door_zb")], "x", xh0, "kick_x0",
+            "KICK STRIP HINGE END BRUSH SEAL (HOLD PRODUCT)", "OUTLINE - KICK STRIP HINGE END BRUSH SEAL",
+            "EXTRUDE - KICK STRIP HINGE END BRUSH SEAL")
+        sk = L.poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "OUTLINE - HINGE END BRUSH: THE RELEASE BUTTON'S WAY",
+                    [(UY0, "kick_zb"), (UY1, "kick_zb"), (UY1, "kick_zb + kick_cav_h"), (UY0, "kick_zb + kick_cav_h")])
+        L.extrude_span(c, sk, "x", xh0, "kick_x0", adsk.fusion.FeatureOperations.CutFeatureOperation,
+                       [bodies["KBRUSHH"]], "CUT - HINGE END BRUSH: THE DROP SEAL'S CAVITY END (RELEASE BUTTON)")
+
     # HOLD spaces for the hinges (into the DL pocket) and the pull; the catch's strike; the seal half
     for key, zc in (("H1", "hinge_z1"), ("H2", "hinge_z2"), ("H3", "hinge_z3")):
         if want(key):
@@ -328,7 +355,8 @@ def build(app):
              "HOLD": ["Paint - Enamel Glossy (Red)", "Plastic - Glossy (Red)"],
              "STRIKE": ["Steel - Satin", "Stainless Steel - Satin"],
              "MSEAL": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"],
-             "KBRUSH": ["Plastic - Matte (Black)", "Paint - Enamel Glossy (Black)"]}
+             "KBRUSH": ["Plastic - Matte (Black)", "Paint - Enamel Glossy (Black)"],
+             "KBRUSHH": ["Plastic - Matte (Black)", "Paint - Enamel Glossy (Black)"]}
     for k, b in bodies.items():
         b.material = L.material(design, *mats[k]) if k in mats else L.material(design, ENVELOPE_MAT, "Aluminum", 1.0)
         a = L.appearance(design, looks.get(k) or looks["HOLD"])
@@ -425,6 +453,17 @@ BOM_ROWS = [
      "across the strip's depth (Y -709 to -689), from the room floor to Z 105; its pile presses about 1.5 onto BASE's "
      "sill end plate at X 218.5 and its tips on the floor close the corner under the strip; modelled compressed to that "
      "face and, near the top, to the fixed pane's free edge"),
+    ("368009", "FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD", "Chổi chặn khe đầu bản lề thanh chắn chân cửa (chờ)",
+     1, "bought, HOLD", "self-adhesive brush (pile), 13 mm overall on the 11 mm slot (2 mm overlap), fitted on site on "
+     "the kick strip's hinge end face once the glides are set and the door hangs, pressed down onto the real floor; "
+     "clear of the drop seal's cavity end (12 x 65 from the strip's bottom), the release button's way to BASE's plate; "
+     "ships in the door's kit bag with an alcohol wipe; product HOLD (H-46): its own data sheet names its adhesive and "
+     "lowest fitting temperature", 0.02, "assumption (about 20 g)", "HOLD: product (D-154)",
+     "D-154; PM rulings 2026-11-01 (the hinge side closed as D-150, against BASE's FL2 end plate flush with DL's door "
+     "face; fitted on site; 13 mm with a 2 mm overlap; Control's number)",
+     "across the strip's depth (Y -709 to -689), from the room floor to Z 105, less the drop seal's cavity end; its "
+     "pile presses 2 onto BASE's plate at X -972; with the hinge pivot on or outside the strip's outer face it only "
+     "moves away from that plate as the door opens (door_swing.py); modelled compressed to that face"),
 ]
 
 

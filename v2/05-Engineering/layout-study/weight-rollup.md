@@ -14,7 +14,7 @@
 | LINING | 94.4 |
 | CEILING | 20.1 |
 | BASE | 28.2 |
-| FRONT | 116.7 |
+| FRONT | 116.8 |
 | AIR | 58.3 |
 | ELECTRICAL | 5.3 |
 | INTERIOR | 3.5 |
@@ -35,7 +35,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Wall cassette, side, upper | 2 | 10.05 | 9.91 | -0.13 | WALL 510103 and 510104 P01, PR #104 |
 | B1 and B2, lower back outer panels | 2 | 8.76 | 8.53 | -0.23 | WALL 210201 and 210202 P01, PR #152 |
 | Wall cassette, back, lower | 2 | 8.41 | 8.01 | -0.40 | WALL 510201 and 510202 P01, PR #152 |
-| Door unit 360001 | 1 | 49.08 | 48.73 | -0.35 | FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip) |
+| Door unit 360001 | 1 | 49.08 | 48.75 | -0.33 | FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip) |
 | Fixed glass unit 360002 | 1 | 29.58 | 29.54 | -0.04 | FRONT 360002 P01, PR #28 (the estimate: its first list) |
 | Decor block DL, left | 1 | 9.98 | 12.30 | +2.32 | FRONT 350001 P01, PR #105 (the estimate: this study's model from v1's shapes) |
 | Decor block DR, right | 1 | 18.06 | 18.32 | +0.26 | FRONT 350003 P01, PR #105 (the estimate: this study's model from v1's shapes) |
@@ -55,7 +55,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.19 | +0.19 | joints 831001 and 831002 P01, PR #139 |
 | Floor panel | 2 | 7.66 | 7.12 | -0.54 | BASE 111401 P01, PR #55 |
 | Floor mat | 1 | 2.10 | 2.12 | +0.02 | BASE 111501 P01, PR #55 |
-| **In all** | | | | **-2.72** | |
+| **In all** | | | | **-2.70** | |
 
 Lines by basis: 30 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 10 estimated.
 
@@ -88,7 +88,7 @@ Lines by basis: 30 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 1
 | FRONT | Decor block - left | 1 | 12.30 | 12.30 | calculation (CAD) | S51, CAD on main: FRONT parts list 350001 P01: skin 4.002, welded frame 4.668 (26 tubes), plates, stops and seals 3.630; the door's 3 hinges are in the door unit's line, the 2 mm back plate takes J-FRONT-01's rivnuts | CAD, main |
 | FRONT | Decor block - right | 1 | 18.32 | 18.32 | calculation (CAD) | S51, CAD on main: FRONT parts list 350003 P01: skin 6.917, welded frame 4.159 (24 tubes), plates, stops and seals 7.244; AIR's riser, transitions and supply fan box are reserved air spaces in it with no mass, counted in AIR's lines (PM ruling 2026-11-01); the fixed glass's right and diagonal channels, fitted in it, are in the fixed glass unit's line | CAD, main |
 | FRONT | Decor block - top | 1 | 7.84 | 7.84 | calculation (CAD) | S51, CAD on main: FRONT parts list 350002 P01: skin 2.518, welded frame 2.756 (13 tubes), plates, stops and seals 2.566; with the door's magnetic catch 368007 and the top stop | CAD, main |
-| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.73 | 48.73 | calculation (CAD); hinges and pull HOLD | S36, CAD on main: FRONT parts list 360001 P01: leaf 43.854, kick strip 1.345 (hollow, D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair | CAD, main |
+| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.75 | 48.75 | calculation (CAD); hinges and pull HOLD | S36, CAD on main: FRONT parts list 360001 P01: leaf 43.854, kick strip 1.345 (hollow, D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair | CAD, main |
 | FRONT | Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half | 1 | 29.54 | 29.54 | calculation (CAD); magnetic seal HOLD | S37, CAD on main: FRONT parts list 360002 P01: pane 28.590, U-profile, U-seal and one half of the magnetic seal (D-83) | CAD, main |
 | AIR | Supply cartridge, in the air column | 1 | 10.55 | 10.55 | calculation (CAD) | S52, CAD on main: AIR parts list 610301 P01: casing 611301 9.129 (2.0 mm, D-121), 3 layers 611302 at 32 kg/m3 (D-116; the CAD has 40 until the AIR follow-up) | CAD, main |
 | AIR | Exhaust cartridge, in the soffit | 1 | 10.55 | 10.55 | calculation (CAD) | S52, CAD on main: AIR parts list 610301 P01, the same part | CAD, main |

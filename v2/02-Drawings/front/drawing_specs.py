@@ -192,7 +192,9 @@ SPECS = {
         "box": {"front": (v["hinge_x0"], 0.0, X1 + v["kbrush_gap"], ZT + v["st_top"])},
         "dims": [
             ("front", (X0, KZB), (X1, KZB), "below", 12), ("front", (X0, KZB), (X0, ZT), "left", 18),
-            ("front", (X1, KZB), (X1, ZB), "right", 10), ("front", (X1, 0.0), (X1, KZB), "right", 10),
+            ("front", (X1, KZB), (X1, ZB), "right", 10),
+            # the brush below the strip on its own line further out, so its 10 doesn't run into the strip's 95
+            ("front", (X1, 0.0), (X1, KZB), "right", 24),
         ],
         "notes": [
             "Door unit (D-56): leaf 361001, kick strip 361002 with the drop seal 368001 in its cavity and the U-seal "
