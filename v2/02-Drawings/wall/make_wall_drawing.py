@@ -361,6 +361,7 @@ def annotate(app, kind, pn, datum_b):
         raise RuntimeError("the sheet already has %d views; start a new drawing" % sheet.views.count)
     cfg = KINDS[kind]
     print("sheet %s: %s x %s" % (sheet.name, round(sheet.width, 2), round(sheet.height, 2)))
+    step("STEP|views for %s" % pn)
     views = place_views(sheet, cfg)
     right = datum_b == "right"
     side = "right" if right else "left"
@@ -380,6 +381,7 @@ def annotate(app, kind, pn, datum_b):
     for vname, title in cfg["tables"]:
         hole_table(sheet, views[vname], "%s (ORIGIN: VIEW LOWER %s CORNER)" % (title, side.upper())
                    if "ORIGIN" not in title else title, "br" if right else "bl")
+    step("STEP|symbol and notes for %s" % pn)
     projection_symbol(sheet, 30.0, 400.0)                 # top left: clear of the views and the note column
     finish(app, dwg, sheet, kind, pn)
 
@@ -400,6 +402,23 @@ def finish(app, dwg, sheet, kind, pn):
         sheet.views.count, sheet.drawingDimensions.count, sheet.holeTables.count))
 
 
+STEP_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".raw", "annotate-steps.log")
+
+
+def step(msg):
+    """Print a step and append it, timestamped, to .raw/annotate-steps.log at once: the runner only returns a run's
+    printed lines when it ends, so after a hang (the 05:00 run, 2026-11-01) this file shows where it stopped."""
+    import time
+    print(msg)
+    try:
+        os.makedirs(os.path.dirname(STEP_LOG), exist_ok=True)
+        with open(STEP_LOG, "a", encoding="utf-8") as fh:
+            fh.write("%s %s\n" % (time.strftime("%H:%M:%S", time.gmtime()), msg))
+            fh.flush()
+    except OSError:
+        pass
+
+
 def open_drawing(app, name):
     """Open the saved drawing NAME from Default Project / FocusPod v2 (the screen is unlocked: PM rule)."""
     proj = [app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
@@ -414,7 +433,7 @@ def open_drawing(app, name):
     doc = app.documents.open(files[0], True)
     if doc is None:
         raise RuntimeError("could not open %r" % name)
-    print("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
+    step("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
     return doc
 
 
@@ -436,9 +455,9 @@ def update_refs(doc, name):
         after = state()
         if any(st for _n, _v, st in after):
             raise RuntimeError("%s: references still out of date after the update: %s" % (name, after))
-        print("BATCH|references of %s updated: %s -> %s" % (name, before, after))
+        step("BATCH|references of %s updated: %s -> %s" % (name, before, after))
     else:
-        print("BATCH|references of %s up to date: %s" % (name, before))
+        step("BATCH|references of %s up to date: %s" % (name, before))
 
 
 def run(_context):
@@ -469,18 +488,18 @@ def run(_context):
                 dwg = adsk.drawing.Drawing.cast(app.activeProduct)
                 if dwg is None or not dwg.activeSheet.views.count:
                     raise RuntimeError("%r has no views yet: annotate it first" % name)
-                print("BATCH|images %s" % name)
+                step("BATCH|images %s" % name)
                 finish(app, dwg, dwg.activeSheet, kind, pn)
             else:
-                print("BATCH|annotate %s" % name)
+                step("BATCH|annotate %s" % name)
                 annotate(app, kind, pn, datum_b)
             if not doc.save("views, dimensions, hole tables, notes"):
                 raise RuntimeError("save failed")
             done.append(name)
-            print("BATCH|done %s" % name)
+            step("BATCH|done %s" % name)
         except Exception as exc:                          # noqa: BLE001  (report, close, go on)
             failed.append(item)
-            print("BATCH|FAIL %s: %s" % (item, exc))
+            step("BATCH|FAIL %s: %s" % (item, exc))
             print(traceback.format_exc()[-1200:])
         finally:
             if doc is not None and doc.isValid:
