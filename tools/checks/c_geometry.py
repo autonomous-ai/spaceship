@@ -523,6 +523,58 @@ def check_unmatched(root, mdl, bodies, capture=4.0, search=60.0, plane=15.0):
     return fs
 
 
+# D-135 (PM, 2026-11-01): the ACP skin flexes 2 mm or less under a 100 N push at a bay's centre, edges simply
+# supported. The skin is bonded to every frame member, so its free spans are the bays between members; WALL's span
+# table (v2/01-CAD-Native/wall/ACP-SPANS.md: plate on 4 edges, 3 mm ACP with 0.21 mm skins) gives 1.99 mm for a
+# 274.8 mm clear bay, so 275 mm clear is the widest bay that passes (the Lead's figure).
+ACP_BAY_MAX = 275.0
+WALL_FRAME = re.compile(r"(\d{6})\s+WALL\W+PANEL\W+FRAME\W+([A-Z0-9 -]+?)(?=:\d|\s*/|$)", re.I)
+
+
+def acp_bays(bodies):
+    """The bays of every wall panel frame: {frame label: [(short span, (u0, u1, v0, v1)), ...]}, in the frame's own
+    plane (its two long box axes), each bay the frame's outline less every member, as rectangles."""
+    frames = {}
+    for b in bodies:
+        m = WALL_FRAME.search(b.label or "")
+        if m:
+            frames.setdefault("%s %s" % (m.group(1), m.group(2).strip()), []).append(b)
+    out = {}
+    for name, members in frames.items():
+        lo = [min(b.box[k] for b in members) for k in range(3)]
+        hi = [max(b.box[k + 3] for b in members) for k in range(3)]
+        ext = [hi[k] - lo[k] for k in range(3)]
+        n = min(range(3), key=lambda k: ext[k])            # the frame's depth axis
+        u, v = [k for k in range(3) if k != n]
+        bays = [(lo[u], hi[u], lo[v], hi[v])]
+        for b in members:
+            c = (b.box[u], b.box[u + 3], b.box[v], b.box[v + 3])
+            bays = [piece for r in bays for piece in _subtract(r, c)]
+        bays = [r for r in bays if r[1] - r[0] > 1.0 and r[3] - r[2] > 1.0]
+        out[name] = sorted(((round(min(r[1] - r[0], r[3] - r[2]), 1), tuple(round(x, 1) for x in r)) for r in bays),
+                           reverse=True)
+    return out
+
+
+def check_acp_bays(root, mdl, bodies, limit=ACP_BAY_MAX):
+    """D-135: every wall panel bay under the ACP skin at most `limit` mm clear across its short span."""
+    fs = []
+    for name, bays in sorted(acp_bays(bodies).items()):
+        wide = [x for x in bays if x[0] > limit + 0.5]
+        if not wide:
+            continue
+        pn = name.split()[0]
+        f = next((b.file for b in bodies if WALL_FRAME.search(b.label or "") and pn in b.label), "")
+        fs.append(Finding(
+            "C09", "acp-bay", "%s %s" % (mdl, name), "major",
+            "%s has %d bay(s) wider than %.0f mm clear under the ACP skin, the widest %.1f mm: the skin would flex "
+            "over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm)."
+            % (name, len(wide), limit, wide[0][0]),
+            "Add a member so every bay is %.0f mm clear or less (members about 300 apart, D-135)." % limit,
+            f, owner_for(f, pn), {"widest_mm": wide[0][0], "bays_over": len(wide)}))
+    return fs
+
+
 def _pt(p):
     return "X %.0f Y %.0f Z %.0f" % p
 

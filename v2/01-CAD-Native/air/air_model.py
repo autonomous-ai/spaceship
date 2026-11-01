@@ -170,6 +170,14 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
 HARDWARE = {
     "lock": ("838002", "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
              "Bulong lục giác chìm M6 × 25 (chốt mối nối khép)", 2, 0.0079),
+    # the roof grille's fixings (the Air Engineer, 2026-11-01, Packing's open item from #265): the grille goes on from
+    # the roof after the soffit hangs, over the roof sleeve's top flange, with the pod's one 5 mm key (R-J2): 4 M6 x 16
+    # socket head bolts and washers into 4 M6 rivnuts the factory sets in the sleeve's flange, one near each corner
+    "grille_bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+                    "Bulong lục giác chìm M6 × 16", 4, 0.0062),
+    "grille_washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+                      "Long đen to M6 inox", 4, 0.0028),
+    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", 4, 0.0023),
 }
 
 MATERIALS = {
