@@ -92,6 +92,16 @@ def _tray(hand):
                             "C": "front face (at the cassette's front end)"}}
 
 
+def _back_tray(end, tolerance=TRAY_TOLERANCE):
+    """A back tray's entry: its back at +Y, its end return at the side wall (B1's at -X, B2's at +X). Datums as WALL's
+    cassette sheets, so one part reads one datum system on all its sheets (the Lead's ruling, 2026-11-01): B the end
+    return, C the bottom return; A the back face once the generator places a datum on a section (#385)."""
+    return {"bent": True, "notes": TRAY_NOTES, "tolerance": tolerance,
+            "corner": end + "+Y-Z", "datum_faces": {"B": end, "C": "-Z"},
+            "datum_words": {"B": "end return's outer face (at the side wall)",
+                            "C": "bottom return's outer face (on the ledge's pad)"}}
+
+
 PARTS = {
     "511101": _tray("LH"),
     "211101": WALL_FRAME,
@@ -100,6 +110,10 @@ PARTS = {
     "211302": _skin("RH"),
     "211303": _skin("LH"),
     "211304": _skin("RH"),
+    "511201": _back_tray("-X"),
+    # B2's tray carries ELECTRICAL's features (feature rationale F39, F44, F45, with their tolerances)
+    "511202": _back_tray("+X", TRAY_TOLERANCE + "; the Ø19.1 bushing hole ±0.2 (F39), the power unit cut-out "
+                         "304 x 268 and the corner slot 11 x 80 ±0.5 (F44, F45; assumptions)"),
 }
 
 _FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with a full parts-list row (WALL's D-123 "
