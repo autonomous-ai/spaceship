@@ -183,3 +183,142 @@ ASSEMBLIES = {
     # B2: its end at the right side wall, the left edge of its rear view, so the overall height goes on the right
     "510202": _cassette("511202", "+Y", "+X", overall_sides={"y": "right"}),
 }
+
+# Panel assembly sheets (tools/drawgen/assembly.py): each outer panel with the parts fitted at the factory (D-87,
+# D-120). What a STEP can't give: the room-side view and the one from above; a 1:2 build-up section through the first
+# stud and the bays beside it, its layers' faces as ordinates (D-147 (2)); a 2:1 joint section through each kind of
+# joint hardware, where that hardware's balloons go, since it is too small to balloon on the 1:5 views (a
+# stopped-joint rivnut with its stop washer, a spigot, a ledge rivet with the pad, a corner rivnut with the skin's
+# return); the joint hardware's centres as interface sizes beside the rail or stile they sit in; and the fitting order
+# from the parts list's notes. The hardware is cut along its axis, so it is drawn whole (ISO 128-50).
+_PANEL_UNCUT = ["838003", "831002", "831001", "838012"]
+_RIVNUTS = "the rivnuts 838003 set in the frame's Ø10 holes after its welding and touch-up (J-FRAME-01)"
+_STOPS = ", a stop washer 831002 under each stopped-joint rivnut's head, which sets the 2.26 gap"
+_SPIGOTS = "the 2 spigots 831001 screwed into the top rail's spigot rivnuts with threadlocker (H-05), locating %s"
+_LEDGE = ("the ledge %s held on the bottom rail's room face as the drill jig for the rail's Ø3.3 holes, then riveted "
+          "with 6 closed-end countersunk blind rivets 838012 (D-166, D-170), and its pad 848015 bonded on the leg")
+_SKIN = ("the skin %s bonded to the frame with the bond set 108002, one 12 x 3 joint on every member it touches%s "
+         "(D-137, bond spec section 8), laid face down on a flat table with the ACP face as datum")
+_BACK_SKIN = ", overhanging the frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
+_BOLTS = ("the captive bolts 838001, a washer 838004 under each head, each held by a retainer 838005 in its Ø19 "
+          "access hole (%s; HOLD-02)")
+
+
+def _fitting(*steps):
+    return "Fitted at the factory (D-87), as the parts list's rows give it: " + "; ".join(steps) + "."
+
+
+ASSEMBLIES.update({
+    # L1: seen from the room (+X); the top rail's spigots and stopped joints, the back stile's corner rivnuts, the ledge
+    "210101": {
+        "principal": "right", "views": ["above"], "unhatched": _PANEL_UNCUT,
+        "balloon_views": {"838003": "section_B", "831002": "section_B", "831001": "section_C", "838012": "section_E",
+                          "848015": "section_E"},
+        "sections": [
+            {"letter": "A", "point": [-1225, -372.74, 680], "normal": [0, 0, 1], "scale": 0.5,
+             "window": [-440, -300, 1196, 1256], "stack": True},
+            {"letter": "B", "point": [-1224, -422.74, 1245], "normal": [0, 1, 0], "scale": 2.0, "slice": 30,
+             "window": [1196, 1256, 1215, 1268]},
+            {"letter": "C", "point": [-1224, 750, 1245], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+             "window": [-1256, -1196, 1215, 1268]},
+            {"letter": "D", "point": [-1206.95, 824, 671.57], "normal": [0, 0, 1], "scale": 2.0, "slice": 30,
+             "window": [780, 856, 1170, 1256]},
+            {"letter": "E", "point": [-1206.5, -55, 121.26], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+             "window": [-1256, -1170, 100, 150]},
+        ],
+        "interfaces": [
+            {"view": "principal", "of": ["838003"], "along": "x", "origin": {"pn": "211101", "face": "-Y"},
+             "side": "up", "list": True,
+             "words": "the rivnut centres along the panel, from the frame's front end: J-WALL-01's stopped joints and "
+                      "the 2 spigot rivnuts in the top rail, J-WALL-02's in the back stile"},
+            {"view": "principal", "of": ["838003"], "along": "y", "origin": {"pn": "211101", "face": "-Z"},
+             "side": "right", "list": True, "words": "the rivnut centres up the panel, from the frame's bottom"},
+            {"view": "principal", "of": ["838012"], "along": "x", "origin": {"pn": "211101", "face": "-Y"},
+             "side": "down", "list": True, "words": "the ledge's rivet centres, from the frame's front end"},
+        ],
+        "notes": [_fitting(
+            _RIVNUTS + _STOPS, _SPIGOTS % "the panel above", _LEDGE % "211701",
+            _SKIN % ("211301", " and one on its back return"),
+            "the fill pieces friction-fitted in their bays: bay 1 F01, bays 2 and 5 F02, bays 3 and 4 F03 (bay 4's "
+            "turned over left to right), bay 6 F04",
+            _BOLTS % "J-BASE-01 or J-WALL-01 in the bottom rail, J-FRONT-01 in the front stile",
+            "the gasket 848001 on the nut-side faces: the top member and the back stile's room face")],
+    },
+    # L2: seen from the room (+X); J-CEIL-01's rivnuts in the top rail, J-WALL-02's corner rivnuts in the back stile
+    "210103": {
+        "principal": "right", "views": ["above"], "unhatched": _PANEL_UNCUT,
+        "balloon_views": {"838003": "section_B", "831002": "section_B"},
+        "sections": [
+            {"letter": "A", "point": [-1225, -372.74, 1830], "normal": [0, 0, 1], "scale": 0.5,
+             "window": [-440, -300, 1196, 1256], "stack": True},
+            {"letter": "B", "point": [-1206, -425, 2374], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+             "window": [-1256, -1196, 2340, 2404]},
+            {"letter": "C", "point": [-1206, 824, 1792.43], "normal": [0, 0, 1], "scale": 2.0, "slice": 30,
+             "window": [780, 856, 1196, 1256]},
+        ],
+        "interfaces": [
+            {"view": "principal", "of": ["838003"], "along": "x", "origin": {"pn": "211103", "face": "-Y"},
+             "side": "up", "list": True,
+             "words": "the rivnut centres along the panel, from the frame's front end: J-CEIL-01's in the top rail, "
+                      "J-WALL-02's in the back stile"},
+            {"view": "principal", "of": ["838003"], "along": "y", "origin": {"pn": "211103", "face": "-Z"},
+             "side": "right", "list": True, "words": "the rivnut centres up the panel, from the frame's bottom"},
+        ],
+        "notes": [_fitting(
+            _RIVNUTS + _STOPS, _SKIN % ("211303", " and one on its back return"),
+            "the fill pieces friction-fitted in their bays: bay 1 F05, bays 2 and 5 F06, bays 3 and 4 F07 (bay 4's "
+            "turned over left to right), bay 6 F08",
+            _BOLTS % "J-BASE-01 or J-WALL-01 in the bottom rail, J-FRONT-01 in the front stile",
+            "the gasket 848001 on the nut-side faces: the top member and the back stile's room face")],
+    },
+    # B1: seen from the room (its front view); J-WALL-01's stopped joints and the spigots in the top rail, the ledge
+    "210201": {
+        "principal": "front", "views": ["above"], "unhatched": _PANEL_UNCUT,
+        "balloon_views": {"838003": "section_B", "831002": "section_B", "831001": "section_C", "838012": "section_D",
+                          "848015": "section_D"},
+        "sections": [
+            {"letter": "A", "point": [-897, 824, 670], "normal": [0, 0, 1], "scale": 0.5,
+             "window": [-950, -840, 798, 856], "stack": True},
+            {"letter": "B", "point": [-475.75, 824, 1220], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+             "window": [790, 856, 1195, 1245]},
+            {"letter": "C", "point": [-102.75, 824, 1220], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+             "window": [790, 856, 1195, 1245]},
+            {"letter": "D", "point": [-476.08, 806.5, 121.26], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+             "window": [770, 856, 100, 150]},
+        ],
+        "interfaces": [
+            {"view": "principal", "of": ["838003"], "along": "x", "origin": {"pn": "211201", "face": "-X"},
+             "side": "up", "list": True,
+             "words": "the top rail's rivnut centres (J-WALL-01's stopped joints and the 2 spigot rivnuts), from the "
+                      "frame's outer end"},
+            {"view": "principal", "of": ["838012"], "along": "x", "origin": {"pn": "211201", "face": "-X"},
+             "side": "down", "list": True, "words": "the ledge's rivet centres, from the frame's outer end"},
+        ],
+        "notes": [_fitting(
+            _RIVNUTS + _STOPS, _SPIGOTS % "the panel above", _LEDGE % "211801", _SKIN % ("211401", _BACK_SKIN),
+            "the fill pieces friction-fitted in their bays: bay 1 F09, bays 2 and 3 F10 (bay 3's turned over left to "
+            "right), bay 4 F11",
+            _BOLTS % "J-BASE-01 or J-WALL-01 in the bottom rail, J-WALL-02 at the corner",
+            "the gasket 848001 on the top rail, the nut side of J-WALL-01")],
+    },
+    # B3: seen from the room (its front view); the spigots that locate the ceiling, in the top rail
+    "210203": {
+        "principal": "front", "views": ["above"], "unhatched": _PANEL_UNCUT,
+        "balloon_views": {"838003": "section_B", "831001": "section_B"},
+        "sections": [
+            {"letter": "A", "point": [-897, 824, 1790], "normal": [0, 0, 1], "scale": 0.5,
+             "window": [-950, -840, 798, 856], "stack": True},
+            {"letter": "B", "point": [-102.75, 824, 2340], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+             "window": [790, 856, 2310, 2366]},
+        ],
+        "interfaces": [
+            {"view": "principal", "of": ["838003"], "along": "x", "origin": {"pn": "211203", "face": "-X"},
+             "side": "up", "list": True, "words": "the top rail's spigot rivnut centres, from the frame's outer end"},
+        ],
+        "notes": [_fitting(
+            _RIVNUTS, _SPIGOTS % "the ceiling above", _SKIN % ("211403", _BACK_SKIN),
+            "the fill pieces friction-fitted in their bays: bay 1 F12, bays 2 and 3 F13 (bay 3's turned over left to "
+            "right), bay 4 F14",
+            _BOLTS % "J-BASE-01 or J-WALL-01 in the bottom rail, J-WALL-02 at the corner, J-CEIL-01 in the top rail")],
+    },
+})
