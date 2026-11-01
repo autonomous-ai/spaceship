@@ -25,7 +25,6 @@ import copy
 import csv
 import itertools
 import math
-import json
 import io
 import re
 import sys
@@ -494,8 +493,8 @@ PIECES = [
 
 PIECE = {p.tag: p for p in PIECES}
 
-# Each label's body in skeleton P04's STEP (v2/03-Manufacturing/skeleton/), for the step pictures. The air parts, kits and
-# cartons have no skeleton body yet; the step pictures show them when their own CAD lands.
+# Each label's body in skeleton P04's STEP (v2/03-Manufacturing/skeleton/): the step pictures (step_drawings.py in the
+# guide's folder) draw a piece with no CAD yet dashed from it. The air parts, kits and cartons have no skeleton body.
 SKELETON_STEP = REPO / "v2" / "03-Manufacturing" / "skeleton" / "100000_P04_POD-SKELETON_STEP.step"
 SKEL = {
     "1-01": ["B1 ENVELOPE"], "1-02": ["B2 ENVELOPE"], "1-03": ["L1 ENVELOPE"], "1-04": ["R1 ENVELOPE"],
@@ -508,11 +507,6 @@ SKEL = {
     "2-08": ["DL FACETED"], "2-11": ["DT FACETED"], "2-14": ["BAND-FL ENVELOPE"],
     "2-19": ["C1-CASS ENVELOPE"], "2-20": ["C2-CASS ENVELOPE"],
 }
-# Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
-# "inside" from above with the ceiling and the front hidden, to show the linings.
-STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "front", 9: "front", 10: "front",
-             11: "front", 14: "inside", 18: "inside"}
-OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
 
 
 def step_image(n):
@@ -522,16 +516,6 @@ def step_image(n):
 def skeleton_bodies(path=SKELETON_STEP):
     return sorted(set(re.findall(r"MANIFOLD_SOLID_BREP\('([^']*)'", Path(path).read_text(encoding="utf-8", errors="replace"))))
 
-
-def step_bodies_json():
-    rows = []
-    for st in STEPS:
-        new = [b for t in st["tags"] for b in SKEL.get(t, [])]
-        if not new:
-            continue
-        rows.append(dict(step=st["n"], title=st["title"], view=STEP_VIEW.get(st["n"], "front"), new=new,
-                         image=str(step_image(st["n"]).relative_to(REPO))))
-    return json.dumps(dict(source=str(SKELETON_STEP.relative_to(REPO)), steps=rows), indent=1) + "\n"
 
 # ---------------- packaging (910000 PACKAGING), part numbers PROPOSED in the 91 band (conventions section 6)
 PACKAGING = [
@@ -1923,7 +1907,6 @@ def outputs(m):
         OUT_SVG[1]: svg_pallet1(m),
         OUT_SVG[2]: svg_pallet2(m),
         OUT_GUIDE: fill(TPL_GUIDE.read_text(encoding="utf-8"), G),
-        OUT_STEP_BODIES: step_bodies_json(),
     }
 
 
