@@ -39,14 +39,17 @@ Read from: this working tree.
 
 **BASE**
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM: HOLD (HOLD)
-- 118001 BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP: HOLD (HOLD)
+- 118001: the list still names it 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP'; the joints register's H-06 now names it 'BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 
 **WALL**
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
@@ -136,7 +139,8 @@ Read from: this working tree.
 - 718017 ELECTRICAL - CONDUIT - PVC FLEXIBLE - 20 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718020 ELECTRICAL - WIRE - H07V-K 1.5 MM2 (BROWN, BLUE, GREEN-YELLOW): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718021 ELECTRICAL - WIRE - H05V-K 1.0 MM2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718022 ELECTRICAL - WIRE - H07V-K 2.5 MM2 GREEN-YELLOW: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -203,7 +207,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 142 numbers, 116 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 145 numbers, 119 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -327,6 +331,9 @@ From `v2/04-BOM/number-allocation.csv`: 142 numbers, 116 not in a team's list ye
 | 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | ALLOCATED |
 | 611406 | AIR - FAN BOX LINING - EXHAUST FAR END | 610402 | 1 | ALLOCATED |
 | 611407 | AIR - FAN BOX LINING - SUPPLY END | 610401 | 2 | ALLOCATED |
+| 611408 | AIR - FAN BOX LIP ANGLE - SUPPLY | 610401 | 1 | ALLOCATED |
+| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | 610401 | 2 | ALLOCATED |
+| 618501 | AIR - RISER BUFFER - RUBBER - M6 - HOLD | 610401 | 1 | ALLOCATED |
 | 611109 | AIR - COLUMN CORNER ANGLE - BACK | 610101 | 1 | ALLOCATED |
 | 611110 | AIR - COLUMN FILL - LEFT | 610101 | 1 | ALLOCATED |
 | 611111 | AIR - KICK GRILLE - LEFT | 610101 | 1 | ALLOCATED |

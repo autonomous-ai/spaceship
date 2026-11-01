@@ -15,11 +15,11 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | | |
 |---|---|
 | Position | L1: the left wall's lower panel (−X side). R1 is its mirror (RH) and isn't built. |
-| Size | 43 × 1495 × 1145 (skeleton L1). Depth 1495 confirmed by D-49, 43 = 3 ACP + 40 frame (D-16, D-42). |
-| Mass | 11.9 kg (calculation, LS): ACP 6.0, frame 3.3, fill 2.2 at 32 kg/m³, bond lines 0.4 (assumption at 0.25 kg/m²) |
-| Build, outside to inside | ACP 3 mm EV3038 (P01), bonded (P04) to an aluminium 20 × 40 × 1.2 frame (P02) with members 400 mm apart or less (D-16, D-34). 40 mm PET fill (P03) in the frame's bays. Gasket (P14J) on its joint faces, beside the washer line. For the base joint: 4 captive M6 × 16 bolts (P06 with P25, held by P26) in its bottom tube, with 7.0 mm clearance and 19 mm access holes, and a spigot hole and a slot, the slot along X at its back end so the panel drops clear of the corner gasket; the joint's rivnuts are in the band (R1). Its back member is 40 × 40 × 1.2 (P02C), for the corner joint (joints register J-BASE-01, J-WALL-02). |
+| Size | 46 × 1495 × 1145 (skeleton L1). Depth 1495 confirmed by D-49; 46 = 3 ACP + 3 bond line + 40 frame (D-66). |
+| Mass | About 18.0 kg (calculation, the joints register's J-FRAME-01 table: the steel frame 9.81 kg with its plates, the other parts as WALL's list; it was 11.9 kg with the aluminium frame) |
+| Build, outside to inside | ACP 3 mm EV3038 (P01), bonded (P04) to a welded galvanized steel 20 × 40 frame (D-131, joints register J-FRAME-01): rails and front stile 20 × 40 × 1.2 (P02), 5 studs 20 × 40 × 0.8 (P02S) about 300 mm apart (D-135), each corner mitred with a 2 mm plate in it (P28), welded all round in a jig once T16 has proved the welding (HOLD-22 in the joints register), every hole and rivnut made after welding, and the burnt zinc touched up with zinc-rich paint (P27). 40 mm PET fill (P03) in the frame's bays. Gasket (P14J) on its joint faces, beside the washer line. For the base joint: 4 captive M6 × 16 bolts (P06 with P25, held by P26) in its bottom tube, with 7.0 mm clearance and 19 mm access holes, and a spigot hole and a slot, the slot along X at its back end so the panel drops clear of the corner gasket; the joint's rivnuts are in the band (R1). Its back member is 40 × 40 × 1.0 (P02C), for the corner joint (joints register J-BASE-01, J-WALL-02). |
 | Not in it | The lining cassette (S2 is a separate part, D-17). No plywood (D-17). No screw goes through to the cassette. |
-| Tests | T01, T02, T10, T11; T09's cut-open bond check comes last, because it destroys the skin bond |
+| Tests | T01, T02, T10, T11, T14; T16's weld coupons come first, before its frame is welded; T09's cut-open bond check comes last, because it destroys the skin bond |
 
 ### S2 · Lining cassette for L1 (L1-CASS) · Cassette lót vách trái dưới (khay thép + tấm tiêu âm)
 
@@ -73,16 +73,18 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 
 | Coupon | What | Count | Test |
 |---|---|---:|---|
-| Rivnut | A 300 mm piece of the 20 × 40 × 1.2 tube from the frame's own batch, with one rivnut (P05) set through a stop washer (P07) in a 40 mm face, as in the joint (joints register 2.2) | 15 (assumption: 10 for spin-out, 5 for the cycle check) | T06 |
-| Rivnut, DR | A 300 mm piece of DR's 20 × 20 × 1.0 frame tube (P02F) with one rivnut (P05) in a 20 mm face, no stop washer, and a washer (P25) on its head as DR's panel stop (joints register H-34) | 5 (assumption: spin-out) | T06 |
-| Bond | A lap-shear pair: an ACP strip (P01) on a 150 mm tube piece, bonded the way S1 is bonded | 10 (assumption: 5 as cured, 5 aged) | T09 |
-| Clip | A strip of the cassette's 0.5 mm return (P08) with one clip (P11), and its mate on a 150 mm tube piece | 10 (assumption: 5 in shear for the wall, 5 in pull-out for the ceiling) | T07 |
+| Rivnut | A 300 mm piece of the 20 × 40 × 1.0 galvanized tube (P02A) from the frames' own lot, with one rivnut (P05) set through a stop washer (P07) in a 40 mm face, as in the joint (joints register 2.2) | 15 (assumption: 10 for spin-out, 5 for the cycle check) | T06 |
+| Rivnut, DR | A 300 mm piece of DR's 0.8 mm galvanized panel-screw tube (P02F) with one rivnut (P05) in a 20 mm face, no stop washer, and a washer (P25) on its head as DR's panel stop (joints register H-34) | 5 (assumption: spin-out) | T06 |
+| Bond | A lap-shear pair: an ACP strip (P01) on a 150 mm piece of the galvanized tube (P02A), bonded the way S1 is bonded (P04); half of them across a T joint, a stud stub (P02S) welded on and its weld touched up with zinc-rich paint (P27) | 10 (assumption: 5 as cured, 5 aged) | T09 |
+| Clip | A strip of the cassette's 0.5 mm return (P08) with one clip (P11), and its mate on a 150 mm piece of the 0.8 mm stud tube (P02S), the thinnest member a clip fixes to (joints register J-LIN-01) | 10 (assumption: 5 in shear for the wall, 5 in pull-out for the ceiling) | T07 |
+| Weld, corner | Two tube legs 400 long, mitred and welded all round with their 2 mm plate (P28), in the production process: two 20 × 40 at 45° in 1.0 (P02A) and in 1.2 (P02); a 20 × 40 rail on a 40 × 40 (P02C), in 1.0 and in 1.2; two 40 × 40 (joints register J-T7) | 35 (5 of each of the 5 kinds to bend, and 2 more of each to saw) | T16 |
+| Weld, T | A 0.8 mm stud (P02S) welded all round on a 1.0 (P02A) and on a 1.2 (P02) rail, legs 400 long (assumption) | 14 (5 of each kind to bend and pull, and 2 more of each to saw) | T16 |
 
 ## Rigs (not product)
 
 | Rig | What | Test |
 |---|---|---|
 | R1 | Base band rig: a base band piece, aluminium 100 × 40 × 2.0 (P24; LS), with 2 spigots 100 mm in from its ends and 4 rivnuts (P05) with stop washers (P07) at the 220 mm rule, matching S1's base holes (joints register J-BASE-01), per the BASE drawing (H17) | T11 |
-| R2 | Ceiling hanging frame: 20 × 40 × 1.2 members (P02) at the cassette's clip and catch positions (PR #32: 6 clips on the back faces of the three cross members, over the ribs, and 2 catches on the middle member's front face), on a stand at the pod's ceiling height, about 2.3 m inside (D-42) | T07, T08 |
+| R2 | Ceiling hanging frame in the ceiling's galvanized tube (D-131, joints register J-FRAME-01): the perimeter and cross member 1 20 × 40 × 1.0 (P02A), cross members 2 and 3 20 × 40 × 0.8 (P02S), at the cassette's clip and catch positions (PR #32: 6 clips on the back faces of the three cross members, over the ribs, and 2 catches on the middle member's front face), on a stand at the pod's ceiling height, about 2.3 m inside (D-42) | T07, T08 |
 | R3 | The D-60 air mock-up for S5 (above): the air column with its backboard, riser box and supply fans, and the soffit with its exhaust fans and roof sleeve | T04, T05, T12 |
 | R4 | Heated chamber on R3's inner side: a closed box over the column's kick grille and the soffit's exhaust grille that takes the supply air and feeds the exhaust, as the pod's inside would, with an adjustable heater (P21) | T05 |
