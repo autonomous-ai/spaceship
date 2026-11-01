@@ -908,3 +908,121 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
                             "Move the hole at least %.1f mm from the bend or add a relief cut." % need,
                             r, owner_for(r, pn), {"hole_to_bend_mm": round(d, 2)}))
     return fs
+
+
+# ----------------------------------------------------------------- D-174 tight fits
+
+# D-174 (the Lead, 2026-11-01, after Reviewer 16 found INTERIOR's light shelf runs cut to the exact gap between two
+# fixed faces): a made part that meets other parts' faces with no gap at both ends of a run of 100 mm or more won't
+# go in with its cut tolerance. It clears with a gap (by default 1 to 1.5 mm at each end of a run; a hole at least
+# 1 mm over the part it takes), or when its row marks the fit as press, adjustable (slots or shims) or set at assembly
+# (the part sets where the others go, as frame members joined by welds or keys do).
+TIGHT_RUN = 100.0          # mm: a run, not a plate's thickness or a short block
+TIGHT_GAP = 1.0            # mm: the least gap at each end of a run (a hole: both sides together)
+FIT_MARK = re.compile(r"\bpress(?:ed)?[- ]?fit|\bpressed in\b|\badjustab|\bslotted\b|\bslots? (?:for|to) adjust|"
+                      r"\bshim(?:s|med)?\b|\bset at assembly\b|\bsets? (?:where|the position of) the others\b", re.I)
+SPACE_HOLDER = re.compile(r"\bRESERVED\b|\bZONE\b|\bROUTE\b|ENVELOPE", re.I)
+
+
+def _part_label(b):
+    parts = (b.label or "").split(" / ")
+    return re.sub(r":\d+$", "", parts[-2] if len(parts) > 1 else (b.label or "")).strip()
+
+
+def _part_pn(b):
+    m = re.match(r"\s*(\d{6})", _part_label(b))
+    return m.group(1) if m else (b.part_number or "")
+
+
+def _team_of(b):
+    m = re.search(r"v2/03-Manufacturing/([^/]+)/", (b.file or "").replace("\\", "/"))
+    return m.group(1).upper() if m else ""
+
+
+def _end_faces(planes, b, k, sign):
+    c = b.box[k] if sign < 0 else b.box[k + 3]
+    return c, [pts for n, _o, pts in planes if abs(n[k] - sign) < 1e-4 and all(abs(p[k] - c) < 0.01 for p in pts)]
+
+
+def _overlap_in_plane(pa, pb, k):
+    i, j = [a for a in range(3) if a != k]
+    oi = min(max(p[i] for p in pa), max(p[i] for p in pb)) - max(min(p[i] for p in pa), min(p[i] for p in pb))
+    oj = min(max(p[j] for p in pa), max(p[j] for p in pb)) - max(min(p[j] for p in pa), min(p[j] for p in pb))
+    return oi > 1.0 and oj > 1.0
+
+
+def tight_ends(b, k, others, planes, reach=TIGHT_GAP):
+    """For each end of b's run along axis k: the nearest facing face of another part within reach (gap, part)."""
+    out = []
+    for sign in (-1, 1):
+        c, ends = _end_faces(planes[id(b)], b, k, sign)
+        best = None
+        if ends:
+            for q in others:
+                if q is b or not (q.box[k] - reach <= c <= q.box[k + 3] + reach):
+                    continue
+                for n, _o, pts in planes[id(q)]:
+                    if abs(n[k] + sign) > 1e-4:
+                        continue
+                    gap = sign * (sum(p[k] for p in pts) / len(pts) - c)
+                    if -0.05 <= gap < reach and all(abs(sign * (p[k] - c) - gap) < 0.01 for p in pts) and \
+                            any(_overlap_in_plane(e, pts, k) for e in ends) and (best is None or gap < best[0]):
+                        best = (0.0 if gap < 0.005 else gap, q)
+        out.append(best)
+    return out
+
+
+def check_tight_fits(root, mdl, bodies, row_texts=None):
+    """C02 tight-fit (D-174): major when the parts at its ends are fitted separately, minor inside one made
+    assembly (the maker fits those; the owner still confirms each or adds the gap)."""
+    from common import is_fastener
+    row_texts = row_texts or {}
+    reserved = reserved_spaces(root)
+    use = [b for b in bodies if b.box is not None and not SPACE_HOLDER.search(b.label or "")
+           and not reserved_label(b.label, reserved) and not is_soft(_part_label(b))
+           and not is_fastener(_part_pn(b), _part_label(b))]
+    planes = {id(b): _world_planes(b) for b in use}
+    fs, seen = [], set()
+    for b in use:
+        pn = _part_pn(b)
+        if pn_class(pn) != "part" or FIT_MARK.search(row_texts.get(pn, "")):
+            continue
+        others = [q for q in use if not (q.file == b.file and _part_pn(q) == pn)]
+        for k in range(3):
+            run = b.box[k + 3] - b.box[k]
+            if run < TIGHT_RUN:
+                continue
+            lo, hi = tight_ends(b, k, others, planes)
+            if lo is None or hi is None:
+                continue
+            hole = _part_pn(lo[1]) == _part_pn(hi[1]) and lo[1].file == hi[1].file
+            if hole and lo[0] + hi[0] >= TIGHT_GAP:
+                continue                         # a hole at least 1 mm over the part it takes
+            key = (pn, k)
+            if key in seen:
+                continue
+            seen.add(key)
+            parent = lambda x: (x.file, " / ".join((x.label or "").split(" / ")[:-2]))
+            inside = parent(lo[1]) == parent(b) and parent(hi[1]) == parent(b)
+            others_named = []
+            for g, q in (lo, hi):
+                t = _team_of(q)
+                others_named.append("%s%s" % (_part_label(q), " (%s's)" % t if t and t != _team_of(b) else ""))
+            what = ("in a hole of %s, %.2f mm clear in all" % (others_named[0], lo[0] + hi[0]) if hole else
+                    "between %s and %s, %.2f and %.2f mm clear" % (others_named[0], others_named[1], lo[0], hi[0]))
+            fs.append(Finding(
+                "C02", "tight-fit", "%s %s along %s" % (mdl, _part_label(b), "XYZ"[k]),
+                "minor" if inside else "major",
+                "%s runs %.1f mm along %s %s: cut to the gap with its cut tolerance, it may not go in (D-174). %s" % (
+                    _part_label(b), run, "XYZ"[k], what,
+                    "The parts are in one made assembly, fitted by its maker: confirm it, or add the gap."
+                    if inside else "Those parts are fitted separately."),
+                "Leave a gap of 1 to 1.5 mm at each end of the run (a hole at least 1 mm over the part it takes), or "
+                "mark its row's fit as press fit, adjustable (slots or shims) or set at assembly (D-174)%s." % (
+                    "; agree with %s which side changes" % " and ".join(sorted({_team_of(q) for _g, q in (lo, hi)
+                                                                              if _team_of(q) != _team_of(b)}))
+                    if any(_team_of(q) != _team_of(b) for _g, q in (lo, hi)) else ""),
+                b.file, owner_for(b.file, pn),
+                {"model": mdl, "axis": "XYZ"[k], "run_mm": round(run, 1), "gaps_mm": [round(lo[0], 2), round(hi[0], 2)],
+                 "facing": [_part_label(lo[1]), _part_label(hi[1])], "inside": inside, "hole": hole}))
+    return fs
