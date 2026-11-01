@@ -20,6 +20,7 @@
    dropping to 1:10, with datum B on B1's round-spigot rivnut (joints register 2.11).
 8. Keys fitted in a part's ends: each key in Joints' corner-keys.csv gets its orientation note, and the read-back
    fails a missing note or one that names holes away from the key's screw positions.
+9. Only holes on one line through two walls count as a two-wall pair (which needs a section).
 """
 
 import os
@@ -142,7 +143,7 @@ def test_model_change_regenerates():
     step = os.path.join(d, os.path.basename(src))
     shutil.copy(src, step)
     p1 = os.path.join(d, "v1.pdf")
-    compose.make("211101", "wall", specs.WALL_FRAME, p1, step=step)
+    compose.make("211101", "wall", specs.SPECS["211101"][2], p1, step=step)
     f1, _ = readback.check(p1, step)
     assert not f1, f1
     rows1 = readback.table_rows(fitz.open(p1)[0])
@@ -153,7 +154,7 @@ def test_model_change_regenerates():
     why = drawgen.stale(p1)
     assert any("changed" in w and w.endswith("STEP.step changed") for w in why), why     # the drawing knows
     p2 = os.path.join(d, "v2.pdf")
-    compose.make("211101", "wall", specs.WALL_FRAME, p2, step=step)
+    compose.make("211101", "wall", specs.SPECS["211101"][2], p2, step=step)
     f2, _ = readback.check(p2, step)
     assert not f2, f2
     rows2 = readback.table_rows(fitz.open(p2)[0])
@@ -301,6 +302,18 @@ def test_key_notes_name_the_screw_holes():
     assert readback.key_note_fails(held, good, [row], holes=[{"c": (50.0, 0.0, 10.0)}]) == []
     late = readback.key_note_fails(held, good, [row], holes=[{"c": (0.0, 14.0, 10.0)}])
     assert late and "draw the key note" in late[0], late
+
+
+def test_two_wall_pairs_are_on_one_line():
+    """Two parallel holes side by side in one wall are not a two-wall pair (BASE's FR1: two Ø13 glide nut holes
+    546.5 apart in its bottom wall); two holes on one line through both walls are."""
+    side = [{"tag": "H01", "kind": "hole", "body": "FR1", "axis": (0, 0, 1), "entry": (0.0, 0.0, 0.0)},
+            {"tag": "H02", "kind": "hole", "body": "FR1", "axis": (0, 0, 1), "entry": (546.5, 0.0, 0.0)}]
+    assert readback.two_wall_pairs(side) == []
+    through = side[:1] + [{"tag": "H03", "kind": "hole", "body": "FR1", "axis": (0, 0, -1), "entry": (0.0, 0.0, 100.0)}]
+    assert readback.two_wall_pairs(through) == [("H01", "H03")]
+    other = side[:1] + [{"tag": "H04", "kind": "hole", "body": "STILE", "axis": (0, 0, 1), "entry": (0.0, 0.0, 100.0)}]
+    assert readback.two_wall_pairs(other) == []
 
 
 def main():
