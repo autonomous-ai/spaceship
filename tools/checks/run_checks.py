@@ -251,6 +251,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=REPO_ROOT)
     ap.add_argument("--ref", default="", help="check this git ref (e.g. origin/main) in a fresh export instead of --root")
+    ap.add_argument("--ref-rows", action="store_true",
+                    help="with --ref: keep the rows the ref adds to the rule files (pre-checking a team's PR that adds "
+                         "an edge exception or a clash allowance)")
     ap.add_argument("--register-root", default=REPO_ROOT)
     ap.add_argument("--rev", default=None)
     ap.add_argument("--update", action="store_true")
@@ -260,7 +263,7 @@ def main(argv=None):
     export_dir = None
     if a.ref:
         from common import export_ref
-        root, sha = export_ref(a.ref)
+        root, sha = export_ref(a.ref, ref_rows=a.ref_rows)
         export_dir = root
         a.rev = a.rev or sha
     try:
