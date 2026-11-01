@@ -240,8 +240,8 @@ ASSEMBLIES["110104"] = {
     "views": ["above"],
     "unhatched": ["111602", "838010", "838001"],
     "sections": [
-        # through FL1 over the knee key 111214 in its knee end (hidden in every view)
-        {"letter": "A", "point": [-1176.66, -718, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,
+        # through FL1 and the knee key 111214 in its knee end, about mid-key (hidden in every view)
+        {"letter": "A", "point": [-1160, -725, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,
          "window": [-760, -680, -2, 121]},
         # through FL2's glide, its load block and M10 rivnut
         {"letter": "B", "point": [-1017.63, -800, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,

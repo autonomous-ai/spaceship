@@ -134,6 +134,25 @@ python3 v2/03-Manufacturing/base/make_outputs.py --dxf
 | Outputs | parts list 61 rows, 11.97 kg; the members' DXFs (111302's flat pattern, 111303's blank) |
 | Names in exports | none: 4 byte hits in the decompressed .f3d files were one coordinate's binary bytes (the double −268.1686), not text; the STEP, CSV and data files are clean |
 
+## Run F, 2026-11-01 13:51 to 14:01 UTC: D-163's round rivnut holes, the made glide 111602 and end cap 111111, the sill's countersunk M3 holes, FL1 and FL2 in their own axes; stopped by a Fusion crash
+
+First a sample with nothing saved (13:48, its own queue place): the glide, the end cap, the sill's bent profile with its countersunk holes, and FL1 and FL2 in their own axes, each built in its own unsaved design: 5 of 5 healthy and fully constrained (glide 0.1064 kg, Ø40 × 60; cap 0.0194 kg; FL1 in CS-111104 X 0…123.24, Y 0…40, Z 0…100; FL2 in CS-111105 X 0…207.48, Y 0…141.16, Z 0…100, as the offline transform gave).
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/base/late_base.py --timeout 3600 \
+  --arg targets=v2/01-CAD-Native/base/base_build.py,v2/02-Drawings/base/base_cleanup.py,v2/01-CAD-Native/base/base_edit_test.py \
+  --arg save=1 --arg replace=1 --arg export=1 --arg scope=p02 --arg batch2=1 \
+  --arg also_parts=sill_bent,doubler,fr1,glide,cap --arg supersede=111301_P01_BASE-SILL-FIXED-GLASS_CAD
+```
+
+| What | Result |
+|---|---|
+| Assembly | saved and exported, which the build does only after every step-9 check passes (timeline, sketches, boxes, clashes, the corner keys); STEP 117 occurrences; the data file has D-163's sizes (`rn_hole` 10, `gl_nut_hole` 13.5, `ch_rn_hole` 5.1 with `ch_rn_csk` 8) |
+| Part designs | 111302, 111601, 111106, 111602, 111111, 111101, 111103 and 111104 saved and exported; their STEPs hold the new holes (Ø10.00, Ø13.50, Ø5.10) |
+| Stopped | Fusion crashed at 14:01 while it built FL2's design; the Lead relaunched it at 14:15. The run's printed results went with it. FL2's and the right band's designs, the old sill design's rename and the edit test didn't run |
+| Offline | the glide's STEP: one solid, 13 547.8 mm³, the socket 5.00 across flats; the cap's 7178.0 mm³ (97 × 37 × 2); FL1's own STEP turned back into the pod is its copy in 110000's STEP (228 vertices within 0.0000 mm, 22 of 22 faces) |
+| Outputs | parts list 61 rows, 11.59 kg; the cap's DXF; master BOM, roll-up and packing rerun |
+
 ## Earlier runs (no files kept)
 
 - 18:02 to 18:43: stopped at the first keyhole sketch (two circles in one sketch over-constrained in Fusion). The keyholes are now two hole features and one slot cut.
