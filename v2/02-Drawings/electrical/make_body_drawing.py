@@ -44,6 +44,7 @@ FRONT_AT = (205.0, 250.0)      # sheet mm, origin at the sheet's lower left corn
 ISO_AT, ISO_SCALE = (205.0, 70.0), 0.2
 SYMBOL_AT = (350.0, 25.0)      # left of the title block, under the iso
 TOL = 1.0                      # sheet mm: a placed view must be this close to its expected size
+DATUM_LEAD = 4.0               # sheet mm from an edge to its datum box (the box is about 7 mm, beyond this point)
 # name, orientation, where (first-angle position against the FRONT)
 VIEWS = [("front", "FrontViewOrientationType", "centre"),
          ("top", "TopViewOrientationType", "below"),
@@ -260,17 +261,20 @@ def annotate(app: "adsk.core.Application"):
     views = place_views(sheet, w, h, d)
     f, t, r = views["front"], views["top"], views["right"]
     fe, te, re_ = extent(f), extent(t), extent(r)
-    # overall sizes, each in the gap beside its view (nothing crosses another view): width under the front
-    # view (datum A), height beside the view from the right (outer side), depth beside the top view
-    # each from the edge lines on the two opposite sides, so a corner relief can't move it
+    # overall sizes, each in a gap beside its view (nothing crosses another view): the width above the front view
+    # (the gap below it holds datums A and C: run of 2026-11-01, A's box sat on the top view's edge and C's touched the
+    # width's line), the height beside the view from the right (outer side), the depth beside the top view; each from
+    # the edge lines on the two opposite sides, so a corner relief can't move it
     dims = DimensionSet(sheet)
-    dim(dims, end_on(f, "left", (fe[0], fe[1])), end_on(f, "right", (fe[2], fe[1])), ((fe[0] + fe[2]) / 2, fe[1] - 9.0), "width")
+    dim(dims, end_on(f, "left", (fe[0], fe[3])), end_on(f, "right", (fe[2], fe[3])), ((fe[0] + fe[2]) / 2, fe[3] + 9.0), "width")
     dim(dims, end_on(r, "bottom", (re_[0], re_[1])), end_on(r, "top", (re_[0], re_[3])), (re_[0] - 9.0, (re_[1] + re_[3]) / 2), "height")
     dim(dims, end_on(t, "bottom", (te[2], te[1])), end_on(t, "top", (te[2], te[3])), (te[2] + 9.0, (te[1] + te[3]) / 2), "depth")
     print("dimensions: width (front view), height (view from the right), depth (top view)")
-    datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 30.0, fe[1] - 17.0))
+    # Fusion draws a datum's 7 mm box beyond its placement point, away from the edge (measured on the 2026-11-01
+    # sheet): A hangs 4 mm under the front view, C stands 4 mm over the top view, at opposite ends of the gap
+    datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 30.0, fe[1] - DATUM_LEAD))
     datum(sheet, "B", edge_line(f, "left"), (fe[0] - 14.0, fe[1] + 30.0))
-    datum(sheet, "C", edge_line(t, "top"), (te[2] - 20.0, te[3] + 8.0))
+    datum(sheet, "C", edge_line(t, "top"), (te[2] - 20.0, te[3] + DATUM_LEAD))
     # no Fusion hole tables: on this folded body the view corners are relieved, so a table's origin can't sit on
     # the datum corner; the hole list H01-H08 from the datums goes into the PDF (body_drawing_text.py)
     for name, _o, _w in VIEWS:              # after the dimensions: centre lines can't move an edge line now

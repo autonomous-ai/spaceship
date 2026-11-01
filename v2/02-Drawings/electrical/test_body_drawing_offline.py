@@ -415,6 +415,31 @@ def main():
               "dimensions measure the part's %g x %g x %g (%g, %g, %g)" % (Fake.W, Fake.H, Fake.D, w, hgt, dep))
         syms = sheet.drawingSymbols.made
         check([s.identifier for s in syms] == ["A", "B", "C"], "datums A, B, C")
+        # Fusion's datum box: about 7.2 mm, beyond the placement point, away from its edge (measured on the
+        # 2026-11-01 sheet: A's box from its point down, C's up, B's to the left). Each box keeps 1.5 mm from every
+        # view, every dimension line and every other box (that run had A's box on the top view's edge).
+        boxes7 = []
+        for sy in syms:
+            (x1, y1), (x2, y2) = [(q.coordinate.x, q.coordinate.y) for q in (sy.viewCurve.startPoint, sy.viewCurve.endPoint)]
+            px, py = sy.placementPoint.coordinate.x, sy.placementPoint.coordinate.y
+            if abs(y1 - y2) < 1e-6:                       # a horizontal edge: the box above or below the point
+                boxes7.append((px - 3.6, py - 7.2, px + 3.6, py) if py < y1 else (px - 3.6, py, px + 3.6, py + 7.2))
+            else:                                         # a vertical edge: the box left or right of the point
+                boxes7.append((px - 7.2, py - 3.6, px, py + 3.6) if px < x1 else (px, py - 3.6, px + 7.2, py + 3.6))
+        dim_lines = []
+        for da, db, dp in dims:
+            ax, ay, bx, by = da.coordinate.x, da.coordinate.y, db.coordinate.x, db.coordinate.y
+            px, py = dp.coordinate.x, dp.coordinate.y
+            if abs(py - (ay + by) / 2) >= abs(px - (ax + bx) / 2):
+                dim_lines.append((min(ax, bx), py - 0.01, max(ax, bx), py + 0.01))
+            else:
+                dim_lines.append((px - 0.01, min(ay, by), px + 0.01, max(ay, by)))
+        crowded = [(sy.identifier, what) for sy, bx_ in zip(syms, boxes7)
+                   for what, other in ([("view %d" % i, vb) for i, vb in enumerate(boxes)] +
+                                       [("dimension %d" % i, dl) for i, dl in enumerate(dim_lines)] +
+                                       [("datum %s" % o.identifier, ob) for o, ob in zip(syms, boxes7) if o is not sy])
+                   if overlap(bx_, other, 1.5)]
+        check(not crowded, "datum boxes 1.5 mm clear of views, dimension lines and each other %s" % crowded)
         check(not any(inside((s.placementPoint.coordinate.x, s.placementPoint.coordinate.y), b, 1.0)
                       for s in syms for b in boxes), "no datum placed on a view")
         check(sheet.holeTables.count == 0, "no Fusion hole table (relieved corners; the hole list is in the PDF)")
