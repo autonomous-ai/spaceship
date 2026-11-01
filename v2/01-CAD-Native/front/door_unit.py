@@ -374,7 +374,10 @@ BOM_ROWS = [
      "hardware selection C5", "length = kick_len"),
     ("368101", "FRONT - DOOR HINGE - HOLD", "Bản lề cửa (chờ chọn)", 3, "bought, HOLD",
      "not named: rated for the 8.76 laminate, at least 60 kg and the 1176 mm width; holds the door at its closed "
-     "position; two-part lift-off, the frame halves ship fitted in DL; hung on site with the 5 mm key (PM rulings)",
+     "position; two-part lift-off, the frame halves ship fitted in DL; hung on site with the 5 mm key (PM rulings). "
+     "Candidates: dormakaba OFFICE 11.233 (D-30); Häfele 926.88.090/091 lift-off glass hinge, 60 kg, 8-12 mm glass, two "
+     "15 mm holes each, second candidate for the factory's questions (PM ruling 2026-11-01); Häfele's 90 deg "
+     "glass-to-wall shower hinges don't pass (36 to 45 kg a pair, 800 to 915 wide)",
      0.6, "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1", "reserved space only"),
     ("368102", "FRONT - DOOR STRIKE", "Bát hít cửa", 1, "bought",
      "stainless steel SUS430 strike with CR packing, finish as supplied", 0.023, "source (Sugatsune datasheet, 22.9 g)",
