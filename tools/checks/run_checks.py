@@ -59,7 +59,8 @@ def contacts_from(bodies, tol=0.2):
 
 def own_file_first(pn, files):
     """Which STEP file speaks for a part's holes: its own (the file named after its number) when there is one, else
-    the first file holding it. An older copy of the part in an assembly can then never add holes it doesn't have."""
+    the first file holding it. A copy in an assembly, older or modelled in another frame, then never adds holes the
+    part doesn't have (BASE's copy of corner key 111211 is the key turned 180 degrees: other key coordinates)."""
     own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
     return own[0] if own else sorted(files)[0]
 

@@ -1413,8 +1413,8 @@ def test_a_drawgen_part_stays_severe_on_a_locked_screen(tmp_path, monkeypatch):
 
 
 def test_a_parts_holes_come_from_its_own_step_first():
-    # an older copy of corner key 111211 in BASE's assembly had its bottom holes 9 mm away from the key's own STEP;
-    # adding both gave C05 six hole axes for a four-hole key
+    # BASE's assembly holds corner key 111211 turned 180 degrees in its own frame (the same key; it is symmetric), so its
+    # bottom holes sit at other key coordinates than in the key's own STEP: adding both gave six hole axes for four holes
     import run_checks
     files = {"v2/03-Manufacturing/base/110000_P01_BASE_STEP.step": 1,
              "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step": 2}
