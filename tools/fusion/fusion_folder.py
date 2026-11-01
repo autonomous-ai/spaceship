@@ -76,10 +76,13 @@ def _listing(folder):
     return out
 
 
-def pause_after_new_file(sleep=time.sleep, clock=time.time, pause_s=NEW_FILE_PAUSE_S):
+def pause_after_new_file(sleep=time.sleep, clock=time.monotonic, wall=time.time, pause_s=NEW_FILE_PAUSE_S):
     """Wait until pause_s has gone by since the last new cloud file this Fusion saved, letting Fusion work in the
-    meantime; returns the seconds waited. The runner's hook notes each saveAs on adsk.core (_spaceship_new_file_at,
-    a time.time(); _spaceship_new_file, its name), in every run through run_script.py and start_drawing.py.
+    meantime; returns the seconds waited, never more than pause_s. The runner's hook notes each saveAs on adsk.core:
+    _spaceship_new_file_mono (time.monotonic(), read with clock) and _spaceship_new_file, its name, in every run
+    through run_script.py and start_drawing.py. A Fusion session whose hook came from an older runner notes only
+    _spaceship_new_file_at (time.time(), read with wall); the cap keeps a clock step from stretching the wait
+    (Reviewer 5, P3 on #379).
 
     Why (PM ruling 2026-11-01): Fusion crashed twice that day right after it fetched the team folder's second page
     of files, each time 1 to 3 s after it started a live-update subscription; at 14:00:58 that was two seconds after
@@ -89,13 +92,16 @@ def pause_after_new_file(sleep=time.sleep, clock=time.time, pause_s=NEW_FILE_PAU
         return 0.0
     try:
         import adsk.core as _ac
-        t = getattr(_ac, "_spaceship_new_file_at", None)
+        t = getattr(_ac, "_spaceship_new_file_mono", None)
+        now = clock
+        if not isinstance(t, (int, float)):
+            t, now = getattr(_ac, "_spaceship_new_file_at", None), wall
         name = getattr(_ac, "_spaceship_new_file", "") or "?"
     except Exception:
         return 0.0
     if not isinstance(t, (int, float)):
         return 0.0
-    left = pause_s - (clock() - t)
+    left = min(pause_s, pause_s - (now() - t))
     if left <= 0:
         return 0.0
     print("fusion_folder: waiting %.1f s after the new cloud file %s before reading the folder" % (left, name))

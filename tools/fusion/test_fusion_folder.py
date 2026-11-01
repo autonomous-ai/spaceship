@@ -102,6 +102,7 @@ class NewFilePauseTests(unittest.TestCase):
         self.adsk.doEvents = lambda: self.events.append(self.clock.t)
         self.clock = Clock()
         self.clock.t = 1000.0
+        self.wall_t = 1793500000.0                                  # the wall clock, for an older runner's note
         self.keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core")}
         sys.modules.update({"adsk": self.adsk, "adsk.core": self.core})
         self.keep_ff = ff.adsk
@@ -118,11 +119,12 @@ class NewFilePauseTests(unittest.TestCase):
     def pause(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
-            waited = ff.pause_after_new_file(sleep=self.clock.sleep, clock=self.clock.now)
+            waited = ff.pause_after_new_file(sleep=self.clock.sleep, clock=self.clock.now,
+                                             wall=lambda: self.wall_t)
         return waited, out.getvalue()
 
     def test_a_new_file_3_s_ago_waits_out_the_other_7_letting_fusion_work(self):
-        self.core._spaceship_new_file_at = 997.0
+        self.core._spaceship_new_file_mono = 997.0
         self.core._spaceship_new_file = "111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_CAD"
         waited, said = self.pause()
         self.assertAlmostEqual(waited, 7.0)
@@ -133,14 +135,28 @@ class NewFilePauseTests(unittest.TestCase):
     def test_an_older_new_file_or_none_waits_not_at_all(self):
         for t in (None, 989.0, "not a time"):
             if t is None:
-                self.core.__dict__.pop("_spaceship_new_file_at", None)
+                self.core.__dict__.pop("_spaceship_new_file_mono", None)
             else:
-                self.core._spaceship_new_file_at = t
+                self.core._spaceship_new_file_mono = t
             waited, said = self.pause()
             self.assertEqual((waited, said, self.clock.sleeps), (0.0, "", []), t)
 
+    def test_an_older_runners_wall_clock_note_is_read_and_its_wait_capped(self):
+        # a Fusion session whose hook came from #379 notes only time.time(); a clock step back after it must not
+        # stretch the wait (Reviewer 5, P3 on #379)
+        self.core._spaceship_new_file_at = self.wall_t - 3.0
+        waited, _said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.clock.sleeps.clear()
+        self.core._spaceship_new_file_at = self.wall_t + 3600.0      # the clock stepped back an hour
+        waited, _said = self.pause()
+        self.assertEqual(waited, 10.0)
+        self.assertAlmostEqual(sum(self.clock.sleeps), 10.0)
+        self.core._spaceship_new_file_mono = 989.0                   # a monotonic note wins over the old one
+        self.assertEqual(self.pause()[0], 0.0)
+
     def test_read_folder_waits_before_its_first_listing(self):
-        self.core._spaceship_new_file_at = 995.0
+        self.core._spaceship_new_file_mono = 995.0
         listed_at = []
 
         class Seen(Files):
