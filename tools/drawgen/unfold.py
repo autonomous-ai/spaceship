@@ -259,15 +259,17 @@ def unfold(sh, k):
             a = b.axis_d
             pF0, _pF1 = _edge_ends(eF)
             # in each flange's plane, the direction square to the bend line: out of F toward the bend, and out of
-            # the bend into G
-            def across(face, P):
-                d = vsub(P, face.centre)
+            # the bend into G. Taken from the bend's own cylinder (its middle lies past each tangent line, on the
+            # bend's side, for any fold up to 180°), never from a flange's middle: an L-shaped flange's middle can
+            # lie across the fold (Reviewer 15 on #369: AIR's floor 611802 unfolded a whole allowance off)
+            def into_bend(face, P):
+                d = vsub(b.face.centre, P)
                 d = vsub(d, vmul(a, vdot(d, a)))
                 d = vsub(d, vmul(face.normal, vdot(d, face.normal)))
                 return vnorm(d)
-            nF = across(F, pF0)
+            nF = into_bend(F, pF0)
             pG0, _pG1 = _edge_ends(eG)
-            nG = vmul(across(G, pG0), -1.0)
+            nG = vmul(into_bend(G, pG0), -1.0)
             BA = b.angle * (b.r + k * sh.t)
             nu = mF.vec(nF)
             al = mF.vec(a)
@@ -292,12 +294,13 @@ def unfold(sh, k):
         mF = uf.maps[F.i]
         pa, pb = _edge_ends(eF)
         a2, b2 = mF(pa), mF(pb)
-        # the strip lies on the side of F's tangent line away from F's middle
-        c2 = mF(F.centre)
+        # the strip lies on the bend's side of F's tangent line: toward the bend's own cylinder (its middle, seen in
+        # F's plane), never away from F's middle (which an L-shaped flange can have across the fold)
+        c2 = mF(b.face.centre)
         d = (b2[0] - a2[0], b2[1] - a2[1])
         L = math.hypot(*d) or 1.0
         nrm = (-d[1] / L, d[0] / L)
-        if (c2[0] - a2[0]) * nrm[0] + (c2[1] - a2[1]) * nrm[1] > 0:
+        if (c2[0] - a2[0]) * nrm[0] + (c2[1] - a2[1]) * nrm[1] < 0:
             nrm = (-nrm[0], -nrm[1])
         BA = b.angle * (b.r + k * sh.t)
         mid = lambda p, s: (p[0] + nrm[0] * s, p[1] + nrm[1] * s)
@@ -469,15 +472,17 @@ class Flat:
 
 
 def where(sh, uf, P):
-    """A point of the sheet's place in the model's flat (before the DXF's isometry): from the flange it lies on (within
-    the sheet of its plane, inside its outer edge), or None."""
+    """A point of the sheet's place in the model's flat (before the DXF's isometry): from the flange it lies in (in its
+    material, between its face and t behind it, inside its outer edge), or None. Only the material side counts: a
+    wall that stands 0.2 mm inside another flange's plane (611801's corner tabs) would claim that flange's holes too
+    (Reviewer 15 on #369)."""
     from OCP.BRepClass import BRepClass_FaceClassifier
     from OCP.TopAbs import TopAbs_IN, TopAbs_ON
     from OCP.gp import gp_Pnt
     hits = []
     for f in sh.flanges:
-        dist = vdot(vsub(P, f.centre), f.normal)
-        if abs(dist) > sh.t + 0.01:
+        dist = vdot(vsub(P, f.centre), f.normal)          # along the face's outward normal: the material is behind
+        if not -sh.t - 0.01 <= dist <= 0.01:
             continue
         Q = vsub(P, vmul(f.normal, dist))
         cl = BRepClass_FaceClassifier(_outer_face(f), gp_Pnt(*Q), 1e-6)

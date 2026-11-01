@@ -139,6 +139,65 @@ class DownLight(unittest.TestCase):
         self.assertAlmostEqual(b[5] - b[4], V["lp_h"])
 
 
+class Folds(unittest.TestCase):
+    """Real folds (the Lead's ruling 2026-11-01 on #335): each fold of the bent parts has its inside corner filleted to
+    the sheet and its outside corner to twice the sheet, so the model, its STEP and its DXF (K 0.44) agree; the DXF's
+    cable holes sit on the back flange's straight run, where the model puts them."""
+
+    def sections(self):
+        lay = {key: (name, kind, data) for key, name, kind, data in I.layout()}
+        return {k: (lay[k][0], [(I.ev(V, u), I.ev(V, z)) for u, z in lay[k][2][0]]) for k in I.BENT}
+
+    def test_folds_at_the_corners(self):
+        for key, (name, pts) in self.sections().items():
+            t, r = (V["lg_t"], V["lg_r"]) if key == "ledge" else (V["sh_t"], V["sh_r"])
+            self.assertAlmostEqual(r, t, msg="inside radius = the sheet (the Lead's ruling)")
+            bs = I.bends(key)
+            self.assertEqual(sorted(i for i, _s, _r in bs), [0, 1, 4, 5], name)
+            for i, side, rexpr in bs:
+                self.assertAlmostEqual(I.ev(V, rexpr), r if side == "inside" else r + t, msg=(name, i))
+            # each outside corner's inside partner sits one sheet in on both axes: the fold's centre is shared
+            for o, n in ((0, 5), (1, 4)):
+                (uo, zo), (ui, zi) = pts[o], pts[n]
+                self.assertAlmostEqual(abs(uo - ui), t, msg=(name, o, n))
+                self.assertAlmostEqual(abs(zo - zi), t, msg=(name, o, n))
+            # the straight runs stay longer than the fold zones (r + t each end)
+            for a, b in zip(pts, pts[1:] + pts[:1]):
+                length = abs(a[0] - b[0]) + abs(a[1] - b[1])
+                if length > t + 1e-9:
+                    self.assertGreater(length, 2 * (r + t), (name, a, b))
+
+    def test_dxf_holes_on_the_back_flange(self):
+        import interior_exports as E
+        lay = {name: data for _key, name, _kind, data in I.layout()}
+        for key, name, n in (("shelf_back", "LIGHT SHELF BACK", 1), ("shelf_lh", "LIGHT SHELF LH", 0),
+                             ("shelf_rh", "LIGHT SHELF RH", 1)):
+            t, r = V["sh_t"], V["sh_r"]
+            _w, bends = E.blank([V["sh_hb"], V["sh_d"], V["sh_hl"]], t, r)
+            ba = 3.141592653589793 / 2 * (r + E.K * t)
+            holes = E.flat_holes(V, key, name, lay[name][1], lay[name][2])
+            self.assertEqual(len(holes), n, name)
+            for x, y, rad in holes:
+                self.assertAlmostEqual(y, 20.0, msg=name)       # the 40 flange, 20 from its free edge
+                self.assertGreater(y - rad, 0.0, name)
+                self.assertLess(y + rad, bends[0] - ba / 2, "%s: the hole reaches the first fold's zone" % name)
+                self.assertGreater(x - rad, 0.0, name)
+
+    def test_brackets_clear_the_inside_bend(self):
+        """The bracket envelope's top back corner sits at the ledge's inside fold corner; a fillet of radius r there
+        fills only the corner triangle u + w > -r, so a 45 deg relief br_rel of r or more keeps them apart."""
+        cx, cz = [(I.ev(V, u), I.ev(V, z)) for u, z in I.ledge_section()][4]
+        self.assertGreaterEqual(V["br_rel"], V["lg_r"] + 1.0)
+        for key, name, kind, data in I.layout():
+            if key != "bracket":
+                continue
+            pts = [(I.ev(V, u), I.ev(V, z)) for u, z in data[0]]
+            self.assertAlmostEqual(max(p[0] for p in pts), cx, msg=name)
+            self.assertAlmostEqual(max(p[1] for p in pts), cz, msg=name)
+            for x, z in pts:                               # every corner stays on the far side of the relief line
+                self.assertLessEqual((x - cx) + (z - cz), -V["br_rel"] + 1e-9, (name, x, z))
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()
