@@ -513,9 +513,9 @@ def analyse(body, dxf_path, k, holes=(), radius=None, radius_from=None, tol=0.05
     cuts, odd = sheetmetal.model_cutouts(body)
     if cuts or odd:
         raise ValueError("its cut-outs that aren't round holes aren't read with folds along any line yet")
-    rs = {round(b.r, 4) for b in sh.bends}
-    if len(rs) > 1:
-        raise ValueError("its bends have different inside radii (%s)" % ", ".join("R%s" % sheetmetal._f(r) for r in rs))
+    # each bend unfolds at its own inside radius (AIR's 611702: R1 with one R10; its vanes: R1 with R32), so a part's
+    # bends may differ; the bend table gives each one's
+    radii = sorted({round(b.r, 4) for b in sh.bends})
     uf = unfold(sh, k)
     _OUTER.clear()
     holes_flat = []
@@ -575,7 +575,9 @@ def analyse(body, dxf_path, k, holes=(), radius=None, radius_from=None, tol=0.05
         r_["axis"] = "any"
         r_["at"] = 0.0
     fl.rows = rows
-    fl.k, fl.radius, fl.radius_from = k, sh.bends[0].r, (radius_from or "the model")
+    fl.k, fl.radius_from = k, (radius_from or "the model")
+    fl.radii = radii
+    fl.radius = sh.bends[0].r if len(radii) == 1 else None      # one inside radius for all its bends, else None
     fl.sheet, fl.unfolded, fl.T = sh, uf, T
     fl.viewed = "from the side the DXF shows"
     fl.holes_flat = holes_flat
