@@ -172,8 +172,10 @@ SPECS = {
             "No latch on the glass (PM ruling): the 35 N magnetic door-stop catch (Sugatsune HT-MSG62) in DT's underside "
             "holds the door at its top latch corner; the hinges hold it at its closed position; the 180 deg magnetic "
             "seal pulls edge to edge in the glass plane, so the fixed pane's free edge carries no closing load.",
-            "Hinges (HOLD): rated for the 8.76 laminate, at least 60 kg and the 1176 width; two-part lift-off, frame "
-            "halves shipped fitted in DL; hung on site with the 5 mm key. No holes in the glass until named.",
+            "Hinges (HOLD): rated for the 8.76 laminate, at least 60 kg and the 1176 width; two-part lift-off, set in "
+            "the factory (frame halves fitted in DL, leaf halves on the door), so on site the door lifts on with no "
+            "adjustment (D-138); the 5 mm key only where the named set has a locking screw. No holes in the glass "
+            "until named.",
             "Pull pair (HOLD) centred %.1f above the floor, its bar %.1f to %.1f, inside the US band 865 to 1220 "
             "(PM ruling 2026-11-01)." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
             "Mass of the unit as it hangs: about 48.7 kg (calculation; parts list).",
