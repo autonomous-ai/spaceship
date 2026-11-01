@@ -178,6 +178,10 @@ def write_dxfs(v):
         for kind, a in feats.get(bodies[0], []):
             if kind == "zcircle" and pl == "xy":
                 ents.append(("CIRCLE", "CUT", to2d(b, pl, a[0], a[1], 0), a[4] / 2))
+            elif kind == "ycircle" and pl == "xz":     # a round relief through an XZ plate (B08's, the door plate)
+                ents.append(("CIRCLE", "CUT", to2d(b, pl, a[0], 0, a[1]), a[4] / 2))
+            elif kind in ("zcircle", "ycircle"):
+                raise RuntimeError("%s: a %s hole in a plate in the %s plane isn't drawn yet" % (bodies[0], kind, pl))
             elif kind == "box":
                 x0, y0 = to2d(b, pl, a[0], a[2], a[4])
                 x1, y1 = to2d(b, pl, a[1], a[3], a[5])
