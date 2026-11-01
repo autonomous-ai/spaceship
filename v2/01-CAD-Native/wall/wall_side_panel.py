@@ -1397,22 +1397,54 @@ def mitre_plates(design, frame, corners, axis, face, toward_room):
         cin.xAxisEntity = mitre_line
         tgt = frame.jointOrigins.add(cin)
         tgt.name = "JOINT ORIGIN - MITRE %s" % label
+        def vec(v):
+            return "(%.3f, %.3f, %.3f)" % (v.x, v.y, v.z) if v else "?"
+        rp = ref.createForAssemblyContext(occ)
+        print("PLATE|%s %s: want %s; plate origin axes Z %s X %s; corner axes Z %s X %s" % (
+            label, key, [round(x, 2) for x in want], vec(getattr(rp, "primaryAxisVector", None)),
+            vec(getattr(rp, "secondaryAxisVector", None)), vec(getattr(tgt, "primaryAxisVector", None)),
+            vec(getattr(tgt, "secondaryAxisVector", None))))
         done = False
-        for flip in (False, True):
-            for ang in (0.0, 180.0):
-                jin = frame.joints.createInput(ref.createForAssemblyContext(occ), tgt)
-                jin.setAsRigidJointMotion()
-                jin.angle = vi("%g deg" % ang)
-                jin.isFlipped = flip
-                j = frame.joints.add(jin)
-                if j.healthState == healthy and all(abs(x - y) < 0.05 for x, y in zip(bbox(occ.bRepBodies.item(0)), want)):
-                    j.name = "JOINT - MITRE PLATE %s %s" % (PARTS[key][0], label)
-                    done = True
+        # joints in the frame (the plate is a part of the welded frame); if none fits, the same in the root, as the
+        # hardware's joints are, with the frame's copy as the context (the dry runs of 06:00 and 06:30 found no fit)
+        frame_occ = root_occ(design, frame) if frame != design.rootComponent else None
+        for where in ("frame", "root"):
+            if where == "root" and frame_occ is None:
+                break
+            owner = frame if where == "frame" else design.rootComponent
+            g1 = rp if where == "frame" else ref.createForAssemblyContext(occ.createForAssemblyContext(frame_occ))
+            g2 = tgt if where == "frame" else tgt.createForAssemblyContext(frame_occ)
+            for flip in (False, True):
+                for ang in (0.0, 180.0):
+                    jin = owner.joints.createInput(g1, g2)
+                    jin.setAsRigidJointMotion()
+                    jin.angle = vi("%g deg" % ang)
+                    jin.isFlipped = flip
+                    j = owner.joints.add(jin)
+                    got = bbox(occ.bRepBodies.item(0) if where == "frame" else
+                               occ.createForAssemblyContext(frame_occ).bRepBodies.item(0))
+                    msg = ""
+                    try:
+                        msg = (j.timelineObject.errorOrWarningMessage or "")[:160] if j.timelineObject else ""
+                    except Exception:            # noqa: BLE001  (diagnostics only)
+                        msg = "?"
+                    ok = j.healthState == healthy and all(abs(x - y) < 0.05 for x, y in zip(got, want))
+                    print("PLATE|  %s joint, angle %g, flip %s: health %s %s; box %s%s" % (
+                        where, ang, flip, j.healthState, msg, [round(x, 2) for x in got], " FITS" if ok else ""))
+                    if ok:
+                        j.name = "JOINT - MITRE PLATE %s %s" % (PARTS[key][0], label)
+                        done = True
+                        break
+                    j.deleteMe()
+                if done:
                     break
-                j.deleteMe()
             if done:
                 break
         if not done:
+            if ARGS.get("dry") == "1":      # a dry run goes on, so the studs, fill copies and hardware get tried too
+                print("PLATE|no fit for %s at %s; this dry run goes on without it (the copy stays at the pod "
+                      "centre, clear of every part)" % (key, label))
+                continue
             raise RuntimeError("mitre plate %s at %s: no joint turn puts it in the mitre %s" % (key, label, want))
         placed.append((label, key))
     print("step 3b: %d mitre plates (%s), each held in its mitre by a joint" % (
