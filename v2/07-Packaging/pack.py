@@ -739,7 +739,7 @@ STEPS = [
          ops=[carry("2-13"), op("fit and plug the light shelf", 1, TIME["t_light_shelf_s"].value, 1, "t_light_shelf_s")],
          joints={}),
     dict(n=20, title="Power on and self-test: fans run", tags=[],
-         A="A qualified electrician connects the mains inlet (220 V for the prototype, REQ-SCP-02) and switches on.",
+         A="Plugs the pod's cord into the room's 120 V wall outlet (NEMA 5-15, D-133) and switches on.",
          B="Presses the hub's self-test button: both fan pairs, the lights and the sensors run, and it shows pass or fail (D-87). Then checks air out at the kick grille and into the soffit grille, and the CO2 reading.",
          check="Self-test passes and the fans run on both paths. The clock stops after the final check, the next step (REQ-ASM-01: closed, powered, fans running).",
          ops=[op("power on and self-test", 2, TIME["t_selftest_s"].value, 1, "t_selftest_s")],

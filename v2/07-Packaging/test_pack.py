@@ -282,6 +282,13 @@ def test_time_rulings_2026_11_01():
     guide = pack.outputs(m)[pack.OUT_GUIDE]
     assert "no power drivers" not in guide and "cordless driver" in guide and "no one holds a part overhead" in guide
 
+
+def test_d133_us_mains():
+    # D-133: the pod plugs into a US 120 V wall outlet; no 220 V socket and no electrician on site
+    guide = pack.outputs(pack.Model())[pack.OUT_GUIDE]
+    assert "220 V" not in guide and "electrician" not in guide.lower(), [l for l in guide.splitlines() if "220" in l or "lectrician" in l]
+    assert "120 V wall outlet" in guide
+
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
     outs = pack.outputs(pack.Model())
