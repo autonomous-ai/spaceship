@@ -1,8 +1,8 @@
-# Mechanical check run: cf96ecc on 2026-11-01
+# Mechanical check run: 2b0d809 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `cf96ecc`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `2b0d809`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 183** (56 severe, 121 major, 6 minor). Register numbers in brackets.
+**Findings in this run: 180** (55 severe, 119 major, 6 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,8 +12,8 @@ Offline checks (`tools/checks/run_checks.py`) on revision `cf96ecc`. The Fusion 
 | C02 tolerance stack-ups | yes | 4 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 103 |
-| C06 BOM completeness | yes | 40 |
+| C05 drawing completeness | yes | 99 |
+| C06 BOM completeness | yes | 41 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 8 |
@@ -75,7 +75,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-266 | severe | C05 | 611402 | 611402 AIR - FAN BOX CASING - SUPPLY has no drawing PDF (611402_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-267 | severe | C05 | 611501 | 611501 AIR - INTAKE RISER has no drawing PDF (611501_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-268 | severe | C05 | 611601 | 611601 AIR - ROOF SLEEVE has no drawing PDF (611601_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
-| F-149 | severe | C05 | 711001 | 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND, BEND_EXTENT, INTERIOR_PROFILES, OUTER_PROFILES; only CUT and MARK pass, so it is folded; its row's process names fold. | ELECTRICAL |
 | F-153 | severe | C05 | 811101 | 811101 INTERIOR - LEDGE - TOP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake. | CEILING |
 | F-154 | severe | C05 | 811201 | 811201 INTERIOR - LIGHT SHELF - BACK has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
 | F-155 | severe | C05 | 811202 | 811202 INTERIOR - LIGHT SHELF - SIDE LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
@@ -83,7 +82,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-244 | severe | C09 | 611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348 | Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates. | CEILING |
 | F-245 | severe | C09 | 611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348 | Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates. | CEILING |
 | F-039 | major | C05 | 110000 | 110000 BASE has no drawing PDF (110000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/110000_P01_BASE_STEP.step. | BASE |
-| F-040 | major | C05 | 110101 | 110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
 | F-041 | major | C05 | 110103 | 110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
 | F-019 | major | C05 | 210101 | 210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-106 | major | C05 | 210102 | 210102 WALL - PANEL ASSY - SIDE LOWER - RH has no drawing PDF (210102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step. | WALL |
@@ -109,7 +107,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-096 | major | C05 | 360002 | 360002 FRONT - FIXED GLASS UNIT has no drawing PDF (360002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step. | FRONT |
 | F-339 | major | C05 | 368004 | 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles. | FRONT |
 | F-138 | major | C05 | 410000 | 410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step. | CEILING |
-| F-139 | major | C05 | 410101 | 410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-140 | major | C05 | 410102 | 410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-118 | major | C05 | 510102 | 510102 LINING - CASSETTE - SIDE LOWER - RH has no drawing PDF (510102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step. | WALL |
@@ -119,7 +116,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-184 | major | C05 | 510202 | 510202 LINING - CASSETTE - BACK LOWER - B2 has no drawing PDF (510202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step. | WALL |
 | F-143 | major | C05 | 510301 | 510301 LINING - CASSETTE - CEILING - COMMON has no drawing PDF (510301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-254 | major | C05 | 610000 | 610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step. | CEILING |
-| F-255 | major | C05 | 610101 | 610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-256 | major | C05 | 610201 | 610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-257 | major | C05 | 610301 | 610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-258 | major | C05 | 610401 | 610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
@@ -167,6 +163,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-271 | major | C06 | 111501 | 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE |
 | F-272 | major | C06 | the base seal lip on the band's inner face, pressing on the  | D-132 requires the base seal lip on the band's inner face, pressing on the room floor across the glides' range, but no parts list or CAD part in v2/03-Manufacturing/base/ names it yet. | BASE |
 | F-279 | major | C06 | 838003 | 838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part. | BASE; ELECTRICAL; WALL |
+| F-346 | major | C06 | 108002 | 108002 is named 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE' in the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', and hardware names come from the register (D-99). The names differ in PANEL-50 (gone), PRIMER-210 (new), SIKAFLEX-252 (new), so they name a different part. | CEILING; WALL |
 | F-252 | major | C06 | 611301 | 611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-253 | major | C06 | 611302 | 611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-340 | major | C06 | 111215 | 111215 BASE - CORNER KEY - SQUARE - INLINE is in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv but in no STEP file in v2/03-Manufacturing. | Joints Engineer |
