@@ -500,6 +500,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
         rows.append(row(level=1, part_number=c["part_number"], name=en_name(c),
                         name_vi=vi_name(c["description"], c["part_number"]), kind="MP",
                         material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
+                        finish="none: the PET batt as supplied, hidden in the cavity",
                         process=fill_cut(mine[0]["dxf"], bool(mine[0]["note"])),
                         qty=q, unit="pc", size_mm="%g x %g x %g (outline and notches in the DXF)" % tuple(dims),
                         tolerance=FILL_TOL,
