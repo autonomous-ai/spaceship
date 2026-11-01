@@ -1624,11 +1624,34 @@ def table_text(page, data):
 
 
 def _solids_by_pn(step_path):
+    """{part number: its solids in the file's top coordinates}. A sub-assembly's number owns every solid under it
+    (a D-120 welded frame's members, a cassette's parts), as drawing takes a sub-assembly as one item; a part's
+    bodies without names of their own belong to it."""
+    _doc, st = _xcaf(step_path)
+    tops = TDF_LabelSequence()
+    st.GetFreeShapes(tops)
     out = {}
-    for name, solids in geom.read_step(step_path):
-        pn = geom.part_number_of(name)
-        if pn:
-            out.setdefault(pn, []).extend(solids)
+
+    def walk(lab, loc, names):
+        if st.IsAssembly_s(lab):
+            comps = TDF_LabelSequence()
+            st.GetComponents_s(lab, comps)
+            for i in range(1, comps.Length() + 1):
+                c = comps.Value(i)
+                ref = TDF_Label()
+                st.GetReferredShape_s(c, ref)
+                walk(ref, loc.Multiplied(st.GetLocation_s(c)), names + [_label_name(ref) or _label_name(c)])
+            return
+        shape = st.GetShape_s(lab)
+        if not loc.IsIdentity():
+            shape = shape.Moved(loc)
+        sol = _solids_of(shape)
+        for pn in {geom.part_number_of(nm) for nm in names} - {None}:
+            out.setdefault(pn, []).extend(sol)
+
+    for i in range(1, tops.Length() + 1):
+        lab = tops.Value(i)
+        walk(lab, TopLoc_Location(), [_label_name(lab)])
     return out
 
 

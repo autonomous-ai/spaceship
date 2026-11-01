@@ -11,7 +11,7 @@ Every number here is a **calculation** from the load table (`710000_P01_ELECTRIC
 | Supply | Rated W | Load max W | Load typical W | Max load / rating | Feeds |
 |---|---:|---:|---:|---:|---|
 | PS1 | 60 | 48.0 | 0.0 | 80 % | voice kit feed A, fused 5 A (REQ-VCK-04) |
-| PS2 | 60 | 41.0 | 22.0 | 68 % | all lights: uplight, down-light and call light, through the 3-channel light controller |
+| PS2 | 60 | 41.0 | 22.0 | 68 % | all lights: uplight, down-light and call light, through the light controller (3 of its 4 channels) |
 | PS3 | 60 | 31.4 | 11.9 | 52 % | four fans and the sensor hub (column fuse block) |
 | PS4 | 60 | 48.0 | 0.0 | 80 % | voice kit feed B, fused 5 A (REQ-VCK-04) |
 | **All** | **240** | **132.4** | **33.9** | 55 % | REQ-ELE-03: about 125 W load, supply at least 150 W |
@@ -88,7 +88,7 @@ At the 53 l/s normal flow that adds **0.27 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 | 710041 hub and controls zone | 0.36 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.59 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.27 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.26 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | **710000 ELECTRICAL** | **5.81** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
 
 **B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.30 kg = **12.4 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
