@@ -1,5 +1,5 @@
 {
- "rev": "a8cd10a",
+ "rev": "084217c",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -62,6 +62,9 @@
    "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step",
    "v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
    "v2/03-Manufacturing/joints/831002_P01_HARDWARE-STOP-WASHER_STEP.step",
+   "v2/03-Manufacturing/joints/831007_P01_HARDWARE-MITRE-PLATE-20X40-45DEG_STEP.step",
+   "v2/03-Manufacturing/joints/831008_P01_HARDWARE-MITRE-PLATE-20X40-TO-40X40_STEP.step",
+   "v2/03-Manufacturing/joints/831009_P01_HARDWARE-MITRE-PLATE-40X40-45DEG_STEP.step",
    "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
    "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
    "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
@@ -2481,37 +2484,9 @@
   {
    "check": "C05",
    "rule": "drawing-author",
-   "subject": "110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG",
-   "severity": "major",
-   "message": "110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
-   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
-   "owner": "BASE",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "111401_P01_BASE-FLOOR-PANEL-F1_DWG",
-   "severity": "major",
-   "message": "111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
-   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
-   "owner": "BASE",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
    "subject": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
    "severity": "major",
-   "message": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2525,7 +2500,7 @@
    "rule": "drawing-author",
    "subject": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
    "severity": "major",
-   "message": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2539,7 +2514,7 @@
    "rule": "drawing-author",
    "subject": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
    "severity": "major",
-   "message": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2553,7 +2528,7 @@
    "rule": "drawing-author",
    "subject": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
    "severity": "major",
-   "message": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2567,7 +2542,7 @@
    "rule": "drawing-author",
    "subject": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
    "severity": "major",
-   "message": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2581,7 +2556,7 @@
    "rule": "drawing-author",
    "subject": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
    "severity": "major",
-   "message": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2595,7 +2570,7 @@
    "rule": "drawing-author",
    "subject": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
    "severity": "major",
-   "message": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2609,7 +2584,7 @@
    "rule": "drawing-author",
    "subject": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
    "severity": "major",
-   "message": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "message": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
    "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
    "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
    "owner": "ELECTRICAL",
@@ -2617,34 +2592,6 @@
     "model": "pdf-people"
    },
    "key": "C05|drawing-author|710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG",
-   "severity": "major",
-   "message": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
-   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
-   "owner": "Joints Engineer",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|111211_P01_BASE-CORNER-KEY-TABULATED_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG",
-   "severity": "major",
-   "message": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
-   "file": "v2/02-Drawings/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf",
-   "owner": "Joints Engineer",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|831001_P01_HARDWARE-LOCATING-SPIGOT_DWG"
   }
  ],
  "stacks": [
