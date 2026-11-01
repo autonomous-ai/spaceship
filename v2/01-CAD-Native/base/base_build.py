@@ -2110,7 +2110,13 @@ def build_run(app):
                         d.close(False)
     parts = [k.strip() for k in ARGS.get("also_parts", "").split(",") if k.strip()]
     if ARGS.get("save") == "1" and last == len(steps) - 1:
-        parts += [k for k in WITH_ASSEMBLY if k not in parts]
+        if ARGS.get("with_assembly", "1") == "0":
+            # --arg with_assembly=0: a short run whose change leaves the band tubes' holes as they are; their part
+            # designs and STEPs from the last saved run stay current
+            print("part designs %s: not rebuilt in this run (with_assembly=0)" % ", ".join(
+                PARTS[k][0] for k in WITH_ASSEMBLY if k in PARTS))
+        else:
+            parts += [k for k in WITH_ASSEMBLY if k not in parts]
     if parts:
         # one run for the assembly and every part design keeps the shared queue short
         for key in parts:
