@@ -111,10 +111,10 @@ SPEC = {
         ("iso", VO.IsoTopRightViewOrientationType, 0.5, (110.0, 52.0)),
     ]),
     "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "tube", [   # A3, 1:2 (CS-111105: from its knee end)
-        ("front", VO.FrontViewOrientationType, 0.5, (105.0, 232.0)),
-        ("top", VO.TopViewOrientationType, 0.5, (105.0, 160.0)),            # hidden lines: the bottom wall's hole
-        ("left", VO.LeftViewOrientationType, 0.5, (198.0, 240.0)),          # the knee end plate's keyholes
-        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (105.0, 70.0)),
+        ("front", VO.FrontViewOrientationType, 0.5, (95.0, 232.0)),
+        ("top", VO.TopViewOrientationType, 0.5, (95.0, 160.0)),             # hidden lines: the bottom wall's hole
+        ("left", VO.LeftViewOrientationType, 0.5, (187.0, 240.0)),          # the knee end plate's keyholes; its 100 clear of the notes
+        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (95.0, 70.0)),
     ]),
     "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "turned", [     # A3, 2:1
         ("front", VO.FrontViewOrientationType, 2.0, (120.0, 200.0)),        # hidden lines: the socket's depth

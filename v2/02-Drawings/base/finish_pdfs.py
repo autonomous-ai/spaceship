@@ -63,8 +63,8 @@ TOL = {
             "and the glide's rivnut hole Ø13.50 +0.15/0 (D-163). Not ISO 2768 on the anodised faces.",
     "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (guideline §3.2).",
     "turned": "General tolerances ISO 2768-m. Thread M10 x 1.5-6g (ISO 965-1) along the stem (assumption). Base height "
-              "7.6 ±0.05: with the M10 rivnut's head (0.81 to 0.97) it sets the band's lowest setting, 8.5 (PM ruling "
-              "on F-018). Hex socket 5 across flats, +0.02/+0.14, to fit a 5 mm hex key (as ISO 4762's s 5; "
+              "7.61 ±0.05 (D-164's 7.6): with the M10 rivnut's head (0.81 to 0.97) it sets the band's lowest setting, 8.5 "
+              "(PM ruling on F-018). Hex socket 5 across flats, +0.02/+0.14, to fit a 5 mm hex key (as ISO 4762's s 5; "
               "assumption). Static rating 3.5 kN or more, proved by BT-04 (D-164).",
     "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
              "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
