@@ -6,8 +6,8 @@ Guideline section 4.4. `edit_test_wall.py` (run by `post_wall_doc.py`) opens eac
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211101, 211301, 211515, 211516, 211517, 211518, 212101, 212102, 212103, 212104, 212105, 831001, 831002, 831007, 831008, 838003.
 
-1. Reopen: timeline 208 items, 0 not healthy; sketches 48, 48 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 208 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 209 items, 0 not healthy; sketches 48, 48 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 209 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
@@ -90,7 +90,7 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | front spigot follows the panel's front end (+100) | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 208 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 209 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD.f3d
 
@@ -685,33 +685,43 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211301.
 
-1. Reopen: timeline 8 items, 0 not healthy; sketches 2, 2 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1000 mm, stile_pitch_max -> 300 mm: rebuild 8 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 9 items, 0 not healthy; sketches 2, 2 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 9 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
 | wall_depth | 1495 | 1300 |
-| side_h | 1142.74 | 1000 |
-| stile_pitch_max | 400 | 300 |
-| frm_len | 1489.74 | 1294.74 |
-| stile_n_mid | 3 | 4 |
-| stile_pitch | 364.935 | 252.948 |
+| side_h | 1142.74 | 1120 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1486.74 | 1291.74 |
+| stile_n_mid | 5 | 5 |
+| stud_c1 | 270 | 270 |
+| stud_c2 | 520.913 | 455.913 |
+| stud_c3 | 746.37 | 648.87 |
+| stud_c4 | 971.827 | 841.827 |
+| stud_c5 | 1222.74 | 1027.74 |
 | cass_len | 1445 | 1250 |
-| cass_h | 1142.74 | 1000 |
+| cass_h | 1142.74 | 1120 |
+| lin_front_dy | 0 | 0 |
 | top_h | 20 | 20 |
+| pod_h | 2400 | 2400 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| outer_t | 46 | 46 |
+| lin_gap | 4 | 4 |
 
 3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
 
 | Body | Before | After |
 |---|---|---|
-| 211301 / SKIN - ACP 3 WITH BACK RETURN | (-1250.0, -642.74, 112.26, -1204.0, 850.0, 1255.0) | (-1250.0, -447.74, 112.26, -1204.0, 850.0, 1112.26) |
+| 211301 WALL - SKIN - SIDE LOWER - LH:1 / SKIN - ACP 3 WITH BACK RETURN | (-1250.0, -642.74, 112.26, -1204.0, 850.0, 1255.0) | (-1250.0, -447.74, 112.26, -1204.0, 850.0, 1232.26) |
 
 | Check | Result |
 |---|---|
-| skin runs wall_depth - 2.26 and side_h | PASS |
+| skin runs wall_depth - 2.26 and the panel height | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 8 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 9 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 211401_P01_WALL-SKIN-BACK-LOWER-B1_CAD.f3d
 

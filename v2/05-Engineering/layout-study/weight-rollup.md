@@ -4,7 +4,7 @@
 **As shipped, the pod comes to 415.2 kg: 44.8 kg under the 460 kg cap and 5.2 kg over the 410 kg target** (calculation). The voice kit's 4.0 kg reserve rides outside the cap, 419.2 kg with it. This is the live count: it is re-run whenever a part's CAD merges or the skeleton moves (see the end).
 
 - **Basis.** This study's decided build on skeleton P03, recounted on P04 with tonight's numbers: the teams' CAD masses where they exist (the next section lists them; AIR's with the changes its follow-up builds), the PM's adopted savings (D-81, D-85), budgets and allowances for parts not designed yet, and this study's model at P04's sizes for the rest. Every line has its status and source below and in `out/parts-decided-P04.csv`.
-- **Cross-check.** This study's model gives L1 11.83 kg at the P04 size with 32 kg/m3 fill and 1.2 mm studs; WALL's CAD on main gives 18.04 kg with 24 kg/m3 fill and 1.0 mm mid stiles.
+- **Cross-check.** This study's model gives L1 11.83 kg at the P04 size with 32 kg/m3 fill and 1.2 mm studs; WALL's CAD on main gives 18.03 kg with 24 kg/m3 fill and 1.0 mm mid stiles.
 - **20 kg rule (D-03).** The intake riser joined to the supply fan box with its two fans (13.5 kg, D-87) ships loose and goes into the right decor block on site through its removable inner face (D-59), so the block ships at 18.9 kg (18.32 kg from its CAD, S51, and 0.54 kg of the fixed glass's right and diagonal channels fitted in it); fitted in the factory it would be about 32 kg, over the rule. The soffit ships with its exhaust fan box and fans fitted (14.8 kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The heaviest piece apart from the glass is the right decor block at 18.9 kg as shipped, against D-108's 19.0 kg for the right block; the door unit and the fixed glass unit are glass and exempt.
 - **Interior and allowances.** The light shelf (1.6 kg) and the work-wall ledge with the screen rail (1.9 kg) are INTERIOR's CAD (D-70, D-85); the named clips (2.2 kg) stay an allowance (assumption) until they're named; the two ceiling lights go (D-70), 1.0 kg less.
 
@@ -29,7 +29,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 
 | Line | Qty | Estimate kg each | CAD kg each | Difference kg each | CAD |
 |---|---:|---:|---:|---:|---|
-| L1 and R1, lower side outer panels | 2 | 11.08 | 14.63 | +3.55 | WALL 210101 and 210102 P01, PRs #41 and #104 |
+| L1 and R1, lower side outer panels | 2 | 11.08 | 14.62 | +3.55 | WALL 210101 and 210102 P01, PRs #41 and #104 |
 | L2 and R2, upper side outer panels | 2 | 11.08 | 11.34 | +0.27 | WALL 210103 and 210104 P01, PR #104 |
 | Wall cassette, side, lower | 2 | 10.47 | 10.34 | -0.13 | WALL 510101 and 510102 P01, PRs #41 and #104 |
 | Wall cassette, side, upper | 2 | 10.05 | 9.91 | -0.13 | WALL 510103 and 510104 P01, PR #104 |
@@ -55,7 +55,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.19 | +0.19 | joints 831001 and 831002 P01, PR #139 |
 | Floor panel | 2 | 7.66 | 7.12 | -0.54 | BASE 111401 P01, PR #55 |
 | Floor mat | 1 | 2.10 | 2.12 | +0.02 | BASE 111501 P01, PR #55 |
-| **In all** | | | | **+4.73** | |
+| **In all** | | | | **+4.72** | |
 
 Lines by basis: 30 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 10 estimated.
 
@@ -63,7 +63,7 @@ Lines by basis: 30 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 1
 
 | Assembly | Item | Qty | kg each | kg | Status | Source | Basis |
 |---|---|---:|---:|---:|---|---|---|
-| WALL | L1 and R1, lower side outer panels | 2 | 14.63 | 29.25 | calculation (CAD); fill provisional | S34, CAD on main: WALL parts lists 210101 and 210102 P01: frames 9.843 and 3.105 (mid stiles at 0.8 mm), skins 6.142, fill 1.380 at 24 kg/m3, bond sets 0.67; their hardware stays in the fixings kit's line | CAD, main |
+| WALL | L1 and R1, lower side outer panels | 2 | 14.62 | 29.25 | calculation (CAD); fill provisional | S34, CAD on main: WALL parts lists 210101 and 210102 P01: frames 9.843 and 3.105 (mid stiles at 0.8 mm), skins 6.141, fill 1.380 at 24 kg/m3, bond sets 0.67; their hardware stays in the fixings kit's line | CAD, main |
 | WALL | L2 and R2, upper side outer panels | 2 | 11.34 | 22.68 | calculation (CAD); fill provisional | S34, CAD on main: WALL parts lists 210103 and 210104 P01: frames 3.262 and 3.262 (mid stiles at 1 mm), skins 6.142, fill 1.400 at 24 kg/m3, bond sets 0.54; their hardware stays in the fixings kit's line | CAD, main |
 | WALL | B1 to B4, back outer panels | 4 | 8.64 | 34.56 | calculation (part CAD); fill provisional | part CAD on main: B1 and B2 from WALL parts lists 210201 and 210202 P01 (S50): frames 2.366 and 2.363 (mid stiles at 1 mm), skins 4.701 and 4.697, fill 1.135 and 1.032 at 24 kg/m3, bond sets 0.38: 8.58 and 8.47 kg; their hardware stays in the fixings kit's line. B3 and B4 stay this study's model at the P04 size (S33), 8.76 kg each: frame 1198.99 under the 1200.61 skin, fill 24 kg/m3; 2 inner studs at 393 mm centres, inside D-16 (D-85); inner studs at 1.0 mm (D-85) | CAD, main (part) |
 | WALL | 40 x 40 corner edge tubes beyond the panels' own | 1 | 0.01 | 0.01 | calculation | D-63's 1.3 kg less the 40 x 40 members the panels' CAD carries: the four side panels' back stiles, L2 and R2's tops and the ceiling halves' back members (S34, S35, S39) | estimate |
