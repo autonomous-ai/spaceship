@@ -1148,7 +1148,7 @@ FRAME_COLS = ("frame", "weldment", "frame_part", "frame_number")
 BEFORE_WELD = re.compile(r"\bbefore\s+(?:the\s+)?weld", re.I)
 # D-162: the row gives the member's section, cut length, both end angles and quantity; the release checklist tests
 # the same (build_release_checklist.py, d162_rows), with these patterns: keep them in step
-END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*°")
+END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
 SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends", re.I)
 
 

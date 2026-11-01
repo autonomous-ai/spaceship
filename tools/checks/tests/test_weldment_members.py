@@ -60,6 +60,10 @@ def test_a_member_on_its_frames_drawing_needs_no_sheet_of_its_own(tmp_path):
                                         "qty": "1"}) == []
     assert c_drawings.member_row_lacks({"section": "20 x 20", "length_mm": "300", "ends": DEFERRED, "qty": ""}) == \
         ["both end angles", "its quantity"]
+    # angles in 'deg' or 'degrees' count as well as in '°' (Reviewer 6 on the checklist; CEILING's rows, #348)
+    for ends in ("front end mitred 45 deg, back end mitred 63.43 deg off square", "45 degrees and 30 Degrees"):
+        assert c_drawings.member_row_lacks({"section": "20 x 40 x 1.0", "length_mm": "1491.35", "ends": ends,
+                                            "qty": "1"}) == [], ends
 
 
 def test_d162_the_row_gives_section_length_both_end_angles_and_quantity(tmp_path):
