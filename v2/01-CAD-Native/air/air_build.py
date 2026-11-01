@@ -767,6 +767,9 @@ def run(_context):
             its own frame from the first (door-side) unit; each room-side copy turned by place_turned."""
             if not unit_names or unit_names[0].endswith("ROOM"):
                 raise RuntimeError("%s: the first unit must be a door-side one" % key)
+            dims = [[ctx.ev(rel(unit_of[n][2 * i + 1], unit_of[n][2 * i])) for i in range(3)] for n in unit_names]
+            if any(max(abs(a - b) for a, b in zip(d, dims[0])) > 1e-6 for d in dims):
+                raise RuntimeError("%s: its copies differ in size: %s" % (key, dims))
             comp = None
             for n in unit_names:
                 u = unit_of[n]
