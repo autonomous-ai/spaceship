@@ -49,6 +49,8 @@ TOL_SIZE = 0.05                          # true mm: a clear size measured again
 BEAM_HALF = 0.05                         # true mm: half the side of a thin beam's square section
 SIZE_TEXT = 2.5                          # paper mm: the clear sizes' text
 TAG_TEXT = 3.5                           # paper mm: the position codes' text
+CLEAR_GAP = 1.0                          # paper mm: a code's box and a size's text keep this clear of other ink
+                                         # (Reviewer 5, P3 on #377: B1's box touched a size's text)
 
 
 def _checks(name):
@@ -555,7 +557,8 @@ class PodAssy(A.Assy):
                 cx, cy = a[0] - 0.8, a[1] + t * (b[1] - a[1])
                 tb = sh.text_box(cx, cy, text, SIZE_TEXT, "center", rotate=90)
                 inside = tb[1] >= min(a[1], b[1]) + 4.0 and tb[3] <= max(a[1], b[1]) - 4.0
-            if inside and span > tw + 10.0 and sh.is_free(tb):
+            if inside and span > tw + 10.0 and sh.is_free((tb[0] - CLEAR_GAP, tb[1] - CLEAR_GAP, tb[2] + CLEAR_GAP,
+                                                            tb[3] + CLEAR_GAP)):
                 spot = (cx, cy)
                 break
         if spot is None:
@@ -631,7 +634,7 @@ def _place_tag(sh, av, code, env):
                 cands.append((math.hypot(i, j), cx, cy))
     for _d, cx, cy in sorted(cands):
         box = (cx - hw, cy - hh, cx + hw, cy + hh)
-        if sh.is_free(box):
+        if sh.is_free((box[0] - CLEAR_GAP, box[1] - CLEAR_GAP, box[2] + CLEAR_GAP, box[3] + CLEAR_GAP)):
             sh.rect(cx - hw, cy - hh, 2 * hw, 2 * hh, lw=W_THIN)
             sh.text(cx, cy, code, TAG_TEXT, "center", bold=True, valign="mid")
             return {"code": code, "view": av.name, "env": [round(c, 3) for c in env], "centre": [cx, cy],

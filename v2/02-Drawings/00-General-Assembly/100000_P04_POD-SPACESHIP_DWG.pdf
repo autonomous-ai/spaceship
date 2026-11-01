@@ -3,7 +3,7 @@
 % Written by MuPDF 1.27.2
 
 1 0 obj
-<</Type/Catalog/Pages 2 0 R/Info<</Producer(MuPDF 1.27.2)>>/DrawgenData({"balloons":[{"centre":[210.13844867224014,391.4],"end":"arrow","no":1,"pn":"110000","r":4.6,"tip":[210.13844867224014,423.9],"tip3d":[-987.2310265552003,800.0,0.0],"tip_view":[-987.2310265552003,0.0],"view":"principal"},{"centre":[197.69000000000023,387.9],"end":"arrow","no":2,"pn":"210000","r":4.6,"tip":[197.69000000000023,371.9],"tip3d":[-1236.2,850.0,2400.0],"tip_view":[-1236.2,850.0],"view":"above"},{"centre":[167.0000000000001,497.575],"end":"arrow","no":3,"pn":"350000","r":4.6,"tip":[197.00000000000017,486.575],"tip3d":[-1250.0,-670.0,1253.5],"tip_view":[-1250.0,1253.5],"view":"principal"},{"centre":[167.0000000000001,427.025],"end":"arrow","no":4,"pn":"360000","r":4.6,"tip":[211.45000000000016,427.025],"tip3d":[-961.0,-709.0,62.5],"tip_view":[-961.0,62.5],"view":"principal"},{"centre":[229.42825000000022,387.9],"end":"arrow","no":5,"pn":"410000","r":4.6,"tip":[229.42825000000022,371.9],"tip3d":[-601.4350000000001,850.0,2400.0],"tip_view":[-601.4350000000001,850.0],"view":"above"},{"centre":[38.0,130.3782499999997],"end":"arrow","no":6,"pn":"510000","r":4.6,"tip":[58.175,130.3782499999997],"tip3d":[-373.5,766.5,671.5649999999987],"tip_view":[-766.5,671.5649999999969],"view":"section_A"},{"centre":[361.74373251083523,427.0],"end":"arrow","no":7,"pn":"610000","r":4.6,"tip":[317.5500000000002,427.0],"tip3d":[1161.0,-643.5,62.0],"tip_view":[1161.0,62.0],"view":"principal"},{"centre":[38.0,155.79999999999984],"end":"arrow","no":8,"pn":"710000","r":4.6,"tip":[82.975,155.79999999999984],"tip3d":[1166.0,270.5,1180.0],"tip_view":[-270.5,1180.0],"view":"section_A"},{"centre":[269.5,232.89999999999986],"end":"arrow","no":9,"pn":"810000","r":4.6,"tip":[269.5,210.39999999999986],"tip3d":[0.0,765.0,2270.0],"tip_view":[0.0,2270.0],"view":"section_B"}],"cutting_planes":[{"letter":"A","on":"above","p":[240.82500000000022,278.89999999999986],"q":[240.82500000000022,379.9]},{"letter":"B","on":"above","p":[189.00000000000017,329.4],"q":[330.0000000000002,329.4]},{"letter":"C","on":"principal","p":[189.0000000000001,473.9],"q":[330.0000000000002,473.9]}],"dims":[{"axis":"x","text":"2500","value":2500.0,"view":"principal"},{"axis":"y","text":"2402","value":2402.0,"view":"principal"},{"axis":"y","text":"1700","value":1700.0,"view":"above"}],"dwg":"100000_P04_POD-SPACESHIP_DWG","extra":{"codes":[{"box":[407.2741406789839,455.1315,415.36285932101674,461.0315],"centre":[411.3185000000003,458.0815],"code":"L1","env":[-1250.0,-642.74,112.26,-1204.0,850.0,1255.0],"view":"from_left"},{"box":[407.2741406789839,512.3815,415.36285932101674,518.2815],"centre":[411.3185000000003,515.3315],"code":"L2","env":[-1250.0,-642.74,1257.26,-1204.0,850.0,2400.0],"view":"from_left"},{"box":[103.3665975000096,455.1315,111.99640249999068,461.0315],"centre":[107.68150000000014,458.0815],"code":"R1","env":[1204.0,-642.74,112.26,1250.0,850.0,1255.0],"view":"from_right"},{"box":[103.3665975000096,512.3815,111.99640249999068,518.2815],"centre":[107.68150000000014,515.3315],"code":"R2","env":[1204.0,-642.74,1257.26,1250.0,850.0,2400.0],"view":"from_right"},{"box":[225.11334750000967,331.575,233.74315249999077,337.47499999999997],"centre":[229.42825000000022,334.525],"code":"C1","env":[-1201.74,-645.0,2354.0,-1.13,850.0,2400.0],"view":"above"},{"box":[285.2568475000097,331.575,293.88665249999076,337.47499999999997],"centre":[289.57175000000024,334.525],"code":"C2","env":[1.13,-645.0,2354.0,1201.74,850.0,2400.0],"view":"above"},{"box":[230.11334750000944,127.52824999999986,238.74315249999054,133.42824999999985],"centre":[234.42825,130.47824999999986],"code":"B1","env":[-1201.74,804.0,112.26,-1.13,850.0,1230.87],"view":"section_B"},{"box":[295.2568475000095,127.52824999999986,303.88665249999053,133.42824999999985],"centre":[299.57175,130.47824999999986],"code":"B2","env":[1.13,804.0,112.26,1201.74,850.0,1230.87],"view":"section_B"},{"box":[230.11334750000944,183.5717499999999,238.74315249999054,189.47174999999987],"centre":[234.42825,186.52174999999988],"code":"B3","env":[-1201.74,804.0,1233.13,-1.13,850.0,2351.74],"view":"section_B"},{"box":[295.2568475000095,183.5717499999999,303.88665249999053,189.47174999999987],"centre":[299.57175,186.52174999999988],"code":"B4","env":[1.13,804.0,1233.13,1201.74,850.0,2351.74],"view":"section_B"}],"door":{"angle":90,"left_out":["368101"],"pivot":[-966.5,-709.0],"unit":"360001"},"floor_lines":[{"label_at":[335.0,97.69999999999986],"view":"section_B","x0":205.0,"x1":334.0,"y":96.89999999999986},{"label_at":[142.00000000000003,97.59999999999984],"view":"section_A","x0":52.0,"x1":141.00000000000003,"y":96.79999999999984}],"floor_z":0.0,"mass":{"kg":"393.1","row":"Pod as shipped","source":"v2/05-Engineering/layout-study/weight-rollup.md","status":"calculation"},"notes":["Pod axes \(conventions section 4\): origin on the room floor at the pod's centre; +X right seen from outside facing the door, +Y back, +Z up; the front is the door side.","No floor and no threshold \(D-132\): people stand on the room floor, and the base stands on its glides \(glide_h 10, skeleton P04\).","Walls and ceiling are 84 deep: ACP 3, bond 3 \(D-137\), steel frame 40 \(D-131\), gap 4, lining cassette 34 \(skeleton P04, stack_t\). Seams 2.26 at a metal stop; the closing seams B1-B2, B3-B4 and C1-C2 have a 5.5 frame gap \(joints register 2.8\).","Still to come \(WALL\): the back upper panels B3 and B4 and their cassettes 510203 and 510204 are not modelled yet, so the back wall's upper half is empty in the views and sections; this sheet is drawn again when they are \(PM ruling 2026-11-01\).","Sections cut the teams' parts as modelled: A-A at X -373.5 \(the door's middle\), seen from the left; B-B at Y 0 \(mid depth\), seen from the front; C-C at Z 1000 \(through the door and the fixed glass\), seen from above. Each assembly's own sheets give its build-ups, fixings and sizes.","Inside sizes, measured on the teams' STEPs \(calculation\): width 2333 between the side linings at Z 1000 \(C-C\); depth 1461.1 from the closed door's inner face to the back lining at X -373.5 \(C-C\); clear height 2316.5 from the room floor to the ceiling cassettes' underside \(B-B\).","Door clear opening with the door open 90\\u00b0 outward \(calculation on FRONT's STEPs\): width 1156.6 at Z 115, 1032.5 at Z 1000 \(C-C\), 879.8 at Z 2089, from DL's hinge-side stop 351103 to the fixed glass's door edge \(the opening narrows upward with the door's slanted edge\); height 2094 under the door catch 368007 in DT \(A-A\). The hinge isn't named yet \(HOLD H01\): the leaf is turned about a pivot taken at X -966.5, Y -709 \(D-154's limit\), the hinges' HOLD spaces left out \(assumption\); the open leaf stays clear of these sizes.","Position codes \(guideline 5.1\), on the skeleton P04's panels: L1, L2 on the view from the left; R1, R2 on the view from the right; C1, C2 on the view from above; B1, B2, B3, B4 on section B-B. B3 and B4 aren't modelled yet \(WALL\); the pod has two ceiling halves, so there is no C3.","MASS 393.1 kg \(calculation\): the weight roll-up on skeleton P04 \(v2/05-Engineering/layout-study/weight-rollup.md, its 'Pod as shipped' row\): every part on the pod as it stands in the room, the parts that ship loose included; packaging not in it, nor the voice kit's reserve \(D-11\)."],"sizes":[{"along":"x","beam":null,"hi3d":[1166.5,300.0,1000.0],"hi_at":[1166.5,300.0,1000.0],"hi_pn":"510102","lo3d":[-1166.5,300.0,1000.0],"lo_at":[-1166.5,300.0,1000.0],"lo_pn":"510101","name":"inside width","open":false,"rotate":0,"start":[0.0,300.0,1000.0],"text":"INSIDE 2333","text_at":[462.50000000000006,190.19999999999987],"tips":[[404.17500000000007,189.39999999999986],[520.825,189.39999999999986]],"value":2333.0,"view":"section_C"},{"along":"y","beam":null,"hi3d":[-373.5,766.5,1000.0],"hi_at":[-373.5,766.5,1000.0],"hi_pn":"510201","lo3d":[-373.5,-694.62,1000.0],"lo_at":[-373.5,-694.62,1000.0],"lo_pn":"361001","name":"inside depth","open":false,"rotate":90,"start":[-373.5,0.0,1000.0],"text":"INSIDE 1461.1","text_at":[443.02500000000003,176.19699999999986],"tips":[[443.82500000000005,139.66899999999987],[443.82500000000005,212.72499999999985]],"value":1461.12,"view":"section_C"},{"along":"z","beam":null,"hi3d":[-600.0,0.0,2316.5],"hi_at":[-600.0,0.0,2316.5],"hi_pn":"510301","lo3d":[-600.0,0.0,0.0],"lo_at":[-600.0,0.0,0.0],"lo_pn":"floor","name":"clear height","open":false,"rotate":90,"start":[-600.0,0.0,1200.0],"text":"CLEAR 2316.5","text_at":[238.7,145.54649999999987],"tips":[[239.5,96.89999999999986],[239.5,212.72499999999985]],"value":2316.5,"view":"section_B"},{"along":"z","beam":{"x":[-940.0,-70.0],"y":[-850.0,-640.0]},"hi3d":[-123.7195,-681.0,2094.0],"hi_at":[-123.7195,-681.95,2094.0],"hi_pn":"368007","line_at":124.55000000000001,"lo3d":[-123.7195,-681.0,0.0],"lo_at":[-123.7195,-681.95,0.0],"lo_pn":"floor","name":"door clear height","open":true,"rotate":90,"side":"left","start":[-505.0,-681.0,1200.0],"text":"DOOR CLEAR 2094","text_at":[123.75000000000001,149.14999999999984],"tips":[[130.55,96.79999999999984],[130.55,201.49999999999983]],"value":2094.0,"view":"section_A"},{"along":"x","beam":{"y":[-850.0,-640.0]},"hi3d":[90.5147,-699.0,1000.001],"hi_at":[90.5147,-699.0,1000.001],"hi_pn":"368003","line_at":123.8999999999995,"lo3d":[-942.0,-688.62,1000.0],"lo_at":[-942.0,-688.62,1000.0],"lo_pn":"351103","name":"door clear width","open":true,"rotate":0,"side":"down","start":[-373.5,-700.0,1000.0],"text":"DOOR CLEAR 1032.5","text_at":[441.21286772842905,120.5999999999995],"tips":[[415.40000000000003,139.96899999999988],[467.02573545685806,139.44999999999987]],"value":1032.508,"view":"section_C"},{"along":"x","beam":{"y":[-850.0,-640.0]},"hi_at":[214.6171,-699.0,115.001],"hi_pn":"368003","lo_at":[-942.0,-688.62,115.0],"lo_pn":"351103","name":"door clear width at the foot","open":true,"start":[-373.5,-700.0,115.0],"value":1156.61},{"along":"x","beam":{"y":[-850.0,-640.0]},"hi_at":[-62.1944,-699.0,2089.001],"hi_pn":"368003","lo_at":[-942.0,-688.62,2089.0],"lo_pn":"351103","name":"door clear width at the head","open":true,"start":[-500.0,-700.0,2089.0],"value":879.799}]},"generator":"drawgen 1.0","interfaces":[{"axis":"y","origin3d":[0.0,0.0,0.0],"points":[{"at3d":[-1.1368683772161603e-13,102.5,2400.0],"pn":"410000","value":"2400"},{"at3d":[3.0,-566.0,2402.0],"pn":"610000","value":"2402"}],"view":"principal","words":"FRONT VIEW: heights from the room floor \(Z 0, under the glides\): the roof skin's top 2400 \(D-21\) and the overall top 2402, AIR's roof grille 611602 \(PM ruling 2026-11-01: the room's ceiling must clear the overall height\)"}],"kind":"pod","parent_keys":[],"pn":"100000","refs":[],"rev":"P04","sheet":"A1","sheet_h":594.0,"sources":[{"path":"v2/03-Manufacturing/air/610000_P01_AIR_STEP.step","role":"STEP","sha256_12":"7ef737431584"},{"path":"v2/03-Manufacturing/base/110000_P01_BASE_STEP.step","role":"STEP","sha256_12":"290a20f7c795"},{"path":"v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step","role":"STEP","sha256_12":"9e66d681b895"},{"path":"v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step","role":"STEP","sha256_12":"7ffab311d3bf"},{"path":"v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step","role":"STEP","sha256_12":"2147464404b4"},{"path":"v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step","role":"STEP","sha256_12":"7bfe8728eafe"},{"path":"v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step","role":"STEP","sha256_12":"bb091c70b8d8"},{"path":"v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step","role":"STEP","sha256_12":"a08edab3a620"},{"path":"v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step","role":"STEP","sha256_12":"08ecc6d6a74c"},{"path":"v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step","role":"STEP","sha256_12":"137ae2ee49e6"},{"path":"v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step","role":"STEP","sha256_12":"891e59703862"},{"path":"v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step","role":"STEP","sha256_12":"d6cb1750b935"},{"path":"v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step","role":"STEP","sha256_12":"4a2a75155087"},{"path":"v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step","role":"STEP","sha256_12":"da7956f32a81"},{"path":"v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step","role":"STEP","sha256_12":"a60814e7a591"},{"path":"v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step","role":"STEP","sha256_12":"dd50b09beb0d"},{"path":"v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step","role":"STEP","sha256_12":"c12f33043daa"},{"path":"v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step","role":"STEP","sha256_12":"ec21264c8aa9"},{"path":"v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step","role":"STEP","sha256_12":"0a79aebafad1"},{"path":"v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step","role":"STEP","sha256_12":"1cf6dceefc18"},{"path":"v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step","role":"STEP","sha256_12":"959ed154022f"},{"path":"v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step","role":"STEP","sha256_12":"2b2ec7410296"},{"path":"v2/04-BOM/100000_P01_POD-MASTER_BOM.csv","role":"parts list","sha256_12":"14ca9314203f"},{"path":"v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step","role":"skeleton STEP","sha256_12":"426f322dfa93"},{"kg":"393.1","path":"v2/05-Engineering/layout-study/weight-rollup.md","role":"mass","sha256_12":"77f2a41761d1"}],"stacks":[],"table":{"rows":[{"bottom":557.025,"no":1,"pn":"110000","top":563.525},{"bottom":550.525,"no":2,"pn":"210000","top":557.025},{"bottom":544.025,"no":3,"pn":"350000","top":550.525},{"bottom":537.525,"no":4,"pn":"360000","top":544.025},{"bottom":531.025,"no":5,"pn":"410000","top":537.525},{"bottom":524.525,"no":6,"pn":"510000","top":531.025},{"bottom":518.025,"no":7,"pn":"610000","top":524.525},{"bottom":511.525,"no":8,"pn":"710000","top":518.025},{"bottom":505.025,"no":9,"pn":"810000","top":511.525}],"x":[577.0,590.0,612.0,686.0,701.0,771.0,829.0],"y_bot":505.025,"y_top":582.0},"team":"ga","unhatched":[],"unmodelled":[],"views":[{"box":[197.0000000000001,423.9,322.0000000000002,544.0],"cut":null,"kind":"view","letter":null,"n":[0.0,-1.0,0.0],"name":"principal","off":[259.50000000000017,423.9],"scale":0.05,"x":[1.0,0.0,0.0],"y":[0.0,0.0,1.0]},{"box":[197.00000000000017,286.89999999999986,322.0000000000002,371.9],"cut":null,"kind":"view","letter":null,"n":[0.0,0.0,1.0],"name":"above","off":[259.5000000000002,329.4],"scale":0.05,"x":[1.0,0.0,0.0],"y":[-0.0,1.0,-0.0]},{"box":[374.0000000000003,423.9,459.00000000000034,544.0],"cut":null,"kind":"view","letter":null,"n":[-1.0,-0.0,-0.0],"name":"from_left","off":[416.5000000000003,423.9],"scale":0.05,"x":[0.0,-1.0,0.0],"y":[0.0,0.0,1.0]},{"box":[60.0,423.9,145.00000000000014,544.0],"cut":null,"kind":"view","letter":null,"n":[1.0,0.0,0.0],"name":"from_right","off":[102.50000000000014,423.9],"scale":0.05,"x":[-0.0,1.0,-0.0],"y":[0.0,0.0,1.0]},{"box":[54.0,96.79999999999984,139.00000000000003,216.89999999999986],"cut":{"normal":[-1.0,0.0,0.0],"point":[-373.5,0,1200],"slice":null},"kind":"section","letter":"A","n":[-1.0,-0.0,-0.0],"name":"section_A","off":[96.5,96.79999999999984],"scale":0.05,"x":[0.0,-1.0,0.0],"y":[0.0,0.0,1.0]},{"box":[207.0,96.89999999999986,332.0,216.89999999999986],"cut":{"normal":[0.0,-1.0,0.0],"point":[0,0,1200],"slice":null},"kind":"section","letter":"B","n":[0.0,-1.0,0.0],"name":"section_B","off":[269.5,96.89999999999986],"scale":0.05,"x":[1.0,0.0,0.0],"y":[0.0,0.0,1.0]},{"box":[400.0,131.8999999999995,525.0,216.89999999999986],"cut":{"normal":[0.0,0.0,1.0],"point":[0,0,1000],"slice":null},"kind":"section","letter":"C","n":[0.0,0.0,1.0],"name":"section_C","off":[462.50000000000006,174.39999999999986],"scale":0.05,"x":[1.0,0.0,0.0],"y":[-0.0,1.0,-0.0]}]})>>
+<</Type/Catalog/Pages 2 0 R/Info<</Producer(MuPDF 1.27.2)>>/DrawgenData({"balloons":[{"centre":[210.13844867224014,391.4],"end":"arrow","no":1,"pn":"110000","r":4.6,"tip":[210.13844867224014,423.9],"tip3d":[-987.2310265552003,800.0,0.0],"tip_view":[-987.2310265552003,0.0],"view":"principal"},{"centre":[197.69000000000023,387.9],"end":"arrow","no":2,"pn":"210000","r":4.6,"tip":[197.69000000000023,371.9],"tip3d":[-1236.2,850.0,2400.0],"tip_view":[-1236.2,850.0],"view":"above"},{"centre":[167.0000000000001,497.575],"end":"arrow","no":3,"pn":"350000","r":4.6,"tip":[197.00000000000017,486.575],"tip3d":[-1250.0,-670.0,1253.5],"tip_view":[-1250.0,1253.5],"view":"principal"},{"centre":[167.0000000000001,427.025],"end":"arrow","no":4,"pn":"360000","r":4.6,"tip":[211.45000000000016,427.025],"tip3d":[-961.0,-709.0,62.5],"tip_view":[-961.0,62.5],"view":"principal"},{"centre":[229.42825000000022,387.9],"end":"arrow","no":5,"pn":"410000","r":4.6,"tip":[229.42825000000022,371.9],"tip3d":[-601.4350000000001,850.0,2400.0],"tip_view":[-601.4350000000001,850.0],"view":"above"},{"centre":[38.0,130.3782499999997],"end":"arrow","no":6,"pn":"510000","r":4.6,"tip":[58.175,130.3782499999997],"tip3d":[-373.5,766.5,671.5649999999987],"tip_view":[-766.5,671.5649999999969],"view":"section_A"},{"centre":[361.74373251083523,427.0],"end":"arrow","no":7,"pn":"610000","r":4.6,"tip":[317.5500000000002,427.0],"tip3d":[1161.0,-643.5,62.0],"tip_view":[1161.0,62.0],"view":"principal"},{"centre":[38.0,155.79999999999984],"end":"arrow","no":8,"pn":"710000","r":4.6,"tip":[82.975,155.79999999999984],"tip3d":[1166.0,270.5,1180.0],"tip_view":[-270.5,1180.0],"view":"section_A"},{"centre":[269.5,232.89999999999986],"end":"arrow","no":9,"pn":"810000","r":4.6,"tip":[269.5,210.39999999999986],"tip3d":[0.0,765.0,2270.0],"tip_view":[0.0,2270.0],"view":"section_B"}],"cutting_planes":[{"letter":"A","on":"above","p":[240.82500000000022,278.89999999999986],"q":[240.82500000000022,379.9]},{"letter":"B","on":"above","p":[189.00000000000017,329.4],"q":[330.0000000000002,329.4]},{"letter":"C","on":"principal","p":[189.0000000000001,473.9],"q":[330.0000000000002,473.9]}],"dims":[{"axis":"x","text":"2500","value":2500.0,"view":"principal"},{"axis":"y","text":"2402","value":2402.0,"view":"principal"},{"axis":"y","text":"1700","value":1700.0,"view":"above"}],"dwg":"100000_P04_POD-SPACESHIP_DWG","extra":{"codes":[{"box":[407.2741406789839,455.1315,415.36285932101674,461.0315],"centre":[411.3185000000003,458.0815],"code":"L1","env":[-1250.0,-642.74,112.26,-1204.0,850.0,1255.0],"view":"from_left"},{"box":[407.2741406789839,512.3815,415.36285932101674,518.2815],"centre":[411.3185000000003,515.3315],"code":"L2","env":[-1250.0,-642.74,1257.26,-1204.0,850.0,2400.0],"view":"from_left"},{"box":[103.3665975000096,455.1315,111.99640249999068,461.0315],"centre":[107.68150000000014,458.0815],"code":"R1","env":[1204.0,-642.74,112.26,1250.0,850.0,1255.0],"view":"from_right"},{"box":[103.3665975000096,512.3815,111.99640249999068,518.2815],"centre":[107.68150000000014,515.3315],"code":"R2","env":[1204.0,-642.74,1257.26,1250.0,850.0,2400.0],"view":"from_right"},{"box":[225.11334750000967,331.575,233.74315249999077,337.47499999999997],"centre":[229.42825000000022,334.525],"code":"C1","env":[-1201.74,-645.0,2354.0,-1.13,850.0,2400.0],"view":"above"},{"box":[285.2568475000097,331.575,293.88665249999076,337.47499999999997],"centre":[289.57175000000024,334.525],"code":"C2","env":[1.13,-645.0,2354.0,1201.74,850.0,2400.0],"view":"above"},{"box":[235.11334750000944,127.52824999999986,243.74315249999054,133.42824999999985],"centre":[239.42825,130.47824999999986],"code":"B1","env":[-1201.74,804.0,112.26,-1.13,850.0,1230.87],"view":"section_B"},{"box":[295.2568475000095,127.52824999999986,303.88665249999053,133.42824999999985],"centre":[299.57175,130.47824999999986],"code":"B2","env":[1.13,804.0,112.26,1201.74,850.0,1230.87],"view":"section_B"},{"box":[235.11334750000944,183.5717499999999,243.74315249999054,189.47174999999987],"centre":[239.42825,186.52174999999988],"code":"B3","env":[-1201.74,804.0,1233.13,-1.13,850.0,2351.74],"view":"section_B"},{"box":[295.2568475000095,183.5717499999999,303.88665249999053,189.47174999999987],"centre":[299.57175,186.52174999999988],"code":"B4","env":[1.13,804.0,1233.13,1201.74,850.0,2351.74],"view":"section_B"}],"door":{"angle":90,"left_out":["368101"],"pivot":[-966.5,-709.0],"unit":"360001"},"floor_lines":[{"label_at":[335.0,97.69999999999986],"view":"section_B","x0":205.0,"x1":334.0,"y":96.89999999999986},{"label_at":[142.00000000000003,97.59999999999984],"view":"section_A","x0":52.0,"x1":141.00000000000003,"y":96.79999999999984}],"floor_z":0.0,"mass":{"kg":"393.0","row":"Pod as shipped","source":"v2/05-Engineering/layout-study/weight-rollup.md","status":"calculation"},"notes":["Pod axes \(conventions section 4\): origin on the room floor at the pod's centre; +X right seen from outside facing the door, +Y back, +Z up; the front is the door side.","No floor and no threshold \(D-132\): people stand on the room floor, and the base stands on its glides \(glide_h 10, skeleton P04\).","Walls and ceiling are 84 deep: ACP 3, bond 3 \(D-137\), steel frame 40 \(D-131\), gap 4, lining cassette 34 \(skeleton P04, stack_t\). Seams 2.26 at a metal stop; the closing seams B1-B2, B3-B4 and C1-C2 have a 5.5 frame gap \(joints register 2.8\).","Still to come \(WALL\): the back upper panels B3 and B4 and their cassettes 510203 and 510204 are not modelled yet, so the back wall's upper half is empty in the views and sections; this sheet is drawn again when they are \(PM ruling 2026-11-01\).","Sections cut the teams' parts as modelled: A-A at X -373.5 \(the door's middle\), seen from the left; B-B at Y 0 \(mid depth\), seen from the front; C-C at Z 1000 \(through the door and the fixed glass\), seen from above. Each assembly's own sheets give its build-ups, fixings and sizes.","Inside sizes, measured on the teams' STEPs \(calculation\): width 2333 between the side linings at Z 1000 \(C-C\); depth 1461.1 from the closed door's inner face to the back lining at X -373.5 \(C-C\); clear height 2316.5 from the room floor to the ceiling cassettes' underside \(B-B\).","Door clear opening with the door open 90\\u00b0 outward \(calculation on FRONT's STEPs\): width 1156.6 at Z 115, 1032.5 at Z 1000 \(C-C\), 879.8 at Z 2089, from DL's hinge-side stop 351103 to the fixed glass's door edge \(the opening narrows upward with the door's slanted edge\); height 2094 under the door catch 368007 in DT \(A-A\). The hinge isn't named yet \(HOLD H01\): the leaf is turned about a pivot taken at X -966.5, Y -709 \(D-154's limit\), the hinges' HOLD spaces left out \(assumption\); the open leaf stays clear of these sizes.","Position codes \(guideline 5.1\), on the skeleton P04's panels: L1, L2 on the view from the left; R1, R2 on the view from the right; C1, C2 on the view from above; B1, B2, B3, B4 on section B-B. B3 and B4 aren't modelled yet \(WALL\); the pod has two ceiling halves, so there is no C3.","MASS 393.0 kg \(calculation\): the weight roll-up on skeleton P04 \(v2/05-Engineering/layout-study/weight-rollup.md, its 'Pod as shipped' row\): every part on the pod as it stands in the room, the parts that ship loose included; packaging not in it, nor the voice kit's reserve \(D-11\)."],"sizes":[{"along":"x","beam":null,"hi3d":[1166.5,300.0,1000.0],"hi_at":[1166.5,300.0,1000.0],"hi_pn":"510102","lo3d":[-1166.5,300.0,1000.0],"lo_at":[-1166.5,300.0,1000.0],"lo_pn":"510101","name":"inside width","open":false,"rotate":0,"start":[0.0,300.0,1000.0],"text":"INSIDE 2333","text_at":[462.50000000000006,190.19999999999987],"tips":[[404.17500000000007,189.39999999999986],[520.825,189.39999999999986]],"value":2333.0,"view":"section_C"},{"along":"y","beam":null,"hi3d":[-373.5,766.5,1000.0],"hi_at":[-373.5,766.5,1000.0],"hi_pn":"510201","lo3d":[-373.5,-694.62,1000.0],"lo_at":[-373.5,-694.62,1000.0],"lo_pn":"361001","name":"inside depth","open":false,"rotate":90,"start":[-373.5,0.0,1000.0],"text":"INSIDE 1461.1","text_at":[443.02500000000003,176.19699999999986],"tips":[[443.82500000000005,139.66899999999987],[443.82500000000005,212.72499999999985]],"value":1461.12,"view":"section_C"},{"along":"z","beam":null,"hi3d":[-300.0,0.0,2316.5],"hi_at":[-300.0,0.0,2316.5],"hi_pn":"510301","lo3d":[-300.0,0.0,0.0],"lo_at":[-300.0,0.0,0.0],"lo_pn":"floor","name":"clear height","open":false,"rotate":90,"start":[-300.0,0.0,1200.0],"text":"CLEAR 2316.5","text_at":[253.7,136.28049999999985],"tips":[[254.5,96.89999999999986],[254.5,212.72499999999985]],"value":2316.5,"view":"section_B"},{"along":"z","beam":{"x":[-940.0,-70.0],"y":[-850.0,-640.0]},"hi3d":[-123.7195,-681.0,2094.0],"hi_at":[-123.7195,-681.95,2094.0],"hi_pn":"368007","line_at":124.55000000000001,"lo3d":[-123.7195,-681.0,0.0],"lo_at":[-123.7195,-681.95,0.0],"lo_pn":"floor","name":"door clear height","open":true,"rotate":90,"side":"left","start":[-505.0,-681.0,1200.0],"text":"DOOR CLEAR 2094","text_at":[123.75000000000001,149.14999999999984],"tips":[[130.55,96.79999999999984],[130.55,201.49999999999983]],"value":2094.0,"view":"section_A"},{"along":"x","beam":{"y":[-850.0,-640.0]},"hi3d":[90.5147,-699.0,1000.001],"hi_at":[90.5147,-699.0,1000.001],"hi_pn":"368003","line_at":123.8999999999995,"lo3d":[-942.0,-688.62,1000.0],"lo_at":[-942.0,-688.62,1000.0],"lo_pn":"351103","name":"door clear width","open":true,"rotate":0,"side":"down","start":[-373.5,-700.0,1000.0],"text":"DOOR CLEAR 1032.5","text_at":[441.21286772842905,120.5999999999995],"tips":[[415.40000000000003,139.96899999999988],[467.02573545685806,139.44999999999987]],"value":1032.508,"view":"section_C"},{"along":"x","beam":{"y":[-850.0,-640.0]},"hi_at":[214.6171,-699.0,115.001],"hi_pn":"368003","lo_at":[-942.0,-688.62,115.0],"lo_pn":"351103","name":"door clear width at the foot","open":true,"start":[-373.5,-700.0,115.0],"value":1156.61},{"along":"x","beam":{"y":[-850.0,-640.0]},"hi_at":[-62.1944,-699.0,2089.001],"hi_pn":"368003","lo_at":[-942.0,-688.62,2089.0],"lo_pn":"351103","name":"door clear width at the head","open":true,"start":[-500.0,-700.0,2089.0],"value":879.799}]},"generator":"drawgen 1.0","interfaces":[{"axis":"y","origin3d":[0.0,0.0,0.0],"points":[{"at3d":[-1.1368683772161603e-13,102.5,2400.0],"pn":"410000","value":"2400"},{"at3d":[3.0,-566.0,2402.0],"pn":"610000","value":"2402"}],"view":"principal","words":"FRONT VIEW: heights from the room floor \(Z 0, under the glides\): the roof skin's top 2400 \(D-21\) and the overall top 2402, AIR's roof grille 611602 \(PM ruling 2026-11-01: the room's ceiling must clear the overall height\)"}],"kind":"pod","parent_keys":[],"pn":"100000","refs":[],"rev":"P04","sheet":"A1","sheet_h":594.0,"sources":[{"path":"v2/03-Manufacturing/air/610000_P01_AIR_STEP.step","role":"STEP","sha256_12":"7ef737431584"},{"path":"v2/03-Manufacturing/base/110000_P01_BASE_STEP.step","role":"STEP","sha256_12":"290a20f7c795"},{"path":"v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step","role":"STEP","sha256_12":"9e66d681b895"},{"path":"v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step","role":"STEP","sha256_12":"7ffab311d3bf"},{"path":"v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step","role":"STEP","sha256_12":"2147464404b4"},{"path":"v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step","role":"STEP","sha256_12":"7bfe8728eafe"},{"path":"v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step","role":"STEP","sha256_12":"bb091c70b8d8"},{"path":"v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step","role":"STEP","sha256_12":"a08edab3a620"},{"path":"v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step","role":"STEP","sha256_12":"08ecc6d6a74c"},{"path":"v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step","role":"STEP","sha256_12":"137ae2ee49e6"},{"path":"v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step","role":"STEP","sha256_12":"891e59703862"},{"path":"v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step","role":"STEP","sha256_12":"d6cb1750b935"},{"path":"v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step","role":"STEP","sha256_12":"4a2a75155087"},{"path":"v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step","role":"STEP","sha256_12":"da7956f32a81"},{"path":"v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step","role":"STEP","sha256_12":"a60814e7a591"},{"path":"v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step","role":"STEP","sha256_12":"dd50b09beb0d"},{"path":"v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step","role":"STEP","sha256_12":"c12f33043daa"},{"path":"v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step","role":"STEP","sha256_12":"ec21264c8aa9"},{"path":"v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step","role":"STEP","sha256_12":"0a79aebafad1"},{"path":"v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step","role":"STEP","sha256_12":"1cf6dceefc18"},{"path":"v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step","role":"STEP","sha256_12":"959ed154022f"},{"path":"v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step","role":"STEP","sha256_12":"2b2ec7410296"},{"path":"v2/04-BOM/100000_P01_POD-MASTER_BOM.csv","role":"parts list","sha256_12":"38e3080fdfb7"},{"path":"v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step","role":"skeleton STEP","sha256_12":"426f322dfa93"},{"kg":"393.0","path":"v2/05-Engineering/layout-study/weight-rollup.md","role":"mass","sha256_12":"2672f91ed1ca"}],"stacks":[],"table":{"rows":[{"bottom":557.025,"no":1,"pn":"110000","top":563.525},{"bottom":550.525,"no":2,"pn":"210000","top":557.025},{"bottom":544.025,"no":3,"pn":"350000","top":550.525},{"bottom":537.525,"no":4,"pn":"360000","top":544.025},{"bottom":531.025,"no":5,"pn":"410000","top":537.525},{"bottom":524.525,"no":6,"pn":"510000","top":531.025},{"bottom":518.025,"no":7,"pn":"610000","top":524.525},{"bottom":511.525,"no":8,"pn":"710000","top":518.025},{"bottom":505.025,"no":9,"pn":"810000","top":511.525}],"x":[577.0,590.0,612.0,686.0,701.0,771.0,829.0],"y_bot":505.025,"y_top":582.0},"team":"ga","unhatched":[],"unmodelled":[],"views":[{"box":[197.0000000000001,423.9,322.0000000000002,544.0],"cut":null,"kind":"view","letter":null,"n":[0.0,-1.0,0.0],"name":"principal","off":[259.50000000000017,423.9],"scale":0.05,"x":[1.0,0.0,0.0],"y":[0.0,0.0,1.0]},{"box":[197.00000000000017,286.89999999999986,322.0000000000002,371.9],"cut":null,"kind":"view","letter":null,"n":[0.0,0.0,1.0],"name":"above","off":[259.5000000000002,329.4],"scale":0.05,"x":[1.0,0.0,0.0],"y":[-0.0,1.0,-0.0]},{"box":[374.0000000000003,423.9,459.00000000000034,544.0],"cut":null,"kind":"view","letter":null,"n":[-1.0,-0.0,-0.0],"name":"from_left","off":[416.5000000000003,423.9],"scale":0.05,"x":[0.0,-1.0,0.0],"y":[0.0,0.0,1.0]},{"box":[60.0,423.9,145.00000000000014,544.0],"cut":null,"kind":"view","letter":null,"n":[1.0,0.0,0.0],"name":"from_right","off":[102.50000000000014,423.9],"scale":0.05,"x":[-0.0,1.0,-0.0],"y":[0.0,0.0,1.0]},{"box":[54.0,96.79999999999984,139.00000000000003,216.89999999999986],"cut":{"normal":[-1.0,0.0,0.0],"point":[-373.5,0,1200],"slice":null},"kind":"section","letter":"A","n":[-1.0,-0.0,-0.0],"name":"section_A","off":[96.5,96.79999999999984],"scale":0.05,"x":[0.0,-1.0,0.0],"y":[0.0,0.0,1.0]},{"box":[207.0,96.89999999999986,332.0,216.89999999999986],"cut":{"normal":[0.0,-1.0,0.0],"point":[0,0,1200],"slice":null},"kind":"section","letter":"B","n":[0.0,-1.0,0.0],"name":"section_B","off":[269.5,96.89999999999986],"scale":0.05,"x":[1.0,0.0,0.0],"y":[0.0,0.0,1.0]},{"box":[400.0,131.8999999999995,525.0,216.89999999999986],"cut":{"normal":[0.0,0.0,1.0],"point":[0,0,1000],"slice":null},"kind":"section","letter":"C","n":[0.0,0.0,1.0],"name":"section_C","off":[462.50000000000006,174.39999999999986],"scale":0.05,"x":[1.0,0.0,0.0],"y":[-0.0,1.0,-0.0]}]})>>
 endobj
 
 2 0 obj
@@ -521,10 +521,10 @@ endstream
 endobj
 
 40 0 obj
-<</Length 112/Filter/FlateDecode>>
+<</Length 113/Filter/FlateDecode>>
 stream
-x⁄-À1
-AF·>ß»vú‰üdàÖ ÇùíN¨ñU∑–¬Û∫ºÊkΩhóTYxÆø∆ô˛Fè‚Êº{qçËú3≠”Û√Q÷Áº-Î˘∞‡}ÁÀ¶°çÕöòjÖ∏N∞Ì5è¥O:—U†É
+x⁄-ãΩ
+É@˚}ä}œ€˚ˆN$E “%\'V‚O·±»Û'Dôfz”5ìg·Jÿˇ*åÛ∏jƒú®%ŒÖÍu⁄>lÆMf¯ï˘<_˜SˆÖ˚N°£FïÇG  HaBº˘A∑LO˙5x9
 endstream
 endobj
 
@@ -604,7 +604,7 @@ endobj
 <</Length 84/Filter/FlateDecode>>
 stream
 x⁄„*‰r
-·2T0 BC3SS=3KCc3=KKÖê\.˝å‘§|Cc=CsKCÖê4∞ZÖ w(£(]!⁄∆ƒ»ÿ–.6ƒãÀ5Ñ+ê óA
+·2T0 BC33K=33c3=KKÖê\.˝å‘§|Cc=CsKCÖê4∞ZÖ w(£(]!⁄∆ƒ»ÿ–.6ƒãÀ5Ñ+ê ˝J
 endstream
 endobj
 
@@ -620,7 +620,7 @@ endobj
 <</Length 86/Filter/FlateDecode>>
 stream
 x⁄„*‰r
-·2T0 BC3SS=3KCS#c=s3#Öê\.˝å‘§|Cc=CsKCÖê4∞jÖ w(£(]!⁄∆ƒ»ÿÿ.6ƒãÀ5Ñ+ê "‡°
+·2T0 BC33K=33S#c=s3#Öê\.˝å‘§|Cc=CsKCÖê4∞jÖ w(£(]!⁄∆ƒ»ÿÿ.6ƒãÀ5Ñ+ê %X™
 endstream
 endobj
 
@@ -633,10 +633,10 @@ endstream
 endobj
 
 54 0 obj
-<</Length 535/Filter/FlateDecode>>
+<</Length 530/Filter/FlateDecode>>
 stream
-x⁄≠ñ=é€@Ö{ùbN@ál”§NrÜ ã`]dõ\?9÷å ;ki7¬ÙÒÕ#Mi˘µ`˘π äÇEQ6p«rYPö´»§æ.–™õ°X˘Ω‘“_?óoÀóe˘'U √∫™ ñèøÓDä†Œ'ÁºØë¸óQ·zÒˆ£|öJ›1ÿm[◊*3u∑˙GJë:‰¡[·P$Ïï6—*?ÕHÄVé"U@äJ’¿,xßû2‹ΩL@çÜ·µ ﬂ⁄ìx†à:Vb/‘¨5Ï•BÚ2€:‘˜√±Ê‡—“ÃÍs?†xFâTù±∑?ÔÇxbgÒ¿È˜ﬁ.É7Ö9*üK8G§¢^Ê‡Lı≤pÿ:ÕC}?Œø ı“{ñ‰)*c;…“Ükxæcı	ñ2TU‹€∫âˇÅî¡7Õ>SoXK+ÇqÛY;–ñ;Ó.É©FÎË≠un≈'ÒHˇ1áJ#WCPÛ∂n”MÕˇZXmœl&ŒHñ(Q≥u[ı j‘œ3íŸµ©ßYËÎ‹≥¥–u)Q3L
-èÉiﬁqÿ}£BéÆÓ∞ì:Í‹⁄˙)* [ e=/07$â`y˚æËÂADJ“°–YÂ’ö√>YJ≤%·4ÈÊË«Úùã◊Jp‹˜9íW´˘J˝0…ÚD‰˘-¡Üπ≤õúN…Û≥$rÑ⁄«Qõ)•|£XıˆqSÁQ P`D
+x⁄≠ñ=é€@Ö{ùbN@ˇ…6MÍ$g≤÷E∂…ı√ëc˝ v÷“n‰gË„õGäÚÙk¬ˆsBK ¶lÅÌ2°∏´»F}ù¿{ò°X˚=ı6>_?∑o”ói˙'U ”Ü™ V∑øÓƒ  §¡ß‡˙]≥¯/kÖÎ≈€èˆiSÍé¡a€Bªl©[q©§i@‹ßB"·®¥à÷˘ôh@¥s6ÈÇWT©f…;ıî·qÎe‘,`^´¸≠Ω—@¿Nç\¿‹qîJ1®ÀjÎ™æé÷9ùw®E|.‡Çq¢2à£˜N}˜˝¿©w¶.3iﬂZÓ\¶5‘ ıö)'Wéóâ3¡Ê˘]’˜Û‡z•˜,	àŒË'YÍ8«;÷™>¡RÜÆä{[7Ò?ê*x'—Íp5#›ãƒä`Ï±’¥ÂéªÀ T£yﬁÊ:∑‚ÒHˇ—1kI0$y¯º?µûÆ¥ÓœÏ&Æ•GV(Q≥y?ÆÍ‘ZøŒLHf{‘¢ûfaÃsœí‡©Û\E≠0)#¶y«·ç
+5∫∫√n‘’¡°ŒÕ≠˜lHŸŸj ©ZuÅµI€€˜]@/"ZPRÖŒÇ®f®˜ˆç•"[NìnéŒq¨^ µr≠%ÁxÎuí=¿zΩD?L2≥∫è[mˆt9R‘ˇê¨	Úè£nûî:∞ıè{:è˙a˛s
 endstream
 endobj
 
@@ -1726,10 +1726,12 @@ endstream
 endobj
 
 184 0 obj
-<</Length 116/Filter/FlateDecode>>
+<</Length 115/Filter/FlateDecode>>
 stream
-x⁄-ä±
-1˚˝ä˝Çò›w˜íπB¡NI'6JN-¥˚=DÜ)F^≤iböL›»‰‡†1&Àé™Ì)´{|4Re®m˛›YèªºozZ¿;Ã3/,ûΩ4^â2.∂208≥{LÁ∂ómìÉ|–ñ
+x⁄-ä;
+AÛ>Eü`ÏœÓõiêÃîŒƒDô’@<øãHAQA—ã6I ≤†l
+scQ1oúOZ›˚„√Q"úÛÔ>Ó˛ÒæÒiÌÓ·n›≈Tkp(Æ:.÷: 0£[LÁ‹”6È@_–i
+
 endstream
 endobj
 
@@ -2098,9 +2100,8 @@ endobj
 <</Length 246/Filter/FlateDecode>>
 stream
 x⁄UêΩJ1Ö˚<Eû`ùÃob!à`ßl'∫ŸΩZh·Û{í´Çíôpræ3IÈzM%V…≈ÕAEï
-jy}OØ˚€WnKı÷ƒÛzL9Âá€ü‚Ûî/µk11aë&¬ª&Ò`‚Í‚≈7ó0Ï%‘õæsìg&t’g∏·>ºÜ¢c(6ﬂ∏á¡iË)é√√jﬁ	âF∏0ËåªöÔpjÿZûU1È`√S·,°H§—¯¯GÔøÙ…ﬁΩªÚÜzL»a#®pìô
-ü¯0x(«9}ƒy>}d e(
-*˝õgŒ~ı¥ﬁ•õ5›ßonóZs
+jy}OØ˚€WnKı÷ƒÛzL9Âá€ü‚Ûî/µk11aë&¬ªìøx0quÒ‚õKˆÍÕﬂπ…3∫ÍÜ3‹p^C—1õo‹√b8=Ö¿qx^Õ#!—¡ÊùqWÛNªAÀ≥
+>&lx*ú%â4ˇË˝ó>ŸªwWﬁê°Aè	9l‰n2S·sÂ8ßè8œæè†EA•ÛÃŸØû÷ªt≥¶˚ÙmdZr
 endstream
 endobj
 
@@ -2641,259 +2642,259 @@ xref
 0000078483 00000 n 
 0000078667 00000 n 
 0000078833 00000 n 
-0000079015 00000 n 
-0000079183 00000 n 
-0000079368 00000 n 
-0000079548 00000 n 
-0000079703 00000 n 
-0000079859 00000 n 
-0000080014 00000 n 
-0000080170 00000 n 
-0000080325 00000 n 
-0000080481 00000 n 
-0000080634 00000 n 
-0000080787 00000 n 
-0000080942 00000 n 
-0000081097 00000 n 
-0000081702 00000 n 
-0000081881 00000 n 
-0000082091 00000 n 
-0000082274 00000 n 
-0000082488 00000 n 
-0000082676 00000 n 
-0000082887 00000 n 
-0000083075 00000 n 
-0000083285 00000 n 
-0000083464 00000 n 
-0000083675 00000 n 
-0000083856 00000 n 
-0000084066 00000 n 
-0000084247 00000 n 
-0000084462 00000 n 
-0000084615 00000 n 
-0000084880 00000 n 
-0000085032 00000 n 
-0000085297 00000 n 
-0000085452 00000 n 
-0000085734 00000 n 
-0000085888 00000 n 
-0000086150 00000 n 
-0000086302 00000 n 
-0000086571 00000 n 
-0000086727 00000 n 
-0000086996 00000 n 
-0000087152 00000 n 
-0000087418 00000 n 
-0000087573 00000 n 
-0000087839 00000 n 
-0000087992 00000 n 
-0000088259 00000 n 
-0000088453 00000 n 
-0000088611 00000 n 
-0000088768 00000 n 
-0000088930 00000 n 
-0000089090 00000 n 
-0000089248 00000 n 
-0000089416 00000 n 
-0000089580 00000 n 
-0000089734 00000 n 
-0000089891 00000 n 
-0000090051 00000 n 
-0000090205 00000 n 
-0000090359 00000 n 
-0000090514 00000 n 
-0000090669 00000 n 
-0000090829 00000 n 
-0000090990 00000 n 
-0000091145 00000 n 
-0000091300 00000 n 
-0000091455 00000 n 
-0000091610 00000 n 
-0000091770 00000 n 
-0000091949 00000 n 
-0000092104 00000 n 
-0000092259 00000 n 
-0000092414 00000 n 
-0000092569 00000 n 
-0000092729 00000 n 
-0000092919 00000 n 
-0000093074 00000 n 
-0000093229 00000 n 
-0000093384 00000 n 
-0000093538 00000 n 
-0000093697 00000 n 
-0000093861 00000 n 
-0000094015 00000 n 
-0000094169 00000 n 
-0000094323 00000 n 
-0000094477 00000 n 
-0000094637 00000 n 
-0000094798 00000 n 
-0000094953 00000 n 
-0000095108 00000 n 
-0000095263 00000 n 
-0000095418 00000 n 
-0000095578 00000 n 
-0000095737 00000 n 
-0000095891 00000 n 
-0000096046 00000 n 
-0000096201 00000 n 
-0000096356 00000 n 
-0000096516 00000 n 
-0000096688 00000 n 
-0000096843 00000 n 
-0000096998 00000 n 
-0000097153 00000 n 
-0000097308 00000 n 
-0000097468 00000 n 
-0000097636 00000 n 
-0000097791 00000 n 
-0000097946 00000 n 
-0000098101 00000 n 
-0000098385 00000 n 
-0000098551 00000 n 
-0000098737 00000 n 
-0000098900 00000 n 
-0000099062 00000 n 
-0000099221 00000 n 
-0000099392 00000 n 
-0000099554 00000 n 
-0000099712 00000 n 
-0000099872 00000 n 
-0000100051 00000 n 
-0000100208 00000 n 
-0000103744 00000 n 
-0000118115 00000 n 
-0000118331 00000 n 
-0000144210 00000 n 
-0000144410 00000 n 
-0000144597 00000 n 
-0000144771 00000 n 
-0000144928 00000 n 
-0000145086 00000 n 
-0000145245 00000 n 
-0000145432 00000 n 
-0000145620 00000 n 
-0000145788 00000 n 
-0000145981 00000 n 
-0000146146 00000 n 
-0000146337 00000 n 
-0000146500 00000 n 
-0000146660 00000 n 
-0000146821 00000 n 
-0000146977 00000 n 
-0000147140 00000 n 
-0000147311 00000 n 
-0000147472 00000 n 
-0000147659 00000 n 
-0000147828 00000 n 
-0000147997 00000 n 
-0000148162 00000 n 
-0000148336 00000 n 
-0000148504 00000 n 
-0000148706 00000 n 
-0000148878 00000 n 
-0000149069 00000 n 
-0000149661 00000 n 
-0000149824 00000 n 
-0000149980 00000 n 
-0000150270 00000 n 
-0000150469 00000 n 
-0000150626 00000 n 
-0000150928 00000 n 
-0000151084 00000 n 
-0000151387 00000 n 
-0000151656 00000 n 
-0000151813 00000 n 
-0000152114 00000 n 
-0000152276 00000 n 
-0000152432 00000 n 
-0000152708 00000 n 
-0000152865 00000 n 
-0000153173 00000 n 
-0000153424 00000 n 
-0000153581 00000 n 
-0000153879 00000 n 
-0000154126 00000 n 
-0000154283 00000 n 
-0000154580 00000 n 
-0000154854 00000 n 
-0000155011 00000 n 
-0000155318 00000 n 
-0000155593 00000 n 
-0000155752 00000 n 
-0000156050 00000 n 
-0000156343 00000 n 
-0000156643 00000 n 
-0000156875 00000 n 
-0000157034 00000 n 
-0000157312 00000 n 
-0000157593 00000 n 
-0000157752 00000 n 
-0000158069 00000 n 
-0000158342 00000 n 
-0000158501 00000 n 
-0000158770 00000 n 
-0000158926 00000 n 
-0000159082 00000 n 
-0000159238 00000 n 
-0000159394 00000 n 
-0000159550 00000 n 
-0000159706 00000 n 
-0000159861 00000 n 
-0000160016 00000 n 
-0000160171 00000 n 
-0000160326 00000 n 
-0000160481 00000 n 
-0000160636 00000 n 
-0000160792 00000 n 
-0000160948 00000 n 
-0000161103 00000 n 
-0000161258 00000 n 
-0000161414 00000 n 
-0000161570 00000 n 
-0000161727 00000 n 
-0000161884 00000 n 
-0000162041 00000 n 
-0000162199 00000 n 
-0000162357 00000 n 
-0000162513 00000 n 
-0000162671 00000 n 
-0000162829 00000 n 
-0000162987 00000 n 
-0000163145 00000 n 
-0000163303 00000 n 
-0000163461 00000 n 
-0000163619 00000 n 
-0000163777 00000 n 
-0000163932 00000 n 
-0000164088 00000 n 
-0000164243 00000 n 
-0000164399 00000 n 
-0000164555 00000 n 
-0000164711 00000 n 
-0000164866 00000 n 
-0000165021 00000 n 
-0000165176 00000 n 
-0000165332 00000 n 
-0000165486 00000 n 
-0000165641 00000 n 
-0000165795 00000 n 
-0000165949 00000 n 
-0000166105 00000 n 
-0000166261 00000 n 
-0000166417 00000 n 
-0000166572 00000 n 
-0000166726 00000 n 
-0000166881 00000 n 
-0000167036 00000 n 
-0000167192 00000 n 
-0000167346 00000 n 
-0000167500 00000 n 
-0000168199 00000 n 
+0000079016 00000 n 
+0000079184 00000 n 
+0000079369 00000 n 
+0000079549 00000 n 
+0000079704 00000 n 
+0000079860 00000 n 
+0000080015 00000 n 
+0000080171 00000 n 
+0000080326 00000 n 
+0000080482 00000 n 
+0000080635 00000 n 
+0000080788 00000 n 
+0000080943 00000 n 
+0000081098 00000 n 
+0000081698 00000 n 
+0000081877 00000 n 
+0000082087 00000 n 
+0000082270 00000 n 
+0000082484 00000 n 
+0000082672 00000 n 
+0000082883 00000 n 
+0000083071 00000 n 
+0000083281 00000 n 
+0000083460 00000 n 
+0000083671 00000 n 
+0000083852 00000 n 
+0000084062 00000 n 
+0000084243 00000 n 
+0000084458 00000 n 
+0000084611 00000 n 
+0000084876 00000 n 
+0000085028 00000 n 
+0000085293 00000 n 
+0000085448 00000 n 
+0000085730 00000 n 
+0000085884 00000 n 
+0000086146 00000 n 
+0000086298 00000 n 
+0000086567 00000 n 
+0000086723 00000 n 
+0000086992 00000 n 
+0000087148 00000 n 
+0000087414 00000 n 
+0000087569 00000 n 
+0000087835 00000 n 
+0000087988 00000 n 
+0000088255 00000 n 
+0000088449 00000 n 
+0000088607 00000 n 
+0000088764 00000 n 
+0000088926 00000 n 
+0000089086 00000 n 
+0000089244 00000 n 
+0000089412 00000 n 
+0000089576 00000 n 
+0000089730 00000 n 
+0000089887 00000 n 
+0000090047 00000 n 
+0000090201 00000 n 
+0000090355 00000 n 
+0000090510 00000 n 
+0000090665 00000 n 
+0000090825 00000 n 
+0000090986 00000 n 
+0000091141 00000 n 
+0000091296 00000 n 
+0000091451 00000 n 
+0000091606 00000 n 
+0000091766 00000 n 
+0000091945 00000 n 
+0000092100 00000 n 
+0000092255 00000 n 
+0000092410 00000 n 
+0000092565 00000 n 
+0000092725 00000 n 
+0000092915 00000 n 
+0000093070 00000 n 
+0000093225 00000 n 
+0000093380 00000 n 
+0000093534 00000 n 
+0000093693 00000 n 
+0000093857 00000 n 
+0000094011 00000 n 
+0000094165 00000 n 
+0000094319 00000 n 
+0000094473 00000 n 
+0000094633 00000 n 
+0000094794 00000 n 
+0000094949 00000 n 
+0000095104 00000 n 
+0000095259 00000 n 
+0000095414 00000 n 
+0000095574 00000 n 
+0000095733 00000 n 
+0000095887 00000 n 
+0000096042 00000 n 
+0000096197 00000 n 
+0000096352 00000 n 
+0000096512 00000 n 
+0000096684 00000 n 
+0000096839 00000 n 
+0000096994 00000 n 
+0000097149 00000 n 
+0000097304 00000 n 
+0000097464 00000 n 
+0000097632 00000 n 
+0000097787 00000 n 
+0000097942 00000 n 
+0000098097 00000 n 
+0000098381 00000 n 
+0000098547 00000 n 
+0000098733 00000 n 
+0000098896 00000 n 
+0000099058 00000 n 
+0000099217 00000 n 
+0000099388 00000 n 
+0000099550 00000 n 
+0000099708 00000 n 
+0000099868 00000 n 
+0000100047 00000 n 
+0000100204 00000 n 
+0000103740 00000 n 
+0000118111 00000 n 
+0000118327 00000 n 
+0000144206 00000 n 
+0000144406 00000 n 
+0000144593 00000 n 
+0000144767 00000 n 
+0000144924 00000 n 
+0000145082 00000 n 
+0000145241 00000 n 
+0000145428 00000 n 
+0000145616 00000 n 
+0000145784 00000 n 
+0000145977 00000 n 
+0000146142 00000 n 
+0000146333 00000 n 
+0000146496 00000 n 
+0000146656 00000 n 
+0000146817 00000 n 
+0000146973 00000 n 
+0000147136 00000 n 
+0000147307 00000 n 
+0000147468 00000 n 
+0000147654 00000 n 
+0000147823 00000 n 
+0000147992 00000 n 
+0000148157 00000 n 
+0000148331 00000 n 
+0000148499 00000 n 
+0000148701 00000 n 
+0000148873 00000 n 
+0000149064 00000 n 
+0000149656 00000 n 
+0000149819 00000 n 
+0000149975 00000 n 
+0000150265 00000 n 
+0000150464 00000 n 
+0000150621 00000 n 
+0000150923 00000 n 
+0000151079 00000 n 
+0000151382 00000 n 
+0000151651 00000 n 
+0000151808 00000 n 
+0000152109 00000 n 
+0000152271 00000 n 
+0000152427 00000 n 
+0000152703 00000 n 
+0000152860 00000 n 
+0000153168 00000 n 
+0000153419 00000 n 
+0000153576 00000 n 
+0000153874 00000 n 
+0000154121 00000 n 
+0000154278 00000 n 
+0000154575 00000 n 
+0000154849 00000 n 
+0000155006 00000 n 
+0000155313 00000 n 
+0000155588 00000 n 
+0000155747 00000 n 
+0000156045 00000 n 
+0000156338 00000 n 
+0000156638 00000 n 
+0000156870 00000 n 
+0000157029 00000 n 
+0000157307 00000 n 
+0000157588 00000 n 
+0000157747 00000 n 
+0000158064 00000 n 
+0000158337 00000 n 
+0000158496 00000 n 
+0000158765 00000 n 
+0000158921 00000 n 
+0000159077 00000 n 
+0000159233 00000 n 
+0000159389 00000 n 
+0000159545 00000 n 
+0000159701 00000 n 
+0000159856 00000 n 
+0000160011 00000 n 
+0000160166 00000 n 
+0000160321 00000 n 
+0000160476 00000 n 
+0000160631 00000 n 
+0000160787 00000 n 
+0000160943 00000 n 
+0000161098 00000 n 
+0000161253 00000 n 
+0000161409 00000 n 
+0000161565 00000 n 
+0000161722 00000 n 
+0000161879 00000 n 
+0000162036 00000 n 
+0000162194 00000 n 
+0000162352 00000 n 
+0000162508 00000 n 
+0000162666 00000 n 
+0000162824 00000 n 
+0000162982 00000 n 
+0000163140 00000 n 
+0000163298 00000 n 
+0000163456 00000 n 
+0000163614 00000 n 
+0000163772 00000 n 
+0000163927 00000 n 
+0000164083 00000 n 
+0000164238 00000 n 
+0000164394 00000 n 
+0000164550 00000 n 
+0000164706 00000 n 
+0000164861 00000 n 
+0000165016 00000 n 
+0000165171 00000 n 
+0000165327 00000 n 
+0000165481 00000 n 
+0000165636 00000 n 
+0000165790 00000 n 
+0000165944 00000 n 
+0000166100 00000 n 
+0000166256 00000 n 
+0000166412 00000 n 
+0000166567 00000 n 
+0000166721 00000 n 
+0000166876 00000 n 
+0000167031 00000 n 
+0000167187 00000 n 
+0000167341 00000 n 
+0000167495 00000 n 
+0000168194 00000 n 
 
 trailer
 <</Size 291/Info 290 0 R/Root 1 0 R>>
 startxref
-168562
+168557
 %%EOF

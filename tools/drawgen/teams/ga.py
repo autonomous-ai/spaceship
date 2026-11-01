@@ -37,8 +37,9 @@ POD = {
         {"name": "inside depth", "view": "section_C", "along": "y", "start": [-373.5, 0.0, 1000.0],
          "search": {"x": [-373.5, -500.0, -250.0, -650.0, -150.0]}, "ends": [["361001"], ["510201"]],
          "label": "INSIDE %s"},
-        {"name": "clear height", "view": "section_B", "along": "z", "start": [-600.0, 0.0, 1200.0],
-         "search": {"x": [-600.0, 600.0, -300.0, 300.0, -900.0, 900.0]}, "ends": [["floor"], ["510301"]],
+        # (off the back panels' middles, X +-601, where their codes sit: Reviewer 5, P3 on #377)
+        {"name": "clear height", "view": "section_B", "along": "z", "start": [-300.0, 0.0, 1200.0],
+         "search": {"x": [-300.0, 300.0, -900.0, 900.0, -150.0, 150.0]}, "ends": [["floor"], ["510301"]],
          "label": "CLEAR %s"},
         {"name": "door clear height", "view": "section_A", "along": "z", "start": [-505.0, -681.0, 1200.0],
          "beam": {"x": [-940.0, -70.0], "y": [-850.0, -640.0]}, "draw_at": {"y": -681.0}, "open": True,
