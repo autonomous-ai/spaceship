@@ -1,8 +1,8 @@
-# Mechanical check run: 7309f94 on 2026-11-01
+# Mechanical check run: f3013d7 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `7309f94`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `f3013d7`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 90** (36 severe, 54 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 79** (31 severe, 48 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `7309f94`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 70 |
+| C05 drawing completeness | yes | 59 |
 | C06 BOM completeness | yes | 19 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
@@ -27,11 +27,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
 | F-136 | severe | C01 | assembly shell left-base Y 847..850 Z 10..110 | The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes. | BASE |
-| F-043 | severe | C05 | 111101 | 111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step. | BASE |
-| F-045 | severe | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step. | Joints Engineer |
-| F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | Joints Engineer |
-| F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | Joints Engineer |
-| F-102 | severe | C05 | 111214 | 111214 BASE - CORNER KEY - KNEE - LH has no drawing PDF (111214_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step. | Joints Engineer |
 | F-020 | severe | C05 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-109 | severe | C05 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH has no drawing PDF (211102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step. | WALL |
 | F-110 | severe | C05 | 211103 | 211103 WALL - PANEL FRAME - SIDE UPPER - LH has no drawing PDF (211103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step. | WALL |
@@ -89,12 +84,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-183 | major | C05 | 510201 | 510201 LINING - CASSETTE - BACK LOWER - B1 has no drawing PDF (510201_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step. | WALL |
 | F-184 | major | C05 | 510202 | 510202 LINING - CASSETTE - BACK LOWER - B2 has no drawing PDF (510202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step. | WALL |
 | F-143 | major | C05 | 510301 | 510301 LINING - CASSETTE - CEILING - COMMON has no drawing PDF (510301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
-| F-124 | major | C05 | 511302 | 511302 LINING - FELT - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes). | WALL |
-| F-125 | major | C05 | 511304 | 511304 LINING - FELT - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes). | WALL |
-| F-187 | major | C05 | 511402 | 511402 LINING - FELT - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches). | WALL |
-| F-146 | major | C05 | 513301 | 513301 LINING - FILL - CEILING - BAY A has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle. | CEILING |
-| F-147 | major | C05 | 513302 | 513302 LINING - FILL - CEILING - BAY B has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle. | CEILING |
-| F-148 | major | C05 | 513303 | 513303 LINING - FILL - CEILING - BAY C has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle. | CEILING |
 | F-151 | major | C05 | 810101 | 810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-152 | major | C05 | 810201 | 810201 INTERIOR - LIGHT SHELF ASSY has no drawing PDF (810201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-098 | major | C06 | 111211 | Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95). | BASE |
@@ -164,8 +153,8 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.405 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
 | 2-11 AIR - AIR COLUMN | 9.735 | 2105 x 360 x 217 | long | calculation; fill provisional |
 | 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |
-| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.282 | 600 x 250 x 200 | long | calculation (CAD) |
-| 2-14 INTERIOR - LIGHT SHELF ASSY | 1.564 | 2332 x 80 x 60 | long | calculation (CAD) |
+| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.28 | 600 x 250 x 200 | long | calculation (CAD) |
+| 2-14 INTERIOR - LIGHT SHELF ASSY | 1.585 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-15 BASE - SMALL PARTS CARTON | 1.968 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-16 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
 | 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.086 | 1845 x 460 x 155 | long | assumption; calculation |
