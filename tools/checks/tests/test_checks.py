@@ -432,6 +432,40 @@ def test_units_rule(tmp_path):
     assert "units (mm)" in got["211102"]          # a column header in mm is not the title block's UNITS: mm
 
 
+def test_generated_drawings_count_the_same_and_their_findings_go_to_the_generator(tmp_path):
+    # D-112: tools/drawgen makes part drawings from STEP; its PDFs name drawgen in the Creator field
+    fitz = pytest.importorskip("fitz")
+    d = tmp_path / "v2/02-Drawings/wall"
+    d.mkdir(parents=True)
+    (tmp_path / "v2/03-Manufacturing/wall").mkdir(parents=True)
+    def pdf(name, text, creator):
+        doc = fitz.open()
+        page = doc.new_page()
+        for i, line in enumerate(text.split("\n")):
+            page.insert_text((40, 50 + 20 * i), line)
+        doc.set_metadata({"creator": creator})
+        doc.save(str(d / name))
+    full = "UNITS: mm\nMATERIAL: EN AW-6063 T6\nFINISH: mill finish\nGENERAL TOLERANCES: see note 1\nH01  X (mm)  Y (mm)"
+    pdf("211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG.pdf", full, "drawgen 0.1 (tools/drawgen)")
+    pdf("211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_DWG.pdf", full.replace("GENERAL TOLERANCES: see note 1", ""),
+        "drawgen 0.1")
+    pdf("211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_DWG.pdf", full.replace("GENERAL TOLERANCES: see note 1", ""),
+        "Autodesk Fusion")
+    holes = {pn: [sf.Hole(1, (0, 0, 0), (1, 0, 0), 6.6, 1.2, [])] for pn in ("211101", "211103", "211104")}
+    fs = c_drawings.check_drawings(str(tmp_path), set(holes), holes)
+    got = {(f.rule, f.subject): f for f in fs}
+    assert not [k for k in got if k[1] == "211101"]                       # a complete generated drawing counts
+    f = got[("drawing-content", "211103")]
+    assert f.owner == "Drawing Generator" and "tools/drawgen" in f.fix   # the generator fixes its own drawing
+    assert got[("drawing-content", "211104")].owner != "Drawing Generator"
+    # a generated table drawing (D-89) one revision behind a part's STEP: the generator regenerates it
+    pdf("211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG.pdf", full + "\nTABULATED: 211301 211302", "drawgen 0.1")
+    (tmp_path / "v2/03-Manufacturing/wall/211302_P02_WALL-SKIN-SIDE-LOWER-RH_STEP.step").write_text("")
+    fs = c_drawings.check_drawings(str(tmp_path), {"211301", "211302"}, {})
+    f = {(f.rule, f.subject): f for f in fs}[("rev-mismatch", "211302")]
+    assert f.owner == "Drawing Generator"
+
+
 def test_run_with_ref_leaves_no_export_behind():
     import glob
     import subprocess

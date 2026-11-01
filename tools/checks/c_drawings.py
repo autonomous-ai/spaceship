@@ -36,6 +36,32 @@ def pdf_text(path):
     return None
 
 
+# D-112: part drawings made by the STEP-driven generator (tools/drawgen) say so in the PDF's Creator or Producer
+# field. They are checked by the same rules; a finding on one goes to the generator's group, which regenerates it.
+GENERATOR = re.compile(r"\bdrawgen\b", re.I)
+GENERATOR_OWNER = "Drawing Generator"
+GENERATOR_FIX = " This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it."
+
+
+def made_by_generator(path):
+    """True when the PDF's Creator or Producer field names drawgen (D-112)."""
+    try:
+        import fitz  # PyMuPDF
+        try:
+            with fitz.open(path) as doc:
+                meta = doc.metadata or {}
+        except Exception:
+            return False
+        return any(GENERATOR.search(str(meta.get(k) or "")) for k in ("creator", "producer"))
+    except ImportError:
+        pass
+    exe = shutil.which("pdfinfo")
+    if exe:
+        out = subprocess.run([exe, path], capture_output=True, text=True, timeout=60).stdout
+        return any(GENERATOR.search(line) for line in out.splitlines() if line.startswith(("Creator:", "Producer:")))
+    return False
+
+
 def index_files(root):
     """pn -> {doctype: [(rev, path)]} for every conventions-named file."""
     idx = {}
@@ -353,12 +379,14 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             tab_revs = {rv for rv, _p, _own in tab[pn]}
             if cad_revs and not (tab_revs & cad_revs):
                 rv, tp, own = sorted(tab[pn])[-1]
+                gen = made_by_generator(tp)
                 fs.append(Finding("C05", "rev-mismatch", pn, "major",
                                   "%s: its tabulated drawing %s is revision %s but its CAD/STEP is revision %s." % (
                                       label, os.path.basename(tp), "/".join(sorted(tab_revs)),
                                       "/".join(sorted(cad_revs))),
-                                  "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
-                                  rel(root, tp), owner))
+                                  "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." +
+                                  (GENERATOR_FIX if gen else ""),
+                                  rel(root, tp), GENERATOR_OWNER if gen else owner))
             continue
         kind = soft_kind(names.get(pn, ""))
         if not pdfs and kind == "soft" and files.get("DXF"):
@@ -417,11 +445,15 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
         rv, pdf = sorted(pdfs)[-1]
         rp = rel(root, pdf)
+        if made_by_generator(pdf):                  # D-112: the generator's group fixes its own drawings
+            owner, gen_fix = GENERATOR_OWNER, GENERATOR_FIX
+        else:
+            gen_fix = ""
         if cad_revs and not (revs & cad_revs):
             fs.append(Finding("C05", "rev-mismatch", pn, "major",
                               "%s: drawing revision %s but CAD/STEP revision %s." % (
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
-                              "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
+                              "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." + gen_fix,
                               rp, owner))
         if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
             continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
@@ -443,7 +475,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         if lacks:
             fs.append(Finding("C05", "drawing-content", pn, "major",
                               "%s drawing %s doesn't state: %s." % (label, os.path.basename(rp), ", ".join(lacks)),
-                              "Add them to the title block or the notes (guideline sections 3.1, 6.3, 9).", rp, owner))
+                              "Add them to the title block or the notes (guideline sections 3.1, 6.3, 9)." + gen_fix,
+                              rp, owner))
         n_axes = len(hole_axes(holes_by_pn.get(pn, [])))
         if cls == "part" and n_axes:
             tags = set(re.findall(r"\bH\d{2}\b", up))
@@ -454,10 +487,11 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   "%s has %d hole axes in its STEP, but drawing %s has no hole tags, no hole table "
                                   "and no diameter callouts." % (label, n_axes, os.path.basename(rp)),
                                   "Tag every hole (H01...), dimension it to its centre from the datums or put it in "
-                                  "a hole table with X (mm) and Y (mm) (guideline section 6.2).", rp, owner))
+                                  "a hole table with X (mm) and Y (mm) (guideline section 6.2)." + gen_fix, rp, owner))
             elif tags and len(tags) < n_axes and not table:
                 fs.append(Finding("C05", "holes-untagged", pn, "major",
                                   "%s has %d hole axes in its STEP but %d hole tags on drawing %s and no hole "
                                   "table." % (label, n_axes, len(tags), os.path.basename(rp)),
-                                  "Tag the rest, or show they share a tag through a pattern note.", rp, owner))
+                                  "Tag the rest, or show they share a tag through a pattern note." + gen_fix, rp,
+                                  owner))
     return fs
