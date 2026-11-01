@@ -25,7 +25,7 @@ INTERIOR parts sit on the floating linings or stand off them (D-17): the light s
 | Feature ID | Feature | Size, offset | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
 | F-8101-01 | Ledge top 811101 | 1000 long, 250 deep, top Z 1067; 1.5 folded: front lip 25 down, back flange 25 down | Lean on it standing, a keyboard on it | D-70 (1000), D-85 (1.5 folded aluminium); depth and height assumption | confirmed; assumption |
-| F-8101-02 | Place | Y −259.5…740.5, centred in the 1051 of right wall beside the column; 2 mm off the felt | Fits the free wall; never touches the floating lining | D-70; D-17 | calculation |
+| F-8101-02 | Place | Y −259.5…740.5, centred in the 1051 of right wall beside the column; 5 mm off the felt | Fits the free wall; never touches the floating lining | D-70; D-17; D-57's 4 mm plus 1 for the felt's tolerance (the mechanical check's LINING-FLOATS rule found 2.0 to the tray at 2) | calculation |
 | F-8101-03 | Brackets 818101 (2) | under the ledge at Y 98.63 and 464.32 | Carry the ledge into R1's two middle stiles through stand-offs | WALL's R1 stile pitch 365.69 (mirror of L1); rating HOLD: a 225 N lean at the front edge × 3 | HOLD |
 | F-8101-04 | Mass | 1.20 kg top + 2 × 0.1 brackets = 1.40 kg | Within D-85's 1.4 kg | calculation | calculation |
 
@@ -33,7 +33,7 @@ INTERIOR parts sit on the floating linings or stand off them (D-17): the light s
 
 | Feature ID | Feature | Size, offset | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
-| F-8103-01 | Rail | 900 long at Y −209.5…690.5, centre Z 1300, 2 mm off the felt | Carries a screen up to about 900 wide over the ledge; its left end meets ELECTRICAL's call-light drop at Y −209.5 | D-70; height assumption | HOLD (bought rail) |
+| F-8103-01 | Rail | 900 long at Y −209.5…690.5, centre Z 1300, 5 mm off the felt (as the ledge, D-17, D-57) | Carries a screen up to about 900 wide over the ledge; its left end meets ELECTRICAL's call-light drop at Y −209.5 | D-70; height assumption | HOLD (bought rail) |
 | F-8103-02 | Fixing | stand-offs to R2's stiles (same Y as R1's) | The screen's weight goes to the frame, not the lining | WALL interface | HOLD |
 
 ## Interfaces to settle (PROPOSED)

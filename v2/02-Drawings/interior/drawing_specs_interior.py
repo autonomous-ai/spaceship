@@ -80,12 +80,12 @@ ALL = [k for k in I.PARTS if I.PARTS[k][3] != "HS"]
 SPECS = {
     "interior": spec("interior", [
         "INTERIOR general arrangement (D-70): the light shelf along the side and back wall tops (Z 2230 to 2270), the 1000 mm ledge on the work wall (top Z 1067), the screen rail (centre Z 1300).",
-        "The ledge and the rail stand 2 mm off the felt on stand-offs to WALL's stiles (R1, R2 at Y 98.63 and 464.32); the shelf screws to the wall cassettes.",
+        "The ledge and the rail stand 5 mm off the felt on stand-offs to WALL's stiles (R1, R2 at Y 98.63 and 464.32); the shelf screws to the wall cassettes.",
         "Parts and quantities: 810000_P01_INTERIOR-PARTS-LIST_BOM.csv.",
     ], ALL, design="810000_P01_INTERIOR_CAD"),
     "ledge_assy": spec("ledge_assy", [
         "Work wall ledge: top 811101 on two brackets 818101 (HOLD: rated for a 225 N lean at the front edge x 3), at WALL's R1 stiles Y 98.63 and 464.32.",
-        "Fixing: stand-offs through clearance holes in R1-CASS into rivnuts in the stiles (WALL interface); the ledge stands 2 off the felt.",
+        "Fixing: stand-offs through clearance holes in R1-CASS into rivnuts in the stiles (WALL interface); the ledge stands 5 off the felt (D-17, D-57).",
     ], ("ledge", "bracket")),
     "shelf_assy": spec("shelf_assy", [
         "Light shelf: back run 811201 (X -1166 to 1166) and side runs 811202 LH, 811203 RH (Y -285 to 706, butting the back run). Under the RH run, 15 off the lining: the down-light's LED profile 718101 (23 x 12.5, 991 long, Y -285 to 706: the side run's length, so it ends at the corner joint) with its clip-in satin cover 718102 (D-127), end caps 718103 and mounting clips 718104 (D-126; bought, product HOLD, listed by ELECTRICAL).",
