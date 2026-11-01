@@ -36,7 +36,9 @@ on an open Create Drawing killed Fusion on 2026-10-31.
 
 Exit 0 = saved, 1 = failed or refused (Fusion left idle), 2 = Fusion not
 reachable, 3 = the Fusion lock was busy past --lock-wait, 4 = Fusion was left
-with a dialog open (a person must press Cancel in Fusion).
+with a dialog open (a person must press Cancel in Fusion), 5 = Fusion is flagged
+unhealthy (an open never finished; as run_script.py: this run refused, or it
+flagged Fusion after a timeout).
 Then add views with the drawing API (base views only): run_script.py with
 --doc DRAWING_NAME.
 """
@@ -444,7 +446,8 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     if why:
         raise StartError(why)
 
-    ok, out = steps.run(rs.doc_script("open", design, folder))
+    ok, out = steps.run(rs.doc_script("open", design, folder, open_log=getattr(steps, "open_log", None),
+                                      run_label=getattr(steps, "run_label", "")))
     if not ok:
         raise StartError("couldn't open %s: %s" % (design, out))
     log((out or "").strip())
@@ -504,15 +507,17 @@ def close_design(steps, design, folder, status, log):
         return
     status["design_closed"] = True
     try:
-        ok, out = steps.run(rs.doc_script("close", design, folder))
+        ok, out = steps.run(rs.doc_script("close", design, folder, open_log=getattr(steps, "open_log", None),
+                                          run_label=getattr(steps, "run_label", "")))
         log((out or "").strip() if ok else "left %s open: %s" % (design, (out or "").strip()[:200]))
     except (StartError, rs.McpError) as e:
         log("couldn't close %s: %s" % (design, e))
 
 
-def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=None):
-    """start_drawing plus cleanup; returns the exit code."""
-    status = {}
+def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=None, status=None):
+    """start_drawing plus cleanup; returns the exit code. `status` (a dict) tells the
+    caller how far the start got, e.g. status["saved"]."""
+    status = {} if status is None else status
     try:
         start_drawing(steps, design, name, folder, sheet, keep_open, log, waits, status)
         log("done: %s" % name)
@@ -541,6 +546,81 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
         return 2 if isinstance(e, rs.McpError) else 1
 
 
+# PM rule 2026-10-31: drawing starts are batched in one lock hold, up to 6 starts
+# or about 15 minutes per hold; then the hold is released and the next one queued.
+BATCH_MAX = 6
+BATCH_BUDGET_S = 15 * 60
+
+
+def read_batch(path, default_sheet):
+    """[(design, drawing, sheet)] from a text file: one start per line, "DESIGN DRAWING
+    [SHEET]" separated by spaces or tabs; blank lines and lines starting with # are
+    skipped. Raises ValueError naming the line on anything else."""
+    pairs, seen = [], set()
+    with open(path, encoding="utf-8") as fh:
+        for n, line in enumerate(fh, 1):
+            text = line.strip()
+            if not text or text.startswith("#"):
+                continue
+            parts = text.split()
+            if len(parts) not in (2, 3):
+                raise ValueError("line %d: expected DESIGN DRAWING [SHEET], got %r" % (n, text))
+            design, drawing = parts[0], parts[1]
+            sheet = parts[2] if len(parts) == 3 else default_sheet
+            if sheet not in SHEETS:
+                raise ValueError("line %d: sheet %r is not one of %s" % (n, sheet, ", ".join(sorted(SHEETS))))
+            if drawing in seen:
+                raise ValueError("line %d: drawing %s is in the batch twice" % (n, drawing))
+            seen.add(drawing)
+            pairs.append((design, drawing, sheet))
+    if not pairs:
+        raise ValueError("no starts in %s" % path)
+    return pairs
+
+
+def run_batch(steps, pairs, folder, log, max_starts=BATCH_MAX, budget_s=BATCH_BUDGET_S,
+              waits=None, now=time.monotonic):
+    """The starts one after another in one lock hold, each saved and closed exactly as a
+    single start is; stop at the first failure. Starts past max_starts, or not begun
+    before budget_s has gone by, are left for the next hold.
+    Returns (exit code, done pairs, (failed pair, code) or None, pairs left)."""
+    t0 = now()
+    done = []
+    for i, (design, drawing, sheet) in enumerate(pairs):
+        if i >= max_starts or (i and now() - t0 >= budget_s):
+            log("batch: %d left for the next hold (%s)" % (
+                len(pairs) - i, "at most %d starts per hold" % max_starts if i >= max_starts
+                else "about %d minutes per hold" % round(budget_s / 60)))
+            return 0, done, None, pairs[i:]
+        log("batch %d/%d: %s -> %s (%s)" % (i + 1, len(pairs), design, drawing, sheet))
+        status = {}
+        code = run_with_cleanup(steps, design, drawing, folder, sheet, False, log, waits, status)
+        if code != 0 and status.get("saved"):
+            # saved, then failed (a late dialog, say): the drawing is in the folder, so on the
+            # next hold its own check would refuse it and stall the list (Reviewer 5, P3 on
+            # #140); it is not written back, and the batch still stops here
+            log("batch: %s was saved before it failed (exit %d): not written back to the list; "
+                "look at it in Fusion; %d not started" % (drawing, code, len(pairs) - i - 1))
+            done.append((design, drawing, sheet))
+            return code, done, None, pairs[i + 1:]
+        if code != 0:
+            log("batch: stopped at %s (exit %d); %d not started" % (drawing, code, len(pairs) - i - 1))
+            return code, done, ((design, drawing, sheet), code), pairs[i + 1:]
+        done.append((design, drawing, sheet))
+    return 0, done, None, []
+
+
+def write_rest(path, failed, left):
+    """The batch's failed start (first) and the starts not begun, for the next hold."""
+    with open(path, "w", encoding="utf-8") as fh:
+        if failed:
+            (design, drawing, sheet), code = failed
+            fh.write("# failed (exit %d): fix it, then run this file again\n" % code)
+            fh.write("%s %s %s\n" % (design, drawing, sheet))
+        for design, drawing, sheet in left:
+            fh.write("%s %s %s\n" % (design, drawing, sheet))
+
+
 def _stop(_signum, _frame):
     raise KeyboardInterrupt
 
@@ -554,8 +634,17 @@ def install_signal_handlers():
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Start a new Fusion drawing of a saved design, "
                                              "with nobody at the Mac (see the module help).")
-    ap.add_argument("design", help="the saved design's name in --folder")
-    ap.add_argument("drawing", help="name for the new drawing, e.g. PARTNO_P01_NAME_DWG")
+    ap.add_argument("design", nargs="?", help="the saved design's name in --folder")
+    ap.add_argument("drawing", nargs="?", help="name for the new drawing, e.g. PARTNO_P01_NAME_DWG")
+    ap.add_argument("--batch", metavar="FILE",
+                    help="several starts in one lock hold: one per line, DESIGN DRAWING [SHEET]; "
+                         "each is saved and closed; stops at the first failure; what is left "
+                         "goes to FILE.rest")
+    ap.add_argument("--max", type=int, default=BATCH_MAX,
+                    help="with --batch: at most this many starts per hold (default %d)" % BATCH_MAX)
+    ap.add_argument("--budget-min", type=float, default=BATCH_BUDGET_S / 60.0,
+                    help="with --batch: begin no start after this many minutes (default %d)"
+                         % (BATCH_BUDGET_S // 60))
     ap.add_argument("--folder", default=rs.DEFAULT_FOLDER)
     ap.add_argument("--sheet", default="A2", choices=sorted(SHEETS))
     ap.add_argument("--keep-open", action="store_true", help="leave the drawing open")
@@ -566,6 +655,10 @@ def main(argv=None):
                          "running it, for up to S more seconds (default %(default)g; as run_script.py)")
     ap.add_argument("--busy-poll", type=float, default=rs.BUSY_POLL_S, metavar="S",
                     help="...trying a read-only check every S seconds (default %(default)g)")
+    ap.add_argument("--open-limit", type=float, default=rs.OPEN_LIMIT_S, metavar="S",
+                    help="after a call times out, an open this run started that hasn't ended by "
+                         "the time it is S seconds old (from its start line) flags Fusion "
+                         "unhealthy (default %(default)g; as run_script.py)")
     ap.add_argument("--lock", default=None)
     ap.add_argument("--lock-wait", type=float, default=1200.0)
     ap.add_argument("--lock-front", default="", metavar="REASON",
@@ -573,14 +666,31 @@ def main(argv=None):
                          "lock); only for runs the Product Manager approved, see run_script.py")
     ap.add_argument("--label", default=os.environ.get(rs.LABEL_ENV, ""))
     opts = ap.parse_args(argv)
+    pairs = None
+    if opts.batch:
+        if opts.design or opts.drawing or opts.keep_open:
+            ap.error("--batch takes its starts from the file (no DESIGN DRAWING, no --keep-open)")
+        try:
+            pairs = read_batch(opts.batch, opts.sheet)
+        except (OSError, ValueError) as e:
+            print("start_drawing: --batch %s: %s; nothing was started" % (opts.batch, e), file=sys.stderr)
+            return 1
+    elif not (opts.design and opts.drawing):
+        ap.error("give DESIGN DRAWING, or --batch FILE")
 
     def log(msg):
         print("start_drawing: %s" % msg, flush=True)
 
     install_signal_handlers()
-    lock = rs.FusionLock(opts.lock or rs.default_lock_path(opts.url),
-                         label=opts.label or "start_drawing", hold_s=900,
-                         script="start_drawing.py %s -> %s" % (opts.design, opts.drawing),
+    lock_path = opts.lock or rs.default_lock_path(opts.url)
+    if pairs:
+        script = "start_drawing.py --batch %s (%d starts)" % (os.path.basename(opts.batch), len(pairs))
+        hold_s = opts.budget_min * 60 + 900
+    else:
+        script = "start_drawing.py %s -> %s" % (opts.design, opts.drawing)
+        hold_s = 900
+    lock = rs.FusionLock(lock_path,
+                         label=opts.label or "start_drawing", hold_s=hold_s, script=script,
                          front=opts.lock_front)
     try:
         lock.acquire(opts.lock_wait, token=os.environ.get(rs.TOKEN_ENV) or None)
@@ -591,26 +701,53 @@ def main(argv=None):
         print("start_drawing: stopped while waiting for the Fusion lock", file=sys.stderr)
         return 3
     mcp = rs.FusionMcp(opts.url, opts.timeout)
+    offset = rs.open_log_size(rs.open_log_path(lock_path))   # this run's open log lines start here
+    say = lambda m: print("start_drawing: %s" % m.replace("run_script: ", ""), file=sys.stderr, flush=True)
+    rc = 1
     try:
-        try:
-            steps = Steps(opts.url, opts.timeout, mcp=mcp)
-        except rs.McpError as e:
-            print("start_drawing: %s" % e, file=sys.stderr)
-            return 2
-        return run_with_cleanup(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
-                                opts.keep_open, log)
+        refusal = rs.unhealthy_refusal(lock_path, log=say)
+        if refusal:
+            say("%s. This run did not start." % refusal)
+            rc = rs.EXIT_UNHEALTHY
+        else:
+            try:
+                steps = Steps(opts.url, opts.timeout, mcp=mcp)
+            except rs.McpError as e:
+                print("start_drawing: %s" % e, file=sys.stderr)
+                rc = 2
+            else:
+                # the design open is logged too, also right after a Fusion start (Reviewer 5 on #269)
+                steps.open_log, steps.run_label = rs.open_log_path(lock_path), "%s: %s" % (lock.label, script)
+                if not pairs:
+                    rc = run_with_cleanup(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
+                                          opts.keep_open, log)
+                else:
+                    rc, done, failed, left = run_batch(steps, pairs, opts.folder, log, opts.max,
+                                                       opts.budget_min * 60)
+                    log("batch: %d of %d done%s" % (len(done), len(pairs), "; failed: %s (exit %d)" % (
+                        failed[0][1], failed[1]) if failed else ""))
+                    rest = opts.batch + ".rest"
+                    if failed or left:
+                        write_rest(rest, failed, left)
+                        log("batch: %d start(s) for the next hold written to %s"
+                            % ((1 if failed else 0) + len(left), rest))
+                    elif os.path.exists(rest):
+                        os.remove(rest)
     finally:
         if mcp.timed_out:
             # as run_script.py (#181, PM ruling 2026-11-01): never hand Fusion to the
-            # next run while it may still be busy with a call of this one
+            # next run while it may still be busy with a call of this one, nor while it
+            # is stuck inside an open of this run (it may still answer then)
             try:
-                rs.wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll,
-                                   log=lambda m: print("start_drawing: %s" % m.replace("run_script: ", ""),
-                                                       file=sys.stderr, flush=True))
+                rs.wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll, log=say)
+                if rs.guard_opens(lock_path, offset, "%s: %s" % (lock.label, script),
+                                  limit_s=opts.open_limit, log=say, lock=lock):
+                    rc = rs.EXIT_UNHEALTHY
             except KeyboardInterrupt:
                 print("start_drawing: stopped while waiting for Fusion to answer; Fusion lock "
                       "given back", file=sys.stderr)
         lock.release()
+    return rc
 
 
 if __name__ == "__main__":

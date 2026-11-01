@@ -368,8 +368,68 @@ def _group(path):
     return parts[2] if len(parts) > 3 and parts[0] == "v2" else ""
 
 
+def _cad_name(pn, name):
+    """A CAD component's name without its part number and Fusion's '(1)' copy suffix; '' for a part file's own top
+    component ('211101_P01_...')."""
+    cad = re.sub(r"^%s\s+" % pn, "", name or "")
+    cad = re.sub(r"\s*\(\d+\)$", "", cad)
+    return "" if re.match(r"^\d{6}_[PR]\d{2}_", cad) else cad
+
+
+# words that make a name a different bought part, not a different wording: a maker's code or a size (CAH2-610-4.2,
+# S88BL, M6, A2) or a material
+MATERIAL_WORDS = {"ALUMINIUM", "ALUMINUM", "STEEL", "STAINLESS", "ZINC", "BRASS", "NYLON", "COPPER", "SILICONE",
+                  "EPDM", "NEOPRENE", "PVC", "POLYAMIDE", "ACETAL", "GALVANIZED", "GALVANISED"}
+
+
+def part_words(name):
+    """The words of a name that pick the part itself: codes with both letters and digits, and materials."""
+    words = set(re.findall(r"[A-Z0-9][A-Z0-9.\-/]*", (name or "").upper()))
+    return {w.rstrip(".-/") for w in words if re.search(r"\d", w) and re.search(r"[A-Z]", w)} | (words & MATERIAL_WORDS)
+
+
+def _register_name_findings(pn, ref, info, list_names):
+    """D-99 for one hardware number: every CAD file and parts list that names it otherwise than the register does.
+    One finding for the number, owned by every team with a file to fix. Major when the names differ in a maker's
+    code or a material (838003 went from the aluminium CAH3-610-4.2 to the steel CAH2-610-4.2 with D-131: a list
+    still naming the old one would buy the wrong part); minor for wording."""
+    norm = name_words
+    cad_names = info.get("names") or {f: info["name"] for f in info["files"]}
+    bad_cad = {}
+    for f, n in sorted(cad_names.items()):
+        cad = _cad_name(pn, n)
+        # the CAD may add a position code to the register's name (368101 '... - HOLD - H1 BOTTOM')
+        if cad and not (norm(cad) == norm(ref) or norm(cad).startswith(norm(ref) + " ")):
+            bad_cad[f] = cad
+    bad_lists = {f: n for f, n in sorted(list_names.items()) if norm(n) != norm(ref)}
+    if not bad_cad and not bad_lists:
+        return []
+    olds = sorted(set(bad_cad.values()) | set(bad_lists.values()))
+    gone = sorted(set().union(*(part_words(o) for o in olds)) - part_words(ref))
+    added = sorted(part_words(ref) - set().union(*(part_words(o) for o in olds)))
+    other_part = bool(gone or added)
+    files = sorted(set(bad_cad) | set(bad_lists))
+    owners = "; ".join(sorted({owner_for(f, pn) for f in files}))
+    where = []
+    if bad_cad:
+        where.append("the CAD (%s)" % ", ".join(os.path.basename(f) for f in sorted(bad_cad)))
+    if bad_lists:
+        where.append("the parts list%s %s" % ("s" if len(bad_lists) > 1 else "", ", ".join(sorted(bad_lists))))
+    msg = "%s is named %s in %s; the joints register names it '%s', and hardware names come from the register (D-99)." % (
+        pn, " and ".join("'%s'" % o for o in olds), " and ".join(where), ref)
+    if other_part:
+        msg += " The names differ in %s, so they name a different part." % ", ".join(
+            [w + " (gone)" for w in gone] + [w + " (new)" for w in added])
+    return [Finding("C06", "name-mismatch", pn, "major" if other_part else "minor", msg,
+                    "Use the register's name%s in %s." % (
+                        ", with the material and finish it gives," if other_part else "",
+                        " and ".join(where) if len(files) < 3 else "each file above (%d CAD, %d parts list%s)" % (
+                            len(bad_cad), len(bad_lists), "s" if len(bad_lists) != 1 else "")),
+                    files[0], owners, evidence={"files": files, "register": ref})]
+
+
 def check_cad_match(root, plists, step_products):
-    """step_products: pn -> {"files": set, "count": int, "name": str}."""
+    """step_products: pn -> {"files": set, "count": int, "name": str, "names": {file: name} (optional)}."""
     fs = []
     listed = {row["part_number"] for _p, rows in plists for row in rows if row["part_number"]}
     for pn, info in sorted(step_products.items()):
@@ -380,33 +440,23 @@ def check_cad_match(root, plists, step_products):
             fs.append(Finding("C06", "cad-not-in-bom", pn, "major",
                               "%s %s is in the CAD (%s) but in no parts list." % (pn, info["name"], f),
                               "Add it to the parts list, or remove it from the CAD.", f, owner_for(f, pn)))
-    names = {}
+    names, list_names = {}, {}
     for p, rows in plists:
         for row in rows:
             if row["part_number"]:
                 names.setdefault(row["part_number"], (row["name"], rel(root, p)))
+                list_names.setdefault(row["part_number"], {}).setdefault(rel(root, p), row["name"] or "")
     norm = name_words
     reg = register_names(root)          # D-99: hardware names come from the joints register
     for pn, info in sorted(step_products.items()):
         if (pn not in names and pn not in reg) or not re.match(r"^\d{6}$", pn):
             continue
-        cad = re.sub(r"^%s\s+" % pn, "", info["name"] or "")
-        cad = re.sub(r"\s*\(\d+\)$", "", cad)            # Fusion's '(1)' copy suffix
-        if not cad or re.match(r"^\d{6}_[PR]\d{2}_", cad):
+        cad = _cad_name(pn, info["name"])
+        if not cad:
             continue
         f = sorted(info["files"])[0]
         if pn in reg:
-            ref = reg[pn]
-            # the CAD may add a position code to the register's name (368101 '... - HOLD - H1 BOTTOM')
-            wrong = ["the CAD"] if not (norm(cad) == norm(ref) or norm(cad).startswith(norm(ref) + " ")) else []
-            if pn in names and norm(names[pn][0]) != norm(ref):
-                wrong.append("the parts list (%s)" % names[pn][1])
-            if wrong:
-                fs.append(Finding("C06", "name-mismatch", pn, "minor",
-                                  "%s is named '%s' in the CAD%s; the joints register names it '%s', and hardware names "
-                                  "come from the register (D-99)." % (
-                                      pn, cad, " and '%s' in %s" % (names[pn][0], names[pn][1]) if pn in names else "", ref),
-                                  "Use the register's name in %s." % " and ".join(wrong), f, owner_for(f, pn)))
+            fs += _register_name_findings(pn, reg[pn], info, list_names.get(pn, {}))
             continue
         same = norm(cad) == norm(names[pn][0]) or norm(cad).startswith(norm(names[pn][0]) + " ")  # + a position code
         if not same:
@@ -505,12 +555,16 @@ def load_adjustments(root, list_path=None):
     return rows
 
 
-def check_pod_mass(root, rows, src, cap_kg=420.0):
+def check_pod_mass(root, rows, src, cap_kg=None):
     """The pod total from the layout study's part list (every row, as it sums
     them) plus the owners' weight changes not yet in that list, against the
-    cap (D-37, D-54)."""
+    cap: config/policy.csv's pod_mass_cap_kg (460 kg, D-131, provisional until
+    the wall sample's recount; it was 420 under D-37 and D-54)."""
     if not rows:
         return [], None
+    if cap_kg is None:
+        from c_drawings import policy
+        cap_kg = num(policy(root, "pod_mass_cap_kg", "460")) or 460.0
     # the PM's weight ruling of 2026-10-31: the voice cockpit kit (4.0 kg, shipped later) sits outside the cap
     outside = [r for r in rows if re.search(r"outside the cap|voice cockpit kit reserve",
                                             " ".join(str(r.get(k) or "") for k in ("item", "name", "status", "note")), re.I)]
@@ -526,7 +580,7 @@ def check_pod_mass(root, rows, src, cap_kg=420.0):
         return [], info
     parts = "; ".join("%+.1f kg %s (%s, %s)" % (num(a["kg"]), a["id"], a["status"], a["source"]) for a in adj)
     return [Finding("C04", "pod-mass-over-cap", "POD total mass", "major",
-                    "The pod is about %.1f kg against the %.0f kg cap (D-37, D-54): %.1f kg over. The layout study's "
+                    "The pod is about %.1f kg against the %.0f kg cap (D-131, provisional): %.1f kg over. The layout study's "
                     "list gives %.1f kg (%s)%s%s. Open against the cap until the wall sample settles it (ISS-080)." % (
                         total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else "",
                         "; %.1f kg of voice cockpit kit is outside the cap (PM weight ruling)" % outside_kg
@@ -649,7 +703,8 @@ def check_mixed_metals(root, plists, contacts):
                                   owner_for(r, pn)))
             elif is_fastener(pn, row["name"]) and metal_class(mat.get(pn, "")) == "steel-bare":
                 fs.append(Finding("C10", "fastener-bare-steel", pn, "severe",
-                                  "Fastener %s %s in %s is bare steel ('%s'); the frames are aluminium." % (
+                                  "Fastener %s %s in %s is bare steel ('%s'), against the aluminium it may touch "
+                                  "(the band, the skins, the ACP)." % (
                                       pn, row["name"], r, mat.get(pn, "")),
                                   "Use stainless or coated steel, with an isolating washer where the joint stays "
                                   "wet.", r, owner_for(r, pn)))
@@ -733,5 +788,196 @@ def check_components(root, step_paths, load):
                    "(D-120; for the frames, D-115's cleated members).")
         fs.append(Finding("C06", "bodies-not-components", pn, "major", msg, fix, d["files"][0][0], owner,
                           {"bodies": n, "shapes": shapes, "files": len(d["files"])}))
+    return fs
+
+
+# ----------------------------------------------------------------- C06: a part's copies match its own model
+
+def _quarter_turns():
+    """The 24 quarter-turn rotations of space (no mirror images)."""
+    import itertools
+    out = []
+    for perm in itertools.permutations(range(3)):
+        for signs in itertools.product((1, -1), repeat=3):
+            m = [[0] * 3 for _ in range(3)]
+            for i in range(3):
+                m[i][perm[i]] = signs[i]
+            det = (m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+                   + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]))
+            if det == 1:
+                out.append(m)
+    return out
+
+
+QUARTER_TURNS = _quarter_turns()
+
+
+def same_holes(own, copy, tol=0.1, dia_tol=0.15):
+    """Do two bodies of one part have the same hole layout, however the copy is turned in its own frame? Hole
+    centres about their own centroid (so a copy placed or modelled elsewhere still matches), every quarter turn tried,
+    hole sizes within dia_tol (a tapped hole drawn at Ø5.0 or at its 6H minor Ø5.03 is the same hole)."""
+    def layout(so):
+        hs = so.holes
+        if not hs:
+            return []
+        c = [sum(h.center[k] for h in hs) / len(hs) for k in range(3)]
+        return [(tuple(h.center[k] - c[k] for k in range(3)), h.diameter) for h in hs]
+    import math
+    a, b = layout(own), layout(copy)
+    if len(a) != len(b):
+        return False
+    for m in QUARTER_TURNS:
+        used = set()
+        for pc, d in b:
+            q = tuple(sum(m[i][j] * pc[j] for j in range(3)) for i in range(3))
+            hit = next((i for i, (oc, od) in enumerate(a) if i not in used and math.dist(q, oc) <= tol
+                        and abs(od - d) <= dia_tol), None)
+            if hit is None:
+                break
+            used.add(hit)
+        else:
+            return True
+    return False
+
+
+def body_sizes(so):
+    """A body's sizes, however it is turned: ('round', ((radius, length along the axis), ...)) from its outer round
+    faces (radius at least 1 mm, along the biggest one's axis), and ('box', three sides) when it has no outer round
+    face, so a detailed and a plain model of one part compare like with like."""
+    import stepfile as sf
+    outer = [f for f in so.faces if f.kind == "cylinder" and not sf._concave(f) and f.radius >= 1.0]
+    if outer:
+        big = max(outer, key=lambda f: f.radius)
+        ax, o = sf.norm(big.normal), big.origin
+        out = []
+        for f in outer:
+            if abs(abs(sf.dot(sf.norm(f.normal), ax)) - 1.0) > 1e-4:
+                continue
+            ts = [sf.dot(sf._sub(p, o), ax) for a in f.arcs for p in (a[0].o, a[2], a[3])] + \
+                 [sf.dot(sf._sub(p, o), ax) for p in f.points]
+            if not ts:
+                continue
+            for i, (r, lo, hi) in enumerate(out):
+                if abs(r - f.radius) <= 0.15:
+                    out[i] = (r, min(lo, min(ts)), max(hi, max(ts)))
+                    break
+            else:
+                out.append((f.radius, min(ts), max(ts)))
+        return ("round", tuple(sorted((round(r, 2), round(hi - lo, 2)) for r, lo, hi in out if hi - lo >= 0.5)))
+    if not so.box:
+        return ("box", ())
+    return ("box", tuple(sorted(round(so.box[k + 3] - so.box[k], 2) for k in range(3))))
+
+
+def _sizes_differ(a, b, tol=0.2):
+    """Only like with like: two boxes by their sides; two round parts by the length at each radius both have (a
+    detailed model may add small radii). A round body against a box can't be compared, so it isn't reported."""
+    if a[0] != b[0] or not a[1] or not b[1]:
+        return False
+    if a[0] == "box":
+        return any(abs(x - y) > tol for x, y in zip(a[1], b[1]))
+    common = [(la, lb) for ra, la in a[1] for rb, lb in b[1] if abs(ra - rb) <= 0.15]
+    return bool(common) and any(abs(la - lb) > tol for la, lb in common)
+
+
+def check_copies(root, step_paths, load):
+    """A part copied into another team's STEP (a washer, a spigot or a key in a panel or band) has to be the part its
+    own STEP holds (the file named after its number): the same hole layout (same_holes; any quarter turn of the copy
+    counts as the same) and the same sizes (body_sizes). An assembly built round an older or different copy has its
+    mating holes and fits set by the wrong part. A different hole layout is severe, different sizes major; one finding
+    per part and file team. Parts whose own STEP holds more than one shape are left to D-120."""
+    import os
+    bodies = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            bodies.setdefault(inst["part_number"], {}).setdefault(p, {})[so.id] = so
+    hits = {}
+    for pn, files in bodies.items():
+        own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
+        if not own or len(files[own[0]]) != 1:
+            continue
+        ref = next(iter(files[own[0]].values()))
+        ref_sizes = body_sizes(ref)
+        for f, sols in files.items():
+            if f in own:
+                continue
+            for so in sols.values():
+                holes_ok = same_holes(ref, so)
+                sizes = body_sizes(so)
+                if holes_ok and not _sizes_differ(ref_sizes, sizes):
+                    continue
+                r = rel(root, f)
+                team = owner_for(r, "")
+                if team == "PM":
+                    team = owner_for(r, pn)
+                h = hits.setdefault((pn, team), {"files": set(), "holes": False, "own": rel(root, own[0]),
+                                                 "ref": (len(ref.holes), ref_sizes), "copy": (len(so.holes), sizes)})
+                h["files"].add(r)
+                h["holes"] = h["holes"] or not holes_ok
+    fs = []
+    for (pn, team), h in sorted(hits.items()):
+        part_team = owner_for(h["own"], pn)
+        owner = team if part_team == team else "%s; %s" % (team, part_team)
+        what = "hole layout" if h["holes"] else "sizes"
+        fs.append(Finding(
+            "C06", "copy-differs", pn, "severe" if h["holes"] else "major",
+            "%s's body in %s isn't the part its own STEP %s holds: its %s differ (own STEP: %d holes, sizes %s; "
+            "the copy: %d holes, sizes %s), whichever way the copy is turned. The assembly's fits were set round the "
+            "copy." % (pn, ", ".join(sorted(os.path.basename(x) for x in h["files"])), os.path.basename(h["own"]),
+                       what, h["ref"][0], h["ref"][1][1], h["copy"][0], h["copy"][1][1]),
+            "Put the part's current model in the assembly (one component placed as copies, D-120) and check the "
+            "holes and fits round it; if the copy is right, the part's owner updates its own STEP.",
+            sorted(h["files"])[0], owner, {"files": len(h["files"])}))
+    return fs
+
+
+# ----------------------------------------------------------------- C06: what decisions cancelled or added
+
+def check_decided_items(root, plists, step_products):
+    """What a decision cancelled has to be gone, and what one added has to be there, read from the teams' parts lists
+    and the CAD's product names (the skeleton, the proof part and the master BOM's own placeholder rows left out).
+    config/cancelled-items.csv: pattern, decision, what (D-131: no cleats; D-132: no floor parts, no threshold);
+    config/required-items.csv: pattern, folder, decision, what (D-132: the base seal lip in BASE's folder)."""
+    from common import CHECKS_DIR
+    cfg = os.path.join(root, CHECKS_DIR, "config")
+    cancelled = read_csv(os.path.join(cfg, "cancelled-items.csv")) if os.path.exists(os.path.join(cfg, "cancelled-items.csv")) else []
+    required = read_csv(os.path.join(cfg, "required-items.csv")) if os.path.exists(os.path.join(cfg, "required-items.csv")) else []
+    items = []                                   # (part number, name, file)
+    for p, rows in plists:
+        r = rel(root, p)
+        for row in rows:
+            if is_master(r) and is_placeholder(row):
+                continue
+            items.append((row["part_number"], row["name"] or "", r))
+    for pn, d in step_products.items():
+        for f in d["files"]:
+            if "/skeleton/" not in f and "/proof/" not in f:
+                items.append((pn, d["name"] or "", f))
+    fs = []
+    for c in cancelled:
+        pat = re.compile(c["pattern"], re.I)
+        hits = {}
+        for pn, name, f in items:
+            if pat.search(name):
+                hits.setdefault(pn or name, set()).add((name, f))
+        for key, where in sorted(hits.items()):
+            files = sorted({f for _n, f in where})
+            name = sorted({n for n, _f in where})[0]
+            fs.append(Finding("C06", "cancelled-by-decision", key, "major",
+                              "%s is still in %s, though %s cancelled it (%s)." % (
+                                  name if name.startswith(str(key)) else ("%s %s" % (key, name)).strip(),
+                                  ", ".join(files), c["decision"], c["what"]),
+                              "Take it out of the CAD, the parts list and the drawings (%s)." % c["decision"],
+                              files[0], owner_for(files[0], key if re.match(r"^\d{6}$", str(key)) else "")))
+    for q in required:
+        pat, folder = re.compile(q["pattern"], re.I), q["folder"].rstrip("/") + "/"
+        if not any(f.startswith(folder) and pat.search(name) for _pn, name, f in items):
+            fs.append(Finding("C06", "required-by-decision", q["what"][:60], "major",
+                              "%s requires %s, but no parts list or CAD part in %s names it yet." % (
+                                  q["decision"], q["what"], folder),
+                              "Model it and give it its row and number (%s)." % q["decision"], folder.rstrip("/"),
+                              owner_for(folder, "")))
     return fs
 
