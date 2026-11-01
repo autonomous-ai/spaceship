@@ -102,7 +102,7 @@ HOLES = {
     "110000": "Holes on the part drawings.",
     "111106": "Bottom wall: 2 glide nut holes Ø13 (X 293.5 and 840), no holes on its top (in view in front of the glass). "
               "End plate at X 915: 2 keyholes, Ø12 entry 10 below each seat and a 6.5 slot up to it, seats at Z 37.5 "
-              "and 71.5 on the band's centre line (joints register J-BASE-02, the intake's inline key 111211).",
+              "and 71.5 on the band's centre line (joints register J-BASE-02, the intake's inline key 111215, D-144).",
     "111301": "Seat: 4 holes Ø5 for the flush M3 rivnuts (838008, HOLD) at X 269.4, 484.3, 699.2 and 905 on the glass line "
               "(Y -699). Flange: blind rivet holes to FR1, HOLD.",
     "110101": "Holes on the part drawings (111101; the key 111211 on the Joints Engineer's sheet).",
@@ -142,7 +142,6 @@ def text_block(pn):
         "Holes: %s" % HOLES[pn],
         "Sources: CAD 110000_P01_BASE_CAD and the part's own design; feature reasons in "
         "v2/02-Drawings/base/FEATURE-RATIONALE.md; status of every number in base_build.py.",
-        "Sheet made from the design with v2/02-Drawings/base/base_drawings.py, 2026-11-01.",
     ]
     if is_asm:
         import csv
