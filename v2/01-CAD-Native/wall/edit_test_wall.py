@@ -148,7 +148,7 @@ EL_BACK = {"510202": ("panel_z0", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "e
                       "el_cut_z1"),
            "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_shelf_z", "el_shelf_d",
                       "el_ceil_x", "el_ceil_z", "el_grm_s"),
-           "210202": ("close_gap", "tube_w", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
+           "210202": ("close_gap", "tube_w", "el_inlet_x", "el_lan_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
                       "el_cut_z1")}
 
 
@@ -199,13 +199,14 @@ def el_back_checks(design, root_pn, before_p, after_p):
                  has_hole(felt, a["el_shelf_d"], "y", x=a["el_lt_x"], z=a["el_shelf_z"]))]
     else:
         skin = round_holes(design, "SKIN")
-        stud = a["close_gap"] / 2.0 + a["stile_pitch"]
-        out += [("inlet and LAN %g holes in the skin at X %g" % (a["el_inlet_d"], a["el_inlet_x"]),
+        xm = (a["el_inlet_x"] + a["el_lan_x"]) / 2.0                 # between the connectors, in the unit's column
+        out += [("the inlet's and the LAN jack's %g holes in the skin at X %g and %g" % (
+                    a["el_inlet_d"], a["el_inlet_x"], a["el_lan_x"]),
                  has_hole(skin, a["el_inlet_d"], "y", x=a["el_inlet_x"], z=a["el_inlet_z"]) and
-                 has_hole(skin, a["el_inlet_d"], "y", x=a["el_inlet_x"], z=a["el_lan_z"])),
-                ("the unit's fill cut-out runs to the first stud (X %.2f), fill below it" % stud,
-                 not inside_of(design, "FILL", stud - 0.3, 824.0, (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0) and
-                 inside_of(design, "FILL", stud - 0.3, 824.0, a["el_cut_z0"] - 20.0))]
+                 has_hole(skin, a["el_inlet_d"], "y", x=a["el_lan_x"], z=a["el_lan_z"])),
+                ("no fill in the unit's space between the cross members; fill beside the channels below it",
+                 not inside_of(design, "FILL", 250.0, 824.0, (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0) and
+                 inside_of(design, "FILL", 250.0, 824.0, a["el_cut_z0"] - 100.0) and xm > 0)]
     return out
 
 
@@ -222,6 +223,7 @@ def back_checks(after, p):
     seam, gap = 2.26, 5.5
     pick = (lambda pre: sorted((v for k, v in after.items() if nm(k).startswith(pre)), key=lambda b: b[0]))
     rails, stiles, mids = pick("RAIL"), pick("STILE"), pick("STILE - MID")
+    split = pick("STUD - BELOW UNIT") + pick("STUD - STUB")          # B2's first stud, round the power unit
     perim = pick("STILE - OUTER") + pick("STILE - CENTRE")
     bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
     zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
@@ -252,10 +254,17 @@ def back_checks(after, p):
                 [("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
                                                          for st in stiles))]) + [
                 ("%d studs, evenly spaced (D-135)" % n_mid, len(mids) == n_mid and all(
-                    abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(mids, mids[1:]))),
+                    abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(mids, mids[1:])))
+                if not split else
+                # B2 (the Lead's approval of WALL's B2 frame): its first stud is split round the power unit, below it
+                # and a stub above, at the pitch from the centre stile; the other two stand full height at the pitch
+                ("%d studs at the pitch, the first split round the unit (below it and a stub above)" % n_mid,
+                 len(mids) == n_mid - 1 and len(split) == 2 and all(
+                     abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(split[:1] + mids, mids))),
                 ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
     if bays:
-        out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+        want_bays = n_mid + 1 + (3 if split else 0)      # B2: bays 1 and 2 below and above the unit, and the piece
+        out.append(("fill bays = %d" % want_bays, len(bays) == want_bays))   # between the cable channels (back_bays)
     if skins:
         sk = skins[0]
         out.append(("skin is half_pw wide and the row high", abs((sk[3] - sk[0]) - p["half_pw"]) < 0.01 and
