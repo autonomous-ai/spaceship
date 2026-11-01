@@ -73,6 +73,11 @@ SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TA
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
 SHEET_CUT = re.compile(r"laser|water\s*-?\s*jet|router|routed", re.I)
+STRIP = re.compile(r"sheet|strip|plate|flat bar|board", re.I)       # D-125: a plain straight-cut strip or sheet
+STRAIGHT = re.compile(r"cut to (?:length|size)|shear|\bsaw|guillotine|straight[- ]cut|\bslit", re.I)
+NOT_STRIP = re.compile(r"\btube\b|profile|\bangle\b|channel|\brod\b|extru", re.I)
+GRADE = re.compile(r"\b(?:(?=[A-Z0-9.+-]*\d)(?=[A-Z0-9.+-]*[A-Z])(?![0-9.]+MM\b)(?!M[23]\b)[A-Z0-9][A-Z0-9.+-]+|\d{3,}(?![.\d])(?!\s*mm\b))\b", re.I)  # 6063-T6, DX51D, A2, PC 2407
+PLAIN_FIELDS = {"material and grade", "thickness, length and width", "finish", "a tolerance"}
 NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pocket|machin|\bmill(?:ed|ing)?\b|drill|\btap(?:ped|ping)?\b|"
                       r"thread|countersink|counterbore|ream|\bturn(?:ed|ing)?\b|lathe|chamfer|weld|bond", re.I)
 
@@ -374,6 +379,36 @@ def flat_lacks(rows):
     return best
 
 
+def plain_lacks(rows):
+    """D-125: what the best row lacks for a plain straight-cut strip or sheet to go without a drawing; None when no
+    row has the number. A strip or sheet (not a tube, angle, channel, rod or profile), cut straight (its process says
+    cut to length or size, sheared, sawn or guillotined; a laser, waterjet or router cut is D-89's DXF case, where
+    the holes live in the DXF), whose line names no hole, bend, notch or other feature, and gives the material and
+    grade, the thickness, length and width, the finish and a tolerance. A grade on HOLD is not a grade."""
+    best = None
+    for cells, _path in rows:
+        def has(pattern):
+            return [v for k, v in cells.items() if re.search(pattern, k, re.I) and v]
+        material = " ".join(has(r"material|grade"))
+        sizes = " ".join(has(r"size|dimension|length|width|thick|^[lwt]_?mm$"))
+        process = " ".join(has(r"process|^type$"))
+        words = " ".join([material, sizes] + has(r"process|^type$|^note|^name$"))
+        features = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(words)} | {m.group(0).lower() for m in FEATURES.finditer(words)})
+        grade = bool(material) and "HOLD" not in material.upper() and bool(GRADE.search(material))
+        lacks = [n for n, ok in (
+            ("a strip or sheet (D-125)", bool(STRIP.search(words)) and not NOT_STRIP.search(words)),
+            ("a straight cut in its process: cut to length, sheared or sawn (D-125)",
+             bool(STRAIGHT.search(process)) and not SHEET_CUT.search(process)),
+            ("no holes, bends, notches or other features (its line names %s)" % ", ".join(features), not features),
+            ("material and grade", grade),
+            ("thickness, length and width", len(re.findall(r"\d+(?:\.\d+)?", sizes)) >= 3),
+            ("finish", bool(has(r"finish"))),
+            ("a tolerance", bool(has(r"toleran")) or any("2768" in v for v in cells.values()))) if not ok]
+        if best is None or len(lacks) < len(best):
+            best = lacks
+    return best
+
+
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
                 dxf_texts=None):
     """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule)."""
@@ -401,12 +436,16 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             step = any(by_pn.get(h, {}).get("STEP") for h in holders)
             soft = soft_kind(r["name"]) if r["make_buy"] != "assembly" else ""
             by_cut = bool(soft) and cut_list_lacks(by_cut_row.get(pn, []), thickness=soft == "soft") == []
+            plain = (plain_lacks(by_cut_row.get(pn, [])) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part"
+                     else None)
             if r["make_buy"] == "assembly":
                 flat = "n/a"
             elif by_cut:
                 flat = "cut list"
             elif by_pn.get(pn, {}).get("DXF"):
                 flat = "yes"
+            elif plain == []:
+                flat = "row (D-125)"
             elif SHEET.search(text):
                 flat = "no"
             elif TUBE.search(text):
@@ -435,6 +474,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                     dwg = "no: its DXF draws on %s; only CUT and MARK pass (D-89)" % ", ".join(other)
                 else:
                     dwg = "no: its DXF can't be read (D-89)"
+            elif plain == []:
+                dwg = "row: a plain cut part (D-125)"
+            elif plain and PLAIN_FIELDS.issuperset(plain):
+                dwg = "no: as a plain cut part (D-125) its line lacks " + ", ".join(plain)
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"

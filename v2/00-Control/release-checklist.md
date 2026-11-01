@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (2f76545), PR #91 (0cb3135), PR #105 (bc3f023), PR #202 (7df5f48). The Mac's screen at run time: **unlocked**. 451 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (a8d75f6), PR #91 (0cb3135), PR #105 (bc3f023), PR #202 (7df5f48), PR #203 (1b3fa40). The Mac's screen at run time: **unlocked**. 453 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -380,6 +380,11 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838007 | H-28 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 |
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
+| 831003 | H-34 | HARDWARE - FRAME CORNER CLEAT - 20 X 40 - 45 DEG |
+| 831004 | H-35 | HARDWARE - FRAME CORNER CLEAT - 40 X 40 - 45 DEG |
+| 831005 | H-36 | HARDWARE - FRAME CORNER CLEAT - 40 X 40 TO 20 X 40 |
+| 831006 | H-37 | HARDWARE - FRAME T PLUG - 20 X 40 STUD |
+| 108003 | H-38 | POD - FRAME CLEAT ADHESIVE - SIKAFAST-5215 NT WITH SIKAFAST-5200 |
 
 ## How it's built
 
