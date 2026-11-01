@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 322 part lines (128 made, 194 bought, 147 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 354.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 369 part lines (174 made, 195 bought, 148 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 356.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -18,6 +18,9 @@ Read from: this working tree.
 - `v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv` @ working tree
@@ -40,24 +43,26 @@ Read from: this working tree.
 **BASE**
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838006: the list still names it 'HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD'; the joints register's H-26 now names it 'HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 838008 HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 
 **WALL**
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
@@ -91,6 +96,7 @@ Read from: this working tree.
 
 **FRONT**
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
+- 848013 SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA: HOLD (HOLD: product (HOLD-19))
 - 361001 FRONT - DOOR LEAF - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
 - 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112: HOLD (source (product); bond to aluminium HOLD)
 - 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002))
@@ -104,6 +110,7 @@ Read from: this working tree.
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -119,6 +126,7 @@ Read from: this working tree.
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
 - 618402 AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD: HOLD (HOLD)
 - 618501 AIR - RISER BUFFER - RUBBER - M6 - HOLD: HOLD (HOLD)
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
@@ -148,8 +156,8 @@ Read from: this working tree.
 - 718017 ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
-- 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718020 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718021 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718022 ELECTRICAL - WIRE - UL 1015 14 AWG GREEN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -205,9 +213,6 @@ Read from: this working tree.
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
-**Joints register**
-- H-46 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD: no part number
-
 ## Reserved air spaces, not counted (D-105)
 
 Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
@@ -220,7 +225,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 155 numbers, 116 not in a team's list yet, 16 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 157 numbers, 67 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -288,58 +293,58 @@ From `v2/04-BOM/number-allocation.csv`: 155 numbers, 116 not in a team's list ye
 | 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | 810201 | 1 | in use |
 | 718103 | ELECTRICAL - LED PROFILE END CAP | 810201 | 2 | in use |
 | 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | 810201 |  | in use |
-| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | 351306 | 1 | ALLOCATED |
-| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | 351306 | 1 | ALLOCATED |
-| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | 351306 | 1 | ALLOCATED |
-| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | 351306 | 1 | ALLOCATED |
-| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | 351306 | 1 | ALLOCATED |
-| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | 351306 | 1 | ALLOCATED |
-| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | 351306 | 1 | ALLOCATED |
-| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | 351306 | 1 | ALLOCATED |
-| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | 351306 | 1 | ALLOCATED |
-| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | 351306 | 1 | ALLOCATED |
-| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | 351306 | 1 | ALLOCATED |
-| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | 351306 | 1 | ALLOCATED |
-| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | 351306 | 1 | ALLOCATED |
-| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | 351306 | 1 | ALLOCATED |
-| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | 351306 | 1 | ALLOCATED |
-| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | 351306 | 1 | ALLOCATED |
-| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | 351306 | 3 | ALLOCATED |
-| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | 351306 | 1 | ALLOCATED |
-| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | 351306 | 2 | ALLOCATED |
-| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | ALLOCATED |
+| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | 351306 | 1 | in use |
+| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | 351306 | 1 | in use |
+| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | 351306 | 1 | in use |
+| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | 351306 | 1 | in use |
+| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | 351306 | 1 | in use |
+| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | 351306 | 1 | in use |
+| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | 351306 | 1 | in use |
+| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | 351306 | 1 | in use |
+| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | 351306 | 1 | in use |
+| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | 351306 | 1 | in use |
+| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | 351306 | 1 | in use |
+| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | 351306 | 1 | in use |
+| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | 351306 | 1 | in use |
+| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | 351306 | 1 | in use |
+| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | 351306 | 1 | in use |
+| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | 351306 | 1 | in use |
+| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | 351306 | 3 | in use |
+| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | 351306 | 1 | in use |
+| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | 351306 | 2 | in use |
+| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | in use |
 | 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | CANCELLED |
-| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | ALLOCATED |
-| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | ALLOCATED |
-| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | ALLOCATED |
-| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | ALLOCATED |
-| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | 351204 | 1 | ALLOCATED |
-| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | 351204 | 1 | ALLOCATED |
-| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | 351204 | 1 | ALLOCATED |
-| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | 351204 | 1 | ALLOCATED |
-| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | 351204 | 1 | ALLOCATED |
-| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | 351204 | 1 | ALLOCATED |
-| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | 351204 | 1 | ALLOCATED |
-| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | 351204 | 3 | ALLOCATED |
-| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | 351104 | 1 | ALLOCATED |
-| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | 351104 | 1 | ALLOCATED |
-| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | 351104 | 1 | ALLOCATED |
-| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | 351104 | 1 | ALLOCATED |
-| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | 351104 | 4 | ALLOCATED |
-| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | 351104 | 4 | ALLOCATED |
-| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | 351104 | 1 | ALLOCATED |
-| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | 351104 | 1 | ALLOCATED |
-| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | 351104 | 3 | ALLOCATED |
-| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | 351104 | 3 | ALLOCATED |
-| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | 351104 | 1 | ALLOCATED |
-| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | 351104 | 1 | ALLOCATED |
-| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | 351104 | 1 | ALLOCATED |
-| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | 351104 | 1 | ALLOCATED |
-| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | 351104 | 1 | ALLOCATED |
-| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | 351104 | 1 | ALLOCATED |
-| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | ALLOCATED |
-| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | ALLOCATED |
-| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | ALLOCATED |
+| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | in use |
+| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | in use |
+| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | in use |
+| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | in use |
+| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | 351204 | 1 | in use |
+| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | 351204 | 1 | in use |
+| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | 351204 | 1 | in use |
+| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | 351204 | 1 | in use |
+| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | 351204 | 1 | in use |
+| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | 351204 | 1 | in use |
+| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | 351204 | 1 | in use |
+| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | 351204 | 3 | in use |
+| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | 351104 | 1 | in use |
+| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | 351104 | 1 | in use |
+| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | 351104 | 1 | in use |
+| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | 351104 | 1 | in use |
+| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | 351104 | 4 | in use |
+| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | 351104 | 4 | in use |
+| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | 351104 | 1 | in use |
+| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | 351104 | 1 | in use |
+| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | 351104 | 3 | in use |
+| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | 351104 | 3 | in use |
+| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | 351104 | 1 | in use |
+| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | 351104 | 1 | in use |
+| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | 351104 | 1 | in use |
+| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | 351104 | 1 | in use |
+| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | 351104 | 1 | in use |
+| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | 351104 | 1 | in use |
+| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | in use |
+| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | in use |
+| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | in use |
 | 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | 610402 | 1 | in use |
 | 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | 610401 | 1 | in use |
 | 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | in use |
@@ -373,6 +378,8 @@ From `v2/04-BOM/number-allocation.csv`: 155 numbers, 116 not in a team's list ye
 | 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
 | 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | ALLOCATED |
 | 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | ALLOCATED |
+| 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | 110101 110102 110106 | 3 | ALLOCATED |
+| 111602 | BASE - LEVELLING GLIDE - M10 - D40 | 110101 110102 110103 110106 | 9 | ALLOCATED |
 | 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | ALLOCATED |
 | 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
 | 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |

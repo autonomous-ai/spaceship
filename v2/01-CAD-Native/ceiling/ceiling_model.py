@@ -72,7 +72,9 @@ CEILING_PARAMS = [
     # ---- site joints (joints register V2-ENG-JNT-01; the register owns the bolt lines, PM ruling 2026-10-31)
     ("hole_clr", "7 mm", "mm", "confirmed", "R-J6 (joints register 2.9): bolt clearance hole, positioned to +/-0.2 from the spigot hole"),
     ("hole_acc", "19 mm", "mm", "confirmed", "joints register 2.2, 2.9: access hole, so the 18 mm head washer goes in with the bolt"),
-    ("hole_rvn", "9.53 mm", "mm", "source", "H-03 Sherex CAH2-610-4.2 rivnut (steel, D-131): hole 9.53 +0.10, as the aluminium part's (joints register H-03, SHX)"),
+    ("hole_rvn", "10.0 mm", "mm", "source", "D-163 (pod-wide ruling 2026-11-01): the M6 rivnut 838003 is Sherex CAL2-610-4.2, the "
+     "knurled round body, in a round drilled hole Ø10.00 +0.10 (was CAH2's Ø9.53; T06's spin-out test, 4 N·m or more in the "
+     "real tubes, confirms it; the joints register's H-03)"),
     ("spig_hole", "8.5 mm", "mm", "confirmed", "R-J13: spigot hole 8.5, round at one end of the edge, an 8.5 x 14 slot along it at the other"),
     ("spig_slot", "14 mm", "mm", "confirmed", "R-J13: the spigot slot's length along the edge (+/-2.75 of travel for the 8 mm spigot)"),
     ("lead_in", "1 mm", "mm", "confirmed", "R-J9 (joints register 2.10): 1 x 45 deg lead-in on the lower edges of the C1-C2 faces, so C2 drops past C1 without catching the seal"),

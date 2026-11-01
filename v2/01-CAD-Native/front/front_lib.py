@@ -426,20 +426,26 @@ PARTS_LIST_COLUMNS = ["part_number", "name", "name_vi", "type", "process", "mate
 
 def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
     """rows: [(pn, name, vn, qty, type, material, mass, mass_status, status, source, note)];
-    mass "cad" = the component's mass from the model; the root row's mass is the sum of the others.
-    Every non-root part number must exist in the CAD with that many components, named 'PN NAME…'."""
+    mass "cad" = the component's mass from the model (one copy); mass None = a sub-assembly row (its parts below
+    carry the mass); the root row's mass is the sum of the others.
+    Every non-root part number must exist in the CAD named 'PN NAME…', placed as many times as the row's quantity
+    (copies of one component count once each, D-120)."""
     by_pn = {}
     for c in design.allComponents:
         if c.partNumber and c != design.rootComponent:
             by_pn.setdefault(c.partNumber, []).append(c)
+    root = design.rootComponent
     out = []
     for pn, name, vn, qty, typ, mat, mass, mstat, status, src, note in rows:
         if pn == root_pn:
             out.append([pn, root_name, root_vn, typ, mat, qty, "", mstat, status, src, note, "", ""])
             continue
         comps = by_pn.get(pn, [])
-        if len(comps) != (qty if isinstance(qty, int) else 1):
-            raise RuntimeError("%s: %d components in CAD, parts list says %s" % (pn, len(comps), qty))
+        placed = sum(root.allOccurrencesByComponent(c).count for c in comps)
+        by_length = str(typ).lower().startswith("bought by length")    # its quantity is a length; pieces vary
+        if not comps or (placed != (qty if isinstance(qty, int) else 1) and not by_length):
+            raise RuntimeError("%s: %d component(s) placed %d time(s) in CAD, parts list says %s" % (
+                pn, len(comps), placed, qty))
         if not comps[0].name.startswith("%s %s" % (pn, name)):
             raise RuntimeError("%s: CAD name %r does not start with %r" % (pn, comps[0].name, name))
         if mass == "cad":
@@ -628,7 +634,8 @@ JF_PARAMS = [
     ("jf_x", "pod_w / 2 - skin_t - bond_t - frame_t / 2", "mm", "calculation",
      "joints register J-FRONT-01: the side panel's front member centre line, X -/+1224 (skin, bond line and half the "
      "40 frame in from the outside, skeleton named values)"),
-    ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH3-610-4.2) hole 9.53 +0.10/0 (hardware selection A5; joints register H-03)"),
+    ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH2-610-4.2, zinc-plated steel, D-131) hole 9.53 +0.10/0, "
+     "as the aluminium part's (joints register H-03; unverified for the steel part, HOLD-04)"),
     ("jf_z1", "panel_z0 + bolt_edge_inset", "mm", "calculation", "lower panel, bottom bolt (220 rule)"),
     ("jf_z2", "panel_z0 + side_h / 2", "mm", "calculation", "lower panel, middle bolt"),
     ("jf_z3", "panel_z0 + side_h - bolt_edge_inset", "mm", "calculation", "lower panel, top bolt"),
@@ -659,7 +666,7 @@ def skin_panels(body, probe_mm=60.0):
         hits = root.findBRepUsingRay(o, n, adsk.fusion.BRepEntityTypes.BRepFaceEntityType, -1.0, False, hp)
         again = []
         for k in range(hits.count if hits else 0):
-            h, q = hits.item(k), hp.item(k) if k < hp.count else None
+            h, q = hits.item(k), adsk.core.Point3D.cast(hp.item(k)) if k < hp.count else None
             if h.body == body and h != fc and q is not None and q.distanceTo(o) * 10 < probe_mm:
                 again.append(h)
         if again:
@@ -725,7 +732,8 @@ def write_panels_dxf(path, panels, gap=60.0, row_w=3000.0):
 # in the same run, so each team keeps at most 3 runs in the queue
 
 VIEWS = {"front": "FrontViewOrientation", "top": "TopViewOrientation", "left": "LeftViewOrientation",
-         "right": "RightViewOrientation", "iso-top-right": "IsoTopRightViewOrientation"}
+         "right": "RightViewOrientation", "iso-top-right": "IsoTopRightViewOrientation", "back": "BackViewOrientation",
+         "iso-top-left": "IsoTopLeftViewOrientation"}
 
 
 def save_doc(app, desc):

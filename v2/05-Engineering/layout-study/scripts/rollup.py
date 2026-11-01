@@ -125,6 +125,9 @@ def front_fixed_cad(path=FRONT_FIXED_LIST):
 
 FRONT_FIXED = front_fixed_cad()
 FRONT_DECOR_PN = {"DL": "350001", "DT": "350002", "DR": "350003"}                           # PR #105 (S51)
+# DR's removable inner face panel and the felt glued on it ship loose and go on after the air unit (D-130; PM ruling
+# 2026-11-01): their own line and packing piece, out of the block's
+FRONT_DECOR_LOOSE = {"DR": ("351305", "351304")}
 
 
 def front_decor_cad(block):
@@ -146,8 +149,10 @@ def front_decor_cad(block):
     skin = [r for r in rows if "DECOR SKIN" in r["name"]]
     frame = [r for r in rows if "DECOR FRAME" in r["name"]]
     tubes = re.search(r"welded frame, (\d+) tubes", types[frame[0]["pn"]])
+    loose = {k: by[k]["kg"] for k in FRONT_DECOR_LOOSE.get(block, ()) if k in by}
     return dict(path=os.path.basename(path), pn=pn, unit=by[pn]["kg"], skin=skin[0]["kg"], frame=frame[0]["kg"],
-                tubes=int(tubes.group(1)), reserved=[k for k, t in types.items() if t == "reserved air space"])
+                tubes=int(tubes.group(1)), reserved=[k for k, t in types.items() if t == "reserved air space"],
+                loose=loose, shipped=by[pn]["kg"] - sum(loose.values()))
 
 
 FRONT_DECOR = {b: front_decor_cad(b) for b in ("DL", "DT", "DR")}
@@ -696,10 +701,18 @@ def lines(**adopt):
                                          "diagonal channels, fitted in it, are in the fixed glass unit's line"),
                           ("F-DT", "DT", "; with the door's magnetic catch 368007 and the top stop")):
         pt, dc = base[pid], FRONT_DECOR[b]
-        L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, dc["unit"], "calculation (CAD)",
+        lz = sum(dc["loose"].values())
+        L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, dc["shipped"], "calculation (CAD)",
                   f"S51, CAD on main: FRONT parts list {dc['pn']} P01: skin {dc['skin']:.3f}, welded frame "
-                  f"{dc['frame']:.3f} ({dc['tubes']} tubes), plates, stops and seals {dc['unit'] - dc['skin'] - dc['frame']:.3f}"
-                  + extra))
+                  f"{dc['frame']:.3f} ({dc['tubes']} tubes), plates, stops and seals "
+                  f"{dc['unit'] - dc['skin'] - dc['frame'] - lz:.3f}" + extra
+                  + (f"; its loose parts ({', '.join(dc['loose'])}, {lz:.3f} kg) have their own line" if lz else "")))
+        if lz:
+            L.append(("FRONT", "DR inner face panel 351305 with its felt 351304, ships loose, fitted on site after the air "
+                      "unit", 1, lz, "calculation (CAD)",
+                      f"S51, CAD on main: FRONT parts list {dc['pn']} P01: panel {dc['loose'].get('351305', 0.0):.3f}, felt "
+                      f"{dc['loose'].get('351304', 0.0):.3f} (D-130; PM ruling 2026-11-01: its own packing piece); its 21 "
+                      "M6 x 16 screws and washers are in the fixings line"))
     fd = FRONT_DOOR
     L.append(("FRONT", "Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull", 1,
               fd["unit"] + (0.0 if a["kick"] else KICK_KG - fd["kick"]), "calculation (CAD); hinges and pull HOLD",
@@ -752,13 +765,15 @@ def lines(**adopt):
         L.append(("INTERIOR", "Work-wall ledge, 1000 mm, with the screen rail", 1, LEDGE_KG_ALLOW + it["rail"], "assumption",
                   "the first allowance: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70), and the screen rail"))
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
+    nt, kt = JOINTS.get("831010", (0, 0.0))     # DT's two 11 mm spigots on DR's ledge (J-FRONT-03, D-157)
     rc = register_counts()
     L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats", 1,
-              fixings_kg() + ns * ks + nw * kw + CLEATS_KG, "calculation (part CAD); cleats assumption",
+              fixings_kg() + ns * ks + nt * kt + nw * kw + CLEATS_KG, "calculation (part CAD); cleats assumption",
               f"part CAD on main: the joints register's counts (S48: {rc['838001']:.0f} M6 x 16 and {rc['838002']:.0f} M6 x 25 "
               f"bolts, {rc['838003']:.0f} rivnuts, {rc['838004']:.0f} washers, {rc['838005']:.0f} retainers, {rc['848001']:g} m of "
               f"joint gasket, {rc['848004']:g} m of closing-seam seal) at the parts lists' masses ({fixings_kg():.2f} kg, D-116); "
-              f"{ns} spigots and {nw} stop washers from the joints' made hardware list ({ns * ks + nw * kw:.2f} kg, S45); and a "
+              f"{ns + nt} spigots ({ns} of 831001, {nt} of 831010) and {nw} stop washers from the joints' made hardware "
+              f"list ({ns * ks + nt * kt + nw * kw:.2f} kg, S45); and a "
               f"{CLEATS_KG:.1f} kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and "
               f"6.7 g T plugs (D-117, S49), until their models land"))
     pt = base["E-VOICE-RESERVE"]
@@ -858,8 +873,8 @@ def base_swaps():
             ("Glide load blocks (D-86's 0.4 kg), now BASE's %g blocks" % sum(bc["blocks"].values()), 1, LOAD_BLOCKS_KG,
              sum(bc["blocks"].values()) * bc["doubler"], "BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6"),
             ("Spigots and stop washers (not in this study's fixings kit)", 1, 0.0,
-             JOINTS["831001"][0] * JOINTS["831001"][1] + JOINTS["831002"][0] * JOINTS["831002"][1],
-             "joints 831001 and 831002 P01, PR #139")]
+             sum(q * kg for q, kg in (JOINTS[pn] for pn in ("831001", "831010", "831002") if pn in JOINTS)),
+             "joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157)")]
 
 
 def pod_kg(rows=None):
@@ -993,15 +1008,17 @@ def rollup_md(rows):
               f"24 kg/m3 fill and 1.0 mm mid stiles.")
     nm = heavy[1].split(",")[0]
     nm = nm.split(" - ")[1] + " decor block" if nm.startswith("Decor block - ") else nm.lower()
-    dr = FRONT_DECOR["DR"]["unit"]
+    dr = FRONT_DECOR["DR"]["shipped"]
     dr_ship = dr + dr_channels_kg()
+    dr_loose = sum(FRONT_DECOR["DR"]["loose"].values())
     fan2 = 2 * AIR["kg"]["618401"]
     sof = sum(r[3] for r in rows if r[0] == "AIR" and (r[1].startswith("Soffit") or r[1].startswith("Exhaust fan box")))
     md.append(f"- **20 kg rule (D-03).** The intake riser joined to the supply fan box with its two fans "
               f"({loose + fan2:.1f} kg, D-87) ships loose and goes into the right decor block on site through its removable "
               f"inner face (D-59), so the block ships at {dr_ship:.1f} kg ({dr:.2f} kg from its CAD, S51, and "
-              f"{dr_ship - dr:.2f} kg of the fixed glass's right and diagonal channels fitted in it); fitted in the factory it "
-              f"would be about {dr_ship + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
+              f"{dr_ship - dr:.2f} kg of the fixed glass's right and diagonal channels fitted in it); its removable inner face "
+              f"panel with its felt ({dr_loose:.1f} kg) ships loose too and goes on after them (D-130); fitted in the factory "
+              f"they would make about {dr_ship + dr_loose + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
               f"({sof + fan2:.1f} kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The "
               f"heaviest piece apart from the glass is the {nm} at {ship_kg(heavy):.1f} kg as shipped, against D-108's 19.0 kg "
               "for the right block; the door unit and the fixed glass unit are glass and exempt.")

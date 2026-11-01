@@ -672,6 +672,29 @@ def test_clash_check_catches_a_line_through_text():
     assert not any("H09" in w for w in found), found
 
 
+def test_section_letter_keeps_clear_of_lines():
+    """WALL's L1 frame (#343, its studs): a removed section's letter at its usual place by the arrow sat on a stud's
+    outline. A cutting plane across a rail, with a stud standing where the upper letter would go: the letter takes
+    the first clear place by its arrow, and the read-back finds no clash (the usual place had the stud through it)."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "letter")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.line((100, 100), (240, 100), 0.5)                 # the rail
+    sh.line((100, 104), (240, 104), 0.5)
+    sh.line((190.5, 104), (190.5, 160), 0.5)             # the stud, through the letter's usual place
+    sh.line((194.5, 104), (194.5, 160), 0.5)
+    usual = sh.text_box(193.0 - 1.5, 116.0 + 1.0, "E", 3.5, "center", bold=True)
+    assert not sh.is_free(usual)
+    sh.section_arrows((200.0, 96.0), (200.0, 116.0), "E", (-1.0, 0.0), size=3.5)
+    sh.save(os.path.join(d, "e.pdf"))
+    doc = fitz.open(os.path.join(d, "e.pdf"))
+    found = [w for _p, w in readback.clashes(doc)]
+    assert not found, found
+    es = [w for w in doc[0].get_text("words") if w[4] == "E"]
+    assert len(es) == 2, es
+
+
 def test_notes_name_no_maker():
     """The Lead's rulings (2026-11-01, #302): a note names the source, never an agent, a role, a script or tool, a
     team or a person as its maker; a process may be named ("holes made by drilling after welding", "made by
