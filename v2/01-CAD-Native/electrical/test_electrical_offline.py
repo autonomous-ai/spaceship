@@ -311,7 +311,8 @@ class Column(unittest.TestCase):
         self.assertEqual((v["ent_z1"], v["ent_z1"] + v["ent_dz"]), (1150.0, 1175.0))
         self.assertAlmostEqual(v["ch_x"], 1140.0)
         self.assertAlmostEqual(v["sof_y"], -316.0)
-        self.assertAlmostEqual(v["fb_y"], -387.64, places=2)
+        self.assertAlmostEqual(v["fb_y"], -392.64, places=2)
+        self.assertAlmostEqual(v["fb_x"], 1140.0)
         self.assertEqual([round(v["tie_ay"] + 100 * k, 2) for k in range(3)], [-597.64, -497.64, -397.64])
         self.assertEqual((v["tie_az1"], v["tie_az2"], v["tie_pz"]), (1960.0, 2040.0, 1905.0))
         # every body of the column's route sits inside the column, the soffit or the fan box's plan, never in DR
@@ -341,7 +342,12 @@ class Column(unittest.TestCase):
         self.assertEqual(hz, tuple(round(x, 2) for x in (b[0], b[3], b[1], b[4], b[2], b[5])))
         v = self.v
         self.assertEqual(tup(hp["leg_y"]), (round(v["y_ent"], 2),))
-        self.assertEqual(tup(hp["entry_z"]), (v["ent_z1"], v["ent_z1"] + v["ent_dz"]))
+        self.assertEqual(tup(hp["entry_z"]), (v["ent_z1"],))
+        for mine, theirs in (("ent_dz", "hn_entry_p"), ("ent_d", "hn_entry_d"), ("tie_pp", "hn_tie_p"), ("cg_d", "hn_sof_d"),
+                             ("cg_d", "hn_box_d"), ("ch_w", "hn_ch_w")):
+            self.assertAlmostEqual(v[mine], va[theirs], places=3, msg=theirs)
+        self.assertGreater(va["hn_lin_d"], v["cg_w"])            # the cordgrip's body fits AIR's path through the lining
+        self.assertGreater(va["hn_sof_felt"], v["cg_w"])         # and the soffit felt's cut-back
         self.assertEqual(tup(hp["tie_z"]), (v["tie_az1"], v["tie_az2"]))
         self.assertEqual(tup(hp["ch_x"]), (round(v["ch_x"], 2),))
         self.assertEqual(tup(hp["sof_y"]), (round(v["sof_y"], 2),))

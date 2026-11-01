@@ -302,9 +302,9 @@ def harnesses(v):
              "(the Lead's rule); inside AIR's transition it rides the AIR Transitions Engineer's two tie points (AIR's reserved space, "
              "D-105: not modelled here)")
     add(id="W41", harness_pn="710023", segment="COLUMN", function="exhaust fan pair", frm="F3b 2 A + hub PWM 2, tach 2",
-        to="exhaust fan box, soffit right end", route="hub top, CH-FILL, UP-ANG, TO-SOF, G-SOFFIT, SOF-CH, G-FBOX",
+        to="exhaust fan box, soffit right end", route="hub top, CH-FILL, UP-ANG, TO-SOF, G-SOFFIT, SOF-CH, G-FBOX, IN-FBOX",
         circuit="PS3 fan E", conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
-        length_mm=L("CH-FILL", "UP-ANG", "TO-SOF", "G-SOF-B", "G-SOFFIT", "SOF-CH", "G-FBOX", "G-FB-B") + IN_AIR_E + 300,
+        length_mm=L("CH-FILL", "UP-ANG", "TO-SOF", "G-SOF-B", "G-SOFFIT", "SOF-CH", "G-FBOX", "G-FB-B", "IN-FBOX") + IN_AIR_E + 300,
         end_a="fuse block and hub terminals", end_b="4-way PWM fan connector into a Y-cable (housing HOLD H-ELE-07)",
         grommets="G-SOFFIT, G-FBOX (Heyco RLTCG M12 cordgrips: they seal the supply plenum from the soffit)",
         amps_max=2 * FAN_W_MAX / 12.0,
