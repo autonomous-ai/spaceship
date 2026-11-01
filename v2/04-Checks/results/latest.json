@@ -1,5 +1,5 @@
 {
- "rev": "12d5825",
+ "rev": "a8cd10a",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -2491,34 +2491,6 @@
     "model": "pdf-people"
    },
    "key": "C05|drawing-author|110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG",
-   "severity": "major",
-   "message": "111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf: its MADE BY field reads 'tools/drawgen (D-112)' (sheet 1, 2); its MADE BY field reads 'tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF.' (sheet 2); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again. This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it.",
-   "file": "v2/02-Drawings/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf",
-   "owner": "Drawing Generator",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "111103_P01_BASE-BAND-TUBE-BACK_DWG",
-   "severity": "major",
-   "message": "111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf: its MADE BY field reads 'tools/drawgen (D-112)' (sheet 1, 2); its MADE BY field reads 'tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF.' (sheet 2); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again. This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it.",
-   "file": "v2/02-Drawings/base/111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf",
-   "owner": "Drawing Generator",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|111103_P01_BASE-BAND-TUBE-BACK_DWG"
   },
   {
    "check": "C05",
