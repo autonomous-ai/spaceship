@@ -139,6 +139,7 @@ def run(root, rev):
             if not fl[0] or inst["part_number"] not in flat_by_pn:      # one body that isn't flat decides
                 flat_by_pn[inst["part_number"]] = fl
             usage.setdefault(inst["part_number"], []).append((rel(root, p), 1, [" / ".join(inst["path"][1:])]))
+    findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
     if plists:
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
