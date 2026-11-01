@@ -1,8 +1,8 @@
-# Mechanical check run: 369cb600 on 2026-11-01
+# Mechanical check run: ebb3e2d1 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `369cb600`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `ebb3e2d1`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 184** (65 severe, 116 major, 3 minor). Register numbers in brackets.
+**Findings in this run: 177** (65 severe, 109 major, 3 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `369cb600`. The Fusion
 | C02 tolerance stack-ups | yes | 4 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 93 |
+| C05 drawing completeness | yes | 86 |
 | C06 BOM completeness | yes | 36 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -120,13 +120,6 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | F-339 | major | C05 | 368004 | 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles. | FRONT |
 | F-138 | major | C05 | 410000 | 410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step. | CEILING |
 | F-140 | major | C05 | 410102 | 410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
-| F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
-| F-118 | major | C05 | 510102 | 510102 LINING - CASSETTE - SIDE LOWER - RH has no drawing PDF (510102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step. | WALL |
-| F-119 | major | C05 | 510103 | 510103 LINING - CASSETTE - SIDE UPPER - LH has no drawing PDF (510103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step. | WALL |
-| F-120 | major | C05 | 510104 | 510104 LINING - CASSETTE - SIDE UPPER - RH has no drawing PDF (510104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step. | WALL |
-| F-183 | major | C05 | 510201 | 510201 LINING - CASSETTE - BACK LOWER - B1 has no drawing PDF (510201_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step. | WALL |
-| F-184 | major | C05 | 510202 | 510202 LINING - CASSETTE - BACK LOWER - B2 has no drawing PDF (510202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step. | WALL |
-| F-143 | major | C05 | 510301 | 510301 LINING - CASSETTE - CEILING - COMMON has no drawing PDF (510301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-254 | major | C05 | 610000 | 610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step. | CEILING |
 | F-256 | major | C05 | 610201 | 610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-257 | major | C05 | 610301 | 610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |

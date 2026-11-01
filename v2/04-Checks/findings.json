@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -848,7 +848,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510101",
    "id": "F-023",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 6ccbfac",
    "posted": "WALL group 2026-11-01",
@@ -857,9 +857,15 @@
      "date": "2026-11-01",
      "rev": "6ccbfac",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -884,7 +890,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -1033,7 +1039,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -1058,7 +1064,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -1083,7 +1089,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -1337,7 +1343,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -1393,7 +1399,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -1459,7 +1465,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 369cb600",
+   "last_seen": "2026-11-01 ebb3e2d1",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3115,7 +3121,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3140,7 +3146,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -3464,7 +3470,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3489,7 +3495,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3514,7 +3520,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3539,7 +3545,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3564,7 +3570,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3589,7 +3595,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3614,7 +3620,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3639,7 +3645,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3664,7 +3670,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3689,7 +3695,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3714,7 +3720,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3739,7 +3745,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3753,7 +3759,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510102",
    "id": "F-118",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 87586c1",
    "posted": "WALL group 2026-11-01",
@@ -3762,9 +3768,15 @@
      "date": "2026-11-01",
      "rev": "87586c1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3778,7 +3790,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510103",
    "id": "F-119",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 87586c1",
    "posted": "WALL group 2026-11-01",
@@ -3787,9 +3799,15 @@
      "date": "2026-11-01",
      "rev": "87586c1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3803,7 +3821,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510104",
    "id": "F-120",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 87586c1",
    "posted": "WALL group 2026-11-01",
@@ -3812,9 +3830,15 @@
      "date": "2026-11-01",
      "rev": "87586c1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3839,7 +3863,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3864,7 +3888,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -3889,7 +3913,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4456,7 +4480,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4512,7 +4536,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4537,7 +4561,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4562,7 +4586,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4576,7 +4600,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510301",
    "id": "F-143",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "CEILING group 2026-11-01",
@@ -4585,9 +4609,15 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4612,7 +4642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4637,7 +4667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4816,7 +4846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4841,7 +4871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4866,7 +4896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4891,7 +4921,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4916,7 +4946,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -4941,7 +4971,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5073,7 +5103,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5102,7 +5132,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5131,7 +5161,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5160,7 +5190,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5189,7 +5219,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5218,7 +5248,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5247,7 +5277,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5276,7 +5306,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5305,7 +5335,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5334,7 +5364,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5363,7 +5393,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5392,7 +5422,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5421,7 +5451,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5450,7 +5480,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5479,7 +5509,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5508,7 +5538,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5537,7 +5567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5562,7 +5592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5587,7 +5617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5612,7 +5642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5637,7 +5667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5662,7 +5692,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5687,7 +5717,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5701,7 +5731,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510201",
    "id": "F-183",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 2f76545",
    "posted": "WALL group, 2026-11-01",
@@ -5710,9 +5740,15 @@
      "date": "2026-11-01",
      "rev": "2f76545",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5726,7 +5762,7 @@
    "evidence": {},
    "key": "C05|no-drawing|510202",
    "id": "F-184",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 2f76545",
    "posted": "WALL group, 2026-11-01",
@@ -5735,9 +5771,15 @@
      "date": "2026-11-01",
      "rev": "2f76545",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "ebb3e2d1",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 369cb600",
+   "closed": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5762,7 +5804,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5787,7 +5829,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -5876,7 +5918,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5905,7 +5947,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5934,7 +5976,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5963,7 +6005,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -5992,7 +6034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -6021,7 +6063,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6046,7 +6088,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6071,7 +6113,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6096,7 +6138,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6121,7 +6163,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6146,7 +6188,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6171,7 +6213,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6196,7 +6238,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6221,7 +6263,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6246,7 +6288,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6271,7 +6313,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6296,7 +6338,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6321,7 +6363,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6346,7 +6388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6371,7 +6413,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6396,7 +6438,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6421,7 +6463,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -6548,7 +6590,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 369cb600",
+   "last_seen": "2026-11-01 ebb3e2d1",
    "closed": "2026-11-01 e796357"
   },
   {
@@ -6914,7 +6956,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C08",
@@ -6943,7 +6985,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -6968,7 +7010,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -6993,7 +7035,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7018,7 +7060,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7043,7 +7085,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7068,7 +7110,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7093,7 +7135,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7118,7 +7160,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7143,7 +7185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7168,7 +7210,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7193,7 +7235,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7218,7 +7260,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7243,7 +7285,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7268,7 +7310,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7293,7 +7335,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -7318,7 +7360,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7343,7 +7385,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -7371,7 +7413,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -7399,7 +7441,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7428,7 +7470,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7457,7 +7499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7486,7 +7528,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7515,7 +7557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7544,7 +7586,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7573,7 +7615,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7598,7 +7640,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -7623,7 +7665,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7648,7 +7690,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7704,7 +7746,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7729,7 +7771,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7754,7 +7796,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7779,7 +7821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7804,7 +7846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7829,7 +7871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7854,7 +7896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7879,7 +7921,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7904,7 +7946,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7929,7 +7971,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7954,7 +7996,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -7979,7 +8021,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -8004,7 +8046,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -8156,7 +8198,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -8184,7 +8226,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -8212,7 +8254,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -8240,7 +8282,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -8268,7 +8310,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -8296,7 +8338,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -8347,7 +8389,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -9706,7 +9748,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9734,7 +9776,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9762,7 +9804,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9790,7 +9832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9818,7 +9860,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9846,7 +9888,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9874,7 +9916,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9902,7 +9944,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9929,7 +9971,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9956,7 +9998,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C11",
@@ -9983,7 +10025,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -10526,7 +10568,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -10551,7 +10593,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -10648,7 +10690,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C02",
@@ -10677,7 +10719,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C02",
@@ -10706,7 +10748,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C02",
@@ -10735,7 +10777,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -10771,7 +10813,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -10799,7 +10841,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -10827,7 +10869,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C09",
@@ -10855,7 +10897,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -10880,7 +10922,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -10905,7 +10947,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -10930,7 +10972,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C05",
@@ -10955,7 +10997,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11010,7 +11052,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11068,7 +11110,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11128,7 +11170,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11183,7 +11225,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11240,7 +11282,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11296,7 +11338,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11351,7 +11393,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11405,7 +11447,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11459,7 +11501,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11514,7 +11556,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11570,7 +11612,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C01",
@@ -11625,7 +11667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -11655,7 +11697,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 369cb600"
+   "last_seen": "2026-11-01 ebb3e2d1"
   },
   {
    "check": "C06",
@@ -11681,7 +11723,8 @@
      "rev": "369cb600",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 ebb3e2d1"
   }
  ]
 }
