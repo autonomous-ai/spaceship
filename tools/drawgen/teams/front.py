@@ -26,10 +26,9 @@ _DT = ["352201", "352202", "352203", "352204", "352205", "352206", "352207", "35
 # on to the back ring (PM ruling 2026-11-01, #313)
 _DR = ["3523%02d" % n for n in range(1, 23) if n != 21]
 
-# DL's tube parts (#232), less the door-side posts 352112, 352114 and 352116: in the model their section is a
-# five-sided tube (a 20 x 20 corner cut off along the facet), not a plain tube; held for the Lead's section call
-# (Reviewer 5 on #320)
-_DL = ["3521%02d" % n for n in range(1, 17) if n not in (12, 14, 16)]
+# DL's 16 tube parts (#232); the door-side posts 352112, 352114 and 352116 are plain 20 x 20 tubes since the PM's
+# ruling of 2026-11-01 (set back to the front facet's bond face, the bead filling the corner; #313)
+_DL = ["3521%02d" % n for n in range(1, 17)]
 
 PARTS = {pn: DECOR_TUBE for pn in _DT + _DR + _DL}
 
