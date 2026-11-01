@@ -234,6 +234,30 @@ def edge_prims(edge, vis, src=""):
     return _bezier_pieces(a, vis, src)
 
 
+def project_bodies(shapes, view, hidden_from=None):
+    """Like project, for several shapes hiding each other: visible edges of all of them, hidden edges only of the
+    shapes whose index is in hidden_from (None: all). A view of one member's face then shows that member's hidden
+    detail and not the far-away members seen through it (ISO 128: hidden lines only where they help)."""
+    algo = HLRBRep_Algo()
+    for s_ in shapes:
+        algo.Add(s_)
+    ax = gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(*view.n), gp_Dir(*view.x))
+    algo.Projector(HLRAlgo_Projector(ax))
+    algo.Update()
+    algo.Hide()
+    h = HLRBRep_HLRToShape(algo)
+    prims = []
+    for i, s_ in enumerate(shapes):
+        comps = [(h.VCompound(s_), True, "sharp"), (h.OutLineVCompound(s_), True, "outline"),
+                 (h.Rg1LineVCompound(s_), True, "smooth")]
+        if hidden_from is None or i in hidden_from:
+            comps += [(h.HCompound(s_), False, "sharp"), (h.OutLineHCompound(s_), False, "outline")]
+        for comp, vis, src in comps:
+            for e in _edges(comp):
+                prims.extend(edge_prims(e, vis, src))
+    return clean(prims)
+
+
 def project(shape, view):
     """Visible and hidden 2D primitives of shape in view (HLRBRep_Algo: exact, edges stay curves)."""
     algo = HLRBRep_Algo()

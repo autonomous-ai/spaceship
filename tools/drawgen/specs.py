@@ -29,12 +29,6 @@ BASE_SIDE_BAND = {
                  "(assumption). Not ISO 2768 on the anodised faces.",
 }
 
-DIFFUSER = {
-    "datums": "corner", "corner": "-X-Y-Z", "sheet": "A2", "right_w": 200.0,
-    "notes": ["Cut to length from opal polycarbonate strip 28 x 1.5; ends square, deburred."],
-    "tolerance": "cut length ±1 (parts list, assumption); width and thickness as supplied.",
-}
-
 # pn: (team, kind, spec). kind "part" = one part on its sheet; "tabulated" = D-89 part 1, the listed numbers on
 # the first one's sheet.
 SPECS = {
@@ -42,9 +36,14 @@ SPECS = {
     "211102": ("wall", "part", WALL_FRAME),
     "211501": ("wall", "tabulated", {"covers": ["211501", "211502", "211503", "211504"]}),
     "111101": ("base", "part", BASE_SIDE_BAND),
-    "811205": ("interior", "part", DIFFUSER),
 }
 
-# The sample of five the Lead reviews before anything else is generated (brief): frame, its RH pair, the table
-# drawing, the tube, the plate.
-SAMPLE = ["211101", "211102", "211501", "111101", "811205"]
+# Parts that need no drawing at all, and why (drawgen won't make one).
+NO_DRAWING = {
+    "811205": "D-125: a plain straight-cut strip; its parts-list line gives material and grade, thickness, length and "
+              "width, finish and tolerance",
+}
+
+# The sample the Lead reviews before anything else is generated (brief): frame, its RH pair, the table drawing,
+# the tube. The plate of the first sample (811205) needs no drawing under D-125.
+SAMPLE = ["211101", "211102", "211501", "111101"]

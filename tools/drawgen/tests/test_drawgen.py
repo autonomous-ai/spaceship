@@ -166,13 +166,13 @@ def test_model_change_regenerates():
 def test_never_overwrites_a_fusion_drawing():
     d = os.path.join(TMP, "fusion")
     os.makedirs(d, exist_ok=True)
-    final, rep = drawgen.generate("811205", d)
+    final, rep = drawgen.generate("111101", d)
     doc = fitz.open()
     doc.new_page()
     doc.set_metadata({"creator": "Autodesk Fusion"})
     doc.save(final)
     try:
-        drawgen.generate("811205", d)
+        drawgen.generate("111101", d)
         raise AssertionError("overwrote a PDF drawgen did not make")
     except compose.NotDrawable as e:
         assert "not made by drawgen" in str(e)

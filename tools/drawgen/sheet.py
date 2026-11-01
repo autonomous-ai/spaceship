@@ -13,6 +13,12 @@ import os
 import fitz
 
 MM = 72.0 / 25.4
+# Text sizes are given as ISO 3098 letter height h (the capital height), as a reviewer measures them on the print;
+# the font size is h over the face's cap height (Helvetica 718/1000, Arial Unicode about the same).
+CAP = 0.718
+H_TEXT = 2.5        # dimensions, tags, tables, notes: never less (A1/A2 sheets)
+H_HEAD = 3.5        # view titles, table titles
+H_LABEL = 2.0       # the title block's small field names only
 
 SIZES = {"A3": (420.0, 297.0), "A2": (594.0, 420.0), "A1": (841.0, 594.0), "A0": (1189.0, 841.0)}
 
@@ -136,9 +142,10 @@ class Sheet:
             return False
 
     def text_width(self, s, size, bold=False):
+        fs = size / CAP
         if self._latin(s) or not self.fonts["bold" if bold else "reg"]:
-            return fitz.get_text_length(s, fontname="hebo" if bold else "helv", fontsize=size * MM) / MM
-        return self._font_obj(bold).text_length(s, fontsize=size * MM) / MM
+            return fitz.get_text_length(s, fontname="hebo" if bold else "helv", fontsize=fs * MM) / MM
+        return self._font_obj(bold).text_length(s, fontsize=fs * MM) / MM
 
     def _font_obj(self, bold):
         key = "fobj_bold" if bold else "fobj_reg"
@@ -156,7 +163,7 @@ class Sheet:
         s = str(s)
         w = self.text_width(s, size, bold)
         dx = {"left": 0.0, "center": -w / 2, "right": -w}[anchor]
-        dy = -0.35 * size if valign == "mid" else 0.0
+        dy = -0.5 * size if valign == "mid" else 0.0
         if self._latin(s) or not self.fonts["bold" if bold else "reg"]:
             fname, ffile = ("hebo" if bold else "helv"), None
         else:
@@ -166,7 +173,7 @@ class Sheet:
             pt = self.P(x + dx, y + dy)
         else:       # reading upward: the text runs along +y
             pt = self.P(x - dy, y + dx)
-        self.page.insert_text(pt, s, fontsize=size * MM, fontname=fname, fontfile=ffile, rotate=rotate,
+        self.page.insert_text(pt, s, fontsize=size / CAP * MM, fontname=fname, fontfile=ffile, rotate=rotate,
                               color=BLACK)
         return w
 
@@ -416,7 +423,7 @@ class Sheet:
     def centre_line(self, p, q, w=W_THIN):
         self.line(p, q, w, DASH_CTR)
 
-    def origin_mark(self, o, name, xdir=(1, 0), ydir=(0, 1), size=2.2):
+    def origin_mark(self, o, name, xdir=(1, 0), ydir=(0, 1), size=2.5, away=(-1.0, -1.0)):
         """The 2D origin of a view's X/Y: a small circle with its name and the +X, +Y arrows."""
         self.circle(o, 1.2, W_THIN)
         L = 9.0
@@ -424,9 +431,11 @@ class Sheet:
             tip = (o[0] + d[0] * L, o[1] + d[1] * L)
             self.line((o[0] + d[0] * 1.2, o[1] + d[1] * 1.2), tip, W_THIN)
             self.arrow(tip, d, 2.2, 0.9)
-            self.text(tip[0] + d[0] * 1.2 + (0.3 if d[0] == 0 else 0), tip[1] + d[1] * 1.2 - (0.8 if d[1] == 0 else 0),
-                      lab, size * 0.9, "left" if d[0] >= 0 else "right")
-        self.text(o[0] - 1.8, o[1] + 1.4, name, size, "right", bold=True)
+            self.text(tip[0] + d[0] * 1.2 + (0.3 if d[0] == 0 else 0), tip[1] + d[1] * 1.2 - (1.2 if d[1] == 0 else 0),
+                      lab, size, "left" if d[0] >= 0 else "right")
+        # the name outside the part's outline, on the corner's outer side
+        self.text(o[0] + away[0] * 2.2, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
+                  name, size, "right" if away[0] < 0 else "left", bold=True)
 
     def datum(self, at, direction, letter, size=2.5):
         """ISO 5459 datum feature symbol: a filled triangle on the feature, a leader and the framed letter."""
@@ -440,11 +449,12 @@ class Sheet:
         self.polyline(base, w=0.1, close=True, fill=BLACK)
         end = (at[0] + dx * 7.0, at[1] + dy * 7.0)
         self.line((at[0] + dx * t * 1.6, at[1] + dy * t * 1.6), end, W_THIN)
-        bx, by = end[0] + dx * 2.6 - 2.6, end[1] + dy * 2.6 - 2.6
-        self.rect(bx, by, 5.2, 5.2, W_THIN)
-        self.text(bx + 2.6, by + 2.6, letter, size, "center", valign="mid", bold=True)
+        b = size * 2.4
+        bx, by = end[0] + dx * b / 2 - b / 2, end[1] + dy * b / 2 - b / 2
+        self.rect(bx, by, b, b, W_THIN)
+        self.text(bx + b / 2, by + b / 2, letter, size, "center", valign="mid", bold=True)
 
-    def tag(self, c, r, label, direction=(1, 1), size=2.3, leader=5.0):
+    def tag(self, c, r, label, direction=(1, 1), size=H_TEXT, leader=5.0):
         """A hole tag: a thin leader from the hole's edge to the label."""
         dx, dy = direction
         L = math.hypot(dx, dy)
@@ -504,8 +514,8 @@ class Sheet:
         fy = (H - 2 * margin) / ny
         for i in range(nx):
             cx = margin_left + (i + 0.5) * fx
-            self.text(cx, H - margin + 3, str(i + 1), 3.0, "center")
-            self.text(cx, margin - 6, str(i + 1), 3.0, "center")
+            self.text(cx, H - margin + 1.2, str(i + 1), 3.0, "center")
+            self.text(cx, margin - 4.2, str(i + 1), 3.0, "center")
             if i:
                 xx = margin_left + i * fx
                 self.line((xx, H - margin), (xx, H - margin + 5), W_THIN)
@@ -521,44 +531,53 @@ class Sheet:
                 self.line((W - margin, yy), (W - margin + 5, yy), W_THIN)
         self.rect(margin_left - 5, margin - 5, W - margin_left - margin + 10, H - 2 * margin + 10, W_THIN)
 
-    def table(self, x, y_top, cols, rows, size=2.3, row_h=4.6, head_size=None, title=None, title_size=2.6):
+    def table(self, x, y_top, cols, rows, size=H_TEXT, row_h=None, head_size=None, title=None, title_size=None):
         """A ruled table from its top-left corner down. cols: [(header, width mm, align)]; rows: lists of cell
-        strings. Returns the y of its bottom edge."""
+        strings, wrapped to their column (never cut). Sizes are letter heights. Returns the y of its bottom."""
         head_size = head_size or size
+        title_size = title_size or size
+        row_h = max(row_h or 0.0, size * 2.6)
+        lead = size * 1.65
         y = y_top
         total_w = sum(c[1] for c in cols)
+        th = 0.0
         if title:
             lines = title if isinstance(title, (list, tuple)) else [title]
-            th = len(lines) * title_size * 1.45 + 2.0
-            self.rect(x, y - th, total_w, th, W_THIN)
-            ty = y - 1.0 - title_size
+            wrapped = []
             for i, ln in enumerate(lines):
-                self.text(x + 1.5, ty, ln, title_size, bold=(i == 0))
-                ty -= title_size * 1.45
+                for part in self.wrap(ln, title_size, total_w - 3.0, bold=(i == 0)):
+                    wrapped.append((part, i == 0))
+            th = len(wrapped) * title_size * 1.65 + 2.2
+            self.rect(x, y - th, total_w, th, W_THIN)
+            ty = y - 1.2 - title_size
+            for ln, bold in wrapped:
+                self.text(x + 1.5, ty, ln, title_size, bold=bold)
+                ty -= title_size * 1.65
             y -= th
-        # header
-        self.rect(x, y - row_h, total_w, row_h, W_THIN)
+        # header (may wrap)
+        hl = [self.wrap(h, head_size, w - 1.6, bold=True) for h, w, al in cols]
+        hh = max(row_h, max(len(x_) for x_ in hl) * head_size * 1.6 + (row_h - head_size * 1.6))
+        self.rect(x, y - hh, total_w, hh, W_THIN)
         cx = x
-        for h, w, al in cols:
-            self.text(cx + w / 2, y - row_h / 2, h, head_size, "center", valign="mid", bold=True)
+        for (h, w, al), ls in zip(cols, hl):
+            y0 = y - hh / 2 + (len(ls) - 1) * head_size * 0.8
+            for k, ln in enumerate(ls):
+                self.text(cx + w / 2, y0 - k * head_size * 1.6, ln, head_size, "center", valign="mid", bold=True)
             cx += w
-            if cx < x + total_w - 1e-6:
-                pass
-        y -= row_h
+        y -= hh
         for r in rows:
-            # wrap long cells
             cells = []
             nlines = 1
             for (h, w, al), v in zip(cols, r):
                 ls = self.wrap(str(v), size, w - 2.0) if v not in (None, "") else [""]
                 cells.append(ls)
                 nlines = max(nlines, len(ls))
-            hgt = row_h + (nlines - 1) * size * 1.3
+            hgt = row_h + (nlines - 1) * lead
             self.rect(x, y - hgt, total_w, hgt, W_THIN)
             cx = x
             for (h, w, al), ls in zip(cols, cells):
                 for k, ln in enumerate(ls):
-                    yy = y - row_h / 2 - k * size * 1.3
+                    yy = y - row_h / 2 - k * lead
                     if al == "c":
                         self.text(cx + w / 2, yy, ln, size, "center", valign="mid")
                     elif al == "r":
@@ -567,9 +586,8 @@ class Sheet:
                         self.text(cx + 1.0, yy, ln, size, "left", valign="mid")
                 cx += w
             y -= hgt
-        # column rules
         cx = x
-        top = y_top - (th if title else 0)
+        top = y_top - th
         for h, w, al in cols[:-1]:
             cx += w
             self.line((cx, top), (cx, y), W_THIN)

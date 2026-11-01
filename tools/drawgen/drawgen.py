@@ -93,6 +93,9 @@ def main(argv=None):
             pns += list(specs.SPECS)
         bad = 0
         for pn in dict.fromkeys(pns):
+            if pn in getattr(specs, "NO_DRAWING", {}):
+                print("%s: no drawing: %s" % (pn, specs.NO_DRAWING[pn]))
+                continue
             if pn not in specs.SPECS:
                 print("%s: not registered in tools/drawgen/specs.py" % pn)
                 bad += 1

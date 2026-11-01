@@ -365,11 +365,18 @@ def spigot_origin(part):
     if not rounds or not slots:
         return None
     b = rounds[0]
-    return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": slots[0],
+    # C must stop the turn about B. The slot runs across the rail (R-J17: the panel closes onto its neighbour across
+    # the corner gap), so it can't; the frame's room-side face, square to the wall and parallel to B, does.
+    k = min(range(3), key=lambda i: part.size[i])
+    toward_centre = -1.0 if part.box[k] + part.box[3 + k] > 0 else 1.0
+    c_normal = tuple(toward_centre if i == k else 0.0 for i in range(3))
+    c_plane = part.box[3 + k] if toward_centre > 0 else part.box[k]
+    return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, c_plane),
+            "slot": slots[0],
             "words": {"A": "%s of %s (the seat on the band)" % (FACE_WORDS.get(axis_name(b.f.normal), "face"),
                                                               b.body.name),
                       "B": "axis of the spigot hole %s" % "{B}",
-                      "C": "the spigot slot %s" % "{C}"}}
+                      "C": "the room-side face (%s %s), which stops the turn about B" % ("XYZ"[k], fmt(c_plane))}}
 
 
 def corner_origin(part, corner):
@@ -508,8 +515,11 @@ def plan_views(part, spec):
     return pl
 
 
-def view_prims(shape, view, scale, min_paper=0.6):
-    pr = project.project(shape, view)
+def view_prims(shape, view, scale, min_paper=0.6, bodies=None, hidden_from=None):
+    if bodies is not None:
+        pr = project.project_bodies(bodies, view, hidden_from)
+    else:
+        pr = project.project(shape, view)
     # ISO 128-20 practice: leave out hidden lines that print on top of a visible one, and hidden scraps too
     # short to read at this scale
     pr = project.drop_hidden_near(pr, 0.5 / scale)
@@ -571,7 +581,7 @@ def draw(part, spec, out_path, today=None):
     sh = Sheet(size, title="%s %s" % (part.pn, part.name), subject="%s %s %s" % (part.dwg_name, part.rev, "DRAFT"),
                keywords="drawgen; D-112; source %s sha256:%s" % (inputs.rel(part.step), inputs.sha12(part.step)))
     W, H = sh.W, sh.H
-    right_w = spec.get("right_w", 300.0)
+    right_w = spec.get("right_w", spec.get("table_w", TABLE_W) + 16.0)
     avail_w = W - 20 - 10 - right_w - 20
     avail_h = H - 20 - 30
     P = pl.principal
@@ -586,10 +596,10 @@ def draw(part, spec, out_path, today=None):
         v = pl.rel[g.vname]
         g.sview = View("section", v.n, v.x, v.y)
         sec_ext[i] = ext_of(g.sview, g.kept)
-    GAP = 30.0          # between stacked views: the title under a view and the tags over the next one
-    GAP_PB = 50.0       # under the principal: its overall dimension, its title, then the next view's tags
-    GAP_PL = 38.0       # left of the principal: its height dimension
-    GAP_PT = 46.0 if any("STILE" in (b.name or "").upper() for b in part.bodies) else GAP   # member positions
+    GAP = 40.0          # between stacked views: the title under a view, then the next view's tags, dimensions
+    GAP_PB = 62.0       # under the principal: its overall dimension, its title, then the next view's dimensions
+    GAP_PL = 40.0       # left of the principal: its height dimension
+    GAP_PT = 52.0       # over the principal: member positions or section letters and datum symbols
 
     def block(scale, rear_down=False):
         wx = lambda e: (e[2] - e[0]) * scale
@@ -625,16 +635,28 @@ def draw(part, spec, out_path, today=None):
 
     # ---- the view objects
     vds = {}
+    shapes = [b.shape for b in part.bodies]
     for nm in sorted(pl.plain, key=order.index):
         v = pl.rel[nm]
-        vd = VD(v, view_prims(part.shape, v, scale), scale)
+        # hidden detail only of the members whose face this view shows (all of them in the principal view)
+        own = {id(ft.body) for g in pl.groups if g.view == nm for ft in g.feats}
+        hid = None if nm == "principal" or not own else {i for i, b in enumerate(part.bodies) if id(b) in own}
+        vd = VD(v, view_prims(part.shape, v, scale, bodies=shapes, hidden_from=hid), scale)
         vd.name = nm
         vds[nm] = vd
     letters = iter("ABCDEFGHJKLMNPRSTUVWXYZ")
     secs = []
     for g in pl.sections:
         v = g.sview
-        vd = VD(v, view_prims(g.kept, v, scale), scale, "section")
+        own = {id(ft.body) for ft in g.feats}
+        kept, hid = [], set()
+        for b in part.bodies:
+            k_ = geom.half_space_keep(b.shape, g.section_point, g.normal)
+            if geom._solids(k_):
+                if id(b) in own:
+                    hid.add(len(kept))
+                kept.append(k_)
+        vd = VD(v, view_prims(g.kept, v, scale, bodies=kept, hidden_from=hid), scale, "section")
         for f in cut_faces(g.kept, g.section_point, g.normal):
             vd.hatch.append(face_loops(f, v))
         g.letter = next(letters)
@@ -676,7 +698,7 @@ def draw(part, spec, out_path, today=None):
         sum(s.size()[1] + GAP for s in secs if s.group.vname == "below") + (GAP_PT - GAP)
     down_h = bh - 2 * GAP - ph - up_h
     block_h = up_h + ph + down_h
-    top = min(H - 10 - 12, (H - 10 - 12 + 24) / 2 + block_h / 2 + 6)
+    top = H - 10 - 30           # top-aligned (room above for the top view's dimensions and datum symbols)
     px = x_left + left_w
     py = top - up_h - ph - 4
     pvd.place_ll(px, py)
@@ -731,14 +753,23 @@ def draw(part, spec, out_path, today=None):
 
     main_right = max([v.box()[2] for v in vds.values()] + [s.box()[2] for s in secs])
     main_bottom = min([v.box()[1] for v in vds.values()] + [s.box()[1] for s in secs])
-    # removed sections: a column right of the main block
-    rx = main_right + GAP + 18
-    ry = H - 10 - 30
-    for vd in removed:
-        w, h = vd.size()
-        vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
-        ry = ry - h - 58
-    pl.mid = (main_right + GAP, ry + 12)
+    # removed sections: a column between the views and the tables when it is wide enough, else a row under the views
+    mid_x0 = main_right + GAP + 18
+    mid_x1 = W - 10 - spec.get("table_w", TABLE_W) - 4 - 10
+    need_w = (max(vd.size()[0] for vd in removed) + 70) if removed else 0
+    if removed and mid_x1 - mid_x0 >= need_w:
+        rx, ry = mid_x0, H - 10 - 30
+        for vd in removed:
+            w, h = vd.size()
+            vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
+            ry = ry - h - 58
+    elif removed:
+        rx, ry = 20 + GAP_PL + 14, main_bottom - 34
+        for vd in removed:
+            w, h = vd.size()
+            vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
+            rx += w + 80
+    pl.mid = (main_right + GAP, 0)
     report = {"pn": part.pn, "rev": part.rev, "scale": scale, "sheet": size, "views": [], "holes": []}
 
     # ---- draw geometry
@@ -841,7 +872,9 @@ def draw(part, spec, out_path, today=None):
         vd.origin_name = "O%d" % k
         o2 = vd.S(vd.view.to2d(O))
         if part.features:
-            sh.origin_mark(o2, vd.origin_name)
+            bx = vd.box()
+            away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+            sh.origin_mark(o2, vd.origin_name, away=away)
         onames[id(vd)] = vd.origin_name
     sh.flush()
     return sh, pl, vds, secs, removed, dat, scale, report, groups
@@ -923,7 +956,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         its title gets the title in short lines starting at its left edge (so it never runs into a neighbour)."""
         x0, y0, x1, y1 = vd.box()
         cx = (x0 + x1) / 2
-        y = y0 - (24.5 if vd is pvd else 9.5) - getattr(vd, "title_drop", 0.0)
+        y = y0 - (28.0 if vd is pvd else 10.0) - getattr(vd, "title_drop", 0.0)
         if x1 - x0 >= max(sh.text_width(head, 3.5, True), sh.text_width(sub, 2.5)) + 4:
             sh.text(cx, y, head, 3.5, "center", bold=True)
             sh.text(cx, y - 4.2, sub, 2.5, "center")
@@ -1032,14 +1065,23 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         sh.dim_linear((x0, y0), (x0, y1), "left", 6.0, fmt(h), 2.5)
     # ---- datums
     if dat.get("B"):
-        Bf, Cf = dat["B"], dat["C"]
+        Bf = dat["B"]
+        cn, cp = dat["C_plane"]
         for nm, vd in vds.items():
             if nm == Bf.group.view and _end_on(Bf, vd.view):
                 cb = vd.S(vd.view.to2d(Bf.f.entry))
                 rb = Bf.f.dia / 2 * vd.scale
                 sh.datum((cb[0] - rb * 0.7, cb[1] - rb * 0.7), (-0.6, -1), "B")
-                cc = vd.S(vd.view.to2d(Cf.f.entry))
-                sh.datum((cc[0] + Cf.f.width / 2 * vd.scale * 0.7, cc[1] - Cf.f.width / 2 * vd.scale * 0.7), (0.6, -1), "C")
+                # C on the room-side face, where this view shows it edge on
+                n2 = vd.view.to2d(cn)
+                if abs(n2[1]) > 0.5:
+                    yy = vd.view.to2d(tuple(cp if abs(cn[i]) > 0.5 else 0.0 for i in range(3)))[1]
+                    e = vd.extent
+                    # where it is farthest from every tagged hole along the edge (clear of the tags)
+                    xs = [vd.view.to2d(ft.f.entry)[0] for g in pl.groups if g.view == nm for ft in g.feats]
+                    cands = [e[0] + t * (e[2] - e[0]) for t in (0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)]
+                    xc = max(cands, key=lambda x: min([abs(x - h) for h in xs] or [1e9]))
+                    sh.datum(vd.S((xc, yy)), (0, n2[1]), "C")
         # A: the seat face, on the principal view's edge
         a_off = vdot(O, dat["A_normal"])
         x0, y0, x1, y1 = pvd.box()
@@ -1173,14 +1215,14 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         lab = "STILE CENTRE LINES FROM THE FRONT END"
         ymax = level + 2.0 + max(sh.text_width(fmt(v), 2.5) for _x, v in marks) + 3.0
         if end == e0[0]:
-            sh.text(x_front, ymax, lab, 2.2, "left")
+            sh.text(x_front, ymax, lab, 2.5, "left")
         else:
-            sh.text(x_front, ymax, lab, 2.2, "right")
+            sh.text(x_front, ymax, lab, 2.5, "right")
     # the spigot hole and slot from the frame's end faces (joints register R-J13: 100 from each end)
     if dat.get("B") and "below" in vds:
         vd = vds["below"]
         ve = vd.extent
-        for f in (dat["B"], dat["C"]):
+        for f in (dat["B"], dat["slot"]):
             c = vd.view.to2d(f.f.entry)
             end_x = ve[0] if abs(c[0] - ve[0]) < abs(c[0] - ve[2]) else ve[2]
             p1 = vd.S((end_x, ve[3]))
@@ -1212,40 +1254,39 @@ def cut_list(part):
     return rows
 
 
+TABLE_W = 262.0
+
+
 def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
+    """Sheet 1: member balloons on the principal view and one hole table per face in the right column."""
     W, H = sh.W, sh.H
     P = pl.principal
     O = dat["O"]
     pvd = vds["principal"]
-    right_x0 = W - 10 - spec.get("table_w", 186.0)
-    tw = spec.get("table_w", 186.0)
+    tw = spec.get("table_w", TABLE_W)
+    right_x0 = W - 10 - tw - 4
     y = H - 10 - 6
-    sz = 2.5
-    # ---- member balloons and cut list (frames)
+    # ---- member balloons (frames): item numbers of the cut list on sheet 2
     members = cut_list(part)
     for m in members:
         for b in m["bodies"]:
             e = project.extent(project.project(b.shape, P))
-            c = pvd.S(((e[0] + e[2]) / 2, (e[1] + e[3]) / 2))
             horiz = (e[2] - e[0]) > (e[3] - e[1])
             if horiz:
                 anchor = pvd.S((e[0] + 0.62 * (e[2] - e[0]), (e[1] + e[3]) / 2))
-                off = (anchor[0] + 6, anchor[1] + (9 if anchor[1] > (pvd.box()[1] + pvd.box()[3]) / 2 else -9) * 1.0)
-                if anchor[1] > (pvd.box()[1] + pvd.box()[3]) / 2:
-                    off = (anchor[0] + 6, anchor[1] - 12)
-                else:
-                    off = (anchor[0] + 6, anchor[1] + 12)
+                upper = anchor[1] > (pvd.box()[1] + pvd.box()[3]) / 2
+                off = (anchor[0] + 7, anchor[1] - 14 if upper else anchor[1] + 14)
             else:
                 anchor = pvd.S(((e[0] + e[2]) / 2, e[1] + 0.55 * (e[3] - e[1])))
-                off = (anchor[0] + 9, anchor[1] + 6)
-            sh.circle(anchor, 0.5, 0.18, fill=(0, 0, 0))
-            sh.line(anchor, (off[0] - 3.2 * (1 if off[0] > anchor[0] else -1) * 0.0, off[1]), 0.18)
-            sh.circle((off[0] + 3.0, off[1]), 3.0, 0.25)
-            sh.text(off[0] + 3.0, off[1], str(m["item"]), 3.0, "center", valign="mid", bold=True)
+                off = (anchor[0] + 10, anchor[1] + 7)
+            sh.circle(anchor, 0.6, 0.18, fill=(0, 0, 0))
+            sh.line(anchor, off, 0.18)
+            sh.circle((off[0] + 4.0, off[1]), 4.0, 0.25)
+            sh.text(off[0] + 4.0, off[1], str(m["item"]), 3.5, "center", valign="mid", bold=True)
     sh.flush()
     # ---- hole tables, one per face
-    cols = [("TAG", 11, "c"), ("X (mm)", 19, "r"), ("Y (mm)", 19, "r"), ("SIZE", 26, "l"), ("DEPTH", 30, "l"),
-            ("FEATURE (register) AND FITS", tw - 105, "l")]
+    cols = [("TAG", 14, "c"), ("X (mm)", 24, "r"), ("Y (mm)", 24, "r"), ("SIZE", 40, "l"), ("DEPTH", 42, "l"),
+            ("FEATURE (register) AND FITS", tw - 144, "l")]
     for g in groups:
         vd = vds.get(g.view) if g.view else g.vd
         oname = vd.origin_name
@@ -1262,7 +1303,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
             if ft.kind == "keyhole":
                 a2 = v.to2d(ft.f.along)
                 size_t += " toward %s%s" % ("+" if (a2[0] + a2[1]) > 0 else "-", "X" if abs(a2[0]) > 0.5 else "Y")
-            rows.append([ft.tag, fmt(x), fmt(yv), size_t, wall_word(ft.f, ft.body), feature_text(ft)])
+            rows.append([ft.tag, "%.2f" % x, "%.2f" % yv, size_t, wall_word(ft.f, ft.body), feature_text(ft)])
         if g.coax_of is not None:
             rm = [r_ for r_ in removed if any(f in st for st in r_.r.all for f in g.feats)]
             twins = sorted(ft.twin.tag for ft in g.feats)
@@ -1270,45 +1311,47 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                 twins[0] + ("-" + twins[-1] if len(twins) > 1 else ""), VIEW_WORDS[g.view].lower(),
                 ", ".join("%s-%s" % (r_.letter, r_.letter) for r_ in rm) or "-")
         elif g.view:
-            where = "seen in the %s" % VIEW_WORDS[g.view].lower()
+            where = "seen in the %s" % (("view %s" % vd.letter) if getattr(vd, "letter", None)
+                                        else VIEW_WORDS[g.view].lower())
         else:
             where = "seen in section %s-%s" % (vd.letter, vd.letter)
         head = ["HOLES %s-%s: %s" % (g.feats[0].tag, g.feats[-1].tag, face_title(part, g)),
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
-        y = sh.table(right_x0, y, cols, rows, size=2.3, row_h=4.4, title=head, title_size=2.4) - 4.0
-    # ---- cut list
-    if members:
-        ccols = [("ITEM", 11, "c"), ("MEMBER", 40, "l"), ("PROFILE (mm)", 30, "l"), ("CUT LENGTH (mm)", 27, "r"),
-                 ("QTY", 10, "c"), ("ENDS, TOLERANCE", tw - 118, "l")]
-        crow = []
-        for m in members:
-            crow.append([str(m["item"]), m["member"], m["profile"], m["length"], m["qty"],
-                         ("%s; %s" % ("square-cut ends" if "square" in (m["note"] + m["tol"]).lower() else m["note"],
-                                      m["tol"].split(",")[0])).strip("; ")])
-        mat = part.row.get("material", "")
-        y = sh.table(right_x0, y, ccols, crow, size=2.3, row_h=4.4,
-                     title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""),
-                            "aluminium 6063-T6 tube: %s" % mat.split(":", 1)[-1].strip()],
-                     title_size=2.4) - 4.0
-    report_y = y
-    return report_y
+        y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
+    return y, members
+
+
+def cut_list_table(sh, part, members, x, y, width):
+    ccols = [("ITEM", 14, "c"), ("MEMBER", 52, "l"), ("PROFILE (mm)", 40, "l"), ("CUT LENGTH (mm)", 34, "r"),
+             ("QTY", 14, "c"), ("ENDS, TOLERANCE", width - 154, "l")]
+    crow = []
+    for m in members:
+        crow.append([str(m["item"]), m["member"], m["profile"], m["length"], m["qty"],
+                     ("%s; %s" % ("square-cut ends" if "square" in (m["note"] + m["tol"]).lower() else m["note"],
+                                  m["tol"].split(",")[0])).strip("; ")])
+    mat = part.row.get("material", "")
+    return sh.table(x, y, ccols, crow, size=2.5,
+                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""),
+                           "aluminium 6063-T6 tube: %s" % mat.split(":", 1)[-1].strip()], title_size=2.5)
 
 
 def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     P = pl.principal
     notes = []
     notes.append("UNITS: mm. Do not scale the drawing. ISO first-angle projection (ISO 5456-2), symbol in the "
-                 "title block. Dimensions to ISO 129-1.")
+                 "title block. Dimensions to ISO 129-1. Sheet 1: views, sections and hole tables; sheet 2: these "
+                 "general notes%s." % (", the cut list" if cut_list(part) else "") + "")
     vw = "the room side" if part.pod_system and pl.principal.pod_name in ("right", "front", "top") else "its side"
     notes.append("Views: the principal view looks %s (%s); every view's title gives its own X and Y and how they "
                  "map to the %s axes (conventions section 4). On every view X runs right and Y up." % (
                      project.LOOK_WORDS.get(P.looking, P.looking), mapping_words(P, part.pod_system),
                      "pod" if part.pod_system else "part"))
     if dat.get("B"):
-        notes.append("Datums (ISO 5459): A = %s; B = axis of the spigot hole %s; C = the spigot slot %s (joints "
-                     "register R-J13). Origin O = datum B's axis on datum A; O1, O2... are O seen in each view. "
-                     "Hole positions in the tables are theoretically exact from O." % (
-                         dat["words"]["A"], dat["B"].tag, dat["C"].tag))
+        notes.append("Datums (ISO 5459): A = %s; B = axis of the spigot hole %s (joints register R-J6, R-J13); C = %s "
+                     "(the spigot slot %s runs across the rail, R-J17, so it locates along the rail only). Origin O = "
+                     "datum B's axis on datum A; O1, O2... are O seen in each view. Hole positions in the tables are "
+                     "theoretically exact from O." % (
+                         dat["words"]["A"], dat["B"].tag, dat["words"]["C"], dat["slot"].tag))
     elif not part.features:
         pass        # nothing is located from a datum: the overall sizes define the part
     else:
@@ -1345,83 +1388,75 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     return notes
 
 
-def title_block(sh, part, spec, scale, removed, today):
-    W = sh.W
-    x0 = W - 10 - spec.get("table_w", 186.0)
-    w = W - 10 - x0
-    y0 = 10.0
-    rows_h = [7.0, 11.0, 11.0, 9.0, 9.0, 9.0]
-    h = sum(rows_h)
-    sh.rect(x0, y0, w, h, 0.7)
-    ys = [y0 + h]
-    for rh in rows_h:
-        ys.append(ys[-1] - rh)
-    for yy in ys[1:-1]:
-        sh.line((x0, yy), (x0 + w, yy), W_THIN)
+TB_W = 180.0      # ISO 7200: the title block is at most 180 mm wide
 
-    def cell(xa, xb, ytop, yb, label, value, vsize=2.8, bold=False):
-        sh.line((xa, ytop), (xa, yb), W_THIN) if xa > x0 + 0.1 else None
-        sh.text(xa + 1.2, ytop - 2.4, label, 1.8)
-        if value:
-            lines = sh.wrap(value, vsize, xb - xa - 2.4, bold)
-            yy = ytop - 2.4 - vsize - 0.6
-            for ln in lines[:2]:
-                sh.text(xa + 1.2, yy, ln, vsize, bold=bold)
-                yy -= vsize * 1.15
+
+def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
+    """ISO 7200 title block at the sheet's lower right: rows sized to their wrapped text, letter height 2.5 mm
+    or more for every value (the field names 2.0). Returns its top y."""
+    W = sh.W
+    w = TB_W
+    x0 = W - 10 - w
     row = part.row
-    # row 0: project, status
-    r0t, r0b = ys[0], ys[1]
-    cell(x0, x0 + 70, r0t, r0b, "PROJECT", "", 2.6)
-    sh.text(x0 + 16, r0t - 5.2, "Spaceship (FocusPod v2)", 2.6, bold=True)
-    cell(x0 + 70, x0 + 112, r0t, r0b, "STATUS", "")
-    sh.text(x0 + 82, r0t - 5.2, "DRAFT", 2.8, bold=True)
-    cell(x0 + 112, x0 + 150, r0t, r0b, "DATE", "")
-    sh.text(x0 + 122, r0t - 5.2, today, 2.6)
-    cell(x0 + 150, x0 + w, r0t, r0b, "SHEET", "")
-    sh.text(x0 + 163, r0t - 5.2, "1/1", 2.8)
-    # row 1: title
-    r1t, r1b = ys[1], ys[2]
-    sh.text(x0 + 1.2, r1t - 2.4, "TITLE", 1.8)
-    sh.text(x0 + 1.2, r1t - 6.6, part.name, 3.5, bold=True)
-    if part.name_vi:
-        sh.text(x0 + 1.2, r1t - 10.0, part.name_vi, 2.5)
-    # row 2: part number, rev, drawing number
-    r2t, r2b = ys[2], ys[3]
-    sh.text(x0 + 1.2, r2t - 2.4, "PART NUMBER", 1.8)
-    sh.text(x0 + 1.2, r2t - 9.0, part.pn, 6.0, bold=True)
-    sh.line((x0 + 32, r2t), (x0 + 32, r2b), W_THIN)
-    sh.text(x0 + 33.2, r2t - 2.4, "REV", 1.8)
-    sh.text(x0 + 33.2, r2t - 9.0, part.rev, 5.0, bold=True)
-    sh.line((x0 + 48, r2t), (x0 + 48, r2b), W_THIN)
-    sh.text(x0 + 49.2, r2t - 2.4, "DRAWING NUMBER (FILE)", 1.8)
-    dn = part.dwg_name
-    sh.text(x0 + 49.2, r2t - 7.0, dn if sh.text_width(dn, 2.6) < w - 52 else dn[:len(dn) // 2], 2.6, bold=True)
-    if sh.text_width(dn, 2.6) >= w - 52:
-        sh.text(x0 + 49.2, r2t - 10.0, dn[len(dn) // 2:], 2.6, bold=True)
-    # row 3: material, finish
-    r3t, r3b = ys[3], ys[4]
-    sh.text(x0 + 1.2, r3t - 2.4, "MATERIAL", 1.8)
-    sh.text(x0 + 1.2, r3t - 5.6, "MATERIAL: " + (row.get("material") or "").strip(), 2.2)
-    sh.text(x0 + 1.2, r3t - 8.4, "FINISH: " + ((row.get("finish") or "").strip() or "none (as supplied)"), 2.2)
-    # row 4: scale, size, units, projection, mass
-    r4t, r4b = ys[4], ys[5]
+    LAB, VAL = 2.0, 2.5
+    mass = (row.get("mass_each_kg") or row.get("unit_mass_kg") or "").strip()
     sc = scale_text(spec["_scale"]) + ("" if not removed else " (sections %s %s)" % (
         " ".join("%s-%s" % (vd.letter, vd.letter) for vd in removed), scale_text(removed[0].scale)))
-    cell(x0, x0 + 62, r4t, r4b, "SCALE", sc, 2.4)
-    cell(x0 + 62, x0 + 76, r4t, r4b, "SIZE", sh.size, 2.6)
-    cell(x0 + 76, x0 + 100, r4t, r4b, "UNITS", "UNITS: mm", 2.6, True)
-    mass = (row.get("mass_each_kg") or row.get("unit_mass_kg") or "").strip()
-    cell(x0 + 100, x0 + 132, r4t, r4b, "MASS", ("%s kg (calculation)" % mass) if mass else "see parts list", 2.3)
-    cell(x0 + 132, x0 + w, r4t, r4b, "PROJECTION", "", 2.3)
-    sh.first_angle_symbol(x0 + 142, r4b + 1.3, 5.2)
-    sh.text(x0 + 163, r4b + 2.4, "ISO first angle", 1.9)
-    # row 5: made by, approved, tolerance
-    r5t, r5b = ys[5], ys[6]
-    cell(x0, x0 + 62, r5t, r5b, "MADE BY", "tools/drawgen (D-112)", 2.4)
-    cell(x0 + 62, x0 + 100, r5t, r5b, "APPROVED", "not released", 2.4)
-    cell(x0 + 100, x0 + w, r5t, r5b, "TOLERANCES", "TOLERANCE: see note; not ISO 2768", 2.3)
+    # rows of cells: (width share, label, value, value size, bold)
+    rows = [
+        [(70, "PROJECT", "Spaceship (FocusPod v2)", VAL, True), (36, "STATUS", "DRAFT", 3.0, True),
+         (40, "DATE", today, VAL, False), (34, "SHEET", "%d/%d" % (sheet_no, sheets), 3.0, True)],
+        [(180, "TITLE", part.name, 3.5, True)] + ([] if not part.name_vi else []),
+        [(40, "PART NUMBER", part.pn, 7.0, True), (22, "REV", part.rev, 5.0, True),
+         (118, "DRAWING NUMBER (FILE)", part.dwg_name, VAL, True)],
+        [(180, "MATERIAL", "MATERIAL: " + (row.get("material") or "").strip(), VAL, False)],
+        [(180, "FINISH", "FINISH: " + ((row.get("finish") or "").strip() or "none (as supplied)"), VAL, False)],
+        [(62, "SCALE", sc, VAL, False), (18, "SIZE", sh.size, VAL, False), (32, "UNITS", "UNITS: mm", VAL, True),
+         (68, "MASS", ("%s kg (calculation)" % mass) if mass else "see parts list", VAL, False)],
+        [(62, "MADE BY", "tools/drawgen (D-112)", VAL, False), (40, "APPROVED", "not released", VAL, False),
+         (78, "TOLERANCES", "TOLERANCE: see the notes; not ISO 2768", VAL, False)],
+    ]
+    proj_h = 12.0
+    heights = []
+    wrapped = []
+    for r in rows:
+        cells = []
+        hmax = 0.0
+        for cw, lab, val, vs, bold in r:
+            ls = sh.wrap(val, vs, cw - 2.4, bold) if val else []
+            if lab == "TITLE" and part.name_vi:
+                ls = [(l_, 3.5, True) for l_ in ls] + [(l_, VAL, False) for l_ in sh.wrap(part.name_vi, VAL, cw - 2.4)]
+            else:
+                ls = [(l_, vs, bold) for l_ in ls]
+            hh = 1.2 + LAB + 1.6 + sum(z[1] * 1.45 for z in ls) + 1.0
+            hmax = max(hmax, hh)
+            cells.append((cw, lab, ls))
+        heights.append(hmax)
+        wrapped.append(cells)
+    total = sum(heights) + proj_h
+    y_top = 10.0 + total
+    sh.rect(x0, 10.0, w, total, 0.7)
+    y = y_top
+    for cells, hh in zip(wrapped, heights):
+        sh.line((x0, y - hh), (x0 + w, y - hh), W_THIN)
+        cx = x0
+        for cw, lab, ls in cells:
+            if cx > x0 + 0.1:
+                sh.line((cx, y), (cx, y - hh), W_THIN)
+            sh.text(cx + 1.2, y - 1.2 - LAB, lab, LAB)
+            yy = y - 1.2 - LAB - 1.6
+            for txt, vs, bold in ls:
+                yy -= vs
+                sh.text(cx + 1.2, yy, txt, vs, bold=bold)
+                yy -= vs * 0.45
+            cx += cw
+        y -= hh
+    # projection row: the first-angle symbol and its name
+    sh.text(x0 + 1.2, y - 1.2 - LAB, "PROJECTION", LAB)
+    sh.first_angle_symbol(x0 + 40, y - proj_h + 2.5, 6.5)
+    sh.text(x0 + 70, y - proj_h / 2 - 1.2, "ISO first angle (ISO 5456-2)", VAL)
     sh.flush()
-    return y0 + h
+    return y_top
 
 
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
@@ -1436,23 +1471,25 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
     spec = dict(spec)
     spec["_scale"] = scale
     annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
-    ty = tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
-    tb_top = title_block(sh, part, spec, scale, removed, today)
-    # notes: in the middle column under the removed sections when it is wide enough, else below the views
-    mx, my = pl.mid
-    mid_w = sh.W - 10 - spec.get("table_w", 186.0) - 12 - mx
-    if mid_w >= 150:
-        nx, nw, ny = mx, mid_w, my
-    else:
-        main_bottom = min([v.box()[1] for v in vds.values()] + [s.box()[1] for s in secs]) - 30
-        nx, nw = 28.0, sh.W - 10 - spec.get("table_w", 186.0) - 28.0 - 12
-        ny = min(main_bottom, 150.0)
-    sh.text(nx, ny, "NOTES", 3.0, bold=True)
-    ny -= 5.0
+    ty, _members = tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
+    tb_top = title_block(sh, part, spec, scale, removed, today, 1, 2)
+    if ty < tb_top + 4:
+        report["warning"] = "the tables run into the title block"
+    sh.border()
+    sh.flush()
+    # ---- sheet 2: GENERAL NOTES, the cut list and a small isometric (guideline 6.1: general rules on their own
+    # sheet, specific notes near their feature on sheet 1)
+    sh.new_page()
+    nx, ny = 30.0, sh.H - 22.0
+    nw = min(sh.W - 10 - TB_W - 30.0 - 24.0, 360.0)        # lines a reader can follow
+    sh.text(nx, ny, "GENERAL NOTES", 3.5, bold=True)
+    ny -= 8.0
     for i, t in enumerate(notes_list(part, spec, pl, vds, secs, removed, dat, groups), 1):
         sh.text(nx, ny, "%d." % i, 2.5)
-        ny = sh.paragraph(nx + 5, ny, t, 2.5, nw - 6, lead=1.42) - 1.2
-    # a small isometric view for identification (guideline 6.1), in the free space under the notes
+        ny = sh.paragraph(nx + 7, ny, t, 2.5, nw - 8, lead=1.6) - 2.0
+    members = cut_list(part)
+    if members:
+        ny = cut_list_table(sh, part, members, nx, ny - 6.0, min(nw, 330.0)) - 6.0
     if spec.get("iso", True):
         P = pl.principal
         n_iso = vnorm(vadd(vadd(P.n, vmul(P.x, -1.0)), P.y))
@@ -1460,34 +1497,36 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
         iv = View("iso", n_iso, x_iso)
         prims = [p_ for p_ in project.project(part.shape, iv) if p_.vis]
         e = project.extent(prims)
-        box_w, box_h = (nw if mid_w >= 150 else 150.0), max(30.0, ny - 22.0 - 30.0)
-        if box_h > 40:
-            si = None
-            for cand in ISO_SCALES:
-                if (e[2] - e[0]) * cand <= box_w * 0.8 and (e[3] - e[1]) * cand <= box_h * 0.8:
-                    si = cand
-                    break
-            if si:
-                ivd = VD(iv, prims, si, "iso")
-                cx = nx + box_w / 2
-                cy = 22.0 + 12.0 + box_h / 2
-                ivd.off = (cx - si * (e[0] + e[2]) / 2, cy - si * (e[1] + e[3]) / 2)
-                for p_ in prims:
-                    if p_.kind == "line":
-                        sh.line(ivd.S(p_.p), ivd.S(p_.q), 0.35)
-                    elif p_.kind == "arc":
-                        sh.arc(ivd.S(p_.c), p_.r * si, p_.a0, p_.a1, 0.35)
-                    else:
-                        sh.bezier([ivd.S(q) for q in p_.pts], 0.35)
-                sh.flush()
-                bx = ivd.box()
-                sh.text((bx[0] + bx[2]) / 2, bx[1] - 8.0, "ISOMETRIC VIEW  %s" % scale_text(si), 3.0, "center",
-                        bold=True)
-                sh.text((bx[0] + bx[2]) / 2, bx[1] - 11.8, "for identification only; seen from the principal "
-                        "view's side, above and to the left", 2.3, "center")
+        box_x0, box_w = nx, nw
+        box_h = ny - 30.0 - 20.0
+        right_free = sh.W - 10 - (nx + nw) - 20
+        if right_free > 200:    # to the right of the notes, over the title block
+            box_x0, box_w, box_h = nx + nw + 20, right_free, sh.H - 20 - tb_top - 40
+        elif box_h < 80:        # beside the title block instead
+            box_x0, box_w, box_h = sh.W - 10 - TB_W - 10, TB_W, sh.H - 20 - tb_top - 40
+        si = None
+        for cand in ISO_SCALES:
+            if (e[2] - e[0]) * cand <= box_w * 0.85 and (e[3] - e[1]) * cand <= box_h * 0.85:
+                si = cand
+                break
+        if si:
+            ivd = VD(iv, prims, si, "iso")
+            cx = box_x0 + box_w / 2
+            cy = (ny - 10.0 + 30.0) / 2 if box_x0 == nx else tb_top + 20 + box_h / 2
+            ivd.off = (cx - si * (e[0] + e[2]) / 2, cy - si * (e[1] + e[3]) / 2)
+            for p_ in prims:
+                if p_.kind == "line":
+                    sh.line(ivd.S(p_.p), ivd.S(p_.q), 0.35)
+                elif p_.kind == "arc":
+                    sh.arc(ivd.S(p_.c), p_.r * si, p_.a0, p_.a1, 0.35)
+                else:
+                    sh.bezier([ivd.S(q) for q in p_.pts], 0.35)
+            sh.flush()
+            bx = ivd.box()
+            sh.text((bx[0] + bx[2]) / 2, bx[1] - 9.0, "ISOMETRIC VIEW  %s" % scale_text(si), 3.5, "center", bold=True)
+            sh.text((bx[0] + bx[2]) / 2, bx[1] - 14.0, "for identification only", 2.5, "center")
+    title_block(sh, part, spec, scale, removed, today, 2, 2)
     sh.border()
-    if ty < tb_top + 4:
-        report["warning"] = "the tables run into the title block"
     report["dwg"] = part.dwg_name
     report["tags"] = {ft.tag: {"x3": ft.f.entry, "dia": ft.f.dia, "kind": ft.kind} for ft in part.features}
     report["origin"] = dat["O"]
@@ -1533,5 +1572,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             "placement": ({"assembly": part.placement["assembly"], "m": part.placement["m"],
                            "t": part.placement["shift"]} if part.placement else None),
             "sheet_h": sh.H, "sources": srcs, "origin": dat["O"],
-            "datums": {"B": dat["B"].tag if dat.get("B") else None, "C": dat["C"].tag if dat.get("C") else None},
+            "datums": {"B": dat["B"].tag if dat.get("B") else None,
+                       "C": ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
+                       if dat.get("C_plane") else None},
             "views": views, "features": feats}
