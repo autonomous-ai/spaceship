@@ -108,6 +108,12 @@ class Sheet:
         for p, q in segs:
             self.grid.add(p, q)
 
+    def reserve_lines(self, segs):
+        """Lines that are drawn later at a place fixed now (an origin's circle and arrows): every label placed before
+        them keeps clear of them already."""
+        for p, q in segs:
+            self.grid.add(p, q)
+
     def _rec(self, pts, close=False):
         """Remember a drawn stroke's segments (labels placed later keep clear of them)."""
         for k in range(len(pts) - 1):
@@ -482,12 +488,14 @@ class Sheet:
         self.shape.finish(width=0.1 * MM, color=BLACK, fill=BLACK, even_odd=True, closePath=True)
 
     # ------------------------------------------------------------ dimensions (ISO 129-1)
-    def dim_linear(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5, slide=False):
+    def dim_linear(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5, slide=False, avoid=()):
         """A linear dimension between sheet points p1 and p2, measured horizontally (side 'up'/'down') or
         vertically ('left'/'right'); the dimension line sits gap mm beyond the farther point on that side. The
         value sits on the far side of the line from the part, centred, or beside the line when it doesn't fit
         between the arrows (ISO 129-1). slide: a value beside the line moves out along it, the line extended, until
-        it touches no other text and no line."""
+        it touches no other text and no line. avoid: x spans of lines drawn later across a horizontal dimension (a
+        frame's stile ordinates): its value moves off the middle, along the line, to the nearest place clear of them
+        (ISO 129-1 allows the value off the middle)."""
         tw = self.text_width(text, size)
         if side in ("up", "down"):
             sgn = 1 if side == "up" else -1
@@ -506,7 +514,13 @@ class Sheet:
                 self.arrow(a, (1, 0))
                 self.arrow(b, (-1, 0))
             if tw + 2 <= span:
-                self.text((a[0] + b[0]) / 2, ty, text, size, "center")
+                cx = (a[0] + b[0]) / 2
+                if avoid:
+                    clear = lambda c: not any(c - tw / 2 - 1.0 < x1 and x0 < c + tw / 2 + 1.0 for x0, x1 in avoid)
+                    steps = [cx + s * k * 2.5 for k in range(1, int(span / 5.0) + 1) for s in (-1, 1)]
+                    cx = next((c for c in [cx] + steps
+                               if a[0] + tw / 2 + 1.0 <= c <= b[0] - tw / 2 - 1.0 and clear(c)), cx)
+                self.text(cx, ty, text, size, "center")
             else:
                 off = 6.0
                 if slide:
@@ -587,14 +601,32 @@ class Sheet:
     def centre_line(self, p, q, w=W_THIN):
         self.line(p, q, w, DASH_CTR)
 
+    ORIGIN_R, ORIGIN_ARROW, ORIGIN_HEAD = 1.2, 9.0, (2.2, 0.9)     # an origin mark's circle, arrows and arrowheads
+
+    def origin_lines(self, o, xdir=(1, 0), ydir=(0, 1)):
+        """The lines origin_mark draws at o, as the segments it records: its circle, and each arrow with its head.
+        Their place is fixed by the origin, so labels placed before the mark is drawn reserve them (reserve_lines)."""
+        r, L, (hl, hw) = self.ORIGIN_R, self.ORIGIN_ARROW, self.ORIGIN_HEAD
+        pts = [q for p0, c1, c2, p1 in self._arc_pieces(o, r, 0.0, 2 * math.pi) for q in self._bez_pts(p0, c1, c2, p1)]
+        segs = list(zip(pts, pts[1:]))
+        for d in (xdir, ydir):
+            n_ = math.hypot(*d)
+            u = (d[0] / n_, d[1] / n_)
+            tip = (o[0] + d[0] * L, o[1] + d[1] * L)
+            b = (tip[0] - u[0] * hl, tip[1] - u[1] * hl)
+            w = (-u[1] * hw / 2, u[0] * hw / 2)
+            head = [tip, (b[0] + w[0], b[1] + w[1]), (b[0] - w[0], b[1] - w[1])]
+            segs += [((o[0] + d[0] * r, o[1] + d[1] * r), tip)] + list(zip(head, head[1:] + head[:1]))
+        return segs
+
     def origin_mark(self, o, name, xdir=(1, 0), ydir=(0, 1), size=2.5, away=(-1.0, -1.0), label_y=None):
         """The 2D origin of a view's X/Y: a small circle with its name and the +X, +Y arrows."""
-        self.circle(o, 1.2, W_THIN)
-        L = 9.0
+        self.circle(o, self.ORIGIN_R, W_THIN)
+        L = self.ORIGIN_ARROW
         for d, lab in ((xdir, "+X"), (ydir, "+Y")):
             tip = (o[0] + d[0] * L, o[1] + d[1] * L)
-            self.line((o[0] + d[0] * 1.2, o[1] + d[1] * 1.2), tip, W_THIN)
-            self.arrow(tip, d, 2.2, 0.9)
+            self.line((o[0] + d[0] * self.ORIGIN_R, o[1] + d[1] * self.ORIGIN_R), tip, W_THIN)
+            self.arrow(tip, d, *self.ORIGIN_HEAD)
             # beside the arrow's tip, on whichever side is clear
             if d[1] == 0:
                 cands = [(tip[0] + d[0] * 1.2, tip[1] - size / 2, "left" if d[0] >= 0 else "right"),
