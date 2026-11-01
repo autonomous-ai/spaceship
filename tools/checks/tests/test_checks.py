@@ -1463,3 +1463,32 @@ def test_a_parts_copies_must_be_the_part_its_own_step_holds():
     assert not c_parts._sizes_differ(spigot, ("round", ((3.0, 8.0), (4.0, 6.24))))          # BASE's plain copy
     assert c_parts._sizes_differ(spigot, ("round", ((3.0, 10.0), (4.0, 7.24))))              # WALL's longer one
     assert not c_parts._sizes_differ(("box", (4.0, 6.31, 15.24)), spigot)                    # can't compare: skip
+
+
+def test_the_drawing_traps_are_read_back_into_c05(tmp_path):
+    # ELECTRICAL's read-back (pdf_traps.py) folded into C05 (PM, 2026-11-01): small text and a symbol without 4 corners
+    # are major, hidden lines and a value printed twice minor; a drawing that keeps hidden lines on purpose is listed
+    fitz = pytest.importorskip("fitz")
+    MMP = 72.0 / 25.4
+    d = tmp_path / "v2/02-Drawings/joints"
+    d.mkdir(parents=True)
+    def pdf(name, note_cap, hidden):
+        doc = fitz.open()
+        page = doc.new_page(width=420 * MMP, height=297 * MMP)
+        hid = doc.add_ocg("Hidden", on=True)
+        for i in range(hidden):                                          # one view's dashes per 100 mm
+            page.draw_line(fitz.Point((50 + 100 * i) * MMP, 50 * MMP), fitz.Point((60 + 100 * i) * MMP, 50 * MMP), oc=hid)
+        for i, line in enumerate(["UNITS: mm", "MATERIAL: EN AW-6063 T6", "FINISH: mill finish",
+                                  "GENERAL TOLERANCES: ISO 2768-m"]):
+            page.insert_text(fitz.Point(30 * MMP, (200 + 8 * i) * MMP), line, fontsize=2.5 / 0.718 * MMP)
+        page.insert_text(fitz.Point(30 * MMP, 240 * MMP), "NOTE", fontsize=note_cap / 0.718 * MMP)
+        doc.save(str(d / name))
+    pdf("831998_P01_HARDWARE-TEST-A_DWG.pdf", 1.6, 2)
+    pdf("831999_P01_HARDWARE-TEST-B_DWG.pdf", 2.5, 2)
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    _write_csv(cfg / "hidden-lines-allow.csv", [{"drawing": "831999_P01_HARDWARE-TEST-B_DWG.pdf", "views": "2",
+                                                 "reason": "test", "ruling": "test"}])
+    got = {(f.subject, f.rule, f.severity) for f in c_drawings.check_drawings(str(tmp_path), {"831998", "831999"}, {})}
+    assert ("831998", "letter-height", "major") in got and ("831998", "hidden-lines", "minor") in got
+    assert not [g for g in got if g[0] == "831999"]                     # 2.5 mm text; its 2 hidden views allowed
