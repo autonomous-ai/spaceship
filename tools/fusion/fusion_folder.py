@@ -31,6 +31,7 @@ except ImportError:                 # offline tests
 
 WAIT_S = 60.0       # read the folder again for up to this long (PM ruling 2026-10-31)
 PAUSE_S = 5.0       # between two reads
+NEW_FILE_PAUSE_S = 10.0   # after a new cloud file, before the folder is read (PM ruling 2026-11-01)
 
 
 def _short(e):
@@ -75,6 +76,36 @@ def _listing(folder):
     return out
 
 
+def pause_after_new_file(sleep=time.sleep, clock=time.time, pause_s=NEW_FILE_PAUSE_S):
+    """Wait until pause_s has gone by since the last new cloud file this Fusion saved, letting Fusion work in the
+    meantime; returns the seconds waited. The runner's hook notes each saveAs on adsk.core (_spaceship_new_file_at,
+    a time.time(); _spaceship_new_file, its name), in every run through run_script.py and start_drawing.py.
+
+    Why (PM ruling 2026-11-01): Fusion crashed twice that day right after it fetched the team folder's second page
+    of files, each time 1 to 3 s after it started a live-update subscription; at 14:00:58 that was two seconds after
+    BASE's run saved a new file and went on to read the folder for its next one. The same fetch had worked about
+    1,700 times before, so this is a pause on a pattern seen twice, not a proven cure."""
+    if adsk is None:
+        return 0.0
+    try:
+        import adsk.core as _ac
+        t = getattr(_ac, "_spaceship_new_file_at", None)
+        name = getattr(_ac, "_spaceship_new_file", "") or "?"
+    except Exception:
+        return 0.0
+    if not isinstance(t, (int, float)):
+        return 0.0
+    left = pause_s - (clock() - t)
+    if left <= 0:
+        return 0.0
+    print("fusion_folder: waiting %.1f s after the new cloud file %s before reading the folder" % (left, name))
+    end = clock() + left
+    while clock() < end:
+        adsk.doEvents()
+        sleep(min(0.5, max(0.0, end - clock())))
+    return left
+
+
 def read_folder(folder, wait_s=WAIT_S, pause_s=PAUSE_S, sleep=time.sleep, now=time.monotonic,
                 stop_when=None):
     """(files, unknown, others) for the entries of a Fusion DataFolder.
@@ -89,7 +120,9 @@ def read_folder(folder, wait_s=WAIT_S, pause_s=PAUSE_S, sleep=time.sleep, now=ti
     until wait_s has gone by, or until stop_when(files, unknown, others) is
     true: an open step that found its file, or a check where nothing still
     unread could be the new file, needn't wait (Reviewer 5, P3 on #121: a
-    warn-only entry must not hold Fusion for a minute)."""
+    warn-only entry must not hold Fusion for a minute). It first waits out the pause after a new cloud file
+    (pause_after_new_file)."""
+    pause_after_new_file(sleep=sleep)
     t_end = now() + wait_s
     while True:
         files, unknown, others = {}, [], {}

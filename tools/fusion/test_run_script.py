@@ -834,6 +834,44 @@ class OpenLogTests(unittest.TestCase):
         self.assertEqual([l.split(" open ")[1].split(" v4")[0] for l in self.lines(log) if " start " in l],
                          ["X_P01_CAD", "Y_P01_CAD"])
 
+    def test_new_cloud_files_are_noted_once_per_session_on_all_three_document_classes(self):
+        # PM ruling 2026-11-01: the shared folder reader waits about 10 s after a new file (fusion_folder)
+        import types
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.fake_core()
+        calls = []
+
+        def doc_class(label):
+            class Doc:
+                def saveAs(self, name, folder, desc, tag):
+                    calls.append((label, name))
+                    return name != "REFUSED_CAD"
+            return Doc
+        core.Document = doc_class("core")
+        fusion, drawing = types.ModuleType("adsk.fusion"), types.ModuleType("adsk.drawing")
+        fusion.FusionDocument, drawing.DrawingDocument = doc_class("fusion"), doc_class("drawing")
+        keep = {k: sys.modules.get(k) for k in ("adsk.fusion", "adsk.drawing")}
+        sys.modules.update({"adsk.fusion": fusion, "adsk.drawing": drawing})
+        try:
+            self.run_wrapped(core, log, "X_P01_CAD", True)
+            self.run_wrapped(core, log, "Y_P01_CAD", True)            # a second run: no second wrapper
+            for cls, name in ((fusion.FusionDocument, "A_CAD"), (drawing.DrawingDocument, "B_DWG"),
+                              (core.Document, "C_CAD")):
+                before = time.time()
+                self.assertTrue(cls().saveAs(name, None, "", ""))
+                self.assertEqual(core._spaceship_new_file, name)
+                self.assertGreaterEqual(core._spaceship_new_file_at, before)
+            self.assertFalse(core.Document().saveAs("REFUSED_CAD", None, "", ""))
+            self.assertEqual(core._spaceship_new_file, "C_CAD")        # a refused save is no new file
+            self.assertEqual(calls, [("fusion", "A_CAD"), ("drawing", "B_DWG"), ("core", "C_CAD"),
+                                     ("core", "REFUSED_CAD")])        # each class's own saveAs, called once
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+
     def test_the_log_sits_next_to_the_lock(self):
         self.assertEqual(rs.open_log_path("/tmp/x.lock"), "/tmp/x.lock.opens.log")
 
