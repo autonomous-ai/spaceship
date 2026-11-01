@@ -82,11 +82,13 @@ SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "panel_z0", "back_ph", "back_oh", "
                   "spigot_inset", "n_base_bolt")       # skeleton P04 as updated in place (#58)
 
 _KEEP = {"skin_t", "tube_w", "bond_t", "tube_d", "stud_t", "plate_t", "stile_pitch_max", "skin_setback", "fill_t",
-         "bolt_d", "access_d", "rivnut_d", "spigot_d", "spigot_slot", "spigot_edge", "bolt_edge", "pocket_w", "felt_t",
+         "bolt_d", "access_d", "rivnut_d", "spigot_d", "spigot_edge", "bolt_edge", "pocket_w", "felt_t",
          "tray_t", "tray_h", "lip_w", "bend_r", "felt_c", "gap_h", "clip_zone_h", "clip_zone_dz", "bolt_line_y",
          "stopw_od", "stopw_id", "stopw_t", "rivnut_head_d", "rivnut_head_t", "rivnut_body_d", "rivnut_len", "m6_d",
          "spigot_pin_d", "spigot_proud"}
 WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
+    ("spigot_slot", "14 mm", "mm", "assumption",
+     "register FR-05: the back panels' slot for the second spigot (D-167 lengthens the side panels' only)"),
     ("tube_t", "1.0 mm", "mm", "source",
      "the Joints Engineer's gauges for D-131 (2026-11-01): a back panel's perimeter members (rails, outer and centre "
      "stiles) at 1.0; the studs 0.8"),

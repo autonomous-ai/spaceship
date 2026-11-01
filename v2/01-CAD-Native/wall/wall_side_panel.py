@@ -213,7 +213,9 @@ WALL_PARAMS = [
     ("rivnut_d", "10 mm", "mm", "confirmed",
      "D-163 (the Lead's ruling, 2026-11-01): Sherex CAL2-610-4.2 in a round drilled hole Ø10.00 +0.10/0, inside the maker's 10.00 +0.15/-0.0 (Sherex drawing CAL2-610-4.2 rev B, note 2) so the bolt-hole stack ST-03 stays positive; T06's spin-out test confirms it"),
     ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
-    ("spigot_slot", "14 mm", "mm", "assumption", "register FR-05: slot length for the second spigot"),
+    ("spigot_slot", "16 mm", "mm", "confirmed",
+     "D-167 (the Lead's ruling, 2026-11-01): the seam gasket is 4.78 (PORON 4701-40's standard), so the side panels' "
+     "back-end slot for the second spigot grows from 8.5 x 14 to 8.5 x 16, ±4 of travel, the panel held 3.4 out"),
     ("spigot_edge", "spigot_inset", "mm", "calculation",
      "the skeleton's spigot_inset: spigots 100 from each end of the edge (PM ruling 2026-10-31, R-J13)"),
     ("bolt_edge", "bolt_edge_inset", "mm", "calculation",

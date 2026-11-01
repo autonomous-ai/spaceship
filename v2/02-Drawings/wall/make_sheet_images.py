@@ -214,7 +214,8 @@ def frame_blocks(pn, src=None):
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access "
                  "and grommet retainer. " + rv + " (steel, zinc plated) over a 1.5 mm stop washer. Ø8.5 "
-                 "and the 8.5 × 14 slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner "
+                 "and the 8.5 × %g slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner " % (
+                     prm.get("spigot_slot", 14.0)) +
                  "rivnuts on the bolt line Y 824 (pod)%s. Reasons: FEATURE-RATIONALE-%s.md." % (
                      "; ceiling rivnuts on Z 2374 from Y -645 at 351.67 (the ceiling's rule)" if pos["row"] == 2 else "",
                      rep["document"].split("_")[0].replace("2111", "2101")))
