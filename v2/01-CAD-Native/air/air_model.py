@@ -202,7 +202,8 @@ AIR_PARAMS = [
     # rivnut 2 hole diameters from every free edge, the skin's slot edge too; CEILING's layout, 2026-11-01): 2 on the
     # left side; 2 on the back side BEHIND cross member 1, whose front face is too near the slot for a set rivnut's
     # bulge; none on the front (the front member under the skin) or the right (19.0 to the side member)
-    ("slv_rn_e", "19.2 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the 9.53 hole (19.06), rounded up (HOLD-04)"),
+    ("slv_rn_e", "20.0 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the Ø10.00 hole (D-163; HOLD-04's rule; "
+     "was 19.2 for the Ø9.53), as the ceiling's"),
     ("slv_rn_in", "20 mm", "mm", "assumption", "the rivnuts this far in from the slot's corners along their sides"),
     ("slv_bulge", "14 mm", "mm", "assumption", "a set rivnut's blind-side bulge, about 14 across (the hole FRONT clears for body and "
      "bulge, DR model fr_hole_jf; Sherex gives no size)"),
