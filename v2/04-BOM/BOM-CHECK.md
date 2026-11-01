@@ -214,7 +214,6 @@ Read from: this working tree.
 
 Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
 
-- 618101 AIR - SENSOR HUB ZONE - HOLD in `v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv` @ working tree
 - 350004 FRONT - AIR SUPPLY ASSY - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
 - 351402 FRONT - AIR INTAKE RISER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
 - 351403 FRONT - AIR TRANSITION - LOWER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree

@@ -44,7 +44,6 @@ TREE = [
     ("col_side_hi", "column", 1, "PM ruling 2026-11-01 (5 mm off the lining)"),
     ("col_fill", "column", 1, "air report 7e: the front piece"), ("col_fill_l", "column", 1, "air report 7e: the left piece"),
     ("kick", "column", 1, "D-61: the front piece"), ("kick_l", "column", 1, "D-61: the left piece"),
-    ("hub", "column", 1, "D-61, D-70: 180 x 180 zone for the in-house sensor hub"),
     ("cart", "air", 2, "D-61: one cartridge for both paths, ships on its own, slides in on site"),
     ("casing", "cart", 1, "D-61: 2 mm aluminium casing"), ("layer", "cart", 3, "D-61: three 50 mm layers"),
     ("soffit", "air", 1, "D-60, D-61, D-87: ships with the exhaust fan box fitted"),

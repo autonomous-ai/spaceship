@@ -547,25 +547,31 @@ class FrontInterface(unittest.TestCase):
                     self.assertLess(names.index(ident), names.index(name), "%s uses %s before it is made" % (name, ident))
 
     def test_front_inputs_come_along(self):
-        """A new input in FRONT's expression (as DR's stops will bring) comes into AIR's parameters with it, in
-        FRONT's order, without a copy in AIR's list."""
+        """A new input in FRONT's expression comes into AIR's parameters with it, in FRONT's order, without a copy in
+        AIR's list. FRONT's dr_pnl_gap came this way (D-142's panel gap); and a test input added to the panel face's
+        expression, in a copy of FRONT's model, comes along too and moves the face by its value."""
         import tempfile
+        have = {p[0] for p in CM.all_params()}
+        names = [p[0] for p in A.front_entries(have=have)]
+        self.assertIn("dr_pnl_gap", names)
+        self.assertLess(names.index("dr_pnl_gap"), names.index("dr_acc_face_y"))
         with open(os.path.join(A.REPO_ROOT, A.FRONT_FILE), encoding="utf-8") as f:
             src = f.read()
-        old = '"-pod_d / 2 + decor_d - dr_back_t + dr_acc_t"'
-        if old not in src:
-            self.skipTest("FRONT's DR model has moved on from #105's expression")
-        new = src.replace('    ("dr_acc_face_y", ' + old, '    ("dr_stop_t", "2.36 mm", "mm", "source", "test stop"),\n'
-                          '    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_stop_t + dr_acc_t"')
+        m = re.search(r'\n([ \t]*)\("dr_acc_face_y", "([^"]+)"', src)
+        self.assertIsNotNone(m, "FRONT's DR model names its panel face dr_acc_face_y")
+        new = (src[:m.start()] + '\n%s("dr_test_t", "1 mm", "mm", "assumption", "test input"),' % m.group(1)
+               + '\n%s("dr_acc_face_y", "%s + dr_test_t"' % (m.group(1), m.group(2)) + src[m.end():])
+        base = CM.evaluate(CM.all_params() + A.front_entries(have=have))["dr_acc_face_y"]
         with tempfile.TemporaryDirectory() as d:
             os.makedirs(os.path.join(d, os.path.dirname(A.FRONT_FILE)))
             with open(os.path.join(d, A.FRONT_FILE), "w", encoding="utf-8") as f:
                 f.write(new)
-            have = {p[0] for p in CM.all_params()}
             got = A.front_entries(d, have)
-            self.assertEqual([p[0] for p in got], ["dr_back_t", "dr_acc_t", "dr_stop_t", "dr_acc_face_y"])
+            gn = [p[0] for p in got]
+            self.assertIn("dr_test_t", gn)
+            self.assertLess(gn.index("dr_test_t"), gn.index("dr_acc_face_y"))
             v = CM.evaluate(CM.all_params() + got)
-            self.assertAlmostEqual(v["dr_acc_face_y"], -641.14, places=6)
+            self.assertAlmostEqual(v["dr_acc_face_y"], base + 1.0, places=6)
 
 
 class EditTest(unittest.TestCase):
