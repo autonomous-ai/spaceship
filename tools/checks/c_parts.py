@@ -988,8 +988,9 @@ def check_decided_items(root, plists, step_products):
                               "Take it out of the CAD, the parts list and the drawings (%s)." % c["decision"],
                               files[0], owner_for(files[0], key if re.match(r"^\d{6}$", str(key)) else "")))
     for q in required:
+        # a required part may be named by its number before its name is set (D-166's rivets): the pattern reads both
         pat, folder = re.compile(q["pattern"], re.I), q["folder"].rstrip("/") + "/"
-        if not any(f.startswith(folder) and pat.search(name) for _pn, name, f in items):
+        if not any(f.startswith(folder) and pat.search("%s %s" % (pn or "", name)) for pn, name, f in items):
             fs.append(Finding("C06", "required-by-decision", q["what"][:60], "major",
                               "%s requires %s, but no parts list or CAD part in %s names it yet." % (
                                   q["decision"], q["what"], folder),
