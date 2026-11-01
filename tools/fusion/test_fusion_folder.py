@@ -5,6 +5,8 @@
 """
 
 import base64
+import contextlib
+import io
 import os
 import sys
 import types
@@ -119,6 +121,61 @@ class ReadFolderTests(unittest.TestCase):
                                            stop_when=lambda fs, u, o: "A_CAD" in fs)
         self.assertIn("A_CAD", files)
         self.assertEqual(c.sleeps, [])                          # no waiting for the broken entry
+
+
+class ArrayFiles(Files):
+    """A folder whose listing comes in one asArray() call; item() must not be used."""
+
+    def __init__(self, items, fail_array=False):
+        super().__init__(items)
+        self.arrays, self.fail_array = 0, fail_array
+
+    def asArray(self):
+        self.arrays += 1
+        if self.fail_array:
+            raise Unreadable("asArray failed")
+        return [File("HEALED_CAD", "f3d") if it == "boom" and self.arrays > 2 else
+                (None if it == "boom" else it) for it in self.items]
+
+
+class OneListingTests(unittest.TestCase):
+    """Live 2026-11-01: each DataFiles.item(i) fetched the whole folder listing again (about
+    2 s each; 89 entries took 3 minutes a pass). One asArray() call per pass instead."""
+
+    def folder(self, items, **kw):
+        f = Folder([])
+        f.dataFiles = ArrayFiles(items, **kw)
+        f.dataFiles.item = lambda i: (_ for _ in ()).throw(AssertionError("item(i) used"))
+        return f
+
+    def test_a_pass_is_one_listing(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("B_DWG", "f2d")])
+        files, unknown, others = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD", "B_DWG"])
+        self.assertEqual((unknown, others, folder.dataFiles.arrays), ([], {}, 1))
+
+    def test_an_empty_slot_is_unknown_and_read_again_until_it_heals(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), "boom"])
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD", "HEALED_CAD"])
+        self.assertEqual(unknown, [])
+        self.assertEqual(folder.dataFiles.arrays, 3)               # one listing per pass
+
+    def test_a_name_that_cant_be_read_is_sorted_as_before(self):
+        c = Clock()
+        folder = self.folder([File(None, "f2d"), File(None, None)])
+        _files, unknown, others = ff.read_folder(folder, wait_s=0, sleep=c.sleep, now=c.now)
+        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1"])
+        self.assertEqual({k: [t.split(" (")[0] for t in v] for k, v in others.items()}, {"f2d": ["entry 0"]})
+
+    def test_a_failing_listing_falls_back_to_reading_each_entry(self):
+        c = Clock()
+        folder = Folder([File("A_CAD", "f3d")])
+        folder.dataFiles = ArrayFiles([File("A_CAD", "f3d")], fail_array=True)
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown), (["A_CAD"], []))
 
 
 class SafeToCreateTests(unittest.TestCase):
@@ -285,6 +342,101 @@ class DocStepTests(unittest.TestCase):
         finally:
             _time.sleep = real_sleep
         self.assertEqual((opened, made, waits), (["NEW_CAD"], [], [10, 10]))
+
+    def test_each_new_try_opens_a_fresh_reference(self):
+        # live 2026-10-31 (#140 batch test): the same reference kept failing for a full
+        # minute; a reference looked up again opens
+        import time as _time
+        handed = []
+
+        class FreshFile(File):
+            latestVersion = None                             # the fake has no version history
+
+        class FreshFiles(Files):
+            def item(self, i):
+                f = FreshFile("NEW_CAD", "f3d")              # a new reference on every look
+                handed.append(f)
+                return f
+
+        folder = types.SimpleNamespace(dataFiles=FreshFiles([None]))
+        stale = []
+
+        def open_doc(f, v):
+            if f is handed[0]:                               # the first reference never opens
+                stale.append(f)
+                raise RuntimeError("1 : Missing key for PIMOpenWorkflowTracker")
+            return types.SimpleNamespace(name=f.name, activate=lambda: True)
+
+        real_sleep = _time.sleep
+        _time.sleep = lambda s: None
+        try:
+            opened = self.run_open_with(folder, open_doc)
+        finally:
+            _time.sleep = real_sleep
+        self.assertEqual((len(stale), opened), (1, "NEW_CAD"))  # one failure, then the fresh one opened
+
+    def test_a_look_up_that_fails_keeps_the_old_reference(self):
+        # PM, on #167: if reading the folder again fails, the tries go on with the
+        # reference from before instead of ending early
+        import time as _time
+
+        class FlakyFiles(Files):
+            looks = 0
+
+            @property
+            def count(self):
+                self.looks += 1
+                if self.looks > 1:                           # every look after the first fails
+                    raise RuntimeError("3 : InternalValidationError : the folder can't be read")
+                return len(self.items)
+
+        first = File("NEW_CAD", "f3d")
+        folder = types.SimpleNamespace(dataFiles=FlakyFiles([first]))
+        tries = []
+
+        def open_doc(f, v):
+            tries.append(f)
+            if len(tries) < 3:
+                raise RuntimeError("1 : Missing key for PIMOpenWorkflowTracker")
+            return types.SimpleNamespace(name=f.name, activate=lambda: True)
+
+        real_sleep = _time.sleep
+        _time.sleep = lambda s: None
+        try:
+            opened = self.run_open_with(folder, open_doc)
+        finally:
+            _time.sleep = real_sleep
+        self.assertEqual(opened, "NEW_CAD")
+        self.assertEqual(tries, [first, first, first])        # the old reference, tried again
+        self.assertEqual(folder.dataFiles.looks, 3)           # it did look again, twice
+
+    def run_open_with(self, folder, open_doc):
+        """The --doc open step against a fake Fusion with this folder and open()."""
+        folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
+        proj = types.SimpleNamespace(name="Default Project", rootFolder=folder)
+        app = types.SimpleNamespace(
+            documents=types.SimpleNamespace(count=0, item=None, open=open_doc),
+            data=types.SimpleNamespace(dataProjects=types.SimpleNamespace(count=1, item=lambda i: proj),
+                                       activeProject=None))
+        adsk = types.ModuleType("adsk")
+        adsk.doEvents = lambda: None
+        adsk.core = types.SimpleNamespace(Application=types.SimpleNamespace(get=lambda: app))
+        adsk.fusion = types.SimpleNamespace()
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
+        sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.fusion": adsk.fusion})
+        out = io.StringIO()
+        try:
+            ns = {}
+            exec(compile(rs.doc_script("open", "NEW_CAD", "Default Project"), "doc_step", "exec"), ns)
+            with contextlib.redirect_stdout(out):
+                ns["run"](None)
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        return "NEW_CAD" if "opened 'NEW_CAD'" in out.getvalue() else out.getvalue()
 
     def test_a_design_that_is_there_opens_despite_an_unreadable_entry(self):
         opened, made = self.run_doc([File("NEW_CAD", "f3d"), "boom"], create=True)
