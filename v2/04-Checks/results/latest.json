@@ -1,5 +1,5 @@
 {
- "rev": "5a996ab",
+ "rev": "2b0d809",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -1253,6 +1253,29 @@
   {
    "check": "C06",
    "rule": "name-mismatch",
+   "subject": "108002",
+   "severity": "major",
+   "message": "108002 is named 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE' in the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', and hardware names come from the register (D-99). The names differ in PANEL-50 (gone), PRIMER-210 (new), SIKAFLEX-252 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (0 CAD, 7 parts lists).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING; WALL",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv"
+    ],
+    "register": "POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE"
+   },
+   "key": "C06|name-mismatch|108002"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
    "subject": "118001",
    "severity": "minor",
    "message": "118001 is named 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD', and hardware names come from the register (D-99).",
@@ -2346,18 +2369,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|611601"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "711001",
-   "severity": "severe",
-   "message": "711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND, BEND_EXTENT, INTERIOR_PROFILES, OUTER_PROFILES; only CUT and MARK pass, so it is folded; its row's process names fold.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|no-drawing|711001"
   },
   {
    "check": "C05",
