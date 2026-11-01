@@ -218,6 +218,21 @@ class Part:
         self.name = self.row.get("name", "").strip()
         self.name_vi = (self.row.get("name_vi") or "").strip()
         self.bodies, self.unit = geom.load_part(self.step, pn)
+        self.occurrences = self.unit.get("occurrences", 1)
+        self.qty_words = None
+        if self.occurrences > 1:
+            q = (self.row.get("qty") or self.row.get("qty_per_parent") or "").strip()
+            try:
+                qn = int(float(q))
+            except ValueError:
+                qn = None
+            if qn is not None and qn != self.occurrences:
+                raise NotDrawable("%s: %s holds it %d times, its parts list says %s" % (
+                    pn, os.path.basename(self.step), self.occurrences, q))
+            par = inputs.parse_name(self.list_file) if self.list_file else None
+            self.qty_words = "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+                q or self.occurrences, ("%s %s" % (par["pn"], par["name"])) if par else "assembly",
+                os.path.basename(self.step), self.occurrences)
         self.placement = None
         if pod_system:
             self._to_pod()
@@ -537,6 +552,18 @@ def plan_views(part, spec):
         pl.principal.pod_name = spec["principal"]
     else:
         pl.principal = principal_view(part)
+    # a straight member lying off the pod's axes (FRONT's 352211, a cross tube on the diagonal): drawn along its own
+    # axis, looking square to a side, so its length runs across the sheet and its end cuts read from its axis
+    ma = geom.member_axis(part.bodies[0]) if len(part.bodies) == 1 and not spec.get("principal") else None
+    if ma is not None and axis_name(ma) is None:
+        P0 = pl.principal
+        n = P0.n
+        if abs(vdot(n, ma)) > 1e-6:
+            sides = [t[0] for t in geom.planes(part.bodies[0]) if abs(vdot(t[0], ma)) < 1e-6]
+            n = max(sides, key=lambda v: vdot(v, P0.n)) if sides else n
+        sgn = vdot(ma, P0.x) if abs(vdot(ma, P0.x)) > 1e-6 else vdot(ma, P0.y)
+        pl.principal = View("principal", n, ma if sgn >= 0 else vmul(ma, -1.0))
+        pl.principal.pod_name = "along the member"
     # a long part seen end up: turn the view so its length runs across the sheet (every view states its mapping)
     P0 = pl.principal
     ext_x = sum(abs(P0.x[i]) * part.size[i] for i in range(3))
@@ -1378,7 +1405,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     angle_texts = []
     for b in part.bodies:
         lk = max(range(3), key=lambda i: b.size[i])
-        lax = tuple(1.0 if i == lk else 0.0 for i in range(3))
+        lax = geom.member_axis(b) or tuple(1.0 if i == lk else 0.0 for i in range(3))
+        top_corners = {}        # view -> (view, extent, the mitre corners on its top edge)
         for n, off, area, face in geom.planes(b):
             c = abs(vdot(n, lax))
             if not (0.02 < c < 0.9998):
@@ -1457,13 +1485,21 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                             e2 = vd2.extent
                             if abs(q2[1] - e2[3]) > 1e-3:
                                 continue
-                            oth = e2[0] if abs(q2[0] - e2[0]) > abs(q2[0] - e2[2]) else e2[2]
-                            sh.dim_linear(vd2.S((oth, e2[3])), vd2.S((q2[0], e2[3])), "up", 11.0,
-                                          fmt(abs(q2[0] - oth)), 2.5)
-                            vd2.top_used = 16.0
+                            top_corners.setdefault(id(vd2), (vd2, e2, []))[2].append(q2[0])
                             break
                 vd.has_mitre = True
                 break
+        # the top face's true length: from the square end to its mitre corner, or, mitred at both ends, between
+        # its two corners, once (FRONT's 352201: two lengths from each end printed over each other)
+        for vd2, e2, xs in top_corners.values():
+            xs = sorted(set(round(x_, 4) for x_ in xs))
+            if len(xs) == 1:
+                oth = e2[0] if abs(xs[0] - e2[0]) > abs(xs[0] - e2[2]) else e2[2]
+                a_, b_ = oth, xs[0]
+            else:
+                a_, b_ = xs[0], xs[-1]
+            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5)
+            vd2.top_used = 16.0
     for ang_t, cands in angle_texts:
         pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
                     cands[0])
@@ -1922,6 +1958,8 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     notes.append("UNITS: mm. Do not scale the drawing. ISO first-angle projection (ISO 5456-2), symbol in the "
                  "title block. Dimensions to ISO 129-1. Sheet 1: views, sections and hole tables; sheet 2: these "
                  "general notes%s." % (", the cut list" if cut_list(part) else "") + "")
+    if getattr(part, "qty_words", None):
+        notes.append("QUANTITY: %s." % part.qty_words)
     vw = "the room side" if part.pod_system and pl.principal.pod_name in ("right", "front", "top") else "its side"
     notes.append("Views: the principal view looks %s (%s); every view's title gives its own X and Y and how they "
                  "map to the %s axes (conventions section 4). On every view X runs right and Y up." % (
@@ -2158,7 +2196,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
     return {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
             "placement": ({"assembly": part.placement["assembly"], "m": part.placement["m"],
                            "t": part.placement["shift"]} if part.placement else None),
-            "sheet_h": sh.H, "sources": srcs, "origin": dat["O"],
+            "sheet_h": sh.H, "sources": srcs, "origin": dat["O"], "occurrences": part.occurrences,
             "datums": {"B": dat["B"].tag if dat.get("B") else None,
                        "C": ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
                        if dat.get("C_plane") else None},
