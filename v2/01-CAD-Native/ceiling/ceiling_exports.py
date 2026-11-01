@@ -115,8 +115,8 @@ def write_flat_parts(v):
     yw = M.ev(v, M.YW)
     sx0, sy0 = v["slot_x0"] - seam, v["slot_y0"] - yw
     p = os.path.join(OUT, fname("skin_c2", "DXF", "dxf"))
-    holes = [("CIRCLE", "CUT", (M.ev(v, x) - M.ev(v, "slot_x0") + sx0, M.ev(v, y) - yw), v["hole_rvn"] / 2)
-             for _n, x, y in M.sleeve_rivnuts()]          # under the roof sleeve flange's 4 rivnuts (J-AIR-03)
+    holes = [("CIRCLE", "CUT", (M.ev(v, x) - M.ev(v, "slot_x0") + sx0, M.ev(v, y) - yw), v["hole_slv"] / 2)
+             for _n, x, y in M.sleeve_rivnuts()]          # clearance under the sleeve flange's 4 rivnuts (J-AIR-03, D-177)
     D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["half_pw"], v["wall_depth"])),
                     ("POLY", "CUT", rect(sx0, sy0, sx0 + v["slot_w"], sy0 + v["slot_d"]))] + holes)
     out["skin_c2"] = p
@@ -238,8 +238,11 @@ def _sizes():
                               "cut length +/-0.5 (assumption)"),
         "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
                               "ISO 2768-m; no drawing (D-89 part 4): its DXF is the outline"),
-        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"]),
-                              "ISO 2768-m; roof slot from the closing-seam edge and the front edge +/-0.5 (critical: the roof sleeve passes through it, D-61); no drawing (D-89 part 4)"),
+        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f, 4 clearance holes Ø%.0f under the roof sleeve's rivnuts"
+                              % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"], v["hole_slv"]),
+                              "ISO 2768-m; roof slot from the closing-seam edge and the front edge +/-0.5 (critical: the roof sleeve, "
+                              "1.0 smaller a side, passes through it, D-61, D-177); the 4 holes +/-0.2 from the slot (D-177); no "
+                              "drawing (D-89 part 4)"),
         "cassette": lambda v: ("%.0f x %.0f x %.0f (%.0f with the fill)" % (v["cs_w"], v["cs_d"], v["tray_h"], v["tray_h"] + v["fill_t"]),
                                "+/-1 assembled (assumption)"),
         "tray": lambda v: ("%.0f x %.0f x %.0f, 0.5 sheet" % (v["cs_w"], v["cs_d"], v["tray_h"]), "cut +/-0.2, bent +/-0.5 (assumption)"),
@@ -296,7 +299,7 @@ def parts_list(v, mass):
             **{k: "D-120 (number from the master BOM's allocation); D-117 (mitred corners); D-131 and J-FRAME-01 (galvanized steel 20 x 40 and 40 x 40 R-J3, 1.0 or 0.8 wall, cut back for the 2.0 mitre plates); joints register J-CEIL-01, J-CEIL-02"
                for k in M.PARTS if k.startswith("m_")},
             "skin_c1": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61",
-            "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins)",
+            "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins); D-177 (the sleeve rivnuts' clearance holes)",
             "tray": "D-17, D-37; PM ruling 2026-10-31 (12 mm lip)",
             "rib": "PM ruling 2026-10-31 (2 ribs); rib joint HOLD",
             "felt": "D-17, D-31; felt fixing HOLD H09",

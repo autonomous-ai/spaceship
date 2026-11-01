@@ -303,18 +303,20 @@ def test_profiles_and_short_tubes():
 
 
 def test_ceiling_frame_bevels():
-    """CEILING's frame C1 (411101, main's STEP): the back member's 1 x 45° end bevel, which no view looks along, is
-    called out where it shows as a band; the seam member's bevel along its whole length, in the removed section
-    across that member at its true angle. Both read back against the STEP."""
+    """CEILING's C1 seam member (412102, the ceiling's STEP): its 1 x 45° lead-in along its whole length (R-J9) is
+    called out in the removed section across the member at its true angle, and reads back against the STEP. Since
+    D-131 (#348) the frame 411101 is a welded assembly, so the member is its own solid; the back member's end bevel
+    this test also drew is gone with it (that member's ends now stop 1.12 inside the seam face, so they need no
+    lead-in)."""
     d = os.path.join(TMP, "ceiling")
     os.makedirs(d, exist_ok=True)
-    p = os.path.join(d, "411101.pdf")
-    compose.make("411101", "ceiling", {"tolerance": "test"}, p)
+    p = os.path.join(d, "412102.pdf")
+    compose.make("412102", "ceiling", {"tolerance": "test"}, p)
     fails, _st = readback.check(p)
     assert not fails, fails
     doc = fitz.open(p)
     data = readback.read_data(doc)
-    assert sorted(c["long"] for c in data["chamfers"]) == [False, True], data["chamfers"]
+    assert [(c["long"], c["text"]) for c in data["chamfers"]] == [(True, "1 x 45°")], data["chamfers"]
     assert "showing its bevel along it" in " ".join(doc[0].get_text().split())      # its 2:1 section (Reviewer 6)
     # Reviewer 6's plant on #331: the seam bevel's callout moved 50 mm, its record moved with it: the read-back
     # still finds the bevel in the STEP and fails the callout that isn't by it

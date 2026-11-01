@@ -153,6 +153,24 @@ class Joints(unittest.TestCase):
     """J-CEIL-01 and J-CEIL-02 holes against the joints register (2.9, 3.5, 3.6) and the PM
     ruling of 2026-10-31 (side edges from Y -645 along the ceiling, back edges on the frame)."""
 
+    def test_rivnut_holes_are_d163s(self):
+        """D-163 pins every 838003 hole in the members at Ø10.00, CAL2-610-4.2's knurled round hole (it was CAH2's
+        Ø9.53): 20 a ceiling, 8 in C1 (the back member's 4, the soffit's 2 hangers and 2 locks) and 12 in C2 (with the
+        seam's 4 pin rivnuts), every rivnut row on the one named value (Reviewer 17's plant on #348: the hole set back
+        to Ø9.53 passed every check)."""
+        self.assertEqual(VALS["hole_rvn"], 10.0)
+        row = [p for p in P if p[0] == "hole_rvn"][0]
+        self.assertIn("D-163", row[4])
+        self.assertIn("CAL2-610-4.2", row[4])
+        counts = {}
+        for half in ("C1", "C2"):
+            for name, _m, _f, _xyz, d, n, _p, _a in M.joint_holes(half):
+                if "RIVNUT" in name or "HANGER" in name or "LOCK" in name:
+                    self.assertEqual(d, "hole_rvn", (half, name))
+                if d == "hole_rvn":
+                    counts[half] = counts.get(half, 0) + int(round(ev(n)))
+        self.assertEqual(counts, {"C1": 8, "C2": 12})
+
     def rows(self, half, name):
         return [xyz for n, _d, xyz in M.hole_positions(VALS, half) if n == name]
 
@@ -478,6 +496,57 @@ class Frames(unittest.TestCase):
                 self.assertTrue(pn.startswith("412"), k)
             self.assertEqual(keys.count("m_cross"), 2, "X2 and X3 are one common part (412001)")
 
+    def test_cut_list_matches_the_members(self):
+        """The committed tube cut list against the members' own outlines (member_shapes, which the build extrudes):
+        each row's length at the outer face, both end cuts, section and wall, part numbers and count, and its holes
+        (Reviewer 17's plant on #348: a row 10 mm long with a wrong end angle passed every check)."""
+        import csv
+        import re
+        import ceiling_exports as E
+        path = os.path.join(E.OUT, "410000_%s_CEILING-TUBE-CUT-LIST_BOM.csv" % E.REV)
+        with open(path, newline="", encoding="utf-8") as f:
+            rows = {(r["half"], r["member"]): r for r in csv.DictReader(f)}
+        self.assertEqual(len(rows), 14)
+        extra = {"BACK": ["back spigot slot 8.5 x 14 x 1"],
+                 "SEAM": ["1 x 45 lead-in on the closing face's lower edge, full length"]}
+        for half, fkey in (("C1", "frame_c1"), ("C2", "frame_c2")):
+            holes = {}
+            for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
+                holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(ev(n)))))
+            for code, key, _name, axis, pts, _z0, _z1 in M.member_shapes(half):
+                r = rows[(half, code)]
+                q = [(ev(x), ev(y)) for x, y in pts]
+                a = 0 if axis == "x" else 1          # along the member
+                c = 1 - a                            # across it
+                self.assertAlmostEqual(float(r["length_mm"]), max(p[a] for p in q) - min(p[a] for p in q), delta=0.006,
+                                       msg=(half, code))
+
+                def cut(i, j):                       # an end edge's angle off square, in degrees
+                    return math.degrees(math.atan2(abs(q[j][a] - q[i][a]), abs(q[j][c] - q[i][c])))
+                got = (cut(3, 0), cut(1, 2))         # the outline's first end (front, or the side's end) and its other
+                text = r["ends"].split(";")[0]
+                nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?) deg", text)]
+                want = (0.0, 0.0) if text == "square cut" else (nums[0], nums[0]) if text.startswith("both ends") else tuple(nums)
+                self.assertEqual(len(want), 2, text)
+                for g, w in zip(got, want):
+                    self.assertAlmostEqual(g, w, delta=0.006, msg=(half, code, text))
+                m = re.search(r"(\d+) x 40 x ([\d.]+)", r["section"])
+                self.assertAlmostEqual(float(m.group(1)), max(p[c] for p in q) - min(p[c] for p in q), msg=(half, code))
+                self.assertAlmostEqual(float(m.group(2)), ev(M.member_wall(key)), msg=(half, code))
+                self.assertEqual((r["frame"], r["member_part"], r["qty"]), (M.PARTS[fkey][0], M.PARTS[key][0], "1"))
+                self.assertEqual(sorted(r["holes"].split("; ")), sorted(holes.get(code, []) + extra.get(code, [])) or ["none"],
+                                 (half, code))
+
+    def test_cut_list_is_current(self):
+        """The committed cut list is what the exports write from today's model."""
+        import csv
+        import ceiling_exports as E
+        path = os.path.join(E.OUT, "410000_%s_CEILING-TUBE-CUT-LIST_BOM.csv" % E.REV)
+        with open(path, newline="", encoding="utf-8") as f:
+            have = list(csv.DictReader(f))
+        want = [{k: str(v) for k, v in r.items()} for r in E.cut_list(VALS)]
+        self.assertEqual(have, want)
+
     def test_parts_list_walls_follow_the_model(self):
         """The parts list's size text and the tube cut list's section carry each member's own wall (D-131: 1.0, the
         plain cross members 0.8); the plain cross member's text once kept the aluminium frame's 1.2."""
@@ -635,6 +704,36 @@ class SleeveFlangeHoles(unittest.TestCase):
             sx, sy = ev(x), ev(y)
             self.assertTrue(-ev("half_pw") < sx < 0 and 0 < sy < ev("wall_depth"), n)
 
+    def test_clearance_holes_pass_a_set_rivnut_at_full_play(self):
+        """D-177: each of C2's four skin holes is a Ø17 clearance hole that passes a set rivnut wherever the sleeve lands
+        in its slot (1.0 a side) with the holes placed to their tolerance (0.5): the bulge (about 14) and the body
+        (9.91) clear its edge; the flange, which runs slv_rn_e past each rivnut on its open sides, covers the hole with
+        10.0 outside it (room for the 8-wide butyl ring placed to +/-0.5, with 1.5 to spare); and the back pair's
+        bodies clear cross member 1 by 1.5 or more."""
+        play = ev("slv_fit") + ev("slv_pos")
+        self.assertAlmostEqual(ev("hole_slv"), 17.0)
+        self.assertAlmostEqual(ev("slv_fit"), 1.0)
+        self.assertAlmostEqual(play, 1.5)
+        r = ev("hole_slv") / 2
+        self.assertGreaterEqual(r - play, ev("slv_bulge") / 2 - 1e-9, "the bulge passes the hole")
+        self.assertGreater(r - play, ev("slv_rn_body") / 2, "the body passes the hole")
+        self.assertGreaterEqual(ev("slv_rn_e") - r - play, 8.0 + 0.5 + 1.5 - 1e-9, "room for the ring outside each hole")
+        x1 = [tuple(ev(e) for e in b) for c, _n, _a, b in M.frame_members("C2") if c == "X1"][0]
+        backs = [(n, ev(y)) for n, _x, y in M.sleeve_rivnuts() if n.split("RIVNUT ")[1].startswith("BACK")]
+        self.assertEqual(len(backs), 2)
+        for n, y in backs:
+            gap = y - ev("slv_rn_body") / 2 - play - x1[3]
+            self.assertGreaterEqual(gap, 1.5 - 1e-9, "%s's body to X1 at full play: %.3f" % (n, gap))
+        # the build and the DXF cut the clearance size, never the rivnut's own hole
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, "ceiling_build.py"), encoding="utf-8") as f:
+            build = f.read()
+        self.assertIn('circle_cut(comp, body, "SKIN " + name, x, y, "hole_slv", "0 mm", "skin_t", ctx)', build)
+        import ceiling_exports as E
+        with open(os.path.join(here, "ceiling_exports.py"), encoding="utf-8") as f:
+            self.assertIn('v["hole_slv"] / 2)', f.read())
+        self.assertIn("4 clearance holes Ø17", E.SIZE_TOL["skin_c2"](VALS)[0])
+
 
 class Numbers(unittest.TestCase):
     def test_bands(self):
@@ -663,6 +762,55 @@ class Numbers(unittest.TestCase):
 
 
 class Weight(unittest.TestCase):
+    def test_fill_at_d81s_24(self):
+        """D-81: the cassette's PET fill is 24 kg/m3 in the model (its material and fill_t's note), in the parts list
+        (each strip's material, and its mass: the strip's area less its notches x fill_t x 24 kg/m3), in the rationale's
+        fill heading, and in the code that carries it into Fusion (the build's density line, the report's materials
+        sync). Reviewer 17 found #306 merged across #348 put 25 back in all of them while every check passed."""
+        import csv
+        import ceiling_exports as E
+        name, rho, _st, src = M.MATERIALS["fill"]
+        self.assertEqual(rho, 24.0)
+        self.assertIn("24 kg/m3", name)
+        self.assertIn("D-81", src)
+        self.assertIn("24 kg/m3", [p for p in P if p[0] == "fill_t"][0][4])
+        with open(os.path.join(E.OUT, "410000_%s_CEILING-PARTS-LIST_BOM.csv" % E.REV), newline="", encoding="utf-8") as f:
+            rows = {r["part_number"]: r for r in csv.DictReader(f)}
+
+        def area_less(box, cuts):
+            xs = sorted({box[0], box[1]} | {min(max(b[i], box[0]), box[1]) for b in cuts for i in (0, 1)})
+            ys = sorted({box[2], box[3]} | {min(max(b[i], box[2]), box[3]) for b in cuts for i in (2, 3)})
+            area = 0.0
+            for xa, xb in zip(xs, xs[1:]):
+                for ya, yb in zip(ys, ys[1:]):
+                    cx, cy = (xa + xb) / 2, (ya + yb) / 2
+                    if not any(b[0] < cx < b[1] and b[2] < cy < b[3] for b in cuts):
+                        area += (xb - xa) * (yb - ya)
+            return area
+        seen = set()
+        for key, _bay, box, notches in M.fill_strips():
+            if key in seen:
+                continue
+            seen.add(key)
+            pn = M.PARTS[key][0]
+            b = [ev(e) for e in box]
+            mass = area_less(b, [[ev(e) for e in nb] for _n, nb in notches]) * VALS["fill_t"] * rho * 1e-9
+            self.assertEqual(rows[pn]["material"], name, pn)
+            self.assertAlmostEqual(float(rows[pn]["mass_each_kg"]), mass, delta=0.0006, msg=pn)
+        self.assertEqual(len(seen), 3)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(E.REPO, "v2", "02-Drawings", "ceiling", "FEATURE-RATIONALE.md"), encoding="utf-8") as f:
+            heading = [ln for ln in f if ln.startswith("## Fill")]
+        self.assertEqual(len(heading), 1)
+        self.assertIn("24 kg/m³", heading[0])
+        with open(os.path.join(here, "ceiling_build.py"), encoding="utf-8") as f:
+            self.assertIn('adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density',
+                          f.read())
+        with open(os.path.join(here, "ceiling_report.py"), encoding="utf-8") as f:
+            report = f.read()
+        self.assertIn("def sync_materials(design):", report)
+        self.assertIn("= sync_materials(design)", report)
+
     def test_parts_under_20_kg(self):
         v = VALS
         rho = {k: m[1] for k, m in M.MATERIALS.items()}
