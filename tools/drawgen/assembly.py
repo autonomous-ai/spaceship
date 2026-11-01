@@ -1487,9 +1487,10 @@ def _title_height(size, assy, spec, today):
     return top
 
 
-def make(pn, team, entry, out_path, today=None, step=None):
-    """Draw assembly pn's sheet into out_path; returns a report (as compose.make does)."""
-    assy = Assy(pn, team, entry, step=step)
+def make(pn, team, entry, out_path, today=None, step=None, assy=None):
+    """Draw assembly pn's sheet into out_path; returns a report (as compose.make does). assy: an assembly already
+    built (an Assy, or a class built on it, such as the whole-pod GA's), drawn as given."""
+    assy = assy or Assy(pn, team, entry, step=step)
     views = plan_views(assy)
     size, s = choose_sheet(views, entry)
     with open(assy.step, encoding="latin-1") as fh:
