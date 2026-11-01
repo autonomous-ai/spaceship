@@ -40,8 +40,9 @@ SKIN_NOTES = [
     "example 12 in, 3 000 to 5 000 rpm, 5 m/min) shaped to the 110° V with its 2 mm flat root. The root never touches "
     "the outer aluminium: 0.1 to 0.5 of core stays on it. Clamp the panel between two rigid supports and fold evenly "
     "along the whole edge; an outside radius under 2 cracks the face and voids the maker's warranty.",
-    "TEST FOLD: groove and fold one piece of the same colour and thickness before the batch (guide 4.4); it sets the "
-    "core left at the root and the fold allowance, which the blank (the sum of the outside lengths) is cut to (HOLD H16).",
+    "Outside radius 2 min, per the maker's guide No. 01/2021/HDTC-VD; the first fold of each batch is a test fold "
+    "that confirms the blank and the core left before the batch. The blank develops along the outer face at that "
+    "radius: 0.86 less than the sum of the sharp outside lengths (the Lead's ruling, 2026-11-01).",
     "BOND (D-137, bond spec): SikaTack Panel-50, one 12 x 3 joint on every frame member, and one 3 mm joint, as wide "
     "as the return allows up to 12, between the return and the frame's back end; laid face down on a flat table with "
     "the ACP face as datum.",
@@ -49,9 +50,9 @@ SKIN_NOTES = [
     "no heat, within 45 days of the start of fitting; no marker, vinyl or tape on the coated face after that.",
     "Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
 ]
-SKIN_TOLERANCE = ("cut sizes ±0.5 (CNC router; assumption, guideline 6.3); the fold line's place and the blank's "
-                  "allowance from the test fold (HOLD H16); fold 90° ±1° (assumption); colour difference between "
-                  "panels ΔE 2 or less (Alcorest guide 2.1).")
+SKIN_TOLERANCE = ("cut sizes ±0.5 (CNC router; assumption, guideline 6.3); the blank and the fold line as the batch's "
+                  "test fold confirms them (HOLD H16); fold 90° ±1° (assumption); outside radius 2 min (Alcorest guide "
+                  "4.5); colour difference between panels ΔE 2 or less (Alcorest guide 2.1).")
 
 
 def _skin(hand):

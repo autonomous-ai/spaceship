@@ -25,7 +25,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import dxf_tools  # noqa: E402
 
-FOLD_ALLOWANCE = 0.0   # assumption, HOLD H16: the ACP maker's V-groove rule
+import math  # noqa: E402
 
 
 def load(pn):
@@ -108,18 +108,27 @@ def main(argv):
                 "Ø%g at %.2f, %.2f" % (e[3] * 2, e[2][0], e[2][1]) for e in rounds)) if rounds else "")))
     else:
         length, ret, height = b[4] - b[1], b[3] - b[0], b[5] - b[2]    # Y (panel length), X (return leg), Z
-        w = ret + length - FOLD_ALLOWANCE
+        # the blank develops along the outer face: each leg to its fold's arc, plus the arc at the fold's outside
+        # radius (skin_fold_r, the maker's guide 01/2021/HDTC-VD 4.5; the Lead's ruling: model it): a 90° fold at
+        # R 2 develops 2 x 2 - pi/2 x 2 = 0.86 less than a sharp corner; the first fold of each batch is a test fold
+        # that confirms it (HOLD H16)
+        prm = {p["name"]: p["value"] for p in panel["parameters"]}
+        r = prm.get("skin_fold_r", 0.0)
+        arc = math.pi / 2.0 * r
+        w = (ret - r) + (length - r) + arc
         # seen from the outside (coloured) face: from -X for the left wall (the back edge on the left), from +X
         # for the right wall (the back edge on the right); X(view) along the panel, Y(view) = +Z(pod); origin at
         # the blank's bottom left; fold line where the return meets the main face
         right = b[0] + b[3] > 0
-        fold = w - ret if right else ret
+        fold_in = (ret - r) + arc / 2.0        # the groove's centre: the middle of the arc, from the return's edge
+        fold = w - fold_in if right else fold_in
         dxf_tools.write_dxf(path, [
             ("POLY", "CUT", [(0.0, 0.0), (w, 0.0), (w, height), (0.0, height)]),
             ("LINE", "BEND", (fold, 0.0), (fold, height)),
         ])
-        out.append((path, "skin blank %.2f x %.2f: return %.2f + main face %.2f, fold on BEND at x = %.2f (%s wall)" % (
-            w, height, ret, length, fold, "right" if right else "left")))
+        out.append((path, "skin blank %.2f x %.2f: return %.2f + main face %.2f outside, developed at the fold's "
+                          "outside radius %.1f (%.2f less than sharp), fold on BEND at x = %.2f (%s wall)" % (
+                              w, height, ret, length, r, ret + length - w, fold, "right" if right else "left")))
     felt_dxf = felt_file(cass)
     if felt_dxf:
         out.append(felt_dxf)

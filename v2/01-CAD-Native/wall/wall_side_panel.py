@@ -157,6 +157,9 @@ WALL_PARAMS = [
     ("skin_ret", "outer_t - skin_t", "mm", "assumption",
      "back return of the side skin: covers the frame's back end at the corner, where the side skin covers the back "
      "panel's edge (D-55; sample drawing D04). V-groove and fold per the ACP maker (HOLD H16)"),
+    ("skin_fold_r", "2 mm", "mm", "source",
+     "outside radius of the back return's V-grooved fold: over 2 at the fold (the panel maker's guide 01/2021/HDTC-VD "
+     "4.5 and figure 4.5: under 2 cracks the face and voids the warranty); modelled (the Lead's ruling, 2026-11-01)"),
     ("skin_setback", "0 mm", "mm", "assumption",
      "skin edge set back from the frame's top and bottom edges: 0, so the outside reveal equals the 2.26 seam gap "
      "(D-23: crisp, aligned reveals; joints register 2.8 leaves the setback to the WALL drawing)"),
@@ -1917,9 +1920,23 @@ def build_skin(design, skin, out):
     plate = box(design, skin, "SKIN PLATE", (X_OUT, X_SKIN_IN), yskin, zskin).bodies.item(0)
     box(design, skin, "SKIN BACK RETURN", (X_SKIN_IN, sx("pod_w / 2 - skin_t - skin_ret")),
         (Y_RETURN_IN, Y_BACK), zskin, "join", plate)
+    # the fold's outside radius (skin_fold_r, the maker's guide 4.5): a constant-radius fillet on the outer corner
+    # edge, where the main face meets the return's outer face; the inside of the fold is the closed V-groove
+    xo, yb = ev(design, X_OUT) / 10.0, ev(design, Y_BACK) / 10.0          # the API's cm
+    edges = [e for e in plate.edges if e.geometry.objectType == adsk.core.Line3D.classType() and all(
+        abs(v.geometry.x - xo) < 1e-5 and abs(v.geometry.y - yb) < 1e-5 for v in (e.startVertex, e.endVertex))]
+    if len(edges) != 1:
+        raise RuntimeError("the skin's outer fold edge: %d found at X %.2f, Y %.2f, not 1" % (
+            len(edges), xo * 10.0, yb * 10.0))
+    oc = adsk.core.ObjectCollection.create()
+    oc.add(edges[0])
+    fin = skin.features.filletFeatures.createInput()
+    fin.edgeSetInputs.addConstantRadiusEdgeSet(oc, adsk.core.ValueInput.createByString("skin_fold_r"), False)
+    fil = skin.features.filletFeatures.add(fin)
+    fil.name = "FILLET - FOLD OUTSIDE RADIUS (MAKER'S GUIDE 4.5)"
     plate.name = "SKIN - ACP 3 WITH BACK RETURN"
     out[plate.name] = plate
-    print("step 4: skin", size(bbox(plate)))
+    print("step 4: skin", size(bbox(plate)), "with its fold's outside radius %.1f" % ev(design, "skin_fold_r"))
 
 
 def build_tray(design, root, tray, yc, zc):

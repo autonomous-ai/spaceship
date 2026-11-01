@@ -348,7 +348,7 @@ def panel_rows(rep):
                     kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
                     finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
                     process=("CNC router: cut flat from the DXF, outline and holes; no drawing (D-89 part 4)" if back else
-                             "CNC router: cut, V-groove and fold the back return (H16)"),
+                             "CNC router: cut, V-groove the back (groove A of the maker's guide: a 110° V with a 2 mm flat root, 0.1 to 0.5 of core left) and fold the back return 90° at an outside radius of 2 min (Alcorest guide 01/2021/HDTC-VD 4.4, 4.5); the first fold of each batch is a test fold that confirms the blank (H16)"),
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
                     tolerance=("ISO 2768-m general tolerance (router cut; assumption until the ACP maker's own)" if back
                                else "per the tabulated skin drawing (D-89)"), mass_each_kg=sm, mass_total_kg=sm,
@@ -483,7 +483,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                     kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
                     finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
                     process=("CNC router: cut flat from the DXF, outline and holes; no drawing (D-89 part 4)" if back else
-                             "CNC router: cut, V-groove and fold the back return (H16)"),
+                             "CNC router: cut, V-groove the back (groove A of the maker's guide: a 110° V with a 2 mm flat root, 0.1 to 0.5 of core left) and fold the back return 90° at an outside radius of 2 min (Alcorest guide 01/2021/HDTC-VD 4.4, 4.5); the first fold of each batch is a test fold that confirms the blank (H16)"),
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
                     tolerance=("ISO 2768-m general tolerance (router cut; assumption until the ACP maker's own)" if back
                                else "per the tabulated skin drawing (D-89)"), mass_each_kg=sm, mass_total_kg=sm,
