@@ -89,6 +89,119 @@ def check(folder, name, ext="f3d", wait=60.0):
     return ff.safe_to_create(folder, name, ext, wait_s=wait, pause_s=5.0, sleep=c.sleep, now=c.now), c
 
 
+class NewFilePauseTests(unittest.TestCase):
+    """PM ruling 2026-11-01: after a run saves a new cloud file, the folder is read again only about 10 s later
+    (Fusion crashed twice right after fetching the team folder's second page, a live-update subscription starting
+    1 to 3 s before; at 14:00:58 two seconds after BASE's run saved a new file)."""
+
+    def setUp(self):
+        self.core = types.ModuleType("adsk.core")
+        self.adsk = types.ModuleType("adsk")
+        self.adsk.core = self.core
+        self.events = []
+        self.adsk.doEvents = lambda: self.events.append(self.clock.t)
+        self.clock = Clock()
+        self.clock.t = 1000.0
+        self.wall_t = 1793500000.0                                  # the wall clock, for an older runner's note
+        self.keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core")}
+        sys.modules.update({"adsk": self.adsk, "adsk.core": self.core})
+        self.keep_ff = ff.adsk
+        ff.adsk = self.adsk
+
+    def tearDown(self):
+        ff.adsk = self.keep_ff
+        for k, v in self.keep.items():
+            if v is None:
+                sys.modules.pop(k, None)
+            else:
+                sys.modules[k] = v
+
+    def pause(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            waited = ff.pause_after_new_file(sleep=self.clock.sleep, clock=self.clock.now,
+                                             wall=lambda: self.wall_t)
+        return waited, out.getvalue()
+
+    def test_a_new_file_3_s_ago_waits_out_the_other_7_letting_fusion_work(self):
+        self.core._spaceship_new_file_mono = 997.0
+        self.core._spaceship_new_file = "111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_CAD"
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.assertAlmostEqual(sum(self.clock.sleeps), 7.0)
+        self.assertGreaterEqual(len(self.events), 14)                 # Fusion's events run every half second
+        self.assertIn("waiting 7.0 s after the new cloud file 111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_CAD", said)
+
+    def test_an_older_new_file_or_none_waits_not_at_all(self):
+        for t in (None, 989.0, "not a time"):
+            if t is None:
+                self.core.__dict__.pop("_spaceship_new_file_mono", None)
+            else:
+                self.core._spaceship_new_file_mono = t
+            waited, said = self.pause()
+            self.assertEqual((waited, said, self.clock.sleeps), (0.0, "", []), t)
+
+    def test_an_older_runners_wall_clock_note_is_read_and_its_wait_capped(self):
+        # a Fusion session whose hook came from #379 notes only time.time(); a clock step back after it must not
+        # stretch the wait (Reviewer 5, P3 on #379)
+        self.core._spaceship_new_file_at = self.wall_t - 3.0
+        waited, _said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.clock.sleeps.clear()
+        self.core._spaceship_new_file_at = self.wall_t + 3600.0      # the clock stepped back an hour
+        waited, _said = self.pause()
+        self.assertEqual(waited, 10.0)
+        self.assertAlmostEqual(sum(self.clock.sleeps), 10.0)
+        self.core._spaceship_new_file_mono = 989.0                   # a monotonic note wins over the old one
+        self.assertEqual(self.pause()[0], 0.0)
+
+    def test_a_new_version_saved_3_s_ago_waits_too_and_the_newer_save_wins(self):
+        # PM ruling 2026-11-01 on #386: no folder is listed within 10 s of any save, a new version as a new file
+        self.core._spaceship_saved_mono = 997.0
+        self.core._spaceship_saved_name = "410000_P01_CEILING_CAD"
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.assertIn("waiting 7.0 s after saving 410000_P01_CEILING_CAD before reading the folder", said)
+        self.clock.sleeps.clear()
+        self.clock.t = 1000.0
+        self.core._spaceship_new_file_mono = 995.0                    # an older new file: the save still sets it
+        self.core._spaceship_new_file = "OLDER_CAD"
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.assertIn("after saving 410000_P01_CEILING_CAD", said)
+        self.clock.sleeps.clear()
+        self.clock.t = 1000.0
+        self.core._spaceship_new_file_mono = 999.0                    # a newer new file sets it
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 9.0)
+        self.assertIn("after the new cloud file OLDER_CAD", said)
+        self.clock.sleeps.clear()
+        self.clock.t = 1000.0
+        self.core._spaceship_new_file_mono, self.core._spaceship_saved_mono = 980.0, 1000.0 + 3600.0
+        self.assertEqual(self.pause()[0], 10.0)                       # capped, whatever the note says
+
+    def test_read_folder_waits_before_its_first_listing(self):
+        self.core._spaceship_new_file_mono = 995.0
+        listed_at = []
+
+        class Seen(Files):
+            def asArray(inner):
+                listed_at.append(self.clock.t)
+                return [File("A_CAD", "f3d")]
+
+        class Fld:
+            dataFiles = Seen([File("A_CAD", "f3d")])
+        real = ff.pause_after_new_file                                # the same pause, on this test's clock
+        ff.pause_after_new_file = lambda sleep=None, **k: real(sleep=self.clock.sleep, clock=self.clock.now)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                files, _u, _o = ff.read_folder(Fld(), sleep=self.clock.sleep, now=self.clock.now)
+        finally:
+            ff.pause_after_new_file = real
+        self.assertEqual(sorted(files), ["A_CAD"])
+        self.assertEqual(listed_at, [1005.0])                         # 10 s after the save, not before
+
+
 class ReadFolderTests(unittest.TestCase):
     def test_a_clean_folder_is_read_once(self):
         c = Clock()
