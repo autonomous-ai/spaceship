@@ -83,6 +83,9 @@ OWN = [
      "D-132 (PM rulings 2026-11-01): no floor and no threshold, so the strip's bottom sits on the base band's bottom "
      "line, the skeleton's glide_h (10) over the room floor, Z 0, and the dark band runs on unbroken; the drop seal "
      "closes that 10 mm gap, near its rated 7, with its 20 mm travel left for a floor a few mm out either way"),
+    ("kbrush_gap", "4.5 mm", "mm", "source",
+     "the slot from the kick strip's end to BASE's sill end plate (its face at X 218.5, BASE 2026-11-01), closed by the "
+     "brush seal 368008 (D-150), modelled compressed to that face"),
     ("door_top_cut", "2 mm", "mm", "decided",
      "PM ruling 2026-10-31: the leaf is 2 mm shorter at the top, so the gap to DT is 6 mm, inside the 5 to 10 mm the "
      "Sugatsune HT-MSG62 door-stop catch needs (datasheet)"),
@@ -154,6 +157,7 @@ PARTS = {
     "STRIKE": ("368102", "FRONT - DOOR STRIKE - ENVELOPE", "Đế hít cửa"),
     "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
     "PULL": ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)"),
+    "KBRUSH": ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD", "Gioăng chổi mép cuối tấm chắn chân cửa (chờ)"),
 }
 
 # Overlaps made on purpose, with the reason; any other clash over 1 mm3 fails the build.
@@ -177,6 +181,8 @@ ANCHORS = [
     ("STRIKE", 5, "leaf_zt + st_top"), ("STRIKE", 2, "leaf_zt - st_h"),
     ("MSEAL", 2, "door_zb"), ("MSEAL", 5, "leaf_zt"),
     ("PULL", 1, GY0 + " - pull_stand"), ("PULL", 4, GY1 + " + pull_stand"), ("PULL", 5, "pull_zc + pull_len / 2"),
+    ("KBRUSH", 0, "kick_x1"), ("KBRUSH", 3, "kick_x1 + kbrush_gap"), ("KBRUSH", 2, "0 mm"), ("KBRUSH", 5, "door_zb"),
+    ("KBRUSH", 1, KY0), ("KBRUSH", 4, KY1),
 ]
 
 ENVELOPE_MAT = "ENVELOPE - mass carried in the parts list (1 kg/m3)"
@@ -264,6 +270,21 @@ def build(app):
             "x", "kick_x0", "kick_x1", "DROP SEAL ENVELOPE (CATALOGUE SECTION)", "SECTION - DROP SEAL GSA 11.6 X 40",
             "EXTRUDE - DROP SEAL CUT LENGTH")
 
+    # 368008 brush seal on the kick strip's end (D-150; PM ruling 2026-11-01 with BASE): the slot from the strip's end
+    # to BASE's sill end plate, from the room floor (its tips close the corner under the strip) to the door's bottom
+    # edge; near the top its outer face follows the fixed pane's free edge, so it never runs into the glass
+    if want("KBRUSH"):
+        c = comp("KBRUSH")
+        xb = "(kick_x1 + kbrush_gap)"
+        zc = "((fg_lc + fg_gap - fg_lnx * %s) / fg_lnz)" % xb        # where the pane's free edge crosses X xb
+        if not 0.0 < L.ev(design, zc) < L.ev(design, "door_zb"):
+            raise RuntimeError("the kick strip's end brush: the pane's free edge crosses its outer face at Z %.1f, "
+                               "outside the strip's height" % L.ev(design, zc))
+        bodies["KBRUSH"] = L.prism(design, c, "KBRUSH", ("x", "z"), [
+            ("kick_x1", "0 mm"), (xb, "0 mm"), (xb, zc), (L.free_x("door_zb"), "door_zb"), ("kick_x1", "door_zb")],
+            "y", KY0, KY1, "KICK STRIP END BRUSH SEAL (HOLD PRODUCT)", "OUTLINE - KICK STRIP END BRUSH SEAL",
+            "EXTRUDE - KICK STRIP END BRUSH SEAL")
+
     # HOLD spaces for the hinges (into the DL pocket) and the pull; the catch's strike; the seal half
     for key, zc in (("H1", "hinge_z1"), ("H2", "hinge_z2"), ("H3", "hinge_z3")):
         if want(key):
@@ -306,7 +327,8 @@ def build(app):
              "GSA": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"],
              "HOLD": ["Paint - Enamel Glossy (Red)", "Plastic - Glossy (Red)"],
              "STRIKE": ["Steel - Satin", "Stainless Steel - Satin"],
-             "MSEAL": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"]}
+             "MSEAL": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"],
+             "KBRUSH": ["Plastic - Matte (Black)", "Paint - Enamel Glossy (Black)"]}
     for k, b in bodies.items():
         b.material = L.material(design, *mats[k]) if k in mats else L.material(design, ENVELOPE_MAT, "Aluminum", 1.0)
         a = L.appearance(design, looks.get(k) or looks["HOLD"])
@@ -390,6 +412,13 @@ BOM_ROWS = [
      "HOLD: product for the 8.76 laminate and a 4 mm gap", "PM ruling 2026-10-31", "pairs with 368003 on the fixed pane"),
     ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.8, "assumption (D-56)", "HOLD", "hardware selection C2",
      "reserved space only"),
+    ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD", "Gioăng chổi mép cuối tấm chắn chân cửa (chờ)", 1,
+     "bought, HOLD", "brush (pile) seal on a carrier, about 6 mm pile, bonded to the kick strip's end face at the "
+     "factory; product not named", 0.01, "assumption (about 10 g)", "HOLD: product (D-150)",
+     "D-150; PM ruling 2026-11-01 (the seal line at the fixed glass's door end, with BASE's sill end plate)",
+     "across the strip's depth (Y -709 to -689), from the room floor to Z 105; its pile presses about 1.5 onto BASE's "
+     "sill end plate at X 218.5 and its tips on the floor close the corner under the strip; modelled compressed to that "
+     "face and, near the top, to the fixed pane's free edge"),
 ]
 
 
