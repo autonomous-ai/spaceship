@@ -52,7 +52,9 @@ PART_INFO = {
     "111103": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with 2 welded 1.5 mm end plates (alloy: assumption)", AA20,
                "saw cut square, weld the end plates, CNC drill, cut the slots, notches and bevels, deburr, anodise",
                "calculation", "DRAFT", "CAD; finish D-67; section layout study B-BAND; D-129 and joints register J-BASE-02 "
-               "(FR-15) for the end plates", "2420 over its end plates (D-129: ships at 2420 on pallet 2's 2438 deck)"),
+               "(FR-15) for the end plates", "2420 over its end plates (D-129: ships at 2420 on pallet 2's 2438 deck); "
+               "fit set at assembly (D-174): the side bands stand free on their glides until it is lowered onto "
+               "their back keys' studs, so it sets their spacing; at 2420 +0/-0.5 it never binds"),
     "831001": ("stainless steel A2 round bar, turned, M6 stud (assumption)", "passivated stainless, bright (assumption)",
                "lathe, thread, chamfer",
                "calculation", "DRAFT", "CAD; joints register H-05 (PROPOSED sizes)",
@@ -269,7 +271,9 @@ PART_INFO_BY_KEY = {
     "sill_plate": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
                    "laser cut flat from the blank in its DXF; its 3 corners relieved C3 where they meet the profile's inside radii",
                    "calculation", "DRAFT", "CAD; D-150 (Reviewer 8's P1 on #303)",
-                   "member of the welded sill 111301: the door-end plate, welded in all round, its outer face flush"),
+                   "member of the welded sill 111301: the door-end plate, welded in all round, its outer face flush; "
+                   "fit set at assembly (D-174): welded into the profile, its edge ground flush with the flange's "
+                   "face on FR1"),
 }
 
 
