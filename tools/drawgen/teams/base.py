@@ -29,8 +29,8 @@ BASE_BACK_BAND = {
     "notes": ["Both ends square, each closed by a 1.5 end plate welded in flush, 2420 over both plates (D-129). Each "
               "plate has one slot open at its bottom edge on the band's centre line, 12 wide at the edge and narrowing "
               "to 6.5 over its bottom 6, then 6.5 up to its round end, for the side band's 2 key studs as the band is "
-              "lowered onto them; the bottom wall has a 12 x 9 notch at each end for the stud heads; each plate's "
-              "bottom edge has a 1 x 45° bevel on its side-band side (joints register J-BASE-02, FR-15)."],
+              "lowered onto them; the bottom wall has a 12 x 9 notch at each end for the stud heads, and its end "
+              "edge a 1 x 45° bevel either side of the notch (joints register J-BASE-02, FR-15)."],
     "tolerance": "hole positions Ø0.4 to A|B|C (joints register R-J6); the other spigot rivnut holes ±0.1 from B along "
                  "the band (joints register 2.11: ST-02, ST-04); rivnut holes Ø9.53 +0.10/0 (maker); the end plate "
                  "slots 6.5 +0.1/0 wide, ±0.2 on the band's centre line (they set the corner across the band, FR-15; "
@@ -49,7 +49,7 @@ BASE_SIDE_BAND_RH = dict(
 # last, down onto the intake's inline key studs through the 2 keyholes in its welded end plate (joints register
 # J-BASE-02), so the keyed end is datum B; A its bottom face on the glides, C its outer face. Origin at their corner.
 BASE_FR1 = {
-    "corner": "+X-Y-Z",
+    "corner": "+X-Y-Z", "datum_faces": {"A": "-Z", "B": "+X", "C": "-Y"},
     "datum_words": {"A": "the bottom face (Z 10, on its glides)",
                     "B": "the keyed end plate's outer face (X 915, on the intake piece's end, J-BASE-02)",
                     "C": "the outer face (Y -850, the band's front line)"},
