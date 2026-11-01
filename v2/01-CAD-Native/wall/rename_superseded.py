@@ -69,6 +69,8 @@ def run(_context):
             new = superseded_name(names, name, day)
             df.name = new
             names.add(new)
+            names.discard(name)
             print("RENAME|%s -> %s (superseded, not deleted)" % (name, new))
-    others = sorted(n for n in names if n.endswith("_DWG") and n[:2] in ("21", "51") and "SUPERSEDED" not in n)
+    others = sorted(n for n in names if n.endswith("_DWG") and n[:2] in ("21", "51") and "SUPERSEDED" not in n
+                    and "CEILING" not in n)
     print("RENAME|WALL drawing documents left as they are: %s" % (", ".join(others) or "none"))
