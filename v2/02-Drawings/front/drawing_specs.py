@@ -128,7 +128,11 @@ SPECS = {
         "box": {"front": (X0, KZB, X1, ZB), "top": (X0, KY0, X1, KY1), "left": (-KY1, KZB, -KY0, ZB)},
         "dims": [
             ("front", (X0, KZB), (X1, KZB), "below", 10),
-            ("left", (-KY1, KZB), (-KY0, KZB), "below", 10), ("left", (-KY1, KZB), (-KY1, ZB), "left", 12),
+            ("left", (-KY1, KZB), (-KY0, KZB), "below", 10),
+            # the pod-side face stops under the push-side taper (US door rule): the taper's rise there, and the strip's
+            # full height on the square outside face (the pod-side face's own height follows; no closed chain)
+            ("left", (-KY1, ZB - v["kick_bev_h"]), (-UY1, ZB), "left", 12),
+            ("left", (-KY0, KZB), (-KY0, ZB), "right", 34),
             ("left", (-UY1, ZB), (-UY0, ZB), "above", 8),
             ("left", (-UY0, ZB - v["kick_pocket_d"]), (-UY0, ZB), "right", 10),
             ("left", (-UY0, KZB), (-UY0, KZB + v["kick_cav_h"]), "right", 22),
