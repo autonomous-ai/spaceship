@@ -228,7 +228,7 @@ class WallSidePanelTest(unittest.TestCase):
                         continue
                     self.assertRegex(pn, r"^(21|51)\d{4}$")
                     self.assertNotIn(pn, ns["RESERVED"])
-                    self.assertNotIn(pn, seen, "%s used twice" % pn)
+                    self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                     seen[pn] = name
                     self.assertTrue(vn)
         self.assertEqual(seen["210101"], "WALL - PANEL ASSY - SIDE LOWER - LH")
@@ -290,7 +290,7 @@ class WallBackPanelTest(unittest.TestCase):
                     continue
                 self.assertRegex(pn, r"^(21|51)\d{4}$")
                 self.assertNotIn(pn, ns["RESERVED"])
-                self.assertNotIn(pn, seen, "%s used twice" % pn)
+                self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                 seen[pn] = name
         self.assertEqual(seen["210201"], "WALL - PANEL ASSY - BACK LOWER - B1")
         self.assertEqual(seen["211204"], "WALL - PANEL FRAME - BACK UPPER - B4")
@@ -601,6 +601,15 @@ class CassetteLedgeTest(unittest.TestCase):
         y0 = vl["pod_d"] / 2 - vl["wall_depth"] + vl["ledge_front_dy"] + vl["ledge_end"]
         self.assertAlmostEqual(y0, -635.0, places=2)
         self.assertAlmostEqual(vr["pod_d"] / 2 - vr["wall_depth"] + vr["lin_front_dy"] + vr["ledge_end"], y0, places=2)
+
+    def test_b1_and_b2_get_the_same_back_ledge(self):
+        nb1, nb2 = load_back("B1"), load_back("B2")
+        v1, v2 = resolve(nb1), resolve(nb2)
+        for k in ("ledge_len", "ledge_rivet_pitch", "ledge_rivet_e", "ledge_rivet_z", "ledge_out", "ledge_t"):
+            self.assertAlmostEqual(v1[k], v2[k], places=6, msg=k)
+        self.assertAlmostEqual(v1["ledge_len"], 1154.87, places=1)
+        self.assertEqual(nb1["PARTS"]["ledge"][0], "211801")
+        self.assertNotIn("ledge_len", resolve(load_back("B3")))
 
     def test_rivet_pattern_is_symmetric_and_clear_of_the_ends(self):
         v = resolve(load())
