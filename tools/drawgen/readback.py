@@ -490,11 +490,17 @@ def flat_fails(data, texts, page_text, tol=TOL):
         if not any(abs(a[ax] - b[ax]) < 1e-6 and abs(a[ax] - at) < 0.01 for a, b in bends):
             fails.append("bend %s (%s %s) is on no BEND line of the DXF" % (row["tag"], row["axis"], _fmtv(row["at"])))
     k = fl["k"]
+    vg = fl.get("vgroove")
     for ci, ch in enumerate(fl["chains"]):
         t, fls, angs = ch["t"], ch["flanges"], ch["angles"]
         radii = [r if r is not None else fl["r"] for r in ch["radii"]]
-        ossb = [(radii[i] + t) * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
-        ba = [math.radians(angs[i]) * (radii[i] + k * t) for i in range(len(angs))]
+        if vg:          # a V-groove: the flat develops along the outer face, each fold's outside arc R (0: sharp)
+            ro = [r_ or 0.0 for r_ in ch.get("radii_out") or [None] * len(angs)]
+            ossb = [ro[i] * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
+            ba = [math.radians(angs[i]) * ro[i] for i in range(len(angs))]
+        else:
+            ossb = [(radii[i] + t) * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
+            ba = [math.radians(angs[i]) * (radii[i] + k * t) for i in range(len(angs))]
         x, pos = 0.0, []
         for i, L in enumerate(fls):
             x += L - (ossb[i - 1] if i > 0 else 0.0) - (ossb[i] if i < len(angs) else 0.0)
@@ -506,8 +512,9 @@ def flat_fails(data, texts, page_text, tol=TOL):
         for p_ in pos:
             want = (box[2 + ax] - p_) if ch["reversed"] else (box[ax] + p_)
             if not any(abs(l_ - want) <= tol for l_ in lines):
-                fails.append("chain %d: the model's flanges at K %s and R%s put a bend line at %s %s; the DXF has none "
-                             "there" % (ci + 1, _fmtv(k), _fmtv(fl["r"]), "xy"[ax], _fmtv(want - box[ax])))
+                fails.append("chain %d: the model's flanges%s put a bend line at %s %s; the DXF has none there" % (
+                    ci + 1, " (a V-groove)" if vg else " at K %s and R%s" % (_fmtv(k), _fmtv(fl["r"])), "xy"[ax],
+                    _fmtv(want - box[ax])))
         if abs(x - (box[2 + ax] - box[ax])) > tol:
             fails.append("chain %d: the model's flat is %s long, the DXF's %s" % (ci + 1, _fmtv(x), _fmtv(box[2 + ax] - box[ax])))
     v = fl.get("view")
@@ -518,11 +525,77 @@ def flat_fails(data, texts, page_text, tol=TOL):
     for row in fl["rows"]:
         if row.get("printed_at") and not _text_near(texts, row["tag"], row["printed_at"], pad=2.5):
             fails.append("bend %s's tag is not printed on its line" % row["tag"])
-    if ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
+    if not vg and ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
         fails.append("the K-factor %s is not printed" % _fmt3(k))
     t = fl["chains"][0]["t"] if fl.get("chains") else None
     if t is not None and ("sheet %s thick" % _fmtv(t)) not in " ".join(page_text.split()):
         fails.append("the sheet's thickness %s is not printed (guideline 6.1)" % _fmtv(t))
+    return fails
+
+
+def profile_fails(data, texts, page_text):
+    """A bent part's sections across its runs of bends (Reviewer 10 on #380: a sheet drawn again lost them all, and
+    the read-back passed): every run the sheet records must have a section on the sheet, titled, with each flange it
+    shows sized (its outside length printed by it), or be the same as a drawn one (the same flanges shown, the same
+    fold angles), whose title then says typical."""
+    fl = data.get("flat")
+    if not fl:
+        return []
+    profs = fl.get("profiles")
+    if profs is None or len(profs) != len(fl["chains"]):
+        return ["the sheet doesn't record a section across each run of bends"]
+    fails = []
+    names = {v["name"] for v in data["views"]}
+    words = " ".join(page_text.split())
+    rnd = lambda xs: [round(x, 3) for x in xs]
+    sized = set()
+    for i, (ch, p) in enumerate(zip(fl["chains"], profs)):
+        what = "run %d of bends (flanges %s)" % (i + 1, " / ".join(_fmtv(L) for L in ch["flanges"]))
+        if not p:
+            fails.append("%s has no section across it on the sheet" % what)
+            continue
+        L = p["section"]
+        if ("section %s-%s" % (L, L)) not in names or ("SECTION %s-%s" % (L, L)) not in words:
+            fails.append("%s: its section %s-%s is not on the sheet" % (what, L, L))
+            continue
+        own = fl["chains"][p["of"]]
+        if p["of"] != i:
+            if rnd(ch["flanges"][k] for k in p["shown"]) != rnd(own["flanges"][k] for k in p["shown"]) or \
+                    rnd(ch["angles"]) != rnd(own["angles"]):
+                fails.append("%s is said to be shown by section %s-%s, but its flanges or folds differ" % (what, L, L))
+            # the title's lines: the "SECTION L-L" line and the lines stacked under it, from the same left edge
+            heads = [t for t in texts if t[4].startswith("SECTION %s-%s" % (L, L))]
+            if not any("typical" in t[4] and abs(t[0] - h[0]) < 1.0 and h[1] - 30.0 <= t[1] <= h[1]
+                       for h in heads for t in texts):
+                fails.append("section %s-%s shows %s too, but its title doesn't say typical" % (L, L, what))
+        if L in sized:
+            continue
+        sized.add(L)
+        for k in p["shown"]:
+            want = _fmtv(own["flanges"][k])
+            if not _text_near(texts, want, p["box"]):
+                fails.append("section %s-%s doesn't print flange %d's outside length %s" % (L, L, k + 1, want))
+    return fails
+
+
+def vgroove_radius_fails(data, faces):
+    """A V-grooved panel's folds against the STEP's own faces (the repo's reader): each fold's outside radius, as the
+    sheet records it, must be a convex cylinder of the STEP along that run's bend lines (Reviewer 6 on #341: the
+    read-back took it from the sheet's own record)."""
+    fl = data.get("flat")
+    if not fl or not fl.get("vgroove") or not fl.get("map"):
+        return []
+    fails = []
+    for ci, (ch, mc) in enumerate(zip(fl["chains"], fl["map"]["chains"])):
+        ax = mc["axis"]
+        for j, r in enumerate(ch.get("radii_out") or []):
+            if not r:
+                fails.append("chain %d's fold %d is recorded sharp" % (ci + 1, j + 1))
+                continue
+            if not any(f["kind"] == "cylinder" and "d" in f and not f.get("concave") and abs(f["r"] - r) < 0.01
+                       and abs(abs(dot(f["d"], ax)) - 1) < 1e-6 for f in faces):
+                fails.append("chain %d's fold %d: the STEP has no outside arc R%s along its bend line" % (
+                    ci + 1, j + 1, _fmtv(r)))
     return fails
 
 
@@ -915,7 +988,9 @@ def check(pdf_path, step_path=None, verbose=False):
         fails += flat_fails(data, text_boxes(doc[fpage], data["sheet_h"]), page.get_text() + " " + doc[fpage].get_text())
     else:
         fails += flat_fails(data, tb, page.get_text())
+    fails += profile_fails(data, tb, page.get_text())   # the sections stay on sheet 1
     fails += flat_hole_fails(data, holes, faces)
+    fails += vgroove_radius_fails(data, faces)
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")

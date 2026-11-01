@@ -834,6 +834,203 @@ class OpenLogTests(unittest.TestCase):
         self.assertEqual([l.split(" open ")[1].split(" v4")[0] for l in self.lines(log) if " start " in l],
                          ["X_P01_CAD", "Y_P01_CAD"])
 
+    def test_new_cloud_files_are_noted_once_per_session_on_all_three_document_classes(self):
+        # PM ruling 2026-11-01: the shared folder reader waits about 10 s after a new file (fusion_folder)
+        import types
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.fake_core()
+        calls = []
+
+        def doc_class(label):
+            class Doc:
+                def saveAs(self, name, folder, desc, tag):
+                    calls.append((label, name))
+                    return name != "REFUSED_CAD"
+            return Doc
+        core.Document = doc_class("core")
+        fusion, drawing = types.ModuleType("adsk.fusion"), types.ModuleType("adsk.drawing")
+        fusion.FusionDocument, drawing.DrawingDocument = doc_class("fusion"), doc_class("drawing")
+        keep = {k: sys.modules.get(k) for k in ("adsk.fusion", "adsk.drawing")}
+        sys.modules.update({"adsk.fusion": fusion, "adsk.drawing": drawing})
+        try:
+            self.run_wrapped(core, log, "X_P01_CAD", True)
+            first = [core.Documents.open] + [getattr(c, m) for c in (core.Document, fusion.FusionDocument,
+                                                                     drawing.DrawingDocument) for m in ("saveAs",)]
+            self.run_wrapped(core, log, "Y_P01_CAD", True)            # a second run: no second wrapper
+            again = [core.Documents.open] + [getattr(c, m) for c in (core.Document, fusion.FusionDocument,
+                                                                     drawing.DrawingDocument) for m in ("saveAs",)]
+            for a, b in zip(first, again):                            # Reviewer 5, P3 on #379: the guard holds
+                self.assertIs(a, b)
+            for cls, name in ((fusion.FusionDocument, "A_CAD"), (drawing.DrawingDocument, "B_DWG"),
+                              (core.Document, "C_CAD")):
+                before = time.time()
+                self.assertTrue(cls().saveAs(name, None, "", ""))
+                self.assertEqual(core._spaceship_new_file, name)
+                self.assertGreaterEqual(core._spaceship_new_file_at, before)
+            self.assertFalse(core.Document().saveAs("REFUSED_CAD", None, "", ""))
+            self.assertEqual(core._spaceship_new_file, "C_CAD")        # a refused save is no new file
+            self.assertEqual(calls, [("fusion", "A_CAD"), ("drawing", "B_DWG"), ("core", "C_CAD"),
+                                     ("core", "REFUSED_CAD")])        # each class's own saveAs, called once
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+
+    # PM ruling 2026-11-01 (CEILING: v11 saved at 14:30, its report step opened v10 a few seconds later)
+    def version_core(self):
+        """A fake adsk.core whose documents save new versions and whose open says which version it opened."""
+        import types
+        core = types.ModuleType("adsk.core")
+        core.RESULT = []
+
+        class Documents:
+            def open(self, dataFile, visible=True):
+                return (dataFile.name, dataFile.versionNumber)
+        core.Documents = Documents
+
+        class DataFile:
+            def __init__(self, name, v, folder=None):
+                self.name, self.versionNumber, self.parentFolder, self.fileExtension = name, v, folder, "f3d"
+
+            @property
+            def latestVersion(self):
+                return self
+        core.DataFile = DataFile
+
+        class Document:
+            def __init__(self, name, v, modified=True, ok=True, lag=False):
+                self.name, self.dataFile, self.isModified, self.ok, self.lag = name, DataFile(name, v), modified, ok, lag
+
+            def save(self, desc=""):
+                if self.ok and self.isModified and not self.lag:      # Fusion: a save makes the next version
+                    self.dataFile = DataFile(self.name, self.dataFile.versionNumber + 1)
+                return self.ok
+
+            def saveAs(self, name, folder, desc, tag):
+                return True
+        core.Document = Document
+        return core
+
+    def listing(self, core, versions):
+        """A folder whose listing of NAME_CAD gives the next of versions each time (the last one from then on)."""
+        test = self
+
+        class Files:
+            def __init__(self):
+                self.calls = 0
+
+            def asArray(self):
+                v = versions[min(self.calls, len(versions) - 1)]
+                self.calls += 1
+                return [core.DataFile("NAME_CAD", v, folder)]
+
+            @property
+            def count(self):
+                return 1
+
+        class Folder:
+            dataFiles = Files()
+        folder = Folder()
+        del test
+        return folder
+
+    def test_a_save_notes_the_version_it_made(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        first = self._installed_once(core, log)
+        self.assertIs(core.Document.save, first)                      # read after the second run (Reviewer 5, P3)
+        core.Document("A_CAD", 10).save("d")                          # changes: v11
+        core.Document("B_CAD", 4, modified=False).save("d")           # no changes: it stays v4
+        core.Document("C_CAD", 7, ok=False).save("d")                 # refused: nothing noted
+        core.Document("D_CAD", 20, lag=True).save("d")                # the document still says v20: v21 is noted
+        saved = core._spaceship_saved
+        self.assertEqual({k: v["version"] for k, v in saved.items()}, {"A_CAD": 11, "B_CAD": 4, "D_CAD": 21})
+        self.assertLessEqual(saved["A_CAD"]["at"], time.monotonic())
+        self.assertEqual(core._spaceship_saved_name, "D_CAD")          # every save's time, for the folder pause
+        self.assertLessEqual(core._spaceship_saved_mono, time.monotonic())
+        self.assertGreaterEqual(core._spaceship_saved_mono, saved["A_CAD"]["at"])
+
+    def _installed_once(self, core, log):
+        first = core.Document.save
+        self.run_wrapped(core, log, "Y_P01_CAD", True)
+        return first
+
+    def test_the_first_folder_listing_comes_10_s_after_the_save(self):
+        # PM ruling 2026-11-01 on #386: no folder listed within 10 s of any save (as #379 for new files)
+        from unittest import mock
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        clock = {"t": 5000.0}
+        listed_at = []
+
+        def now():
+            return clock["t"]
+
+        def sleep(s):
+            clock["t"] += s
+        folder = self.listing(core, [10, 11])
+        real = folder.dataFiles.asArray
+
+        def seen():
+            listed_at.append(clock["t"])
+            return real()
+        folder.dataFiles.asArray = seen
+        with mock.patch("time.monotonic", now), mock.patch("time.sleep", sleep):
+            core.Document("NAME_CAD", 10).save("v11")                   # at 5000.0, the default pause
+            clock["t"] += 2.0                                           # the report step opens 2 s later
+            got = core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True)
+        self.assertEqual(got, ("NAME_CAD", 11))
+        self.assertGreaterEqual(listed_at[0], 5010.0)                   # not before 10 s after the save
+        self.assertLess(listed_at[0], 5010.6)
+        self.assertEqual(len(listed_at), 2)                             # then every 3 s: v11 on the second look
+        self.assertAlmostEqual(listed_at[1] - listed_at[0], 3.0)
+
+    def test_an_open_soon_after_a_save_waits_for_the_saved_version(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core._spaceship_version_wait_s, core._spaceship_version_step_s = 2.0, 0.01
+        core._spaceship_list_pause_s = 0.0
+        doc = core.Document("NAME_CAD", 10)
+        self.assertTrue(doc.save("v11"))
+        folder = self.listing(core, [10, 10, 11])                     # the cloud lists v11 on the third look
+        self.assertEqual(core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True), ("NAME_CAD", 11))
+        self.assertEqual(folder.dataFiles.calls, 3)
+        text = "".join(self.lines(log))
+        self.assertIn("waiting for NAME_CAD v11: the cloud lists v10", text)
+        self.assertIn("found NAME_CAD v11", text)
+
+    def test_an_open_gives_up_rather_than_open_the_older_version(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core._spaceship_version_wait_s, core._spaceship_version_step_s = 0.1, 0.01
+        core._spaceship_list_pause_s = 0.0
+        core.Document("NAME_CAD", 10).save("v11")
+        folder = self.listing(core, [10])
+        with self.assertRaises(RuntimeError) as cm:
+            core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True)
+        self.assertIn("version 11 was saved", str(cm.exception))
+        self.assertIn("still lists version 10", str(cm.exception))
+        self.assertIn("gave up waiting for NAME_CAD v11", "".join(self.lines(log)))
+
+    def test_any_other_open_goes_through_at_once(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core.Document("NAME_CAD", 10).save("v11")
+        folder = self.listing(core, [10])
+        open_ = core.Documents().open
+        self.assertEqual(open_(core.DataFile("OTHER_CAD", 3, folder), True), ("OTHER_CAD", 3))       # another name
+        self.assertEqual(open_(core.DataFile("NAME_CAD", 11, folder), True), ("NAME_CAD", 11))       # the saved one
+        core._spaceship_saved["NAME_CAD"]["at"] -= 120.0                                             # long ago
+        self.assertEqual(open_(core.DataFile("NAME_CAD", 10, folder), True), ("NAME_CAD", 10))
+        self.assertEqual(folder.dataFiles.calls, 0)                                                  # no folder read
+
     def test_the_log_sits_next_to_the_lock(self):
         self.assertEqual(rs.open_log_path("/tmp/x.lock"), "/tmp/x.lock.opens.log")
 
