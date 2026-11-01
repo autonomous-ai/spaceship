@@ -113,8 +113,10 @@ BASE_PARAMS = [
      "54 gives 27, clear of that line"),
     ("gd_w", "band_t - 2 * band_wall - 1 mm", "mm", "calculation",
      "glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls"),
-    ("gd_t", "3 mm", "mm", "assumption",
-     "glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)"),
+    ("gd_t", "5 mm", "mm", "confirmed",
+     "load block (glide doubler) 5 mm EN AW-6082 T6 (PM ruling 2026-11-01 on the D-132 PR): about 43 MPa at the worst glide's 0.75 kN "
+     "and 97 at 1.7 kN, against about 250 (plate spanning the bore, edges free to turn; feature rationale); clamped with the 1.5 mm "
+     "bottom face by the glide's M10 rivnut (grip 6.5)"),
     # back corners: hook-in corner key 111211 (joints register J-BASE-02, D-87; PROPOSED geometry)
     ("ck_x", "30 mm", "mm", "source",
      "corner key length into its carrier: 30, so the carrier's Ø7.0 fixing holes keep 2 diameters from its cut end (joints register #127)"),

@@ -74,11 +74,12 @@ PART_INFO = {
     "838004": ("stainless steel A2, 200 HV (ISO 7093-1)", "plain stainless, as supplied", "", "calculation", "DRAFT",
                "CAD envelope; joints register H-09",
                "under the corner keys' fixing bolts"),
-    "111601": ("aluminium sheet EN AW-5754 H22, 3 mm thick (assumption)", "mill finish (hidden inside the band, D-79)",
-               "laser or waterjet cut from 3 mm sheet, deburred; no drawing: its DXF and this row (D-89 part 4)",
+    "111601": ("aluminium plate EN AW-6082 T6, 5 mm thick (PM ruling 2026-11-01)", "mill finish (hidden inside the band, D-79)",
+               "laser or waterjet cut from 5 mm plate, deburred; no drawing: its DXF and this row (D-89 part 4)",
                "calculation", "DRAFT",
-               "CAD; PM rulings 2026-10-31 (band 1.5 with a doubler at each glide; 52 long, hole centred)",
-               "54 x 36 x 3 with one Ø13 hole centred; inside the band on its bottom face, clamped by the glide's M10 rivnut"),
+               "CAD; PM rulings 2026-10-31 (band 1.5 with a doubler at each glide; 52 long, hole centred) and 2026-11-01 "
+               "(5 mm 6082-T6, the recheck at the steel pod's mass)",
+               "54 x 36 x 5 with one Ø13 hole centred; inside the band on its bottom face, clamped by the glide's M10 rivnut"),
     # P02 batch 1 (the right band, FR1 with its sill; F2 and the threshold went, D-132)
     "110102": ("assembly: band tube with its rivnuts, stop washers, spigots and glides fitted at the factory", "", "",
                "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD", "hardware-fitted subassembly; mirror of 110101"),
@@ -101,8 +102,10 @@ PART_INFO = {
                "black", "bonded into the side band's back end at the factory, flush with the back face (adhesive HOLD)",
                "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the end)",
                "closes the side band's back end, face flush with Y = pod_d / 2"),
-    "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad; base 6.5 mm or taller, so that "
-               "screwed fully home against the M10 rivnut's head it holds the band at 8.5 mm: a hard stop (product HOLD)", "", "",
+    "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad, static rating 3.5 kN or more "
+               "(PM ruling 2026-11-01: the worst glide carries about 1.7 kN with two people leaning on one wall); base 6.5 mm or "
+               "taller, so that screwed fully home against the M10 rivnut's head it holds the band at 8.5 mm: a hard stop "
+               "(product HOLD)", "", "",
                "assumption", "HOLD", "layout study B-GLIDE 0.15 kg; lowest setting: PM ruling on F-018 (joints register PR #99)",
                "preset at the factory (D-87); levelled from above through the band top before the walls go on, up from the "
                "highest floor spot, never below 8.5 mm"),
@@ -140,7 +143,8 @@ EXTRA = [
     ("838006", "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD", "Tán rút M10 cho chân chỉnh", "PI", "band",
      "glides", "pcs", "aluminium or steel (HOLD)", "zinc plated steel or plain aluminium, with the product (HOLD)", 0.006,
      "assumption", "HOLD",
-     "number PROPOSED for the joints register (glide nut)", "set through the band's 1.5 bottom face and the 3 mm doubler (grip 4.5) at the factory"),
+     "number PROPOSED for the joints register (glide nut)",
+     "set through the band's 1.5 bottom face and the 5 mm load block, a 6.5 mm grip (PM ruling 2026-11-01), at the factory"),
     ("838007", "HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2", "Vít đầu bằng M3 × 8 inox", "PI", "110106",
      "channel", "pcs", "stainless steel A2-70", "plain stainless, as supplied", 0.0006, "assumption", "DRAFT",
      "joints register J-FRONT-04 (838007)", "fixes FRONT's bottom U-channel to the sill at the factory (2 mm key)"),
@@ -325,7 +329,7 @@ def make_dxf(d):
                       dxfattribs={"layer": "CUT"})
     dm.add_circle((gdx, 0.0), gh / 2, dxfattribs={"layer": "CUT"})
     for i, line in enumerate(("111601 P01 GLIDE DOUBLER - COMMON - qty per the parts list",
-                              "EN AW-5754 H22 sheet 3 mm - mill finish - ISO 2768-m - mm",
+                              "EN AW-6082 T6 plate 5 mm - mill finish - ISO 2768-m - mm",
                               "hole Ø%g +0.10/0 centred +-0.2 (the glide's M10 rivnut)" % gh)):
         dm.add_text(line, dxfattribs={"layer": "MARK", "height": 2.5}).set_placement((-gw / 2, gl / 2 + 4 + 4 * (2 - i)))
     ddoc.saveas(DBL_DXF)
