@@ -37,6 +37,10 @@ entry} (D-139). An entry holds only what the STEP and the list can't give:
   section across the parts that hide it is added;
 - interfaces: [{view, of: [part numbers], along: 'x' or 'y', origin: {pn, pick: '-Y'...}, at: 'centre', 'min' or
   'max', side, words}]: ordinates of those parts from the origin part (guideline 5.1's interface sizes);
+- centre_lines: [{view, of: [part numbers]}]: a chain line along each of those parts (a cassette's ribs);
+- datums: [{letter, pn, face ('+Z'...), view, words}]: a part's outer face seen edge on, named (ISO 5459);
+- envelopes: {name start: part number}: a held part the STEP models as a named shape without a number (WALL's
+  'NO-PN-HOLD-H03' clip zones for the clip 518001), drawn and ballooned as that part;
 - unhatched: part numbers a section leaves whole (ISO 128-50: shafts, pins, studs and the like cut along their
   axis are drawn uncut), such as a spigot or a glide's stem;
 - hidden: part numbers whose hidden lines are drawn;
@@ -403,6 +407,10 @@ class Assy:
         if not self.step:
             raise NotDrawable("%s: no STEP of its own and no team STEP under v2/03-Manufacturing/%s" % (pn, team))
         self.step_name, occs = read_assembly(self.step, pn)
+        for o in occs:                  # a held part modelled as a named envelope without a number (WALL's clip zones)
+            for key, epn in entry.get("envelopes", {}).items():
+                if o.pn is None and (o.name or "").startswith(key):
+                    o.pn, o.envelope = epn, key
         loose = [o for o in occs if o.pn is None]
         if loose:
             raise NotDrawable("%s: its STEP has parts without a part number (%s): every body belongs to a numbered "
@@ -1232,7 +1240,7 @@ def lane_spots(av, side, S):
              ("up", (None, y1 + d["up"] + LANE))]
     dist = {"left": S[0] - x0, "right": x1 - S[0], "down": S[1] - y0, "up": y1 - S[1]}
     lanes.sort(key=lambda ln: dist[ln[0]])
-    for k in range(0, 15):
+    for k in range(0, 8):
         for nm, (lx, ly) in lanes[:3]:
             for sgn in ((0,) if k == 0 else (1, -1)):
                 off = sgn * k * 11.0
@@ -1276,7 +1284,7 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                         continue
                     dx, dy = S[0] - ctr[0], S[1] - ctr[1]
                     L = math.hypot(dx, dy)
-                    if L < r + 6.0 or L > 170.0:
+                    if L < r + 6.0 or L > 120.0:
                         continue
                     u = (dx / L, dy / L)
                     a = (ctr[0] + u[0] * r, ctr[1] + u[1] * r)
@@ -1350,6 +1358,12 @@ def notes_for(assy, views):
         out.append("Items marked * (%s) are not in the STEP %s %s: they have no balloon; their places are in their "
                    "rows and the joints register." % (", ".join("%d %s" % (it.no, it.pn) for it in un),
                                                       os.path.basename(assy.step), assy.rev))
+    for it in assy.table_items:
+        keys = sorted({getattr(o, "envelope", None) for o in it.occs} - {None})
+        if keys:
+            out.append("Item %d %s is shown by the STEP's held envelope%s %s: the part isn't named yet (%s); its "
+                       "places and count are the envelope's." % (it.no, it.pn, "s" if len(it.occs[0].solids) > 1 else "",
+                                                                  ", ".join(keys), (it.row.get("status") or "HOLD").strip()))
     for it in assy.refs:
         r, _k, _f = list_rows(it.pn, assy.team)
         par = (r or {}).get("parent", "").strip() if r else ""
@@ -1359,6 +1373,9 @@ def notes_for(assy, views):
                        it.pn, it.name, par or "another assembly", (" (%s)" % why) if why else ""))
     out.append("Views in first angle (ISO 5456-2); each view title gives its X and Y in pod axes (guideline 3.3). "
                "Visible outlines only, as an assembly drawing shows them.")
+    for d in e.get("datums", ()):
+        out.append("Datum %s: %s's %s face%s (ISO 5459)." % (d["letter"], d["pn"], d["face"],
+                                                             (", " + d["words"]) if d.get("words") else ""))
     for g in e.get("interfaces", ()):
         if g.get("words"):
             out.append("Interface sizes (ordinates, true mm from the STEP): %s." % g["words"])
@@ -1416,10 +1433,12 @@ def make(pn, team, entry, out_path, today=None, step=None):
     for nm in order:
         draw_prims(sh, views[nm], assy.occs)
     cuts = cutting_planes(sh, views)
+    clines = centre_lines(sh, assy, views)
     sides = {nm: Side() for nm in views}
     dims = overall_dims(sh, views, sides)
     ifaces = interface_dims(sh, assy, views, sides)
     stacks = stack_dims(sh, assy, views, sides)
+    datums = datum_symbols(sh, assy, views)
     for nm in order:
         av = views[nm]
         av.title_gap = sides[nm].dims["down"] + 9.0
@@ -1479,12 +1498,14 @@ def make(pn, team, entry, out_path, today=None, step=None):
                         {"role": "parts list", "path": inputs.rel(assy.list_file),
                          "sha256_12": inputs.sha12(assy.list_file)}],
             "parent_keys": list(entry.get("parent_keys", ())), "unhatched": list(entry.get("unhatched", ())),
+            "envelopes": dict(entry.get("envelopes", {})),
             "views": [{"name": nm, "kind": v.kind, "n": v.view.n, "x": v.view.x, "y": v.view.y, "scale": v.scale,
                        "off": v.off, "box": v.box(), "letter": v.letter,
                        "cut": ({"point": v.cut[0], "normal": v.cut[1], "slice": v.spec.get("slice")} if v.cut else None)}
                       for nm, v in views.items()],
             "cutting_planes": cuts,
-            "balloons": balloons, "dims": dims, "interfaces": ifaces, "stacks": stacks,
+            "balloons": balloons, "dims": dims, "interfaces": ifaces, "stacks": stacks, "datums": datums,
+            "centre_lines": clines,
             "table": {"x": xs, "y_top": ty, "y_bot": y_bot,
                       "rows": [{"no": r["no"], "pn": r["pn"], "top": a, "bottom": b} for r, (a, b) in zip(rows, row_spans)]},
             "refs": [it.pn for it in assy.refs], "unmodelled": [it.pn for it in assy.table_items if not it.occs]}
@@ -1560,9 +1581,12 @@ def interface_dims(sh, assy, views, sides):
         raw = [vdot(vsub(c, org3), ax3) for _pn, c in pts3]
         sgn = 1.0 if sum(1 for r_ in raw if r_ > 1e-6) >= sum(1 for r_ in raw if r_ < -1e-6) else -1.0
         vals = [fmt(sgn * r_, 2) for r_ in raw]
-        side = g.get("side", "up" if axis == "x" else "right")
-        x0, y0, x1, y1 = av.box()
         d = sides[av.name].dims
+        if axis == "x":
+            side = g.get("side") or ("up" if not d["up"] else "down")
+        else:
+            side = g.get("side") or ("right" if not d["right"] else "left")
+        x0, y0, x1, y1 = av.box()
         if axis == "x":
             level = (y1 + d["up"] + 12.0) if side == "up" else (y0 - d["down"] - 12.0)
         else:
@@ -1696,7 +1720,7 @@ def table_text(page, data):
     return out
 
 
-def _solids_by_pn(step_path):
+def _solids_by_pn(step_path, envelopes=None):
     """{part number: its solids in the file's top coordinates}, a sub-assembly's being every solid under it."""
     _doc, st = _xcaf(step_path)
     tops = TDF_LabelSequence()
@@ -1718,7 +1742,8 @@ def _solids_by_pn(step_path):
             shape = shape.Moved(loc)
         sol = _solids_of(shape)
         for nm in set(names):
-            pn = geom.part_number_of(nm)
+            pn = geom.part_number_of(nm) or next((v for k, v in (envelopes or {}).items() if (nm or "").startswith(k)),
+                                                 None)
             if pn:
                 out.setdefault(pn, []).extend(sol)
 
@@ -1813,17 +1838,24 @@ def check(pdf_path):
     for o in occ:
         kids.setdefault(o["parent"], []).append(o["child"])
     under = set()
+    env = data.get("envelopes", {})
+
+    def pn_of(p_):
+        n = geom.part_number_of(p_.get("part_number", "")) or geom.part_number_of(p_.get("name", ""))
+        if n:
+            return n
+        return next((v for k, v in env.items() if (p_.get("name") or "").startswith(k) or
+                     (p_.get("part_number") or "").startswith(k)), None)
     for pd, p_ in prods.items():
         if p_["part_number"] == pn or geom.part_number_of(p_["name"]) == pn:
             stack = [pd]
             while stack:
                 c = stack.pop()
                 for ch in kids.get(c, []):
-                    q = prods.get(ch, {})
-                    under.add(geom.part_number_of(q.get("part_number", "")) or geom.part_number_of(q.get("name", "")))
+                    under.add(pn_of(prods.get(ch, {})))
                     stack.append(ch)
     views = {v["name"]: v for v in data["views"]}
-    solids = _solids_by_pn(step)
+    solids = _solids_by_pn(step, env)
     ballooned = set()
     for b in data.get("balloons", []):
         stats["balloons"] += 1
@@ -1876,6 +1908,21 @@ def check(pdf_path):
             want = abs(vdot(vsub(c3, o3), ax))
             if abs(abs(float(p_["value"])) - want) > TOL_ON:
                 fails.append("interface value %s for %s, the STEP gives %.2f" % (p_["value"], p_["pn"], want))
+    for dm in data.get("datums", []):
+        v = views[dm["view"]]
+        n3 = AXES[dm["face"]]
+        sol = solids.get(dm["pn"], [])
+        if not sol:
+            fails.append("datum %s: %s is not in the STEP" % (dm["letter"], dm["pn"]))
+            continue
+        b = box_of(sol)
+        corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+        off = max(vdot(c, n3) for c in corners)
+        x, y = (dm["at"][0] - v["off"][0]) / v["scale"], (dm["at"][1] - v["off"][1]) / v["scale"]
+        n2 = (vdot(n3, v["x"]), vdot(n3, v["y"]))
+        if abs(n2[0] * x + n2[1] * y - off) > TOL_ON:
+            fails.append("datum %s is %.3f mm off %s's %s face" % (dm["letter"], abs(n2[0] * x + n2[1] * y - off),
+                                                                  dm["pn"], dm["face"]))
     text = "\n".join(pg.get_text() for pg in doc)
     up = text.upper()
     for need, pat in (("UNITS: mm", r"UNITS:\s*MM\b"), ("MATERIAL", r"MATERIAL:"), ("FINISH", r"FINISH:"),
@@ -2126,6 +2173,96 @@ def main(argv=None):
                 print("  - " + f)
             bad += bool(fails)
     return 1 if bad else 0
+
+
+
+# ------------------------------------------------------------------ datums (ISO 5459)
+
+AXES = {"+X": (1.0, 0.0, 0.0), "-X": (-1.0, 0.0, 0.0), "+Y": (0.0, 1.0, 0.0), "-Y": (0.0, -1.0, 0.0),
+        "+Z": (0.0, 0.0, 1.0), "-Z": (0.0, 0.0, -1.0)}
+
+
+def datum_symbols(sh, assy, views):
+    """The datums an entry names (ISO 5459): a part's outer face along a pod axis, seen edge on in a view (the
+    entry's first, then any other); the filled triangle sits on that face's line where its frame touches no line
+    and no text, its leader as short as that allows, and the notes say what the letter is."""
+    out = []
+    for d in assy.entry.get("datums", ()):
+        n3 = AXES[d["face"]]
+        idx = [i for i, o in enumerate(assy.occs) if o.item.pn == d["pn"]]
+        if not idx:
+            raise NotDrawable("%s: datum %s's part %s is not in the STEP" % (assy.pn, d["letter"], d["pn"]))
+        b = box_of([x for i in idx for x in assy.occs[i].solids])
+        corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+        off = max(vdot(c, n3) for c in corners)          # the part's outer face along n3
+        names = [d["view"]] if d.get("view") in views else []
+        names += [nm for nm in VIEW_ORDER if nm in views and nm not in names] + \
+            [nm for nm in views if nm not in VIEW_ORDER and nm not in names]
+        placed = None
+        for nm in names:
+            av = views[nm]
+            n2 = (vdot(n3, av.view.x), vdot(n3, av.view.y))
+            if abs(math.hypot(*n2) - 1.0) > 1e-6:
+                continue
+            for lead in (7.0, 12.0, 18.0, 26.0):
+                for i in idx:
+                    for p in av.prims[i]:
+                        if not p.vis or p.kind != "line":
+                            continue
+                        if any(abs(n2[0] * q[0] + n2[1] * q[1] - off) > 0.01 for q in (p.p, p.q)):
+                            continue
+                        for t in (0.5, 0.35, 0.65, 0.2, 0.8, 0.1, 0.9):
+                            pt, _dv = prim_point(p, t)
+                            S = av.S(pt)
+                            if sh.datum_free(S, n2, leader=lead):
+                                placed = (av, n2, S, lead)
+                                break
+                        if placed:
+                            break
+                    if placed:
+                        break
+                if placed:
+                    break
+            if placed:
+                break
+        if not placed:
+            raise NotDrawable("%s: no free place for datum %s on %s's %s face" % (assy.pn, d["letter"], d["pn"],
+                                                                                 d["face"]))
+        av, n2, S, lead = placed
+        sh.datum(S, n2, d["letter"], leader=lead)
+        out.append({"letter": d["letter"], "pn": d["pn"], "face": d["face"], "view": av.name, "at": S,
+                    "offset": off, "words": d.get("words", "")})
+    sh.flush()
+    return out
+
+
+# ------------------------------------------------------------------ centre lines (ISO 128-24)
+
+
+def centre_lines(sh, assy, views):
+    """Centre lines the entry names: a thin long-dash-dot line along each named part's long direction in a view,
+    through its centre, 3 mm past its ends (ISO 128-24 type 04), such as a cassette's rib centre lines."""
+    from sheet import DASH_CTR
+    out = []
+    for g in assy.entry.get("centre_lines", ()):
+        av = views[g.get("view", "principal")]
+        for o, ps in zip(assy.occs, av.prims):
+            if o.item.pn not in g["of"]:
+                continue
+            b = box_of(o.solids)
+            c = av.view.to2d(((b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2))
+            corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+            xs = [vdot(q, av.view.x) for q in corners]
+            ys = [vdot(q, av.view.y) for q in corners]
+            ext = 3.0 / av.scale
+            if max(xs) - min(xs) >= max(ys) - min(ys):
+                p, q = (min(xs) - ext, c[1]), (max(xs) + ext, c[1])
+            else:
+                p, q = (c[0], min(ys) - ext), (c[0], max(ys) + ext)
+            sh.line(av.S(p), av.S(q), W_THIN, DASH_CTR)
+            out.append({"view": av.name, "pn": o.item.pn, "p": av.S(p), "q": av.S(q), "centre": av.S(c)})
+    sh.flush()
+    return out
 
 
 if __name__ == "__main__":
