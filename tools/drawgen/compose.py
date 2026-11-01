@@ -1114,15 +1114,20 @@ def plan_views(part, spec):
             if g.vname not in pl.aux:
                 pl.plain.add(g.vname)
     # a view square to an angled face needs a drawn view that shows that face edge on (or within EDGE_ON_NEAR), for its
-    # arrow (ISO 128-30): where no planned view does, the related view nearest to it is added (AIR's 611703: its only
-    # view is square to its main facet, and its related views are 3° to 4° off its view F's face)
+    # arrow (ISO 128-30): where no planned view does exactly, a related view that does is added; where none does, and
+    # no planned view is within EDGE_ON_NEAR, the related view nearest to it (AIR's 611703: its only view is square to
+    # its main facet, and its related views are 3° to 4° off its view F's face)
     for _nm, va in sorted(pl.aux.items()):
-        if any(abs(vdot(rel[nm].n, va.n)) < EDGE_ON_NEAR for nm in pl.plain if nm in rel):
+        off = lambda nm: abs(vdot(rel[nm].n, va.n))
+        planned = [nm for nm in pl.plain if nm in rel]
+        if any(off(nm) < 1e-6 for nm in planned):
             continue
-        cands = [nm for nm in ("above", "below", "from_left", "from_right", "rear")
-                 if abs(vdot(rel[nm].n, va.n)) < EDGE_ON_NEAR]
-        if cands:
-            pl.plain.add(min(cands, key=lambda nm: abs(vdot(rel[nm].n, va.n))))
+        cands = [nm for nm in ("above", "below", "from_left", "from_right", "rear") if off(nm) < EDGE_ON_NEAR]
+        exact = [nm for nm in cands if off(nm) < 1e-6]
+        if exact:
+            pl.plain.add(exact[0])
+        elif cands and not any(off(nm) < EDGE_ON_NEAR for nm in planned):
+            pl.plain.add(min(cands, key=off))
     for g in pl.groups:
         if not g.blocked:
             continue
@@ -1279,6 +1284,17 @@ def _trace(view, point, normal, ext):
             return None
         return (c[0] + d[0] * lo, c[1] + d[1] * lo), (c[0] + d[0] * hi, c[1] + d[1] * hi)
     return None
+
+
+def _row_top(views, pvd, main_bottom, O=None):
+    """The top of the row under the main views: under every view's title (the principal's title sits 28 under it, its
+    mapping up to three lines) and, when origin marks are drawn (O given), under every view's origin mark with its name
+    below it, with room over the row for the sections' hole callouts (AIR's 611703: O lies far off its added view from
+    the left, and that view's O2 sat on section E-E's title)."""
+    under = [vd_.box()[1] - (28.0 if vd_ is pvd else 10.0) - 4.2 - 3.4 * 2 for vd_ in views]
+    if O is not None:
+        under += [vd_.S(vd_.view.to2d(getattr(vd_, "origin3d", None) or O))[1] - 4.7 for vd_ in views]
+    return min(main_bottom - 34, min(under) - 12.0)
 
 
 def _row(items, rx0, ry, right_limit, scale):
@@ -1614,13 +1630,10 @@ def draw(part, spec, out_path, today=None):
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             ry = ry - h - 58
     elif place:
-        # under every view's title too (the principal's title sits 28 under it, its mapping up to three lines), with
-        # room over the row for the sections' hole callouts
-        under_titles = min([vd_.box()[1] - (28.0 if vd_ is pvd else 10.0) - 4.2 - 3.4 * 2
-                            for vd_ in list(vds.values()) + secs])
         right_limit = W - 10 - pl.table_w - 4 - 10
         tops = _row([(vd.kind, getattr(vd, "letter", None)) + tuple(vd.size()) for vd in place], 20 + GAP_PL + 14,
-                    min(main_bottom - 34, under_titles - 12.0), right_limit, scale)
+                    _row_top(list(vds.values()) + secs, pvd, main_bottom, O if part.features else None), right_limit,
+                    scale)
         for vd, top in zip(place, tops):
             if top is None:
                 vd.dropped = True       # no room: the parent view keeps its tags

@@ -1261,6 +1261,8 @@ def test_a_view_square_to_an_angled_face_starts_a_row_under_the_others():
     want = [(74.0, 360.8), (254.0, 360.8), (74.0, under), (74.0 + 252.9 + 80, under)]
     assert all(near(t, w) for t, w in zip(tops, want)) and len(tops) == 4, tops
     for items, ry, what in ((row[:2] + [("aux", "F", 252.9, 300.0)], 360.8, "view F (square to an angled face)"),
+                            # too wide for a row of its own too (Reviewer 15: the width check had no test)
+                            (row[:2] + [("aux", "F", 600.0, 50.0)], 360.8, "view F (square to an angled face)"),
                             ([("removed", c, 54.0, 34.0) for c in "DEFGHJKLM"] + [("aux", "N", 319.0, 152.6)], 69.0,
                              None)):
         try:
@@ -1270,6 +1272,79 @@ def test_a_view_square_to_an_angled_face_starts_a_row_under_the_others():
             assert e.what == what and e.scale == 0.5, (e.what, e.scale)
     tops = compose._row([("removed", "D", 400.0, 5.0), ("detail", "E", 200.0, 50.0)], 74.0, 360.8, 555.0, 0.5)
     assert tops[1] is None, tops
+
+
+def test_the_row_starts_under_every_views_origin_mark():
+    """AIR's 611703 (Reviewer 15 on #405): O lies far off its views, and the view from the left added for F's arrow put
+    its O2 86 under that view, on section E-E's title in the row under the main views. The row's top is set under every
+    main view's origin mark and its name, as under its title: 611703's own views at 1:2 start the row at 309.98, not
+    360.79. An origin on its view's outline (the usual case) leaves the row where it was."""
+    from types import SimpleNamespace as NS
+
+    def view(box, o2):
+        return NS(box=lambda: box, S=lambda q: q, view=NS(to2d=lambda p: o2))
+    pvd = view((60.0, 411.79, 312.98, 538.0), (218.47, 326.68))
+    left = view((352.98, 411.79, 357.65, 538.0), (346.24, 326.68))
+    O = (0.0, 0.0, 0.0)
+    assert abs(compose._row_top([pvd, left], pvd, 411.79) - 360.79) < 1e-9
+    assert abs(compose._row_top([pvd, left], pvd, 411.79, O) - 309.98) < 1e-9
+    on = view((60.0, 411.79, 312.98, 538.0), (60.0, 411.79))       # O at the principal outline's corner
+    assert abs(compose._row_top([on], on, 411.79, O) - compose._row_top([on], on, 411.79)) < 1e-9
+
+
+def _block_with_a_drafted_side(path):
+    """A test block 120 x 40 x 30, two Ø8 holes down through its top, and its +Y side drafted 2° (in at the top) with a
+    Ø6 hole square to it at half height, through to the -Y side. Looking down, the drafted side shows 2° off edge on;
+    from the left or the right, exactly edge on."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakeHalfSpace
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pln, gp_Pnt
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    z0, e = 300.0, math.radians(2.0)
+    n = (0.0, math.cos(e), math.sin(e))                       # the drafted side's outward normal
+    p0 = (60.0, 40.0, z0)                                     # on its bottom edge
+    sh = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, z0), 120, 40, 30).Shape()
+    face = BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(*p0), gp_Dir(*n)), -500, 500, -500, 500).Face()
+    sh = cut(sh, BRepPrimAPI_MakeHalfSpace(face, gp_Pnt(*(p0[i] + 10 * n[i] for i in range(3)))).Solid())
+    for x in (30.0, 90.0):
+        sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, 15, z0 - 1), gp_Dir(0, 0, 1)), 4.0, 32).Shape())
+    mid = (60.0, 40.0 - 15.0 * math.tan(e), z0 + 15.0)       # on the drafted side, half way up
+    sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*(mid[i] - 45 * n[i] for i in range(3))), gp_Dir(*n)),
+                                          3.0, 50).Shape())
+    w = STEPControl_Writer()
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    return path
+
+
+def test_an_exactly_edge_on_view_carries_the_arrow_first():
+    """Reviewer 15 on #405: plan_views kept a planned view within 5° of edge on for an angled view's arrow when an
+    unplanned related view shows the face exactly edge on. A test block whose +Y side is drafted 2°, with a hole square
+    to it: the view looking down (planned, for the top's holes) shows that side 2° off edge on, the view from the left
+    exactly. That view is added and carries F's arrow, and the sheet reads back (#405's 554c24c added none)."""
+    d = os.path.join(TMP, "draft")
+    os.makedirs(d, exist_ok=True)
+    step = _block_with_a_drafted_side(os.path.join(d, "219971_P01_TEST-BLOCK-DRAFT_STEP.step"))
+    p = os.path.join(d, "219971.pdf")
+    compose.make("219971", "none", SPEC, p, step=step, row=dict(ROW, part_number="219971", name="TEST - BLOCK - DRAFT"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    names = [v["name"] for v in readback.read_data(fitz.open(p))["views"]]
+    assert "from_left" in names or "from_right" in names, names
 
 
 def test_tapped_holes_wait_for_their_callouts():
