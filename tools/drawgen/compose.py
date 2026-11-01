@@ -2013,7 +2013,7 @@ def face_title(part, g):
 
 
 def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
-    """Lines first (cutting planes, reference arrows, dimensions), then what can move (hole callouts, view titles,
+    """Lines first (cutting planes, dimensions), then what can move (reference arrows, hole callouts, view titles,
     centre marks with their tags, origin names, datums), each put where it touches no line and no other text."""
     P = pl.principal
     O = dat["O"]
@@ -2047,31 +2047,6 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         look = P.to2d(vmul(r.n, -1.0))
         sh.section_arrows(a, b, vd.letter, look, size=3.5)
     sh.flush()
-    for nm, vd in vds.items():
-        if not getattr(vd, "letter", None) or nm in pl.aux:
-            continue
-        look3 = vmul(vd.view.n, -1.0)
-        host = next((h for h in ("above", "below", "principal") if h in vds and abs(vdot(look3, vds[h].view.n)) < 1e-6
-                     and h != nm), None)
-        if host:
-            hv = vds[host]
-            l2 = hv.view.to2d(look3)
-            hb = hv.box()
-            cx = hb[0] + 0.40 * (hb[2] - hb[0])
-            cx = hb[0] + 0.22 * (hb[2] - hb[0])
-            if abs(l2[1]) > 0.5:        # arrow across the strip, on the viewer's side, clear of its dimensions
-                y0 = hb[3] + 9 + getattr(hv, "top_used", 0.0) if l2[1] < 0 else hb[1] - 9
-                tip = (cx, y0 + l2[1] * 6)
-                sh.line((cx, y0), tip, 0.35)
-                sh.arrow(tip, (0, l2[1]), 3.0, 1.1)
-                sh.text(cx + 3.0, y0 - (1.0 if l2[1] > 0 else -0.5), vd.letter, 3.5, "left", bold=True)
-            else:
-                x0 = hb[2] + 9 if l2[0] < 0 else hb[0] - 9
-                cy = (hb[1] + hb[3]) / 2
-                tip = (x0 + l2[0] * 6, cy)
-                sh.line((x0, cy), tip, 0.35)
-                sh.arrow(tip, (l2[0], 0), 3.0, 1.1)
-                sh.text(x0, cy + 3.0, vd.letter, 3.5, "center", bold=True)
     # ---- removed sections: the hole axis and the profile size (each wall's hole is sized after, clear of these)
     for vd in removed:
         r = vd.r
@@ -2214,6 +2189,44 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                     cands[0])
         sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
         pl.angle_marks.append({"text": ang_t, "box": sh.text_box(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")})
+    # a lettered view's reference arrow (the rear view, too long to sit beside, under the others; ISO 128-30), on the
+    # viewer's side of a view that shows its direction: drawn after every dimension so those are known, where its line
+    # crosses no line and its letter touches nothing: its usual place first (past the true length over that view), then
+    # farther out, then along the view (CEILING's 412202: its E sat on the 1431.35 line over the view from above)
+    def ref_arrows():
+        for nm, vd in vds.items():
+            if not getattr(vd, "letter", None) or nm in pl.aux:
+                continue
+            look3 = vmul(vd.view.n, -1.0)
+            host = next((h for h in ("above", "below", "principal") if h in vds and
+                         abs(vdot(look3, vds[h].view.n)) < 1e-6 and h != nm), None)
+            if not host:
+                continue
+            hv = vds[host]
+            l2 = hv.view.to2d(look3)
+            hb = hv.box()
+            cands = []
+            if abs(l2[1]) > 0.5:        # arrow across the strip, on the viewer's side, clear of its dimensions
+                y1 = hb[3] + 9 + getattr(hv, "top_used", 0.0) if l2[1] < 0 else hb[1] - 9
+                for fr in (0.22, 0.32, 0.12, 0.42, 0.52, 0.62, 0.72):
+                    cx = hb[0] + fr * (hb[2] - hb[0])
+                    for k in range(7):
+                        y0 = y1 - math.copysign(2.5 * k, l2[1])
+                        cands.append(((cx, y0), (cx, y0 + l2[1] * 6), (cx + 3.0, y0 - (1.0 if l2[1] > 0 else -0.5)),
+                                      "left", (0, l2[1])))
+            else:
+                x1 = hb[2] + 9 if l2[0] < 0 else hb[0] - 9
+                for fr in (0.5, 0.35, 0.65, 0.2, 0.8):
+                    cy = hb[1] + fr * (hb[3] - hb[1])
+                    for k in range(7):
+                        x0 = x1 - math.copysign(2.5 * k, l2[0])
+                        cands.append(((x0, cy), (x0 + l2[0] * 6, cy), (x0, cy + 3.0), "center", (l2[0], 0)))
+            tail, tip, q, anchor, d2 = next(
+                (c for c in cands if sh.seg_free(c[0], c[1], 0.8) and
+                 sh.is_free(sh.text_box(c[2][0], c[2][1], vd.letter, 3.5, c[3], bold=True))), cands[0])
+            sh.line(tail, tip, 0.35)
+            sh.arrow(tip, d2, 3.0, 1.1)
+            sh.text(q[0], q[1], vd.letter, 3.5, anchor, bold=True)
     # angled-face and end views (ISO 128-30): an arrow square to the face, in a drawn view that shows the face edge
     # on, its tip just off the face by the features (else moved along the face, or shorter) where the arrow crosses
     # no line and its letter touches nothing; drawn after every dimension so those are known (BASE's D-129 111103: the
@@ -2336,6 +2349,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     for fv in getattr(pl, "flats", []):
         flat_dims(sh, part, fv)
     sh.flush()
+    ref_arrows()
     aux_arrows()
     chamfer_callouts(sh, part, pl, vds, removed)
     sh.flush()
