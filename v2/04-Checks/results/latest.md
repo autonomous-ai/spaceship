@@ -1,8 +1,8 @@
-# Mechanical check run: e10d4433 on 2026-11-01
+# Mechanical check run: eaea775c on 2026-11-02
 
-Offline checks (`tools/checks/run_checks.py`) on revision `e10d4433`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `eaea775c`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 171** (61 severe, 107 major, 3 minor). Register numbers in brackets.
+**Findings in this run: 173** (61 severe, 109 major, 3 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,7 +13,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `e10d4433`. The Fusion
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 80 |
-| C06 BOM completeness | yes | 36 |
+| C06 BOM completeness | yes | 38 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 12 |
@@ -152,6 +152,8 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | F-251 | major | C06 | 838002 | 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC is one component holding 4 bodies of 2 different shapes (LOCK SCREW 1 HEAD, LOCK SCREW 1 SHANK, LOCK SCREW 2 HEAD, LOCK SCREW 2 SHANK) in 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | CEILING |
 | F-172 | major | C06 | 838003 | 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (9 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
 | F-189 | major | C06 | 831001 | 831001's body in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step isn't the part its own STEP 831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step holds: its sizes differ (own STEP: 0 holes, sizes ((2.94, 8.0), (4.0, 6.24)); the copy: 0 holes, sizes ((3.0, 10.0), (4.0, 7.24))), whichever way the copy is turned. The assembly's fits were set round the copy. | WALL; Joints Engineer |
+| F-368 | major | C06 | 518001 | 518001 is named 'LINING - CASSETTE CLIP' in the CAD (410000_P01_CEILING_STEP.step) and the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv, v2/04-BOM/100000_P01_POD-MASTER_BOM.csv; the joints register names it 'LINING - CASSETTE CLIP - CEILING - FASTMOUNT PC-SF1 + PC-SVMX', and hardware names come from the register (D-99). The names differ in PC-SF1 (new), so they name a different part. | CEILING; Control; WALL |
+| F-369 | major | C06 | 518002 | 518002 is named 'LINING - CEILING SAFETY CATCH' in the CAD (410000_P01_CEILING_STEP.step) and the parts list v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv; the joints register names it 'LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3', and hardware names come from the register (D-99). The names differ in NO.3 (new), so they name a different part. | CEILING |
 | F-279 | major | C06 | 838003 | 838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' and 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH2-610-4.2 (gone), CAH3-610-4.2 (gone), CAL2-610-4.2 (new), so they name a different part. | BASE; CEILING; ELECTRICAL; WALL |
 | F-346 | major | C06 | 108002 | 108002 is named 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE' in the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', and hardware names come from the register (D-99). The names differ in PANEL-50 (gone), PRIMER-210 (new), SIKAFLEX-252 (new), so they name a different part. | CEILING; WALL |
 | F-366 | major | C06 | 838006 | 838006 is named 'HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD' in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9', and hardware names come from the register (D-99). The names differ in CAL2-1015-7.9 (new), STEEL (new), ZINC (new), so they name a different part. | BASE |
@@ -214,7 +216,7 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | Piece | kg | Size mm | Ships as | Status |
 |---|---|---|---|---|
 | 1-01 WALL - PANEL ASSY - BACK LOWER - B1 | 8.641 | 1200.61 x 1127 x 46 | upright | calculation (part CAD); fill provisional |
-| 1-02 WALL - PANEL ASSY - BACK LOWER - B2 | 11.514 | 1200.61 x 1127 x 88 | upright | calculation (CAD); calculation (part CAD); fill provisional |
+| 1-02 WALL - PANEL ASSY - BACK LOWER - B2 | 12.114 | 1200.61 x 1127 x 88 | upright | calculation (CAD); calculation (part CAD); fill provisional |
 | 1-03 WALL - PANEL ASSY - SIDE LOWER - LH | 11.163 | 1492.74 x 1151 x 48.5 | upright | calculation (CAD); fill provisional |
 | 1-04 WALL - PANEL ASSY - SIDE LOWER - RH | 11.163 | 1492.74 x 1151 x 48.5 | upright | calculation (CAD); fill provisional |
 | 1-05 WALL - PANEL ASSY - BACK UPPER - B3 | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
@@ -242,7 +244,7 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-09 AIR - SOFFIT | 14.756 | 2322 x 359 x 233 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
 | 2-10 AIR - AIR COLUMN | 8.147 | 2108 x 359 x 212 | long | calculation (CAD); fill provisional |
 | 2-11 FRONT - DECOR BLOCK ASSY - DT | 7.913 | 1699 x 306 x 203 | long | calculation (CAD); calculation (CAD); magnetic seal HOLD |
-| 2-12 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.402 | 600 x 250 x 200 | long | calculation (CAD) |
+| 2-12 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.446 | 600 x 250 x 200 | long | calculation (CAD) |
 | 2-13 INTERIOR - LIGHT SHELF ASSY | 1.569 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-14 BASE - SMALL PARTS CARTON | 1.139 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-15 INTERIOR - WORK WALL LEDGE ASSY | 1.895 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
@@ -274,5 +276,5 @@ Horizontal cuts from the room floor to Z 110 (the skeleton's glide_h + band_h): 
 
 ## Fastener schedule (C07)
 
-149 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+151 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 

@@ -1,5 +1,5 @@
 {
- "next": 368,
+ "next": 370,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -890,7 +890,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -1039,7 +1039,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -1064,7 +1064,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -1089,7 +1089,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -1343,7 +1343,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -1399,7 +1399,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -1465,7 +1465,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433",
+   "last_seen": "2026-11-02 eaea775c",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3121,7 +3121,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3146,7 +3146,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -3470,7 +3470,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3495,7 +3495,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3520,7 +3520,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3545,7 +3545,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3570,7 +3570,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3595,7 +3595,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3620,7 +3620,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3645,7 +3645,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3670,7 +3670,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3695,7 +3695,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3720,7 +3720,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3745,7 +3745,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3863,7 +3863,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3888,7 +3888,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -3913,7 +3913,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4480,7 +4480,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4536,7 +4536,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4561,7 +4561,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4586,7 +4586,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4642,7 +4642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4667,7 +4667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4846,7 +4846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -4871,7 +4871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5127,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5156,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5185,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5214,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5243,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5272,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5301,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5330,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5359,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5388,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5417,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5446,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5475,7 +5475,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5504,7 +5504,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5533,7 +5533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5562,7 +5562,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5591,7 +5591,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5616,7 +5616,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5641,7 +5641,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5666,7 +5666,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5691,7 +5691,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5716,7 +5716,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5741,7 +5741,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5828,7 +5828,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5853,7 +5853,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -5942,7 +5942,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -5971,7 +5971,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -6000,7 +6000,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -6029,7 +6029,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -6058,7 +6058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -6087,7 +6087,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6112,7 +6112,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6137,7 +6137,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6162,7 +6162,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6187,7 +6187,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6212,7 +6212,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6237,7 +6237,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6262,7 +6262,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6287,7 +6287,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6312,7 +6312,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6337,7 +6337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6362,7 +6362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6387,7 +6387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6412,7 +6412,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6437,7 +6437,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6462,7 +6462,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6487,7 +6487,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -6614,7 +6614,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433",
+   "last_seen": "2026-11-02 eaea775c",
    "closed": "2026-11-01 e796357"
   },
   {
@@ -6980,7 +6980,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C08",
@@ -7009,7 +7009,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7034,7 +7034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7059,7 +7059,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7084,7 +7084,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7109,7 +7109,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7134,7 +7134,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7159,7 +7159,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7184,7 +7184,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7209,7 +7209,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7234,7 +7234,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7259,7 +7259,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7284,7 +7284,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7309,7 +7309,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7334,7 +7334,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7359,7 +7359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -7384,7 +7384,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7409,7 +7409,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -7437,7 +7437,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -7465,7 +7465,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7494,7 +7494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7523,7 +7523,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7552,7 +7552,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7581,7 +7581,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7610,7 +7610,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7639,7 +7639,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7664,7 +7664,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -7689,7 +7689,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7714,7 +7714,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7770,7 +7770,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7795,7 +7795,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7882,7 +7882,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7907,7 +7907,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7932,7 +7932,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7957,7 +7957,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -7982,7 +7982,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -8007,7 +8007,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -8032,7 +8032,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -8057,7 +8057,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -8082,7 +8082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -8234,7 +8234,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -8262,7 +8262,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -8290,7 +8290,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -8318,7 +8318,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -8346,7 +8346,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -8374,7 +8374,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -8425,7 +8425,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -9784,7 +9784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9812,7 +9812,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9840,7 +9840,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9868,7 +9868,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9896,7 +9896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9924,7 +9924,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9952,7 +9952,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -9980,7 +9980,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -10007,7 +10007,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -10034,7 +10034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C11",
@@ -10061,7 +10061,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -10604,7 +10604,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -10629,7 +10629,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -10726,7 +10726,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C02",
@@ -10755,7 +10755,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C02",
@@ -10784,7 +10784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C02",
@@ -10813,7 +10813,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -10849,7 +10849,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -10877,7 +10877,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -10905,7 +10905,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C09",
@@ -10933,7 +10933,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -10958,7 +10958,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -10983,7 +10983,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -11008,7 +11008,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C05",
@@ -11033,7 +11033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11088,7 +11088,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11146,7 +11146,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11206,7 +11206,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11261,7 +11261,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11318,7 +11318,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11374,7 +11374,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11429,7 +11429,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11483,7 +11483,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11537,7 +11537,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11592,7 +11592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11648,7 +11648,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C01",
@@ -11703,7 +11703,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -11733,7 +11733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
   },
   {
    "check": "C06",
@@ -11760,7 +11760,74 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e10d4433"
+   "last_seen": "2026-11-02 eaea775c"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "518001",
+   "severity": "major",
+   "message": "518001 is named 'LINING - CASSETTE CLIP' in the CAD (410000_P01_CEILING_STEP.step) and the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv, v2/04-BOM/100000_P01_POD-MASTER_BOM.csv; the joints register names it 'LINING - CASSETTE CLIP - CEILING - FASTMOUNT PC-SF1 + PC-SVMX', and hardware names come from the register (D-99). The names differ in PC-SF1 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (1 CAD, 8 parts lists).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING; Control; WALL",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
+     "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
+    ],
+    "register": "LINING - CASSETTE CLIP - CEILING - FASTMOUNT PC-SF1 + PC-SVMX"
+   },
+   "key": "C06|name-mismatch|518001",
+   "id": "F-368",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 eaea775c",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "eaea775c",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "518002",
+   "severity": "major",
+   "message": "518002 is named 'LINING - CEILING SAFETY CATCH' in the CAD (410000_P01_CEILING_STEP.step) and the parts list v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv; the joints register names it 'LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3', and hardware names come from the register (D-99). The names differ in NO.3 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in the CAD (410000_P01_CEILING_STEP.step) and the parts list v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv.",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step"
+    ],
+    "register": "LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3"
+   },
+   "key": "C06|name-mismatch|518002",
+   "id": "F-369",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 eaea775c",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "eaea775c",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
