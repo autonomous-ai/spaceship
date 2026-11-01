@@ -17,7 +17,7 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | Position | L1: the left wall's lower panel (−X side). R1 is its mirror (RH) and isn't built. |
 | Size | 43 × 1495 × 1145 (skeleton L1). Depth 1495 confirmed by D-49, 43 = 3 ACP + 40 frame (D-16, D-42). |
 | Mass | 11.9 kg (calculation, LS): ACP 6.0, frame 3.3, fill 2.2 at 32 kg/m³, bond lines 0.4 (assumption at 0.25 kg/m²) |
-| Build, outside to inside | ACP 3 mm EV3038 (P01), bonded (P04) to an aluminium 20 × 40 × 1.2 frame (P02) with members 400 mm apart or less (D-16, D-34). 40 mm PET fill (P03) in the frame's bays. Gasket (P14J) on its joint faces, beside the washer line. For the base joint: 4 captive M6 × 16 bolts (P06 with P25, held by P26) in its bottom tube, with 7.0 mm clearance and 19 mm access holes, and a spigot hole and a slot, the slot along X at its back end so the panel drops clear of the corner gasket; the joint's rivnuts are in the band (R1). Its back member is 40 × 40 × 1.2 (P02C), for the corner joint (joints register J-BASE-01, J-WALL-02). |
+| Build, outside to inside | ACP 3 mm EV3038 (P01), bonded (P04) to an aluminium 20 × 40 × 1.2 frame (P02) with members 400 mm apart or less (D-16, D-34), its 3 studs 20 × 40 × 1.0 (P02S, D-85). Its corners are mitred and joined by corner cleats, and each stud end by a T plug, glued (P28) and crimped (P27; joints register J-FRAME-01, D-117). 40 mm PET fill (P03) in the frame's bays. Gasket (P14J) on its joint faces, beside the washer line. For the base joint: 4 captive M6 × 16 bolts (P06 with P25, held by P26) in its bottom tube, with 7.0 mm clearance and 19 mm access holes, and a spigot hole and a slot, the slot along X at its back end so the panel drops clear of the corner gasket; the joint's rivnuts are in the band (R1). Its back member is 40 × 40 × 1.2 (P02C), for the corner joint (joints register J-BASE-01, J-WALL-02). |
 | Not in it | The lining cassette (S2 is a separate part, D-17). No plywood (D-17). No screw goes through to the cassette. |
 | Tests | T01, T02, T10, T11; T09's cut-open bond check comes last, because it destroys the skin bond |
 
@@ -76,6 +76,8 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | Rivnut | A 300 mm piece of the 20 × 40 × 1.2 tube from the frame's own batch, with one rivnut (P05) set through a stop washer (P07) in a 40 mm face, as in the joint (joints register 2.2) | 15 (assumption: 10 for spin-out, 5 for the cycle check) | T06 |
 | Bond | A lap-shear pair: an ACP strip (P01) on a 150 mm tube piece, bonded the way S1 is bonded | 10 (assumption: 5 as cured, 5 aged) | T09 |
 | Clip | A strip of the cassette's 0.5 mm return (P08) with one clip (P11), and its mate on a 150 mm tube piece | 10 (assumption: 5 in shear for the wall, 5 in pull-out for the ceiling) | T07 |
+| Cleated corner | Two 300 mm pieces of the frame's 20 × 40 × 1.2 tube (P02), mitred at 45° and joined by a corner cleat (P27, 831003) with the glue (P28), crimped, as S1's corners are made (joints register J-FRAME-01) | 7 (assumption: 5 in plane, 2 out of plane) | T14 |
+| T joint | A 300 mm stud piece of 20 × 40 × 1.0 tube (P02S) on a 300 mm rail piece (P02), joined by a T plug (P27, 831006) with the glue (P28) in an 8 × 22 slot, as S1's stud ends are made | 5 (assumption) | T15 |
 
 ## Rigs (not product)
 
