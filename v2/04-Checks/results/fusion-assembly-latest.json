@@ -1,8 +1,12 @@
 {
  "steps": [
+  "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
   "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
   "v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step",
   "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step",
+  "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+  "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+  "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
   "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
   "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
   "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
@@ -18,9 +22,13 @@
   "v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step",
   "v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step"
  ],
- "started": "2026-11-01 09:12:23",
+ "started": "2026-11-01 12:54:23",
  "errors": [],
  "imports": [
+  {
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "ok": true
+  },
   {
    "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
    "ok": true
@@ -31,6 +39,18 @@
   },
   {
    "file": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
    "ok": true
   },
   {
@@ -91,6 +111,699 @@
   }
  ],
  "bodies": [
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / Body1",
+   "box_mm": [
+    949.0,
+    -643.5,
+    12.0,
+    1161.0,
+    -285.0,
+    14.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "box_mm": [
+    949.0,
+    -297.0,
+    124.0,
+    1161.0,
+    -285.0,
+    2120.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "box_mm": [
+    949.0,
+    -643.5,
+    124.0,
+    961.0,
+    -297.0,
+    2120.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / Body1",
+   "box_mm": [
+    1160.0,
+    -643.5,
+    14.0,
+    1161.0,
+    -317.0,
+    134.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "box_mm": [
+    1160.0,
+    -643.5,
+    1884.0,
+    1161.0,
+    -317.0,
+    2120.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "box_mm": [
+    970.0,
+    -324.5,
+    134.0,
+    1152.0,
+    -297.0,
+    1884.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body2",
+   "box_mm": [
+    961.0,
+    -623.5,
+    134.0,
+    988.0,
+    -324.5,
+    1884.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+   "box_mm": [
+    949.0,
+    -287.0,
+    24.0,
+    1161.0,
+    -285.0,
+    124.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+   "box_mm": [
+    949.0,
+    -599.0,
+    24.0,
+    951.0,
+    -287.0,
+    124.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+   "box_mm": [
+    971.0,
+    -314.0,
+    1110.0,
+    1151.0,
+    -285.0,
+    1290.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "box_mm": [
+    961.0,
+    -317.0,
+    14.0,
+    970.0,
+    -297.0,
+    2120.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "box_mm": [
+    1152.0,
+    -317.0,
+    14.0,
+    1161.0,
+    -297.0,
+    2120.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "box_mm": [
+    961.0,
+    -643.5,
+    14.0,
+    981.0,
+    -623.5,
+    2120.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "box_mm": [
+    988.0,
+    -638.5,
+    134.0,
+    1161.0,
+    -324.5,
+    1884.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body2",
+   "box_mm": [
+    990.0,
+    -636.5,
+    134.0,
+    1159.0,
+    -586.5,
+    1884.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body3",
+   "box_mm": [
+    990.0,
+    -506.5,
+    134.0,
+    1159.0,
+    -456.5,
+    1884.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body4",
+   "box_mm": [
+    990.0,
+    -376.5,
+    134.0,
+    1159.0,
+    -326.5,
+    1884.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "box_mm": [
+    -1161.0,
+    -643.5,
+    2120.0,
+    -1.0,
+    -297.0,
+    2132.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "box_mm": [
+    1.0,
+    -643.5,
+    2120.0,
+    948.0,
+    -297.0,
+    2132.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "box_mm": [
+    949.0,
+    -643.5,
+    2120.0,
+    1161.0,
+    -297.0,
+    2132.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "box_mm": [
+    -1161.0,
+    -297.0,
+    2120.0,
+    1161.0,
+    -285.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+   "box_mm": [
+    -1161.0,
+    -643.5,
+    2346.24,
+    1161.0,
+    -621.0,
+    2349.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611209 AIR - SOFFIT TOP RAIL - ROOM SIDE:1 / Body1",
+   "box_mm": [
+    -1161.0,
+    -309.0,
+    2346.24,
+    1161.0,
+    -285.0,
+    2349.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "box_mm": [
+    -1161.0,
+    -643.5,
+    2140.0,
+    1161.0,
+    -641.5,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611206 AIR - SOFFIT END PLATE - LEFT:1 / Body1",
+   "box_mm": [
+    -1161.0,
+    -641.5,
+    2132.0,
+    -1159.0,
+    -297.0,
+    2338.74
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "box_mm": [
+    -883.0,
+    -638.5,
+    2132.0,
+    1161.0,
+    -305.0,
+    2159.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body2",
+   "box_mm": [
+    -883.0,
+    -324.5,
+    2159.0,
+    1161.0,
+    -297.0,
+    2338.74
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611204 AIR - EXHAUST GRILLE:1 / Body1",
+   "box_mm": [
+    -1150.0,
+    -633.0,
+    2120.0,
+    -885.0,
+    -297.0,
+    2122.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body1",
+   "box_mm": [
+    -588.0,
+    -640.0,
+    2340.24,
+    -578.0,
+    -630.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body2",
+   "box_mm": [
+    -586.0,
+    -638.0,
+    2346.24,
+    -580.0,
+    -632.0,
+    2353.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body3",
+   "box_mm": [
+    -588.0,
+    -296.0,
+    2340.24,
+    -578.0,
+    -286.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body4",
+   "box_mm": [
+    -586.0,
+    -294.0,
+    2346.24,
+    -580.0,
+    -288.0,
+    2353.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body5",
+   "box_mm": [
+    578.0,
+    -640.0,
+    2340.24,
+    588.0,
+    -630.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body6",
+   "box_mm": [
+    580.0,
+    -638.0,
+    2346.24,
+    586.0,
+    -632.0,
+    2353.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body7",
+   "box_mm": [
+    578.0,
+    -296.0,
+    2340.24,
+    588.0,
+    -286.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body8",
+   "box_mm": [
+    580.0,
+    -294.0,
+    2346.24,
+    586.0,
+    -288.0,
+    2353.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body1",
+   "box_mm": [
+    -901.0,
+    -643.5,
+    2132.0,
+    -841.0,
+    -638.5,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body2",
+   "box_mm": [
+    -321.0,
+    -643.5,
+    2132.0,
+    -261.0,
+    -638.5,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body3",
+   "box_mm": [
+    207.75,
+    -643.5,
+    2132.0,
+    267.75,
+    -638.5,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body4",
+   "box_mm": [
+    681.25,
+    -643.5,
+    2132.0,
+    741.25,
+    -638.5,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body1",
+   "box_mm": [
+    -886.0,
+    -305.0,
+    2132.0,
+    -856.0,
+    -297.0,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body2",
+   "box_mm": [
+    -306.0,
+    -305.0,
+    2132.0,
+    -276.0,
+    -297.0,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body3",
+   "box_mm": [
+    222.75,
+    -305.0,
+    2132.0,
+    252.75,
+    -297.0,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body4",
+   "box_mm": [
+    696.25,
+    -305.0,
+    2132.0,
+    726.25,
+    -297.0,
+    2140.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+   "box_mm": [
+    -1105.0,
+    -640.0,
+    2340.24,
+    -1095.0,
+    -630.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body2",
+   "box_mm": [
+    -1103.0,
+    -638.0,
+    2346.24,
+    -1097.0,
+    -632.0,
+    2353.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+   "box_mm": [
+    -955.0,
+    -640.0,
+    2340.24,
+    -945.0,
+    -630.0,
+    2346.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body4",
+   "box_mm": [
+    -953.0,
+    -638.0,
+    2346.24,
+    -947.0,
+    -632.0,
+    2353.24
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "box_mm": [
+    -883.0,
+    -638.5,
+    2159.0,
+    867.0,
+    -324.5,
+    2332.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body2",
+   "box_mm": [
+    -883.0,
+    -636.5,
+    2161.0,
+    867.0,
+    -586.5,
+    2330.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body3",
+   "box_mm": [
+    -883.0,
+    -506.5,
+    2161.0,
+    867.0,
+    -456.5,
+    2330.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body4",
+   "box_mm": [
+    -883.0,
+    -376.5,
+    2161.0,
+    867.0,
+    -326.5,
+    2330.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "box_mm": [
+    867.0,
+    -638.5,
+    2159.0,
+    1161.0,
+    -324.5,
+    2332.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM:1 / Body1",
+   "box_mm": [
+    870.5,
+    -551.5,
+    2209.0,
+    1010.5,
+    -411.5,
+    2234.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM:2 / Body1",
+   "box_mm": [
+    1017.5,
+    -551.5,
+    2209.0,
+    1157.5,
+    -411.5,
+    2234.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "box_mm": [
+    645.0,
+    -847.0,
+    1650.0,
+    945.0,
+    -692.0,
+    1950.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM:3 / Body1",
+   "box_mm": [
+    650.0,
+    -839.5,
+    1700.0,
+    790.0,
+    -699.5,
+    1725.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM:4 / Body1",
+   "box_mm": [
+    800.0,
+    -839.5,
+    1700.0,
+    940.0,
+    -699.5,
+    1725.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "box_mm": [
+    645.0,
+    -692.0,
+    1895.0,
+    1161.0,
+    -643.5,
+    2110.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "box_mm": [
+    955.0,
+    -803.0,
+    105.0,
+    1094.0,
+    -648.0,
+    1445.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "box_mm": [
+    645.0,
+    -803.0,
+    1445.0,
+    1094.0,
+    -648.0,
+    1650.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 611601 AIR - ROOF SLEEVE:1 / Body1",
+   "box_mm": [
+    872.0,
+    -620.0,
+    2332.0,
+    1157.0,
+    -326.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "610000_P01_AIR_CAD:1 / 611602 AIR - ROOF GRILLE:1 / Body1",
+   "box_mm": [
+    862.0,
+    -630.0,
+    2400.0,
+    1167.0,
+    -316.0,
+    2402.0
+   ]
+  },
   {
    "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
    "box_mm": [
@@ -1695,6 +2408,974 @@
     1137.0,
     -285.0,
     1290.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -844.0,
+    110.0,
+    -972.0,
+    -645.0,
+    2397.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "box_mm": [
+    -1247.0,
+    -647.0,
+    113.0,
+    -975.0,
+    -645.0,
+    2394.01
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -694.62,
+    105.0,
+    -946.0,
+    -690.62,
+    285.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body2",
+   "box_mm": [
+    -961.0,
+    -694.62,
+    425.0,
+    -946.0,
+    -690.62,
+    1039.5
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body3",
+   "box_mm": [
+    -961.0,
+    -694.62,
+    1179.5,
+    -946.0,
+    -690.62,
+    1794.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body4",
+   "box_mm": [
+    -961.0,
+    -694.62,
+    1934.0,
+    -946.0,
+    -690.62,
+    2105.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body1",
+   "box_mm": [
+    -972.0,
+    -690.62,
+    105.0,
+    -942.0,
+    -670.62,
+    285.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body2",
+   "box_mm": [
+    -972.0,
+    -690.62,
+    425.0,
+    -942.0,
+    -670.62,
+    1039.5
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body3",
+   "box_mm": [
+    -972.0,
+    -690.62,
+    1179.5,
+    -942.0,
+    -670.62,
+    1794.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body4",
+   "box_mm": [
+    -972.0,
+    -690.62,
+    1934.0,
+    -942.0,
+    -670.62,
+    2100.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body1",
+   "box_mm": [
+    -1247.0,
+    -667.0,
+    110.0,
+    -975.0,
+    -647.0,
+    130.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body2",
+   "box_mm": [
+    -995.0,
+    -667.0,
+    110.0,
+    -975.0,
+    -647.0,
+    2118.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+   "box_mm": [
+    -1247.0,
+    -667.0,
+    2110.45,
+    -975.0,
+    -647.0,
+    2389.78
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body4",
+   "box_mm": [
+    -1247.0,
+    -667.0,
+    110.0,
+    -1187.0,
+    -647.0,
+    2389.78
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body5",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    110.0,
+    -975.0,
+    -670.0,
+    130.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body6",
+   "box_mm": [
+    -1245.49,
+    -690.0,
+    110.0,
+    -975.0,
+    -670.0,
+    130.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body7",
+   "box_mm": [
+    -1245.49,
+    -749.51,
+    110.0,
+    -1144.88,
+    -670.0,
+    130.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body8",
+   "box_mm": [
+    -1156.29,
+    -832.4,
+    110.0,
+    -995.0,
+    -732.88,
+    130.0
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body9",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    722.25,
+    -975.0,
+    -670.0,
+    742.25
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body10",
+   "box_mm": [
+    -1245.49,
+    -690.0,
+    722.25,
+    -975.0,
+    -670.0,
+    742.25
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body11",
+   "box_mm": [
+    -1245.49,
+    -749.51,
+    722.25,
+    -1144.88,
+    -670.0,
+    742.25
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body12",
+   "box_mm": [
+    -1156.29,
+    -832.4,
+    722.25,
+    -995.0,
+    -732.88,
+    742.25
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body13",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    1476.75,
+    -975.0,
+    -670.0,
+    1496.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body14",
+   "box_mm": [
+    -1245.49,
+    -690.0,
+    1476.75,
+    -975.0,
+    -670.0,
+    1496.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body15",
+   "box_mm": [
+    -1245.49,
+    -749.51,
+    1476.75,
+    -1144.88,
+    -670.0,
+    1496.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body16",
+   "box_mm": [
+    -1156.29,
+    -832.4,
+    1476.75,
+    -995.0,
+    -732.88,
+    1496.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body17",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    2098.75,
+    -975.0,
+    -670.0,
+    2118.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body18",
+   "box_mm": [
+    -1245.49,
+    -690.0,
+    2098.75,
+    -975.0,
+    -670.0,
+    2118.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body19",
+   "box_mm": [
+    -1245.49,
+    -749.51,
+    2098.75,
+    -1144.88,
+    -670.0,
+    2118.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body20",
+   "box_mm": [
+    -1156.29,
+    -832.4,
+    2098.75,
+    -995.0,
+    -732.88,
+    2118.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body21",
+   "box_mm": [
+    -1154.0,
+    -729.0,
+    133.0,
+    -1134.0,
+    -669.0,
+    722.25
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body22",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    133.0,
+    -975.0,
+    -821.0,
+    722.25
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body23",
+   "box_mm": [
+    -1154.0,
+    -729.0,
+    742.25,
+    -1134.0,
+    -669.0,
+    1476.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body24",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    742.25,
+    -975.0,
+    -821.0,
+    1476.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body25",
+   "box_mm": [
+    -1154.0,
+    -729.0,
+    1496.75,
+    -1134.0,
+    -669.0,
+    2098.75
+   ]
+  },
+  {
+   "label": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body26",
+   "box_mm": [
+    -995.0,
+    -841.0,
+    1496.75,
+    -975.0,
+    -821.0,
+    2098.75
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -850.0,
+    2120.0,
+    449.0,
+    -647.26,
+    2400.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "box_mm": [
+    -1245.75,
+    -649.26,
+    2123.0,
+    449.0,
+    -647.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368007 FRONT - DOOR CATCH - IN DT:1 / Body1",
+   "box_mm": [
+    -154.72,
+    -691.95,
+    2094.0,
+    -92.72,
+    -671.95,
+    2120.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368005 FRONT - FRAME-STOP SEAL (1):1 / Body1",
+   "box_mm": [
+    -961.0,
+    -694.62,
+    2105.0,
+    -164.72,
+    -690.62,
+    2120.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351203 FRONT - DOOR TOP STOP - DT:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -690.62,
+    2100.0,
+    -164.72,
+    -670.62,
+    2120.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "box_mm": [
+    -970.76,
+    -669.26,
+    2123.0,
+    449.0,
+    -649.26,
+    2143.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "box_mm": [
+    429.0,
+    -669.26,
+    2123.0,
+    449.0,
+    -649.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "box_mm": [
+    -1245.75,
+    -669.26,
+    2357.0,
+    449.0,
+    -649.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+   "box_mm": [
+    -1245.75,
+    -669.26,
+    2123.0,
+    -962.5,
+    -649.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body5",
+   "box_mm": [
+    -271.5,
+    -669.26,
+    2143.0,
+    -251.5,
+    -649.26,
+    2357.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body6",
+   "box_mm": [
+    -969.0,
+    -847.23,
+    2123.0,
+    256.14,
+    -743.94,
+    2143.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "box_mm": [
+    -970.76,
+    -689.26,
+    2123.0,
+    449.0,
+    -669.26,
+    2143.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body8",
+   "box_mm": [
+    -969.0,
+    -763.99,
+    2278.83,
+    335.82,
+    -735.76,
+    2307.06
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body9",
+   "box_mm": [
+    -689.0,
+    -764.71,
+    2123.0,
+    -669.0,
+    -689.26,
+    2143.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body10",
+   "box_mm": [
+    -133.72,
+    -803.15,
+    2123.0,
+    -113.72,
+    -689.26,
+    2143.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body11",
+   "box_mm": [
+    -689.0,
+    -750.7,
+    2293.77,
+    -669.0,
+    -669.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body12",
+   "box_mm": [
+    -133.72,
+    -750.7,
+    2293.77,
+    -113.72,
+    -669.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body13",
+   "box_mm": [
+    295.82,
+    -750.7,
+    2293.77,
+    315.82,
+    -669.26,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE:1 / Body1",
+   "box_mm": [
+    956.0,
+    -803.0,
+    253.0,
+    1095.0,
+    -648.0,
+    1445.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351403 FRONT - AIR TRANSITION - LOWER - DR - RESERVED AIR SPACE:1 / Body1",
+   "box_mm": [
+    672.95,
+    -803.0,
+    1445.0,
+    1095.0,
+    -648.0,
+    1650.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "box_mm": [
+    672.95,
+    -847.0,
+    1650.0,
+    972.95,
+    -692.0,
+    1950.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "box_mm": [
+    672.95,
+    -847.0,
+    1950.0,
+    1164.0,
+    -646.5,
+    2110.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body2",
+   "box_mm": [
+    972.95,
+    -696.0,
+    1895.0,
+    1164.0,
+    -646.5,
+    1950.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "box_mm": [
+    230.0,
+    -850.0,
+    110.0,
+    1250.0,
+    -645.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "box_mm": [
+    449.0,
+    -646.5,
+    113.0,
+    1247.0,
+    -645.0,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "box_mm": [
+    949.0,
+    -646.5,
+    113.0,
+    1204.44,
+    -643.5,
+    2155.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "box_mm": [
+    233.97,
+    -646.5,
+    116.47,
+    949.0,
+    -643.5,
+    2120.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "box_mm": [
+    233.97,
+    -643.5,
+    116.47,
+    949.0,
+    -634.5,
+    2120.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body1",
+   "box_mm": [
+    949.91,
+    -847.0,
+    110.0,
+    1050.85,
+    -827.0,
+    130.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "box_mm": [
+    1030.85,
+    -847.0,
+    110.0,
+    1050.85,
+    -827.0,
+    2198.86
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "box_mm": [
+    258.3,
+    -847.0,
+    2178.86,
+    1050.85,
+    -827.0,
+    2198.86
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body4",
+   "box_mm": [
+    258.3,
+    -847.0,
+    2091.92,
+    278.3,
+    -827.0,
+    2198.86
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+   "box_mm": [
+    258.3,
+    -847.0,
+    1522.29,
+    770.83,
+    -827.0,
+    2099.38
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body6",
+   "box_mm": [
+    751.85,
+    -847.0,
+    110.0,
+    967.3,
+    -827.0,
+    1530.92
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "box_mm": [
+    949.91,
+    -666.5,
+    110.0,
+    1247.0,
+    -646.5,
+    150.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "box_mm": [
+    1167.0,
+    -666.5,
+    110.0,
+    1247.0,
+    -646.5,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "box_mm": [
+    449.0,
+    -666.5,
+    2377.0,
+    1247.0,
+    -646.5,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "box_mm": [
+    449.0,
+    -666.5,
+    2100.0,
+    469.0,
+    -646.5,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "box_mm": [
+    233.97,
+    -666.5,
+    2100.0,
+    469.0,
+    -646.5,
+    2120.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "box_mm": [
+    233.97,
+    -666.5,
+    1522.29,
+    770.83,
+    -646.5,
+    2120.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "box_mm": [
+    751.85,
+    -666.5,
+    110.0,
+    964.49,
+    -646.5,
+    1530.92
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body14",
+   "box_mm": [
+    865.76,
+    -847.0,
+    834.0,
+    1030.85,
+    -827.0,
+    854.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body15",
+   "box_mm": [
+    667.66,
+    -847.0,
+    1630.0,
+    1030.85,
+    -827.0,
+    1650.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "box_mm": [
+    469.0,
+    -666.5,
+    2120.0,
+    1167.0,
+    -646.5,
+    2180.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "box_mm": [
+    1050.85,
+    -847.0,
+    110.0,
+    1247.0,
+    -666.5,
+    130.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body18",
+   "box_mm": [
+    1050.85,
+    -847.0,
+    1630.0,
+    1247.0,
+    -666.5,
+    1650.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body19",
+   "box_mm": [
+    1050.85,
+    -847.0,
+    1930.0,
+    1247.0,
+    -666.5,
+    1950.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body20",
+   "box_mm": [
+    1050.85,
+    -847.0,
+    2178.86,
+    1247.0,
+    -666.5,
+    2198.86
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body21",
+   "box_mm": [
+    469.0,
+    -847.0,
+    2198.86,
+    489.0,
+    -666.5,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body22",
+   "box_mm": [
+    1010.85,
+    -847.0,
+    2198.86,
+    1030.85,
+    -666.5,
+    2397.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body23",
+   "box_mm": [
+    258.3,
+    -827.0,
+    2120.0,
+    469.0,
+    -672.0,
+    2140.0
+   ]
+  },
+  {
+   "label": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "box_mm": [
+    449.0,
+    -681.52,
+    2120.0,
+    469.0,
+    -666.5,
+    2140.0
    ]
   },
   {
@@ -4010,6 +5691,288 @@
  ],
  "clashes": [
   {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+   "mm3": 217790.1,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body5",
+   "mm3": 247.1,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+   "mm3": 30240.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+   "mm3": 12960.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body2",
+   "mm3": 5216.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3",
+   "mm3": 4.31,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+   "mm3": 99543.6,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+   "mm3": 3240.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+   "mm3": 47520.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+   "mm3": 866520.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+   "mm3": 9000.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+   "mm3": 41484.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body2",
+   "mm3": 224.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body5",
+   "mm3": 52.4,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body5",
+   "mm3": 321.23,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+   "mm3": 2730.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body5",
+   "mm3": 247.1,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+   "mm3": 8778.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+   "mm3": 2835.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body2",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+   "mm3": 273.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 326455.49,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+   "mm3": 431.86,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "mm3": 130.32,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+   "mm3": 198.29,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "mm3": 159.28,
+   "allowed": "GASKET-COMPRESSED"
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM:3 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 7000.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3",
+   "mm3": 626.65,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4",
+   "mm3": 3780.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 3552976.64,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body2",
+   "mm3": 470585.72,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "mm3": 7740.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "mm3": 196080.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 328992.0,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "mm3": 447.55,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "mm3": 273.33,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "mm3": 138.73,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "mm3": 230.61,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+   "mm3": 284.19,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "mm3": 258.1,
+   "allowed": "GASKET-COMPRESSED"
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351403 FRONT - AIR TRANSITION - LOWER - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 6974482.32,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "mm3": 98693.68,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "mm3": 8887.25,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "mm3": 4532.45,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body18",
+   "mm3": 1573.3,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "mm3": 152005.87,
+   "allowed": "HOLD-ON-GLASS"
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+   "mm3": 15403.22,
+   "allowed": null
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "mm3": 14975.11,
+   "allowed": "GASKET-COMPRESSED"
+  },
+  {
    "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
    "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:1 / Body1",
    "mm3": 122.68,
@@ -4061,6 +6024,36 @@
    "a": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1",
    "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5",
    "mm3": 69.74,
+   "allowed": null
+  },
+  {
+   "a": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 90.59,
+   "allowed": null
+  },
+  {
+   "a": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "mm3": 316.02,
+   "allowed": null
+  },
+  {
+   "a": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "mm3": 4320.0,
+   "allowed": null
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511102 LINING - TRAY - SIDE LOWER - RH:1 / Body1",
+   "mm3": 20122.05,
+   "allowed": null
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_CAD:1 / 511104 LINING - TRAY - SIDE UPPER - RH:1 / Body1",
+   "mm3": 15807.04,
    "allowed": null
   },
   {
@@ -4146,8 +6139,1167 @@
    "source": "confirmed: D-68 and D-74, the fixed glass's free edge parallel to the door edge at 4.0 mm"
   }
  ],
- "fasteners": [],
+ "fasteners": [
+  {
+   "bolt": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+   "error": "no cylindrical face"
+  },
+  {
+   "bolt": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body2",
+   "length_mm": 7.0,
+   "dia_mm": 6.0,
+   "head": [
+    -1100.0,
+    -635.0,
+    2346.2
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "layers": [
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+     "from_head_mm": 0.25,
+     "to_mm": 2.75,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": null,
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": [
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+     "segment": "axis",
+     "segment_mm": [
+      0.0,
+      30.0
+     ],
+     "mm3": 276.5
+    },
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      0.0,
+      40.0
+     ],
+     "mm3": 276.5
+    },
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 7412.0
+    },
+    {
+     "body": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 2757.0
+    },
+    {
+     "body": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 1812.2
+    },
+    {
+     "body": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 3257.6
+    },
+    {
+     "body": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 1419.8
+    }
+   ]
+  },
+  {
+   "bolt": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+   "error": "no cylindrical face"
+  },
+  {
+   "bolt": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body4",
+   "length_mm": 7.0,
+   "dia_mm": 6.0,
+   "head": [
+    -950.0,
+    -635.0,
+    2346.2
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "layers": [
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+     "from_head_mm": 0.25,
+     "to_mm": 2.75,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": null,
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": [
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+     "segment": "axis",
+     "segment_mm": [
+      0.0,
+      30.0
+     ],
+     "mm3": 276.5
+    },
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+     "segment": "room",
+     "segment_mm": [
+      0.0,
+      40.0
+     ],
+     "mm3": 276.5
+    },
+    {
+     "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 7412.0
+    },
+    {
+     "body": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 5981.0
+    }
+   ]
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:1 / Body1",
+   "length_mm": 22.0,
+   "dia_mm": 6.0,
+   "head": [
+    -1217.8,
+    830.0,
+    37.5
+   ],
+   "axis": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+     "from_head_mm": 6.5,
+     "to_mm": 7.75,
+     "is_nut": false
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+     "from_head_mm": 8.0,
+     "to_mm": 37.75,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": null,
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      0.0,
+      40.0
+     ],
+     "mm3": 438.3
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 5982.8
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118002 BASE - LEVELLING GLIDE - M10 - HOLD:2 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 1224.3
+    }
+   ]
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2 / Body1",
+   "length_mm": 22.0,
+   "dia_mm": 6.0,
+   "head": [
+    -1217.8,
+    830.0,
+    71.5
+   ],
+   "axis": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+     "from_head_mm": 6.5,
+     "to_mm": 7.75,
+     "is_nut": false
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+     "from_head_mm": 8.0,
+     "to_mm": 37.75,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": null,
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      0.0,
+      40.0
+     ],
+     "mm3": 438.3
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 5982.8
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118002 BASE - LEVELLING GLIDE - M10 - HOLD:2 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      40.0,
+      140.0
+     ],
+     "mm3": 44.8
+    }
+   ]
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:1 / Body1",
+   "length_mm": 15.3,
+   "dia_mm": 6.0,
+   "head": [
+    -1190.5,
+    823.0,
+    6.7
+   ],
+   "axis": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+     "from_head_mm": 3.5,
+     "to_mm": 4.75,
+     "is_nut": false
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+     "from_head_mm": 5.0,
+     "to_mm": 45.25,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": {
+    "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+    "mm": 9.2
+   },
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2 / Body1",
+   "length_mm": 15.3,
+   "dia_mm": 6.0,
+   "head": [
+    -1190.5,
+    837.0,
+    6.7
+   ],
+   "axis": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+     "from_head_mm": 3.5,
+     "to_mm": 4.75,
+     "is_nut": false
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+     "from_head_mm": 5.0,
+     "to_mm": 45.25,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": {
+    "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+    "mm": 9.2
+   },
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3 / Body1",
+   "length_mm": 22.0,
+   "dia_mm": 6.0,
+   "head": [
+    1217.8,
+    830.0,
+    37.5
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+     "from_head_mm": 8.0,
+     "to_mm": 37.75,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": null,
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4 / Body1",
+   "length_mm": 22.0,
+   "dia_mm": 6.0,
+   "head": [
+    1217.8,
+    830.0,
+    71.5
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+     "from_head_mm": 8.0,
+     "to_mm": 37.75,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": null,
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3 / Body1",
+   "length_mm": 15.3,
+   "dia_mm": 6.0,
+   "head": [
+    1190.5,
+    823.0,
+    6.7
+   ],
+   "axis": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+     "from_head_mm": 3.5,
+     "to_mm": 4.75,
+     "is_nut": false
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+     "from_head_mm": 5.0,
+     "to_mm": 45.25,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": {
+    "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+    "mm": 9.2
+   },
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  },
+  {
+   "bolt": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4 / Body1",
+   "length_mm": 15.3,
+   "dia_mm": 6.0,
+   "head": [
+    1190.5,
+    837.0,
+    6.7
+   ],
+   "axis": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "layers": [
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+     "from_head_mm": 3.5,
+     "to_mm": 4.75,
+     "is_nut": false
+    },
+    {
+     "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+     "from_head_mm": 5.0,
+     "to_mm": 45.25,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": {
+    "body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+    "mm": 9.2
+   },
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  }
+ ],
  "touching": [
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "b": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611206 AIR - SOFFIT END PLATE - LEFT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611204 AIR - EXHAUST GRILLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611209 AIR - SOFFIT TOP RAIL - ROOM SIDE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611206 AIR - SOFFIT END PLATE - LEFT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611204 AIR - EXHAUST GRILLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611209 AIR - SOFFIT TOP RAIL - ROOM SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611209 AIR - SOFFIT TOP RAIL - ROOM SIDE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611209 AIR - SOFFIT TOP RAIL - ROOM SIDE:1 / Body1",
+   "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611206 AIR - SOFFIT END PLATE - LEFT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body3",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body5",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body7",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 618104 AIR - SOFFIT HANGER STUD - HOLD:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body2",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body3",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610301 AIR - SPLITTER CARTRIDGE - COMMON (EXHAUST):1 / Body4",
+   "b": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 610402 AIR - EXHAUST FAN BOX:1 / 611401 AIR - FAN BOX CASING - EXHAUST:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 611601 AIR - ROOF SLEEVE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351403 FRONT - AIR TRANSITION - LOWER - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351403 FRONT - AIR TRANSITION - LOWER - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 611601 AIR - ROOF SLEEVE:1 / Body1",
+   "b": "610000_P01_AIR_CAD:1 / 611602 AIR - ROOF GRILLE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 611601 AIR - ROOF SLEEVE:1 / Body1",
+   "b": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411302 CEILING - SKIN - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "610000_P01_AIR_CAD:1 / 611602 AIR - ROOF GRILLE:1 / Body1",
+   "b": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411302 CEILING - SKIN - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
   {
    "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
    "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:1 / Body1",
@@ -4196,6 +7348,21 @@
   {
    "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
    "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body4",
    "gap_mm": 0.0
   },
   {
@@ -4595,6 +7762,11 @@
   },
   {
    "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411102 CEILING - PANEL FRAME - C2:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411102 CEILING - PANEL FRAME - C2:1 / Body1",
    "b": "210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (4):1 / Body1",
    "gap_mm": 0.0
   },
@@ -4639,6 +7811,11 @@
    "gap_mm": 0.0
   },
   {
+   "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411102 CEILING - PANEL FRAME - C2:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
    "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411102 CEILING - PANEL FRAME - C2:1 / Body5",
    "b": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 518001 LINING - CASSETTE CLIP:7 / Body1",
    "gap_mm": 0.0
@@ -4676,6 +7853,16 @@
   {
    "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411102 CEILING - PANEL FRAME - C2:1 / Body7",
    "b": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 518001 LINING - CASSETTE CLIP:12 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411302 CEILING - SKIN - C2:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "410000_P01_CEILING_CAD:1 / 410102 CEILING - PANEL ASSY - C2:1 / 411302 CEILING - SKIN - C2:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
    "gap_mm": 0.0
   },
   {
@@ -5041,6 +8228,1281 @@
   {
    "a": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body6",
    "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body14",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body17",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body18",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body19",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body22",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body26",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351101 FRONT - DECOR SKIN - DL:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+   "b": "510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_CAD:1 / 511103 LINING - TRAY - SIDE UPPER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body2",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body2",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body3",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body3",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body4",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body4",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368005 FRONT - FRAME-STOP SEAL (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body4",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351203 FRONT - DOOR TOP STOP - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 368005 FRONT - FRAME-STOP SEAL:1 / Body4",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / Body4",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351203 FRONT - DOOR TOP STOP - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body1",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body2",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body5",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body5",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body6",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body7",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body9",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body9",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body9",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body22",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body9",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body10",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body10",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body21",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body10",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body11",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body11",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body21",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body11",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body12",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body22",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body12",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body13",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body14",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body13",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body13",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body13",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body26",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body14",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body14",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body14",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body25",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body15",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body15",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body15",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body25",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body16",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body16",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body26",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body17",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body18",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body17",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body17",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body26",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body18",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body19",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body18",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body25",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body19",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body19",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body25",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body20",
+   "b": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body26",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368007 FRONT - DOOR CATCH - IN DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368005 FRONT - FRAME-STOP SEAL (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351203 FRONT - DOOR TOP STOP - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351201 FRONT - DECOR SKIN - DT:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368007 FRONT - DOOR CATCH - IN DT:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR STRIKE - ENVELOPE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368005 FRONT - FRAME-STOP SEAL (1):1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351203 FRONT - DOOR TOP STOP - DT:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 368005 FRONT - FRAME-STOP SEAL (1):1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body5",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body6",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body6",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body6",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body7",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body8",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body8",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body8",
+   "b": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351403 FRONT - AIR TRANSITION - LOWER - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351403 FRONT - AIR TRANSITION - LOWER - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body14",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body18",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body19",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body21",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body22",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351302 FRONT - DECOR BACK PLATE - DR:1 / Body1",
+   "b": "510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_CAD:1 / 511104 LINING - TRAY - SIDE UPPER - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511302 LINING - FELT - SIDE LOWER - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+   "b": "510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_CAD:1 / 511304 LINING - FELT - SIDE UPPER - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351304 FRONT - DECOR INNER PANEL FELT - DR:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body1",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body14",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body18",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body19",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body21",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body3",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body22",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body4",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body4",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body23",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body15",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body6",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body14",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body18",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body19",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body8",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body20",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body21",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body9",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body22",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body21",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body10",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body11",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body16",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body23",
+   "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body24",
    "gap_mm": 0.0
   },
   {
@@ -7116,6 +11578,8 @@
    "step_deg": 0.5,
    "direction": "outward",
    "moving": [
+    "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+    "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
     "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
     "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
     "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
@@ -7127,16 +11591,165 @@
    ],
    "hits": [
     {
+     "hits": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 0.5,
+     "last_deg": 0.5,
+     "max_mm3": 400.0,
+     "soft": false
+    },
+    {
+     "hits": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 0.5,
+     "last_deg": 0.5,
+     "max_mm3": 400.0,
+     "soft": false
+    },
+    {
      "hits": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD:1 / Body1",
      "moving": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD:1 / Body1",
      "first_deg": 0.5,
      "last_deg": 0.5,
      "max_mm3": 17.3,
      "soft": true
+    },
+    {
+     "hits": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 1.0,
+     "last_deg": 9.5,
+     "max_mm3": 202.8,
+     "soft": false
+    },
+    {
+     "hits": "510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511102 LINING - TRAY - SIDE LOWER - RH:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 1.0,
+     "last_deg": 9.5,
+     "max_mm3": 55.5,
+     "soft": false
+    },
+    {
+     "hits": "510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511302 LINING - FELT - SIDE LOWER - RH:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 1.0,
+     "last_deg": 9.5,
+     "max_mm3": 186.9,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 1.5,
+     "last_deg": 16.5,
+     "max_mm3": 461.5,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 1.5,
+     "last_deg": 10.5,
+     "max_mm3": 380.1,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 1.5,
+     "last_deg": 11.0,
+     "max_mm3": 598.9,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body13",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 1.5,
+     "last_deg": 3.5,
+     "max_mm3": 16.4,
+     "soft": false
+    },
+    {
+     "hits": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 2.5,
+     "last_deg": 15.0,
+     "max_mm3": 639.0,
+     "soft": false
+    },
+    {
+     "hits": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 3.0,
+     "last_deg": 6.0,
+     "max_mm3": 447.9,
+     "soft": false
+    },
+    {
+     "hits": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 3.0,
+     "last_deg": 7.0,
+     "max_mm3": 425.3,
+     "soft": false
+    },
+    {
+     "hits": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 3.0,
+     "last_deg": 6.5,
+     "max_mm3": 427.6,
+     "soft": true
+    },
+    {
+     "hits": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body3",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 4.5,
+     "last_deg": 8.5,
+     "max_mm3": 2134.5,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body6",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body2",
+     "first_deg": 7.0,
+     "last_deg": 12.0,
+     "max_mm3": 198.3,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body1",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 7.5,
+     "last_deg": 16.5,
+     "max_mm3": 135.9,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body17",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 11.0,
+     "last_deg": 16.0,
+     "max_mm3": 114.5,
+     "soft": false
+    },
+    {
+     "hits": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body2",
+     "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+     "first_deg": 15.5,
+     "last_deg": 16.0,
+     "max_mm3": 86.0,
+     "soft": false
     }
    ],
-   "first_hit": null
+   "first_hit": {
+    "angle_deg": 0.5,
+    "moving": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+    "hits": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+    "mm3": 400.0
+   }
   }
  ],
- "seconds": 14.8
+ "seconds": 22.9
 }
