@@ -752,7 +752,9 @@ class SupplyTransition(unittest.TestCase):
             self.assertAlmostEqual(min(ys), b6("SUPPLY FAN BOX")[2])
             self.assertAlmostEqual(max(ys), -646.5)
         (top, z0, z1), (side, z2, z3) = A.transition_outlines()
-        self.assertEqual([A.ev(V, z) for z in (z0, z1, z2, z3)], [1950.0, 2110.0, 1895.0, 1950.0])
+        # up to DR's opening's top, FRONT's Z 2102 (the 12:42 ruling's narrower opening, read from FRONT's model)
+        self.assertEqual([A.ev(V, z) for z in (z0, z1, z2, z3)], [1950.0, 2102.0, 1895.0, 1950.0])
+        self.assertEqual(max(A.ev(V, x) for x, _y in top + side), 1146.0, "the opening's right edge, FRONT's X 1146")
         self.assertAlmostEqual(A.ev(V, side[0][0]), b6("SUPPLY FAN BOX")[1], msg="beside the box from its right end")
 
     def test_clear_of_c04_b08_b02(self):
@@ -778,8 +780,25 @@ class SupplyTransition(unittest.TestCase):
                 d = min(seg_dist(e[0], tube), seg_dist(e[1], tube), seg_dist(tube[0], e), seg_dist(tube[1], e))
                 self.assertGreaterEqual(d, 3.9, "edge %s within %.2f of %s" % (e, d, tube))
             self.assertGreater(side_of(pts[0], tube), 0.0, "the trapezoid lies inside DR, right of %s" % (tube,))
-        lay = b6("RISER TRANSITION")
-        self.assertEqual((lay[2], lay[3]), (b6("SUPPLY FAN BOX")[2], b6("INTAKE RISER")[3]))
+        lay = b6("RISER TRANSITION")          # over the riser's depth, as FRONT reserves it (Reviewer 7)
+        self.assertEqual((lay[2], lay[3]), (b6("INTAKE RISER")[2], b6("INTAKE RISER")[3]))
+
+    def test_riser_chamfer_clear_of_the_facet_skin(self):
+        """The Lead's ruling 2026-11-01: the riser's front-right edge cut 8 x 8 keeps 6 from DR's corner facet skin. The
+        skin's inner face in plan, measured on #313's DR STEP (780aa83) 1.2 off the riser's old corner: through
+        (1098.8, -803.89), along C04's direction."""
+        p0 = (1098.8, -803.89)
+        (ax, ay), (bx, by) = C04_INNER
+        L = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5
+        n = ((by - ay) / L, -(bx - ax) / L)                 # the facet's normal, out of DR
+        def gap(q):
+            return -((q[0] - p0[0]) * n[0] + (q[1] - p0[1]) * n[1])
+        corner = (b6("INTAKE RISER")[1], b6("INTAKE RISER")[2])
+        self.assertAlmostEqual(gap(corner), 1.2, delta=0.05)         # the edge as it was: the measurement agrees
+        for x, y in A.riser_chamfer():
+            q = (A.ev(V, x), A.ev(V, y))
+            if q != corner:
+                self.assertGreaterEqual(gap(q), 6.0, "chamfer end %s only %.2f from the facet skin" % (q, gap(q)))
 
 
 class SleeveFlange(unittest.TestCase):

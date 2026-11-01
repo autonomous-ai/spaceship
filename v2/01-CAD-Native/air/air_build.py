@@ -551,6 +551,8 @@ def build_scope(root, design, ctx, scope):
                     continue
                 b = body(name)
                 if k == "riser":
+                    poly_prism(root, "INTAKE RISER CHAMFER", ("x", "y"), A.riser_chamfer(), "z", "rs_z0 - 1 mm",
+                               "rs_z1 + 1 mm", ctx, op=CUT, bodies=[b])
                     hollow_axis(root, b, "z", "rs_t", name)
                 if k == "sleeve":
                     hollow_axis(root, b, "z", "slv_t", name)
@@ -828,11 +830,16 @@ def run(_context):
         made["SUPPLY TRANSITION"] = (tc, tb)
         set_material(design, tc, "trans")
         rc = comp_with(boxes["sbox"], "riser", names_of("riser"))
+        # the 8 x 8 chamfer on its front-right edge (the Lead's ruling 2026-11-01), cut before the shell so the tube's
+        # wall follows it
+        poly_prism(rc, "INTAKE RISER CHAMFER", ("x", "y"), A.riser_chamfer(), "z", "rs_z0 - 1 mm", "rs_z1 + 1 mm", ctx,
+                   op=CUT, bodies=[made["INTAKE RISER"][1]])
         hollow_axis(rc, made["INTAKE RISER"][1], "z", "rs_t", "INTAKE RISER")
-        # the lower transition: FRONT's trapezoid from the riser's top to the box's bottom, across both depths
+        # the lower transition: FRONT's trapezoid from the riser's top to the box's bottom, over the riser's depth as
+        # FRONT reserves it (Reviewer 7: from the box's front line it cut DR's corner skin)
         _or, rtc = new_comp(boxes["sbox"], "rtrans")
         made["RISER TRANSITION"] = (rtc, poly_prism(rtc, "RISER TRANSITION", ("x", "z"), A.riser_transition_outline(),
-                                                    "y", "(-pod_d / 2 + sb_yf)", "rs_y0 + rs_d", ctx))
+                                                    "y", "rs_y0", "rs_y0 + rs_d", ctx))
         set_material(design, rtc, "rtrans")
         # the roof sleeve: its walls through the slot, and its top flange on C2's skin round the slot (J-AIR-03)
         _os, slc = new_comp(root, "sleeve")

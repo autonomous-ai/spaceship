@@ -163,19 +163,21 @@ AIR_PARAMS = [
     ("sb_yf", "31 mm", "mm", "source", "PM ruling 2026-11-01 and FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the supply fan box's front face at Y -819, 5 mm "
      "behind the cross tube F09 over it (Z 1904 to 1924), now 3 off the skin (was 28: Y -822)"),
     ("sb_z0", "1650 mm", "mm", "source", R7E + ": supply fan box Z 1650 to 1950"),
-    ("op_x0", "961 mm", "mm", "source", R7E + ": opening from the block into the column top X 961 to 1161, Z 1895 to 2110"),
-    ("op_z0", "1895 mm", "mm", "source", R7E + ": opening Z 1895 to 2110"),
-    ("op_h", "215 mm", "mm", "source", R7E + ": opening 200 x 215"),
     ("rs_x0", "959 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the riser's space X 959 to 1098, 5.9 off the glass-edge tube B07 (was 956; "
      "report 7e had 955)"),
     ("rs_w", "139 mm", "mm", "source", R7E + ": intake riser 139 wide, 155 deep"),
-    ("rs_d", "150 mm", "mm", "source", "the air report's D-130 table (riser_y, riser_lo): the riser Y -803 to -653, 4.8 mm off "
-     "DR's corner facet at its front-right corner and 6.5 off DR's frame face (was 155; FRONT's ri_d follows with D-130)"),
+    ("rs_d", "150 mm", "mm", "source", "the air report's D-130 table (riser_y, riser_lo): the riser Y -803 to -653, 6.5 off "
+     "DR's frame face (was 155; FRONT's ri_d follows with D-130). Its front-right edge runs 1.2 from DR's corner facet "
+     "skin over its height, measured on #313's DR (the air report's 4.8 predates the 3 mm move right)"),
     ("rs_y0", "-803 mm", "mm", "source", R7E + ": intake riser Y -803 to -648"),
     ("rs_z0", "252 mm", "mm", "source", "FRONT's reserved space for the riser (DR model on main: its open foot 140 over DR's "
      "base, Z 252); D-130's sealed intake boot (611502, to come) takes the air from the mesh up to this foot (was Z 105)"),
-    ("rs_z1", "1445 mm", "mm", "source", R7E + ": intake riser Z 105 to 1445, then it widens into the fan box below Z 1650"),
+    ("rs_z1", "1386 mm", "mm", "confirmed", "the Lead's ruling 2026-11-01 in the transitions group: the riser cut 60 "
+     "shorter (was 1445, the air report's), so the lower duct's turn eases to 52 deg; the AIR Transitions Engineer's shape"),
     ("rs_t", "1 mm", "mm", "confirmed", "D-61: 1 mm steel intake riser"),
+    ("rs_ch", "8 mm", "mm", "confirmed", "the Lead's ruling 2026-11-01: an 8 x 8 chamfer on the riser's front-right vertical "
+     "edge, so it stands 6.8 from DR's corner facet skin instead of 1.2, for 0.15% of its area; the lower duct's bottom "
+     "flange follows it (the AIR Transitions Engineer)"),
     # ---- how the supply fan box assembly rests in DR (PM rulings 2026-11-01, after the box moved back): a lip angle on
     #      the box's front wall on two rubber pads on DR's shelf tube F08, and a rubber buffer on the riser's front face
     #      against DR's cross tube F07; the outlet's soft lip seal carries no load. DR's frame values are FRONT's (its DR
@@ -216,7 +218,7 @@ AIR_PARAMS = [
     ("ut_ay", "dr_fac_ya + ut_clr * (dr_fac_xb - dr_fac_xa) / fac_len", "mm", "calculation", "the same point, Y"),
     ("ut_xf", "ut_ax + (-pod_d / 2 + sb_yf - ut_ay) * (dr_fac_xb - dr_fac_xa) / (dr_fac_yb - dr_fac_ya)", "mm",
      "calculation", "the transition's facet side meets its front (the box's front line), X (about 1044)"),
-    ("ut_yr", "ut_ay + (pod_w / 2 - stack_t - col_gap - ut_ax) * (dr_fac_yb - dr_fac_ya) / (dr_fac_xb - dr_fac_xa)", "mm",
+    ("ut_yr", "ut_ay + (op_x0 + op_w - ut_ax) * (dr_fac_yb - dr_fac_ya) / (dr_fac_xb - dr_fac_xa)", "mm",
      "calculation", "the transition's facet side meets its right end (the opening's, X 1161), Y (about -717)"),
     # ---- roof slot, sleeve and grille (D-61: Y -620 to -326, in the right outer ceiling panel)
     ("slv_t", "1 mm", "mm", "assumption", "roof sleeve wall, galvanised steel"),
@@ -354,7 +356,7 @@ AIR_MAY_DEFINE = {"dr_back_t", "dr_acc_t", "dr_acc_face_y",
                   # the roof sleeve flange's rivnut layout, which the ceiling's model carries too (C2's skin holes):
                   # once the ceiling's frames PR lands, its copies win and these drop out
                   "slv_rn_e", "slv_rn_in", "slv_bulge", "slv_rn_clr", "slv_rn_yb"}
-FRONT_NAMED = ("dr_back_t", "dr_acc_t", "dr_acc_face_y")
+FRONT_NAMED = ("dr_back_t", "dr_acc_t", "dr_acc_face_y", "op_x0", "op_w", "op_z0", "op_h")   # DR's opening is FRONT's too
 FRONT_FILE = "v2/01-CAD-Native/front/dr_block.py"     # FRONT's DR model, which publishes them
 
 
@@ -607,11 +609,11 @@ def layout():
     b.append(("box_s", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
     b += fan_box_inner()
     # the upper transition: over the box and in the passage beside it, full depth (its shape: transition_outlines())
-    b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", XR, sy0, YB_FRAME, "op_z0", "op_z0 + op_h")))
+    b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", "op_x0 + op_w", sy0, YB_FRAME, "op_z0", "op_z0 + op_h")))
     b.append(("riser", "INTAKE RISER", box("rs_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z0", "rs_z1")))
     # the lower transition: FRONT's trapezoid from the riser's top to the box's bottom (riser_transition_outline()), across
     # the box's and the riser's depths
-    b.append(("rtrans", "RISER TRANSITION", box("sb_x0", "rs_x0 + rs_w", sy0, "rs_y0 + rs_d", "rs_z1", "sb_z0")))
+    b.append(("rtrans", "RISER TRANSITION", box("sb_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z1", "sb_z0")))
     # how the assembly rests in DR: the lip angle on two pads on F08, the riser's buffer against F07 (PM rulings 2026-11-01)
     b.append(("lip", "FAN BOX LIP ANGLE SUPPLY", box("sb_x0", LIP_X1, LIP_Y0, sy0, "sb_z0 + pad_t", "sb_z0 + pad_t + lip_h")))
     for side, x0 in (("LEFT", "sb_x0 + pad_in"), ("RIGHT", "%s - pad_in - pad_l" % LIP_X1)):
@@ -652,15 +654,23 @@ def transition_outlines():
     """The upper transition's two plan outlines [(x, y)], each (outline, z0, z1): over the box and the passage from the
     box's top to the opening's top, and the passage beside the box down to the opening's foot; both run from the box's
     front line to DR's frame face, their facet side ut_clr off C04 (PM rulings 2026-11-01, report #283)."""
-    y0, xr = "(%s + sb_yf)" % YF, XR
+    y0, xr = "(%s + sb_yf)" % YF, "(op_x0 + op_w)"       # the opening's right edge (FRONT's, X 1146; Reviewer 7)
     top = [("sb_x0", y0), ("ut_xf", y0), (xr, "ut_yr"), (xr, YB_FRAME), ("sb_x0", YB_FRAME)]
     side = [("sb_x0 + sb_w", y0), ("ut_xf", y0), (xr, "ut_yr"), (xr, YB_FRAME), ("sb_x0 + sb_w", YB_FRAME)]
     return [(top, "sb_z0 + sb_h", "op_z0 + op_h"), (side, "op_z0", "sb_z0 + sb_h")]
 
 
+def riser_chamfer():
+    """The riser's front-right vertical edge cut off 8 x 8 (rs_ch; the Lead's ruling 2026-11-01): the triangle [(x, y)]
+    removed from its plan, run over its height."""
+    xr, yf = "rs_x0 + rs_w", "rs_y0"
+    return [("%s - rs_ch" % xr, yf), (xr, yf), (xr, "%s + rs_ch" % yf)]
+
+
 def riser_transition_outline():
     """The lower transition's side outline [(x, z)]: FRONT's trapezoid from the riser's top to the box's bottom, run in
-    Y across both depths (the box's front line to the riser's back)."""
+    Y over the riser's depth, as FRONT reserves it (Y -803 on; Reviewer 7: from the box's front line, -819, it cut DR's
+    corner skin)."""
     return [("rs_x0", "rs_z1"), ("rs_x0 + rs_w", "rs_z1"), ("sb_x0 + sb_w", "sb_z0"), ("sb_x0", "sb_z0")]
 
 
