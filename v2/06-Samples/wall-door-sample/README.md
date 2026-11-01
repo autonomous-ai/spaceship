@@ -12,7 +12,7 @@ Nothing here is released for production. Every physical test stays PLANNED until
 
 1. [build-list.md](build-list.md): what the factory builds. The sample items S1 to S7 and the test rigs R1 to R4, with sizes, layers, and the tests each one serves.
 2. [parts-list.md](parts-list.md): every material and part, with its quantity, maker and product where one is picked, the status of each number, and its source.
-3. [test-plan.md](test-plan.md): the 13 tests T01 to T13. For each: the method, who measures, the pass or fail limit and the requirement it ties to.
+3. [test-plan.md](test-plan.md): the 14 tests T01 to T14. For each: the method, who measures, the pass or fail limit and the requirement it ties to.
 4. [hold-list.md](hold-list.md): what can't be built or tested until a part is named, a joint is designed or a drawing exists. Each item has an owner and a release condition.
 5. [drawings-needed.md](drawings-needed.md): the Fusion drawings the factory needs from Milestone 2 before it cuts anything.
 

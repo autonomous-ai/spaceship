@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (e7f2d9e), PR #235 (e9f720d), PR #243 (a926f06). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (5fa198d), PR #235 (e9f720d), PR #243 (a926f06), PR #267 (142bf8a). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
 Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-cleats changed it, but main changed it later.
 
@@ -18,7 +18,7 @@ Read from main although an open PR changed them, because main changed them later
 |---|---:|---:|---:|---:|---:|---:|---:|
 | BASE | 3 | 3 | 0 | 3 | 3 | 0 | 4 |
 | CEILING | 6 | 8 | 0 | 0 | 5 | 0 | 5 |
-| CEILING (builds AIR, D-80) | 10 | 14 | 0 | 7 | 1 | 0 | 7 |
+| CEILING (builds AIR, D-80) | 10 | 14 | 0 | 7 | 4 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
 | FRONT | 5 | 16 | 0 | 1 | 4 | 1 | 5 |
@@ -73,37 +73,37 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 610000 | AIR | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 610101 | AIR - AIR COLUMN | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611106 | AIR - COLUMN FOOT PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611101 | AIR - COLUMN FACE - FRONT | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611102 | AIR - COLUMN FACE - LEFT | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611103 | AIR - COLUMN CORNER ANGLE | main | yes | yes | yes | n/a | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
-| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611104 | AIR - COLUMN FILL | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611105 | AIR - KICK GRILLE | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 610301 | AIR - SPLITTER CARTRIDGE - COMMON | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611301 | AIR - CARTRIDGE CASING | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 611302 | AIR - CARTRIDGE LAYER 50 | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 610201 | AIR - SOFFIT | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611201 | AIR - SOFFIT UNDERSIDE - LEFT HINGED | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611207 | AIR - SOFFIT UNDERSIDE - RIGHT HINGED | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611208 | AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611202 | AIR - SOFFIT FACE - FRONT | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611206 | AIR - SOFFIT END PLATE - LEFT | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611210 | AIR - SOFFIT DOOR-SIDE PLATE | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611203 | AIR - SOFFIT FILL | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611204 | AIR - EXHAUST GRILLE | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
-| 610402 | AIR - EXHAUST FAN BOX | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611401 | AIR - FAN BOX CASING - EXHAUST | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 610401 | AIR - SUPPLY FAN BOX | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03, K-A05 | open: drawing |
-| 611402 | AIR - FAN BOX CASING - SUPPLY | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 611501 | AIR - INTAKE RISER | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03, K-A04 | open: DXF or cut list, drawing |
-| 611601 | AIR - ROOF SLEEVE | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 611602 | AIR - ROOF GRILLE | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 610000 | AIR | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610101 | AIR - AIR COLUMN | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611106 | AIR - COLUMN FOOT PLATE | PR #267 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611101 | AIR - COLUMN FACE - FRONT | PR #267 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611102 | AIR - COLUMN FACE - LEFT | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611103 | AIR - COLUMN CORNER ANGLE | PR #267 | yes | yes | yes | n/a | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611104 | AIR - COLUMN FILL | PR #267 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611105 | AIR - KICK GRILLE | PR #267 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 610301 | AIR - SPLITTER CARTRIDGE - COMMON | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611301 | AIR - CARTRIDGE CASING | PR #267 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611302 | AIR - CARTRIDGE LAYER 50 | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610201 | AIR - SOFFIT | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611201 | AIR - SOFFIT UNDERSIDE - LEFT HINGED | PR #267 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611207 | AIR - SOFFIT UNDERSIDE - RIGHT HINGED | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611208 | AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611202 | AIR - SOFFIT FACE - FRONT | PR #267 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | PR #267 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | PR #267 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611206 | AIR - SOFFIT END PLATE - LEFT | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611210 | AIR - SOFFIT DOOR-SIDE PLATE | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611203 | AIR - SOFFIT FILL | PR #267 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611204 | AIR - EXHAUST GRILLE | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 610402 | AIR - EXHAUST FAN BOX | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611401 | AIR - FAN BOX CASING - EXHAUST | PR #267 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 610401 | AIR - SUPPLY FAN BOX | PR #267 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03, K-A05 | open: drawing |
+| 611402 | AIR - FAN BOX CASING - SUPPLY | PR #267 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611501 | AIR - INTAKE RISER | PR #267 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03, K-A04 | open: DXF or cut list, drawing |
+| 611601 | AIR - ROOF SLEEVE | PR #267 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611602 | AIR - ROOF GRILLE | PR #267 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -254,14 +254,17 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 618101 | AIR - SENSOR HUB ZONE - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618104 | AIR - SOFFIT HANGER STUD - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618102 | AIR - SUPPLY TRANSITION - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618103 | AIR - RISER TRANSITION - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
+| 618101 | AIR - SENSOR HUB ZONE - HOLD | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618104 | AIR - SOFFIT HANGER STUD - HOLD | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618102 | AIR - SUPPLY TRANSITION - HOLD | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618103 | AIR - RISER TRANSITION - HOLD | PR #267 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #267 | H-01P | yes | J-T1 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #267 | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #267 | H-09 | yes | T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | PR #267 | H-03 | yes | J-T1, T06 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
