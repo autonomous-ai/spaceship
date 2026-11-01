@@ -212,6 +212,21 @@ def all_strokes(page, sheet_h):
     return segs
 
 
+MAKER = re.compile(r"\b(made|created|drawn|designed|generated|produced|prepared)\s+by\s+([^\s,;]+)", re.I)
+
+
+def note_makers(doc):
+    """[(sheet, phrase)] for each 'made by X' and the like on the sheets, other than the title block's CREATED BY
+    Autonomous: the Lead's ruling (2026-11-01) is that a note names the source, never an agent, a role or a script as
+    the maker."""
+    out = []
+    for n, page in enumerate(doc, start=1):
+        for m in MAKER.finditer(page.get_text()):
+            if m.group(2).strip(":.") != "Autonomous":
+                out.append((n, " ".join(m.group(0).split())))
+    return out
+
+
 def clashes(doc):
     """On every page: texts that touch each other, texts that touch a part outline, and lines that run through a
     text's letters (a leader or a dimension line that stops at the text doesn't): [(page, what)]."""
@@ -357,7 +372,8 @@ def check(pdf_path, step_path=None, verbose=False):
         for i, h in enumerate(holes):
             if abs(abs(dot(h["axis"], v["n"])) - 1) > 1e-6 or abs(h["dia"] - f["dia"]) > 0.011:
                 continue
-            ex, ey = dot(sub(h["c"], O), v["x"]), dot(sub(h["c"], O), v["y"])
+            Ov = v.get("origin3d") or O        # a view with its own origin (an angled face's)
+            ex, ey = dot(sub(h["c"], Ov), v["x"]), dot(sub(h["c"], Ov), v["y"])
             d = math.hypot(ex - x, ey - y)
             if best is None or d < best[0]:
                 best = (d, i, ex, ey)
@@ -370,7 +386,7 @@ def check(pdf_path, step_path=None, verbose=False):
         # the same axis can carry runs in two walls of different sizes; mark every run on this axis of this size
         used.update(j for j, h in enumerate(holes) if abs(h["dia"] - f["dia"]) < 0.011 and
                     abs(abs(dot(h["axis"], v["n"])) - 1) < 1e-6 and
-                    math.hypot(dot(sub(h["c"], O), v["x"]) - best[2], dot(sub(h["c"], O), v["y"]) - best[3]) < TOL)
+                    math.hypot(dot(sub(h["c"], Ov), v["x"]) - best[2], dot(sub(h["c"], Ov), v["y"]) - best[3]) < TOL)
     if data.get("occurrences", 1) > 1 and used:
         drawn_occ = {holes[j].get("occ") for j in used}
         skip = {j for j, h in enumerate(holes) if h.get("occ") not in drawn_occ}
@@ -403,7 +419,8 @@ def check(pdf_path, step_path=None, verbose=False):
             fails.append("%s: drawn circle centre is %.3f mm from the STEP hole (limit %s)" % (tag, d, TOL))
     for name, v in (views.items() if data["features"] else []):
         s = v["scale"]
-        o = (v["off"][0] + s * dot(O, v["x"]), v["off"][1] + s * dot(O, v["y"]))
+        Ov = v.get("origin3d") or O
+        o = (v["off"][0] + s * dot(Ov, v["x"]), v["off"][1] + s * dot(Ov, v["y"]))
         if not any(abs(c[2] - 1.2) < 1e-3 and math.hypot(c[0] - o[0], c[1] - o[1]) < 1e-3 for c in circles):
             fails.append("origin mark %s is not on the origin" % name)
     # 3. what the mechanical check reads
@@ -432,6 +449,8 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("PDF author is not Autonomous")
     if not re.search(r"CREATED BY\s+Autonomous\b", page.get_text()):
         fails.append("the title block's CREATED BY is not Autonomous")
+    for pg, phrase in note_makers(doc):
+        fails.append("sheet %d: a note names a maker ('%s')" % (pg, phrase))
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
     two_wall = bool(two_wall_pairs(data["features"]))
