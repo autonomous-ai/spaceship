@@ -505,12 +505,16 @@ def load_adjustments(root, list_path=None):
     return rows
 
 
-def check_pod_mass(root, rows, src, cap_kg=420.0):
+def check_pod_mass(root, rows, src, cap_kg=None):
     """The pod total from the layout study's part list (every row, as it sums
     them) plus the owners' weight changes not yet in that list, against the
-    cap (D-37, D-54)."""
+    cap: config/policy.csv's pod_mass_cap_kg (460 kg, D-131, provisional until
+    the wall sample's recount; it was 420 under D-37 and D-54)."""
     if not rows:
         return [], None
+    if cap_kg is None:
+        from c_drawings import policy
+        cap_kg = num(policy(root, "pod_mass_cap_kg", "460")) or 460.0
     # the PM's weight ruling of 2026-10-31: the voice cockpit kit (4.0 kg, shipped later) sits outside the cap
     outside = [r for r in rows if re.search(r"outside the cap|voice cockpit kit reserve",
                                             " ".join(str(r.get(k) or "") for k in ("item", "name", "status", "note")), re.I)]
@@ -526,7 +530,7 @@ def check_pod_mass(root, rows, src, cap_kg=420.0):
         return [], info
     parts = "; ".join("%+.1f kg %s (%s, %s)" % (num(a["kg"]), a["id"], a["status"], a["source"]) for a in adj)
     return [Finding("C04", "pod-mass-over-cap", "POD total mass", "major",
-                    "The pod is about %.1f kg against the %.0f kg cap (D-37, D-54): %.1f kg over. The layout study's "
+                    "The pod is about %.1f kg against the %.0f kg cap (D-131, provisional): %.1f kg over. The layout study's "
                     "list gives %.1f kg (%s)%s%s. Open against the cap until the wall sample settles it (ISS-080)." % (
                         total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else "",
                         "; %.1f kg of voice cockpit kit is outside the cap (PM weight ruling)" % outside_kg
@@ -649,7 +653,8 @@ def check_mixed_metals(root, plists, contacts):
                                   owner_for(r, pn)))
             elif is_fastener(pn, row["name"]) and metal_class(mat.get(pn, "")) == "steel-bare":
                 fs.append(Finding("C10", "fastener-bare-steel", pn, "severe",
-                                  "Fastener %s %s in %s is bare steel ('%s'); the frames are aluminium." % (
+                                  "Fastener %s %s in %s is bare steel ('%s'), against the aluminium it may touch "
+                                  "(the band, the skins, the ACP)." % (
                                       pn, row["name"], r, mat.get(pn, "")),
                                   "Use stainless or coated steel, with an isolating washer where the joint stays "
                                   "wet.", r, owner_for(r, pn)))
@@ -875,5 +880,54 @@ def check_copies(root, step_paths, load):
             "Put the part's current model in the assembly (one component placed as copies, D-120) and check the "
             "holes and fits round it; if the copy is right, the part's owner updates its own STEP.",
             sorted(h["files"])[0], owner, {"files": len(h["files"])}))
+    return fs
+
+
+# ----------------------------------------------------------------- C06: what decisions cancelled or added
+
+def check_decided_items(root, plists, step_products):
+    """What a decision cancelled has to be gone, and what one added has to be there, read from the teams' parts lists
+    and the CAD's product names (the skeleton, the proof part and the master BOM's own placeholder rows left out).
+    config/cancelled-items.csv: pattern, decision, what (D-131: no cleats; D-132: no floor parts, no threshold);
+    config/required-items.csv: pattern, folder, decision, what (D-132: the base seal lip in BASE's folder)."""
+    from common import CHECKS_DIR
+    cfg = os.path.join(root, CHECKS_DIR, "config")
+    cancelled = read_csv(os.path.join(cfg, "cancelled-items.csv")) if os.path.exists(os.path.join(cfg, "cancelled-items.csv")) else []
+    required = read_csv(os.path.join(cfg, "required-items.csv")) if os.path.exists(os.path.join(cfg, "required-items.csv")) else []
+    items = []                                   # (part number, name, file)
+    for p, rows in plists:
+        r = rel(root, p)
+        for row in rows:
+            if is_master(r) and is_placeholder(row):
+                continue
+            items.append((row["part_number"], row["name"] or "", r))
+    for pn, d in step_products.items():
+        for f in d["files"]:
+            if "/skeleton/" not in f and "/proof/" not in f:
+                items.append((pn, d["name"] or "", f))
+    fs = []
+    for c in cancelled:
+        pat = re.compile(c["pattern"], re.I)
+        hits = {}
+        for pn, name, f in items:
+            if pat.search(name):
+                hits.setdefault(pn or name, set()).add((name, f))
+        for key, where in sorted(hits.items()):
+            files = sorted({f for _n, f in where})
+            name = sorted({n for n, _f in where})[0]
+            fs.append(Finding("C06", "cancelled-by-decision", key, "major",
+                              "%s is still in %s, though %s cancelled it (%s)." % (
+                                  name if name.startswith(str(key)) else ("%s %s" % (key, name)).strip(),
+                                  ", ".join(files), c["decision"], c["what"]),
+                              "Take it out of the CAD, the parts list and the drawings (%s)." % c["decision"],
+                              files[0], owner_for(files[0], key if re.match(r"^\d{6}$", str(key)) else "")))
+    for q in required:
+        pat, folder = re.compile(q["pattern"], re.I), q["folder"].rstrip("/") + "/"
+        if not any(f.startswith(folder) and pat.search(name) for _pn, name, f in items):
+            fs.append(Finding("C06", "required-by-decision", q["what"][:60], "major",
+                              "%s requires %s, but no parts list or CAD part in %s names it yet." % (
+                                  q["decision"], q["what"], folder),
+                              "Model it and give it its row and number (%s)." % q["decision"], folder.rstrip("/"),
+                              owner_for(folder, "")))
     return fs
 
