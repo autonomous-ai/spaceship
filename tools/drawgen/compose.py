@@ -203,20 +203,31 @@ POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right"
 
 
 def step_count_words(pn, occurrences, row, step, list_file):
-    """The quantity note for a part its STEP holds several times, checked against its parts list; NotDrawable when
-    they differ. A STEP named for its parts list's number holds the team as built into the pod, so where the list
-    gives qty_per_pod the count is the pod's: the sum over the part's rows (BASE's glide doubler 111601, a row per
-    band; CEILING's members shared by both frames in one row, frame_c1|frame_c2, and its tray and ribs, their cassette
-    placed twice). Any other STEP (a block's, a panel's) holds one assembly: its count is the row's qty."""
+    """The STEP's count of a part checked against its parts list, and the quantity note for a part it holds several
+    times (None for one held once); NotDrawable when they differ. A STEP named for its parts list's number holds the
+    team as built into the pod, so where the list has qty_per_pod the count, once included, is the pod's: the sum
+    over the part's rows (BASE's glide doubler 111601, a row per band; CEILING's members shared by both frames in one
+    row, frame_c1|frame_c2, and its tray and ribs, their cassette placed twice); a row without a whole number there
+    (blank, HOLD) is refused as missing. Any other STEP (a block's, a panel's) holds one assembly: the count of a part
+    it holds several times is the row's qty."""
+    held = "once" if occurrences == 1 else "%d times" % occurrences
     snm = inputs.parse_name(step)
     lnm = inputs.parse_name(list_file) if list_file else None
     pod = inputs.pod_qty(pn, list_file) if snm and lnm and snm["pn"] == lnm["pn"] else None
     if pod is not None:
-        if pod[0] != occurrences:
-            raise NotDrawable("%s: %s holds it %d times, its parts list says %d per pod%s" % (
-                pn, os.path.basename(step), occurrences, pod[0], " (its %d rows)" % pod[1] if pod[1] > 1 else ""))
+        total, n, missing = pod
+        if missing:
+            raise NotDrawable("%s: %s holds it %s, but its parts list's per-pod quantity is missing (qty_per_pod "
+                              "%s)" % (pn, os.path.basename(step), held, ", ".join(missing)))
+        if total != occurrences:
+            raise NotDrawable("%s: %s holds it %s, its parts list says %d per pod%s" % (
+                pn, os.path.basename(step), held, total, " (its %d rows)" % n if n > 1 else ""))
+        if occurrences == 1:
+            return None
         return "%d per pod (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
-            pod[0], os.path.basename(step), occurrences)
+            total, os.path.basename(step), occurrences)
+    if occurrences == 1:
+        return None
     q = (row.get("qty") or row.get("qty_per_parent") or "").strip()
     try:
         qn = int(float(q))
@@ -259,9 +270,7 @@ class Part:
         self.name_vi = (self.row.get("name_vi") or "").strip()
         self.bodies, self.unit = geom.load_part(self.step, pn)
         self.occurrences = self.unit.get("occurrences", 1)
-        self.qty_words = None
-        if self.occurrences > 1:
-            self.qty_words = step_count_words(pn, self.occurrences, self.row, self.step, self.list_file)
+        self.qty_words = step_count_words(pn, self.occurrences, self.row, self.step, self.list_file)
         self.placement = None
         if pod_system:
             self._to_pod()
