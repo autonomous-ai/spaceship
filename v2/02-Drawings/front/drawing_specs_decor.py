@@ -38,7 +38,7 @@ SPECS["dr"] = {
         "frame's bottom tubes (PM ruling: at least 0.028 free). Air goes band, block, riser; the riser's open foot "
         "stands 140 above the base.",
         "Slot along the inner edge for the fixed pane's hidden channel: 17 wide at the glass plane (PM ruling).",
-        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads on plain 12 washers (ISO 7089) into rivnuts "
+        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads on plain washers 838011 (ISO 7089 6.4 x 12, zinc) into rivnuts "
         "838003 in the frame's tubes under its edges, about 400 apart; a washer 838004 on each rivnut head holds it "
         "%.2f off the frame, its room face at Y %.2f (AIR's named value); the seal 848013 runs round its edge, squeezed "
         "to %.2f, cut round each washer. Opening %.0f wide into the air column's top (X %.0f to %.0f); the column hangs "

@@ -231,8 +231,9 @@ OWN = [
     ("dr_sc_clear", "40 mm", "mm", "calculation",
      "the panel's end screws 40 from the corners of its screw line, clear of the frame's welded corners (D-130)"),
     ("dr_hd_d", "12 mm", "mm", "source",
-     "a plain M6 washer under each panel screw's head, ISO 7089 6.4 x 12 x 1.6 (PM ruling 2026-11-01: the socket "
-     "heads stay, one 5 mm key on site; the 18 mm washer made every felt hole break out; Joints numbers it)"),
+     "a plain M6 washer 838011 under each panel screw's head, ISO 7089 6.4 x 12 x 1.6, 200 HV zinc-plated steel (PM "
+     "rulings 2026-11-01: the socket heads stay, one 5 mm key on site; the 18 mm washer made every felt hole break "
+     "out; joints register H-44)"),
     ("dr_felt_web", "3 mm", "mm", "calculation",
      "felt left between each felt hole and the felt's edge (PM ruling 2026-11-01)"),
     ("dr_felt_hole", "dr_hd_d + 2 mm", "mm", "calculation",
@@ -974,8 +975,8 @@ def export_all(app):
          "PM rulings 2026-11-01 (the column's hook studs, the panel carries the 10 kg column)",
          "one removable inner face panel (D-130) over the opening the air unit goes in by: DXF " + DXF_FLAT["ACCESS"] +
          "; on stops 2.36 off the frame (an 838004 washer on each rivnut head), sealed all round by 848013, held by "
-         "%d M6 x 16 socket heads 838001 (ISO 4762, the one 5 mm key on site), each on a plain washer 12 (ISO 7089; "
-         "Joints numbers it), about 400 apart into rivnuts 838003 in the frame's tube walls (Joints' counts); the "
+         "%d M6 x 16 socket heads 838001 (ISO 4762, the one 5 mm key on site), each on a plain washer 838011 (ISO "
+         "7089 6.4 x 12, 200 HV zinc), about 400 apart into rivnuts 838003 in the frame's tube walls (Joints' counts); the "
          "heads stand 7.6 proud of its room face and AIR clears the ones it covers (its supply cartridge lifted 6, "
          "reliefs at the soffit); the glass-edge tube's lowest screw stands 10 left of the air column's edge; 2 holes "
          "9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the column's 2 hook studs (J-AIR-02); its "

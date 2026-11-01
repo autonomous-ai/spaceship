@@ -199,7 +199,8 @@ def frame_members():
     zb3 = "(%s + dt_skin_t)" % ZT
     bot, top = FL.line(0, 1, ZT), FL.line(0, -1, "-pod_h")
     right = FL.line(-1, 0, "-(%s + dt_xr)" % XL)
-    # DT stands on the slope over DL: z - dt_zb = dt_m (XL + dl_w - x); pushed 3 in, the joint's seal gap (HOLD)
+    # DT stands on the slope over DL: z - dt_zb = dt_m (XL + dl_w - x), DT's skin directly on DL's (no gap); the
+    # frame's slope tube sits a skin thickness in from it
     slope = FL.line("dt_m / dt_k", "1 / dt_k", "(dt_zb + dt_m * (%s + dl_w)) / dt_k" % XL)
     M = []
 
