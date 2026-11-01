@@ -365,6 +365,17 @@ class Sprinkler(unittest.TestCase):
                 pz = to_pod(zone, half)
                 for mc, mb in M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)]):
                     self.assertFalse(M.overlap((pz[0], pz[1], pz[2], pz[3], mb[4], mb[5]), mb), "zone under " + mc)
+                # the PM's provision (2026-11-01): clear through every layer, so a head goes in later without
+                # cutting a member: ELECTRICAL's draw wire runs along the cassette's centre line from the front
+                # return's cable hole to the back one (10 mm allowed for the wire and its clips) ...
+                wire = ev(M.CABLE_HOLE_X[half])
+                self.assertGreaterEqual(min(abs(pz[0] - wire), abs(pz[1] - wire)) if not pz[0] <= wire <= pz[1] else -1,
+                                        10.0, "zone over the draw wire (%s)" % half)
+                # ... and the roof slot and the AIR sleeve in it (C2) stay 25 or more away
+                slot = (VALS["slot_x0"], VALS["slot_x0"] + VALS["slot_w"], VALS["slot_y0"], VALS["slot_y0"] + VALS["slot_d"])
+                gap_x = max(slot[0] - pz[1], pz[0] - slot[1])
+                gap_y = max(slot[2] - pz[3], pz[2] - slot[3])
+                self.assertGreaterEqual(max(gap_x, gap_y), 25.0, "zone near the roof slot (%s)" % half)
 
 
 class Frames(unittest.TestCase):
