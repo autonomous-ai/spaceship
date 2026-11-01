@@ -118,6 +118,7 @@ Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unh
 | Electrical connectors and the wiring diagram | ELECTRICAL | not designed yet |
 | Step pictures from the Fusion model | Packing and Assembly | after each part's CAD lands and the screen is unlocked |
 | The driver's clutch value and the bit length for the captive bolts, with margin against the rivnut spinning out | Joints Engineer | the PM's ruling 2026-11-01 |
+| The seam prop's height and its spot under the front end of the C1-C2 seam ({{PROP_H}} mm from the skeleton for now) | CEILING | asked |
 | Which of the six overhead lifts already rest hands-free (the ceiling halves on the wall tops, DT on DL and DR, the exhaust cartridge in the soffit, the ceiling cassettes on their catches); a ledge or hook on an existing part where one is missing | CEILING, FRONT, AIR | the PM's ruling 2026-11-01 |
 | Lift-off hinges set in the factory (about 4 minutes) | FRONT, in the hinge HOLD's asks for the factory (D-138) | asked |
 | A plug-in light shelf (about 3 minutes) | ELECTRICAL, with its connector choice | asked |

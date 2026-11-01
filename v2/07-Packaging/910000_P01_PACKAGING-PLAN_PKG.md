@@ -11,7 +11,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 ## Result
 
-1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **207 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **325 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 532 kg gross in all.
+1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **207 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **327 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 534 kg gross in all.
 2. **Masses are the layout study's P04 roll-up**, 392.9 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 396.9 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 396.4 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **39 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 9; inside the crate the fixed glass lies on top because it goes in first.
@@ -23,8 +23,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 18 | 181.2 | 207 (457) | 1,641 (64.6) | 71.8 | 6.4 |
-| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 21 | 215.2 | 325 (716) | 1,563 (61.5) | 164.1 | 4.4 |
-| **Both** |  | 39 | **396.4** | **532** (1,173) |  |  |  |
+| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 21 | 215.2 | 327 (721) | 1,563 (61.5) | 164.1 | 4.4 |
+| **Both** |  | 39 | **396.4** | **534** (1,178) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -94,6 +94,8 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 150 | **2-21** | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 900 × 150 × 80 | 1 |
 
 **Glass crate (911001), tier 1.** Outside 2200 x 1219 x 238 mm; inside 2,110 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 9). Door 2096 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
+
+**The seam prop (911004).** The tier 3 separator carries one more batten, 22 × 95, along the deck, cut to 2354 mm (the ceiling's seam corner over the room floor; CEILING confirms) and marked SEAM PROP - STEP 7. In guide step 7 it props C1's corner at the front end of the C1-C2 seam until the seam pins are in (the Lead's ruling, 2026-11-01), then goes with the packaging. It is packing, not a part of the pod: its mass is in the tare.
 
 **Tier separators (911003).** Timber battens carried on posts at the corners and sides, so no tier rests on a decor skin, a felt face or the crate lid's span: the crate lid takes tier 2's load only over its frame.
 
@@ -236,8 +238,9 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911001 (PROPOSED) | PACKAGING - GLASS CRATE: ISPM 15 STAMPED TIMBER RUNNERS, RAILS AND LID SLATS, PLYWOOD SIDES |  | - | 30.00 | assumption | - | - |
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS |  | - | 16.00 | assumption | - | - |
+| - | 911004 (PROPOSED) | PACKAGING - SEAM PROP: ISPM 15 STAMPED BATTEN 22 X 95, ALONG THE TIER 3 SEPARATOR, CUT TO THE CEILING SEAM'S HEIGHT AND MARKED |  | - | 2.50 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **324.7** |  |  |  |
+|  |  | **Gross** |  |  | **327.2** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -371,6 +374,7 @@ The bolt check reads `v2/05-Engineering/joints/joints-register.md` section 3.9. 
 | 911001 | PACKAGING - GLASS CRATE: ISPM 15 STAMPED TIMBER RUNNERS, RAILS AND LID SLATS, PLYWOOD SIDES | made | 1 | 30.0 | assumption | this plan (crate_kg) |
 | 911002 | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) | made | 1 | 6.0 | assumption | this plan (glass_rest_kg); flat-packed in the crate |
 | 911003 | PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS | made | 4 | 4.0 | assumption | this plan (sep_kg) |
+| 911004 | PACKAGING - SEAM PROP: ISPM 15 STAMPED BATTEN 22 X 95, ALONG THE TIER 3 SEPARATOR, CUT TO THE CEILING SEAM'S HEIGHT AND MARKED | made | 1 | 2.5 | assumption | this plan (prop_h, prop_kg); the Lead's ruling 2026-11-01 |
 | 918010 | PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film | bought | 1 | 6.0 | assumption | layout study pack_kg_std |
 | 918011 | PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film | bought | 1 | 9.0 | assumption | layout study pack_kg_long |
 | 911010 | PACKAGING - PART LABEL, 100 X 150 MM, ONE PER PIECE | made | 39 | 0.0 | - | this plan |
@@ -383,7 +387,7 @@ Numbers in the 91 band follow conventions §6 (PACKAGING; 1000–7999 made, 8000
 The controlling numbers are metric (guideline §3.1; conventions §2). For US LTL quotes:
 
 - Pallet 1: 48 × 40 in, 1,641 mm loaded, 207 kg gross (section 1 gives inches, pounds, cubic feet and lb/ft³).
-- Pallet 2: 96 × 48 in, 1,563 mm loaded, 325 kg gross.
+- Pallet 2: 96 × 48 in, 1,563 mm loaded, 327 kg gross.
 - No piece over 96 in; no piece over 20 kg except the glass; nothing stackable on top of either pallet.
 
 ## 11. Open items
@@ -431,6 +435,8 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | `glass_rest_kg` | 6 kg | assumption | this plan | two padded timber A-frame glass rests, flat-packed in the crate |
 | `sep_h` | 20 mm | assumption | this plan | tier separator: battens carried on posts, so no load rests on a decor skin, the felt or the glass |
 | `sep_kg` | 4 kg | assumption | this plan | one separator: 5 battens 22 × 95 × 1219 and 4 posts |
+| `prop_h` | 2354 mm | calculation | skeleton P04: pod_h - outer_t, the ceiling frame's underside; CEILING confirms the height and the spot | the seam prop's length: from the room floor to C1's corner at the front end of the C1-C2 seam (step 7) |
+| `prop_kg` | 2.5 kg | assumption | this plan: 22 × 95 timber at about 500 kg/m3 | the seam prop: one long batten along the tier 3 separator, ISPM 15 |
 | `cass_foam` | 10 mm | assumption | this plan | foam sheet under the ceiling cassettes' fill strips on the top tier |
 | `wrap` | 5 mm | assumption | this plan | per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box |
 | `dr_bed` | 10 mm | assumption | this plan | foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01) |

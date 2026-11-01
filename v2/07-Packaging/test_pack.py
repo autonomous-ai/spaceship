@@ -289,6 +289,21 @@ def test_d133_us_mains():
     assert "220 V" not in guide and "electrician" not in guide.lower(), [l for l in guide.splitlines() if "220" in l or "lectrician" in l]
     assert "120 V wall outlet" in guide
 
+
+def test_seam_prop():
+    # the Lead's ruling 2026-11-01: a marked packing batten props C1's seam corner in step 7 until the seam pins are in;
+    # it is packing (911004 in the tare), not a part of the pod and not a labelled piece
+    prop = next(it for it in pack.PACKAGING if it["pn"] == "911004")
+    assert prop["pallet"] == 2 and prop["wood"] and prop["kg"] == pack.MINE["prop_kg"].value, prop
+    assert pack.MINE["prop_h"].value == pack.sk("pod_h") - pack.sk("outer_t")
+    ceiling = next(s for s in pack.STEPS if s["title"].startswith("Ceiling"))
+    srcs = [o["src"] for o in ceiling["ops"]]
+    assert srcs.index("t_prop_s") < srcs.index("t_overhead_rest_s") < srcs.index("t_prop_off_s"), srcs
+    assert "SEAM PROP" in ceiling["A"] and "seam prop away" in ceiling["B"]
+    assert not [p for p in pack.PIECES if "PROP" in p.name]
+    m = pack.Model()
+    assert prop in m.packaging(2) and abs(m.tare(2) - sum(it["kg"] * it["qty"] for it in m.packaging(2))) < 1e-9
+
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
     outs = pack.outputs(pack.Model())
@@ -312,7 +327,7 @@ def test_elevator_rule():
 def test_export_wood_is_ispm15():
     # every solid-wood packaging part is heat-treated and ISPM 15 stamped, or US ports refuse it
     wood = [it for it in pack.PACKAGING if it.get("wood")]
-    assert {it["pn"] for it in wood} == {"918001", "918002", "911001", "911003"}, wood
+    assert {it["pn"] for it in wood} == {"918001", "918002", "911001", "911003", "911004"}, wood   # 911004: the seam prop
     assert all("ISPM 15" in it["name"] for it in wood), [it["name"] for it in wood]
 
 

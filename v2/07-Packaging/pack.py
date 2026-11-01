@@ -113,6 +113,8 @@ MINE = {
     # pallet 2 tiers
     "sep_h": N(20, "mm", "assumption", "this plan", "tier separator: battens carried on posts, so no load rests on a decor skin, the felt or the glass"),
     "sep_kg": N(4.0, "kg", "assumption", "this plan", "one separator: 5 battens 22 x 95 x 1219 and 4 posts"),
+    "prop_h": N(sk("pod_h") - sk("outer_t"), "mm", "calculation", "skeleton P04: pod_h - outer_t, the ceiling frame's underside; CEILING confirms the height and the spot", "the seam prop's length: from the room floor to C1's corner at the front end of the C1-C2 seam (step 7)"),
+    "prop_kg": N(round(22 * 95 * (sk("pod_h") - sk("outer_t")) * 500e-9, 1), "kg", "assumption", "this plan: 22 x 95 timber at about 500 kg/m3", "the seam prop: one long batten along the tier 3 separator, ISPM 15"),
     "cass_foam": N(10, "mm", "assumption", "this plan", "foam sheet under the ceiling cassettes' fill strips on the top tier"),
     "wrap": N(5, "mm", "assumption", "this plan", "per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box"),
     "dr_bed": N(10, "mm", "assumption", "this plan", "foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01)"),
@@ -174,6 +176,8 @@ TIME = {
     "t_overhead_rest_s": N(60, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 2)", "lift a part overhead onto its rest and let go: nobody holds a part overhead to fix it"),
     "t_check_door_light_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "one person: the door, then the light test walking round the lit pod with the room dark"),
     "t_clean_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "the other person at the same time: cleaning inside and out"),
+    "t_prop_s": N(30, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "fetch the seam prop and stand it on the room floor at its mark under the seam's front corner"),
+    "t_prop_off_s": N(15, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "take the seam prop away once the 4 seam pins are in"),
     "t_packer_stack_s": N(60, "s", "assumption", "this plan (D-132)", "stack the setting packers at both of the door's bottom corners to the band's bottom edge beside each, checked with a rule"),
     "t_sleeve_s": N(90, "s", "assumption", "this plan (#263)", "from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box"),
     "t_grille_set_s": N(60, "s", "assumption", "this plan (#263, J-AIR-03)", "lay the roof grille on the sleeve's flange, holes on the rivnuts, and start its 4 bolts by hand; driving them is the register bolts' time"),
@@ -527,6 +531,8 @@ PACKAGING = [
          status="assumption", src="this plan (glass_rest_kg); flat-packed in the crate", pallet=2),
     dict(pn="911003", name="PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS", kind="made", qty=4, kg=MINE["sep_kg"].value, wood=True,
          status="assumption", src="this plan (sep_kg)", pallet=2),
+    dict(pn="911004", name="PACKAGING - SEAM PROP: ISPM 15 STAMPED BATTEN 22 X 95, ALONG THE TIER 3 SEPARATOR, CUT TO THE CEILING SEAM'S HEIGHT AND MARKED",
+         kind="made", qty=1, kg=MINE["prop_kg"].value, wood=True, status="assumption", src="this plan (prop_h, prop_kg); the Lead's ruling 2026-11-01", pallet=2),
     dict(pn="918010", name="PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film",
          kind="bought", qty=1, kg=lay("pack_kg_std"), status=LAYP["pack_kg_std"].status, src="layout study pack_kg_std", pallet=1),
     dict(pn="918011", name="PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film",
@@ -594,7 +600,7 @@ KEY_BOLT = lay("t_bolt_captive_s")        # the kit's 5 mm key, where the driver
 STEPS = [
     dict(n=1, title="Unpack and set the parts down at their places", tags=["2-21"],
          A="Cuts the straps and film on pallet 2 and hands the tiers down, top first: the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.",
-         B="Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection; opens the kit (hex key, this guide, label map) and ticks the packing list.",
+         B="Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the long batten marked SEAM PROP (tier 3's separator) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.",
          check="Every label on the packing list is found and lies at its place. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.",
          ops=[op("open pallet 1, packed in fitting order", 2, lay("t_unpack_std_ordered_min") * 60, 1, "t_unpack_std_ordered_min"),
               op("unload pallet 2 tiers 5 to 2, each part to its place", 2, lay("t_unpack_long_ordered_min") * 60, 1, "t_unpack_long_ordered_min")],
@@ -638,12 +644,14 @@ STEPS = [
               op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
          joints={"J-WALL-01": 8, "J-WALL-02": 6}),
     dict(n=7, title="Ceiling: C1, C2", tags=["1-09", "1-10"],
-         A="With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2, and both let go: it rests on the wall tops before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.",
-         B="Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6.",
+         A=f"First stands the seam prop (the batten marked SEAM PROP, {MINE['prop_h'].value:g} mm, kept from pallet 2's packing in step 1) upright on the room floor at its mark under the front end of the C1-C2 seam. With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2 and its seam corner on the prop, and both let go: it rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.",
+         B="Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6. Once the 4 seam pins are in, takes the seam prop away; it goes with the packaging.",
          check="Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.",
-         ops=[carry("1-09"), carry("1-10"),
+         ops=[op("stand the seam prop under the seam's front corner", 1, TIME["t_prop_s"].value, 1, "t_prop_s"),
+              carry("1-09"), carry("1-10"),
               op("lift each ceiling half onto its rest, then let go", 2, TIME["t_overhead_rest_s"].value, 2, "t_overhead_rest_s"),
-              op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_driver_s")],
+              op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_driver_s"),
+              op("take the seam prop away", 1, TIME["t_prop_off_s"].value, 1, "t_prop_off_s")],
          joints={"J-CEIL-02": 4, "J-CEIL-01": 16}),
     dict(n=8, title="Left decor block DL", tags=["2-08"],
          A="With B, carries DL (2.3 m) from its place to the front-left and stands it on its spigots on the band, against L1 and L2's front edges, hinge halves toward the door opening.",
@@ -1409,6 +1417,7 @@ def gen_tables(m):
         T[key] = str(next(s["n"] for s in STEPS if s["title"].startswith(start)))   # the texts quote these; no typed numbers
     T["WRAP"] = f"{MINE['wrap'].value:g}"
     T["TARGET_MIN"] = f"{MINE['time_target_min'].value:g}"
+    T["PROP_H"] = f"{MINE['prop_h'].value:g}"
     T["DOOR_GAP"] = f"{MINE['door_gap'].value:g}"
     T["DR_BED"] = f"{MINE['dr_bed'].value:g}"
     none = [p for p in m.shipped() if m.cad.get(p.tag, (None,))[0] is None]
