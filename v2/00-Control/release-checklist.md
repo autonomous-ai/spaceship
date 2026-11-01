@@ -6,9 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (ea9bb19), PR #91 (97f8f5d), PR #235 (e9f720d), PR #203 (43238a4). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 88 characteristics, 11 functional checks and 20 bought-part test lines.
-
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #91 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #91 changed it, but main changed it later.
+Read from: main (316e2e7), PR #235 (e9f720d), PR #203 (43238a4), PR #91 (7a04de1). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -45,7 +43,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
 | 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
 | 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
+| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
 | 110401 | BASE - FLOOR PANEL ASSY - F1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | HOLD |
 | 111401 | BASE - FLOOR PANEL - F1 | main | yes | yes | yes | yes | yes | yes | n/a | K-B02, K-B03 | HOLD |
 | 111501 | BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-B04 | HOLD |
@@ -156,7 +154,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 351302 | FRONT - DECOR BACK PLATE - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
 | 351305 | FRONT - DECOR ACCESS PANEL - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
 | 351303 | FRONT - DECOR INNER PANEL - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-D08 | done |
-| 351304 | FRONT - DECOR INNER PANEL FELT - DR | main | yes | yes | yes | yes | no | yes | n/a | K-D09 | open: drawing |
+| 351304 | FRONT - DECOR INNER PANEL FELT - DR | main | yes | yes | yes | yes | no: as a felt or fill piece on its DXF (D-128) it needs in its row in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv: thickness (9 mm, as in its STEP), through features only (its row names stepped) | yes | n/a | K-D09 | open: drawing |
 | 360001 | FRONT - DOOR UNIT | main | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | main | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 | 361002 | FRONT - DOOR KICK STRIP | main | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
