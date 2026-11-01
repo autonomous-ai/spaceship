@@ -314,6 +314,51 @@ class RefsAndPacking(unittest.TestCase):
         self.assertTrue(src[air][1].startswith("air"))       # AIR's own list is read
         self.assertIn("611999", later[ceil][0])              # AIR's own later change wins
 
+    def test_a_rebase_keeps_the_author_time_and_a_dropped_branch_edit_is_named(self):
+        # A rebase gives each commit a new committer time and keeps its author time: AIR's rebased copy of CEILING's
+        # old list (authored 01:00, committed 06:00) still loses to CEILING's squash merge on main (05:00). And a
+        # branch's own edit of the joints register, older than main's, falls back to main's copy and is listed.
+        import os
+        import subprocess
+        import tempfile
+        ceil = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv"
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a, when="2026-11-01T00:00:00", committed=None):
+                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": committed or when}
+                return subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                                      check=True, capture_output=True, text=True, env=env).stdout
+
+            def put(path, text, when, committed=None):
+                Path(d, path).parent.mkdir(parents=True, exist_ok=True)
+                Path(d, path).write_text(text, encoding="utf-8")
+                g("add", "-A", when=when)
+                g("commit", "-q", "-m", path, when=when, committed=committed)
+
+            g("init", "-q")
+            g("checkout", "-q", "-b", "main")
+            put(bom.REGISTER, "register v1", "2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "air")
+            put(ceil, "part_number\n411301\n", "2026-11-01T01:00:00", committed="2026-11-01T06:00:00")
+            put(bom.REGISTER, "register v1, AIR's edit", "2026-11-01T02:00:00", committed="2026-11-01T06:00:00")
+            g("checkout", "-q", "main")
+            put(ceil, "part_number\n411301\n411302\n", "2026-11-01T05:00:00")
+            put(bom.REGISTER, "register v2", "2026-11-01T05:30:00")
+            old = bom.ROOT
+            bom.ROOT = Path(d)
+            bom.FELL_BACK.clear()
+            try:
+                src = bom.load_sources(["main", "air"])
+                fell = list(bom.FELL_BACK)
+                lines = bom.fell_back_lines({"air": "PR #91"}, keep=bom.wanted)
+            finally:
+                bom.ROOT = old
+                bom.FELL_BACK.clear()
+        self.assertIn("411302", src[ceil][0])               # main's merged list, by author time
+        self.assertEqual(src[bom.REGISTER][0], "register v2")
+        self.assertEqual(sorted(fell), [("air", ceil), ("air", bom.REGISTER)])
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(any(x.startswith(f"`{bom.REGISTER}`: PR #91 changed it, but main changed it later") for x in lines), lines)
+
     def test_a_packing_list_adds_only_packaging_items(self):
         pk = ("label,part_number,name,name_vi,pallet,kg,kg_status,class\n"
               "1-01,111501,BASE - SEAL MAT - F1,,1,1.05,calculation,MP\n"
