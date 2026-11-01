@@ -176,8 +176,9 @@ SPECS = {
             "seal pulls edge to edge in the glass plane, so the fixed pane's free edge carries no closing load.",
             "Hinges (HOLD): rated for the 8.76 laminate, at least 60 kg and the 1176 width; two-part lift-off, set in "
             "the factory (frame halves fitted in DL, leaf halves on the door), so on site the door lifts on with no "
-            "adjustment (D-138); the 5 mm key only where the named set has a locking screw. No holes in the glass "
-            "until named.",
+            "adjustment (D-138); the 5 mm key only where the named set has a locking screw. Pivot on or outside the "
+            "kick strip's outer face (Y -709 over the glass, further out in the gap or in DL), so the strip's hinge "
+            "end and its brush only move away from BASE's plate. No holes in the glass until named.",
             "Brush seal 368008 (HOLD, D-150) on the kick strip's end, from the floor to Z 105: it closes the slot to "
             "BASE's sill end plate (X 218.5). A self-adhesive strip, fitted on site once the glides are set and the door "
             "hangs, pressed down onto the real floor; it ships in the door's kit bag (PM ruling 2026-11-01).",

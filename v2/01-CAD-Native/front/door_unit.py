@@ -398,7 +398,10 @@ BOM_ROWS = [
      "not named: rated for the 8.76 laminate, at least 60 kg and the 1176 mm width; holds the door at its closed "
      "position; two-part lift-off hinges, set in the factory: the frame halves fitted in DL and the leaf halves on "
      "the door, so on site the door lifts on with no adjustment (PM ruling 2026-11-01, D-138); secured with the 5 mm "
-     "key where the named set has a locking screw (PM rulings). "
+     "key where the named set has a locking screw (PM rulings); its pivot on or outside the kick strip's outer "
+     "face, Y -709 or further out over the glass and further out in the gap or in DL (Y -724.8 at X -972, -736.3 at "
+     "X -980), so the strip's hinge end and its brush only move away from BASE's plate as the door opens "
+     "(door_swing.py). "
      "Candidates: dormakaba OFFICE 11.233 (D-30); Häfele 926.88.090/091 lift-off glass hinge, 60 kg, 8-12 mm glass, two "
      "15 mm holes each, second candidate for the factory's questions (PM ruling 2026-11-01); Häfele's 90 deg "
      "glass-to-wall shower hinges don't pass (36 to 45 kg a pair, 800 to 915 wide)",
