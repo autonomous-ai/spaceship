@@ -58,7 +58,10 @@ PART_INFO = {
     "831002": ("aluminium sheet 1.5, 5000 or 6000 series (joints register H-08)", "mill finish (hidden)", "punch",
                "calculation", "DRAFT", "CAD; joints register H-08", "under each J-BASE-01 bolt rivnut's head"),
     "838003": ("steel 1008/1010 (maker)", "zinc plated, trivalent passivation (maker)", "", "calculation", "DRAFT",
-               "CAD envelope; joints register H-03; Sherex CAH2-610-4.2 (steel, D-131)", "set at the factory; torque HOLD-01"),
+               "CAD envelope (as set); mass: calculation from the joints register's sizes (body Ø9.50 x 14.86, head "
+               "Ø12.96 x 0.76, M6 bore, steel 7850 kg/m3), as AIR's and CEILING's lists; joints register H-03; "
+               "Sherex CAH2-610-4.2 (steel, D-131)",
+               "set at the factory; torque HOLD-01"),
     "111211": ("aluminium EN AW-6061 T6 block 25 x 35 x 75 (joints register J-BASE-02; sizes from the Joints Engineer 2026-11-01)",
                "mill finish (hidden)",
                "saw, mill; drill and tap 2 x M6 through the end face and 2 x M6 with 15 of full thread in the bottom (PM ruling on F-017)",
@@ -191,6 +194,12 @@ def size_text(rec):
 # modelled only as space envelopes; listed from EXTRA (the lip seal: in metres, from the CAD's runs, D-132)
 BY_LENGTH = ("118001",)
 
+# bought parts whose mass isn't their CAD body's: the rivnut is modelled as set (10.16 long, the space it takes),
+# but it weighs what it weighs before setting. Calculation from the joints register's CAH2-610-4.2 sizes (body
+# Ø9.50 x 14.86, head Ø12.96 x 0.76, an M6 bore at the thread's minor diameter Ø4.92 through both, steel
+# 7850 kg/m3: 857 mm3, 6.7 g), the figure AIR's and CEILING's lists give, so every list has one mass for 838003.
+MASS_EACH = {"838003": 0.0067}
+
 
 def make_bom(d):
     parts = d["parts"]
@@ -206,6 +215,7 @@ def make_bom(d):
     for pn, rec in parts.items():
         if rec.get("mass_kg") is not None:
             mass_of[pn] = rec["mass_kg"]
+    mass_of.update({pn: m for pn, m in MASS_EACH.items() if pn in parts})
     # assembly masses: children's copies x mass (calculation)
     for asm in sorted({k.split(">")[0] for k in copies} - {"110000"}):
         tot = 0.0
