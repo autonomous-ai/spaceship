@@ -1,14 +1,14 @@
 # drawgen: part drawings from STEP, outside Fusion (D-112, D-113)
 
 `drawgen` makes the manufacturing drawing of a simple part straight from that part's STEP on main: aluminium tube
-cut parts and frames of them, flat plates, and blanks with square notches. It never opens Fusion or its queue.
+cut parts and frames of them, and flat plates. It never opens Fusion or its queue.
 Fusion keeps the general arrangement, the assemblies, bent parts, the door, the glass, the decor, and any part
 drawgen refuses.
 
 ## Run it
 
 ```
-tools/drawgen/run.sh generate --sample          # the five sample drawings, into v2/02-Drawings/<team>/
+tools/drawgen/run.sh generate --sample          # the sample the PM reviewed first (#202), into v2/02-Drawings/<team>/
 tools/drawgen/run.sh generate 211101 111101     # registered parts (tools/drawgen/specs.py)
 tools/drawgen/run.sh check v2/02-Drawings/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG.pdf
 tools/drawgen/run.sh stale                      # generated drawings whose STEP, parts list or register changed
@@ -58,14 +58,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   sheet; the tolerance note is the project's (joints register, parts lists), never a blanket ISO 2768. No
   personal names. The PDF's Creator is `drawgen`; its catalog key `/DrawgenData` lists every source with its
   hash, the views and the tagged features.
-- TABULATED drawings (D-89 part 1): one sheet for parts of one family (`tabulated.py`), each piece's size and
-  notches read from its own STEP.
 
 ## What it refuses (the part stays with Fusion)
 
 A cylinder that is neither a hole, a slot nor a keyhole (a bend, a fillet, a round), a cone (a countersink), any
-other curved face, holes on a face at an angle to every principal view, an outline with a curve or an angled
-edge on a tabulated blank, a part that fits no ISO scale on its sheet. It also never overwrites a PDF it didn't
+other curved face, holes on a face at an angle to every principal view, a part that fits no ISO scale on its
+sheet. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
+`specs.py` with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
 make: a Fusion drawing stays.
 
 ## Checks

@@ -93,6 +93,7 @@ class Sheet:
         self.boxes = []         # ink boxes of the text written on this page (x0, y0, x1, y1)
         self.obstacles = []     # part outlines on this page, as segments, for placing labels clear of them
         self.grid = _SegGrid()  # every line drawn on this page (outlines included), for the same
+        self.reserved = []      # areas kept for what is drawn later (the table column): no label goes there
         return self.page
 
     # ------------------------------------------------------------ keeping labels clear (the read-back checks it)
@@ -143,7 +144,7 @@ class Sheet:
     def is_free(self, box):
         if box[0] < 22 or box[2] > self.W - 12 or box[1] < 12 or box[3] > self.H - 12:
             return False
-        if any(self._boxes_touch(box, b) for b in self.boxes):
+        if any(self._boxes_touch(box, b) for b in self.boxes + self.reserved):
             return False
         return not any(self._seg_box(p, q, box) for p, q in self.grid.near(box, 0.4))
 

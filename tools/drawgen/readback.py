@@ -15,6 +15,7 @@ circles miss the STEP centres, so it can't hide an error.
 """
 
 import json
+import csv
 import math
 import os
 import re
@@ -260,6 +261,40 @@ def step_holes(step_path, pn):
     return out
 
 
+def key_note_fails(text, matched, krows, tol=0.1, holes=None):
+    """Each key row (corner-keys.csv) needs its note on the sheet ("Key PN, JOINT, ... meet Hxx and Hyy;"), and the
+    two holes it names must be the part's holes at the key's screw positions there (centres from the STEP). A HOLD
+    note for the key stands in only while the STEP really has no hole at either screw position (holes: the STEP's
+    hole centres, from the independent reader)."""
+    flat = re.sub(r"\s+", " ", text)
+    out = []
+    for r in krows:
+        want = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
+        m = re.search(r"Key %s, %s, .*?meet (H\d+) and (H\d+);" % (r["part_number"], re.escape(r["joint"])), flat)
+        if not m:
+            held = re.search(r"HOLD: Joints' key file puts key %s, %s, in this end" % (
+                r["part_number"], re.escape(r["joint"])), flat)
+            if held and holes is not None:
+                there = [h for h in holes if min(math.dist((h["c"][0], h["c"][1]), w) for w in want) < 0.5]
+                if there:
+                    out.append("key %s (%s): a HOLD note, but the STEP has a hole at its screw position %s: draw the "
+                               "key note" % (r["part_number"], r["joint"], tuple(round(v, 2) for v in there[0]["c"][:2])))
+                continue
+            out.append("no orientation note for key %s (%s)" % (r["part_number"], r["joint"]))
+            continue
+        got = []
+        for tg in m.groups():
+            c = matched.get(tg)
+            d = min(math.dist((c[0], c[1]), w) for w in want) if c else None
+            if d is None or d > tol:
+                out.append("key %s (%s): its note names %s, which is not at one of the key's screw positions %s" % (
+                    r["part_number"], r["joint"], tg, want))
+            got.append(c)
+        if all(got) and math.dist(got[0][:2], got[1][:2]) < tol:
+            out.append("key %s (%s): its note names the same hole twice" % (r["part_number"], r["joint"]))
+    return out
+
+
 def check(pdf_path, step_path=None, verbose=False):
     """Run every check on one drawing; returns (failures, stats)."""
     doc = fitz.open(pdf_path)
@@ -267,8 +302,6 @@ def check(pdf_path, step_path=None, verbose=False):
     data = read_data(doc)
     fails = []
     stats = {"rows": 0, "holes": 0, "circles": 0, "worst_table": 0.0, "worst_drawn": 0.0}
-    if data.get("tabulated"):
-        return check_tabulated(doc, data, fails, stats)
     step_path = step_path or os.path.join(REPO, [s for s in data["sources"] if s["role"] == "STEP"][0]["path"])
     views = {v["origin"]: v for v in data["views"] if v["origin"]}
     O = data["origin"]
@@ -291,6 +324,7 @@ def check(pdf_path, step_path=None, verbose=False):
     stats["holes"] = len(holes)
     # 1. table rows against the STEP
     used = set()
+    matched = {}            # tag -> the STEP hole centre its table row matched (the independent reader's)
     for tag, f in feats.items():
         if tag not in rows:
             fails.append("%s: no row in the hole tables" % tag)
@@ -313,6 +347,7 @@ def check(pdf_path, step_path=None, verbose=False):
                 tag, x, y, f["dia"], TOL, "" if best is None else " (nearest %.3f away)" % best[0]))
             continue
         stats["worst_table"] = max(stats["worst_table"], best[0])
+        matched[tag] = holes[best[1]]["c"]
         # the same axis can carry runs in two walls of different sizes; mark every run on this axis of this size
         used.update(j for j, h in enumerate(holes) if abs(h["dia"] - f["dia"]) < 0.011 and
                     abs(abs(dot(h["axis"], v["n"])) - 1) < 1e-6 and
@@ -357,6 +392,13 @@ def check(pdf_path, step_path=None, verbose=False):
     for need, pat in needs:
         if not re.search(pat, up):
             fails.append("text lacks %s" % need)
+    # 4. keys fitted in the part's ends: a note for each key Joints' file puts there, naming the two holes that sit
+    # where that file puts the key's screws
+    ksrc = [s_ for s_ in data["sources"] if s_["role"] == "key positions"]
+    if ksrc:
+        with open(os.path.join(REPO, ksrc[0]["path"]), newline="", encoding="utf-8") as fh:
+            krows = [r for r in csv.DictReader(fh) if data["pn"] in (r.get("carrier_key_in_its_end") or "")]
+        fails += key_note_fails(text, matched, krows, holes=holes)
     if " " in text or "­" in text:
         fails.append("the text layer has non-breaking spaces or soft hyphens (search breaks)")
     if (doc.metadata or {}).get("creator") != "drawgen":
@@ -369,65 +411,6 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("holes through two walls but no SECTION label")
     if verbose:
         print(json.dumps(stats))
-    return fails, stats
-
-
-def check_tabulated(doc, data, fails, stats):
-    """A TABULATED drawing: every part it covers is in its table, each piece's W, H and T in the table text equal
-    that piece's box in its STEP as the repo's reader sees it (within 0.05), and the text says TABULATED."""
-    page = doc[0]
-    text = page.get_text()
-    if "TABULATED" not in text.upper():
-        fails.append("text lacks TABULATED")
-    for pn in data["tabulated"]:
-        if pn not in text:
-            fails.append("%s is not in the table" % pn)
-    # table rows: PART ... PIECE W H T
-    words = sorted(page.get_text("words"), key=lambda w: ((w[1] + w[3]) / 2, w[0]))
-    lines, cur, cy = [], None, None
-    for w in words:
-        y = (w[1] + w[3]) / 2
-        if cy is None or abs(y - cy) > 0.6:
-            lines.append([])
-            cy = y
-        lines[-1].append(w)
-    rows = {}
-    for ln in lines:
-        ws = [w[4] for w in sorted(ln, key=lambda w: w[0])]
-        if ws and re.fullmatch(r"\d{6}", ws[0]) and "BAY" in ws:
-            i = ws.index("BAY")
-            bay = ws[i + 1]
-            nums = []
-            for t in ws[i + 2:i + 5]:
-                try:
-                    nums.append(float(t))
-                except ValueError:
-                    pass
-            rows[(ws[0], bay)] = nums if len(nums) == 3 else None
-    sf = _stepfile()
-    for src in data["sources"]:
-        st = sf.StepFile(os.path.join(REPO, src["path"]))
-        for inst in st.instances():
-            nm = (inst["name"] or "") + " " + (inst["part_number"] or "")
-            if src["pn"] not in nm and not os.path.basename(src["path"]).startswith(src["pn"] + "_"):
-                continue
-            sol = st.solid(inst["solid"])
-            pts = [inst["frame"].point(q) for q in sol.points()]
-            ext = sorted(max(q[k] for q in pts) - min(q[k] for q in pts) for k in range(3))
-            bay = (sol.name or "").split()[-1]
-            got = rows.get((src["pn"], bay))
-            stats["rows"] += 1
-            if not got:
-                fails.append("%s %s: no table row" % (src["pn"], sol.name))
-                continue
-            if any(abs(a - b) > TOL for a, b in zip(sorted(got), ext)):
-                fails.append("%s %s: table W/H/T %s vs STEP box %s" % (src["pn"], sol.name, got,
-                                                                      [round(v, 2) for v in ext]))
-            stats["worst_table"] = max([stats["worst_table"]] + [abs(a - b) for a, b in zip(sorted(got), ext)])
-    if (doc.metadata or {}).get("creator") != "drawgen":
-        fails.append("PDF Creator is not drawgen")
-    for pg, what in clashes(doc):
-        fails.append("sheet %d: %s" % (pg, what))
     return fails, stats
 
 
