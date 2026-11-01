@@ -142,7 +142,7 @@ def test_d87_in_the_steps():
     names = " ".join(p.name for p in pack.PIECES)
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
     assert pack.PIECE["2-09"].kg <= 20 and pack.PIECE["2-16"].kg <= 20
-    assert len(tags) == 39
+    assert len(tags) == 40          # BASE's batch 2: DL's band piece 2-22
     power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
     assert all(o["secs"] < 600 for o in power["ops"])
 
@@ -205,7 +205,7 @@ def test_bundle_parts_each_fit():
 def test_d129_keys_on_the_side_bands():
     # D-129: the side bands carry the back-corner keys; the back band ships with keyholes only, 2420 long
     keys = {p.tag: sum(u for h, u in p.mass if h == "KEY") for p in pack.PIECES}
-    assert keys["2-04"] == 0 and keys["2-05"] == 2 and keys["2-06"] == 2 and keys["2-14"] == 2, keys
+    assert keys["2-04"] == 0 and keys["2-05"] == 2 and keys["2-06"] == 2 and keys["2-14"] == 1 and keys["2-22"] == 1, keys
     m = pack.Model()
     assert m.cad["2-04"][1][0] <= 2420 + 1e-6, m.cad["2-04"]
     tiers, _ = m.tiers2()
