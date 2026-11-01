@@ -22,4 +22,25 @@ ASSEMBLIES = {
              "window": [-1201.7, -1000, 2350, 2405], "stack": True},
         ],
     },
+    "410102": {
+        "parent_keys": ["assy_c2"],
+        "sections": [
+            {"letter": "A", "point": [600, 100, 2377], "normal": [0, -1, 0], "scale": 0.5,
+             "window": [1000, 1201.7, 2350, 2405], "stack": True},
+        ],
+    },
+    # The ceiling as the room sees it, from below (the two cassettes under the panels), with the front view; the
+    # fitting order from the assembly guide (steps 7 and 18) and the joints register (J-CEIL-01, J-CEIL-02).
+    "410000": {
+        "parent_keys": ["ceiling"],
+        "principal": "bottom",
+        "notes": [
+            "Fitted on site, C1 410101 then C2 410102 (assembly guide, step 7): each lifted from inside onto its back "
+            "spigots on B3, its side against its side wall's upper panel, C2 dropping past C1's lead-in (CEILING feature "
+            "rationale F-4111-12). Then the closing seam's 4 pins M6 x 25 838002 (J-CEIL-02), the 8 back-edge and the "
+            "8 side-edge bolts M6 x 16 838001 (J-CEIL-01); the C1-C2 gap even, 4.3 to 6.7.",
+            "The two ceiling cassettes 510301 (step 18): each lifted from below, fill side up, onto its clips behind "
+            "the soffit, its 2 safety catches hooked before it's let go; their front edges 3 behind the soffit.",
+        ],
+    },
 }
