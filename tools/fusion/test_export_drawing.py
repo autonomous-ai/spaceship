@@ -58,6 +58,24 @@ class ExportTests(unittest.TestCase):
         self.assertIn("created by", text)          # the label stays
         self.assertIn("elevations", text)          # the drawing stays
 
+    def test_the_title_block_is_filled_from_the_drawing_name(self):
+        # Reviewer 5 on the GUI L1 (85900e0): DWG No. and Rev. were empty because the cleaned
+        # file was called clean.pdf, so the shared fill (#222) found no drawing number in it
+        import test_pdf_title_block as tptb
+        raw = os.path.join(self.tmp, "raw.pdf")
+        tptb.sheet(raw)
+        names = os.path.join(self.tmp, "names2.json")
+        with open(names, "w") as fh:
+            json.dump([tptb.NAME], fh)
+        pdf, _pngs, _n = ed.check_and_render(raw, ed.account_words(names), self.out,
+                                             "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG", 40)
+        page = fitz.open(pdf)[0]
+        cells = tptb.ptb.cells(page)
+        cell = lambda f: " ".join(page.get_text("text", clip=cells[f]).split())
+        self.assertEqual((cell("DWG No."), cell("Rev.")), ("211101", "P01"))
+        self.assertIn("WALL", cell("Title"))
+        self.assertNotIn("_CAD", cell("Title"))                  # the design's file name is gone
+
     def test_a_name_elsewhere_stops_the_export(self):
         raw = os.path.join(self.tmp, "raw.pdf")
         make_pdf(raw, stray="checked by Jane")

@@ -70,7 +70,9 @@ def account_words(path):
 
 def check_and_render(raw_pdf, words, out_dir, name, dpi):
     import fitz  # PyMuPDF
-    clean = os.path.join(os.path.dirname(raw_pdf), "clean.pdf")
+    # named as the drawing: the shared finish step (pdf_clear_field.py, #222) reads DWG No., Rev.,
+    # status and title from this name and fills the title block; as "clean.pdf" it filled nothing
+    clean = os.path.join(os.path.dirname(raw_pdf), name + ".pdf")
     p = subprocess.run([sys.executable, os.path.join(HERE, "pdf_clear_field.py"), raw_pdf, clean],
                        capture_output=True, text=True)
     if p.returncode != 0:
