@@ -523,6 +523,72 @@ def test_folds_along_any_line():
     assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
 
 
+class _RowSays:
+    """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
+
+    def __init__(self, page, tag, old, new):
+        self.page, self.tag, self.old, self.new = page, tag, old, new
+
+    def get_text(self, *a, **k):
+        out = self.page.get_text(*a, **k)
+        if a != ("words",):
+            return out
+        rows = [w for w in out if w[4] == self.tag and any(abs((v[1] + v[3]) / 2 - (w[1] + w[3]) / 2) < 0.6 and
+                                                            v[4] in ("UP", "DOWN") for v in out)]
+        assert len(rows) == 1, rows
+        y = (rows[0][1] + rows[0][3]) / 2
+        hit = [w for w in out if abs((w[1] + w[3]) / 2 - y) < 0.6 and w[4] == self.old]
+        assert len(hit) == 1, (self.old, [w[4] for w in out if abs((w[1] + w[3]) / 2 - y) < 0.6])
+        return [w if w is not hit[0] else w[:4] + (self.new,) + w[5:] for w in out]
+
+    def __getattr__(self, name):
+        return getattr(self.page, name)
+
+
+def test_any_line_bend_table_is_read_back():
+    """Reviewer 15 on #369: the read-back never read the bend table of folds along any line, so a sheet printing every
+    UP as DOWN, 150° for 30° or R2 for R1 read back PASS. Each printed row is now read against the sheet's record, and
+    each recorded bend against the STEP: a fold on its axis, the angle it sweeps, and its direction (which skin is the
+    fold's inside, and whether the DXF is mirrored). On the test duct, each plant fails."""
+    import copy
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct_table")
+    os.makedirs(d, exist_ok=True)
+    step = duct_piece.build_step(os.path.join(d, "219970_P01_TEST-DUCT_STEP.step"))
+    good = duct_piece.write_dxf(os.path.join(d, "219970_DXF.dxf"))
+    row = dict(ROW, part_number="219970", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219970.pdf")
+    compose.make("219970", "none", dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good}),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    data = readback.read_data(fitz.open(p))
+    faces = readback.step_faces(step, "219970")
+    printed = readback.bend_table_rows(page)
+    assert sorted(printed) == sorted(r_["tag"] for r_ in data["flat"]["rows"]), printed
+    assert readback.unfold_table_fails(data, page, faces) == []
+    b30 = next(r_ for r_ in data["flat"]["rows"] if round(r_["angle"]) == 30)
+    tag = b30["tag"]
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "UP", "DOWN"), faces)
+    assert f == ["bend %s's row prints DOWN; the sheet's record is UP" % tag], f
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "30°", "150°"), faces)
+    assert f == ["bend %s's row prints its angle 150; the sheet's record is 30" % tag], f
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "R1", "R2"), faces)
+    assert f == ["bend %s's row prints its inside radius 2; the sheet's record is 1" % tag], f
+    # the record against the STEP: an angle the fold doesn't sweep, a direction the fold and the DXF don't give
+    dd = copy.deepcopy(data)
+    next(b_ for b_ in dd["flat"]["unfold"]["bends"] if b_["tag"] == tag)["angle"] = 150.0
+    f = readback.unfold_table_fails(dd, page, faces)
+    assert any("bend %s: the sheet records 150°; its fold in the STEP sweeps 30°" % tag in x for x in f), f
+    dd = copy.deepcopy(data)
+    dd["flat"]["unfold"]["T"][0] = not dd["flat"]["unfold"]["T"][0]
+    f = readback.unfold_table_fails(dd, page, faces)
+    assert len([x for x in f if "the STEP's fold and the DXF give DOWN" in x]) == len(dd["flat"]["rows"]), f
+
+
 def test_a_sharp_v_groove_is_refused():
     """D-161 (Reviewer 6 on #341): a V-grooved ACP fold bends its outer skin round a radius (2 mm minimum), so a model
     that leaves the fold sharp would develop as the plain sum of the outside lengths, 0.86 too long. A test skin

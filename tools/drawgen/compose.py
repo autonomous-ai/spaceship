@@ -62,6 +62,56 @@ class NotDrawable(Exception):
     """The part has something this tool can't dimension properly: it goes back to Fusion (D-112, D-113)."""
 
 
+def fold_window(v, rows):
+    """The window of a section round folds, in view v: each fold's whole arc (outside radius r + t about its axis) and
+    10 of each leg past it, 25 either way at least; {"box": (x0, x1, y0, y1), "w", "h"}. A fold's axis runs along v's
+    line of sight, so where the cut is along it doesn't move it on paper."""
+    box = None
+    for row_ in rows:
+        bd_ = row_["bend"]
+        c2 = v.to2d(bd_.axis_p)
+        h_ = max(25.0, bd_.r + bd_.t + 10.0)
+        b_ = (c2[0] - h_, c2[0] + h_, c2[1] - h_, c2[1] + h_)
+        box = b_ if box is None else (min(box[0], b_[0]), max(box[1], b_[1]), min(box[2], b_[2]), max(box[3], b_[3]))
+    return {"box": box, "w": box[1] - box[0], "h": box[3] - box[2]}
+
+
+def tag_runs(tags):
+    """Bend tags as a short list: a run of three or more numbers as 'B7 to B11'."""
+    nums = sorted(int(t[1:]) for t in tags)
+    out, start = [], None
+    for a_, b_ in zip(nums, nums[1:] + [None]):
+        start = a_ if start is None else start
+        if b_ != a_ + 1:
+            out += ["B%d to B%d" % (start, a_)] if a_ >= start + 2 else ["B%d" % x for x in range(start, a_ + 1)]
+            start = None
+    return ", ".join(out)
+
+
+def fold_section_words(r):
+    """A fold section's title words: the fold it cuts, its angle and inside radius, and the folds of the same angle
+    and radius it is typical of."""
+    w = "across %s's fold at its middle: %s°, inside R%s" % (r.fold["tag"], fmt(r.fold["angle"]), fmt(r.fold["r"]))
+    typ = getattr(r, "typical", None) or []
+    return w + ("; typical for %s" % tag_runs([x["tag"] for x in typ]) if typ else "")
+
+
+class Letters:
+    """The letters that name a sheet's sections and lettered views, in order; one more than there are is a refusal,
+    never a crash (Reviewer 15 on #369: 611701 stopped generate's whole run on a StopIteration)."""
+
+    def __init__(self, letters, pn):
+        self.left, self.pn = list(letters), pn
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if not self.left:
+            raise NotDrawable("%s needs more sections and lettered views than the letters D to Z give" % self.pn)
+        return self.left.pop(0)
+
+
 # ------------------------------------------------------------------ geometry helpers
 
 def ray_blocked(shape, p, d, skip=0.02):
@@ -1190,19 +1240,28 @@ def plan_views(part, spec):
         r.point = getattr(ch, "point", None) or vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 -
                                                                        vdot(b.centroid, ch.axis)))
         pl.removed.append(r)
-    # folds along any line: a section across each fold at its middle, square to its bend line, round the fold
+    # folds along any line: a section across each kind of fold (its angle and inside radius), at the middle of the
+    # first of that kind, square to its bend line, round the fold; the others of its kind are typical of it (its title
+    # says so). AIR's 611701 took a section for each of its 17 folds and ran out of letters (Reviewer 15 on #369); its
+    # parallel folds sit too far apart for one cut, but it has 6 kinds of fold
     if getattr(getattr(part, "flat", None), "mode", None) == "unfold":
         import unfold
+        kinds = {}
         for row in part.flat.rows:
+            key = (round(row["angle"], 2), round(row["r"], 3))
+            if key in kinds:
+                kinds[key].typical.append(row)
+                continue
             bd = row["bend"]
             (F, eF), _g = bd.flanges
             pa, pb = unfold._edge_ends(eF)
             mid = vmul(vadd(pa, pb), 0.5)
             r = Plan()
             r.feats, r.all, r.body = [], [], part.bodies[0]
-            r.fold = row
+            r.fold, r.typical = row, []
             r.n, r.y = bd.axis_d, F.normal
             r.point = vadd(bd.axis_p, vmul(bd.axis_d, vdot(vsub(mid, bd.axis_p), bd.axis_d)))
+            kinds[key] = r
             pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
@@ -1380,7 +1439,7 @@ def draw(part, spec, out_path, today=None):
         vd = VD(v, view_prims(part.shape, v, scale, bodies=shapes, hidden_from=hid), scale)
         vd.name = nm
         vds[nm] = vd
-    letters = iter("DEFGHJKLMNPRSTUVWXYZ")       # A, B and C name the datums
+    letters = Letters("DEFGHJKLMNPRSTUVWXYZ", part.pn)       # A, B and C name the datums
     secs = []
     for g in pl.sections:
         v = g.sview
@@ -1412,9 +1471,11 @@ def draw(part, spec, out_path, today=None):
                 continue                # the same as a section already drawn: its title says typical
             removed.append(vd)
             continue
-        if getattr(r, "fold", None):        # 25 mm round the fold, either way
-            c2 = v.to2d(r.point)
-            kept = geom.window_keep(kept, v, c2[0] - 25.0, c2[0] + 25.0, c2[1] - 25.0, c2[1] + 25.0)
+        if getattr(r, "fold", None):
+            # round every fold the cut crosses: each one's whole arc (outside radius r + t about its axis) and 10 of
+            # each leg past it, 25 either way at least (Reviewer 15 on #369: a window 25 round the axis showed only
+            # a sliver of an R32 fold)
+            kept = geom.window_keep(kept, v, *fold_window(v, [r.fold])["box"])
         loops = [face_loops(f, v) for f in cut_faces(kept, r.point, r.n)]
         prims = [p for lp in loops for p in lp]
         rs = None
@@ -2563,9 +2624,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                   extra=mapping_words(vd.view, part.pod_system))
             continue
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
-              ("across %s's fold at its middle: %s°, inside R%s" % (vd.r.fold["tag"], fmt(vd.r.fold["angle"]),
-                                                                    fmt(vd.r.fold["r"])))
-              if getattr(vd.r, "fold", None) else
+              fold_section_words(vd.r) if getattr(vd.r, "fold", None) else
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
               if vd.r.feats else ("across %s, showing its bevel along it" % (vd.r.body.name or "the member"))
               if getattr(vd.r, "bevel", None) else "across the middle, showing the thickness",
@@ -3290,4 +3349,8 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
     if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
         out["flat"] = flat_data(part, pl)
+        if out["flat"].get("mode") == "unfold":     # which section shows each fold (its own, or one it is typical of)
+            out["flat"]["sections"] = [{"letter": vd.letter, "fold": vd.r.fold["tag"],
+                                        "typical": [x["tag"] for x in vd.r.typical]}
+                                       for vd in removed if getattr(vd.r, "fold", None)]
     return out
