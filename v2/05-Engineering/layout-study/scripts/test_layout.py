@@ -163,8 +163,8 @@ def test_p04_rollup_lines():
     k, A = rollup.AIR["kg"], rollup.AIR
     layers = 2 * A["n_layers"] * k["611302"] * (rollup.AA.CART_LAYER_KG_M3 / A["layer_rho"] - 1)
     casings = (k["611401"] + k["611402"]) * (rollup.AA.CASINGS[rollup.AA.FANBOX_CASING][2] / rollup.AIR_FBOX_T_CAD - 1)
-    want = (k["610000"] + layers + casings + sum(rollup.air_unmodelled().values()) + rollup.AIR_RISER_FOOT_KG
-            + rollup.AA.BOOT_KG)
+    want = (k["610000"] - sum(A["register_hw"].values()) + layers + casings + sum(rollup.air_unmodelled().values())
+            + rollup.AIR_RISER_FOOT_KG + rollup.AA.BOOT_KG)      # AIR's register hardware is in the fixings kit's line
     assert abs(air(32.0) - want) < 0.01, (air(32.0), want)
     assert abs(air(32.0) - air(rollup.FILL_LIGHT) - (k["611104"] + k["611203"]) * (1 - rollup.FILL_LIGHT / 32.0)) < 1e-9
     for name in ("Named clips",):                                  # the light shelf and ledge are INTERIOR's CAD now
