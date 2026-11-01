@@ -400,11 +400,19 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0, expect=CREATE_CMD):
             left, ax_ok = [], False
         if mcp_ok and cmd in IDLE_CMDS and not left:
             return True
-        if left:
+        if left and mcp_ok and cmd not in (CREATE_CMD, BASE_VIEW_CMD):
+            # Fusion says it's idle or in another command, so the dialog listed isn't this start's
+            # (Reviewer 5 on #301: someone's Preferences dialog got the Cancel): press nothing; if it
+            # stays, the start ends with exit 4 for a person to look
+            unseen = 0
+            log("cleanup: a dialog is open but Fusion is %s, not in this start's dialog: nothing pressed"
+                % ("idle" if cmd in IDLE_CMDS else "in %s" % (cmd or "no command")))
+        elif left:
             unseen = 0
             try:
-                # only this start's own dialog: the one Fusion is in, else the one the start was at
-                mine = cmd if cmd in (CREATE_CMD, BASE_VIEW_CMD) else expect
+                # this start's own dialog: the one Fusion names, else (Fusion can't be read) the one the
+                # start was at, Create Drawing before OK and Base View after
+                mine = cmd if mcp_ok else expect
                 log("cleanup: accessibility Cancel: %s" % steps.click("Cancel", TITLES[mine]))
             except StartError as e:
                 log("cleanup: %s" % e)

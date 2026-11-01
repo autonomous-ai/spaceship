@@ -67,6 +67,8 @@ class FakeFusion:
         self.click_log = []                       # (button, Fusion's command at the click)
         self.click_titles = []                    # (button, the dialog title it was asked to press in)
         self.ok_raises = None                     # an exception every OK press raises (a timed-out call)
+        self.mcp_dies_after_ok = False            # MCP lost once OK is pressed
+        self.ok_done = False
 
     def _tick(self):
         nxt = []
@@ -78,7 +80,7 @@ class FakeFusion:
         self.pending = nxt
 
     def _mcp(self):
-        if self.mcp_dies_after_queue and self.queued:
+        if (self.mcp_dies_after_queue and self.queued) or (self.mcp_dies_after_ok and self.ok_done):
             raise rs.McpError("cannot reach Fusion MCP (fake)")
 
     # -- MCP side
@@ -172,6 +174,7 @@ class FakeFusion:
     def _press(self, button):
         if self.cmd == sd.CREATE_CMD:
             if button == "OK" and self.ok_found:
+                self.ok_done = True
                 self.cmd = "busy"
 
                 def made():
@@ -363,15 +366,47 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(f.cmd, sd.IDLE_CMD)
         self.assertEqual(f.click_titles[-1], ("Cancel", "Create Drawing"))
 
-    def test_the_cleanup_cancels_only_this_starts_dialog_when_fusion_cant_say(self):
-        # MCP lost after OK: Fusion can't name its command, so the cleanup asks for the Base View dialog the
-        # start was at, never any dialog with OK and Cancel
+    def test_with_fusion_unreadable_before_ok_the_cleanup_asks_for_create_drawing(self):
+        # MCP lost once Create Drawing is queued: Fusion can't name its command, so the cleanup asks for the
+        # dialog the start was at, Create Drawing (Reviewer 5, P3 on #301: assert the exact title)
         f = FakeFusion(mcp_dies_after_queue=True)
-        f.cmd = sd.IDLE_CMD
         go(f)
         cancels = [t for b, t in f.click_titles if b == "Cancel"]
         self.assertTrue(cancels)
-        self.assertNotIn("", cancels)
+        self.assertEqual(set(cancels), {"Create Drawing"})
+
+    def test_with_fusion_unreadable_after_ok_the_cleanup_asks_for_base_view(self):
+        f = FakeFusion(drawing_after=1, base_view_after=1)      # Base View opens while the cleanup looks
+        f.mcp_dies_after_ok = True
+        code, logs = go(f)
+        cancels = [t for b, t in f.click_titles if b == "Cancel"]
+        self.assertTrue(cancels, logs)
+        self.assertEqual(set(cancels), {"Base View"})
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                    # the Base View dialog was cancelled
+
+    def test_a_dialog_while_fusion_is_idle_or_elsewhere_is_never_pressed(self):
+        # Reviewer 5, P2 on #301: with Fusion idle and someone's Preferences dialog open, the cleanup pressed
+        # Cancel in it. Now it presses nothing, and the start ends with exit 4 for a person to look
+        for cmd in (sd.IDLE_CMD, "SketchCreate"):
+            st = CleanupStub([cmd] * 9, [["600x400"]] * 9)
+            self.assertFalse(sd.cancel_dialogs(st, st.log.append, tries=4, poll_s=0, expect=sd.BASE_VIEW_CMD))
+            self.assertEqual((st.clicks, st.cancels), ([], 0), cmd)
+            self.assertTrue(any("nothing pressed" in m for m in st.log), cmd)
+        f = FakeFusion(ok_found=False)
+        real_dialogs = f.dialogs
+
+        def dialogs():                                          # a foreign dialog stays after ours is gone
+            return real_dialogs() or ["600x400"]
+        f.dialogs = dialogs
+        f.fusion_cancel_works = True
+        code, _logs = go(f)
+        self.assertEqual(code, 4)
+
+    def test_a_dialog_closing_just_after_the_cancel_is_not_a_problem(self):
+        # right after the press Fusion is idle while the dialog is still listed for a moment
+        st = CleanupStub([sd.CREATE_CMD, sd.IDLE_CMD, sd.IDLE_CMD], [["395x445"], ["395x445"], []])
+        self.assertTrue(sd.cancel_dialogs(st, st.log.append, tries=4, poll_s=0))
+        self.assertEqual(st.clicks, ["Cancel"])
 
     def test_cleanup_presses_cancel_through_accessibility_first(self):
         # PM ruling 2026-10-31: ending an open Create Drawing by script killed Fusion
