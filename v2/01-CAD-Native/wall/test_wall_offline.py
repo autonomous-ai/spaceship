@@ -651,6 +651,68 @@ class TrayCableTieTest(unittest.TestCase):
         self.assertTrue(v)
 
 
+class InteriorFixingsTest(unittest.TestCase):
+    """INTERIOR's fixings on D-131's studs (the Lead's rulings of 2026-11-01): R1's ledge brackets on studs Y -240,
+    103.6, 329.1 and 700 (two of them added), rivnuts at Z 815 and 1045; R2's screen rail on studs Y -121.8 and 580,
+    rivnuts at Z 1320 and 1380; Ø16 clearance holes in the lining; R2's bottom-back clip zone moved up clear of them."""
+
+    def ys(self, side, row):
+        ns = load("panel", side, row)
+        v = resolve(ns)
+        y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+        n = int(round(v["stile_n_mid"]))
+        return ns, v, [round(y_front + v["stud_c%d" % k], 1) for k in range(1, n + 1)]
+
+    def test_studs_and_fixings(self):
+        ns, v, ys = self.ys("R", "1")
+        self.assertEqual(ys, [-372.7, -240.0, -121.8, 103.6, 329.1, 580.0, 700.0])
+        self.assertEqual([ys[k - 1] for k in ns["INT_FIX"]["R1"]], [-240.0, 103.6, 329.1, 700.0])
+        self.assertEqual((v["int_rn_z1"], v["int_rn_z2"]), (815.0, 1045.0))
+        ns2, v2, ys2 = self.ys("R", "2")
+        self.assertEqual([ys2[k - 1] for k in ns2["INT_FIX"]["R2"]], [-121.8, 580.0])
+        self.assertEqual((v2["int_rn_z1"], v2["int_rn_z2"]), (1320.0, 1380.0))
+        _ns, _v, ys_l = self.ys("L", "1")
+        self.assertEqual(ys_l, [-372.7, -121.8, 103.6, 329.1, 580.0])           # L1 keeps D-131's five
+
+    def test_bays_stay_under_the_skin_limit_and_clear_of_bolts(self):
+        """Every R1 bay is no wider than L1's widest (so the skin keeps its 2 mm), and the added studs stand 30 or more
+        clear of every bolt (R-J14)."""
+        def bays(side):
+            _n, v, ys = self.ys(side, "1")
+            y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+            edges = [y_front + v["tube_w"]] + [y + d * v["tube_w"] / 2 for y in ys for d in (-1, 1)]
+            return [edges[i + 1] - edges[i] for i in range(0, len(edges) - 1, 2)]
+        self.assertLessEqual(max(bays("R")), max(bays("L")) + 1e-6)
+        ns, v, ys = self.ys("R", "1")
+        tw = v["tube_w"]
+        y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+        bolts = [y_front + v["bolt_edge"] + i * v["len_bolt_pitch"] for i in range(int(round(v["n_len_bolt"])))]
+        for y in (ys[1], ys[6]):
+            self.assertGreaterEqual(min(abs(y - b) for b in bolts) - tw / 2, 30.0, y)
+
+    def test_clearances_against_clips_and_ties(self):
+        for side_row, code in ((("R", "1"), "R1"), (("R", "2"), "R2")):
+            ns = load("cassette", *side_row)
+            v = resolve(ns)
+            y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+            z0 = v["panel_z0"] + (0 if code == "R1" else v["side_h"] + v["seam_gap"])
+            n = int(round(v["stile_n_mid"]))
+            last = y_front + v["stud_c%d" % n]
+            back_low = v["clip_dz_back_low"] if code == "R2" else v["clip_zone_dz"]
+            zone = (z0 + back_low - v["clip_zone_h"] / 2, z0 + back_low + v["clip_zone_h"] / 2)
+            fixes = [(y_front + v["stud_c%d" % k], z) for k in ns["INT_FIX"][code]
+                     for z in (v["int_rn_z1"], v["int_rn_z2"])]
+            for y, z in fixes:
+                if abs(y - last) < 1:                          # on the stud with the back clips
+                    self.assertTrue(z + v["int_clr_d"] / 2 < zone[0] or z - v["int_clr_d"] / 2 > zone[1], (code, z, zone))
+            ties = [(v[a] if a in v else None, v[b] if b in v else None) for a, b in ns["TIE_SITES"][code]]
+            for ty, tz in ties:
+                for y, z in fixes:
+                    gap = max(abs(ty - y), abs(tz - z)) - (v["int_clr_d"] + v["el_tie_d"]) / 2
+                    self.assertGreater(gap, 10.0, (code, ty, tz, y, z))
+        self.assertAlmostEqual(z0 + back_low - v["clip_zone_h"] / 2, 1397.26, delta=0.01)
+
+
 class CassetteLedgeTest(unittest.TestCase):
     """The Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge on the lower frame's bottom rail
     (WALL's sizes, accepted): one part for L1 and R1, its leg the 2.26 seam gap under the frame, lower panels only."""
