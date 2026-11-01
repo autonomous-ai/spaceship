@@ -1172,12 +1172,27 @@ def angle_fails(data, faces, page, tol=0.01):
     txt = " ".join(page.get_text().split())
     tb = text_boxes(page, data["sheet_h"])
     strokes = all_strokes(page, data["sheet_h"])
-    planes = [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]]
-    pts = [p for f in planes for p in f["pts"]]
+    by_solid = {}
+    for f in faces:
+        by_solid.setdefault(f.get("solid"), []).append(f)
     for ag in data.get("angle_sections", []):
         L = ag["letter"]
         u, v, heel = ag["u"], ag["v"], ag["heel"]
         lax = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
+        # the placement the section was cut from: the solid with a face through the heel square to each leg. A part
+        # its team STEP holds twice is drawn once, and its sizes come from that one solid, never across both
+        # (CEILING Drawings Engineer 2 on #391: 611103 at X 961 and X 1152 read its 9 leg as 200)
+        def at_heel(fs):
+            return sum(1 for f in fs if f["kind"] == "plane" and "n" in f and f["pts"] and
+                       max(abs(dot(f["n"], u)), abs(dot(f["n"], v))) > 1 - 1e-6 and abs(dot(sub(heel, f["pts"][0]), f["n"])) < tol
+                       and all(min(p[k] for p in f["pts"]) - tol <= heel[k] <= max(p[k] for p in f["pts"]) + tol
+                               for k in range(3)))
+        own = next((fs for fs in by_solid.values() if at_heel(fs) >= 2), None)
+        if own is None:
+            fails.append("section %s-%s: no solid of the STEP has faces at its heel" % (L, L))
+            continue
+        planes = [f for f in own if f["kind"] == "plane" and "n" in f and f["pts"]]
+        pts = [p for f in planes for p in f["pts"]]
         a = max(dot(sub(p, heel), u) for p in pts) - min(dot(sub(p, heel), u) for p in pts)
         b = max(dot(sub(p, heel), v) for p in pts) - min(dot(sub(p, heel), v) for p in pts)
 
@@ -1200,7 +1215,7 @@ def angle_fails(data, faces, page, tol=0.01):
                     L, L, name, _fmtv(got), "?" if want is None else _fmtv(want)))
         # the root: a fillet tangent to both inside faces has its axis along the member at (t_b + r, t_a + r)
         roots = []
-        for f in faces:
+        for f in own:
             if f["kind"] != "cylinder" or not f.get("concave") or "d" not in f or abs(abs(dot(f["d"], lax)) - 1) > 1e-6:
                 continue
             ou, ov = dot(sub(f["o"], heel), u), dot(sub(f["o"], heel), v)

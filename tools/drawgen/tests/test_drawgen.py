@@ -441,6 +441,21 @@ def test_angle_section_reads_each_dimension_back():
         raise AssertionError("drew an angle with a root fillet")
     except compose.NotDrawable as e:
         assert "cylinder r2" in str(e), e
+    # a part its team STEP holds twice (CEILING Drawings Engineer 2: AIR's 611103 at X 961 and X 1152) is drawn once,
+    # and its section is read against the one solid at its heel, never across both: the same sheet against the angle
+    # and its copy 191 along X reads back clean; against the copy alone, it fails
+    def moved(fs, dx, tag):
+        out = []
+        for f_ in fs:
+            g_ = dict(f_, pts=[(q[0] + dx, q[1], q[2]) for q in f_["pts"]], solid=(tag, f_.get("solid")))
+            if "o" in f_:
+                g_["o"] = (f_["o"][0] + dx, f_["o"][1], f_["o"][2])
+            out.append(g_)
+        return out
+    twice = faces + moved(faces, 191.0, "copy")
+    assert readback.angle_fails(data, twice, page) == [], readback.angle_fails(data, twice, page)
+    f = readback.angle_fails(data, moved(faces, 191.0, "copy"), page)
+    assert f == ["section %s-%s: no solid of the STEP has faces at its heel" % (ag["letter"], ag["letter"])], f
 
 
 def test_ceiling_frame_bevels():
