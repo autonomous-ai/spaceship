@@ -28,7 +28,7 @@ door_h,2011,mm,2011 mm,source,B1 list F-GLASS-DOOR 2011; v1 STEP solid 238
 glass_t,8.76,mm,8.76 mm,decided,D-46 (4+4 laminate)
 glass_y,699,mm,699 mm,source,v1 STEP solid 238 centre Y = -699 (layout study data)
 kick_d,20,mm,20 mm,assumption,kick strip envelope depth (D-40 gives the height only)
-kick_gap,7,mm,7 mm,source,FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); over the room floor since D-132
+kick_gap,7,mm,7 mm,source,"FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); since D-132 the PM puts the kick strip's bottom on the band's bottom line, glide_h, so the skeleton's kick envelope no longer uses it"
 fr_dz,17,mm,17 mm,calculation,v1 front top 2417 (v2 frame) - pod_h 2400
 door_xl,289,mm,289 mm,source,V1-FRONT-FACETS: door left edge X -961 = -1250 + 289
 door_xbr,1464,mm,1464 mm,source,V1-FRONT-FACETS: door bottom-right X 214
