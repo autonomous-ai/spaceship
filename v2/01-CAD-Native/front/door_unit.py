@@ -9,12 +9,13 @@ step=build (default) empties the active design (it must be this unit's
 document) and builds it; step=export writes the .f3d, STEP, DXF, parts list
 and the edit-test anchors from the saved version.
 
-The door unit (D-56): the 4+4 leaf, the 85 mm aluminium kick strip with the
+The door unit (D-56): the 4+4 leaf, the 95 mm aluminium kick strip with the
 drop seal (D-40, D-57), the hinges and the pull. The hinges and pull are HOLD
 (D-46): reserved spaces only, and the glass gets no holes or cut-outs for them
 until a rated set is named (PM ruling on the FRONT plan). The glass runs 25 mm
-down into the kick strip and the strip keeps the skeleton's 7 mm kick_gap
-(PM rulings, 2026-10-31). The door opens outward (open-questions Q3, ISS-055).
+down into the kick strip (PM rulings, 2026-10-31), and the strip's bottom sits
+on the base band's bottom line, the skeleton's glide_h over the room floor (D-132,
+PM rulings 2026-11-01). The door opens outward (open-questions Q3, ISS-055).
 No latch on the glass (PM ruling 2026-10-31): a 35 N magnetic door-stop catch
 in DT's underside holds the door at its top latch corner, with its strike
 clipped on the leaf's top edge, and the leaf is 2 mm shorter at the top for
@@ -78,16 +79,16 @@ OWN = [
     ("kick_x0", XL + " + door_xl", "mm", "calculation", "strip end and leaf hinge edge = the skeleton door's left edge"),
     ("kick_x1", XL + " + door_xbr", "mm", "calculation",
      "strip end under the latch edge = the skeleton door's bottom-right corner"),
-    ("kick_zb", "kick_gap", "mm", "calculation",
-     "D-132 (PM ruling 2026-11-01): no floor and no threshold, so the strip's bottom stands the skeleton's kick_gap "
-     "(7, the drop seal's rated gap) over the room floor, Z 0, where the drop seal closes (its travel 20 covers an "
-     "uneven floor)"),
+    ("kick_zb", "glide_h", "mm", "calculation",
+     "D-132 (PM rulings 2026-11-01): no floor and no threshold, so the strip's bottom sits on the base band's bottom "
+     "line, the skeleton's glide_h (10) over the room floor, Z 0, and the dark band runs on unbroken; the drop seal "
+     "closes that 10 mm gap, near its rated 7, with its 20 mm travel left for a floor a few mm out either way"),
     ("door_top_cut", "2 mm", "mm", "decided",
      "PM ruling 2026-10-31: the leaf is 2 mm shorter at the top, so the gap to DT is 6 mm, inside the 5 to 10 mm the "
      "Sugatsune HT-MSG62 door-stop catch needs (datasheet)"),
     ("leaf_zt", "door_zt - door_top_cut", "mm", "calculation", "top of the leaf"),
     ("kick_h", "door_zb - kick_zb", "mm", "calculation",
-     "strip height: 98 down to the room floor (D-132), so the dark band runs on unbroken under the door"),
+     "strip height: 95, down to the band's bottom line (D-132), so the dark band runs on unbroken under the door"),
     ("kick_len", "kick_x1 - kick_x0", "mm", "calculation", "cut length of the strip and the drop seal"),
     ("kick_pocket_d", "door_glass_engage + gu_base", "mm", "calculation", "glazing pocket depth"),
     ("kick_wall", "(kick_d - gu_w) / 2", "mm", "calculation",

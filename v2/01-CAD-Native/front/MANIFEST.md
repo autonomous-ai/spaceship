@@ -60,8 +60,8 @@ The design holds skeleton P04's parameters (updated in place, v4, #94; comment "
 | Parameter | Value | Status · source |
 |---|---|---|
 | door_glass_engage | 25 | decided: PM ruling on the FRONT plan, 2026-10-31 |
-| kick_zb = thresh_h + kick_gap | 20 | calculation: skeleton threshold 13 and the drop seal's 7 mm gap |
-| kick_h = door_zb - kick_zb | 85 | calculation |
+| kick_zb = glide_h | 10 | calculation: D-132 (PM rulings 2026-11-01), the strip's bottom on the base band's bottom line, 10 over the room floor (no floor, no threshold) |
+| kick_h = door_zb - kick_zb | 95 | calculation |
 | kick_x0, kick_x1, kick_len | -961, 214, 1175 | calculation from the skeleton door corners |
 | door_top_cut, leaf_zt | 2, 2114 | decided: PM ruling 2026-10-31 (6 mm gap at DT for the catch) |
 | gu_w | 12 | source: Bohle BO5201571 U-profile inner width (selection C5) |
