@@ -217,7 +217,7 @@ R = {
     "RISER": "Intake riser",
     "ROOF": "Roof slot grille",
     "FANS": "Four 12 V fans",
-    "SEALS": "Door edge seals, base seal",
+    "SEALS": "Base seal and cable grommets",   # the door edge seals are in FRONT's parts lists (PM ruling, #105)
     "ELEC": "Switches and harness",   # ELECTRICAL's line: power unit 2.80 kg (in B2) + harness, cord set, hub zone, lights
     "SHELF": "Light shelf",
     "LEDGE": "Work-wall ledge",
