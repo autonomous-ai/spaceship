@@ -35,8 +35,8 @@ EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm")]
 # (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
 # (2300 - 92 - 2 x 2.26 - 5.5) / 2); back_ph 1080, not 1000: ELECTRICAL's power unit cut-out in B2-CASS reaches
 # Z 1134 at a fixed height, and a lower row 1000 high would end at Z 1112, under it
-EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1080 mm"),
-              ("stile_pitch_max", "250 mm")]
+# (the stud count is fixed now, 3 copies held by joints, so the rule isn't edited; the pitch follows half_fw)
+EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1080 mm")]
 BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
 
 
@@ -191,6 +191,12 @@ def el_back_checks(design, root_pn, before_p, after_p):
     return out
 
 
+def cut_back(w_member, w_other, plate_t=2.0):
+    """How far a mitred member's end stands back from the frame's outer corner for the 2 mm plate (Joints, D-131):
+    (plate_t / 2) x the mitre's length in the frame plane / the member's own width."""
+    return plate_t / 2.0 * math.hypot(w_member, w_other) / w_member
+
+
 def back_checks(after, p):
     """What must follow on a back wall panel or its cassette (wall_back_panel.py) after EDITS_BACK."""
     def nm(k):
@@ -209,22 +215,26 @@ def back_checks(after, p):
     else:
         rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
     rule = p["stile_pitch_max"]
-    n_mid = math.ceil((p["frm_len"] - 20) / rule) - 1
+    n_mid = int(round(p["stile_n_mid"]))                   # fixed (D-135); the pitch follows the width
     out = []
     if rails:
-        out += [("frame width follows half_fw (%g)" % p["frm_len"],
-                 abs(p["frm_len"] - p["half_fw"]) < 0.01 and all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
-                ("frame stays close_gap / 2 from X 0 at the closing seam",
-                 all(abs(min(abs(r[0]), abs(r[3])) - gap / 2) < 0.01 for r in rails)),
+        cb = cut_back(20.0, 20.0)
+        out += [("frame width follows half_fw (%g), the rails 2 plate cut-backs shorter" % p["frm_len"],
+                 abs(p["frm_len"] - p["half_fw"]) < 0.01 and all(abs((r[3] - r[0]) - (p["frm_len"] - 2 * cb)) < 0.01
+                                                                  for r in rails)),
+                ("frame stays close_gap / 2 from X 0 at the closing seam (the rail one cut-back further)",
+                 all(abs(min(abs(r[0]), abs(r[3])) - (gap / 2 + cb)) < 0.01 for r in rails)),
                 ("frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26)",
-                 all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam)) < 0.01 for r in rails)),
-] + ([("perimeter stiles span the row height (mitred corners, D-117)",
-                  all(abs((st[5] - st[2]) - p["pnl_h"]) < 0.01 for st in perim) and len(perim) == 2),
+                 all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam - cb)) < 0.01 for r in rails)),
+] + ([("perimeter stiles span the row height less 2 plate cut-backs of 1.41 (D-117, D-131)",
+                  all(abs((st[5] - st[2]) - (p["pnl_h"] - 2 * cut_back(20.0, 20.0))) < 0.01 for st in perim)
+                  and len(perim) == 2),
                  ("studs span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01 for st in mids))]
-                if perim and all(abs((st[5] - st[2]) - p["pnl_h"]) < 0.01 for st in perim) else
+                if perim else
                 [("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
                                                          for st in stiles))]) + [
-                ("stud count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
+                ("%d studs, evenly spaced (D-135)" % n_mid, len(mids) == n_mid and all(
+                    abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(mids, mids[1:]))),
                 ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
     if bays:
         out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
@@ -376,13 +386,17 @@ def record(design, rel):
         clear = [faces[i + 1] - faces[i] for i in range(0, len(faces), 2)]
         if rails:
             checks += [
-                ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
-                                                        for r in rails)),
-                ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
-                # D-117: the perimeter stiles run to the outer corners (mitred); the studs fit between the rails
-                ("perimeter stiles span the panel height (mitred corners)",
-                 all(abs((st[5] - st[2]) - (z1 - z0)) < 0.01 for k, st in after.items()
-                     if nm(k) in ("STILE - FRONT", "STILE - BACK"))),
+                # D-117's mitres with D-131's 2 mm plates: each perimeter member stands back from its outer corners
+                # by its cut-back (1.41 for 20 to 20 and 40 to 40; 2.24 / 1.12 where a 20 meets a 40)
+                ("rails run wall_depth - 2.26 - 3 less their plate cut-backs", all(
+                    abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3 - cut_back(r[5] - r[2], 20.0)
+                                         - cut_back(r[5] - r[2], 40.0))) < 0.01 for r in rails)),
+                ("rails start one cut-back behind the frame's front end (2.26 behind the decor back plate)",
+                 all(abs(r[1] - (y0p + cut_back(r[5] - r[2], 20.0))) < 0.01 for r in rails)),
+                ("perimeter stiles span the panel height less their plate cut-backs",
+                 all(abs((st[5] - st[2]) - (z1 - z0 - cut_back(st[4] - st[1], 20.0)
+                                            - cut_back(st[4] - st[1], after_p["top_h"]))) < 0.01
+                     for k, st in after.items() if nm(k) in ("STILE - FRONT", "STILE - BACK"))),
                 ("studs span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
                                                                  < 0.01 for st in mids)),
                 ("%d studs, set from the bolts" % n_mid, len(mids) == n_mid and all(

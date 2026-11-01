@@ -101,8 +101,10 @@ WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
     ("frm_h", "pnl_h", "mm", "calculation", "the frame fills the row height; the seam gaps are outside it (P04)"),
     ("top_h", "tube_w", "mm", "calculation", "the back panels' top rails stay 20 x 40 (the ceiling's back member is "
                                             "the 40 x 40, R-J3)"),
-    ("stile_n_mid", "ceil((frm_len - tube_w) / stile_pitch_max) - 1", "", "calculation",
-     "intermediate stiles so that no stile pitch exceeds stile_pitch_max"),
+    ("stile_n_mid", "3", "", "calculation",
+     "PM ruling 2026-11-01 (D-135): 3 studs on a back panel, so the skin flexes 1.99 mm under a 100 N push at 274.75 "
+     "clear (make_acp_spans.py); a fixed count (the studs are copies held by joints), the pitch follows the width, and "
+     "the build refuses a pitch over stile_pitch_max"),
     ("stile_pitch", "(frm_len - tube_w) / (stile_n_mid + 1)", "mm", "calculation", "equal stile pitch, centre to centre"),
     ("stile_len", "frm_h - 2 * tube_w", "mm", "calculation",
      "studs between the rails (square ends, welded T joints, D-131); the perimeter stiles run the full height, mitred (D-117) and welded"),
@@ -242,6 +244,9 @@ def build_frame_back(design, frame, out, yf, zs):
         tri_cut_y(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile),
                   "MITRE")
     mitre_plates(design, frame, [(c[0], "top_h" if "TOP" in c[0] else "tube_w", "tube_w") for c in back_corners()])
+    if ev(design, "stile_pitch") > ev(design, "stile_pitch_max") + 1e-6:
+        raise RuntimeError("stud pitch %.2f over stile_pitch_max %.2f: the panel needs another stud (stile_n_mid)" % (
+            ev(design, "stile_pitch"), ev(design, "stile_pitch_max")))
     n = int(round(design.userParameters.itemByName("stile_n_mid").value))
     xr = lambda k: ("(%s) + %d * stile_pitch" % (X_LOW, k), "(%s) + %d * stile_pitch + tube_w" % (X_LOW, k))  # noqa: E731
     make("STILE - MID", xr(1), zs, "z", "stud_t")
