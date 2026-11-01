@@ -146,6 +146,39 @@ else:
             check(bool(re.search(r"\bTABULATED\b", up)), "keys notes: says TABULATED")
             nums = set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text))
             check({"111211", "111212", "111213", "111214"} <= nums, "keys notes: list every part number")
+        if part == "spigot":         # Reviewer 10 on #346: the tabulated spigot sheet, tested as the key sheet is
+            check(bool(re.search(r"\bTABULATED\b", up)), "spigot notes: says TABULATED")
+            nums = set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text))
+            check({"831001", "831010"} <= nums, "spigot notes: list both part numbers")
+            check(any("L + 8" in ln for ln in text.splitlines()), "spigot notes: 'L + 8' on one line")
+
+# the spigot sheet's table and letters (Reviewer 10 on #346): the view letters exactly the two sizes the table varies,
+# and the table, the drawn part and the parts list agree
+_sp = JD.PARTS["spigot"]
+_tab = [n for n in _sp["notes"] if isinstance(n, dict)][0]["table"]
+_hd = _tab[0]
+_rows = {r[0]: dict(zip(_hd, r)) for r in _tab[1:]}
+check(set(_rows) == {"831001", "831010"}, "spigot table: 831001 and 831010 (%s)" % sorted(_rows))
+for _pn, _r in _rows.items():
+    _L, _pr, _ov = float(_r["L"]), float(_r["PROUD"]), float(_r["OVERALL"])
+    check(abs(_ov - (_L + 8.0)) < 1e-9 and abs(_pr - (_L + 0.76)) < 1e-9,
+          "spigot table %s: OVERALL = L + 8 (the stud) and PROUD = L + 0.76 (the rivnut's head) (%s)" % (_pn, _r))
+_vary = [c for c in _hd if c not in ("PART", "POD", "WHERE") and len({r[c] for r in _rows.values()}) > 1]
+check(sorted(v for v, _l in _sp["letters"]) == sorted([_rows["831001"]["L"], _rows["831001"]["OVERALL"]]) and
+      dict(_sp["letters"]) == {_rows["831001"]["L"]: "L", _rows["831001"]["OVERALL"]: "L + 8"},
+      "spigot letters: the view's 831001 values (the saved design's) become L and L + 8 (%s; the table varies %s; "
+      "PROUD isn't on the view)" % (_sp["letters"], _vary))
+check(not any("F2" in r["WHERE"] or "FLOOR" in r["WHERE"] for r in _rows.values()),
+      "spigot table: no floor panel F2 (D-132)")
+import csv as _csv
+_spec = os.path.join(HERE, "..", "..", "03-Manufacturing", "joints", "V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv")
+with open(_spec, newline="", encoding="utf-8") as _f:
+    _qty = {r.get("part_number") or r.get("pn") or "": r for r in _csv.DictReader(_f)}
+_qcol = next((c for c in ("qty_per_pod", "qty", "quantity") if c in next(iter(_qty.values()))), None)
+for _pn, _r in _rows.items():
+    _got = _qty.get(_pn, {}).get(_qcol, "") if _qcol else ""
+    check(_got != "" and float(_got) == float(_r["POD"]),
+          "spigot table %s: POD %s matches the parts list (%s)" % (_pn, _r["POD"], _got))
 
 # hole tags: the circles Fusion writes, solid (curves) and hidden (short straight dashes)
 if fitz is not None:
@@ -179,6 +212,32 @@ if fitz is not None:
     tan = math.tan(math.radians(24.14))
     check(abs(30 + 17.5 * tan - 37.84) < 0.005 and abs(30 - 17.5 * tan - 22.16) < 0.005,
           "view B: the long and short sides follow A = 24.14° about the centre line (as the table)")
+
+# the lettering: on a page with Fusion-like dimension values (vertical, bottom to top, and one horizontal) and a line,
+# the two values become letters in their direction, the other value and the line stay, and a value that isn't
+# there exactly once stops it
+if fitz is not None:
+    doc = fitz.open()
+    page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    k = page.rect.width / 420.0
+    page.insert_text(fitz.Point(82.5 * k, 118.28 * k), "15.24", fontsize=13.86, fontname="helv", rotate=90)
+    page.insert_text(fitz.Point(88.06 * k, 96.77 * k), "7.24", fontsize=13.86, fontname="helv", rotate=90)
+    page.insert_text(fitz.Point(115.0 * k, 159.0 * k), "5.88", fontsize=13.86, fontname="helv")
+    page.draw_line(fitz.Point(84.0 * k, 80.0 * k), fitz.Point(84.0 * k, 130.0 * k), width=0.72)   # a dimension line
+    src, dst = os.path.join(tmp, "letters-in.pdf"), os.path.join(tmp, "letters-out.pdf")
+    doc.save(src)
+    JD.letter_dims(src, dst, [("7.24", "L"), ("15.24", "L + 8")])
+    pg = fitz.open(dst)[0]
+    got = {t: d for t, d, _s in JD.view_spans(pg)}
+    check(got.get("L") == (0.0, -1.0) and got.get("L + 8") == (0.0, -1.0) and "5.88" in got
+          and "7.24" not in got and "15.24" not in got,
+          "letters: 7.24 and 15.24 become L and L + 8, bottom to top; 5.88 stays (%s)" % got)
+    check(any(it[0] == "l" for d in pg.get_drawings() for it in d["items"]), "letters: the dimension line stays")
+    try:
+        JD.letter_dims(src, dst, [("9.99", "L")])
+        check(False, "letters: a value not on the views stops the finish")
+    except SystemExit:
+        check(True, "letters: a value not on the views stops the finish")
 
 print("\n%d failure(s)" % len(FAILS))
 sys.exit(1 if FAILS else 0)
