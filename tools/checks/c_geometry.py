@@ -295,6 +295,7 @@ def check_gap_rules(root, mdl, bodies, rules):
     fails = {}
     reserved = reserved_spaces(root)
     bodies = [b for b in bodies if not reserved_label(b.label, reserved)]   # reserved spaces have no seams yet
+    bodies = [b for b in bodies if not re.search(r"(?<!\d)7100\d\d(?!\d)", b.label or "")]   # D-92: nor route bodies
     for r in rules:
         if r.get("models") and mdl not in r["models"].split():
             continue

@@ -700,6 +700,11 @@ def run(_context):
 FOLDER_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_folder.py")
 with open(FOLDER_HELPER_PATH, encoding="utf-8") as _fh:
     FOLDER_HELPER_SRC = _fh.read()
+# The shared drawing helpers (fusion_drawing.py, PM 2026-11-01): given to every script
+# as a module, the same way, so teams import them instead of copying code.
+DRAWING_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_drawing.py")
+with open(DRAWING_HELPER_PATH, encoding="utf-8") as _fh:
+    DRAWING_HELPER_SRC = _fh.read()
 
 
 # Document steps for --doc, --save and --close. Runs inside Fusion; ARGS is
@@ -889,6 +894,11 @@ _FF = _types.ModuleType("fusion_folder")
 _FF.__file__ = %(ffpath)r
 exec(compile(_b64.b64decode(%(ffsrc)r).decode("utf-8"), %(ffpath)r, "exec"), _FF.__dict__)
 _sys.modules["fusion_folder"] = _FF
+# the shared drawing helpers, the same way: "from fusion_drawing import insert_image"
+_FD = _types.ModuleType("fusion_drawing")
+_FD.__file__ = %(fdpath)r
+exec(compile(_b64.b64decode(%(fdsrc)r).decode("utf-8"), %(fdpath)r, "exec"), _FD.__dict__)
+_sys.modules["fusion_drawing"] = _FD
 # Every document open is logged to a file next to the Fusion lock, start and end,
 # with the file's name, version and whether it was hidden, written at once, so a
 # run stuck in an open shows what it was opening (PM 2026-11-01, after a drawing
@@ -990,6 +1000,8 @@ def wrap_script(source, path, args, open_log=None, run_label=""):
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
                       "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
+                      "fdpath": DRAWING_HELPER_PATH,
+                      "fdsrc": base64.b64encode(DRAWING_HELPER_SRC.encode("utf-8")).decode("ascii"),
                       "team": team_roots(), "keep": keep_roots(),
                       "openlog": open_log or open_log_path(), "runlabel": run_label or os.path.basename(path)}
 

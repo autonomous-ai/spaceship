@@ -85,6 +85,12 @@ def parts_rows():
     for k in top:
         qty_pod[k] = 1
         walk(parts[k]["part_number"], 1)
+    # parts ELECTRICAL lists under another team's assembly (D-126: the LED profile under INTERIOR's light shelf
+    # 810201): one of that assembly per pod; they count in its mass, not in 710000's
+    ext = [k for k, p in parts.items() if p["parent"] and p["parent"] not in by_pn]
+    for k in ext:
+        qty_pod[k] = parts[k]["qty_per_parent"]
+        walk(parts[k]["part_number"], parts[k]["qty_per_parent"])
     mass = {}
 
     def m(k):
@@ -106,7 +112,7 @@ def parts_rows():
         for k in children.get(pn, []):
             order.append(k)
             walk_order(parts[k]["part_number"])
-    for k in top:
+    for k in top + ext:
         order.append(k)
         walk_order(parts[k]["part_number"])
     for k in order:

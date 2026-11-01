@@ -170,6 +170,40 @@ class OneListingTests(unittest.TestCase):
         self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1"])
         self.assertEqual({k: [t.split(" (")[0] for t in v] for k, v in others.items()}, {"f2d": ["entry 0"]})
 
+    def test_a_short_listing_counts_the_missing_slots_as_unreadable(self):
+        # Reviewer 5, P2 on #213: a file must never just vanish from a pass
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("NEW_CAD", "f3d")])
+        files_obj = folder.dataFiles
+        files_obj.asArray = lambda: (files_obj.__dict__.__setitem__("arrays", files_obj.arrays + 1),
+                                     [File("A_CAD", "f3d")])[1]          # one short, every time
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD"])
+        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1"])
+        self.assertIn("missing from the listing", unknown[0])
+        self.assertEqual(sum(c.sleeps), 60.0)                    # read again for the minute
+        with self.assertRaises(RuntimeError):                     # and never taken as free
+            ff.safe_to_create(folder, "NEW_CAD", "f3d", sleep=c.sleep, now=c.now)
+
+    def test_a_listing_that_catches_up_is_read_again_until_it_does(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("B_CAD", "f3d")])
+        files_obj = folder.dataFiles
+        full = files_obj.asArray
+
+        def late():                                               # short on the first pass only
+            arr = full()
+            return arr[:1] if files_obj.arrays == 1 else arr
+        files_obj.asArray = late
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown), (["A_CAD", "B_CAD"], []))
+        self.assertEqual(files_obj.arrays, 2)
+
+    def test_a_full_listing_adds_nothing(self):
+        c = Clock()
+        files, unknown, others = ff.read_folder(self.folder([File("A_CAD", "f3d")]), sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown, others, c.sleeps), (["A_CAD"], [], {}, []))
+
     def test_a_failing_listing_falls_back_to_reading_each_entry(self):
         c = Clock()
         folder = Folder([File("A_CAD", "f3d")])

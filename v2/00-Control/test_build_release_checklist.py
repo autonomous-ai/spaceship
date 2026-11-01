@@ -148,6 +148,38 @@ class MadeParts(unittest.TestCase):
         extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars)
         self.assertEqual((extra[0]["fai"], extra[0]["gaps"]), (["K-J01"], ["BOM row", "drawing"]))
 
+    def test_a_tabulated_drawing_covers_a_part_with_no_bom_row(self):
+        # 111212 to 111214 have STEP files and no BOM row; 111211's tabulated sheet lists them (D-89, #215)
+        file_map = files("211102_P01_WALL-PANEL-FRAME-RH_CAD.f3d", "211102_P01_WALL-PANEL-FRAME-RH_STEP.step")
+        chars = rc.fai_plan(PLAN, BOM)[0]
+        extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars, {"211102": "211101"})
+        self.assertEqual((extra[0]["dwg"], extra[0]["gaps"]), ("on 211101, tabulated (D-89)", ["BOM row"]))
+        self.assertIn("| on 211101, tabulated (D-89) |", rc.render(extra, [], [], [], "main", "unlocked", {}, ([], [], []),
+                                                                   "2026-11-01"))
+
+    def test_the_real_run_passes_the_tabulated_cover_to_those_lines(self):
+        # main() hands the same cover to the lines with no BOM row; a run that stops passing it fails here
+        import inspect
+        import tempfile as _tempfile
+        seen, cover = {}, {"211102": "211101"}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["tab_cover"] = inspect.signature(real).bind(*args, **kw).arguments.get("tab_cover")
+            raise Stop
+
+        real, old = rc.files_only, (rc.tabulated_cover, rc.d125_strips)
+        rc.files_only, rc.tabulated_cover, rc.d125_strips = spy, (lambda by_pn, text_of: cover), (lambda root=None: {})
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.files_only = real
+            rc.tabulated_cover, rc.d125_strips = old
+        self.assertIs(seen.get("tab_cover"), cover)
+
 
 class BoughtParts(unittest.TestCase):
     def test_register_named_part_with_a_test_is_done(self):
@@ -158,6 +190,12 @@ class BoughtParts(unittest.TestCase):
     def test_register_hold_wins_over_the_parts_list(self):
         _, bought = run([row("518001", "buy", "LINING - CASSETTE CLIP - ACME CL-20")], {})
         self.assertEqual((bought[0]["state"], bought[0]["tests"]), ("HOLD", ["T07"]))
+
+    def test_the_register_reads_hold_as_a_whole_word(self):
+        text = REGISTER + ("| H-30 | **838009** | HARDWARE - GROMMET | bought | 4 | part DECIDED; the strip holds the seal |\n"
+                           "| H-31 | **838010** | HARDWARE - CLIP | bought | 4 | number adopted; product on hold until T07 |\n")
+        got = rc.register_products(text, BOM)
+        self.assertEqual((got["838009"], got["838010"]), ("named", "hold"))   # "holds" is not HOLD; "on hold" is
 
     def test_register_leaves_it_to_the_list(self):
         _, bought = run([row("368102", "buy", "FRONT - DOOR STRIKE - HOLD", hold=True, team="FRONT")], {})
@@ -579,6 +617,28 @@ class D125PlainStrip(unittest.TestCase):
         self.assertEqual(self.strip_line({})["dwg"], "no")
         self.assertEqual(self.strip_line(None)["dwg"], "no")
 
+    def test_the_real_run_passes_the_strip_list_on(self):
+        # main() reads D-125 and hands that list to check_parts; a run that stops passing it fails here (Reviewer 6, #211)
+        import inspect
+        import tempfile as _tempfile
+        seen, strips = {}, {"811299": ([], self.LIST)}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["d125"] = inspect.signature(real).bind(*args, **kw).arguments.get("d125")
+            raise Stop
+
+        real, old = rc.check_parts, rc.d125_strips
+        rc.check_parts, rc.d125_strips = spy, (lambda root=None: strips)
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.check_parts, rc.d125_strips = real, old
+        self.assertIs(seen.get("d125"), strips)
+
 
 class D125SharedRows(unittest.TestCase):
     """C05's D-125 row cases (tools/checks/tests), run through the function the checklist calls, plus three sizes
@@ -636,13 +696,13 @@ class MadeHold(unittest.TestCase):
     LIST = WALL
     HEAD = "part_number,name,material,grade,finish,status,mass_status"
 
-    def line(self, material="aluminium 5052-H32 sheet", rows="", drawn=True):
+    def line(self, material="aluminium 5052-H32 sheet", rows="", drawn=True, head=None):
         fai = rc.fai_plan(PLAN, BOM)
         part = row("211199", "make", "WALL - TEST STRIP", material, team="WALL", src=self.LIST)
         part["finish"] = "mill finish"
         file_map = files("211199_P01_WALL-TEST-STRIP_CAD.f3d", "211199_P01_WALL-TEST-STRIP_STEP.step")
         made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
-                                 {self.LIST: self.HEAD + "\n" + rows} if rows else {}, {}, None,
+                                 {self.LIST: (head or self.HEAD) + "\n" + rows} if rows else {}, {}, None,
                                  {"211199": ([], self.LIST)} if drawn else {})
         return made[0]
 
@@ -657,17 +717,96 @@ class MadeHold(unittest.TestCase):
     def test_gaps_show_first(self):
         self.assertEqual(self.line(material="aluminium (alloy HOLD)", drawn=False)["state"], "open: drawing")
 
-    def test_only_its_own_row_and_columns_count(self):
-        other = "218101,WALL - BRACKET 211199 - HOLD,,,,HOLD,calculation\n"      # another part's row naming it
+    def test_only_its_own_columns_count(self):
         massnote = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT,real kg/m2 HOLD\n"
-        self.assertEqual(self.line(rows=other)["state"], "done")
         self.assertEqual(self.line(rows=massnote)["state"], "done")
+
+    def test_another_parts_row_naming_it_is_not_read(self):
+        # a bracket's row with 211199 in its parent cell reaches 211199's rows (cut_rows); only its own row counts
+        head = "part_number,parent,name,material,grade,finish,status,mass_status"
+        other = "218101,211199,WALL - BRACKET,aluminium (alloy HOLD),HOLD,mill finish,HOLD,calculation\n"
+        reached = rc.cut_rows({self.LIST: head + "\n" + other}).get("211199", [])
+        self.assertEqual([cells["part_number"] for cells, _path in reached], ["218101"])
+        self.assertEqual(self.line(rows=other, head=head)["state"], "done")
+        own = "211199,210101,WALL - TEST STRIP,polycarbonate,HOLD,mill finish,DRAFT,calculation\n"
+        self.assertEqual(self.line(rows=other + own, head=head)["state"], "HOLD")
+
+    def test_hold_is_a_whole_word(self):
+        for material in ("aluminium 5052-H32, the lip holds the felt", "aluminium 5052-H32 threshold trim",
+                         "aluminium 5052-H32 (HOLDER bracket)"):
+            self.assertEqual(self.line(material=material)["state"], "done", material)
+        own = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT (holds its shape),calculation\n"
+        self.assertEqual(self.line(rows=own)["state"], "done")
+        for material in ("aluminium (alloy on hold)", "aluminium 5052 (HOLD-02)"):
+            self.assertEqual(self.line(material=material)["state"], "HOLD", material)
 
     def test_the_totals_count_made_hold(self):
         held = self.line(material="aluminium (alloy HOLD)")
         text = rc.render([held], [], [], [], "main", "unlocked", {}, ([], [], []), "2026-11-01")
         self.assertIn("| Made: HOLD |", text)
         self.assertIn("| WALL | 0 | 0 | 0 | 1 | 0 | 0 | 0 |", text)
+
+
+class DrawgenParts(unittest.TestCase):
+    """D-113 (1): a part tools/drawgen draws is never blocked by a locked screen, because drawgen doesn't run in Fusion;
+    the list is drawgen's own registry (tools/drawgen/specs.py), with the numbers its tabulated sheets cover."""
+
+    def line(self, pn, drawgen):
+        rh = row(pn, "make", "WALL - PANEL FRAME - " + pn, "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish")
+        rh["cut_rows"] = True
+        file_map = files(f"{pn}_P01_WALL-FRAME_CAD.f3d", f"{pn}_P01_WALL-FRAME_STEP.step")
+        fai = rc.fai_plan(PLAN, BOM)
+        made, _ = rc.check_parts([rh], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "locked", BOM, {}, {},
+                                 None, None, None, drawgen)
+        return made[0]
+
+    def test_a_part_drawgen_draws_is_never_blocked(self):
+        self.assertEqual(self.line("211102", None)["state"], rc.BLOCKED)              # Fusion's: waits for the screen
+        self.assertEqual(self.line("211102", set())["state"], rc.BLOCKED)
+        self.assertEqual(self.line("211102", {"211102"})["state"], "open: drawing")   # drawgen's: it can draw it now
+
+    def test_the_list_is_drawgens_own_registry(self):
+        got = rc.drawgen_parts()
+        self.assertTrue({"211101", "211102", "111101", "211501", "211504"} <= got, sorted(got))   # 211504: on 211501's sheet
+        planted = {"999901": ("wall", "part", {}), "999911": ("wall", "tabulated", {"covers": ["999911", "999912"]})}
+        self.assertEqual(rc.drawgen_parts(planted), {"999901", "999911", "999912"})
+
+    def test_the_totals_and_notes_say_why(self):
+        lines = [self.line("211101", {"211102"}), self.line("211102", {"211102"})]
+        text = rc.render(lines, [], [], [], "main", "locked", {}, ([], [], []), "2026-11-01", (), {"211102"})
+        self.assertIn("| WALL | 0 | 1 | 1 | 0 | 0 | 0 | 0 |", text)
+        self.assertIn("1 wait for the unlocked screen (D-84) and 1 are drawn by tools/drawgen, which a locked screen "
+                      "doesn't hold (D-113)", text)
+        self.assertIn("its specs.py: 211102)", text)
+
+    def test_the_real_run_passes_drawgens_list_on(self):
+        # main() reads drawgen's registry and hands it to check_parts and the notes; a run that stops passing it fails
+        import inspect
+        import tempfile as _tempfile
+        seen, parts = {}, {"211102"}
+
+        class Stop(Exception):
+            pass
+
+        def spy_parts(*args, **kw):
+            seen["check_parts"] = inspect.signature(real_parts).bind(*args, **kw).arguments.get("drawgen")
+            return real_parts(*args, **kw)
+
+        def spy_render(*args, **kw):
+            seen["render"] = inspect.signature(real_render).bind(*args, **kw).arguments.get("drawgen")
+            raise Stop
+
+        real_parts, real_render, old = rc.check_parts, rc.render, (rc.drawgen_parts, rc.d125_strips)
+        rc.check_parts, rc.render = spy_parts, spy_render
+        rc.drawgen_parts, rc.d125_strips = (lambda specs=None: parts), (lambda root=None: {})
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "locked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.check_parts, rc.render = real_parts, real_render
+            rc.drawgen_parts, rc.d125_strips = old
+        self.assertIs(seen.get("check_parts"), parts)
+        self.assertIs(seen.get("render"), parts)
 
 
 class OpenPrFiles(unittest.TestCase):
