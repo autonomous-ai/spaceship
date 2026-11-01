@@ -38,3 +38,24 @@ _FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with
 NO_DRAWING = {
     "211501": _FILL, "211502": _FILL, "211503": _FILL, "211504": _FILL, "211601": _FILL, "211602": _FILL,
 }
+
+# Assembly sheets (tools/drawgen/assembly.py): the lining cassettes. WALL's STEP models the four held cassette clips
+# as one shape without a number, 'NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)': each of its four
+# bodies is one clip 518001 (the list's 4), drawn and ballooned as that part until it is named (HOLD-08).
+# Each sheet also gives the clip centres from the cassette's centre in the principal view, both ways, and the build-up
+# (D-147 (2)) in a 1:2 section across the cassette through its lowest clip.
+_CASSETTE = {
+    "envelopes": {"NO-PN-HOLD-H03": "518001"},
+    "interfaces": [
+        {"view": "principal", "of": ["518001"], "along": "x", "origin": {"assembly": True}, "sign": "view",
+         "words": "the clip centres across the cassette, from its centre (principal view)"},
+        {"view": "principal", "of": ["518001"], "along": "y", "origin": {"assembly": True}, "sign": "view",
+         "words": "the clip centres up the cassette, from its centre (principal view)"},
+    ],
+    "sections": [{"letter": "A", "around": "518001", "normal": [0, 0, -1], "half": 70, "scale": 0.5, "stack": True}],
+}
+
+ASSEMBLIES = {
+    "510101": dict(_CASSETTE), "510102": dict(_CASSETTE), "510103": dict(_CASSETTE), "510104": dict(_CASSETTE),
+    "510201": dict(_CASSETTE), "510202": dict(_CASSETTE),
+}
