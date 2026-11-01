@@ -212,6 +212,21 @@ def all_strokes(page, sheet_h):
     return segs
 
 
+MAKER = re.compile(r"\b(made|created|drawn|designed|generated|produced|prepared)\s+by\s+([^\s,;]+)", re.I)
+
+
+def note_makers(doc):
+    """[(sheet, phrase)] for each 'made by X' and the like on the sheets, other than the title block's CREATED BY
+    Autonomous: the Lead's ruling (2026-11-01) is that a note names the source, never an agent, a role or a script as
+    the maker."""
+    out = []
+    for n, page in enumerate(doc, start=1):
+        for m in MAKER.finditer(page.get_text()):
+            if m.group(2).strip(":.") != "Autonomous":
+                out.append((n, " ".join(m.group(0).split())))
+    return out
+
+
 def clashes(doc):
     """On every page: texts that touch each other, texts that touch a part outline, and lines that run through a
     text's letters (a leader or a dimension line that stops at the text doesn't): [(page, what)]."""
@@ -432,6 +447,8 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("PDF author is not Autonomous")
     if not re.search(r"CREATED BY\s+Autonomous\b", page.get_text()):
         fails.append("the title block's CREATED BY is not Autonomous")
+    for pg, phrase in note_makers(doc):
+        fails.append("sheet %d: a note names a maker ('%s')" % (pg, phrase))
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
     two_wall = bool(two_wall_pairs(data["features"]))
