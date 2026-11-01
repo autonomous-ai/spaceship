@@ -29,6 +29,7 @@ names, material, finish and revision come from the part's STEP, its parts-list r
 | `notes` | Notes for this part, each one sentence or two, with their source (a decision, a register line) | `["Both ends square (BASE tube cut list)."]` |
 | `tolerance` | The tolerance note: the project's own values with their source, never a blanket ISO 2768 (guideline 3.2) | see `base.py` |
 | `key_notes` | `True`: a note at each end that carries a key from Joints' `corner-keys.csv`, saying which way round it fits | `True` |
+| `rivet_holes` | Hole sizes that take rivets, each with its rivet: the tapped-hole guard passes them (3.3, 4.2 and about 5.0 are tap drills' sizes too) and their table rows name the rivet. A parts-list row that says tapped or threaded is still refused | `{4.2: "blind rivet, Ø4 (D-130)"}` |
 | `material_has`, `material_why` | The entry is written for this material: drawgen refuses to draw while the parts list says another (so welded-steel notes never go over an aluminium list) | `"steel"`, `"D-131's welded, galvanized steel frame"` |
 | `principal`, `scale`, `sheet` | Only when the default choice is wrong: the principal view, the ISO scale, the sheet size | `"right"`, `0.2`, `"A1"` |
 

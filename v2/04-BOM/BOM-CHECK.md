@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (41 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -194,9 +194,6 @@ Read from: this working tree.
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
-**Joints register**
-- H-44 HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 A2: no part number
-
 ## Reserved air spaces, not counted (D-105)
 
 Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
@@ -348,11 +345,11 @@ From `v2/04-BOM/number-allocation.csv`: 147 numbers, 120 not in a team's list ye
 | 211515 | WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
 | 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | ALLOCATED |
 | 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | ALLOCATED |
-| 211518 | WALL - CAVITY FILL PIECE F04 217 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
+| 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
 | 211535 | WALL - CAVITY FILL PIECE F05 240 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
 | 211536 | WALL - CAVITY FILL PIECE F06 230.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | ALLOCATED |
 | 211537 | WALL - CAVITY FILL PIECE F07 205.5 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | ALLOCATED |
-| 211538 | WALL - CAVITY FILL PIECE F08 217 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
+| 211538 | WALL - CAVITY FILL PIECE F08 214 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
 | 211614 | WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
 | 211615 | WALL - CAVITY FILL PIECE F10 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 2 | ALLOCATED |
 | 211616 | WALL - CAVITY FILL PIECE F11 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
