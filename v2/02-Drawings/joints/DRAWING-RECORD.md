@@ -4,7 +4,7 @@ Two drawings, as the PM approved (2026-10-31): the corner key family on one TABU
 
 | Drawing (Default Project / FocusPod v2 / joints, and the PDF here) | Covers | Sheet | Views (base views, first-angle, one scale) | Dimensions |
 |---|---|---|---|---|
-| `831001_P01_HARDWARE-LOCATING-SPIGOT_DWG` | 831001 | A3 | front (elevation, hidden lines) and from above, 5:1 | 6 |
+| `831001_P01_HARDWARE-LOCATING-SPIGOT_DWG` | **TABULATED** 831001 and 831010 (since 2026-11-01), drawn as 831001 | A3 | front (elevation, hidden lines) and from above, 5:1 | 6 |
 | `111211_P01_BASE-CORNER-KEY-TABULATED_DWG` | **TABULATED** 111211, 111212, 111213, 111214, 111215, drawn as the square 111211 with its D-144 holes | A3 | front (hidden lines), from the right (the stud face) and from above (hidden lines), 2:1 | 12 |
 
 **The key sheet is back (D-144, 2026-11-01).** #300 took its old version out of the repo (D-147 (3)); this redraw on the key design's version 3 replaces it. How it was drawn is below.
@@ -79,4 +79,19 @@ Reviewer 6 checked each key against its STEP (111212 to 111215 pass; 111211 matc
 - **The finish:** one more note line had closed the 4 mm and two note lines that `finish()` keeps between the notes and view B, so it stopped. Notes 3 and 4 are shorter (same facts), and view B sits 4 lower (it still ends 5 above the title block). `test_joints_drawing.py` now checks that gap, and view B's room above the title block, from the sheet's own settings, so a longer note fails the test before a finish.
 
 **Read back from the PDF:** right view 17.5, 26, 60, 35; front 75, 30; top 10.5 and 17.8 (x), 11.5 and 23.5 (y); view B 22.16, 37.84, A = 24.14°. No 5.04 anywhere on the sheet. H03's tag on the upper hole (10.5, +6), H04's on the lower (17.8, −6). Created by and the author read "Autonomous"; no maker named (D-147 (1)).
+
+## The spigot sheet, tabulated (2026-11-01)
+
+The Lead's ruling on J-FRONT-03: DT's two spigots on DR's ledge stand 11 proud, so they still engage DT's holes 5. 831010 is 831001 with the pin 3 longer, a tabulated variant. The sheet's views don't change: they show 831001, as the native drawing has them since Reviewer 5's pass. So only the finish step changed, from the same raw export: the title (HARDWARE - LOCATING SPIGOT - TABULATED: 831001, 831010), TABULATED in the notes, the scale in note 1, the pin length L in note 3 with a table (PART, L, PROUD, OVERALL, POD, WHERE: 831001 7.24, 8.00, 15.24, 28; 831010 10.24, 11.00, 18.24, 2, DR's ledge under DT), note 5's proud from the table, and note 6 naming H-05 and H-45 with one STEP per number. Read back: the views' dimensions are the same as main's sheet, word for word; Created by and the PDF's author read Autonomous. A Reviewer's D-114 pass follows. Known from the first sheet: the pin's 8 sits on its dimension line.
+
+## Reviewer 10's D-114 pass on the spigot sheet (#346), and the fixes (2026-11-01)
+
+Reviewer 10 held #346 on one P2: the front view printed 831001's 7.24 and 15.24, the two sizes the table varies, so for 831010 the view and the table disagreed. The Lead asked for the finish step to fix it rather than a new Fusion run (the queue was long).
+
+- **Lettered, in the finish step (no Fusion run):** `letter_dims()` takes each value Fusion printed on the views (it must be there exactly once, left of the notes), removes its text from the page (a redaction; the dimension's lines and arrows stay) and writes the letter on the same baseline, centred where the value was, at the same size and direction: **7.24 → L** and **15.24 → L + 8**. It runs before the notes, whose table repeats the values, and re-reads the page: each letter there once in its direction, neither value left. Note 3 says L is the pin above its shoulder and L + 8 the overall length, both per part in the table.
+- **The drawing test covers the spigot sheet:** TABULATED and both numbers in the notes; "L + 8" on one note line; each table row's OVERALL = L + 8 and PROUD = L + 0.76; the letters are exactly the drawn part's L and OVERALL; no floor panel in WHERE (D-132); each POD equals the parts list's count; and `letter_dims()` on a page with Fusion-like values (it keeps the other values and the dimension line, and stops on a value that isn't there).
+- **WHERE, note 5 and the count (P3):** F2 is gone (D-132), so its two spigots and their 838009 inserts go: 831001 is **24** a pod (8 band, 8 seams, 4 ceiling, 2 DL, 2 DR; Reviewer 10's re-check: the count had carried 2 too many since DL's, DR's and DT's were added), and 838009 is cancelled. Note 5 now says the pin stands the table's proud above the face its rivnut is set in (not always a tube face: DR's are on BASE's closing angle). The air column's foot has no locator yet: BASE's bracket on the band isn't posted, so J-AIR-02 holds it (HOLD-26), with Joints' proposal in the register.
+- **For the next annotate run (Reviewer 10, carried from main):** a centre line on the front view and a centre mark on the top view, and the pin's 8 off the shoulder line; and 831001's STEP header names the stop washer (the product is right), fixed at the next spigot export.
+
+**Read back from the PDF:** front view L, L + 8, 8, 8 (the pin's Ø8 h9 is in note 3); 5.88; top view 4. Created by and the author read "Autonomous"; no maker named (D-147 (1)).
 

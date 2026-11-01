@@ -18,7 +18,9 @@ function:
         cut_angle 0 (111211), -24.1446 (111212 LH), +24.02 (111213 RH), -7.2546 (111214), 0 (111215):
         the mitres exactly, as corner_keys.py computes them (BASE, 2026-11-01)
         saved and drawn at 0 (111211); one STEP per part number
-    831001_P01_HARDWARE-LOCATING-SPIGOT_CAD    spigot, register H-05
+    831001_P01_HARDWARE-LOCATING-SPIGOT_CAD    spigot family, register H-05 and H-45: pin_proud 8 (831001) or 11
+                                               (831010, DR's DT ledge, J-FRONT-03); saved at 831001; one STEP per
+                                               part number; a TABULATED sheet
     831002_P01_HARDWARE-STOP-WASHER_CAD        stop washer, register H-08, plus its DXF
                                                (D-89 part 4: flat, cut from sheet, no drawing)
     831007_P01_HARDWARE-MITRE-PLATE-TABULATED_CAD   mitre plate family, register H-40 to H-42 (J-FRAME-01, D-131):
@@ -57,6 +59,13 @@ MFG_DIR = "v2/03-Manufacturing/joints"
 
 KEYS = "111211_P01_BASE-CORNER-KEY-TABULATED_CAD"
 SPIGOT = "831001_P01_HARDWARE-LOCATING-SPIGOT_CAD"
+SPIGOT_VARIANTS = [  # part number, name, how far the pin's top stands above the face it sits on, STEP file
+    ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "8 mm", "831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step"),
+    # the Lead's ruling 2026-11-01 (J-FRONT-03): DT's two ledge spigots stand 11 proud, so they engage DT's holes
+    # 5 as before
+    ("831010", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - 11 PROUD - STAINLESS", "11 mm",
+     "831010_P01_HARDWARE-LOCATING-SPIGOT-11-PROUD_STEP.step"),
+]
 WASHER = "831002_P01_HARDWARE-STOP-WASHER_CAD"
 PLATES = "831007_P01_HARDWARE-MITRE-PLATE-TABULATED_CAD"
 PLATE_VARIANTS = [  # part number, name, the two members' widths in the frame's plane, file stem (register H-40 to H-42)
@@ -551,7 +560,8 @@ def build_spigot(app):
     doc, design, f = new_design(app, SPIGOT)
     add_params(design, [
         ("pin_d", "8 mm", "mm", "PROPOSED: pin diameter, h9 (joints register H-05); Ø8.5 hole or 8.5 slot in the mating part"),
-        ("pin_proud", "8 mm", "mm", "PROPOSED: the pin's top stands this far above the joint face (H-05)"),
+        ("pin_proud", "8 mm", "mm", "PROPOSED: the pin's top stands this far above the joint face: 8 (831001, "
+         "H-05) or 11 (831010, H-45: DR's DT ledge, J-FRONT-03)"),
         ("rivnut_head", "0.76 mm", "mm", "SOURCE: Sherex CAH3-610-4.2 head 0.76 +-0.08 (joints register SHX)"),
         ("pin_len", "pin_proud - rivnut_head", "mm", "CALCULATION: the pin sits on its rivnut's head, so 7.24 long"),
         ("thread_d", "6 mm", "mm", "SOURCE: M6 x 1 into the rivnut 838003 (H-03)"),
@@ -612,9 +622,25 @@ def build_spigot(app):
         material(comp, ["Steel"], ["steel"])
     health(design)
     print("SPIGOT 831001: %s, material %s, mass %.5f kg" % (fmt(box(body)), mat, body.physicalProperties.mass))
+    family = (root.partNumber, root.description)
+
+    def spigot_state(variant):
+        def go():
+            num, name, proud, _step = variant
+            design.userParameters.itemByName("pin_proud").expression = proud
+            root.partNumber = num            # each STEP carries its own part number (C06)
+            root.description = "%s | rev %s | pin %s proud | joints register H-05, H-45 | PROPOSED" % (name, REV, proud)
+            adsk.doEvents()
+            health(design)
+            print("  %s: %s" % (num, fmt(box(comp.bRepBodies.item(0)))))
+        return go
+
     save_export(app, doc, design, f, SPIGOT,
-                "Locating spigot 831001, rev P01, PROPOSED (joints register H-05). Built by joints_hardware_build.py",
-                [("831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step", None)])
+                "Locating spigot family 831001 (8 proud) and 831010 (11 proud), rev P01, PROPOSED (joints register "
+                "H-05, H-45). Built by joints_hardware_build.py",
+                [(v[3], spigot_state(v)) for v in SPIGOT_VARIANTS])
+    spigot_state(SPIGOT_VARIANTS[0])()        # back to the saved state, 831001
+    root.partNumber, root.description = family
     edit_test(design, lambda: box(comp.bRepBodies.item(0)), [("pin_proud", "10 mm")],
               lambda bb, a: abs((a[5] - bb[5]) - 2.0) < 0.01)
     doc.close(False)
