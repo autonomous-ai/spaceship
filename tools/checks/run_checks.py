@@ -126,8 +126,9 @@ def run(root, rev):
                 r, owner_for(r, fn["pn"])))
         for prod in s.products():
             pn = prod["part_number"]
-            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"]})
+            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"], "names": {}})
             d["files"].add(rel(root, p))
+            d["names"].setdefault(rel(root, p), prod["name"])
             d["count"] = max(d["count"], counts.get(pn, 0))
         for inst in s.instances():
             so = s.solid(inst["solid"])
