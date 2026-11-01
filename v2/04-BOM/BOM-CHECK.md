@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 12 failure(s) on the five rules; 322 part lines (128 made, 194 bought, 136 on HOLD) and 45 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 361.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: FAIL.** 12 failure(s) on the five rules; 332 part lines (138 made, 194 bought, 136 on HOLD) and 46 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 368.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -220,7 +220,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 157 numbers, 121 not in a team's list yet, 13 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 157 numbers, 112 not in a team's list yet, 22 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -249,11 +249,11 @@ From `v2/04-BOM/number-allocation.csv`: 157 numbers, 121 not in a team's list ye
 | 212205 | WALL - FRAME STILE MID - SIDE LOWER - RH | 211102 | 3 | ALLOCATED |
 | 211521 | WALL - CAVITY FILL PIECE 1102.7 X 344.9 - SIDE LOWER - RH | 210102 | 3 | CANCELLED |
 | 211522 | WALL - CAVITY FILL PIECE 1102.7 X 334.9 - SIDE LOWER - RH | 210102 | 1 | CANCELLED |
-| 212301 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212302 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212303 | WALL - FRAME STILE FRONT - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212304 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212305 | WALL - FRAME STILE MID - SIDE UPPER - LH | 211103 | 3 | ALLOCATED |
+| 212301 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212302 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212303 | WALL - FRAME STILE FRONT - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212304 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212305 | WALL - FRAME STILE MID - SIDE UPPER - LH | 211103 | 3 | in use |
 | 211531 | WALL - CAVITY FILL PIECE F05 344.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | CANCELLED |
 | 211532 | WALL - CAVITY FILL PIECE F08 334.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | CANCELLED |
 | 212401 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
@@ -360,10 +360,10 @@ From `v2/04-BOM/number-allocation.csv`: 157 numbers, 121 not in a team's list ye
 | 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | in use |
 | 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | in use |
 | 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
-| 211535 | WALL - CAVITY FILL PIECE F05 240 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
-| 211536 | WALL - CAVITY FILL PIECE F06 230.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | ALLOCATED |
-| 211537 | WALL - CAVITY FILL PIECE F07 205.5 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | ALLOCATED |
-| 211538 | WALL - CAVITY FILL PIECE F08 214 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
+| 211535 | WALL - CAVITY FILL PIECE F05 240 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | in use |
+| 211536 | WALL - CAVITY FILL PIECE F06 230.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | in use |
+| 211537 | WALL - CAVITY FILL PIECE F07 205.5 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | in use |
+| 211538 | WALL - CAVITY FILL PIECE F08 214 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | in use |
 | 211614 | WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
 | 211615 | WALL - CAVITY FILL PIECE F10 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 2 | ALLOCATED |
 | 211616 | WALL - CAVITY FILL PIECE F11 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
