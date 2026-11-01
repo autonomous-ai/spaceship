@@ -14,8 +14,12 @@ run, so a fix here reaches every team at once.
    about 1.6 mm high. Scale = width_mm / 58.02; (x, y) is the lower-left corner. A sheet
    size not yet measured is refused (pass width_at_scale_1 after measuring it).
 2. first_angle_symbol(sheet, x0, cy): the outline is one closed chain in a sketch of its
-   own and the circles go in another. In one sketch, Fusion's PDF export dropped a
-   corner and the outline printed as a triangle (GA sheet 1, 2026-10-31).
+   own and the circles go in another, and the whole symbol stays at least 6 mm clear
+   of the frame and the title block (with no x0, cy it sits just left of the title
+   block). Either fault made Fusion's PDF print the outline as a triangle: sharing a
+   sketch with the circles (GA sheet 1, 2026-10-31), and an edge on the border's line,
+   whose corners the PDF pulled onto the border's corner (FRONT, CEILING 2026-11-01).
+   A symbol closer than that is refused.
 3. base_view(sheet, orientation, scale, at, style): Fusion ignores the style given in the
    view input (hidden lines showed on every view, the iso too), so the style and scale
    are set again on the made view and checked.
@@ -36,6 +40,12 @@ except ImportError:                 # offline tests
 IMAGE_WIDTH_AT_SCALE_1_MM = 58.02    # measured on A1, A2 and A3 (2026-10-31)
 MEASURED_SHEETS = {"A1": (841.0, 594.0), "A2": (594.0, 420.0), "A3": (420.0, 297.0)}
 SYMBOL_NAME = "PROJECTION SYMBOL - FIRST ANGLE"
+# Fusion's ISO sheets (measured on A1 and A2 exports, 2026-11-01; assumed on the other A
+# sizes): the frame 20 mm in on the left and 10 mm on the other sides (ISO 5457), the
+# title block 180 x 47 mm in the frame's bottom-right corner
+FRAME_MARGINS = (20.0, 10.0, 10.0, 10.0)        # left, bottom, right, top
+TITLE_BLOCK_SIZE = (180.0, 47.0)
+SYMBOL_CLEARANCE = 6.0                           # FRONT's sample: 6 mm in from the border
 
 
 def _point2d(x, y):
@@ -87,9 +97,56 @@ def symbol_outline(x0, cy, small=5.0, big=10.0, length=10.0):
             (x0, cy + small / 2), (x0, cy - small / 2)]
 
 
-def first_angle_symbol(sheet: "adsk.drawing.Sheet", x0, cy, small=5.0, big=10.0, length=10.0, gap=4.0, name=SYMBOL_NAME):
+def frame_box(sheet):
+    """(x0, y0, x1, y1) of the drawing frame, sheet mm."""
+    left, bottom, right, top = FRAME_MARGINS
+    return (left, bottom, float(sheet.width) - right, float(sheet.height) - top)
+
+
+def title_block_box(sheet):
+    """(x0, y0, x1, y1) of the title block in the frame's bottom-right corner."""
+    _l, bottom, right, _t = FRAME_MARGINS
+    w, h = TITLE_BLOCK_SIZE
+    x1 = float(sheet.width) - right
+    return (x1 - w, bottom, x1, bottom + h)
+
+
+def symbol_box(x0, cy, small=5.0, big=10.0, length=10.0, gap=4.0):
+    """(x0, y0, x1, y1) the whole symbol covers: the outline and the circles."""
+    return (x0, cy - big / 2, x0 + length + gap + big, cy + big / 2)
+
+
+def symbol_clear(sheet, box, clearance=SYMBOL_CLEARANCE):
+    """Why the symbol at `box` is too close to the frame or the title block, or None."""
+    fx0, fy0, fx1, fy1 = frame_box(sheet)
+    if box[0] < fx0 + clearance or box[1] < fy0 + clearance or box[2] > fx1 - clearance \
+            or box[3] > fy1 - clearance:
+        return "it is within %g mm of the sheet's border (frame %s, symbol %s)" % (
+            clearance, tuple(round(v, 1) for v in (fx0, fy0, fx1, fy1)), tuple(round(v, 1) for v in box))
+    tx0, ty0, tx1, ty1 = title_block_box(sheet)
+    if not (box[2] <= tx0 - clearance or box[3] <= ty0 - clearance or box[1] >= ty1 + clearance):
+        return "it is within %g mm of the title block (title block %s, symbol %s)" % (
+            clearance, tuple(round(v, 1) for v in (tx0, ty0, tx1, ty1)), tuple(round(v, 1) for v in box))
+    return None
+
+
+def default_symbol_place(sheet, small=5.0, big=10.0, length=10.0, gap=4.0, clearance=SYMBOL_CLEARANCE):
+    """(x0, cy): just left of the title block, its foot `clearance` above the frame."""
+    tx0, ty0, _tx1, _ty1 = title_block_box(sheet)
+    return (tx0 - clearance - (length + gap + big), ty0 + clearance + big / 2)
+
+
+def first_angle_symbol(sheet: "adsk.drawing.Sheet", x0=None, cy=None, small=5.0, big=10.0, length=10.0, gap=4.0,
+                       name=SYMBOL_NAME, clearance=SYMBOL_CLEARANCE):
     """ISO first-angle symbol, the outline from (x0, cy - small/2); the end view gap mm
-    to its right. Returns (outline sketch, circles sketch)."""
+    to its right; at least `clearance` mm from the frame and the title block (with no
+    x0, cy: just left of the title block). Returns (outline sketch, circles sketch)."""
+    if x0 is None or cy is None:
+        x0, cy = default_symbol_place(sheet, small, big, length, gap, clearance)
+    why = symbol_clear(sheet, symbol_box(x0, cy, small, big, length, gap), clearance)
+    if why:
+        raise RuntimeError("first-angle symbol refused: %s; Fusion's PDF pulls an outline touching "
+                           "a border line onto it (a triangle)" % why)
     have = [sheet.sketches.item(i).name for i in range(sheet.sketches.count)]
     if any(n == name or n.startswith(name + " ") for n in have):
         raise RuntimeError("the sheet has a %r sketch already" % name)
