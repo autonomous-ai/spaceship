@@ -14,11 +14,22 @@ import numpy as np
 
 from tr_params import P
 
-# the set rivet's envelope (assumption, the largest among the register's candidates for these stacks, until the
-# Joints register picks the rivet): a dome head 12 across and 2.5 high (the Ø4.0 x 8 closed-end rivet's sheet), and a
-# closed-end tail 7 across standing 8 proud of the stack (the body less the grip, plus its closed end)
+# the set rivet's envelope (source: the Joints Engineer's pick, 2026-11-01, ISO 15973 closed end, aluminium body and
+# steel mandrel, the maker's sheets): a dome head 12 across and 2.5 high; and a closed-end tail 7 across standing 8
+# proud of the stack (assumption: the body less the grip, plus its closed end)
 HEAD_D, HEAD_H = 12.0, 2.5
 TAIL_D, TAIL_L = 7.0, 8.0
+# the rivet for each grip (the Joints Engineer's pick): 4 x 8 (grip 0.5 to 3.5), 4 x 9.5 (3.5 to 5.0), and for the
+# 5.0 stacks, which sit on the line between two lengths, a 1.0 aluminium washer under the head and 4 x 11 (5.0 to 6.5)
+RIVETS = ((3.5, "4 x 8", 0.0), (4.5, "4 x 9.5", 0.0), (5.5, "4 x 11, a 1.0 aluminium washer under the head", 1.0))
+
+
+def rivet_for(grip):
+    """(the rivet, the washer's thickness under its head) for a stack's grip."""
+    for top, name, washer in RIVETS:
+        if grip <= top + 1e-9:
+            return name, washer
+    raise ValueError("no rivet picked for a %.1f grip" % grip)
 
 STEEL_GALV = "galvanised steel"
 ALU = "aluminium"
@@ -149,9 +160,10 @@ def stacks(pieces, tol=0.05, inside_out=()):
             head_dir = -1.0                                               # set from inside the duct
             head_c, head_n, tail_c, tail_n = tail_c, tail_n, head_c, head_n
         grip = sum(h["t"] for h in group) + (other["t"] if other else 0.0)
+        rivet, washer = rivet_for(grip)
         out.append(dict(sheets=group, other=other, grip=round(grip, 3), gap=round(s_out - s_in - grip, 3), axis=n,
                         base=base, s_out=s_out, s_in=s_in, head_dir=head_dir, head_c=head_c, head_n=head_n,
-                        tail_c=tail_c, tail_n=tail_n))
+                        tail_c=tail_c, tail_n=tail_n, rivet=rivet, washer=washer))
     return out, faults
 
 
@@ -164,7 +176,7 @@ def describe(st):
 
 
 def solids(sts):
-    """Each rivet's head and tail as cylinders: [(name, shape)]."""
+    """Each rivet's head (with its washer, if any) and tail as cylinders: [(name, shape)]."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
     from OCP.BRepPrimAPI import BRepPrimAPI_MakeCylinder
     from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
@@ -173,7 +185,7 @@ def solids(sts):
         return BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*map(float, p)), gp_Dir(*map(float, d))), r, h).Shape()
     out = []
     for i, st in enumerate(sts):
-        head = cyl(st["head_c"], st["head_n"], HEAD_D / 2, HEAD_H)
+        head = cyl(st["head_c"], st["head_n"], HEAD_D / 2, HEAD_H + st["washer"])
         tail = cyl(st["tail_c"], st["tail_n"], TAIL_D / 2, TAIL_L)
         f = BRepAlgoAPI_Fuse(head, tail)
         f.Build()
@@ -183,9 +195,9 @@ def solids(sts):
 
 
 def table(sts):
-    """Counts per kind of stack: {(description, grip): count}."""
+    """Counts per kind of stack: {(description, grip, rivet): count}."""
     out = {}
     for st in sts:
-        k = (describe(st), st["grip"])
+        k = (describe(st), st["grip"], st["rivet"])
         out[k] = out.get(k, 0) + 1
     return out

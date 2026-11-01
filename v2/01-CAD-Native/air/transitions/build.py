@@ -121,8 +121,9 @@ def build(out, dr=None, glass=None, summary_path=None):
     # the rivets: every hole's mate and stack, and each set rivet's head and tail (for the checks only)
     sts, rfaults = R.stacks(pieces(), inside_out=INSIDE_OUT)
     summary["faults"] += rfaults
-    summary["rivets"] = [dict(stack=d, grip_mm=g, count=n, duct=("LT" if "steel" in d.split(" + ")[0] else "UT"))
-                         for (d, g), n in sorted(R.table(sts).items())]
+    summary["rivets"] = [dict(stack=d, grip_mm=g, rivet=rv_, count=n,
+                              duct=("LT" if "steel" in d.split(" + ")[0] else "UT"))
+                         for (d, g, rv_), n in sorted(R.table(sts).items())]
     rv = R.solids(sts)
     summary["overlaps"] = overlaps([(nm, sh) for _k, nm, sh in placed] + rv)
     summary["faults"] += ["overlap: %s" % o for o in summary["overlaps"]]
@@ -347,7 +348,7 @@ def main(argv):
         print("%-6s %-48s x%d  %.3f kg  flat %s  folds %d  holes %d  %s" % (
             k, p["name"][:48], p["qty"], p["mass_kg"], p["flat"], p["folds"], p["holes"], p["flat_check"]))
     for r in s.get("rivets", []):
-        print("rivets %s x%d  grip %.1f  %s" % (r["duct"], r["count"], r["grip_mm"], r["stack"]))
+        print("rivets %s x%d  grip %.1f  %s: %s" % (r["duct"], r["count"], r["grip_mm"], r["stack"], r["rivet"]))
     for p, v in (s.get("clearance") or {}).items():
         print("nearest DR tube or glass to %s: %.2f mm (%s)" % (p[:60], v[0], v[1]))
     for p, v in (s.get("skin") or {}).items():

@@ -25,7 +25,8 @@ its 578 mm of 1 mm steel wall).
 - Flat check (`check_flat.py`, from the STEP alone): outline, bend lines, zone edges (the K they imply: 0.44), holes
   and the shell's window within 0.01 mm, 7 of 7. Planted faults fail: a bend line 0.5 off, an outline edge 0.1 off,
   a flat developed at K 0.33.
-- Rivets (`rivets.py`): 80, every hole paired with its mate; no hole without one. Stacks in the README.
+- Rivets (`rivets.py`): 80, every hole paired with its mate; no hole without one. Stacks and the rivet for each
+  (the Joints Engineer's pick) in the README; the 5.0 stacks' heads sit on a 1.0 washer, and the checks count it.
 - Overlaps over 0.001 mm3, among the placed pieces, the 80 set rivets (heads 12 x 2.5, tails 7 x 8), the fan box
   with its linings and bulkhead, and the riser with its 8 x 8 chamfer: 0.
 - Clearance on FRONT's DR and the glass unit: the nearest DR tube is 6.00 mm (the shell's right wall to the bolt-line
@@ -59,6 +60,7 @@ its 578 mm of 1 mm steel wall).
 - The Air Engineer's model of the rebuilt lower duct (the middle figure at 3.1 Pa or less), and the air report's
   update.
 - AIR's parts list rows (CEILING owns the list): on top of CEILING's #378 once it merges (`build.py --rows`).
-- The rivet for each stack and the duct sealant (the Joints register); 848013's AIR line (Joints' next register PR).
+- The register's rows for the rivets (4 x 8, 4 x 9.5, 4 x 11 and the washer), the bond set's AIR line and 848013's
+  AIR line (Joints' next register PR).
 - CEILING: the riser cut and chamfer, and the 24 holes in 611501's and 611402's flats, in AIR's next rebuild.
 - Drawings: the generator's any-line folds mode (#369, ef811f7) doesn't draw these parts yet (README).

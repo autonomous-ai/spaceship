@@ -16,18 +16,21 @@ Every number is in `tr_params.py` with its status and source. Pod coordinates, m
 | 611803 vane over the box | turning vane, R 32, the turn from up to across; its front tab riveted to the shell's front wall, its back tab bonded to the back wall | aluminium 5052-H32, 1.0 (alloy HOLD) | 3 |
 | 611804 vane beside the box | turning vane, R 32, the turn from across into the window; tabs riveted to the floor and the roof | aluminium 5052-H32, 1.0 (alloy HOLD) | 2 |
 
-Folds: inside radius = thickness, K 0.44 (the Lead's ruling; the vanes' curves R 32). Joints: closed-end blind rivets
-(D-166: every tail ends inside the duct or the fan box), the Joints register's pick for each stack; every lap and corner
-sealed (sealant HOLD, as the casing's). 80 rivets a pod (`rivets.py` pairs every hole with its mate):
+Folds: inside radius = thickness, K 0.44 (the Lead's ruling), the vanes' curves R 32 and the right wrapper's corner
+fold R 10. Joints: closed-end blind rivets (D-166: every tail ends inside the duct or the fan box), one family picked
+by the Joints Engineer (2026-11-01): ISO 15973, aluminium body, steel mandrel, Ø4.0 in Ø4.1 holes with 8.5 to every
+edge, head 12 x 2.5; the register's rows to come. Every lap and corner is sealed, and the three bonded vane tabs
+bonded, with the pod's bond set 108002 (the Joints Engineer). 80 rivets a pod (`rivets.py` pairs every hole with its
+mate):
 
-| Duct | Stack (grip) | Rivets |
-|---|---|---:|
-| riser transition | steel 1.0 + steel 1.0: the wrappers' flanges on the cheeks (2.0) | 34 |
-| riser transition | steel 1.0 + the riser's steel 1.0: the collars into the riser (2.0) | 10 |
-| riser transition | steel 1.0 + the fan box's 3.0 end walls (4.0) | 6 |
-| supply transition | aluminium 2.0 + 2.0: the shell's corner tabs, the floor's flanges (4.0) | 15 |
-| supply transition | aluminium 2.0 + the fan box's 3.0 front and back walls (5.0) | 8 |
-| supply transition | the vanes' 1.0 tabs on the 2.0 shell or floor (3.0) | 7 |
+| Duct | Stack (grip) | Rivet | Per pod |
+|---|---|---|---:|
+| riser transition | steel 1.0 + steel 1.0: the wrappers' flanges on the cheeks (2.0) | 4 x 8 (grip 0.5 to 3.5) | 34 |
+| riser transition | steel 1.0 + the riser's steel 1.0: the collars into the riser (2.0) | 4 x 8 | 10 |
+| riser transition | steel 1.0 + the fan box's 3.0 end walls (4.0) | 4 x 9.5 (grip 3.5 to 5.0) | 6 |
+| supply transition | aluminium 2.0 + 2.0: the shell's corner tabs, the floor's flanges (4.0) | 4 x 9.5 | 15 |
+| supply transition | aluminium 2.0 + the fan box's 3.0 front and back walls (5.0) | 4 x 11 (grip 5.0 to 6.5) on a 1.0 aluminium washer | 8 |
+| supply transition | the vanes' 1.0 tabs on the 2.0 shell or floor (3.0) | 4 x 8 | 7 |
 
 No rivet goes through the shell's back wall (DR's removable panel is 2.36 mm behind it) or within reach of DR's
 bolt-line tube: the back-right corner's tab (behind the gasket's strip right of the window) bears and is sealed, and

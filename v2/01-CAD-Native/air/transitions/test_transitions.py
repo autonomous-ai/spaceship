@@ -111,6 +111,8 @@ class Parts(unittest.TestCase):
         sts, faults = rivets.stacks(self.pieces, inside_out=build.INSIDE_OUT)
         self.assertEqual(faults, [])
         self.assertTrue(all(st["grip"] in (2.0, 3.0, 4.0, 5.0) for st in sts), sorted({st["grip"] for st in sts}))
+        # each stack has its picked rivet; the 5.0 stacks, between two lengths, a washer under the head
+        self.assertTrue(all(st["washer"] == (1.0 if st["grip"] == 5.0 else 0.0) for st in sts))
 
     def test_no_rivet_through_the_shells_back_wall(self):
         """DR's removable panel is 2.36 mm behind it: a rivet's head or tail would stand in that gap."""
