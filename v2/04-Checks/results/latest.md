@@ -1,8 +1,8 @@
-# Mechanical check run: 95204bdb on 2026-11-01
+# Mechanical check run: e10d4433 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `95204bdb`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `e10d4433`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 175** (65 severe, 107 major, 3 minor). Register numbers in brackets.
+**Findings in this run: 171** (61 severe, 107 major, 3 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `95204bdb`. The Fusion
 | C02 tolerance stack-ups | yes | 4 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 84 |
+| C05 drawing completeness | yes | 80 |
 | C06 BOM completeness | yes | 36 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -84,10 +84,6 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | F-266 | severe | C05 | 611402 | 611402 AIR - FAN BOX CASING - SUPPLY has no drawing PDF (611402_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-267 | severe | C05 | 611501 | 611501 AIR - INTAKE RISER has no drawing PDF (611501_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-268 | severe | C05 | 611601 | 611601 AIR - ROOF SLEEVE has no drawing PDF (611601_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
-| F-153 | severe | C05 | 811101 | 811101 INTERIOR - LEDGE - TOP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake. | CEILING |
-| F-154 | severe | C05 | 811201 | 811201 INTERIOR - LIGHT SHELF - BACK has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
-| F-155 | severe | C05 | 811202 | 811202 INTERIOR - LIGHT SHELF - SIDE LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
-| F-156 | severe | C05 | 811203 | 811203 INTERIOR - LIGHT SHELF - SIDE RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
 | F-367 | severe | C06 | 111211 | 111211's body in 110000_P01_BASE_STEP.step isn't the part its own STEP 111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step holds: its hole layout differ (own STEP: 4 holes, sizes (30.0, 35.0, 75.0); the copy: 4 holes, sizes (30.0, 35.0, 75.0)), whichever way the copy is turned. The assembly's fits were set round the copy. | BASE; Joints Engineer |
 | F-244 | severe | C09 | 611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348 | Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates. | CEILING |
 | F-245 | severe | C09 | 611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348 | Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates. | CEILING |
@@ -247,9 +243,9 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-10 AIR - AIR COLUMN | 8.147 | 2108 x 359 x 212 | long | calculation (CAD); fill provisional |
 | 2-11 FRONT - DECOR BLOCK ASSY - DT | 7.913 | 1699 x 306 x 203 | long | calculation (CAD); calculation (CAD); magnetic seal HOLD |
 | 2-12 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.402 | 600 x 250 x 200 | long | calculation (CAD) |
-| 2-13 INTERIOR - LIGHT SHELF ASSY | 1.585 | 2332 x 80 x 60 | long | calculation (CAD) |
+| 2-13 INTERIOR - LIGHT SHELF ASSY | 1.569 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-14 BASE - SMALL PARTS CARTON | 1.139 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
-| 2-15 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
+| 2-15 INTERIOR - WORK WALL LEDGE ASSY | 1.895 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
 | 2-16 AIR - SUPPLY FAN BOX | 13.45 | 2005 x 516 x 203 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption |
 | 2-17 AIR - SPLITTER CARTRIDGE - COMMON | 10.55 | 1750 x 314 x 173 | long | calculation (CAD) |
 | 2-18 AIR - SPLITTER CARTRIDGE - COMMON | 10.55 | 1750 x 314 x 173 | long | calculation (CAD) |

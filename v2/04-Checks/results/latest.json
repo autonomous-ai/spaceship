@@ -1,5 +1,5 @@
 {
- "rev": "95204bdb",
+ "rev": "e10d4433",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 31,
@@ -2790,54 +2790,6 @@
   },
   {
    "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811101",
-   "severity": "severe",
-   "message": "811101 INTERIOR - LEDGE - TOP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811201",
-   "severity": "severe",
-   "message": "811201 INTERIOR - LIGHT SHELF - BACK has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811201"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811202",
-   "severity": "severe",
-   "message": "811202 INTERIOR - LIGHT SHELF - SIDE LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811202"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "811203",
-   "severity": "severe",
-   "message": "811203 INTERIOR - LIGHT SHELF - SIDE RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|811203"
-  },
-  {
-   "check": "C05",
    "rule": "dimension-twice",
    "subject": "831001",
    "severity": "minor",
@@ -3318,7 +3270,7 @@
   {
    "id": "2-13",
    "name": "INTERIOR - LIGHT SHELF ASSY",
-   "kg": 1.585,
+   "kg": 1.569,
    "dims": [
     2332.0,
     80.0,
@@ -3342,7 +3294,7 @@
   {
    "id": "2-15",
    "name": "INTERIOR - WORK WALL LEDGE ASSY",
-   "kg": 1.903,
+   "kg": 1.895,
    "dims": [
     1000.0,
     250.0,
