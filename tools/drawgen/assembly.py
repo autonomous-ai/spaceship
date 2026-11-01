@@ -408,7 +408,16 @@ class Item:
 
 
 class Assy:
-    """Everything one assembly sheet needs, read from the team STEP and the team parts list."""
+    """Everything one assembly sheet needs, read from the team STEP and the team parts list. A class built on it (the
+    whole-pod GA) may give its sheet another kind, its own sources, and an extra(sh, views, sides) step that draws
+    more annotation; make() uses them when present."""
+
+    kind = "assembly"           # the sheet's kind in its drawing data; check() reads only 'assembly'
+
+    def sources(self):
+        """What the sheet was drawn from, with their hashes: the STEP and the parts list."""
+        return [{"role": "STEP", "path": inputs.rel(self.step), "sha256_12": inputs.sha12(self.step)},
+                {"role": "parts list", "path": inputs.rel(self.list_file), "sha256_12": inputs.sha12(self.list_file)}]
 
     def __init__(self, pn, team, entry, step=None):
         self.pn, self.team, self.entry = pn, team, entry
@@ -1549,6 +1558,9 @@ def make(pn, team, entry, out_path, today=None, step=None, assy=None):
     ifaces = interface_dims(sh, assy, views, sides)
     stacks = stack_dims(sh, assy, views, sides)
     datums = datum_symbols(sh, assy, views, sides)
+    # an assembly class's own annotation (the GA's clear sizes and position codes), drawn after the sizes and before
+    # the titles and balloons, so they keep clear of it
+    extra = assy.extra(sh, views, sides) if hasattr(assy, "extra") else None
     for nm in order:
         av = views[nm]
         av.title_gap = sides[nm].dims["down"] + 9.0
@@ -1604,11 +1616,9 @@ def make(pn, team, entry, out_path, today=None, step=None, assy=None):
     xs = [tx]
     for c in COLS:
         xs.append(xs[-1] + c[1])
-    data = {"kind": "assembly", "generator": TOOL_REV, "pn": assy.pn, "rev": assy.rev, "dwg": assy.dwg_name,
+    data = {"kind": assy.kind, "generator": TOOL_REV, "pn": assy.pn, "rev": assy.rev, "dwg": assy.dwg_name,
             "sheet": size, "sheet_h": H, "team": team,
-            "sources": [{"role": "STEP", "path": inputs.rel(assy.step), "sha256_12": inputs.sha12(assy.step)},
-                        {"role": "parts list", "path": inputs.rel(assy.list_file),
-                         "sha256_12": inputs.sha12(assy.list_file)}],
+            "sources": assy.sources(),
             "parent_keys": list(entry.get("parent_keys", ())), "unhatched": list(entry.get("unhatched", ())),
             "views": [{"name": nm, "kind": v.kind, "n": v.view.n, "x": v.view.x, "y": v.view.y, "scale": v.scale,
                        "off": v.off, "box": v.box(), "letter": v.letter,
@@ -1620,7 +1630,8 @@ def make(pn, team, entry, out_path, today=None, step=None, assy=None):
                       "rows": [{"no": r["no"], "pn": r["pn"], "top": a, "bottom": b} for r, (a, b) in zip(rows, row_spans)]},
             "refs": [it.pn for it in assy.refs], "unmodelled": [it.pn for it in assy.table_items if not it.occs]}
     # what only some sheets have goes in only when they have it (a sheet without it keeps its bytes)
-    for k, v in (("envelopes", dict(entry.get("envelopes", {}))), ("datums", datums), ("centre_lines", clines)):
+    for k, v in (("envelopes", dict(entry.get("envelopes", {}))), ("datums", datums), ("centre_lines", clines),
+                 ("extra", extra)):
         if v:
             data[k] = v
     sh.meta["creationDate"] = "D:%s000000Z" % today.replace("-", "")

@@ -338,6 +338,36 @@ def test_readback_fails_a_balloon_on_a_hidden_point():
                        for f in fails), (end, fails)
 
 
+def test_an_assembly_class_brings_its_own_kind_sources_and_extra():
+    """The hooks the whole-pod GA builds on (Fusion Engineer 2's pod_assembly.py): make() draws an assembly already
+    built; the sheet's kind and sources come from it, and its extra(sh, views, sides) step draws more annotation
+    after the sizes and before the balloons, its return kept in the drawing data. A sheet of another kind is not
+    this module's to read back."""
+    team, entry = assembly.assemblies()["610101"]
+
+    class Pod(assembly.Assy):
+        kind = "pod"
+
+        def sources(self):
+            return super().sources() + [{"role": "master BOM", "path": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+                                         "sha256_12": "test"}]
+
+        def extra(self, sh, views, sides):
+            P = views["principal"]
+            x0, y0, x1, y1 = P.box()
+            sh.text(x0, y0 - 30.0, "EXTRA", 2.5)
+            return {"labels": ["EXTRA"]}
+    a = Pod("610101", team, entry)
+    out = os.path.join(TMP, "pod.pdf")
+    rep = assembly.make("610101", team, entry, out, assy=a)
+    data = rep["data"]
+    assert data["kind"] == "pod" and data["extra"] == {"labels": ["EXTRA"]}, (data["kind"], data.get("extra"))
+    assert [s_["role"] for s_ in data["sources"]] == ["STEP", "parts list", "master BOM"], data["sources"]
+    assert "EXTRA" in fitz.open(out)[0].get_text()
+    fails, _st = assembly.check(out)
+    assert fails and "not an assembly sheet" in fails[0], fails
+
+
 def test_never_goes_over_a_fusion_drawing():
     out = os.path.join(TMP, "fusion")
     os.makedirs(out, exist_ok=True)
