@@ -2,6 +2,15 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-11-01 05:59 UTC in one lock hold with the FRONT combined check after it, through the late-bound loader (the newest `door_unit.py` read when the lock was granted), for D-132 and the US door rules (PM rulings 2026-11-01): no floor and no threshold, so the kick strip's bottom sits on the base band's bottom line, the skeleton's `glide_h` (Z 10), and the drop seal closes the 10 mm gap to the room floor; the strip is 95 tall (it was 85 over the 13 mm threshold), its seal cavity 65; its push-side (pod-side) top edge is tapered 60° from the horizontal, 6.93 high across the 4 mm wall, the pod-side chamber stopping a skin under it, the outside face square; the pull is centred 1042.5 above the room floor, its 350 bar from 867.5 to 1217.5 inside the 865 to 1220 band, and the build now fails if it leaves the band. The version's description in Fusion still names the first D-132 values (strip from Z 7, pull 1050): the description file was written before the follow-up rulings; the model and every export carry the values above.
+
+- bodies 11, timeline 36 items, unhealthy 0, loose sketches 0, parameters 155; clash pairs 4, all listed (as below)
+- unit box X -1132.02 to 216.04, Y -773.40 to -624.59, Z 9.98 to 2115.52; `step_check.py` box MATCH against the parameters' box (X -1132 to 216.02, Y -773.38 to -624.62, Z 10 to 2115.5, largest difference 0.0000 mm); re-read in Fusion, box equal (0.000 mm)
+- kick strip section (DXF): 20 × 95, the push-side top corner cut from (20, 88.07) to (16, 95), the 60° taper
+- parts list: 9 rows, the unit 48.72 kg (the kick strip 1.345 kg, was 1.218)
+- edit test PASS (`EDIT-TEST-RECORD.md`); no names in the exports (f3d entries read through zstd, STEP, CSV, DXF)
+- FRONT combined check (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies; the gaps unchanged (door to the fixed pane 4.00, leaf top to DT 6.00, catch to the strike 0, seals 0 on the leaf); the pull spaces 781.45 from DR's skin
+
 Rebuilt 2026-10-31 21:17 UTC in one lock hold (the cloud copy is the version this run saved) with the glass rebuild and the four part-only designs: the hardware's CAD names are the joints register's (D-99), and the strike is named FRONT - DOOR STRIKE - ENVELOPE, a stand-in for the product (D-104), so its expected overlap with the leaf is no clash (F-103). Same geometry and results as the run below: clash pairs 4, all expected; leaf 43.854 kg, unit 48.59 kg; STEP re-read 0.000 mm; edit test PASS (31 anchors). The parts list is in the process and finish columns, same values.
 
 Run 2026-10-31 18:5x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
@@ -53,7 +62,7 @@ DXF: leaf (front view, X from the hinge edge, Y from the leaf's bottom) (0, 0), 
 | 368102 strike | 0.02 | source (Sugatsune datasheet, 22.9 g) |
 | 368006 magnetic seal, the door's half | 0.15 | assumption, HOLD product |
 | 368103 pull pair | 0.80 | assumption (D-56) |
-| **Door unit** | **48.59** | calculation |
+| **Door unit** | **48.72** | calculation (D-132 rebuild: the kick strip 95 tall) |
 
 The hinge set's rating stays at least 60 kg (PM ruling 2026-10-31: the unit plus a margin).
 

@@ -149,7 +149,7 @@ SPECS = {
             "60 +0/-5 deg." % (ZB - KZB),
         ],
         "title": title("361002", "FRONT - DOOR KICK STRIP", "Thanh chân cửa nhôm", "aluminium EN AW-6063-T6",
-                       "black anodised matte 20 um (AA20)", "1:5, section 2:1", "A2", [("MASS", "1.1 kg (calculation)")]),
+                       "black anodised matte 20 um (AA20)", "1:5, section 2:1", "A2", [("MASS", "1.35 kg (calculation, CAD)")]),
     },
     "door_unit": {
         "design": doc("360001", "FRONT - DOOR UNIT", "CAD"),
@@ -172,7 +172,7 @@ SPECS = {
             "halves shipped fitted in DL; hung on site with the 5 mm key. No holes in the glass until named.",
             "Pull pair (HOLD) centred %.1f above the floor, its bar %.1f to %.1f, inside the US band 865 to 1220 "
             "(PM ruling 2026-11-01)." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
-            "Mass of the unit as it hangs: about 48.5 kg (calculation; parts list).",
+            "Mass of the unit as it hangs: about 48.7 kg (calculation; parts list).",
             "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the room floor (D-132)." % v["kick_zb"],
         ],
         "title": title("360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "see the parts list", "see the parts list",

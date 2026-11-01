@@ -4,6 +4,18 @@ Engineering guideline section 4.4. Each test opens the exported .f3d as a new un
 
 ## 360001 FRONT - DOOR UNIT, P01
 
+Rerun 2026-11-01 05:59 UTC after the D-132 rebuild (the kick strip on the band's bottom line, its 60° push-side taper, the pull in the US band), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1348.1 x 148.8 x 2105.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1358.1 x 148.8 x 2110.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1348.1 x 148.8 x 2105.5 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS, 31 anchors.
+
+Earlier run (before D-132):
+
 In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
 
 | State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
