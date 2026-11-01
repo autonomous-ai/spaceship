@@ -105,6 +105,27 @@ def _plate_with_hole(width=100.0, height=50.0, t=2.0, hole_x=10.0, hole_y=25.0, 
     return s
 
 
+def _half_cyl(x, r=3.25, t=1.5, side=1.0):
+    """A concave half-cylinder face (a slot's round end) on the X axis at x, t long, 180 degrees of arc."""
+    fr = sf.Frame((x, 830.0, 73.5), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (side, 0.0, 0.0))
+    a = (fr, r, (x, 830.0 + r, 73.5), (x, 830.0 - r, 73.5), True)
+    b = (sf.Frame((x + t, 830.0, 73.5), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (side, 0.0, 0.0)), r,
+         (x + t, 830.0 + r, 73.5), (x + t, 830.0 - r, 73.5), True)
+    pts = [a[2], a[3], b[2], b[3]]
+    return sf.Face(1, "cylinder", (x, 830.0, 73.5), (side, 0.0, 0.0), r, False, pts, [a, b], [])
+
+
+def test_a_hole_goes_all_the_way_round_in_its_own_place_on_the_axis():
+    # BASE's D-129 back band: a half-round slot end in each end plate, 2.4 m apart on one axis, isn't a hole
+    import types
+    solid = types.SimpleNamespace(id=7, faces=[_half_cyl(-1210.0), _half_cyl(1208.5)])
+    assert sf._holes(solid) == []
+    # two half faces in one place make one hole
+    solid = types.SimpleNamespace(id=7, faces=[_half_cyl(-1210.0), _half_cyl(-1210.0, side=-1.0)])
+    hs = sf._holes(solid)
+    assert len(hs) == 1 and abs(hs[0].diameter - 6.5) < 1e-9 and abs(hs[0].length - 1.5) < 1e-9
+
+
 def test_edge_distance_rule_fires_under_two_diameters_and_not_above():
     bad = _plate_with_hole(hole_x=10.0, d=6.0)       # 10 < 12
     assert bad.thickness == 2.0 and len(bad.holes) == 1
