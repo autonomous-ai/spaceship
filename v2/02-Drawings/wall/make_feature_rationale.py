@@ -178,6 +178,25 @@ OTHER_EL = {
             "the clip (H03) needs its edge distance on the tray base there", "HOLD H03", "", "", "HOLD")],
 }
 POSITIONS = {"2101": ("L1", "R1", "L2", "R2"), "2102": ("B1", "B2", "B3", "B4")}
+# D-117 and D-120: the frame's corners and parts once it is rebuilt that way (the reports show member parts)
+D117_ROW = ("F12", "{frame}", "The 4 perimeter members run to the frame's outer corners, mitred there (the mitre from the "
+            "outer to the inner corner: 45 degrees where the two are the same size, 26.57 on a 40 x 40 meeting a 20 x 40 and "
+            "63.43 on the 20 x 40); the studs fit square between the rails", "internal corner and T cleats, crimped, with "
+            "structural adhesive (D-115); no hole within 100 of a corner, so the cleats (ending within 65) clear every hole",
+            "D-117; the Joints Engineer's corner details (2026-11-01)", "follows the frame (edit test)",
+            "mitre angle per the frame drawing", "DECIDED (D-117)")
+D120_ROW = ("F49", "{frame}", "Every member is its own part with its own number, the studs copies of one; the frame is "
+            "their assembly and keeps its number; the fill is a set of numbered pieces; the hardware copies of one part "
+            "each", "the build plan's rule 2: every part a component, never a body", "D-120, D-123; numbers from the "
+            "master BOM's allocation", "copies follow their pattern and their holes", "", "DECIDED (D-120)")
+FAMILIES_D117 = {
+    ("RAIL - BOTTOM", 8.0, "z"): (
+        "F50", "T-joint plug cleat slot, round ends: one per stud end in the rail's bay-side wall", "the plug cleat "
+        "(831003 to 831006, the Joints Engineer's; placed when modelled)", "on the stud's centre line, its 22 across the "
+        "40 face, centred on the frame depth", "the Joints Engineer's corner details for D-117 (2026-11-01)",
+        "through the 1.2 wall only", "±0.2 (assumption)", "CNC or jig, with the rail's other holes", "DECIDED (D-117)"),
+}
+FAMILIES_D117[("RAIL - TOP", 8.0, "z")] = FAMILIES_D117[("RAIL - BOTTOM", 8.0, "z")]
 
 # (body name, hole diameter, axis) -> id, function, mating part, rule (where and why there), source,
 # clearances, tolerance, make and check, status
@@ -307,15 +326,23 @@ def main(argv):
              "| ID | Part | Holes from the CAD (Ø, axis, centres) | Function | Mating part | Rule: where and why | Source | "
              "Clearances | Tolerance | Make and check | Status |", "|---|---|---|---|---|---|---|---|---|---|---|"]
     pns = {}
+    assy = panel["document"].split("_")[0]
+    body_part = {}                       # D-120: a member's holes belong to the member's own number
     for rep in (panel, cass):
         for c in rep["components"]:
             for key, pre in (("frame", ("2111", "2112")), ("skin", ("2113", "2114")), ("fill", ("2115", "2116")),
                              ("tray", ("5111", "5112")), ("felt", ("5113", "5114"))):
-                if c["part_number"].startswith(pre):
+                # the fill set is the 2115/2116 part under the panel itself, not one of its pieces
+                if c["part_number"].startswith(pre) and (key != "fill" or assy in c.get("parents", [assy])):
                     pns[key] = c["part_number"]
-    pns["assy"] = panel["document"].split("_")[0]
+            if c["part_number"].startswith("212"):
+                for b in c["bodies"]:
+                    body_part[b["name"]] = c["part_number"]
+    pns["assy"] = assy
+    d117 = bool(body_part)
     back = pns["frame"].startswith("2112")
     families = {**FAMILIES, **FAMILIES_BACK, **FAMILIES_EL} if back else {**FAMILIES, **FAMILIES_EL}
+    families.update(FAMILIES_D117)
     code = POSITIONS[pns["assy"][:4]][int(pns["assy"][4:6]) - 1]
     found = holes(panel)
     found.update(holes(cass))
@@ -332,7 +359,7 @@ def main(argv):
                 continue
         cs = "; ".join("(%s)" % ", ".join("%g" % v for v in h["centre"] if v is not None) for h in hs)
         part = pns["felt"] if body == FELT else pns["tray"] if body == TRAY else pns["skin"] if body.startswith("SKIN") \
-            else pns["frame"]
+            else body_part.get(body, pns["frame"])
         lines.append("| %s | %s %s | Ø%g along %s, %d: %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             fam[0], part, body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7],
             fam[8]))
@@ -341,6 +368,8 @@ def main(argv):
     lines += ["", "Other features:", "", "| ID | Part | Feature | Why | Source or calculation | Edit behaviour | Tolerance | Status |",
               "|---|---|---|---|---|---|---|---|"]
     other = (OTHER_BACK if back else OTHER) + OTHER_EL.get(code, [])
+    if d117:                             # the frame rebuilt as D-117 and D-120 ask: mitred, every member a part
+        other = [D117_ROW if r[0] == "F12" else r for r in other] + [D120_ROW]
     for row in other:
         lines.append("| %s |" % " | ".join(f.format(**pns) for f in row))
     lines += ["", "Joint hardware modelled in the panel (bodies at every rivnut hole, joints register 2.1): rivnut "

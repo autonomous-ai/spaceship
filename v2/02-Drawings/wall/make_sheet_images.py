@@ -149,8 +149,13 @@ def frame_blocks(pn, src=None):
     rep = load(src or pn)
     pos = position(rep)
     frame = comp_of(rep, pn)
-    bodies = sorted(frame["bodies"], key=lambda b: b["name"])
     prm = {p["name"]: p["value"] for p in rep["parameters"]}
+    # D-120: a rebuilt frame holds no bodies itself; its members are parts, the studs copies of one
+    members = [c for c in rep["components"] if c["part_number"].startswith("212") and pn in c.get("parents", [])]
+    if members:
+        bodies = [dict(c["bodies"][0], part=c["part_number"]) for c in members for _ in range(c.get("copies", 1))]
+    else:
+        bodies = sorted(frame["bodies"], key=lambda b: b["name"])
     mass = sum(b["mass_kg"] for b in bodies)
     bx = box_of(bodies)
     cut = {}
@@ -158,7 +163,7 @@ def frame_blocks(pn, src=None):
         d = sorted(round(b["box"][i + 3] - b["box"][i], 2) for i in range(3))
         wall = prm.get("stud_t", 1.0) if b["name"].startswith("STILE - MID") else prm.get("tube_t", 1.2)
         sec = "%s × %.1f" % ("40 × 40" if d[0] >= 39.9 else "20 × 40", wall)
-        key = (b["name"].rstrip("0123456789 ").strip(), sec, d[2])
+        key = (("%s %s" % (b["part"], b["name"])) if members else b["name"].rstrip("0123456789 ").strip(), sec, d[2])
         cut[key] = cut.get(key, 0) + 1
     data = data_block(pn, frame, rep, "1:5", "A2", "aluminium tube 6063-T6, mill finish (D-79)", mass)
     if pos["back"]:
@@ -198,13 +203,20 @@ def frame_blocks(pn, src=None):
         datums,
         holes,
         "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009).",
-        "5. Cut list, square ends, tube 6063-T6 (studs 1.0 wall, D-85): " + "; ".join(
+        ("5. Cut list, ends per note 6, tube 6063-T6 (studs 1.0 wall, D-85): " if members else
+         "5. Cut list, square ends, tube 6063-T6 (studs 1.0 wall, D-85): ") + "; ".join(
             "%s: %s tube, length %g, qty %d" % (k[0].title().replace(" - ", " "), k[1], k[2], q)
             for k, q in sorted(cut.items())) + ".",
-        "6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
-        "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
-        "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's capability "
-        "is known (guideline 6.3)." % extra,
+        ("6. Member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no "
+         "welds). The 4 perimeter members run to the outer corners, mitred there (D-117: 45° where the two are the "
+         "same size; 26.57° on a 40 × 40 meeting a 20 × 40, 63.43° on the 20 × 40); the studs fit square between the "
+         "rails, with an 8 × 22 plug-cleat slot in the rail's bay-side wall at each stud end. Each member is its own "
+         "part (D-120); the cleats are the Joints Engineer's, placed when they land. %sCut lengths outer to outer, "
+         "±0.5 (assumption) until the frame maker's capability is known (guideline 6.3)." % extra) if members else
+        ("6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
+         "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
+         "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's "
+         "capability is known (guideline 6.3)." % extra),
         "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
         "(HOLD-02), torque (HOLD-01). P01 DRAFT.",
         "8. Lengths and hole positions without their own tolerance: ISO 2768-1 class m (aluminium tube, sawn and "
