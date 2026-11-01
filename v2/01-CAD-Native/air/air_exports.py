@@ -69,7 +69,14 @@ TREE = [
     ("lin_s", "sbox", 2, "D-121: the two end walls, from 70 above the fans to the box's open top"),
     ("fan_sup", "sbox", 2, "PM ruling 2026-11-01: the two supply fans belong to AIR's supply box only (FRONT drops them from DR)", "fan"),
     ("riser", "sbox", 1, "D-61: 1 mm steel"),
-    ("trans", "sbox", 1, "air report 7e (opening into the column top)"), ("rtrans", "sbox", 1, "air report 7e"),
+    ("trans", "sbox", 1, "PM rulings 2026-11-01 and the air report (#283): over the box and the full-depth passage beside "
+     "it to the opening into the column, two sets of turning vanes"),
+    ("rtrans", "sbox", 1, "air report 7e; FRONT's trapezoid from the riser's top to the box's bottom"),
+    ("lip", "sbox", 1, "PM ruling 2026-11-01: the box's front no longer reaches DR's shelf tube F08 (25 mm back), so a "
+     "lip angle reaches forward onto it on rubber pads"),
+    ("pad", "sbox", 2, "PM ruling 2026-11-01: two rubber pads under the lip on F08, to keep fan vibration out of DR"),
+    ("buffer", "sbox", 1, "PM ruling 2026-11-01: holds the assembly upright on DR's cross tube F07 with DR's inner panel "
+     "off, so the outlet's seal carries no load"),
     ("sleeve", "air", 1, "D-61: through C2's roof slot"), ("rgrille", "air", 1, "D-61"),
 ]
 FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left": "ACP EV3038 face with Dark Gray felt (D-79)",
@@ -86,7 +93,7 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "col_ang_b": "mill finish (hidden, D-79)", "kick_l": "powder coat to match the felt (HOLD)",
           "blk_e": "mill finish (hidden, D-79)", "blk_s": "mill finish (hidden, D-79)",
           "lin_es": "as supplied (the maker's facing)", "lin_ee": "as supplied (the maker's facing)",
-          "lin_s": "as supplied (the maker's facing)"}
+          "lin_s": "as supplied (the maker's facing)", "lip": "mill finish (hidden, D-79)"}
 PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
            "sof_rail_d": "laser cut flat bar, forks and holes", "sof_rail_r": "laser cut flat bar, forks", "sof_end": "laser cut",
            "col_front": "CNC routed ACP, felt laminated", "col_left": "CNC routed ACP, felt laminated",
@@ -95,22 +102,29 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "kick": "perforated sheet, cut", "egrille": "perforated sheet, cut", "rgrille": "perforated sheet, cut",
            "casing": "sheet metal: cut, folded into a tube (blank HOLD: the factory's bend table)",
            "box": "sheet metal: cut, folded, riveted (blank HOLD)", "box_s": "sheet metal: cut, folded, riveted (blank HOLD)",
-           "riser": "sheet metal: cut, folded into a tube (blank HOLD)", "sleeve": "sheet metal: cut, folded into a tube (blank HOLD)",
+           "riser": "sheet metal: cut, folded into a tube (blank HOLD); one rivnut hole for the buffer",
+           "sleeve": "sheet metal: cut, folded into a tube with its top flange (40 left, 72 back, 15 front and right) "
+                     "and 4 rivnut holes (blank HOLD)",
            "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut",
            "col_ang_b": "extruded angle, cut, keyholes milled", "kick_l": "perforated sheet, cut",
            "col_fill_l": "knife cut", "sof_fill_f": "knife cut",
            "blk_e": "laser cut, two fan bores; sealed to the casing (sealant HOLD)",
            "blk_s": "laser cut, two fan bores; sealed to the casing (sealant HOLD)",
            "lin_es": "knife cut; bonded to the casing (adhesive HOLD)", "lin_ee": "knife cut; bonded to the casing (adhesive HOLD)",
-           "lin_s": "knife cut; bonded to the casing (adhesive HOLD)"}
+           "lin_s": "knife cut; bonded to the casing (adhesive HOLD)",
+           "lip": "laser cut, folded to an angle; 3 closed-end blind rivets to the casing's front wall (rivet HOLD, with "
+                  "the casing's)"}
 HOLD_MASS = {"hub": (0.0, "assumption: space only (in-house module, its mass is ELECTRICAL's)"),
-             "trans": (1.89, "calculation: 0.35 m2 of 2 mm aluminium, the air report's sizing (D-60, 7f), until the AIR "
-                       "follow-up designs it into FRONT's reserved space"),
+             "trans": (2.07, "calculation (the air report #283, dr_transition): walls of 2 mm aluminium, 0.327 m2 for the "
+                       "full-depth passage (175.5 x 160 over 488 mm), and 0.3 kg of turning vanes (assumption); the "
+                       "transition's own design (walls, vanes, outlet lip seal) is HOLD"),
              "rtrans": (1.47, "calculation: a 1 mm galvanised steel duct of 0.187 m2, from the riser's top (139 x 155) to the "
                         "fan box's bottom (300 x 155) over 205, FRONT's reserved space, until the AIR follow-up designs it"),
              "stud": (0.012, "assumption: an M6 shoulder stud, about 12 g"),
              "hinge": (0.04, "assumption: a small concealed hinge, about 40 g"),
-             "latch": (0.02, "assumption: a push latch, about 20 g")}
+             "latch": (0.02, "assumption: a push latch, about 20 g"),
+             "pad": (0.004, "calculation: 40 x 15 x 5 rubber at about 1300 kg/m3 (product HOLD)"),
+             "buffer": (0.012, "assumption: a rubber buffer about 20 across and 23 long with an M6 steel stud (product HOLD)")}
 
 
 def fname(key, doctype, ext):
@@ -252,7 +266,11 @@ HARDWARE_ROWS = {
                       "one under each roof grille bolt's head (R-J10); joints register H-09"),
     "grille_rivnut": ("air", "steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2",
                       "HOLD-01 (D-48)",
-                      "set at the factory in the roof sleeve's top flange, one near each corner, for the grille's bolts; "
+                      "set at the factory in the roof sleeve's top flange, two on its left side and two on its back side "
+                      "behind cross member 1, for the grille's bolts (J-AIR-03); joints register H-03"),
+    "buffer_rivnut": ("sbox", "steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2",
+                      "HOLD-01 (D-48)",
+                      "set at the factory in the riser's front wall for the riser buffer 618501 (PM ruling 2026-11-01); "
                       "joints register H-03"),
 }
 
@@ -274,7 +292,7 @@ def parts_list(v, mass):
         m = mass.get(pn)
         if kind == "HS":
             mass_txt, mstat = "", "calculation (sum of its parts)"
-        elif kind == "HOLD":
+        elif kind == "HOLD" or (kind == "PI" and key in HOLD_MASS):   # a bought part whose product is on HOLD
             hm, hs = HOLD_MASS.get(key, (0.0, "assumption: space only"))
             mass_txt, mstat = "%.3f" % hm, hs
         elif pkey == "fan":
@@ -291,12 +309,13 @@ def parts_list(v, mass):
             each = (sum(m) / max(1, qty_pod(key))) if m else None
             mass_txt, mstat = ("%.3f" % each if each is not None else ""), "calculation (Fusion, CAD geometry x density)"
         size, tol = size_tol(v, pkey) if kind == "MP" else ("", "")
-        maker, sku = MAKER.get(pkey, ("HOLD", "HOLD: chosen at the RFQ") if kind == "HOLD" else ("", ""))
+        held = kind == "HOLD" or name.endswith("- HOLD")
+        maker, sku = MAKER.get(pkey, ("HOLD", "HOLD: chosen at the RFQ") if held else ("", ""))
         r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": A.PARTS[parent][0] if parent else "",
              "qty_per_parent": q, "qty_per_pod": qty_pod(key), "material": A.MATERIALS[mat][0] if mat else "",
              "finish": FINISH.get(key, ""), "process": PROCESS.get(key, ""), "maker": maker, "sku": sku,
              "torque": "", "size_mm": size, "tolerance": tol, "mass_each_kg": mass_txt,
-             "mass_status": mstat, "revision": REV, "status": "HOLD" if kind == "HOLD" or pkey == "fan" else "DRAFT",
+             "mass_status": mstat, "revision": REV, "status": "HOLD" if held or pkey == "fan" else "DRAFT",
              "source": src}
         rows.append(r)
         by_key[key] = r

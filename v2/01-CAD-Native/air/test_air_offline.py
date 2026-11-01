@@ -31,6 +31,25 @@ def gap(a, b):
     return max(max(b[2 * i] - a[2 * i + 1], a[2 * i] - b[2 * i + 1]) for i in range(3))
 
 
+def pieces(name, v=V):
+    """The boxes a layout body is made of, where its own box would overlap its neighbours though its shape doesn't:
+    the roof sleeve's walls (in the slot) and its top flange (on the skin); the upper transition's part over the box
+    and its part beside it (each piece's box; transition_outlines gives the shapes)."""
+    ev = lambda e: A.ev(v, e)
+    if name == "ROOF SLEEVE":
+        b = tuple(ev(e) for e in A.layout_box(name))
+        walls = (ev("slot_x0"), ev("slot_x0 + slot_w"), ev("slot_y0"), ev("slot_y0 + slot_d"), b[4], ev("pod_h"))
+        fx0, fx1, fy0, fy1 = (ev(e) for e in A.sleeve_flange())
+        return [walls, (fx0, fx1, fy0, fy1, ev("pod_h"), ev("pod_h + slv_t"))]
+    if name == "SUPPLY TRANSITION":
+        out = []
+        for pts, z0, z1 in A.transition_outlines():
+            xs, ys = [ev(x) for x, _y in pts], [ev(y) for _x, y in pts]
+            out.append((min(xs), max(xs), min(ys), max(ys), ev(z0), ev(z1)))
+        return out
+    return [b6(name)] if v is V else [tuple(ev(e) for e in A.layout_box(name))]
+
+
 class Sizes(unittest.TestCase):
     def test_d61(self):
         col = b6("COLUMN FACE FRONT")
@@ -46,7 +65,7 @@ class Sizes(unittest.TestCase):
             dims = sorted((b[1] - b[0], b[3] - b[2], b[5] - b[4]))
             self.assertEqual([round(d, 6) for d in dims], [173.0, 314.0, 1750.0], name)
         self.assertAlmostEqual(V["pass_w"], 80.0)
-        slot = b6("ROOF SLEEVE")
+        slot = pieces("ROOF SLEEVE")[0]          # the walls in the slot (the flange lies on the skin round it)
         self.assertAlmostEqual(slot[1] - slot[0], 285.0)
         self.assertAlmostEqual(slot[3] - slot[2], 294.0)
         self.assertAlmostEqual(slot[2], -620.0)
@@ -83,7 +102,9 @@ class Fits(unittest.TestCase):
                 a, b = names[i], names[j]
                 if (a, b) in cut or (b, a) in cut:
                     continue
-                self.assertGreaterEqual(gap(b6(a), b6(b)), -1e-9, "%s overlaps %s" % (a, b))
+                for pa in pieces(a):
+                    for pb in pieces(b):
+                        self.assertGreaterEqual(gap(pa, pb), -1e-9, "%s overlaps %s" % (a, b))
 
     def test_cartridge_clearance(self):
         xir = V["pod_w"] / 2 - V["stack_t"]
@@ -113,12 +134,13 @@ class Fits(unittest.TestCase):
 
     def test_sleeve_clear_of_ceiling_members(self):
         cv = CM.evaluate(CM.all_params())
-        s = b6("ROOF SLEEVE")
+        walls, flange = pieces("ROOF SLEEVE")
         for code, _n, _a, b in CM.frame_members("C2"):
             m = tuple(CM.ev(cv, e) for e in b)
-            self.assertGreaterEqual(gap(s, m), 5.0 - 1e-9, "sleeve too close to C2 " + code)
-        self.assertAlmostEqual(s[5], V["pod_h"])
-        self.assertAlmostEqual(s[4], b6("EXHAUST FAN BOX")[5])
+            self.assertGreaterEqual(gap(walls, m), 5.0 - 1e-9, "sleeve too close to C2 " + code)
+        self.assertAlmostEqual(walls[5], V["pod_h"])
+        self.assertAlmostEqual(flange[4], V["pod_h"], msg="the flange lies on C2's skin")
+        self.assertAlmostEqual(walls[4], b6("EXHAUST FAN BOX")[5])
 
     def test_fans_inside_boxes(self):
         boxes = {"SUPPLY": b6("SUPPLY FAN BOX"), "EXHAUST": b6("EXHAUST FAN BOX")}
@@ -206,11 +228,11 @@ class D120Copies(unittest.TestCase):
             if k in A.COPIES:
                 b = [A.ev(V, e) for e in bx]
                 size.setdefault(k, []).append((round(b[1] - b[0], 6), round(b[3] - b[2], 6), round(b[5] - b[4], 6)))
-        self.assertEqual(sorted(size), ["hinge", "latch", "lin_es", "lin_s", "lock", "stud"])
+        self.assertEqual(sorted(size), ["hinge", "latch", "lin_es", "lin_s", "lock", "pad", "stud"])
         for k, sizes in size.items():
             self.assertEqual(len(set(sizes)), 1, "%s: %s" % (k, sizes))
         self.assertEqual({k: len(v) for k, v in size.items()},
-                         {"hinge": 4, "latch": 4, "lin_es": 2, "lin_s": 2, "lock": 2, "stud": 4})
+                         {"hinge": 4, "latch": 4, "lin_es": 2, "lin_s": 2, "lock": 2, "pad": 2, "stud": 4})
 
     def test_joined_units(self):
         for k, n, bx in A.units():
@@ -320,11 +342,12 @@ class FrontInterface(unittest.TestCase):
         for name in self.DOOR_SIDE:
             self.assertAlmostEqual(b6(name)[2], yd, msg=name)
         for name, (_k, bx) in LAY.items():
-            if _k not in ("box_s", "blk_s", "lin_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock"):
+            if _k not in ("box_s", "blk_s", "lin_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock",
+                          "lip", "pad", "buffer"):
                 self.assertGreaterEqual(bx[2], yd - 1e-9, "%s reaches into DR's access panel" % name)
 
     def test_door_rail_clear_of_the_sleeve(self):
-        self.assertLessEqual(b6("SOFFIT RAIL DOOR")[3], b6("ROOF SLEEVE")[2] - 1.0 + 1e-9)
+        self.assertLessEqual(b6("SOFFIT RAIL DOOR")[3], pieces("ROOF SLEEVE")[0][2] - 1.0 + 1e-9)
         self.assertAlmostEqual(b6("SOFFIT RAIL DOOR")[3] - b6("SOFFIT RAIL DOOR")[2], 22.5)
 
     def test_same_as_front(self):
@@ -367,6 +390,171 @@ class EditTest(unittest.TestCase):
                     c = (x - d / 2, x + d / 2, y0, y1, z - d / 2, z + d / 2)
                 self.assertTrue(all(min(t[2 * i + 1], c[2 * i + 1]) - max(t[2 * i], c[2 * i]) > 1e-6 for i in range(3)),
                                 "%s: a %s in %s finds nothing" % (edit, kind, bname))
+
+
+# FRONT's DR frame where the supply box assembly meets it (its DR STEP on main, 350003 P01, read 2026-11-01): the
+# shelf tube F08 and the cross tube F07 in the front ring (Y -847 to -827), the back ring's diagonal tube B06's inner
+# edge in side view (X, Z), C04's inner face in plan, the band tube B08's underside and the bolt-line tube B02's face
+F08 = dict(x0=667.66, x1=1030.85, y0=-847.0, y1=-827.0, z1=1650.0)
+F07 = dict(x1=1030.85, y1=-827.0, z0=834.0, z1=854.0)
+B06_INNER = ((277.76, 2100.0), (770.83, 1530.92))      # the diagonal tube, then the glass-edge tube B07 below it
+B07_INNER = ((770.83, 1530.92), (964.49, 150.0))
+C04_INNER = ((1050.85, -820.11), (1221.72, -666.5))
+B08_Z0, B02_X0 = 2120.0, 1167.0
+
+
+def seg_dist(p, seg):
+    """Distance from point p to the segment seg."""
+    (ax, ay), (bx, by) = seg
+    dx, dy = bx - ax, by - ay
+    t = max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / (dx * dx + dy * dy)))
+    return ((p[0] - ax - t * dx) ** 2 + (p[1] - ay - t * dy) ** 2) ** 0.5
+
+
+def crosses(s1, s2):
+    """Whether two segments cross."""
+    def o(a, b, c):
+        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+    (p, q), (r, t) = s1, s2
+    return o(p, q, r) * o(p, q, t) < 0 and o(r, t, p) * o(r, t, q) < 0
+
+
+def side_of(p, line):
+    """Signed distance of point p from the line through line's two points (positive to its left)."""
+    (ax, ay), (bx, by) = line
+    L = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5
+    return ((bx - ax) * (p[1] - ay) - (by - ay) * (p[0] - ax)) / L
+
+
+class SupplyBoxRest(unittest.TestCase):
+    """PM rulings 2026-11-01: the box 25 mm back from DR's skin no longer reaches F08, so a lip angle reaches onto it on
+    two rubber pads; a buffer on the riser against F07 holds the assembly upright with DR's inner panel off; the outlet's
+    seal carries no load."""
+
+    def test_box_where_ruled(self):
+        b = b6("SUPPLY FAN BOX")
+        self.assertEqual((b[0], b[1], b[2]), (673.0, 973.0, -822.0))
+        self.assertAlmostEqual(F08["y1"] - b[2], -5.0, msg="5 mm from F08's back face to the box's front")
+
+    def test_lip_reaches_f08(self):
+        lip = b6("FAN BOX LIP ANGLE SUPPLY")
+        self.assertAlmostEqual(lip[2] - F08["y0"], 2.0, msg="the lip's tip 2 mm off DR's skin")
+        self.assertAlmostEqual(lip[3], b6("SUPPLY FAN BOX")[2], msg="the lip's upright leg on the box's front wall")
+        self.assertGreaterEqual(F08["y1"] - lip[2], 18.0 - 1e-9, msg="the foot covers 18 of F08's 20")
+        self.assertAlmostEqual(F08["x1"] - lip[1], 5.0, msg="5 mm short of F02")
+        self.assertGreaterEqual(lip[0], F08["x0"], "on F08 at its left end")
+        self.assertAlmostEqual(lip[4], F08["z1"] + V["pad_t"], msg="the lip rests on the pads")
+
+    def test_pads_on_f08_under_the_lip(self):
+        lip = b6("FAN BOX LIP ANGLE SUPPLY")
+        xs = []
+        for side in ("LEFT", "RIGHT"):
+            p = b6("FAN BOX PAD %s" % side)
+            self.assertTrue(F08["x0"] <= p[0] and p[1] <= F08["x1"] and F08["y0"] <= p[2] and p[3] <= F08["y1"], side)
+            self.assertTrue(lip[0] <= p[0] and p[1] <= lip[1] and lip[2] <= p[2] and p[3] <= lip[3], side)
+            self.assertAlmostEqual(p[4], F08["z1"])
+            self.assertAlmostEqual(p[5], lip[4])
+            xs.append((p[0] + p[1]) / 2)
+        # the assembly's weight centre, about X 940 (CEILING's estimate 2026-11-01: the riser carries half the mass at
+        # X 1025), sits between the pads with room either way
+        self.assertTrue(xs[0] + 100 < 940.0 < xs[1] - 50, xs)
+
+    def test_buffer_touches_f07_from_the_riser(self):
+        buf, riser = b6("RISER BUFFER"), b6("INTAKE RISER")
+        self.assertAlmostEqual(buf[2], F07["y1"], msg="set to touch F07's back face")
+        self.assertAlmostEqual(riser[2] - buf[3], V["rvn_head"], msg="on the rivnut's head on the riser's front face")
+        self.assertTrue(riser[0] <= buf[0] and buf[1] <= F07["x1"], "its whole face on F07, inside the riser's width")
+        self.assertAlmostEqual((buf[4] + buf[5]) / 2, (F07["z0"] + F07["z1"]) / 2)
+        self.assertTrue(F07["z0"] <= buf[4] and buf[5] <= F07["z1"])
+
+    def test_riser_off_the_panel(self):
+        self.assertGreaterEqual(A.ev(V, A.YB_FRAME) - b6("INTAKE RISER")[3], 6.0, "6 mm and more off DR's frame face")
+
+
+class SupplyTransition(unittest.TestCase):
+    """PM rulings 2026-11-01 and the air report #283: the upper transition fills the passage beside the box, the box's
+    front line to DR's frame face, Z 1895 to 2110, clear of the corner facet's tube C04; the lower one is FRONT's
+    trapezoid, clear of DR's diagonal tube."""
+
+    def test_full_depth(self):
+        for pts, z0, z1 in A.transition_outlines():
+            ys = [A.ev(V, y) for _x, y in pts]
+            self.assertAlmostEqual(min(ys), b6("SUPPLY FAN BOX")[2])
+            self.assertAlmostEqual(max(ys), -646.5)
+        (top, z0, z1), (side, z2, z3) = A.transition_outlines()
+        self.assertEqual([A.ev(V, z) for z in (z0, z1, z2, z3)], [1950.0, 2110.0, 1895.0, 1950.0])
+        self.assertAlmostEqual(A.ev(V, side[0][0]), b6("SUPPLY FAN BOX")[1], msg="beside the box from its right end")
+
+    def test_clear_of_c04_b08_b02(self):
+        for pts, _z0, z1 in A.transition_outlines():
+            for x, y in pts:
+                p = (A.ev(V, x), A.ev(V, y))
+                self.assertGreaterEqual(side_of(p, C04_INNER), 3.0 - 1e-6, "corner %s inside 3 mm of C04" % (p,))
+            self.assertLessEqual(A.ev(V, z1), B08_Z0 - 10.0 + 1e-9)
+            self.assertLessEqual(max(A.ev(V, x) for x, _y in pts), B02_X0 - 6.0 + 1e-9)
+        # C04's front end runs straight back along X 1050.85 to Y -820.11: the outline's front corner stays clear of it
+        self.assertLess(A.ev(V, "ut_xf"), C04_INNER[0][0] - 6.0)
+
+    def test_lower_transition_clear_of_b06(self):
+        """FRONT's trapezoid, in side view, against the back ring's diagonal and glass-edge tubes' inner edges (they lie
+        in the depth the transition spans, Y -666.5 to -646.5): no edge crosses them, and the box's lower-left corner,
+        the nearest point, keeps FRONT's 4 mm."""
+        pts = [(A.ev(V, x), A.ev(V, z)) for x, z in A.riser_transition_outline()]
+        edges = list(zip(pts, pts[1:] + pts[:1]))
+        for tube in (B06_INNER, B07_INNER):
+            for e in edges:
+                self.assertFalse(crosses(e, tube), "%s crosses %s" % (e, tube))
+                d = min(seg_dist(e[0], tube), seg_dist(e[1], tube), seg_dist(tube[0], e), seg_dist(tube[1], e))
+                self.assertGreaterEqual(d, 3.9, "edge %s within %.2f of %s" % (e, d, tube))
+            self.assertGreater(side_of(pts[0], tube), 0.0, "the trapezoid lies inside DR, right of %s" % (tube,))
+        lay = b6("RISER TRANSITION")
+        self.assertEqual((lay[2], lay[3]), (b6("SUPPLY FAN BOX")[2], b6("INTAKE RISER")[3]))
+
+
+class SleeveFlange(unittest.TestCase):
+    """J-AIR-03 and HOLD-04's edge rule, CEILING's layout 2026-11-01: each of the grille's 4 rivnuts 2 hole diameters
+    (19.06) from every free edge, the skin's slot edge too; their set bulges (about 14 across) clear of C2's members."""
+
+    def setUp(self):
+        self.cv = CM.evaluate(CM.all_params())
+        self.flange = tuple(A.ev(V, e) for e in A.sleeve_flange())
+        self.slot = (V["slot_x0"], V["slot_x0"] + V["slot_w"], V["slot_y0"], V["slot_y0"] + V["slot_d"])
+        self.rn = [(n, A.ev(V, x), A.ev(V, y)) for n, x, y in A.sleeve_rivnuts()]
+
+    def test_edge_rule(self):
+        fx0, fx1, fy0, fy1 = self.flange
+        sx0, sx1, sy0, sy1 = self.slot
+        for n, x, y in self.rn:
+            in_slot_x, in_slot_y = sx0 < x < sx1, sy0 < y < sy1
+            to_slot = (sx0 - x) if in_slot_y else (y - sy1)          # left side or back side
+            self.assertTrue(in_slot_x or in_slot_y, n)
+            for d in (to_slot, x - fx0, fx1 - x, y - fy0, fy1 - y):
+                self.assertGreaterEqual(d, 2 * V["hole_rvn"] - 1e-9, "%s: %.2f from an edge" % (n, d))
+
+    def test_bulges_clear_of_c2_members(self):
+        for code, _n, _a, b in CM.frame_members("C2"):
+            m = tuple(CM.ev(self.cv, e) for e in b)
+            for n, x, y in self.rn:
+                r = V["slv_bulge"] / 2
+                gap_xy = max(m[0] - (x + r), (x - r) - m[1], m[2] - (y + r), (y - r) - m[3])
+                self.assertGreaterEqual(gap_xy, V["slv_rn_clr"] - 1e-9, "%s's bulge meets C2 %s" % (n, code))
+
+    def test_same_layout_as_the_ceiling(self):
+        """The rivnut layout's names are the ceiling's too (C2's skin holes): where the ceiling's model has them, AIR's
+        copies say the same."""
+        theirs = {p[0]: p[1] for p in CM.all_params()}
+        for name, expr, _u, _st, _src in A.AIR_PARAMS:
+            if name.startswith("slv_rn") or name == "slv_bulge":
+                self.assertIn(name, A.AIR_MAY_DEFINE)
+                if name in theirs:
+                    self.assertEqual(" ".join(theirs[name].split()), " ".join(expr.split()), name)
+
+    def test_grille_covers_the_flange_and_takes_the_bolts(self):
+        g = b6("ROOF GRILLE")
+        self.assertEqual(tuple(g[:4]), self.flange)
+        self.assertAlmostEqual(g[4], V["pod_h"] + V["slv_t"], msg="on the flange")
+        holes = sorted((A.ev(V, a[0]), A.ev(V, a[1])) for n, k, a in A.features() if n == "ROOF GRILLE")
+        self.assertEqual(holes, sorted((x, y) for _n, x, y in self.rn))
 
 
 class Numbers(unittest.TestCase):

@@ -109,25 +109,88 @@ AIR_PARAMS = [
     ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
     ("e_lin_gap", "50 mm", "mm", "source", "D-121, the Air Engineer: the exhaust box's far-end lining stops 50 mm under the fans"),
     # ---- supply fan box and intake riser, inside the right decor block (D-61, D-62)
-    ("sb_x0", "645 mm", "mm", "source", R7E + ": supply fan box X 645 to 945"),
+    ("sb_x0", "673 mm", "mm", "source", "PM ruling 2026-11-01 (FRONT's fan box points): the supply fan box X 673 to 973, "
+     "FRONT's reserved space, 4 mm clear of DR's diagonal tube and its glass slot (was X 645 in report 7e)"),
     ("sb_w", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
     ("sb_d", "155 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
     ("sb_h", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
-    ("sb_yf", "3 mm", "mm", "source", R7E + ": supply fan box from Y -847, 3 behind the decor's front face"),
+    ("sb_yf", "28 mm", "mm", "source", "PM ruling 2026-11-01: the supply fan box stands 25 mm further back from DR's front "
+     "skin (front face Y -822), so FRONT's tube across the skin at Z 1905 to 1925 fits in front of it with 5 mm (was 3)"),
     ("sb_z0", "1650 mm", "mm", "source", R7E + ": supply fan box Z 1650 to 1950"),
     ("op_x0", "961 mm", "mm", "source", R7E + ": opening from the block into the column top X 961 to 1161, Z 1895 to 2110"),
     ("op_z0", "1895 mm", "mm", "source", R7E + ": opening Z 1895 to 2110"),
     ("op_h", "215 mm", "mm", "source", R7E + ": opening 200 x 215"),
-    ("rs_x0", "955 mm", "mm", "source", R7E + ": intake riser X 955 to 1094"),
+    ("rs_x0", "956 mm", "mm", "source", "FRONT's reserved space for the riser (ri_x0, DR model; the air report's D-60 table): "
+     "X 956 to 1095 (report 7e had 955)"),
     ("rs_w", "139 mm", "mm", "source", R7E + ": intake riser 139 wide, 155 deep"),
-    ("rs_d", "155 mm", "mm", "source", R7E + ": intake riser 139 wide, 155 deep"),
+    ("rs_d", "150 mm", "mm", "source", "the air report's D-130 table (riser_y, riser_lo): the riser Y -803 to -653, 4.8 mm off "
+     "DR's corner facet at its front-right corner and 6.5 off DR's frame face (was 155; FRONT's ri_d follows with D-130)"),
     ("rs_y0", "-803 mm", "mm", "source", R7E + ": intake riser Y -803 to -648"),
-    ("rs_z0", "105 mm", "mm", "source", R7E + ": intake riser Z 105 to 1445"),
+    ("rs_z0", "252 mm", "mm", "source", "FRONT's reserved space for the riser (DR model on main: its open foot 140 over DR's "
+     "base, Z 252); D-130's sealed intake boot (611502, to come) takes the air from the mesh up to this foot (was Z 105)"),
     ("rs_z1", "1445 mm", "mm", "source", R7E + ": intake riser Z 105 to 1445, then it widens into the fan box below Z 1650"),
     ("rs_t", "1 mm", "mm", "confirmed", "D-61: 1 mm steel intake riser"),
+    # ---- how the supply fan box assembly rests in DR (PM rulings 2026-11-01, after the box moved back): a lip angle on
+    #      the box's front wall on two rubber pads on DR's shelf tube F08, and a rubber buffer on the riser's front face
+    #      against DR's cross tube F07; the outlet's soft lip seal carries no load. DR's frame values are FRONT's (its DR
+    #      STEP on main, 350003 P01): F08 Y -847 to -827, top Z 1650 (fb_z0), right end X 1030.85 at the facet side tube
+    #      F02; F07 Z 834 to 854, the same right end
+    ("dr_skin_t", "3 mm", "mm", "source", "FRONT's DR skin, ACP 3 (DR model's dr_skin_t): DR's front ring tubes start behind it"),
+    ("dr_fr_w", "20 mm", "mm", "source", "FRONT's DR frame tube 20 x 20 (DR model's fr_w): F07 and F08"),
+    ("dr_f08_x1", "1030.85 mm", "mm", "source", "FRONT's DR STEP on main (350003 P01): F08's and F07's right end, at the facet "
+     "side tube F02's inner face"),
+    ("dr_f07_zc", "844 mm", "mm", "source", "FRONT's DR STEP on main (350003 P01): F07, the front ring's cross tube, Z 834 to 854"),
+    ("lip_t", "3 mm", "mm", "source", "Control's allocation of 611408 (#279): a 3 mm aluminium lip angle, as the casing"),
+    ("lip_h", "40 mm", "mm", "assumption", "the lip's upright leg on the box's front wall, room for its 3 rivets 20 above the "
+     "foot leg and below the bulkhead (Z 1698)"),
+    ("lip_tip", "2 mm", "mm", "calculation", "the lip's tip stays this far off DR's skin (the PM's 25 mm reach less 2)"),
+    ("lip_end", "5 mm", "mm", "calculation", "the lip's right end this far short of F02 (X 1025.85)"),
+    ("pad_l", "40 mm", "mm", "source", "Control's allocation of 618402 (#279): rubber pad 40 x 15 x 5"),
+    ("pad_w", "15 mm", "mm", "source", "Control's allocation of 618402 (#279): rubber pad 40 x 15 x 5"),
+    ("pad_t", "5 mm", "mm", "source", "Control's allocation of 618402 (#279): rubber pad 40 x 15 x 5"),
+    ("pad_in", "5 mm", "mm", "calculation", "each pad this far in from the lip's ends: the left at X 678, the right at X 980.85, "
+     "on F08's free end past the box, since the riser puts the weight centre near the box's right end (about X 940)"),
+    ("buf_d", "20 mm", "mm", "assumption", "the riser buffer's rubber body, about 20 across (product HOLD)"),
+    ("buf_gap", "0 mm", "mm", "calculation", "the buffer is set to touch F07: about 15 N of the assembly's lean (CEILING, "
+     "2026-11-01) holds the riser's foot back with DR's inner panel off"),
+    # ---- the upper transition (618102) over the box and in the passage beside it, full depth (PM rulings 2026-11-01,
+    #      the Air Engineer's report #283): from the box's front line to DR's frame face, Z 1895 to 2110, kept ut_clr off
+    #      the corner facet's shelf tube C04 (Z 1930 to 1950), whose inner face runs between these two plan points
+    #      (FRONT's DR STEP on main, 350003 P01)
+    ("dr_fac_xa", "1050.85 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, front end, X"),
+    ("dr_fac_ya", "-820.11 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, front end, Y"),
+    ("dr_fac_xb", "1221.72 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, back end, X"),
+    ("dr_fac_yb", "-666.5 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, back end, Y"),
+    ("ut_clr", "3 mm", "mm", "assumption", "the transition keeps this far off C04, so no metal touches DR's frame"),
+    ("air_sk_ref", "4000 mm", "mm", "assumption", "the polygon sketches' reference point sits this far off the origin on "
+     "both axes, so each corner's dimension stays positive whatever the pod's size (FRONT's sk_ref pattern)"),
+    ("fac_len", "sqrt((dr_fac_xb - dr_fac_xa) * (dr_fac_xb - dr_fac_xa) + (dr_fac_yb - dr_fac_ya) * (dr_fac_yb - dr_fac_ya))",
+     "mm", "calculation", "C04's inner face, its length in plan"),
+    ("ut_ax", "dr_fac_xa - ut_clr * (dr_fac_yb - dr_fac_ya) / fac_len", "mm", "calculation",
+     "the transition's facet side: C04's inner face moved ut_clr into DR, a point on it, X"),
+    ("ut_ay", "dr_fac_ya + ut_clr * (dr_fac_xb - dr_fac_xa) / fac_len", "mm", "calculation", "the same point, Y"),
+    ("ut_xf", "ut_ax + (-pod_d / 2 + sb_yf - ut_ay) * (dr_fac_xb - dr_fac_xa) / (dr_fac_yb - dr_fac_ya)", "mm",
+     "calculation", "the transition's facet side meets its front (the box's front line), X (about 1044)"),
+    ("ut_yr", "ut_ay + (pod_w / 2 - stack_t - col_gap - ut_ax) * (dr_fac_yb - dr_fac_ya) / (dr_fac_xb - dr_fac_xa)", "mm",
+     "calculation", "the transition's facet side meets its right end (the opening's, X 1161), Y (about -717)"),
     # ---- roof slot, sleeve and grille (D-61: Y -620 to -326, in the right outer ceiling panel)
     ("slv_t", "1 mm", "mm", "assumption", "roof sleeve wall, galvanised steel"),
     ("rg_t", "2 mm", "mm", "assumption", "roof grille plate; 50 % free or more (report 7e), pattern HOLD"),
+    # the sleeve's top flange on C2's skin, with the grille's 4 rivnuts 838003 (J-AIR-03, HOLD-04's edge rule: each
+    # rivnut 2 hole diameters from every free edge, the skin's slot edge too; CEILING's layout, 2026-11-01): 2 on the
+    # left side; 2 on the back side BEHIND cross member 1, whose front face is too near the slot for a set rivnut's
+    # bulge; none on the front (the front member under the skin) or the right (19.0 to the side member)
+    ("slv_rn_e", "19.2 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the 9.53 hole (19.06), rounded up (HOLD-04)"),
+    ("slv_rn_in", "20 mm", "mm", "assumption", "the rivnuts this far in from the slot's corners along their sides"),
+    ("slv_bulge", "14 mm", "mm", "assumption", "a set rivnut's blind-side bulge, about 14 across (the hole FRONT clears for body and "
+     "bulge, DR model fr_hole_jf; Sherex gives no size)"),
+    ("slv_rn_clr", "1 mm", "mm", "assumption", "the bulge's clearance to cross member 1's back face"),
+    ("slv_fl_l", "40 mm", "mm", "calculation", "the flange on the slot's left side: its rivnuts slv_rn_e in, slv_rn_e to its edge, rounded up"),
+    ("slv_fl_f", "15 mm", "mm", "assumption", "the flange on the front and right sides: no rivnuts there"),
+    ("slv_rn_yb", "%s + tube_w + slv_bulge / 2 + slv_rn_clr" % CM.cross_y0(1), "mm", "calculation",
+     "the back side's rivnuts behind cross member 1: its back face plus half the bulge plus the clearance (Y -273)"),
+    ("slv_fl_b", "slv_rn_yb + slv_rn_e - (slot_y0 + slot_d)", "mm", "calculation",
+     "the flange on the slot's back side, out to slv_rn_e behind those rivnuts (about 72)"),
 ]
 
 PARTS = {   # key: part number, name, Vietnamese name, kind, material key
@@ -178,6 +241,11 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "hub": ("618101", "AIR - SENSOR HUB ZONE - HOLD", "Vùng bộ cảm biến (chờ)", "HOLD", "hold"),
     "trans": ("618102", "AIR - SUPPLY TRANSITION - HOLD", "Ống chuyển cấp (chờ)", "HOLD", "hold"),
     "rtrans": ("618103", "AIR - RISER TRANSITION - HOLD", "Ống chuyển hút (chờ)", "HOLD", "hold"),
+    # how the supply fan box assembly rests in DR (PM rulings 2026-11-01; Control's numbers and names, #279)
+    "lip": ("611408", "AIR - FAN BOX LIP ANGLE - SUPPLY", "Hộp quạt cấp - thanh góc mép nhôm 3 mm", "MP", "al"),
+    "pad": ("618402", "AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD", "Hộp quạt cấp - đệm cao su 40 x 15 x 5 (chờ)",
+            "PI", "hold"),
+    "buffer": ("618501", "AIR - RISER BUFFER - RUBBER - M6 - HOLD", "Ống hút gió đứng - đệm cao su ren M6 (chờ)", "PI", "hold"),
 }
 
 # joint hardware from the joints register used in AIR (D-63): the soffit's two captive lock
@@ -193,6 +261,9 @@ HARDWARE = {
     "grille_washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
                       "Long đen to M6 inox", 4, 0.0028),
     "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 4, 0.0067),
+    # the riser buffer 618501 screws into one rivnut set at the factory in the riser's front wall (PM ruling 2026-11-01)
+    "buffer_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 1,
+                      0.0067),
 }
 
 MATERIALS = {
@@ -224,11 +295,15 @@ XL = "(-pod_w / 2 + stack_t + col_gap)"   # the soffit's left limit
 ZRB = "(pod_h - outer_t - rvn_head - (stud_l - stud_eng))"   # rails' underside: on the M6 x 16 studs' heads (HOLD-18)
 ZBT = "(%s - hd_h - hd_c)" % ZRB                           # top of what sits under a stud head
 YFACE = "(%s + col_d)" % YW          # the column's and the soffit's room face (Y -285), the ceiling cassette's front edge
+YB_FRAME = "(%s + decor_d - dr_back_t)" % YF   # DR's frame face toward the pod (Y -646.5): the passage and the riser stop short of it
 
 
 # AIR parameters another owner may take over: if the skeleton or the ceiling ever carries FRONT's
 # named values, theirs win and AIR's copies drop out
-AIR_MAY_DEFINE = {"dr_back_t", "dr_acc_t", "dr_acc_face_y"}
+AIR_MAY_DEFINE = {"dr_back_t", "dr_acc_t", "dr_acc_face_y",
+                  # the roof sleeve flange's rivnut layout, which the ceiling's model carries too (C2's skin holes):
+                  # once the ceiling's frames PR lands, its copies win and these drop out
+                  "slv_rn_e", "slv_rn_in", "slv_bulge", "slv_rn_clr", "slv_rn_yb"}
 FRONT_NAMED = ("dr_back_t", "dr_acc_t", "dr_acc_face_y")
 FRONT_FILE = "v2/01-CAD-Native/front/dr_block.py"     # FRONT's DR model, which publishes them
 
@@ -389,15 +464,76 @@ def layout():
     sy0 = "%s + sb_yf" % YF
     b.append(("box_s", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
     b += fan_box_inner()
-    b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", "op_x0 + (%s - op_x0)" % XR, "%s + sb_d" % sy0, YD,
-                                                 "op_z0", "op_z0 + op_h")))
+    # the upper transition: over the box and in the passage beside it, full depth (its shape: transition_outlines())
+    b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", XR, sy0, YB_FRAME, "op_z0", "op_z0 + op_h")))
     b.append(("riser", "INTAKE RISER", box("rs_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z0", "rs_z1")))
-    b.append(("rtrans", "RISER TRANSITION", box("sb_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z1", "sb_z0")))
-    b.append(("sleeve", "ROOF SLEEVE", box("slot_x0", "slot_x0 + slot_w", "slot_y0", "slot_y0 + slot_d",
-                                            "%s + cart_w" % ez0, "pod_h")))
-    b.append(("rgrille", "ROOF GRILLE", box("slot_x0 - 10 mm", "slot_x0 + slot_w + 10 mm", "slot_y0 - 10 mm",
-                                             "slot_y0 + slot_d + 10 mm", "pod_h", "pod_h + rg_t")))
+    # the lower transition: FRONT's trapezoid from the riser's top to the box's bottom (riser_transition_outline()), across
+    # the box's and the riser's depths
+    b.append(("rtrans", "RISER TRANSITION", box("sb_x0", "rs_x0 + rs_w", sy0, "rs_y0 + rs_d", "rs_z1", "sb_z0")))
+    # how the assembly rests in DR: the lip angle on two pads on F08, the riser's buffer against F07 (PM rulings 2026-11-01)
+    b.append(("lip", "FAN BOX LIP ANGLE SUPPLY", box("sb_x0", LIP_X1, LIP_Y0, sy0, "sb_z0 + pad_t", "sb_z0 + pad_t + lip_h")))
+    for side, x0 in (("LEFT", "sb_x0 + pad_in"), ("RIGHT", "%s - pad_in - pad_l" % LIP_X1)):
+        b.append(("pad", "FAN BOX PAD %s" % side, box(x0, "%s + pad_l" % x0, "%s - pad_w / 2" % F08_YC,
+                                                      "%s + pad_w / 2" % F08_YC, "sb_z0", "sb_z0 + pad_t")))
+    b.append(("buffer", "RISER BUFFER", box("%s - buf_d / 2" % BUF_X, "%s + buf_d / 2" % BUF_X,
+                                            "%s + dr_skin_t + dr_fr_w + buf_gap" % YF, "rs_y0 - rvn_head",
+                                            "dr_f07_zc - buf_d / 2", "dr_f07_zc + buf_d / 2")))
+    # the roof sleeve with its top flange on C2's skin, and the grille on the flange (J-AIR-03)
+    fx0, fx1, fy0, fy1 = sleeve_flange()
+    b.append(("sleeve", "ROOF SLEEVE", box(fx0, fx1, fy0, fy1, "%s + cart_w" % ez0, "pod_h + slv_t")))
+    b.append(("rgrille", "ROOF GRILLE", box(fx0, fx1, fy0, fy1, "pod_h + slv_t", "pod_h + slv_t + rg_t")))
     return b
+
+
+# the lip's ends and tip, the pads' line on F08 and the buffer's place over F07 (PM rulings 2026-11-01)
+LIP_X1 = "(dr_f08_x1 - lip_end)"
+LIP_Y0 = "(%s + dr_skin_t + lip_tip)" % YF
+F08_YC = "(%s + dr_skin_t + dr_fr_w / 2)" % YF
+BUF_X = "((rs_x0 + dr_f08_x1) / 2)"
+
+
+def layout_box(name):
+    """The layout box (expressions) of one named body."""
+    return next(bx for _k, n, bx in layout() if n == name)
+
+
+def lip_section():
+    """The lip angle's section in (Y, Z): the foot leg from its tip under the box's front line, the upright leg up the
+    box's front wall, outside it. Extruded along X from the box's left end to LIP_X1."""
+    y0, y1 = LIP_Y0, "(%s + sb_yf)" % YF
+    z0 = "(sb_z0 + pad_t)"
+    return [(y0, z0), (y1, z0), (y1, "%s + lip_h" % z0), ("%s - lip_t" % y1, "%s + lip_h" % z0),
+            ("%s - lip_t" % y1, "%s + lip_t" % z0), (y0, "%s + lip_t" % z0)]
+
+
+def transition_outlines():
+    """The upper transition's two plan outlines [(x, y)], each (outline, z0, z1): over the box and the passage from the
+    box's top to the opening's top, and the passage beside the box down to the opening's foot; both run from the box's
+    front line to DR's frame face, their facet side ut_clr off C04 (PM rulings 2026-11-01, report #283)."""
+    y0, xr = "(%s + sb_yf)" % YF, XR
+    top = [("sb_x0", y0), ("ut_xf", y0), (xr, "ut_yr"), (xr, YB_FRAME), ("sb_x0", YB_FRAME)]
+    side = [("sb_x0 + sb_w", y0), ("ut_xf", y0), (xr, "ut_yr"), (xr, YB_FRAME), ("sb_x0 + sb_w", YB_FRAME)]
+    return [(top, "sb_z0 + sb_h", "op_z0 + op_h"), (side, "op_z0", "sb_z0 + sb_h")]
+
+
+def riser_transition_outline():
+    """The lower transition's side outline [(x, z)]: FRONT's trapezoid from the riser's top to the box's bottom, run in
+    Y across both depths (the box's front line to the riser's back)."""
+    return [("rs_x0", "rs_z1"), ("rs_x0 + rs_w", "rs_z1"), ("sb_x0 + sb_w", "sb_z0"), ("sb_x0", "sb_z0")]
+
+
+def sleeve_flange():
+    """(x0, x1, y0, y1) of the roof sleeve's top flange, which the grille covers exactly (CEILING's layout 2026-11-01)."""
+    return ("slot_x0 - slv_fl_l", "slot_x0 + slot_w + slv_fl_f", "slot_y0 - slv_fl_f", "slot_y0 + slot_d + slv_fl_b")
+
+
+def sleeve_rivnuts():
+    """[(name, x, y)] of the grille's 4 rivnuts in the sleeve's flange: 2 on the left side, 2 on the back side behind
+    cross member 1 (J-AIR-03)."""
+    return [("SLEEVE RIVNUT LEFT FRONT", "slot_x0 - slv_rn_e", "slot_y0 + slv_rn_in"),
+            ("SLEEVE RIVNUT LEFT BACK", "slot_x0 - slv_rn_e", "slot_y0 + slot_d - slv_rn_in"),
+            ("SLEEVE RIVNUT BACK LEFT", "slot_x0 + slv_rn_in", "slv_rn_yb"),
+            ("SLEEVE RIVNUT BACK RIGHT", "slot_x0 + slot_w - slv_rn_in", "slv_rn_yb")]
 
 
 def features():
@@ -433,6 +569,12 @@ def features():
         tag = "EXHAUST" if name.startswith("EXHAUST") else "SUPPLY"
         z0, z1 = ("%s + fan_t" % z, "%s + fan_t + blk_t" % z) if tag == "EXHAUST" else ("%s - blk_t" % z, z)
         out.append(("FAN BOX BULKHEAD %s" % tag, "zcircle", (x, y, z0, z1, "fan_bore")))
+    # the riser buffer's rivnut hole in the riser's front wall, over F07 (PM ruling 2026-11-01)
+    out.append(("INTAKE RISER", "ycircle", (BUF_X, "dr_f07_zc", "rs_y0", "rs_y0 + rs_t", "hole_rvn")))
+    # the grille's rivnuts in the sleeve's flange, and the grille's bolt holes over them (J-AIR-03, R-J6's 7.0)
+    for _n, x, y in sleeve_rivnuts():
+        out.append(("ROOF SLEEVE", "zcircle", (x, y, "pod_h", "pod_h + slv_t", "hole_rvn")))
+        out.append(("ROOF GRILLE", "zcircle", (x, y, "pod_h + slv_t", "pod_h + slv_t + rg_t", "lock_hole")))
     return out
 
 
@@ -456,7 +598,7 @@ def cutouts():
 # D-120: parts placed as copies of one component, and the parts whose layout boxes are one body together (a stud's or a
 # screw's head and shank, joined): {key: how the layout's names group into one copy}
 JOINED = {"stud": (" HEAD", " SHANK"), "lock": (" HEAD", " SHANK")}
-COPIES = {"stud", "lock", "hinge", "latch", "lin_es", "lin_s", "layer"}
+COPIES = {"stud", "lock", "hinge", "latch", "lin_es", "lin_s", "layer", "pad"}
 TURNED = {"col_ang": "y"}       # the right front angle is the left one turned about Y (the angle runs the full height)
 BODY_KEY = {"cart": "casing"}   # a layout box whose body belongs to another part: the cartridge's is its casing's
 

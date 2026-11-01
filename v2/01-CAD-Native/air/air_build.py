@@ -177,6 +177,93 @@ def poly_xy_extrude(comp, name, pts, z0, z1, ctx):
     return f.bodies.item(0)
 
 
+def _sketch_axis(sk, model_axis):
+    """Which sketch axis ('x' or 'y') a model axis ('x', 'y' or 'z') maps to on this sketch's plane."""
+    o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
+    v = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}[model_axis]
+    e = sk.modelToSketchSpace(adsk.core.Point3D.create(*v))
+    return "x" if abs(e.x - o.x) > abs(e.y - o.y) else "y"
+
+
+def poly_prism(comp, name, plane_axes, pts, along, a, b, ctx, op=None, bodies=None):
+    """A closed polygon on one of the component's origin planes, fully constrained, extruded along the third axis from
+    a to b (expressions, a < b). Unlike poly_xy_extrude, its edges may slant (the transition's facet side, the lower
+    transition's trapezoid, the lip's L): an edge along an axis gets a horizontal or vertical constraint, the corners it
+    joins share one dimension, and every corner is dimensioned from a reference point air_sk_ref off the origin on both
+    axes, so no dimension flips side in an edit. Adapted from FRONT's front_lib.poly and extrude_span (the skeleton's
+    pod_skeleton.py pattern), proven in FRONT's DR builds. Returns the new body, or the feature when op joins or cuts."""
+    op = op or NEW
+    plane = {("x", "y"): comp.xYConstructionPlane, ("x", "z"): comp.xZConstructionPlane,
+             ("y", "z"): comp.yZConstructionPlane}[tuple(plane_axes)]
+    sk = comp.sketches.add(plane)
+    sk.name = "SECTION - " + name
+    third = ({"x", "y", "z"} - set(plane_axes)).pop()
+
+    def at(ea, eb):
+        c = {plane_axes[0]: ctx.ev(ea), plane_axes[1]: ctx.ev(eb), third: 0.0}
+        return sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * CB.MM, c["y"] * CB.MM, c["z"] * CB.MM))
+    sp = [at(ea, eb) for ea, eb in pts]
+    lines = sk.sketchCurves.sketchLines
+    verts, edges = [], []
+    n = len(sp)
+    for i in range(n):
+        start = verts[-1] if verts else sp[0]
+        end = sp[i + 1] if i < n - 1 else verts[0]
+        ln = lines.addByTwoPoints(start, end)
+        edges.append(ln)
+        if i == 0:
+            verts.append(ln.startSketchPoint)
+        if i < n - 1:
+            verts.append(ln.endSketchPoint)
+    dims, gc = sk.sketchDimensions, sk.geometricConstraints
+    expr_on = {_sketch_axis(sk, ax): k for k, ax in enumerate(plane_axes)}
+    ref = sk.sketchPoints.add(at("-air_sk_ref", "-air_sk_ref"))
+    for sa in ("x", "y"):
+        g = ref.geometry
+        dims.addDistanceDimension(sk.originPoint, ref, CB.H if sa == "x" else CB.V,
+                                  adsk.core.Point3D.create(g.x / 2, g.y / 2, 0)).parameter.expression = "air_sk_ref"
+    for sa in ("x", "y"):
+        group = list(range(n))
+
+        def root_of(i):
+            while group[i] != i:
+                i = group[i]
+            return i
+        for i, ln in enumerate(edges):
+            p0, p1 = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+            if abs((p0.x - p1.x) if sa == "x" else (p0.y - p1.y)) < 1e-7:
+                (gc.addVertical if sa == "x" else gc.addHorizontal)(ln)
+                group[root_of((i + 1) % n)] = root_of(i)
+        for i in range(n):
+            if root_of(i) != i:
+                continue
+            g = verts[i].geometry
+            d = dims.addDistanceDimension(ref, verts[i], CB.H if sa == "x" else CB.V,
+                                          adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0))
+            d.parameter.expression = "(%s) + air_sk_ref" % pts[i][expr_on[sa]]
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    nrm = sk.xDirection.crossProduct(sk.yDirection)
+    sign = 1 if {"x": nrm.x, "y": nrm.y, "z": nrm.z}[along] > 0 else -1
+    if sk.profiles.count != 1:
+        raise RuntimeError("%s: the outline made %d profiles" % (sk.name, sk.profiles.count))
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), op)
+    ei.startExtent = adsk.fusion.OffsetStartDefinition.create(CB.vi("(%s) * (%d)" % (a, sign)))
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(CB.vi("(%s) - (%s)" % (b, a))),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if sign > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    if bodies:
+        ei.participantBodies = bodies
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = ("EXTRUDE - " if op == NEW else "JOIN - " if op == JOIN else "CUT - ") + name
+    if op == NEW:
+        if f.bodies.count != 1:
+            raise RuntimeError("%s: the extrude made %d bodies" % (name, f.bodies.count))
+        f.bodies.item(0).name = name
+        return f.bodies.item(0)
+    return f
+
+
 def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
     """A round hole through a face normal to Y, from y0 to y1: sketch on the XZ plane offset
     to y0, centre dimensioned by expressions for model X and Z."""
@@ -660,6 +747,14 @@ def run(_context):
             else:
                 comp_with(fb, "blk_s", names_of("blk_s"))
                 copies(fb, "lin_s", units_of("lin_s"), box_maker("FAN BOX LINING SUPPLY END"))
+                # how the assembly rests in DR (PM rulings 2026-11-01): the lip angle on the box's front wall, its two
+                # pads on F08 (one part placed twice), the riser's buffer against F07
+                _ol, lipc = new_comp(fb, "lip")
+                made["FAN BOX LIP ANGLE SUPPLY"] = (lipc, poly_prism(lipc, "FAN BOX LIP ANGLE SUPPLY", ("y", "z"),
+                                                                     A.lip_section(), "x", "sb_x0", A.LIP_X1, ctx))
+                set_material(design, lipc, "lip")
+                copies(fb, "pad", units_of("pad"), box_maker("FAN BOX PAD"))
+                comp_with(fb, "buffer", names_of("buffer"))
             for fname, fx, fy, fz in [f for f in fans if f[0].startswith(tag)]:
                 if fan_comp is None:
                     fo, fan_comp = new_comp(fb, "fan")
@@ -669,14 +764,35 @@ def run(_context):
                 else:
                     fo = fb.occurrences.addExistingComponent(fan_comp, adsk.core.Matrix3D.create())
                 CB.place(fb, fo, (fx, fy, fz), fname, ctx)
-        for key, parent in (("trans", boxes["sbox"]), ("riser", boxes["sbox"]), ("rtrans", boxes["sbox"]),
-                            ("sleeve", root), ("rgrille", root)):
-            c = comp_with(parent, key, names_of(key))
-            for n in names_of(key):
-                if key == "riser":
-                    hollow_axis(c, made[n][1], "z", "rs_t", n)
-                if key == "sleeve":
-                    hollow_axis(c, made[n][1], "z", "slv_t", n)
+        # the upper transition over the box and the full-depth passage beside it (PM rulings 2026-11-01), one body
+        _ot, tc = new_comp(boxes["sbox"], "trans")
+        (top, z0, z1), (side, z2, z3) = A.transition_outlines()
+        tb = poly_prism(tc, "SUPPLY TRANSITION", ("x", "y"), top, "z", z0, z1, ctx)
+        poly_prism(tc, "SUPPLY TRANSITION BESIDE THE BOX", ("x", "y"), side, "z", z2, z3, ctx, op=JOIN, bodies=[tb])
+        made["SUPPLY TRANSITION"] = (tc, tb)
+        set_material(design, tc, "trans")
+        rc = comp_with(boxes["sbox"], "riser", names_of("riser"))
+        hollow_axis(rc, made["INTAKE RISER"][1], "z", "rs_t", "INTAKE RISER")
+        # the lower transition: FRONT's trapezoid from the riser's top to the box's bottom, across both depths
+        _or, rtc = new_comp(boxes["sbox"], "rtrans")
+        made["RISER TRANSITION"] = (rtc, poly_prism(rtc, "RISER TRANSITION", ("x", "z"), A.riser_transition_outline(),
+                                                    "y", "(-pod_d / 2 + sb_yf)", "rs_y0 + rs_d", ctx))
+        set_material(design, rtc, "rtrans")
+        # the roof sleeve: its walls through the slot, and its top flange on C2's skin round the slot (J-AIR-03)
+        _os, slc = new_comp(root, "sleeve")
+        sz0 = lay["ROOF SLEEVE"][1][4]
+        sw = CB.box_body(slc, "ROOF SLEEVE", ("slot_x0", "slot_x0 + slot_w", "slot_y0", "slot_y0 + slot_d", sz0, "pod_h"),
+                         ctx)
+        hollow_axis(slc, sw, "z", "slv_t", "ROOF SLEEVE")
+        fx0, fx1, fy0, fy1 = A.sleeve_flange()
+        jf = CB.box_body(slc, "ROOF SLEEVE FLANGE", (fx0, fx1, fy0, fy1, "pod_h", "pod_h + slv_t"), ctx, op=JOIN,
+                         bodies=[sw])
+        jf.name = "JOIN - ROOF SLEEVE FLANGE"
+        CB.box_body(slc, "ROOF SLEEVE FLANGE OPENING", ("slot_x0", "slot_x0 + slot_w", "slot_y0", "slot_y0 + slot_d",
+                                                        "pod_h", "pod_h + slv_t"), ctx, op=CUT, bodies=[sw])
+        made["ROOF SLEEVE"] = (slc, sw)
+        set_material(design, slc, "sleeve")
+        comp_with(root, "rgrille", names_of("rgrille"))
         # ---- cut features: keyholes, BASE's spigot hole and slot, the rails' forks, lock holes
         for k, (bname, kind, a) in enumerate(A.features()):
             comp, body = made[bname]
