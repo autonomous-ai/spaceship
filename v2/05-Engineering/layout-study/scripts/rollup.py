@@ -375,7 +375,7 @@ def air_parts(fill):
     col = k["610101"] - k["611104"] + col_fill
     sof = k["610201"] - k["610402"] - k["611203"] + sof_fill
     sbox = k["611402"] * sc + k["618102"] + k["618103"] + un["supply bulkhead"] + un["supply linings"]
-    ebox = k["611401"] * sc + un["exhaust bulkhead"] + un["exhaust linings"] + k["611601"]
+    ebox = k["611401"] * sc + un["exhaust bulkhead"] + un["exhaust linings"]
     cad = "S52, CAD on main: AIR parts list "
     lay = (f"{AIR['n_layers']:.0f} layers 611302 at {AA.CART_LAYER_KG_M3:.0f} kg/m3 (D-116; the CAD has "
            f"{AIR['layer_rho']:.0f} until the AIR follow-up)")
@@ -398,11 +398,11 @@ def air_parts(fill):
          f"yet (D-121, the air report's sizes): a {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['supply bulkhead']:.2f} and "
          f"50 mm linings at {AA.FANBOX_LINING_KG_M3:g} kg/m3 where they fit, {rooms['supply']['lined']:.3f} m2, "
          f"{un['supply linings']:.2f}; the fans are in their own line"),
-        ("Exhaust fan box 610402 and roof sleeve 611601, in the soffit", ebox,
+        ("Exhaust fan box 610402, in the soffit", ebox,
          "calculation (CAD at 2 mm, scaled to D-124's 3 mm)",
          f"{cad}610402 P01: {ebox:.2f} kg = casing 611401 {k['611401'] * sc:.2f} (the CAD's {k['611401']:.3f} at "
          f"{AIR_FBOX_T_CAD:g} mm x {t3:g}/{AIR_FBOX_T_CAD:g}: D-124's {t3:g} mm casing, which the model gets in the AIR "
-         f"follow-up) + the roof sleeve {k['611601']:.3f} + not in the CAD yet (D-121, the air report's sizes): the fans' "
+         f"follow-up) + not in the CAD yet (D-121, the air report's sizes): the fans' "
          f"sealed {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['exhaust bulkhead']:.2f} and 50 mm linings where they fit, "
          f"{rooms['exhaust']['lined']:.3f} m2, {un['exhaust linings']:.2f}; the fans are in their own line"),
         ("Intake riser 611501, in the right block", k["611501"] + AIR_RISER_FOOT_KG + AA.BOOT_KG,
@@ -410,7 +410,11 @@ def air_parts(fill):
          f"{cad}611501 P01 {k['611501']:.3f} (1 mm galvanised steel, 139 x 155 x 1340; D-130's 150 deep comes with the "
          f"AIR follow-up), {AIR_RISER_FOOT_KG:g} kg for its foot and the mesh band piece's extra over the band it replaces, "
          f"and {AA.BOOT_KG:g} kg for D-130's sealed intake boot and the cartridges' gaskets (the air report's assumptions)"),
-        ("Roof slot grille 611602", k["611602"], "calculation (CAD)", f"{cad}611602 P01"),
+        ("Roof slot grille 611602 and roof sleeve 611601, with C2", k["611602"] + k["611601"], "calculation (CAD)",
+         f"{cad}611602 P01 {k['611602']:.3f} and 611601 P01 {k['611601']:.3f}: the sleeve fills C2's roof slot, so it "
+         "can't ride on the exhaust fan box while the soffit is lifted and slid onto its studs; it ships with the grille "
+         "and C2 and drops in through the slot after the soffit hangs, onto a gasket on the fan box's top (the Air "
+         "Engineer, 2026-11-01)"),
     ]
 KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
 
