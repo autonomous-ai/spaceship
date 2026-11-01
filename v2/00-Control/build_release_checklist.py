@@ -388,24 +388,14 @@ def load_checks():
 
 def d125_strips(root=None):
     """D-125 as C05 reads it: {number: (what its best parts-list row lacks, that row's file), or None when no list
-    has a row} for every part whose one shape in the per-part STEP files is a plain strip or sheet. Built the way
-    the mechanical check builds it (tools/checks/run_checks.py): each different body of a number once, across the
-    files; a number counts when it has one shape, that shape is a plain rectangular block (cuboid_sides) and thin
-    enough to be a strip (is_strip); its row is read by strip_row_lacks. Read from the working tree, as C05 does."""
+    has a row} for every part whose one shape in the per-part STEP files is a plain strip or sheet. The strip list is
+    the mechanical check's own shared function (c_drawings.strip_sides, PR #210) over the per-part STEP files that
+    c_geometry.models finds; each row is read by strip_row_lacks. Read from the working tree, as C05 does."""
     root = str(root or ROOT)
     c_geometry, c_drawings = load_checks()
     _models, per_part = c_geometry.models(root)
-    shapes, cuboids = {}, {}
-    for path in per_part:
-        step = c_geometry.load_step(path)
-        for inst in step.instances():
-            solid, pn = step.solid(inst["solid"]), inst["part_number"]
-            shape = c_drawings.body_shape(solid)
-            if shape not in shapes.setdefault(pn, set()):
-                shapes[pn].add(shape)
-                cuboids.setdefault(pn, []).append(c_drawings.cuboid_sides(solid))
-    one = {pn: v[0] for pn, v in cuboids.items() if len(v) == 1 and v[0]}
-    return {pn: c_drawings.strip_row_lacks(root, pn, sides) for pn, sides in one.items() if c_drawings.is_strip(sides)}
+    return {pn: c_drawings.strip_row_lacks(root, pn, sides)
+            for pn, sides in c_drawings.strip_sides(per_part, c_geometry.load_step).items()}
 
 
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
@@ -695,6 +685,10 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
             "- The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: "
             "the Joints Engineer makes them and the teams place them by reference (D-95).",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
+            "- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP "
+            "reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch "
+            "shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or "
+            "status says HOLD shows HOLD.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
             "that names the number or its register ID.",
