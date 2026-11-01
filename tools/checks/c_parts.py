@@ -856,6 +856,83 @@ def same_holes(own, copy, tol=0.1, dia_tol=0.15):
     return False
 
 
+def _corners(so, cell=0.01):
+    """A body's distinct face points (its corners and seam points), deduplicated on a 0.01 mm grid."""
+    seen, out = set(), []
+    for f in so.faces:
+        for p in f.points:
+            k = tuple(round(c / cell) for c in p)
+            if k not in seen:
+                seen.add(k)
+                out.append(tuple(p))
+    return out
+
+
+def same_shape_turned(own, copy, tol=0.05, tries=500):
+    """Is the copy the own part turned and moved any way, not only by quarter turns? True when every corner of the
+    own part, turned and moved, lands within tol of a corner of the copy and every hole lands on a hole of the same
+    size. Only a true turn counts, never a mirror image (an LH part is not its RH). Why: an exact copy placed at an
+    angle, as BASE's front band facets sit in #396 at their facet angle, matched neither a quarter turn of its hole
+    layout nor its box's sides, so the same part was reported as a different one."""
+    import math
+    import stepfile as sf
+    a, b = _corners(own), _corners(copy)
+    if len(a) != len(b) or len(a) < 3 or len(own.holes) != len(copy.holes):
+        return False
+    n = len(a)
+    ca = tuple(sum(p[k] for p in a) / n for k in range(3))
+    cb = tuple(sum(p[k] for p in b) / n for k in range(3))
+
+    def off_line(p, o, u):
+        v = sf._sub(p, o)
+        return math.dist(v, sf._mul(u, sf.dot(v, u)))
+    # three corners spread over the own part: farthest from its centre, farthest from that, farthest from their line
+    p0 = max(a, key=lambda p: math.dist(p, ca))
+    p1 = max(a, key=lambda p: math.dist(p, p0))
+    u = sf.norm(sf._sub(p1, p0))
+    p2 = max(a, key=lambda p: off_line(p, p0, u))
+    if off_line(p2, p0, u) < 10.0 * tol:
+        return False
+
+    def frame(q0, q1, q2):
+        e1 = sf.norm(sf._sub(q1, q0))
+        v = sf._sub(q2, q0)
+        e2 = sf.norm(sf._sub(v, sf._mul(e1, sf.dot(v, e1))))
+        return e1, e2, sf.cross(e1, e2)                 # right-handed: a turn, never a mirror
+    fa = frame(p0, p1, p2)
+    grid = {}
+    for q in b:
+        grid.setdefault(tuple(math.floor(c) for c in q), []).append(q)
+
+    def lands(q):
+        c = tuple(math.floor(x) for x in q)
+        return any(math.dist(q, r) <= tol for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1)
+                   for r in grid.get((c[0] + dx, c[1] + dy, c[2] + dz), ()))
+    like = lambda x, y: abs(x - y) <= 2.0 * tol
+    d = {k: math.dist(p, ca) for k, p in (("0", p0), ("1", p1), ("2", p2))}
+    c0 = [q for q in b if like(math.dist(q, cb), d["0"])]
+    for q0 in c0:
+        c1 = [q for q in b if like(math.dist(q, q0), math.dist(p1, p0)) and like(math.dist(q, cb), d["1"])]
+        for q1 in c1:
+            c2 = [q for q in b if like(math.dist(q, q0), math.dist(p2, p0)) and like(math.dist(q, q1), math.dist(p2, p1))
+                  and like(math.dist(q, cb), d["2"])]
+            for q2 in c2:
+                tries -= 1
+                if tries < 0:
+                    return False
+                fb = frame(q0, q1, q2)
+                turn = lambda v: tuple(sum(sf.dot(v, fa[i]) * fb[i][k] for i in range(3)) for k in range(3))
+                move = lambda p: sf._add(q0, turn(sf._sub(p, p0)))
+                if not all(lands(move(p)) for p in a):
+                    continue
+                if all(any(abs(h.diameter - g.diameter) <= 0.15 and
+                           abs(abs(sf.dot(sf.norm(turn(h.axis)), sf.norm(g.axis))) - 1.0) < 1e-4 and
+                           sf.line_distance(move(h.center), g.center, g.axis) <= tol for g in copy.holes)
+                       for h in own.holes):
+                    return True
+    return False
+
+
 def body_sizes(so):
     """A body's sizes, however it is turned: ('round', ((radius, length along the axis), ...)) from its outer round
     faces (radius at least 1 mm, along the biggest one's axis), and ('box', three sides) when it has no outer round
@@ -899,7 +976,8 @@ def _sizes_differ(a, b, tol=0.2):
 def check_copies(root, step_paths, load):
     """A part copied into another team's STEP (a washer, a spigot or a key in a panel or band) has to be the part its
     own STEP holds (the file named after its number): the same hole layout (same_holes; any quarter turn of the copy
-    counts as the same) and the same sizes (body_sizes). An assembly built round an older or different copy has its
+    counts as the same) and the same sizes (body_sizes), or the same corners and holes turned any way, never mirrored
+    (same_shape_turned: a copy set at an angle). An assembly built round an older or different copy has its
     mating holes and fits set by the wrong part. A different hole layout is severe, different sizes major; one finding
     per part and file team. Parts whose own STEP holds more than one shape are left to D-120."""
     import os
@@ -924,6 +1002,8 @@ def check_copies(root, step_paths, load):
                 sizes = body_sizes(so)
                 if holes_ok and not _sizes_differ(ref_sizes, sizes):
                     continue
+                if same_shape_turned(ref, so):
+                    continue                    # the same part, turned at an angle that isn't a quarter turn
                 r = rel(root, f)
                 team = owner_for(r, "")
                 if team == "PM":

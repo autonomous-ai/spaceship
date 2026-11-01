@@ -1600,6 +1600,39 @@ def test_a_parts_copies_must_be_the_part_its_own_step_holds():
     assert not c_parts._sizes_differ(("box", (4.0, 6.31, 15.24)), spigot)                    # can't compare: skip
 
 
+def test_a_copy_turned_at_any_angle_is_the_same_part_but_a_mirror_image_is_not():
+    # BASE's #396: the front band facet 111104 sits in the band at its facet angle. The copy there is its own STEP's
+    # body turned (all 36 corners within 0.05 mm, the same two Ø7 holes 14 apart), but neither a quarter turn of its
+    # holes nor its box's sides could match, so it was reported as a different part
+    class FakeStep:
+        def __init__(self, rows):
+            self.rows = rows
+        def instances(self):
+            return [{"solid": i, "part_number": pn} for i, (pn, _so) in enumerate(self.rows)]
+        def solid(self, sid):
+            return self.rows[sid][1]
+
+    def turn(deg_z, deg_x, mirror=False):
+        az, ax = math.radians(deg_z), math.radians(deg_x)
+        f = sf.Frame.from_axes((500.0, 300.0, 20.0), (0.0, -math.sin(ax), math.cos(ax)), (math.cos(az), math.sin(az), 0.0))
+        return sf.Frame(f.o, f.x, tuple(-c for c in f.y), f.z) if mirror else f
+    key = lambda frame=sf.Frame(), holes=((20.0, 6.6), (70.0, 6.6)), length=100.0: \
+        _profile(frame, length=length, w=30.0, h=10.0, t=None, holes=holes, chamfer=4.0)
+    own = os.path.join(ROOT, "v2/03-Manufacturing/joints/831998_P01_HARDWARE-TEST-KEY_STEP.step")
+    base = os.path.join(ROOT, "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step")
+    files = {own: FakeStep([("831998", key())]), base: FakeStep([("831998", key(turn(23.0, 11.0)))])}
+    assert c_parts.check_copies(ROOT, list(files), files.get) == []
+    assert c_parts.same_shape_turned(key(), key(turn(23.0, 11.0)))
+    assert not c_parts.same_holes(key(), key(turn(23.0, 11.0)))          # what the quarter turns alone said
+    for bad in (key(turn(23.0, 11.0, mirror=True)),                          # a mirror image (the chamfer flips)
+                key(turn(23.0, 11.0), holes=((20.0, 6.6), (72.0, 6.6))),     # a hole 2 mm off
+                key(turn(23.0, 11.0), length=102.0)):                        # 2 mm longer
+        assert not c_parts.same_shape_turned(key(), bad)
+        files[base] = FakeStep([("831998", bad)])
+        (f,) = c_parts.check_copies(ROOT, list(files), files.get)
+        assert f.rule == "copy-differs" and f.owner == "BASE; Joints Engineer"
+
+
 def test_the_drawing_traps_are_read_back_into_c05(tmp_path):
     # ELECTRICAL's read-back (pdf_traps.py) folded into C05 (PM, 2026-11-01): small text and a symbol without 4 corners
     # are major, hidden lines and a value printed twice minor; a drawing that keeps hidden lines on purpose is listed
