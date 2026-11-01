@@ -118,6 +118,7 @@ How to load it (factory): crate first, then tier by tier, each lane against the 
 | Roof sleeve and grille (AIR), with C2 | The sleeve seated loose in C2's roof slot, taped on both faces; the grille taped flat over it; both labelled with C2's label number | They go on only after the soffit hangs (#263); seated in their own slot they can't slide or scratch C2's skin |
 | Kits and cartons | Cartons with the contents list on the side | One place for small parts |
 | The whole load | Straps over edge protectors, cap board, three layers of stretch film, "DO NOT STACK" on both pallets | Fork and stacking damage |
+| Export wood | Every solid-wood part (both pallets, the crate's runners, end rails and lid slats, the tier separators' battens and posts) is heat-treated and carries the ISPM 15 stamp; the crate's plywood and the fibreboard edge and cap boards are processed wood, outside ISPM 15 | US ports refuse untreated solid wood (ISPM 15; the US review, 2026-11-01) |
 
 ## 5. Labels
 
@@ -208,8 +209,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | - | Bond beyond L1 and R1 (D-71) |  | - | 0.05 | calculation | inside the pieces | - |
 | - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 3.14 | calculation (part CAD); cleats assumption | inside the pieces | - |
 | - | - | Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes |  | - | 1.28 | assumption | inside the pieces | - |
-| - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
-| - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: edge boards, corner guards, foam interleaf, PE sheets, cap board, straps, film |  | - | 6.00 | assumption | - | - |
+| - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
+| - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film |  | - | 6.00 | assumption | - | - |
 |  |  | **Gross** |  |  | **223.5** |  |  |  |
 
 ### Pallet 2: 96 × 48 in
@@ -240,11 +241,11 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-22** | 109000 | POD - INSTALLATION KIT (OPEN FIRST) | Bộ phụ kiện lắp (mở trước) | - | 3.55 | assumption | 900 × 150 × 80 | 1 |
 | - | - | Base seal and cable grommets, fitted on the band and the panels (the door edge seals are in FRONT's parts) |  | - | 0.60 | source | inside the pieces | - |
 | - | - | Ceiling clips and catches: 12 clips and 4 lanyards, with the ceiling cassettes |  | - | 0.88 | assumption | inside the pieces | - |
-| - | 918002 (PROPOSED) | PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, 4-WAY |  | - | 48.50 | source | - | - |
-| - | 911001 (PROPOSED) | PACKAGING - GLASS CRATE |  | - | 30.00 | assumption | - | - |
+| - | 918002 (PROPOSED) | PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY |  | - | 48.50 | source | - | - |
+| - | 911001 (PROPOSED) | PACKAGING - GLASS CRATE: ISPM 15 STAMPED TIMBER RUNNERS, RAILS AND LID SLATS, PLYWOOD SIDES |  | - | 30.00 | assumption | - | - |
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
-| - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR (BATTENS ON POSTS) |  | - | 16.00 | assumption | - | - |
-| - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film |  | - | 9.00 | assumption | - | - |
+| - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS |  | - | 16.00 | assumption | - | - |
+| - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film |  | - | 9.00 | assumption | - | - |
 |  |  | **Gross** |  |  | **324.5** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
@@ -318,6 +319,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K12 | Every skeleton body maps to exactly one label, for the step pictures | 36 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
 | K13 | Every part number on a label is the master BOM's number for that name | 32 of 42 pieces numbered, 0 of them from the BOM by name (none); still TBD: BASE 5, ELECTRICAL 1, WALL 4; named otherwise in the BOM: none; not in the BOM: none; two numbers for one name: none; neither a number nor TBD: none | yes |
 | K14 | Every piece's planned size holds its own CAD, as it ships | 33 pieces checked against 22 STEP files; no CAD yet: 9 (1-07, 1-08, 1-19, 1-20, 2-07, 2-08, 2-13, 2-15, 2-22); over: none; unreadable: none | yes |
+| K15 | Every piece goes into the install sheet's elevator, leaned in through its door (the glass out of its crate) | car 2032 × 1295 × 2286 mm inside, door 1070 × 2134: not in: none; a typical car with a 914 mm door: not in: ['2-03']; the crate itself: opened at the entrance | yes |
 
 ### Sizes against CAD (K14)
 
@@ -376,13 +378,13 @@ The bolt check reads `v2/05-Engineering/joints/joints-register.md` section 3.9. 
 | --- | --- | --- | ---: | ---: | --- | --- |
 | 910001 | PACKAGING - PALLET LOAD 1 - 48 X 40 | assembly | 1 | - | - | this plan |
 | 910002 | PACKAGING - PALLET LOAD 2 - 96 X 48 | assembly | 1 | - | - | this plan |
-| 918001 | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, 4-WAY (GMA) | bought | 1 | 20.0 | source | layout study S14 (PHS S-4840, 44 lb) |
-| 918002 | PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, 4-WAY | bought | 1 | 48.5 | source | layout study S15 (Uline H-1627, 107 lb) |
-| 911001 | PACKAGING - GLASS CRATE | made | 1 | 30.0 | assumption | this plan (crate_kg) |
+| 918001 | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA) | bought | 1 | 20.0 | source | layout study S14 (PHS S-4840, 44 lb) |
+| 918002 | PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY | bought | 1 | 48.5 | source | layout study S15 (Uline H-1627, 107 lb) |
+| 911001 | PACKAGING - GLASS CRATE: ISPM 15 STAMPED TIMBER RUNNERS, RAILS AND LID SLATS, PLYWOOD SIDES | made | 1 | 30.0 | assumption | this plan (crate_kg) |
 | 911002 | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) | made | 1 | 6.0 | assumption | this plan (glass_rest_kg); flat-packed in the crate |
-| 911003 | PACKAGING - TIER SEPARATOR (BATTENS ON POSTS) | made | 4 | 4.0 | assumption | this plan (sep_kg) |
-| 918010 | PACKAGING - PROTECTION SET, 48 X 40: edge boards, corner guards, foam interleaf, PE sheets, cap board, straps, film | bought | 1 | 6.0 | assumption | layout study pack_kg_std |
-| 918011 | PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film | bought | 1 | 9.0 | assumption | layout study pack_kg_long |
+| 911003 | PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS | made | 4 | 4.0 | assumption | this plan (sep_kg) |
+| 918010 | PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film | bought | 1 | 6.0 | assumption | layout study pack_kg_std |
+| 918011 | PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film | bought | 1 | 9.0 | assumption | layout study pack_kg_long |
 | 911010 | PACKAGING - PART LABEL, 100 X 150 MM, ONE PER PIECE | made | 42 | 0.0 | - | this plan |
 | 911011 | PACKAGING - PALLET LABEL AND DOCUMENT POUCH, 2 PER PALLET | made | 4 | 0.0 | - | this plan |
 
@@ -455,6 +457,15 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | `glide_min` | 8.5 mm | confirmed | PM ruling on F-018 (joints register) | the lowest glide setting: the band's bottom 8.5 mm above the floor |
 | `glide_max` | 15 mm | assumption | ISS-054 (PROPOSED): the glides take the floor's 10 ± 5 mm | the highest glide setting |
 | `lay_out` | 1000 mm | assumption | this plan | clear round the footprint while the pod goes together: the parts set down at their places (step 1) and the step stools |
+| `lift_door_w` | 1070 mm | calculation | this plan, check K15 | the elevator's door: DR's 1030 mm face in its wrap goes across it with 20 mm a side for hands; a 42 in (1067) door is 3 mm short, so in practice 48 in |
+| `lift_door_h` | 2134 mm | source | a common US elevator door, 84 in | the elevator's door height |
+| `lift_car_w` | 2032 mm | source | a common US passenger car, 80 in (the Lead's US review) | the car's inside width |
+| `lift_car_d` | 1295 mm | source | a common US passenger car, 51 in (the Lead's US review) | the car's inside depth |
+| `lift_car_h` | 2286 mm | calculation | this plan, check K15 | the car's inside height, 90 in: the soffit doesn't lean in under 84 in |
+| `typ_door_w` | 914 mm | source | a common US passenger elevator door, 36 in (the Lead's US review) | for the pieces a typical car can't take |
+| `typ_car_h` | 2438 mm | source | a common US passenger car, 8 ft | for the pieces a typical car can't take |
+| `lifter` | 100 mm | assumption | this plan | a suction lifter stands this far off the face of the pane it holds |
+| `hand_gap` | 20 mm | assumption | this plan | room a side for hands and the wrap when a piece goes through a door |
 | `pal_std_l_exact` | 1219.2 mm | calculation | requirements C1 | 48 in exactly; the controlling number for 'fits the pallet' |
 | `pal_std_w_exact` | 1016 mm | calculation | requirements C1 | 40 in exactly |
 | `pal_long_l_exact` | 2438.4 mm | calculation | requirements C1 | 96 in exactly |

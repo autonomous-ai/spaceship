@@ -23,6 +23,8 @@ as soon as the owner's parts list carries its exact name, and every number on a 
 import argparse
 import copy
 import csv
+import itertools
+import math
 import json
 import io
 import re
@@ -126,6 +128,16 @@ MINE = {
     "glide_min": N(8.5, "mm", "confirmed", "PM ruling on F-018 (joints register)", "the lowest glide setting: the band's bottom 8.5 mm above the floor"),
     "glide_max": N(15, "mm", "assumption", "ISS-054 (PROPOSED): the glides take the floor's 10 ± 5 mm", "the highest glide setting"),
     "lay_out": N(1000, "mm", "assumption", "this plan", "clear round the footprint while the pod goes together: the parts set down at their places (step 1) and the step stools"),
+    # getting the pieces in (install sheet, check K15; US review 2026-11-01)
+    "lift_door_w": N(1070, "mm", "calculation", "this plan, check K15", "the elevator's door: DR's 1030 mm face in its wrap goes across it with 20 mm a side for hands; a 42 in (1067) door is 3 mm short, so in practice 48 in"),
+    "lift_door_h": N(2134, "mm", "source", "a common US elevator door, 84 in", "the elevator's door height"),
+    "lift_car_w": N(2032, "mm", "source", "a common US passenger car, 80 in (the Lead's US review)", "the car's inside width"),
+    "lift_car_d": N(1295, "mm", "source", "a common US passenger car, 51 in (the Lead's US review)", "the car's inside depth"),
+    "lift_car_h": N(2286, "mm", "calculation", "this plan, check K15", "the car's inside height, 90 in: the soffit doesn't lean in under 84 in"),
+    "typ_door_w": N(914, "mm", "source", "a common US passenger elevator door, 36 in (the Lead's US review)", "for the pieces a typical car can't take"),
+    "typ_car_h": N(2438, "mm", "source", "a common US passenger car, 8 ft", "for the pieces a typical car can't take"),
+    "lifter": N(100, "mm", "assumption", "this plan", "a suction lifter stands this far off the face of the pane it holds"),
+    "hand_gap": N(20, "mm", "assumption", "this plan", "room a side for hands and the wrap when a piece goes through a door"),
     # stated limits
     "pal_std_l_exact": N(1219.2, "mm", "calculation", "requirements C1", "48 in exactly; the controlling number for 'fits the pallet'"),
     "pal_std_w_exact": N(1016.0, "mm", "calculation", "requirements C1", "40 in exactly"),
@@ -490,19 +502,19 @@ def step_bodies_json():
 PACKAGING = [
     dict(pn="910001", name="PACKAGING - PALLET LOAD 1 - 48 X 40", kind="assembly", qty=1, kg=None, status="-", src="this plan"),
     dict(pn="910002", name="PACKAGING - PALLET LOAD 2 - 96 X 48", kind="assembly", qty=1, kg=None, status="-", src="this plan"),
-    dict(pn="918001", name="PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, 4-WAY (GMA)", kind="bought", qty=1, kg=lay("pal_std_kg"),
+    dict(pn="918001", name="PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA)", kind="bought", qty=1, kg=lay("pal_std_kg"), wood=True,
          status=LAYP["pal_std_kg"].status, src="layout study S14 (PHS S-4840, 44 lb)", pallet=1),
-    dict(pn="918002", name="PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, 4-WAY", kind="bought", qty=1, kg=lay("pal_long_kg"),
+    dict(pn="918002", name="PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY", kind="bought", qty=1, kg=lay("pal_long_kg"), wood=True,
          status=LAYP["pal_long_kg"].status, src="layout study S15 (Uline H-1627, 107 lb)", pallet=2),
-    dict(pn="911001", name="PACKAGING - GLASS CRATE", kind="made", qty=1, kg=MINE["crate_kg"].value,
+    dict(pn="911001", name="PACKAGING - GLASS CRATE: ISPM 15 STAMPED TIMBER RUNNERS, RAILS AND LID SLATS, PLYWOOD SIDES", kind="made", qty=1, kg=MINE["crate_kg"].value, wood=True,
          status="assumption", src="this plan (crate_kg)", pallet=2),
     dict(pn="911002", name="PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR)", kind="made", qty=1, kg=MINE["glass_rest_kg"].value,
          status="assumption", src="this plan (glass_rest_kg); flat-packed in the crate", pallet=2),
-    dict(pn="911003", name="PACKAGING - TIER SEPARATOR (BATTENS ON POSTS)", kind="made", qty=4, kg=MINE["sep_kg"].value,
+    dict(pn="911003", name="PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS", kind="made", qty=4, kg=MINE["sep_kg"].value, wood=True,
          status="assumption", src="this plan (sep_kg)", pallet=2),
-    dict(pn="918010", name="PACKAGING - PROTECTION SET, 48 X 40: edge boards, corner guards, foam interleaf, PE sheets, cap board, straps, film",
+    dict(pn="918010", name="PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film",
          kind="bought", qty=1, kg=lay("pack_kg_std"), status=LAYP["pack_kg_std"].status, src="layout study pack_kg_std", pallet=1),
-    dict(pn="918011", name="PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film",
+    dict(pn="918011", name="PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film",
          kind="bought", qty=1, kg=lay("pack_kg_long"), status=LAYP["pack_kg_long"].status, src="layout study pack_kg_long", pallet=2),
     dict(pn="911010", name="PACKAGING - PART LABEL, 100 X 150 MM, ONE PER PIECE", kind="made", qty=None, kg=0.0, status="-", src="this plan"),
     dict(pn="911011", name="PACKAGING - PALLET LABEL AND DOCUMENT POUCH, 2 PER PALLET", kind="made", qty=4, kg=0.0, status="-", src="this plan"),
@@ -935,6 +947,42 @@ def cad_size(tag):
     return "box", box_dims(solids), files
 
 
+# ------------------------------------------------------------------------------------------- getting it in (K15)
+def tilt_in(L, t, D, H, dh, step=5.0):
+    """A piece L long and t thick in the car's depth-height plane, leaned into a car D deep and H tall through a door dh
+    high: its lower back corner slides along the floor to the door while its front end stays inside the car, at the
+    flattest angle that allows. False if it would hit the car's ceiling or the door head before it is wholly inside."""
+    b = -L
+    while True:
+        c = (D - b) / L
+        phi = 0.0 if c >= 1 else math.acos(max(-1.0, c))
+        if L * math.sin(phi) + t * math.cos(phi) > H:
+            return False
+        if b >= t * math.sin(phi):
+            return True
+        if math.cos(phi) < 1e-9 or -b * math.tan(phi) + t / math.cos(phi) > dh:
+            return False
+        b += step
+
+
+def goes_in(dims, car, door):
+    """Some face of the piece goes across the door (with room for hands) and it leans in (tilt_in)."""
+    cw, cd, ch = car
+    dw, dh = door
+    gap = 2 * MINE["hand_gap"].value
+    return any(across + gap <= dw and across + gap <= cw and tilt_in(L, t, cd, ch, dh)
+               for across, t, L in itertools.permutations(dims))
+
+
+def moving_size(p):
+    """A piece as it is carried: in its wrap, a carton as it is, a pane on its suction lifters."""
+    a, b, c = p.dims
+    if p.glass:
+        return (a, b, c + MINE["lifter"].value)
+    w = 0.0 if p.carton else MINE["wrap"].value
+    return (a + 2 * w, b + 2 * w, c + 2 * w)
+
+
 # ------------------------------------------------------------------------------------------- time model
 def step_ops(st, other_fixings):
     """A step's operations, with one captive-bolt drive per register bolt and per counted outside fixing."""
@@ -1187,6 +1235,23 @@ class Model:
         self.check_skeleton()
         self.check_numbers()
         self.check_cad_sizes()
+        self.check_delivery()
+
+    def check_delivery(self):
+        """K15: every piece goes into the install sheet's elevator, leaned in through its door; the glass out of its crate."""
+        car = (MINE["lift_car_w"].value, MINE["lift_car_d"].value, MINE["lift_car_h"].value)
+        door = (MINE["lift_door_w"].value, MINE["lift_door_h"].value)
+        typ_car = (MINE["lift_car_w"].value, MINE["lift_car_d"].value, MINE["typ_car_h"].value)
+        typ_door = (MINE["typ_door_w"].value, MINE["lift_door_h"].value)
+        self.no_lift = [p.tag for p in self.shipped() if not goes_in(moving_size(p), car, door)]
+        self.no_typical = [p.tag for p in self.shipped() if not goes_in(moving_size(p), typ_car, typ_door)]
+        cr = self.crate()
+        crate = (MINE["crate_l"].value, MINE["crate_w"].value, cr["outside_h"])
+        self.crate_in = goes_in(crate, car, door)
+        self.check("K15", "Every piece goes into the install sheet's elevator, leaned in through its door (the glass out of its crate)",
+                   f"car {car[0]:g} x {car[1]:g} x {car[2]:g} mm inside, door {door[0]:g} x {door[1]:g}: not in: "
+                   f"{self.no_lift or 'none'}; a typical car with a {typ_door[0]:g} mm door: not in: {self.no_typical or 'none'}; "
+                   f"the crate itself: {'goes in' if self.crate_in else 'opened at the entrance'}", not self.no_lift)
 
     def check_cad_sizes(self):
         """K14: every piece's planned size holds its own CAD box, as it ships (a bundle or carton: each of its parts)."""
@@ -1704,6 +1769,12 @@ def install_tables(m, T):
         I["SLOT"] = f"X {sleeve[0]:.0f} to {sleeve[3]:.0f}, Y {sleeve[1]:.0f} to {sleeve[4]:.0f} (AIR 610000 P01 STEP, the roof sleeve)"
     except (FileNotFoundError, ValueError):
         I["SLOT"] = "behind DR, near the front right corner (AIR's CAD not found)"
+    for k in ("lift_door_w", "lift_door_h", "lift_car_w", "lift_car_d", "lift_car_h", "typ_door_w"):
+        I[k.upper()] = f"{MINE[k].value:g}"
+        I[k.upper() + "_IN"] = f"{MINE[k].value / 25.4:.0f}"
+    I["NOT_TYPICAL"] = (", ".join(f"{PIECE[t].pos if PIECE[t].pos != '-' else PIECE[t].name} ({t}, "
+                                  f"{' × '.join(f'{v:g}' for v in moving_size(PIECE[t]))} mm as carried)" for t in m.no_typical) or "nothing")
+    I["DR_FACE"] = f"{moving_size(PIECE['2-03'])[1]:g}"
     longest = max(m.shipped(), key=lambda p: p.dims[0])
     I["LONGEST"] = f"{longest.name} ({longest.tag}), {longest.dims[0]:g} mm"
     return I

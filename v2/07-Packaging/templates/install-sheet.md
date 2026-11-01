@@ -13,7 +13,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 2. **Floor: flat and level enough that the high and low points under the pod's 8 glides lie within {{FLOOR_PV}} mm of each other** (calculation: the glides run from {{GLIDE_MIN}} mm, the lowest setting the PM allows, to {{GLIDE_MAX}} mm, ISS-054's working range). The pod has no floor of its own (D-132): people stand on the room floor, so it should also be a finished, hard floor.
 3. **Power: one 120 V, 60 Hz wall outlet (NEMA 5-15, 15 A)** within reach of the pod's cord (D-133). The pod draws {{LOAD_W}} W at most on its 12 V side (ELECTRICAL's load table, the voice kit's 60 W hook included), so an ordinary outlet will do. In Vietnam the prototype runs through a 220-to-110 V step-down transformer (D-133).
 4. **Air: keep clear above the roof slot and in front of the intake under DR.** The pod breathes out through a slot in its roof near the front right corner and in through the mesh in the base band under the right decor block (D-61, D-62). AIR sets the minimum gaps (ISS-049); until then keep at least the {{ROOF_WORK}} mm above the roof that assembly needs, and nothing standing against the base band under DR.
-5. **Getting it in:** two pallets, and every piece passes an 810 × 2032 mm doorway (REQ-ASM-06).
+5. **Getting it in:** every door on the way at least 810 × 2032 mm (REQ-ASM-06). **An elevator needs a door at least {{LIFT_DOOR_W}} mm wide (a 48 in door; a 42 in one is 3 mm short with DR in its wrap) and {{LIFT_DOOR_H}} mm ({{LIFT_DOOR_H_IN}} in) tall, and a car at least {{LIFT_CAR_W}} × {{LIFT_CAR_D}} mm inside and {{LIFT_CAR_H}} mm ({{LIFT_CAR_H_IN}} in) tall** (calculation, check K15): DR goes in with its {{DR_FACE}} mm face across the door and leans up into the car, and the long parts lean in the same way. A typical passenger car with a {{TYP_DOOR_W}} mm ({{TYP_DOOR_W_IN}} in) door can't take {{NOT_TYPICAL}}: use a freight or service elevator, or the stairs, for that. Open the glass crate at the building's entrance; each pane goes in upright on its suction lifters.
 
 ## 1. Delivery
 
@@ -22,7 +22,9 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 | 1 | 48 × 40 in (1219 × 1016 mm) | {{H1}} mm | {{G1}} kg |
 | 2 | 96 × 48 in (2438 × 1219 mm) | {{H2}} mm | {{G2}} kg |
 
-- A pallet jack and a route for a 2438 mm long pallet to the room, or unpacking at the door: every piece passes an 810 mm wide, 2032 mm high doorway (REQ-ASM-06). The longest piece is {{LONGEST}}.
+- A pallet jack and a route for a 2438 mm long pallet to the room, or unpacking at the door: every piece passes an 810 mm wide, 2032 mm high doorway (REQ-ASM-06). The longest piece is {{LONGEST}}, so corridors need room to turn it.
+- An elevator: a door at least {{LIFT_DOOR_W}} × {{LIFT_DOOR_H}} mm and a car at least {{LIFT_CAR_W}} × {{LIFT_CAR_D}} mm inside and {{LIFT_CAR_H}} mm tall, or a freight elevator (check K15: each piece as carried, in its wrap, leaned into the car with its lower end sliding on the floor; the panes out of the crate on their lifters). A typical passenger car with a {{TYP_DOOR_W}} mm door can't take {{NOT_TYPICAL}}.
+- The pallets' wood is heat-treated and ISPM 15 stamped (the packing plan), so they clear US ports.
 - The glass travels in a crate at the bottom of pallet 2: the door unit {{DOOR_KG}} kg and the fixed glass {{FIX_KG}} kg, each moved by two people with two suction lifters. Every other piece is 20 kg or less (D-03).
 - Both pallets are marked DO NOT STACK.
 
