@@ -226,11 +226,12 @@ def develop(faces, adj, skin, t, k):
             axis = C.axis_d / np.linalg.norm(C.axis_d)
             foot = C.axis_p + np.dot(m - C.axis_p, axis) * axis
             out = np.cross(axis, P.n)
-            # out must point from P's interior toward the fold: away from P's centroid
+            # out points from P across its edge into the fold: toward the fold cylinder's own centre of area (the
+            # whole cylinder lies past the tangent line; a plane's centroid can sit outside an L-shaped face)
             props = GProp_GProps()
-            BRepGProp.SurfaceProperties_s(P.f, props)
-            pc = v3(props.CentreOfMass())
-            if np.dot(m - pc, out) < 0:
+            BRepGProp.SurfaceProperties_s(C.f, props)
+            cc = v3(props.CentreOfMass())
+            if np.dot(cc - m, out) < 0:
                 out = -out
             # rotate Q back by the fold's angle about the axis, so its plane meets P's again
             Rq = rot_about(foot, axis, ang)
@@ -465,11 +466,15 @@ def check(step_path, dxf_path, k=0.44, tol=TOL, verbose=True):
         # the DXF's coordinates carry 6 decimals: a zone edge is parallel to the bend line within 1e-5 rad and
         # keeps its offset within 1e-4 mm along its length
         offs = []
+        blen = float(np.linalg.norm(bl[1] - bl[0]))
         for m in marks:
             dm = m[1] - m[0]
             sin = abs(float(dm[0] * d[1] - dm[1] * d[0])) / float(np.linalg.norm(dm))
             o0, o1 = float(np.dot(m[0] - bl[0], nrm)), float(np.dot(m[1] - bl[0], nrm))
-            if sin < 1e-5 and abs(o1 - o0) < 1e-4 and abs(o0) < fd["ba"] + 1.0:
+            # alongside this bend line: its span along the line overlaps the bend line's own
+            a0, a1 = sorted((float(np.dot(m[0] - bl[0], d)), float(np.dot(m[1] - bl[0], d))))
+            beside = a1 > 1e-6 and a0 < blen - 1e-6
+            if sin < 1e-5 and abs(o1 - o0) < 1e-4 and abs(o0) < fd["ba"] + 1.0 and beside:
                 offs.append(o0)
         offs.sort()
         if len(offs) < 2:

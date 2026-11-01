@@ -16,6 +16,7 @@ import math
 import numpy as np
 
 import geom3 as G
+import rivets as R
 import sheetmetal as S
 from tr_params import P
 
@@ -80,6 +81,7 @@ def _angle(n1, n2):
 
 
 TAB_Z0 = 1952.0            # corner tabs start above the box's top (1950) and the floor's flanges (to 1949)
+TAB_GAP = 0.2              # a corner tab stands this far off the wall it is riveted to: one sheet, not a closed loop
 
 
 def _slot(poly, h, keep, ei, n_wall, top_edge):
@@ -127,7 +129,7 @@ def _tab_edge(poly, line):
             return i
     raise ValueError("no tab edge on the line")
 
-def shell():
+def shell(holes=None):
     F = frame()
     t, zr, zs, zf = F["t"], F["zr"], F["zs"], F["zf"]
     A, B, C, D, E, u, nfac = F["A"], F["B"], F["C"], F["D"], F["E"], F["u"], F["n_fac"]
@@ -141,20 +143,22 @@ def shell():
     segs = [_seg_from(roof[i], roof[(i + 1) % 5], ROOF_RELIEF, ROOF_RELIEF) for i in range(5)]
     # the walls (outer skins). Corners: front outer at A and B; left inner at A, outer at E; facet inner at B, outer
     # at C; right inner at C, outer at D; back inner at D and E. Inner walls stop at the next wall's inside face.
-    Bi = B + u * (t / u[1])                              # the facet's outer line at the front wall's inside face
-    s_c = (F["xr"] - B[0] + t * nfac[0]) / u[0]
-    Ci = B + u * s_c - nfac * t                          # the facet's inside face at the right wall's plane
+    g = TAB_GAP
+    Bi = B + u * ((t + g) / u[1])                        # the facet's outer line, TAB_GAP inside the front wall
+    s_c = (F["xr"] - B[0] + (t + g) * nfac[0]) / u[0]
+    Ci = B + u * s_c - nfac * (t + g)                    # TAB_GAP inside the facet's inside face, at the right wall
     Ci = np.array([F["xr"], Ci[1], 0.0])
     yr = P.ramp_y
     Pr = B + u * ((yr - B[1]) / u[1])                    # the ramp's foot under the facet
     front = [_at(A, zs), _at(B, zs), _at(B, zr), _at(A, zr)]
-    left = [np.array([F["x0"], F["yf"] + t, zs]), np.array([F["x0"], F["ypocket"], zs]),
+    left = [np.array([F["x0"], F["yf"] + t + g, zs]), np.array([F["x0"], F["ypocket"], zs]),
             np.array([F["x0"], F["ypocket"], zf]), np.array([F["x0"], F["yb"], zf]),
-            np.array([F["x0"], F["yb"], zr]), np.array([F["x0"], F["yf"] + t, zr])]
+            np.array([F["x0"], F["yb"], zr]), np.array([F["x0"], F["yf"] + t + g, zr])]
     facet = [_at(Bi, zs), _at(Pr, zf), _at(C, zf), _at(C, zr), _at(Bi, zr)]
-    right = [_at(Ci, zf), _at(D, zf), _at(D, zr), _at(Ci, zr)]
-    back = [np.array([F["x0"] + t, F["yb"], zf]), np.array([F["xr"] - t, F["yb"], zf]),
-            np.array([F["xr"] - t, F["yb"], zr]), np.array([F["x0"] + t, F["yb"], zr])]
+    Dr = np.array([F["xr"], F["yb"] - t - g, 0.0])     # the right wall stops TAB_GAP inside the back wall
+    right = [_at(Ci, zf), _at(Dr, zf), _at(Dr, zr), _at(Ci, zr)]
+    back = [np.array([F["x0"] + t + g, F["yb"], zf]), np.array([F["xr"], F["yb"], zf]),
+            np.array([F["xr"], F["yb"], zr]), np.array([F["x0"] + t + g, F["yb"], zr])]
     free = 0.3
     h90 = _h(math.pi / 2)
     a_fac = _angle(-Y, nfac)            # the facet's tab onto the front wall
@@ -163,14 +167,15 @@ def shell():
         "FRONT": (front, -Y, [free, free, h90, free], 2, 0),
         "LEFT": (left, -X, [free, free, free, free, h90, h90], 4, 4),
         "FACET": (facet, nfac, [free, free, free, h90, _h(a_fac)], 3, 1),
-        "RIGHT": (right, X, [free, free, h90, _h(a_rt)], 2, 2),
-        "BACK": (back, Y, [free, h90, h90, h90], 2, 3),
+        "RIGHT": (right, X, [free, h90, h90, _h(a_rt)], 2, 2),
+        "BACK": (back, Y, [free, free, h90, h90], 2, 3),
     }
     walls, folds = [], []
-    roof_wall = S.Wall("ROOF", roof_r, Z)
+    holes = holes or {}
+    roof_wall = S.Wall("ROOF", roof_r, Z, holes=holes.get("ROOF", []))
     walls.append(roof_wall)
     # each tab's edge: (wall, edge index): the tab runs from TAB_Z0 up; below it a relief slot frees the fold's end
-    tab_edges = {("LEFT", 5), ("FACET", 4), ("RIGHT", 3), ("BACK", 1), ("BACK", 3)}
+    tab_edges = {("LEFT", 5), ("FACET", 4), ("RIGHT", 3), ("RIGHT", 1), ("BACK", 3)}
     built = {}
     for name, (poly, n, h, top_edge, roof_edge) in walls_def.items():
         poly = list(poly)
@@ -184,14 +189,19 @@ def shell():
         pr, used = _relieve_keep(poly, h, fx, keep)
         built[name] = (poly, pr, used, n)
         folds.append(S.Fold("ROOF", name, segs[roof_edge][0], segs[roof_edge][1], "ROOF - " + name))
-    # corner tabs: (wall, its side edge index, the plane the tab lies on (point, the tab's outer normal), direction)
-    tabs = [("LEFT", 5, (np.array([0, F["yf"] + t, 0]), -Y), X, "TAB LEFT TO FRONT"),
-            ("FACET", 4, (np.array([0, F["yf"] + t, 0]), -Y), -X, "TAB FACET TO FRONT"),
-            ("RIGHT", 3, (Bi - nfac * t, nfac), -u, "TAB RIGHT TO FACET"),
-            ("BACK", 1, (np.array([F["xr"] - t, 0, 0]), X), -Y, "TAB BACK TO RIGHT"),
-            ("BACK", 3, (np.array([F["x0"] + t, 0, 0]), -X), -Y, "TAB BACK TO LEFT")]
-    tab_walls = []
-    for wname, ei, (pp, pn), e, tname in tabs:
+    # corner tabs: (wall, its side edge index, the plane the tab lies on (point, the tab's outer normal), direction,
+    # name, width, riveted). The back-right tab isn't riveted: a rivet through the back wall would stand in the
+    # 2.36 mm gap to DR's panel, and one through the right wall within 6 mm of DR's bolt-line tube. It lies behind
+    # the back wall's strip right of the window (the gasket's land) and carries the gasket's push in bearing; its
+    # edge stops 0.5 mm clear of the window.
+    tabs = [("LEFT", 5, (np.array([0, F["yf"] + t + g, 0]), -Y), X, "TAB LEFT TO FRONT", P.ut_tab_w, True),
+            ("FACET", 4, (np.array([0, F["yf"] + t + g, 0]), -Y), -X, "TAB FACET TO FRONT", P.ut_tab_w, True),
+            ("RIGHT", 3, (Bi - nfac * (t + g), nfac), -u, "TAB RIGHT TO FACET", P.ut_tab_w, True),
+            ("RIGHT", 1, (np.array([0, F["yb"] - t - g, 0]), Y), -X, "TAB RIGHT TO BACK",
+             F["xr"] - P.win_x1 - 0.5, False),
+            ("BACK", 3, (np.array([F["x0"] + t + g, 0, 0]), -X), -Y, "TAB BACK TO LEFT", P.ut_tab_w, True)]
+    tab_walls, tab_rivets = [], []
+    for wname, ei, (pp, pn), e, tname, w, riveted in tabs:
         poly, pr, used, n = built[wname]
         n_ = len(poly)
         orig = walls_def[wname][0]
@@ -203,17 +213,22 @@ def shell():
         # project the tab's direction into its plane, square to the fold line
         e = G.unit(e - np.dot(e, pn) * pn)
         e = G.unit(e - np.dot(e, d) * d)
-        w = P.ut_tab_w
-        tab_walls.append(S.Wall(tname, [s0, s1, s1 + e * w, s0 + e * w], pn))
+        tpoly = [s0, s1, s1 + e * w, s0 + e * w]
+        th = [(s0 + (s1 - s0) * f + e * (w / 2), P.rivet_hole) for f in (0.25, 0.75)] if riveted else []
+        tab_walls.append(S.Wall(tname, tpoly, pn, holes=th))
+        if th:
+            tab_rivets.append((tname, th, pn))
         folds.append(S.Fold(wname, tname, s0, s1, tname))
     for name, (poly, pr, used, n) in built.items():
         cut = []
         if name == "BACK":
             cut = [[np.array([P.win_x0, F["yb"], P.win_z0]), np.array([P.win_x1, F["yb"], P.win_z0]),
                     np.array([P.win_x1, F["yb"], P.win_z1]), np.array([P.win_x0, F["yb"], P.win_z1])]]
-        walls.append(S.Wall(name, pr, n, cutouts=cut))
+        walls.append(S.Wall(name, pr, n, cutouts=cut, holes=holes.get(name, [])))
     walls += tab_walls
-    return S.Part("UT-S", "AIR - SUPPLY TRANSITION - SHELL", walls, folds, t, P.ut_r, P.k_factor, "ROOF", P.dens_al, AL)
+    part = S.Part("UT-S", "AIR - SUPPLY TRANSITION - SHELL", walls, folds, t, P.ut_r, P.k_factor, "ROOF", P.dens_al, AL)
+    part.tab_rivets = tab_rivets
+    return part
 
 
 def _relieve_keep(poly, h, fixed, keep, amin=5.0):
@@ -233,7 +248,7 @@ def _relieve_keep(poly, h, fixed, keep, amin=5.0):
     return out, used
 
 
-def floor():
+def floor(holes=None, keep=None):
     """The floor: an L under the shell beside and behind the box, a ramp up to the front wall's bottom edge, and
     flanges up the shell's inside faces (cut low under the window) and the box's back wall. Its edges along the box's
     right wall stand 1.5 mm off it, sealed; a 1 mm slit at the box's back corner frees the back flange's fold."""
@@ -285,7 +300,9 @@ def floor():
         K0, K1 = poly[i], poly[(i + 1) % n]
         d = G.unit(K1 - K0)
         return K0 + used[(i, "next")] * d, K1 - used[((i + 1) % n, "prev")] * d
-    walls = [S.Wall("BASE", base_r, -Z), S.Wall("RAMP", ramp_r, n_ramp)]
+    holes = holes or {}
+    walls = [S.Wall("BASE", base_r, -Z, holes=holes.get("BASE", [])), S.Wall("RAMP", ramp_r, n_ramp)]
+    flange_rivets = []
     sr = seg(base, bu, 0)
     folds = [S.Fold("BASE", "RAMP", sr[0], sr[1], "RAMP")]
     w = P.ut_tab_w
@@ -296,6 +313,11 @@ def floor():
           ("RAMP", ramp, ru, 2, -Y, "FLANGE FRONT")]
     mitre = {"FLANGE FACET LOW": (_angle(-Z, n_ramp) / 2, None), "FLANGE FACET RAMP": (None, _angle(-Z, n_ramp) / 2)}
     for wall, poly, used, i, nn, name in fl:
+        # the box back flange's rivets are set from the duct's side (rivets.py), their heads on the flange's inside
+        # face: the hole keeps the head clear of the fold's inside round (t + r + half the head + 0.5), and 2
+        # diameters to the free edge
+        hole_in = P.ut_t + P.ut_r + R.HEAD_D / 2 + 0.5 if name == "FLANGE BOX BACK" else 8.5
+        wf = max(w, math.ceil((hole_in + 2 * P.rivet_hole) * 2) / 2)
         s0, s1 = seg(poly, used, i)
         d = G.unit(s1 - s0)
         e = G.unit(np.cross(nn, d))
@@ -308,8 +330,8 @@ def floor():
         def end(p, along, half):
             """The flange's end: square for sq, then mitred back by half the bend's angle when a bend closes it."""
             if half is None:
-                return [p + e * w]
-            return [p + e * sq, p + e * w - along * ((w - sq) * math.tan(half) + 0.5)]
+                return [p + e * wf]
+            return [p + e * sq, p + e * wf - along * ((wf - sq) * math.tan(half) + 0.5)]
         top0 = end(s0, -d, m0)                  # at s0, 'back along the fold' is -d
         top1 = end(s1, d, m1)
         if name == "FLANGE BACK":
@@ -317,23 +339,190 @@ def floor():
             zlim = P.win_z0 - 3.0 - (zf + t)
             ts = sorted(float(np.dot(np.array([x, s0[1], s0[2]]) - s0, d)) for x in (P.win_x0 - 6.0, P.win_x1 + 6.0))
             ta, tb = max(ts[0], 0.0), min(ts[1], L)
-            pts = [s0, s1, s1 + e * w]
+            pts = [s0, s1, s1 + e * wf]
             if tb < L - 1e-6:
-                pts += [s0 + d * tb + e * w]
+                pts += [s0 + d * tb + e * wf]
             pts += [s0 + d * tb + e * zlim, s0 + d * ta + e * zlim]
             if ta > 1e-6:
-                pts += [s0 + d * ta + e * w, s0 + e * w]
+                pts += [s0 + d * ta + e * wf, s0 + e * wf]
         else:
             pts = [s0, s1] + top1 + list(reversed(top0))
-        walls.append(S.Wall(name, pts, nn))
+        hs = G.holes_along(s0, s1, e, hole_in, 12.0, 60.0, P.rivet_hole) if L >= 24.0 else []
+        hs = [(c, dd) for c, dd in hs if G.inside_margin(c, pts, nn, 2 * P.rivet_hole - 1e-6)]
+        if keep is not None:
+            hs = [(c, dd) for c, dd in hs if keep(c, nn)]
+        walls.append(S.Wall(name, pts, nn, holes=hs))
+        flange_rivets.append((name, hs, nn))
         folds.append(S.Fold(wall, name, s0, s1, name))
-    return S.Part("UT-F", "AIR - SUPPLY TRANSITION - FLOOR", walls, folds, t, P.ut_r, P.k_factor, "BASE", P.dens_al, AL)
+    part = S.Part("UT-F", "AIR - SUPPLY TRANSITION - FLOOR", walls, folds, t, P.ut_r, P.k_factor, "BASE", P.dens_al, AL)
+    part.flange_rivets = flange_rivets
+    return part
+
+
+def vane(name, V, d_in, d_out, n_lead, n_leg, span_axis, lo, hi, tab_on, tab_dir_lo, tab_dir_hi, lead_len=None,
+         leg_len=None):
+    """A turning vane, 1 mm aluminium: a straight lead along d_in, a curve of inside radius vane_r turning 90 degrees
+    to d_out, a straight leg along d_out. V is the corner where the lead's and the leg's outer (convex) faces meet;
+    n_lead, n_leg those faces' outward normals. The vane spans span_axis from lo to hi, wall face to wall face, and
+    the end tabs fold off its lead or leg ('lead' / 'leg') onto those faces, toward tab_dir_lo / tab_dir_hi."""
+    t, r = P.vane_t, P.vane_r
+    dt = (r + t)                                   # a 90 degree fold's tangent distance on the outer skin
+    V = np.asarray(V, float)
+    a = np.asarray(span_axis, float)
+    lead0 = V - d_in * (dt + (P.vane_lead if lead_len is None else lead_len))
+    leg1 = V + d_out * (dt + (P.vane_leg if leg_len is None else leg_len))
+    plo, phi = V + a * (lo - float(np.dot(V, a))), V + a * (hi - float(np.dot(V, a)))
+    lead = [lead0 + (plo - V), V + (plo - V), V + (phi - V), lead0 + (phi - V)]
+    leg = [V + (plo - V), leg1 + (plo - V), leg1 + (phi - V), V + (phi - V)]
+    h_tab = (1.0 + t) * math.tan(math.pi / 4) + 0.4
+    h_turn = (r + t) + 0.4
+    rel = 5.0
+    if tab_on == "leg":
+        lp, lh = leg, [h_tab, 0.3, h_tab, h_turn]       # edges: lo end (tab), free end, hi end (tab), the curve
+        fixed = {(0, "prev"): rel, (3, "next"): rel}            # the curve's ends; the tabs start past its zone
+        poly_t, used_t = _relieve(lp, lh, fixed, amin=2.0)
+        poly_o, used_o = _relieve(lead, [0.3, h_turn, 0.3, 0.3], {(1, "next"): rel, (2, "prev"): rel}, amin=2.0)
+        tab_wall_poly, tab_edges = lp, (0, 2)
+    else:
+        lp, lh = lead, [h_tab, h_turn, h_tab, 0.3]      # edges: lo end (tab), the curve, hi end (tab), free end
+        fixed = {(1, "next"): rel, (2, "prev"): rel}
+        poly_t, used_t = _relieve(lp, lh, fixed, amin=2.0)
+        poly_o, used_o = _relieve(leg, [0.3, 0.3, 0.3, h_turn], {(3, "next"): rel, (0, "prev"): rel}, amin=2.0)
+        tab_wall_poly, tab_edges = lp, (0, 2)
+    W = []
+    lead_name, leg_name = name + " LEAD", name + " LEG"
+    if tab_on == "leg":
+        W += [S.Wall(leg_name, poly_t, n_leg), S.Wall(lead_name, poly_o, n_lead)]
+    else:
+        W += [S.Wall(lead_name, poly_t, n_lead), S.Wall(leg_name, poly_o, n_leg)]
+    curve = (V + (plo - V) + a * rel, V + (phi - V) - a * rel)
+    folds = [S.Fold(lead_name, leg_name, curve[0], curve[1], name + " CURVE", r=r)]
+    owner = leg_name if tab_on == "leg" else lead_name
+    holes = []
+    for ei, tdir, tag in ((tab_edges[0], tab_dir_lo, "LO"), (tab_edges[1], tab_dir_hi, "HI")):
+        n_ = len(tab_wall_poly)
+        K0, K1 = tab_wall_poly[ei], tab_wall_poly[(ei + 1) % n_]
+        d = G.unit(K1 - K0)
+        s0, s1 = K0 + used_t[(ei, "next")] * d, K1 - used_t[((ei + 1) % n_, "prev")] * d
+        tn = np.asarray(tdir, float)
+        e = G.unit(tn - np.dot(tn, d) * d)
+        tab_n = a * (-1.0 if tag == "LO" else 1.0)          # a tab's outer skin faces the wall it lies on
+        tw = P.vane_tab
+        tname = "%s TAB %s" % (name, tag)
+        c = (s0 + s1) / 2 + e * (tw / 2)
+        # a tab on the shell's back wall is bonded, not riveted: DR's panel is 2.36 mm behind that wall
+        riveted = float(np.dot(tab_n, Y)) < 0.99
+        W.append(S.Wall(tname, [s0, s1, s1 + e * tw, s0 + e * tw], tab_n, holes=[(c, P.rivet_hole)] if riveted else []))
+        folds.append(S.Fold(owner, tname, s0, s1, tname))
+        if riveted:
+            holes.append((c, tab_n))
+    part = S.Part("UT-V", name, W, folds, t, 1.0, P.k_factor, owner, P.dens_al, "Aluminium 5052-H32, 1.0 mm (alloy HOLD)")
+    part.tab_holes = holes
+    return part
+
+
+def vanes():
+    """The two vane sets. Over the box (the turn from up to across): vane1_n vanes along the mitre from the outlet's
+    left edge under the roof (X 733, Z 2110) to its right edge at the box's top (X 927, Z 1950), spanning the duct's
+    depth wall to wall, tabs on their legs riveted to the front and back walls. Beside the box (the turn from across
+    to back, into the window): two vanes standing floor to roof, tabs on their leads riveted to the floor and roof."""
+    F = frame()
+    t = F["t"]
+    yf_in, yb_in = F["yf"] + t, F["yb"] - t
+    zr_in, zf_in = F["zr"] - t, F["zf"] + t
+    out = []
+    x_a, z_a, x_b, z_b = P.sb_x0 + P.sb_t + P.sb_lin_t, zr_in, P.sb_x1 - P.sb_t - P.sb_lin_t, P.sb_z0 + P.sb_h
+    n = int(P.vane1_n)
+    for i in range(1, n + 1):
+        V = np.array([x_a + (x_b - x_a) * i / (n + 1), 0.0, z_a + (z_b - z_a) * i / (n + 1)])
+        out.append(vane("AIR - SUPPLY TRANSITION - VANE A%d" % i, V, Z, X, -X, Z, Y, yf_in, yb_in, "leg", -Z, -Z))
+    # beside the box: each vane's lead (25, carrying its tabs) starts past the box's right side, and its leg ends
+    # short of the back wall; the outer one keeps 24 mm inside the facet wall
+    for i, (vx, vy) in enumerate(((1045.0, -690.0), (1092.0, -735.0))):
+        V = np.array([vx, vy, 0.0])
+        out.append(vane("AIR - SUPPLY TRANSITION - VANE B%d" % (i + 1), V, X, Y, -Y, X, Z, zf_in, zr_in, "lead", Y, Y,
+                        lead_len=25.0, leg_len=6.0))
+    return out
+
+
+def _wall_of(part, c, n_hint):
+    """The wall of a part whose outer skin holds point c (within 0.01 mm) and faces n_hint, or None."""
+    for w in part.walls.values():
+        if abs(float(np.dot(c - w.pts[0], w.n))) < 1e-2 and float(np.dot(w.n, n_hint)) > 0.99:
+            return w.name
+    return None
+
+
+def parts():
+    """The upper transition's parts with their rivet holes matched: the shell, the floor and the vanes.
+    - the shell's corner tabs and the floor's flanges: their rivets through the walls they lie on;
+    - the vanes' tabs: through the shell's front and back walls (the vanes over the box) or its roof and the
+      floor's base (the vanes beside the box);
+    - the front skirt: rivets into the box's front wall (drilled at assembly through these holes); the left skirt
+      sits on the box's lined end wall, sealed only;
+    - the floor's back flange on the box's back wall: rivets drilled through the box's wall at assembly, set from
+      inside the duct before the shell goes on.
+    No other hole: each would leak air into DR."""
+    F = frame()
+    t = F["t"]
+    sh0, fl0, vs = shell(), floor(), vanes()
+    sh_holes, fl_holes = {}, {}
+
+    def add(store, part, c, n, d=None):
+        name = _wall_of(part, c, n)
+        if name is None:
+            raise ValueError("no wall of %s under a rivet at %s" % (part.name, np.round(c, 2)))
+        store.setdefault(name, []).append((c, d or P.rivet_hole))
+    for tname, hs, pn in sh0.tab_rivets:
+        for c, _d in hs:
+            add(sh_holes, sh0, c + pn * (t + TAB_GAP), pn)
+    for fname, hs, nn in fl0.flange_rivets:
+        for c, _d in hs:
+            if not rivet_ok(c, nn):
+                continue
+            if fname == "FLANGE BOX BACK":
+                continue                                 # the box's back wall is drilled at assembly
+            add(sh_holes, sh0, c + nn * t, nn)
+    for v in vs:
+        for c, n in v.tab_holes:
+            target = fl0 if n[2] < -0.99 else sh0
+            add(fl_holes if target is fl0 else sh_holes, target, c + n * t, n)
+    # the front skirt's rivets into the box's front wall, between the box's end linings
+    zs = (P.ut_skirt_z + P.sb_z0 + P.sb_h) / 2
+    for x in np.linspace(LINING_X0 + 15.0, LINING_X1 - 15.0, 4):
+        sh_holes.setdefault("FRONT", []).append((np.array([x, F["yf"], zs]), P.rivet_hole))
+    sh1, fl1 = shell(sh_holes), floor(fl_holes, keep=lambda c, n: rivet_ok(c, n))
+    return sh1, fl1, vs
+
+
+
+LINING_X0 = P.sb_x0 + P.sb_t + P.sb_lin_t          # the box's free outlet between its 50 mm end linings
+LINING_X1 = P.sb_x1 - P.sb_t - P.sb_lin_t
+
+
+def rivet_ok(c, n):
+    """A rivet through the shell or the box may go here: not through the shell's back wall (DR's removable panel is
+    2.36 mm behind it), not through the shell's right wall within 6 mm of DR's bolt-line tube's depth, not through the
+    box's walls where its linings are."""
+    if float(np.dot(n, Y)) > 0.99:                       # a flange or tab on the back wall
+        return False
+    if float(np.dot(n, X)) > 0.99:
+        # the right wall beside DR's bolt-line tube (its front face Y c04_by, its left face X bolt_tube_x0): the head
+        # (HEAD_D across, HEAD_H proud) keeps 6 mm to the tube's corner
+        dx = P.bolt_tube_x0 - P.ut_right_x - R.HEAD_H
+        lim = P.c04_by - math.sqrt(max(0.0, 6.0 ** 2 - dx ** 2)) - R.HEAD_D / 2
+        if c[1] > lim:
+            return False
+    if float(np.dot(n, -Y)) > 0.99 and abs(c[1] - (P.sb_y1 + P.ut_c)) < 1e-6:
+        return LINING_X0 + 10.0 <= c[0] <= LINING_X1 - 10.0     # the box's back wall: between its linings
+    return True
 
 
 if __name__ == "__main__":
     F = frame()
     print("facet B %s C %s" % (np.round(F["B"], 2), np.round(F["C"], 2)))
-    for part in (shell(), floor()):
+    sh_, fl_, vs_ = parts()
+    for part in [sh_, fl_] + vs_:
         sh = part.solid()
         n, ok, vol, bb = S.solid_checks(sh)
         print(part.name, "solids", n, "valid", ok, "volume %.1f (expected %.1f)" % (vol, part.expected_volume()),
