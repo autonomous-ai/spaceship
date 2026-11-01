@@ -415,8 +415,9 @@ def spigot_origin(part, spec=None):
     A and parallel to B, which stops the turn about B. Origin O: datum B's axis on datum A.
 
     spec: spigot_dia (8.5, the frames' round hole; 9.53 for a band's spigot rivnut), spigot_pick ('-Y': the one
-    nearest the front), spigot_slot (True: a frame also has the slot), c_face ('-X'...; default the room-side
-    face across the part's thinnest direction), a_words / c_words (what the faces are)."""
+    nearest the front) or spigot_near ({'X': -102.75}: the one nearest that pod coordinate), spigot_slot (True: a
+    frame also has the slot), c_face ('-X'...; default the room-side face across the part's thinnest direction),
+    a_words / c_words (what the faces are)."""
     spec = spec or {}
     dia = spec.get("spigot_dia", 8.5)
     rounds = [ft for ft in part.features if ft.kind == "hole" and ft.reg and "spigot" in
@@ -428,6 +429,11 @@ def spigot_origin(part, spec=None):
     if pick:
         k = "XYZ".index(pick[1])
         rounds.sort(key=lambda ft: ft.f.entry[k] * (1 if pick[0] == "-" else -1))
+    near = spec.get("spigot_near")
+    if near:
+        ((ax, v),) = near.items()
+        k = "XYZ".index(ax)
+        rounds.sort(key=lambda ft: abs(ft.f.entry[k] - v))
     b = rounds[0]
     if spec.get("c_face"):
         cf = spec["c_face"]
@@ -658,8 +664,6 @@ def draw(part, spec, out_path, today=None):
     sh = Sheet(size, title="%s %s" % (part.pn, part.name), subject="%s %s %s" % (part.dwg_name, part.rev, "DRAFT"),
                keywords="drawgen; D-112; source %s sha256:%s" % (inputs.rel(part.step), inputs.sha12(part.step)))
     W, H = sh.W, sh.H
-    right_w = spec.get("right_w", spec.get("table_w", TABLE_W) + 16.0)
-    avail_w = W - 20 - 10 - right_w - 20
     avail_h = H - 20 - 30
     P = pl.principal
 
@@ -694,14 +698,27 @@ def draw(part, spec, out_path, today=None):
         left = sum(wx(exts[n_]) + GAP for n_ in ("from_right",) if n_ in exts) + \
             sum(wx(sec_ext[i]) + GAP for i, g in enumerate(pl.sections) if g.vname == "from_right") + (GAP_PL - GAP)
         return left + pw + right + 2 * GAP, up + ph + down + 2 * GAP
-    scale, rear_down = None, False
+    # the hole tables take the right column; when the views don't fit beside it at a scale, a narrower column (its
+    # text wraps more) is tried before a smaller scale, as long as the tables still end above the title block
+    tw0 = spec.get("table_w", TABLE_W)
+    room = H - 16 - TB_ROOM
+
+    def tables_fit(tw):
+        return tw == tw0 or tables_height(sh, part, groups, tw) <= room
+    scale, rear_down, table_w = None, False, tw0
     for s in ISO_SCALES:
         if spec.get("scale") and abs(s - spec["scale"]) > 1e-9:
             continue
-        for rd in ((False, True) if "rear" in exts else (False,)):
-            bw, bh = block(s, rd)
-            if bw <= avail_w and bh <= avail_h:
-                scale, rear_down = s, rd
+        for tw in (tw0, 230.0, 200.0):
+            if tw > tw0 or not tables_fit(tw):
+                continue
+            avail_w = W - 20 - 10 - spec.get("right_w", tw + 16.0) - 20
+            for rd in ((False, True) if "rear" in exts else (False,)):
+                bw, bh = block(s, rd)
+                if bw <= avail_w and bh <= avail_h:
+                    scale, rear_down, table_w = s, rd, tw
+                    break
+            if scale:
                 break
         if scale:
             break
@@ -709,6 +726,7 @@ def draw(part, spec, out_path, today=None):
         raise NotDrawable("%s doesn't fit on %s at any ISO scale down to 1:20" % (part.pn, size))
     bw, bh = block(scale, rear_down)
     pl.rear_down = rear_down
+    pl.table_w = table_w
 
     # ---- the view objects
     vds = {}
@@ -869,7 +887,7 @@ def draw(part, spec, out_path, today=None):
     # removed sections and details: a column between the views and the tables when it is wide enough, else a row
     # under the views
     mid_x0 = main_right + GAP + 18
-    mid_x1 = W - 10 - spec.get("table_w", TABLE_W) - 4 - 10
+    mid_x1 = W - 10 - pl.table_w - 4 - 10
     need_w = (max(vd.size()[0] for vd in place) + 70) if place else 0
     if place and mid_x1 - mid_x0 >= need_w:
         rx, ry = mid_x0, H - 10 - 30
@@ -879,7 +897,7 @@ def draw(part, spec, out_path, today=None):
             ry = ry - h - 58
     elif place:
         rx, ry = 20 + GAP_PL + 14, main_bottom - 34
-        right_limit = W - 10 - spec.get("table_w", TABLE_W) - 4 - 10
+        right_limit = W - 10 - pl.table_w - 4 - 10
         for vd in place:
             w, h = vd.size()
             if vd.kind == "detail" and (rx + w + 40 > right_limit or ry - h - 40 < 20):
@@ -1566,6 +1584,27 @@ def cut_list(part):
 
 
 TABLE_W = 262.0
+TB_ROOM = 120.0     # the title block's height and the gap over it, which the right column's tables stay above
+
+
+def hole_cols(tw):
+    return [("TAG", 14, "c"), ("X (mm)", 24, "r"), ("Y (mm)", 24, "r"), ("SIZE", 40, "l"), ("DEPTH", 42, "l"),
+            ("FEATURE (register) AND FITS", tw - 144, "l")]
+
+
+def tables_height(sh, part, groups, tw):
+    """The hole tables' height in the right column at width tw, as tables_and_text draws them (the numbers and the
+    second title line at their longest)."""
+    total = 0.0
+    for g in groups:
+        rows = [[ft.tag, "-0000.00", "-0000.00",
+                 size_text(ft) + (" along X" if ft.kind == "slot" else " toward +X" if ft.kind == "keyhole" else ""),
+                 wall_word(ft.f, ft.body), feature_text(ft)] for ft in g.feats]
+        head = ["HOLES %s-%s: %s" % (g.feats[0].tag, g.feats[-1].tag, face_title(part, g)),
+                "far wall, coaxial with H00-H00: hidden in the view from below, shown in section D-D, E-E; origin O0; "
+                "+X right, +Y up; drilled from this face"]
+        total += sh.table_height(hole_cols(tw), rows, size=2.5, title=head, title_size=2.5) + 5.0
+    return total
 
 
 def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
@@ -1574,7 +1613,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
     P = pl.principal
     O = dat["O"]
     pvd = vds["principal"]
-    tw = spec.get("table_w", TABLE_W)
+    tw = getattr(pl, "table_w", spec.get("table_w", TABLE_W))
     right_x0 = W - 10 - tw - 4
     y = H - 10 - 6
     # ---- member balloons (frames): item numbers of the cut list on sheet 2
@@ -1596,8 +1635,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
             sh.text(off[0] + 4.0, off[1], str(m["item"]), 3.5, "center", valign="mid", bold=True)
     sh.flush()
     # ---- hole tables, one per face
-    cols = [("TAG", 14, "c"), ("X (mm)", 24, "r"), ("Y (mm)", 24, "r"), ("SIZE", 40, "l"), ("DEPTH", 42, "l"),
-            ("FEATURE (register) AND FITS", tw - 144, "l")]
+    cols = hole_cols(tw)
     for g in groups:
         vd = vds.get(g.view) if g.view else g.vd
         oname = vd.origin_name

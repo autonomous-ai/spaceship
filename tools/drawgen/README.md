@@ -49,6 +49,10 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   and every hole position is from B (R-J6). Other parts name their datum faces in `specs.py`.
 - Mitred ends: the angle from square and the true length along each face.
 - Frames: member balloons, the cut list from the parts list, stile positions, the D-115 joint note.
+- Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
+  gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
+- Labels: every line is drawn first (views, cutting planes, dimensions), then hole callouts, view titles, tags,
+  origin names and datum symbols each go where they touch no line and no other text.
 - Title block: UNITS: mm, the first-angle symbol, part number, name (English and Vietnamese), revision of the
   part's STEP (or of its parts list when it lives in an assembly STEP), DRAFT, material, finish, mass, scale,
   sheet; the tolerance note is the project's (joints register, parts lists), never a blanket ISO 2768. No
@@ -68,6 +72,7 @@ make: a Fusion drawing stays.
 
 `readback.py` reads a drawing back against its STEP, independently of how it was drawn: every hole the repo's own
 STEP reader finds is in a table, each row's X and Y equal the hole's projected centre within 0.05 mm, each tagged
-hole is drawn as a true circle at its place within 0.05 mm, the text has what the mechanical check reads, and the
-Creator is drawgen. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+hole is drawn as a true circle at its place within 0.05 mm, the text has what the mechanical check reads, the
+Creator is drawgen, and no text touches another text or a part outline and no line runs through a text (read from
+the PDF's own text and paths). `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.
