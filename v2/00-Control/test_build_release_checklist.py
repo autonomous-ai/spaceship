@@ -747,6 +747,73 @@ class MadeHold(unittest.TestCase):
         self.assertIn("| WALL | 0 | 0 | 0 | 1 | 0 | 0 | 0 |", text)
 
 
+class DrawgenParts(unittest.TestCase):
+    """D-113 (1): a part tools/drawgen draws is never blocked by a locked screen, because drawgen doesn't run in Fusion;
+    the list is drawgen's own registry (tools/drawgen/specs.py), with the numbers its tabulated sheets cover."""
+
+    def line(self, pn, drawgen, mass=1.0):
+        rh = row(pn, "make", "WALL - PANEL FRAME - " + pn, "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish", mass=mass)
+        rh["cut_rows"] = True
+        file_map = files(f"{pn}_P01_WALL-FRAME_CAD.f3d", f"{pn}_P01_WALL-FRAME_STEP.step")
+        fai = rc.fai_plan(PLAN, BOM)
+        made, _ = rc.check_parts([rh], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "locked", BOM, {}, {},
+                                 None, None, None, drawgen)
+        return made[0]
+
+    def test_a_part_drawgen_draws_is_never_blocked(self):
+        self.assertEqual(self.line("211102", None)["state"], rc.BLOCKED)              # Fusion's: waits for the screen
+        self.assertEqual(self.line("211102", set())["state"], rc.BLOCKED)
+        self.assertEqual(self.line("211102", {"211102"})["state"], "open: drawing")   # drawgen's: it can draw it now
+
+    def test_a_drawgen_part_with_a_second_gap_shows_both(self):
+        # drawgen lifts only the locked screen's hold on the drawing; every other gap still shows (Reviewer 6, #227)
+        line = self.line("211102", {"211102"}, mass=None)
+        self.assertEqual((line["gaps"], line["state"]), (["drawing", "mass"], "open: drawing, mass"))
+
+    def test_the_list_is_drawgens_own_registry(self):
+        got = rc.drawgen_parts()
+        self.assertTrue({"211101", "211102", "111101", "211501", "211504"} <= got, sorted(got))   # 211504: on 211501's sheet
+        planted = {"999901": ("wall", "part", {}), "999911": ("wall", "tabulated", {"covers": ["999911", "999912"]})}
+        self.assertEqual(rc.drawgen_parts(planted), {"999901", "999911", "999912"})
+
+    def test_the_totals_and_notes_say_why(self):
+        lines = [self.line("211101", {"211102"}), self.line("211102", {"211102"})]
+        text = rc.render(lines, [], [], [], "main", "locked", {}, ([], [], []), "2026-11-01", (), {"211102"})
+        self.assertIn("| WALL | 0 | 1 | 1 | 0 | 0 | 0 | 0 |", text)
+        self.assertIn("1 wait for the unlocked screen (D-84) and 1 are drawn by tools/drawgen, which a locked screen "
+                      "doesn't hold (D-113)", text)
+        self.assertIn("its specs.py: 211102)", text)
+
+    def test_the_real_run_passes_drawgens_list_on(self):
+        # main() reads drawgen's registry and hands it to check_parts and the notes; a run that stops passing it fails
+        import inspect
+        import tempfile as _tempfile
+        seen, parts = {}, {"211102"}
+
+        class Stop(Exception):
+            pass
+
+        def spy_parts(*args, **kw):
+            seen["check_parts"] = inspect.signature(real_parts).bind(*args, **kw).arguments.get("drawgen")
+            return real_parts(*args, **kw)
+
+        def spy_render(*args, **kw):
+            seen["render"] = inspect.signature(real_render).bind(*args, **kw).arguments.get("drawgen")
+            raise Stop
+
+        real_parts, real_render, old = rc.check_parts, rc.render, (rc.drawgen_parts, rc.d125_strips)
+        rc.check_parts, rc.render = spy_parts, spy_render
+        rc.drawgen_parts, rc.d125_strips = (lambda specs=None: parts), (lambda root=None: {})
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "locked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.check_parts, rc.render = real_parts, real_render
+            rc.drawgen_parts, rc.d125_strips = old
+        self.assertIs(seen.get("check_parts"), parts)
+        self.assertIs(seen.get("render"), parts)
+
+
 class OpenPrFiles(unittest.TestCase):
     """A branch stacked on a PR that squash-merged since keeps that PR's older copies; main's newer files win."""
     SKIN = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
