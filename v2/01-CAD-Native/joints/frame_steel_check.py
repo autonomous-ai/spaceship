@@ -31,7 +31,10 @@ The model, in short (D-117's load cases, which the PM accepted for the cleats, a
   stiffened knee that carries the tube's moment. The weld coupons (J-T7) prove it.
 - Welds: a full-perimeter fillet round each stud end (T joint) against the T joints' shear.
 """
+import glob
+import importlib.util
 import math
+import os
 import sys
 
 G = 9.81
@@ -71,6 +74,81 @@ PLATE_BLANKS = {"20x40 to 20x40, 45 deg": (20.0, 20.0, 1.75, 26.5),
                 "rail to 40x40, 63.43 / 26.57 deg": (20.0, 40.0, 3.15, 41.5),
                 "40x40 to 40x40, 45 deg": (40.0, 40.0, 1.75, 54.8)}
 PLATES = {k: v[3] for k, v in PLATE_BLANKS.items()}    # the blank's length, for its mass
+PLATE_PNS = {"20x40 to 20x40, 45 deg": "831007", "rail to 40x40, 63.43 / 26.57 deg": "831008",
+             "40x40 to 40x40, 45 deg": "831009"}       # joints register H-40 to H-42
+REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+PLATE_DIR = os.path.join(REPO, "v2", "03-Manufacturing", "joints")
+
+
+def _stepfile():
+    """The mechanical check's own STEP reader (tools/checks/stepfile.py), loaded by its path, not copied."""
+    spec = importlib.util.spec_from_file_location("stepfile_for_frame_steel_check",
+                                                  os.path.join(REPO, "tools", "checks", "stepfile.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def dxf_extents(path):
+    """(xmin, ymin, xmax, ymax) of an R12 DXF's LINE entities and its $INSUNITS (4 is mm)."""
+    with open(path, encoding="latin-1") as fh:
+        rows = [ln.strip() for ln in fh]
+    pairs = list(zip(rows[0::2], rows[1::2]))
+    xs, ys, units, in_ents = [], [], None, False
+    for i, (code, val) in enumerate(pairs):
+        if code == "9" and val == "$INSUNITS" and i + 1 < len(pairs):
+            units = pairs[i + 1][1]
+        elif code == "2" and val == "ENTITIES":
+            in_ents = True
+        elif code == "0" and val == "ENDSEC":
+            in_ents = False
+        elif in_ents and code in ("10", "11"):
+            xs.append(float(val))
+        elif in_ents and code in ("20", "21"):
+            ys.append(float(val))
+    return ((min(xs), min(ys), max(xs), max(ys)) if xs and ys else None), units
+
+
+def plate_exports():
+    """Each plate's committed STEP and DXF against its blank (Reviewer 6 on #308): the STEP's one solid from the
+    frame's outer corner (X from the blank's start, Y 0 to 40 across the frame, Z the half thickness either side),
+    carrying its own part number; the DXF the blank alone from its own corner (0 to the length, 0 to 40, in mm).
+    Returns [(part number, STEP box, DXF extents, problems)], all in mm."""
+    sf = _stepfile()
+    out = []
+    for kind, (_a, _b, x0, length) in PLATE_BLANKS.items():
+        pn = PLATE_PNS[kind]
+        problems, sbox, dbox = [], None, None
+        steps = glob.glob(os.path.join(PLATE_DIR, pn + "_P[0-9][0-9]_*_STEP.step"))
+        dxfs = glob.glob(os.path.join(PLATE_DIR, pn + "_P[0-9][0-9]_*_DXF.dxf"))
+        if len(steps) != 1:
+            problems.append("%d STEP files, want 1" % len(steps))
+        else:
+            st = sf.StepFile(steps[0])
+            insts = st.instances()
+            boxes = [sf.world_box(st.solid(i["solid"]), i["frame"]) for i in insts]
+            if len(boxes) != 1 or boxes[0] is None:
+                problems.append("its STEP has %d solids, want 1" % len(boxes))
+            else:
+                sbox = boxes[0]
+                want = (x0, 0.0, -PLATE_T / 2, x0 + length, 40.0, PLATE_T / 2)
+                if any(abs(g - w) > 0.01 for g, w in zip(sbox, want)):
+                    problems.append("STEP box X %.2f..%.2f Y %.2f..%.2f Z %.2f..%.2f, want X %.2f..%.2f Y 0..40 Z -%.1f..%.1f"
+                                    % (sbox[0], sbox[3], sbox[1], sbox[4], sbox[2], sbox[5], x0, x0 + length,
+                                       PLATE_T / 2, PLATE_T / 2))
+                if insts[0]["part_number"] != pn:
+                    problems.append("its STEP carries part number %r" % insts[0]["part_number"])
+        if len(dxfs) != 1:
+            problems.append("%d DXF files, want 1" % len(dxfs))
+        else:
+            dbox, units = dxf_extents(dxfs[0])
+            if units != "4":
+                problems.append("its DXF's units are %r, want 4 (mm)" % units)
+            if dbox is None or any(abs(g - w) > 0.01 for g, w in zip(dbox, (0.0, 0.0, length, 40.0))):
+                problems.append("DXF extents %s, want 0..%.2f x 0..40" % (
+                    "none" if dbox is None else "%.2f..%.2f x %.2f..%.2f" % (dbox[0], dbox[2], dbox[1], dbox[3]), length))
+        out.append((pn, sbox, dbox, problems))
+    return out
 
 
 def plate_corners(a, b, x0, length, half=PLATE_T / 2):
@@ -396,6 +474,11 @@ def report():
         min(plate_corners(PLATE_BLANKS[k][0], PLATE_BLANKS[k][1], 0.0, math.hypot(*PLATE_BLANKS[k][:2])).values()))
         for k, n in n_plates.items()) +
           "; %.2f kg in all (in the frame masses above)." % sum(n * plate_kg(k) for k, n in n_plates.items()))
+    print("Plate exports against their blanks: " + "; ".join(
+        "%s STEP X %s, DXF %s: %s" % (pn, "%.2f..%.2f" % (sb[0], sb[3]) if sb else "?",
+                                      "%.2f x %.2f" % (db[2] - db[0], db[3] - db[1]) if db else "?",
+                                      "match" if not probs else ", ".join(probs))
+        for pn, sb, db, probs in plate_exports()) + ".")
     print("Every perimeter at 1.2 mm: %.0f%% at worst with any grade above, the wall at %.0f%%, for %.1f kg more a pod."
           % (100 * p12[0], 100 * WALL_MIN, d12))
     for key in ("L2", "C1"):
@@ -450,6 +533,8 @@ def check():
             bad.append("a full-size %s plate stays inside the frame: the trim isn't needed, re-check" % kind)
         if a > b:
             bad.append("mitre plate %s: the narrower member first" % kind)
+    for pn, _sb, _db, probs in plate_exports():          # the committed exports are the blanks, not only the table
+        bad.extend("mitre plate %s: %s" % (pn, pr) for pr in probs)
     if sum(sum(c.values()) * FRAMES[f][1] for f, c in CORNERS.items()) != 40:
         bad.append("corner count: want 40 a pod")
     # the rules are checked, not assumed: 0.8 perimeters must fail, and so must the weakest grade left out
