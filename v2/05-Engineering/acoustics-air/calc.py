@@ -339,12 +339,13 @@ TUBE_KG_M = {
 
 # D-131 (PM ruling 2026-11-01): the wall, ceiling and decor-core frames are welded, galvanised steel tube with the same
 # outside sections. The Joints Engineer's gauges (1.0 mm for perimeters, 40 x 40s and members with a bolt, spigot, rivnut
-# or stud; 0.8 mm for studs; Z100 zinc) put about 46 kg more on the 10 wall and ceiling frames (source). Spread over this
-# model's wall and ceiling area, that takes the decided 20 x 40 frames from aluminium's 1.87 kg/m2 to about 4.75 (the
-# steel-to-aluminium ratio below); every v2 frame in the search takes the same ratio (calculation). The decor cores'
-# steel comes with FRONT's rework; until then they stay in REST_KG as they were.
+# or stud; 0.8 mm for studs; Z100 zinc), with 5 studs per side panel (D-135) and 1.2 mm rails and front stiles on the
+# side panels for margin, put 52.3 kg more on the 10 wall and ceiling frames (source, the Joints Engineer's latest).
+# Spread over this model's wall and ceiling area, that takes the decided 20 x 40 frames from aluminium's 1.87 kg/m2 to
+# about 5.14 (the steel-to-aluminium ratio below); every v2 frame in the search takes the same ratio (calculation). The
+# decor cores' steel comes with FRONT's rework; until then they stay in REST_KG as they were.
 FRAMES_STEEL = True
-STEEL_FRAME_DELTA_KG = 46.0
+STEEL_FRAME_DELTA_KG = 52.3
 
 
 def steel_frame_ratio():
