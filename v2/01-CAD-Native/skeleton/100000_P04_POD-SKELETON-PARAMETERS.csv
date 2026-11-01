@@ -15,10 +15,9 @@ stack_t,84,mm,outer_t + cav_gap + cass_t,calculation,"D-16, D-42 stack, walls an
 wall_depth,1495,mm,1495 mm,decided,"PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"
 lin_gap,4,mm,4 mm,assumption,PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)
 seam_gap,2.26,mm,2.26 mm,decided,"PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)"
-mat_t,3,mm,3 mm,decided,"D-72, PM ruling 2026-10-31 (from BASE): the 3 mm floor mat under the floor ply"
-floor_t,9,mm,9 mm,decided,"PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list), on the mat"
-thresh_h,13,mm,13 mm,decided,"PM ruling 2026-10-31: 13 mm, a US-accessible threshold (D-18 had 20); the kick strip keeps its kick_gap above it"
-thresh_d,60,mm,60 mm,source,layout study B1 list B-THRESH 1176 x 60 x 20
+mat_t,0,mm,0 mm,decided,"D-132 (PM ruling 2026-11-01): no floor, so no floor mat (was 3, D-72)"
+floor_t,0,mm,0 mm,decided,D-132 (PM ruling 2026-11-01): no floor; people stand on the room floor (was 9)
+thresh_h,0,mm,0 mm,decided,"D-132 (PM ruling 2026-11-01): no threshold, no step at the door; the door's drop seal closes on the room floor (was 13)"
 decor_d,205,mm,205 mm,source,"v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"
 dl_w,278,mm,278 mm,source,B1 list F-DL 278 (v1 BOM DL)
 dr_w,1016,mm,1016 mm,source,B1 list F-DR 1016 (v1 STEP solid 78)
@@ -29,7 +28,7 @@ door_h,2011,mm,2011 mm,source,B1 list F-GLASS-DOOR 2011; v1 STEP solid 238
 glass_t,8.76,mm,8.76 mm,decided,D-46 (4+4 laminate)
 glass_y,699,mm,699 mm,source,v1 STEP solid 238 centre Y = -699 (layout study data)
 kick_d,20,mm,20 mm,assumption,kick strip envelope depth (D-40 gives the height only)
-kick_gap,7,mm,7 mm,source,FRONT door unit: 7 mm running gap between the threshold and the kick strip for the drop seal (Mechanical Checker F-002 on P03)
+kick_gap,7,mm,7 mm,source,"FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); since D-132 the PM puts the kick strip's bottom on the band's bottom line, glide_h, so the skeleton's kick envelope no longer uses it"
 fr_dz,17,mm,17 mm,calculation,v1 front top 2417 (v2 frame) - pod_h 2400
 door_xl,289,mm,289 mm,source,V1-FRONT-FACETS: door left edge X -961 = -1250 + 289
 door_xbr,1464,mm,1464 mm,source,V1-FRONT-FACETS: door bottom-right X 214
@@ -60,7 +59,7 @@ dt_xr,1699,mm,1699 mm,source,"V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -
 dr_yc,672,mm,672 mm,source,V1-FRONT-FACETS: DR corner facet back Y -672
 fix_xbl,1468.46,mm,door_xbr + (door_zb - fix_zb) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb),calculation,"F-014: fixed glass bottom-left, on the line glass_gap from the door's slanted edge (was v1's 1468)"
 fix_xtl,1185.618,mm,door_xbr + (door_zb - fix_zt) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb),calculation,"F-014: fixed glass top-left, on the same line (was v1's 1184)"
-floor_top,12,mm,mat_t + floor_t,calculation,"D-72: the floor top, Z 12 (mat 3 + ply 9); the threshold stands thresh_h above the room floor"
+floor_top,0,mm,mat_t + floor_t,calculation,"the floor top: Z 0, the room floor itself (D-132: no floor; was Z 12)"
 wall_z0,110,mm,glide_h + band_h,calculation,base band top: glides + band
 panel_z0,112.26,mm,wall_z0 + seam_gap,calculation,"walls stand one seam_gap above the band top (joints register 2.8, IF-01)"
 wall_h,2290,mm,pod_h - wall_z0,calculation,2290 = layout study v2_model wall_h

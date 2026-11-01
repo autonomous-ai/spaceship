@@ -16,107 +16,94 @@
   },
   {
    "step": 3,
-   "title": "Floor and threshold",
-   "view": "back",
-   "new": [
-    "F1 ENVELOPE",
-    "F1-MAT ENVELOPE",
-    "F2 ENVELOPE",
-    "F2-MAT ENVELOPE",
-    "THRESHOLD ENVELOPE"
-   ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png"
-  },
-  {
-   "step": 4,
    "title": "Lower back wall: B1, B2",
    "view": "back",
    "new": [
     "B1 ENVELOPE",
     "B2 ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png"
   },
   {
-   "step": 5,
+   "step": 4,
    "title": "Lower side walls: L1, R1",
    "view": "back",
    "new": [
     "L1 ENVELOPE",
     "R1 ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-05_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png"
   },
   {
-   "step": 6,
+   "step": 5,
    "title": "Upper back wall: B3, B4",
    "view": "back",
    "new": [
     "B3 ENVELOPE",
     "B4 ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-05_IMG.png"
   },
   {
-   "step": 7,
+   "step": 6,
    "title": "Upper side walls: L2, R2",
    "view": "back",
    "new": [
     "L2 ENVELOPE",
     "R2 ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png"
   },
   {
-   "step": 8,
+   "step": 7,
    "title": "Ceiling: C1, C2",
    "view": "back",
    "new": [
     "C1 ENVELOPE",
     "C2 ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png"
   },
   {
-   "step": 9,
+   "step": 8,
    "title": "Left decor block DL",
    "view": "front",
    "new": [
     "DL FACETED"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png"
   },
   {
-   "step": 10,
+   "step": 9,
    "title": "Fixed glass, then the right decor block DR",
    "view": "front",
    "new": [
     "FIXED GLASS",
     "DR FACETED"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png"
   },
   {
-   "step": 11,
+   "step": 10,
    "title": "Door (before DT)",
    "view": "front",
    "new": [
     "DOOR GLASS",
     "KICK ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-11_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png"
   },
   {
-   "step": 12,
+   "step": 11,
    "title": "Top decor block DT, from above",
    "view": "front",
    "new": [
     "DT FACETED"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-12_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-11_IMG.png"
   },
   {
-   "step": 15,
+   "step": 14,
    "title": "Wall linings: 8 cassettes",
    "view": "inside",
    "new": [
@@ -129,17 +116,17 @@
     "B3-CASS ENVELOPE",
     "B4-CASS ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-15_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png"
   },
   {
-   "step": 19,
+   "step": 18,
    "title": "Ceiling linings: 2 cassettes",
    "view": "inside",
    "new": [
     "C1-CASS ENVELOPE",
     "C2-CASS ENVELOPE"
    ],
-   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-19_IMG.png"
+   "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png"
   }
  ]
 }
