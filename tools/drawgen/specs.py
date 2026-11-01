@@ -17,16 +17,19 @@ WALL_FRAME = {
                  "diagonals within 1.0, bond face flat within 1.0 (assumption).",
 }
 
+# BASE side band: the wall above stands on the band's two spigots (their rivnut holes FB-05), so the front one is
+# datum B as on the frames (joints register R-J6, R-J13, 2.11; Reviewer 5's D-114 pass on #202).
 BASE_SIDE_BAND = {
-    "datums": "corner", "corner": "-X+Y+Z", "principal": "left",
-    "datum_faces": {"A": "+Z", "B": "-X", "C": "+Y"},
-    "datum_words": {"A": "top face (the wall seat, Z 110)", "B": "outer face (X -1250, flush with the ACP)",
-                    "C": "back end face (Y 847, square cut, under the end cap)"},
+    "datums": "spigot", "spigot_dia": 9.53, "spigot_pick": "-Y", "spigot_slot": False,
+    "c_face": "-X",
+    "a_words": "top face (the wall seat, Z 110)",
+    "c_words": "the outer face (X -1250, flush with the ACP)",
     "notes": ["Front end: mitre to the DL decor block's outer facet band piece, 24.14° from square, long point on "
               "the outer face; back end square (BASE tube cut list)."],
-    "tolerance": "cut length +0/-0.5, end angle ±0.25° (BASE cut list, assumption); hole positions ±0.2 from datums "
-                 "C and B (as BASE 111103); rivnut holes Ø9.53 +0.10/0 (maker); other hole sizes +0.2/0 "
-                 "(assumption). Not ISO 2768 on the anodised faces.",
+    "tolerance": "hole positions Ø0.4 to A|B|C (joints register R-J6; stack ST-03 leaves 0.05 mm); the back spigot "
+                 "rivnut hole ±0.1 from B along the band (joints register 2.11); rivnut holes Ø9.53 +0.10/0 (maker); "
+                 "other hole sizes +0.2/0 (assumption); cut length +0/-0.5, end angle ±0.25° (BASE cut list, "
+                 "assumption). Not ISO 2768 on the anodised faces.",
 }
 
 # pn: (team, kind, spec). kind "part" = one part on its sheet; "tabulated" = D-89 part 1, the listed numbers on

@@ -423,7 +423,7 @@ class Sheet:
     def centre_line(self, p, q, w=W_THIN):
         self.line(p, q, w, DASH_CTR)
 
-    def origin_mark(self, o, name, xdir=(1, 0), ydir=(0, 1), size=2.5, away=(-1.0, -1.0)):
+    def origin_mark(self, o, name, xdir=(1, 0), ydir=(0, 1), size=2.5, away=(-1.0, -1.0), label_y=None):
         """The 2D origin of a view's X/Y: a small circle with its name and the +X, +Y arrows."""
         self.circle(o, 1.2, W_THIN)
         L = 9.0
@@ -433,9 +433,13 @@ class Sheet:
             self.arrow(tip, d, 2.2, 0.9)
             self.text(tip[0] + d[0] * 1.2 + (0.3 if d[0] == 0 else 0), tip[1] + d[1] * 1.2 - (1.2 if d[1] == 0 else 0),
                       lab, size, "left" if d[0] >= 0 else "right")
-        # the name outside the part's outline, on the corner's outer side
-        self.text(o[0] + away[0] * 2.2, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
-                  name, size, "right" if away[0] < 0 else "left", bold=True)
+        # the name outside the part's outline, on the corner's outer side (or at label_y, off the outline)
+        if label_y is not None:
+            self.line((o[0], o[1] - 1.2 if label_y < o[1] else o[1] + 1.2), (o[0], label_y + (size + 0.6 if label_y < o[1] else -0.6)), 0.18)
+            self.text(o[0], label_y, name, size, "center", bold=True)
+        else:
+            self.text(o[0] + away[0] * 2.2, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
+                      name, size, "right" if away[0] < 0 else "left", bold=True)
 
     def datum(self, at, direction, letter, size=2.5):
         """ISO 5459 datum feature symbol: a filled triangle on the feature, a leader and the framed letter."""

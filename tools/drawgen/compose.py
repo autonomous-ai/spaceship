@@ -409,29 +409,46 @@ def two_wall_sets(part):
 
 # ------------------------------------------------------------------ datum scheme
 
-def spigot_origin(part):
-    """WALL and CEILING frames sit on two spigots: a round hole and a slot in the bottom rail (joints register
-    R-J13; R-J6 positions every bolt hole from the round one). Datums: A the face they enter (the seat), B the
-    round hole's axis, C the slot. Origin O: datum B's axis on datum A."""
+def spigot_origin(part, spec=None):
+    """Parts that locate on spigots (joints register R-J13; R-J6 positions every bolt hole from the round spigot
+    hole). Datums: A the face the spigot hole enters (the seat), B the round spigot hole's axis, C a face square to
+    A and parallel to B, which stops the turn about B. Origin O: datum B's axis on datum A.
+
+    spec: spigot_dia (8.5, the frames' round hole; 9.53 for a band's spigot rivnut), spigot_pick ('-Y': the one
+    nearest the front), spigot_slot (True: a frame also has the slot), c_face ('-X'...; default the room-side
+    face across the part's thinnest direction), a_words / c_words (what the faces are)."""
+    spec = spec or {}
+    dia = spec.get("spigot_dia", 8.5)
     rounds = [ft for ft in part.features if ft.kind == "hole" and ft.reg and "spigot" in
-              (ft.reg["function"] + ft.reg["mating"]).lower() and "slot" not in ft.reg["function"].lower()[:12]]
-    rounds = [ft for ft in rounds if abs(ft.f.dia - 8.5) < 0.05] or rounds
+              (ft.reg["function"] + " " + ft.reg["mating"]).lower() and abs(ft.f.dia - dia) < 0.05]
     slots = [ft for ft in part.features if ft.kind == "slot"]
-    if not rounds or not slots:
+    if not rounds or (spec.get("spigot_slot", True) and not slots):
         return None
+    pick = spec.get("spigot_pick")
+    if pick:
+        k = "XYZ".index(pick[1])
+        rounds.sort(key=lambda ft: ft.f.entry[k] * (1 if pick[0] == "-" else -1))
     b = rounds[0]
-    # C must stop the turn about B. The slot runs across the rail (R-J17: the panel closes onto its neighbour across
-    # the corner gap), so it can't; the frame's room-side face, square to the wall and parallel to B, does.
-    k = min(range(3), key=lambda i: part.size[i])
-    toward_centre = -1.0 if part.box[k] + part.box[3 + k] > 0 else 1.0
-    c_normal = tuple(toward_centre if i == k else 0.0 for i in range(3))
-    c_plane = part.box[3 + k] if toward_centre > 0 else part.box[k]
+    if spec.get("c_face"):
+        cf = spec["c_face"]
+        k = "XYZ".index(cf[1])
+        c_normal = tuple((1.0 if cf[0] == "+" else -1.0) if i == k else 0.0 for i in range(3))
+        c_plane = part.box[3 + k] if cf[0] == "+" else part.box[k]
+        c_words = spec.get("c_words", "the %s face (%s %s)" % (FACE_WORDS.get(cf, "face"), cf[1], fmt(c_plane)))
+    else:
+        # the frame's room-side face, square to the wall and parallel to B (the slot runs across the rail, R-J17,
+        # so it can't stop the turn)
+        k = min(range(3), key=lambda i: part.size[i])
+        toward_centre = -1.0 if part.box[k] + part.box[3 + k] > 0 else 1.0
+        c_normal = tuple(toward_centre if i == k else 0.0 for i in range(3))
+        c_plane = part.box[3 + k] if toward_centre > 0 else part.box[k]
+        c_words = "the room-side face (%s %s)" % ("XYZ"[k], fmt(c_plane))
     return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, c_plane),
-            "slot": slots[0],
-            "words": {"A": "%s of %s (the seat on the band)" % (FACE_WORDS.get(axis_name(b.f.normal), "face"),
-                                                              b.body.name),
+            "slot": slots[0] if slots else None,
+            "words": {"A": spec.get("a_words", "%s of %s (the seat on the band)" % (
+                FACE_WORDS.get(axis_name(b.f.normal), "face"), b.body.name)),
                       "B": "axis of the spigot hole %s" % "{B}",
-                      "C": "the room-side face (%s %s), which stops the turn about B" % ("XYZ"[k], fmt(c_plane))}}
+                      "C": c_words + ", which stops the turn about B"}}
 
 
 def corner_origin(part, corner):
@@ -614,7 +631,7 @@ def draw(part, spec, out_path, today=None):
     """Write the drawing PDF of part to out_path. spec: per-part options (see specs.py). Returns a report dict."""
     pl = plan_views(part, spec)
     if spec.get("datums") == "spigot":
-        dat = spigot_origin(part)
+        dat = spigot_origin(part, spec)
         if dat is None:
             raise NotDrawable("%s: no spigot hole and slot found for its datums" % part.pn)
     else:
@@ -704,7 +721,7 @@ def draw(part, spec, out_path, today=None):
         vd = VD(v, view_prims(part.shape, v, scale, bodies=shapes, hidden_from=hid), scale)
         vd.name = nm
         vds[nm] = vd
-    letters = iter("ABCDEFGHJKLMNPRSTUVWXYZ")
+    letters = iter("DEFGHJKLMNPRSTUVWXYZ")       # A, B and C name the datums
     secs = []
     for g in pl.sections:
         v = g.sview
@@ -934,7 +951,13 @@ def draw(part, spec, out_path, today=None):
         if part.features:
             bx = vd.box()
             away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-            sh.origin_mark(o2, vd.origin_name, away=away)
+            # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the label
+            # below (or above) the outline, clear of the edge
+            inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+            lab_y = None
+            if inside:
+                lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
+            sh.origin_mark(o2, vd.origin_name, away=away, label_y=lab_y)
         onames[id(vd)] = vd.origin_name
     sh.flush()
     return sh, pl, vds, secs, removed, dat, scale, report, groups
@@ -1139,7 +1162,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                     e = vd.extent
                     # where it is farthest from every tagged hole along the edge (clear of the tags)
                     xs = [vd.view.to2d(ft.f.entry)[0] for g in pl.groups if g.view == nm for ft in g.feats]
-                    cands = [e[0] + t * (e[2] - e[0]) for t in (0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)]
+                    if n2[1] < 0:       # pointing down into the view's title: keep to the ends, past the title
+                        cands = [e[0] + t * (e[2] - e[0]) for t in (0.06, 0.12, 0.88, 0.94)]
+                    else:               # clear of the middle, where a length dimension's text sits
+                        cands = [e[0] + t * (e[2] - e[0]) for t in (0.2, 0.28, 0.36, 0.64, 0.72, 0.8)]
                     xc = max(cands, key=lambda x: min([abs(x - h) for h in xs] or [1e9]))
                     sh.datum(vd.S((xc, yy)), (0, n2[1]), "C")
         # A: the seat face, on the principal view's edge
@@ -1279,10 +1305,11 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         else:
             sh.text(x_front, ymax, lab, 2.5, "right")
     # the spigot hole and slot from the frame's end faces (joints register R-J13: 100 from each end)
-    if dat.get("B") and "below" in vds:
-        vd = vds["below"]
+    bview = dat["B"].group.view if dat.get("B") else None
+    if dat.get("B") and bview in vds:
+        vd = vds[bview]
         ve = vd.extent
-        for f in (dat["B"], dat["slot"]):
+        for f in [x for x in (dat["B"], dat.get("slot")) if x is not None]:
             c = vd.view.to2d(f.f.entry)
             end_x = ve[0] if abs(c[0] - ve[0]) < abs(c[0] - ve[2]) else ve[2]
             p1 = vd.S((end_x, ve[3]))
@@ -1363,6 +1390,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
             if ft.kind == "keyhole":
                 a2 = v.to2d(ft.f.along)
                 size_t += " toward %s%s" % ("+" if (a2[0] + a2[1]) > 0 else "-", "X" if abs(a2[0]) > 0.5 else "Y")
+            x, yv = (0.0 if abs(x) < 0.005 else x), (0.0 if abs(yv) < 0.005 else yv)       # never "-0.00"
             rows.append([ft.tag, "%.2f" % x, "%.2f" % yv, size_t, wall_word(ft.f, ft.body), feature_text(ft)])
         if g.coax_of is not None:
             rm = [r_ for r_ in removed if any(f in st for st in r_.r.all for f in g.feats)]
@@ -1407,11 +1435,12 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
                      project.LOOK_WORDS.get(P.looking, P.looking), mapping_words(P, part.pod_system),
                      "pod" if part.pod_system else "part"))
     if dat.get("B"):
-        notes.append("Datums (ISO 5459): A = %s; B = axis of the spigot hole %s (joints register R-J6, R-J13); C = %s "
-                     "(the spigot slot %s runs across the rail, R-J17, so it locates along the rail only). Origin O = "
-                     "datum B's axis on datum A; O1, O2... are O seen in each view. Hole positions in the tables are "
-                     "theoretically exact from O." % (
-                         dat["words"]["A"], dat["B"].tag, dat["words"]["C"], dat["slot"].tag))
+        slot = (" (the spigot slot %s runs across the rail, R-J17, so it locates along the rail only)" %
+                dat["slot"].tag) if dat.get("slot") else ""
+        notes.append("Datums (ISO 5459): A = %s; B = axis of the spigot hole %s (joints register R-J6, R-J13); "
+                     "C = %s%s. Origin O = datum B's axis on datum A; O1, O2... are O seen in each view. Hole "
+                     "positions in the tables are theoretically exact from O." % (
+                         dat["words"]["A"], dat["B"].tag, dat["words"]["C"], slot))
     elif not part.features:
         pass        # nothing is located from a datum: the overall sizes define the part
     else:
