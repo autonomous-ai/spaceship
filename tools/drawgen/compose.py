@@ -550,7 +550,10 @@ def flat_view(part):
 
 def profile_dims(sh, vd):
     """A bent part's profile: each flange shown whole sized outside (from the free edge or a fold's outside sharp to
-    the next), on its outer side, horizontal or vertical as it runs in the view (ISO 129-1)."""
+    the next), on its outer side, horizontal or vertical as it runs in the view (ISO 129-1). The sizes are laid out
+    before any is drawn, and one whose extension lines would cross another size's value or lines goes on its other
+    side when it crosses none there and its value is clear (BASE's sill 111302: the step's 19, on the right, ran its
+    extension lines through the 17 and across the 103.5's arrow; under the top flange it crosses nothing)."""
     pr = vd.profile
     ch, P3 = pr["chain"], pr["P3"]
     marks = [ch.start] + [f.outer_pt for f in ch.folds]
@@ -558,7 +561,7 @@ def profile_dims(sh, vd):
     marks.append(end)
     bx = vd.box()
     cx, cy = (bx[0] + bx[2]) / 2, (bx[1] + bx[3]) / 2
-    used = {}
+    sizes = []
     for i in pr["shown"]:
         a, b = vd.S(vd.view.to2d(P3(marks[i]))), vd.S(vd.view.to2d(P3(marks[i + 1])))
         d = ch.flanges[i][1]
@@ -567,9 +570,47 @@ def profile_dims(sh, vd):
             side = "down" if (a[1] + b[1]) / 2 <= cy else "up"
         else:
             side = "left" if (a[0] + b[0]) / 2 <= cx else "right"
-        gap = 6.0 + 8.0 * used.get(side, 0)
-        used[side] = used.get(side, 0) + 1
-        sh.dim_linear(a, b, side, gap, fmt(ch.flanges[i][0]), 2.5)
+        sizes.append((a, b, side, fmt(ch.flanges[i][0])))
+
+    def laid(sides):
+        # each size's gap (6 beyond its farther point, 8 more for each earlier size on its side), lines and value box
+        used, out = {}, []
+        for (a, b, _s, t), side in zip(sizes, sides):
+            gap = 6.0 + 8.0 * used.get(side, 0)
+            used[side] = used.get(side, 0) + 1
+            out.append((gap,) + tuple(sh.dim_linear_lines(a, b, side, gap, t, 2.5)))
+        return out
+
+    def crossings(lay):
+        # each size: the other sizes whose value or lines its extension lines come within 0.3 of
+        return {k: {j for j, (_g, segs, box) in enumerate(lay) if j != k and any(
+            sh._seg_box(p, q, box) or any(sh._seg_seg_dist(p, q, u, v) < 0.3 for u, v in segs)
+            for p, q in lay[k][1][:2])} for k in range(len(lay))}
+
+    other = {"up": "down", "down": "up", "left": "right", "right": "left"}
+    sides = [s[2] for s in sizes]
+    lay = laid(sides)
+    moved = set()
+    while True:
+        hits = crossings(lay)
+        n = sum(len(v) for v in hits.values())
+        if not n:
+            break
+        # the size in the most crossings first, crossing or crossed; each moves once at most
+        count = {k: len(hits[k]) + sum(k in v for v in hits.values()) for k in hits}
+        for k in sorted((k for k in count if count[k] and k not in moved), key=lambda k: (-count[k], k)):
+            trial = sides[:k] + [other[sides[k]]] + sides[k + 1:]
+            lay2 = laid(trial)
+            hits2 = crossings(lay2)
+            if not hits2[k] and not any(k in v for v in hits2.values()) and sum(map(len, hits2.values())) < n \
+                    and sh.is_free(lay2[k][2]):
+                sides, lay = trial, lay2
+                moved.add(k)
+                break
+        else:
+            break
+    for (a, b, _s, t), side, (gap, _segs, _box) in zip(sizes, sides, lay):
+        sh.dim_linear(a, b, side, gap, t, 2.5)
 
 
 def flat_dims(sh, part, fv):
