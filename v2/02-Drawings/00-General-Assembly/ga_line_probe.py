@@ -27,9 +27,10 @@ _ns: dict = {}
 with open(os.path.join(A.get("repo_root", "."), "tools", "fusion", "hatch.py"), encoding="utf-8") as _fh:
     exec(compile(_fh.read(), "hatch.py", "exec"), _ns)
 hatch_segments, chain_for = _ns["hatch_segments"], _ns["chain_for"]
-fill_lines, hatch_chains = _ns["fill_lines"], _ns["chains"]
+fill_lines, hatch_chains, pieces = _ns["fill_lines"], _ns["chains"], _ns["pieces"]
 
 FORMS = ["plain", "mid", "dup-first", "dup-last"]
+GA_CASES = ("chain zigzag 2mm", "pairs 2mm", "thin own", "own sketch x5", "3pt open", "4pt open", "5pt closed")
 
 
 def cases():
@@ -50,6 +51,16 @@ def cases():
     strip = [(240.0, 140.0), (270.0, 140.0), (270.0, 142.0), (240.0, 142.0)]
     out += [("chain zigzag", hatch_chains(hatch_segments(sq, spacing=0.7, angle_deg=45.0), sq), True),
             ("chain strip", hatch_chains(fill_lines(strip), strip), True)]
+    # at the GA's own spacings (2026-11-01 07:55: the cases above used 0.7 mm, whose links are
+    # under 1 mm): a 45 degree hatch 2 mm apart as one chain, the same cut into 4-point pieces,
+    # and a thin face's fill lines 0.3 mm apart, each line in its own sketch
+    sq2 = [(200.0, 200.0), (220.0, 200.0), (220.0, 220.0), (200.0, 220.0)]
+    ch2 = hatch_chains(hatch_segments(sq2, spacing=2.0, angle_deg=45.0), sq2)
+    sq3 = [(230.0, 200.0), (250.0, 200.0), (250.0, 220.0), (230.0, 220.0)]
+    ch3 = [p for ch in hatch_chains(hatch_segments(sq3, spacing=2.0, angle_deg=45.0), sq3) for p in pieces(ch)]
+    strip2 = [(260.0, 205.0), (290.0, 205.0), (290.0, 206.5), (260.0, 206.5)]
+    out += [("chain zigzag 2mm", ch2, True), ("pairs 2mm", ch3, True),
+            ("thin own", [[a, b] for a, b in fill_lines(strip2)], True)]
     out += [("own sketch x5", [[(200.0 + 12 * k, 20.0), (210.0 + 12 * k, 40.0)] for k in range(5)], True),
             ("3pt open", [[(200.0, 80.0), (215.0, 100.0), (230.0, 80.0)]], False),
             ("4pt open", [[(240.0, 85.0), (260.0, 80.0), (260.0, 100.0), (240.0, 95.0)]], False),
@@ -77,6 +88,10 @@ def run(_c):
             time.sleep(0.5)
         print("probe sheet %g x %g mm" % (sh.width, sh.height))
         report, all_cases = [], cases()
+        if A.get("cases") == "ga":
+            # only the forms the GA can use (the one-sketch forms failed every probe so far, and
+            # drawing their many lines took most of a 10-minute probe on 2026-11-01)
+            all_cases = [c for c in all_cases if c[0] in GA_CASES]
         for label, chains, own in all_cases:
             sk = None
             made = 0

@@ -54,7 +54,8 @@ _ns = {}
 exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
 hatch_segments = _ns["hatch_segments"]
 chain_for, read_line_mode, spacing_for = _ns["chain_for"], _ns["read_line_mode"], _ns["spacing_for"]
-fill_lines, hatch_chains = _ns["fill_lines"], _ns["chains"]
+fill_lines, hatch_chains, pieces, read_thin_mode = _ns["fill_lines"], _ns["chains"], _ns["pieces"], _ns["read_thin_mode"]
+MAX_SKETCHES = 3000     # one sketch per chain, piece or line: past this the sheet would be unworkable
 
 
 def find_in_folder(folder, name):
@@ -161,10 +162,10 @@ def run(_context):
         raise RuntimeError("the sheet is hatched already; promote the drawing's first version to redo it")
     # the form of Lines.add that draws a straight line, from this session's live probe
     mode = read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
-    if mode in ("none", "own-sketch"):
-        print("GAP: no hatch drawn: the line probe found %s, so the hatch waits for a fix "
-              "(the view is placed)" % ("no form that draws a straight line" if mode == "none"
-                                        else "only one line per sketch works"))
+    thin_mode = read_thin_mode(ARGS.get("line_mode_file"), ARGS.get("thin_mode", "none"))
+    if mode == "none" or thin_mode == "none":
+        print("GAP: no hatch drawn: the line probe found no form that draws %s exactly, so the hatch "
+              "waits for a fix (the view is placed)" % ("a straight line" if mode == "none" else "thin faces' lines"))
         return
 
     # the section design, for the cut faces
@@ -197,42 +198,45 @@ def run(_context):
         return (ex[0] + coord(sx) * SCALE, ex[1] + coord(sy) * SCALE)
 
     base = "HATCH - SECTION %s" % sec
-    record, n_seg, n_sk, failed, filled = {}, 0, 0, 0, 0
-    if mode == "chain":
-        # Fusion's PDF export keeps one chain per sketch exactly, but garbles a sketch of
-        # many lines (live probe 2026-11-01): each face's lines joined into chains, each
-        # chain in its own sketch; thin faces filled with long lines along the strip
-        for i, (body, body_loops) in enumerate(loops):
-            poly = [[to_sheet(p) for p in lp] for lp in body_loops]
-            filled += spacing_for(poly) < 1.0
-            segs = fill_lines(poly, i)
-            n_seg += len(segs)
-            for ch in hatch_chains(segs, poly):
-                n_sk += 1
-                name = "%s %03d" % (base, n_sk)
-                sk = sheet.sketches.add(name)
-                if sk.lines.add([p2(*q) for q in ch]) is None:      # None when it fails
-                    failed += 1
-                record[name] = [[list(q) for q in ch]]
-                if n_sk % 50 == 0:
-                    adsk.doEvents()
-    else:
-        sk = sheet.sketches.add(base)
-        n_sk = 1
-        for i, (body, body_loops) in enumerate(loops):
-            poly = [[to_sheet(p) for p in lp] for lp in body_loops]
-            filled += spacing_for(poly) < 1.0
-            for a, b in fill_lines(poly, i):
-                if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:   # None when it fails
-                    failed += 1
-                record.setdefault(base, []).append([list(q) for q in chain_for(a, b, mode)])
-                n_seg += 1
-                if n_seg % 250 == 0:
-                    adsk.doEvents()
+    record, n_seg, failed, filled = {}, 0, 0, 0
+    # every sketch's chains, planned first (2026-11-01 probes: Fusion's PDF export keeps one short
+    # chain per sketch exactly but garbles long chains and lines under 1 mm apart): a thin face's fill
+    # lines (0.3 mm apart, along the strip) one per sketch; other faces' 45 degree lines, 2 mm apart,
+    # in the probe's form: one chain, 4-point pieces, or one line per sketch; the old one-sketch forms
+    # put every line in a single sketch
+    plan, single = [], []
+    for i, (body, body_loops) in enumerate(loops):
+        poly = [[to_sheet(p) for p in lp] for lp in body_loops]
+        thin = spacing_for(poly) < 1.0
+        filled += thin
+        segs = fill_lines(poly, i)
+        n_seg += len(segs)
+        if thin or mode == "own-sketch":
+            plan += [[[a, b]] for a, b in segs]
+        elif mode == "chain":
+            plan += [[ch] for ch in hatch_chains(segs, poly)]
+        elif mode == "pairs":
+            plan += [[pc] for ch in hatch_chains(segs, poly) for pc in pieces(ch)]
+        else:
+            single += [chain_for(a, b, mode) for a, b in segs]
+    if single:
+        plan.append(single)
+    if len(plan) > MAX_SKETCHES:
+        raise RuntimeError("the hatch would take %d sketches, more than %d; nothing drawn" % (len(plan), MAX_SKETCHES))
+    for k, chains_ in enumerate(plan, 1):
+        name = "%s %03d" % (base, k)
+        sk = sheet.sketches.add(name)
+        for ch in chains_:
+            if sk.lines.add([p2(*q) for q in ch]) is None:      # None when it fails
+                failed += 1
+        record[name] = [[list(q) for q in ch] for ch in chains_]
+        if k % 50 == 0:
+            adsk.doEvents()
+    n_sk = len(plan)
     adsk.doEvents()
     print("section %s at %.2f mm: %d cut faces (%d thin, filled along), %d hatch lines in %d sketch(es), "
-          "the %r form, %d failed; view extent %s" % (
-              sec, at, len(loops), filled, n_seg, n_sk, mode, failed, tuple(round(v, 1) for v in ex)))
+          "the %r form (thin faces %r), %d failed; view extent %s" % (
+              sec, at, len(loops), filled, n_seg, n_sk, mode, thin_mode, failed, tuple(round(v, 1) for v in ex)))
     if failed:
         raise RuntimeError("%d hatch sketch line(s) weren't made; nothing kept" % failed)
     # what was asked, per sketch, for the line-by-line check of the export (ga_pdf_check.py
@@ -240,5 +244,5 @@ def run(_context):
     out = os.path.join(ARGS.get("repo_root", "."), "v2", "02-Drawings", "00-General-Assembly",
                        "%s.hatch.json" % doc.name)
     with open(out, "w", encoding="utf-8") as fh:
-        json.dump({"drawing": doc.name, "form": mode, "layers": record}, fh)
+        json.dump({"drawing": doc.name, "form": mode, "thin": thin_mode, "layers": record}, fh)
     print("hatch record: %s (%d sketch(es))" % (os.path.basename(out), len(record)))

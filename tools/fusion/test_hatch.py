@@ -166,5 +166,37 @@ class ChainTests(unittest.TestCase):
         self.assertEqual(hatch.chain_for((0, 0), (1, 1), "chain"), [(0, 0), (1, 1)])
 
 
+
+class PiecesTests(unittest.TestCase):
+    """2026-11-01 07:55: long chains came out garbled in the PDF, 4-point chains exact."""
+
+    def test_a_long_chain_is_cut_into_pieces_of_three_segments(self):
+        chain = [(float(i), float(i % 2)) for i in range(9)]           # 8 segments
+        got = hatch.pieces(chain)
+        self.assertEqual([len(p) - 1 for p in got], [3, 3, 2])
+        for a, b in zip(got, got[1:]):
+            self.assertEqual(a[-1], b[0])                              # each starts where the last ended
+        segs = [(p[i], p[i + 1]) for p in got for i in range(len(p) - 1)]
+        self.assertEqual(segs, [(chain[i], chain[i + 1]) for i in range(8)])   # every segment once
+
+    def test_a_short_chain_stays_whole(self):
+        for n in (2, 3, 4):
+            chain = [(float(i), 0.0) for i in range(n)]
+            self.assertEqual(hatch.pieces(chain), [chain])
+
+    def test_the_thin_face_answer_from_the_probe(self):
+        import json
+        import tempfile
+        d = tempfile.mkdtemp()
+        old, new = os.path.join(d, "old.json"), os.path.join(d, "new.json")
+        with open(old, "w") as fh:
+            json.dump({"mode": "chain"}, fh)                           # from before the thin answer
+        with open(new, "w") as fh:
+            json.dump({"mode": "pairs", "thin": "own-sketch"}, fh)
+        self.assertEqual(hatch.read_thin_mode(old), "none")
+        self.assertEqual((hatch.read_line_mode(new), hatch.read_thin_mode(new)), ("pairs", "own-sketch"))
+        self.assertEqual(hatch.chain_for((0, 0), (1, 1), "pairs"), [(0, 0), (1, 1)])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

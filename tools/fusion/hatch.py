@@ -19,8 +19,12 @@ import math
 # the form a live probe showed Fusion keeps (ga_pdf_check.py probe; the add is a
 # preview API: on 2026-10-31 a closed 5-point chain lost a corner and 2-point lines
 # came out as scraps in the PDF). "own-sketch" is the plain form, one sketch per
-# segment; "none" means no form worked, so nothing is drawn.
-LINE_MODES = ("plain", "mid", "dup-first", "dup-last", "chain", "own-sketch")
+# segment; "pairs" is a face's chains cut into pieces of at most 3 segments (4 points), each
+# in its own sketch (2026-11-01 07:55: long chains came out garbled, 4-point chains exact);
+# "none" means no form worked, so nothing is drawn. Thin faces have their own form (the
+# probe's "thin" answer): their fill lines are only 0.3 mm apart, too close to join.
+LINE_MODES = ("plain", "mid", "dup-first", "dup-last", "chain", "pairs", "own-sketch")
+PIECE_SEGMENTS = 3
 
 # ISO 128-50: a cut face too thin to hatch is shown solid; at 1:20 a skin, frame or
 # cassette layer is 0.15 to 2 mm wide on the sheet. Narrower than THIN_MM on the
@@ -75,7 +79,7 @@ def hatch_segments(loops, spacing=3.0, angle_deg=45.0, phase=0.0):
 
 def chain_for(a, b, mode="plain"):
     """Points for one Lines.add call drawing the segment a-b in the given form."""
-    if mode in ("plain", "own-sketch", "chain"):
+    if mode in ("plain", "own-sketch", "chain", "pairs"):
         return [a, b]
     if mode == "mid":
         return [a, ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0), b]
@@ -95,6 +99,26 @@ def read_line_mode(path=None, default="plain"):
     if mode not in LINE_MODES and mode != "none":
         raise ValueError("unknown line mode %r in %s" % (mode, path))
     return mode
+
+
+def read_thin_mode(path=None, default="none"):
+    """The form for thin faces' fill lines from the probe's JSON file ("own-sketch" or "none");
+    a file from before this answer existed gives default."""
+    if not path:
+        return default
+    with open(path, encoding="utf-8") as fh:
+        mode = json.load(fh).get("thin", default)
+    if mode not in ("own-sketch", "none"):
+        raise ValueError("unknown thin-face form %r in %s" % (mode, path))
+    return mode
+
+
+def pieces(chain, max_segments=PIECE_SEGMENTS):
+    """A point chain cut into chains of at most max_segments segments; each piece starts where
+    the last one ended, so together they draw every segment once."""
+    if len(chain) <= max_segments + 1:
+        return [list(chain)]
+    return [list(chain[i:i + max_segments + 1]) for i in range(0, len(chain) - 1, max_segments)]
 
 
 def loop_area_perimeter(loops):

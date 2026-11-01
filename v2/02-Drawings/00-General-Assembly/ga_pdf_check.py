@@ -234,11 +234,16 @@ def chain_segments(chains):
 
 # a form is taken when all its cases come out exactly as asked: five separate lines, a
 # hatch of about 40 lines in one sketch, and tiny lines in a 0.44 mm strip (the B-B walls)
+# Faces 2 mm wide or more get a 45 degree hatch 2 mm apart: the first form, fewest sketches first,
+# whose cases come out exactly (a chain or its 4-point pieces at that spacing, 2026-11-01 07:55).
+# Thin faces' fill lines are 0.3 mm apart: only one line per sketch is tried for them.
 MODES = [(f, ("%s small x5" % f, "%s many" % f, "%s thin" % f)) for f in ("plain", "mid", "dup-first", "dup-last")] \
-    + [("chain", ("chain zigzag", "chain strip", "5pt closed")), ("own-sketch", ("own sketch x5",))]
+    + [("chain", ("chain zigzag 2mm", "5pt closed")), ("pairs", ("pairs 2mm", "4pt open")),
+       ("own-sketch", ("own sketch x5",))]
+THIN_MODES = [("own-sketch", ("thin own",))]
 
 
-USABLE = ("plain", "mid", "dup-first", "dup-last", "chain")   # forms a hatch (thousands of lines) can use
+USABLE = ("plain", "mid", "dup-first", "dup-last", "chain", "pairs", "own-sketch")   # forms a hatch can use
 
 
 def probe(pdf_path, out_path):
@@ -263,9 +268,10 @@ def probe(pdf_path, out_path):
         print("probe %-22s %s: %d segment(s) drawn, %d asked" % (label, "OK  " if ok[label] else "DIFF",
                                                                     len(got), len(want)))
     mode = next((m for m, need in MODES if all(ok.get(n) for n in need)), "none")
+    thin = next((m for m, need in THIN_MODES if all(ok.get(n) for n in need)), "none")
     with open(out_path, "w", encoding="utf-8") as fh:
-        json.dump({"mode": mode, "ok": ok, "drawn": drawn, "made": spec.get("report")}, fh, indent=1)
-    print("line mode: %s (written to %s)" % (mode, out_path))
+        json.dump({"mode": mode, "thin": thin, "ok": ok, "drawn": drawn, "made": spec.get("report")}, fh, indent=1)
+    print("line mode: %s, thin faces: %s (written to %s)" % (mode, thin, out_path))
     return mode
 
 
@@ -332,9 +338,11 @@ def main(argv):
         return 0
     if len(argv) >= 2 and argv[0] == "need-mode":      # exit 0 when the probe found a form for hatch lines
         with open(argv[1], encoding="utf-8") as fh:
-            mode = json.load(fh)["mode"]
-        print("line mode %r: %s" % (mode, "hatch can be drawn" if mode in USABLE else "no hatch this time"))
-        return 0 if mode in USABLE else 1
+            got = json.load(fh)
+        mode, thin = got["mode"], got.get("thin", "none")
+        can = mode in USABLE and thin == "own-sketch"
+        print("line mode %r, thin faces %r: %s" % (mode, thin, "hatch can be drawn" if can else "no hatch this time"))
+        return 0 if can else 1
     if len(argv) >= 3 and argv[0] == "hatch":
         n = int(argv[argv.index("--min") + 1]) if "--min" in argv else 1
         problems = check_hatch(argv[1], argv[2], n)

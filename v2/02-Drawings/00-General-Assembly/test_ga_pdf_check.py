@@ -128,6 +128,50 @@ class ProbeTests(unittest.TestCase):
         with open(out) as fh:
             self.assertEqual(json.load(fh)["mode"], "none")
 
+    def new_spec(self):
+        """The probe's cases at the GA's own spacings (2026-11-01 07:55)."""
+        import hatch
+        sq = [(200.0, 200.0), (220.0, 200.0), (220.0, 220.0), (200.0, 220.0)]
+        chains = hatch.chains(hatch.hatch_segments(sq, spacing=2.0), sq)
+        strip = [(260.0, 205.0), (290.0, 205.0), (290.0, 206.5), (260.0, 206.5)]
+        return self.spec() + [
+            ["chain zigzag 2mm", chains, True],
+            ["pairs 2mm", [p for ch in chains for p in hatch.pieces(ch)], True],
+            ["thin own", [[a, b] for a, b in hatch.fill_lines(strip)], True],
+            ["own sketch x5", [[(200.0 + 12 * k, 20.0), (210.0 + 12 * k, 40.0)] for k in range(5)], True],
+            ["4pt open", [[(240.0, 85.0), (260.0, 80.0), (260.0, 100.0), (240.0, 95.0)]], False],
+            ["5pt closed", [[(270.0, 85.0), (290.0, 80.0), (290.0, 100.0), (270.0, 95.0), (270.0, 85.0)]], False]]
+
+    def decide(self, bad):
+        """The probe's answer when the cases in `bad` (and every one-sketch form) come out wrong."""
+        spec = self.new_spec()
+        d = tempfile.mkdtemp()
+        pdf = os.path.join(d, "probe.pdf")
+        wrong = lambda label: label in bad or any(label.startswith(f) for f in ("plain", "mid", "dup"))
+        with open(pdf, "wb") as fh:
+            fh.write(fake_pdf({"PROBE " + label: ([seg_path((0, 0), (1, 0))] if wrong(label) else self.as_asked(chains))
+                               for label, chains, _own in spec}))
+        with open(pdf + ".json", "w") as fh:
+            json.dump({"cases": spec}, fh)
+        out = os.path.join(d, "mode.json")
+        pc.probe(pdf, out)
+        with open(out) as fh:
+            got = json.load(fh)
+        return got["mode"], got["thin"], pc.main(["need-mode", out])
+
+    def test_long_chains_garbled_gives_pairs_and_thin_lines_one_per_sketch(self):
+        # the live answer of 07:55 at the GA's own spacings: chains break, pieces and single lines don't
+        self.assertEqual(self.decide({"chain zigzag 2mm"}), ("pairs", "own-sketch", 0))
+
+    def test_a_chain_that_comes_out_right_is_taken_first(self):
+        self.assertEqual(self.decide(set()), ("chain", "own-sketch", 0))
+
+    def test_without_a_form_for_thin_faces_there_is_no_hatch(self):
+        self.assertEqual(self.decide({"thin own"}), ("chain", "none", 1))
+
+    def test_one_line_per_sketch_is_the_last_form(self):
+        self.assertEqual(self.decide({"chain zigzag 2mm", "pairs 2mm"}), ("own-sketch", "own-sketch", 0))
+
     def test_nothing_right_gives_none(self):
         self.assertEqual(self.run_probe(lambda label, chains: [seg_path((0, 0), (1, 0))]), "none")
 
