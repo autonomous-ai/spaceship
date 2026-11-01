@@ -3,7 +3,9 @@
 
 Run: python3 v2/00-Control/test_build_release_checklist.py
 """
+import csv
 import importlib.util
+import io
 import sys
 import unittest
 from pathlib import Path
@@ -116,6 +118,38 @@ class MadeParts(unittest.TestCase):
         file_map = files("211101_P01_WALL-FRAME_CAD.f3d", "211101_P01_WALL-FRAME_STEP.step", "211101_P01_WALL-FRAME_DWG.pdf")
         made, _ = run([self.frame()], file_map)
         self.assertEqual(made[0]["gaps"], ["DXF or cut list"])
+
+    # D-131's steel members, word for word: CEILING's 412101 (#348 at 3d7c6ae) and WALL's 212101 (#343 at 5afde8e)
+    CEILING_TUBE = ("Galvanized steel S280GD+Z or SGC400 (yield 280 MPa or more), Z100",
+                    "tube cut to length (mitred ends where it meets the corners, cut back for the 2.0 mitre plate), welded into "
+                    "the frame; holes CNC or jig drilled after welding (+/-0.2 from the spigot hole, R-J6)")
+    WALL_TUBE = ("steel box tube 20 x 40 x 1.2, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, "
+                 "zinc Z100 (J-FRAME-01, D-131)")
+
+    def test_a_galvanized_steel_tube_is_read_as_a_tube_not_sheet(self):
+        # the CEILING Drawings Engineer's catch on #362: 'galvanized' alone reads as sheet, so D-131's steel tubes wanted
+        # a DXF even with their cut list rows; the tube words now come first (and FRONT's 'GLASS EDGE' tubes too)
+        ceiling = row("412101", "make", "CEILING - FRAME SIDE MEMBER - COMMON", self.CEILING_TUBE[0], team="CEILING")
+        ceiling["process"] = self.CEILING_TUBE[1]
+        wall = row("212101", "make", "WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH", self.WALL_TUBE)
+        glass_edge = row("352306", "make", "FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE",
+                         "aluminium EN AW-6063-T6 tube 20 x 20 x 1.0", team="FRONT")
+        for r in (ceiling, wall, glass_edge):
+            r["cut_rows"] = True
+        made, _ = run([ceiling, wall, glass_edge], {})
+        self.assertEqual([m["flat"] for m in made], ["yes", "yes", "yes"])
+        # with no cut list row, a steel tube still wants one
+        bare = dict(ceiling)
+        del bare["cut_rows"]
+        made, _ = run([bare], {})
+        self.assertEqual(made[0]["flat"], "no")
+        self.assertIn("DXF or cut list", made[0]["gaps"])
+
+    def test_galvanized_sheet_with_no_tube_words_still_needs_its_dxf(self):
+        tray = row("513101", "make", "LINING - TRAY - CEILING", "galvanised steel DX51D+Z, 0.5 sheet", team="CEILING")
+        tray["cut_rows"] = True     # a cut list row doesn't stand in for a sheet part's DXF
+        made, _ = run([tray], {})
+        self.assertEqual(made[0]["flat"], "no")
 
     def test_a_sheet_part_needs_its_own_dxf(self):
         skin = row("211301", "make", "WALL - SKIN", "ACP 3 mm EV3038")
@@ -264,11 +298,51 @@ class MakerDigits(unittest.TestCase):
         self.assertEqual((parts[0]["maker"], parts[0]["sku"]), ("Belden", "9534 060100"))
 
 
+# CEILING's tube cut list as the CEILING Engineer's #348 has it (15e8a4e), and WALL's as #343 has it (4efa807), word
+# for word: their member rows state the end angles in 'deg', for both ends at once, and as square ends
+CEILING_CUT = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv"
+CEILING_ROWS = """frame,half,member,member_part,name,section,length_mm,qty,ends,holes,status
+411101,C1,SIDE,412101,CEILING - FRAME SIDE MEMBER - COMMON,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1491.35,1,"front end mitred 45 deg, back end mitred 63.43 deg off square; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",side bolt clearance x 4; side bolt access x 4,calculation (from the parameters)
+411101,C1,SEAM,412102,CEILING - FRAME SEAM MEMBER - C1,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1491.35,1,"front end mitred 45 deg, back end mitred 63.43 deg off square; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct","seam pin clearance x 4; 1 x 45 lead-in on the closing face's lower edge, full length",calculation (from the parameters)
+411101,C1,FRONT,412103,CEILING - FRAME FRONT MEMBER - C1,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1196.16,1,"both ends mitred 45 deg; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",soffit hanger front x 1,calculation (from the parameters)
+411101,C1,BACK,412104,CEILING - FRAME BACK MEMBER 40 X 40 - C1,"galvanized steel 40 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1196.75,1,"both ends mitred 26.57 deg off square; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",back rivnut x 4; back spigot round x 1; back spigot slot 8.5 x 14 x 1,calculation (from the parameters)
+411101,C1,X1,412105,CEILING - FRAME CROSS MEMBER 1 - COMMON,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1158.99,1,"square cut; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",soffit hanger x1 x 1; soffit lock x 2,calculation (from the parameters)
+411101,C1,X2,412001,CEILING - FRAME CROSS MEMBER - PLAIN - COMMON,"galvanized steel 20 x 40 x 0.8 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1158.99,1,"square cut; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",none,calculation (from the parameters)
+411101,C1,X3,412001,CEILING - FRAME CROSS MEMBER - PLAIN - COMMON,"galvanized steel 20 x 40 x 0.8 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1158.99,1,"square cut; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",none,calculation (from the parameters)
+411102,C2,SIDE,412101,CEILING - FRAME SIDE MEMBER - COMMON,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1491.35,1,"front end mitred 45 deg, back end mitred 63.43 deg off square; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",side bolt clearance x 4; side bolt access x 4,calculation (from the parameters)
+411102,C2,SEAM,412202,CEILING - FRAME SEAM MEMBER - C2,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1491.35,1,"front end mitred 45 deg, back end mitred 63.43 deg off square; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct","seam pin rivnut x 4; seam pin access x 4; 1 x 45 lead-in on the closing face's lower edge, full length",calculation (from the parameters)
+411102,C2,FRONT,412203,CEILING - FRAME FRONT MEMBER - C2,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1196.16,1,"both ends mitred 45 deg; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",soffit hanger front x 1,calculation (from the parameters)
+411102,C2,BACK,412204,CEILING - FRAME BACK MEMBER 40 X 40 - C2,"galvanized steel 40 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1196.75,1,"both ends mitred 26.57 deg off square; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",back rivnut x 4; back spigot round x 1; back spigot slot 8.5 x 14 x 1,calculation (from the parameters)
+411102,C2,X1,412105,CEILING - FRAME CROSS MEMBER 1 - COMMON,"galvanized steel 20 x 40 x 1.0 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1158.99,1,"square cut; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",soffit hanger x1 x 1; soffit lock x 2,calculation (from the parameters)
+411102,C2,X2,412001,CEILING - FRAME CROSS MEMBER - PLAIN - COMMON,"galvanized steel 20 x 40 x 0.8 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1158.99,1,"square cut; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",none,calculation (from the parameters)
+411102,C2,X3,412001,CEILING - FRAME CROSS MEMBER - PLAIN - COMMON,"galvanized steel 20 x 40 x 0.8 (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)",1158.99,1,"square cut; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct",none,calculation (from the parameters)
+"""
+WALL_CUT = "v2/03-Manufacturing/wall/210000_P01_WALL-TUBE-CUT-LIST_BOM.csv"
+WALL_ROWS = """frame,position,member,member_part,name,section,length_mm,qty,ends,holes,status
+211101,L1,RAIL BOTTOM,212101,WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH,"steel box tube 20 x 40 x 1.2, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, zinc Z100 (J-FRAME-01, D-131)",1483.09,1,"front end mitred 45.00° and back end 63.43° off square, in the frame's plane, long points on its bottom face (the frame's outer edge); cut back for the 2 mm mitre plate (D-117, D-131)","none of its own: every joint hole is made after welding, in the frame (J-FRAME-01; the frame's drawing)",calculation (CAD; number from the master BOM's allocation (D-120); steel D-131)
+211101,L1,RAIL TOP,212102,WALL - FRAME RAIL TOP - SIDE LOWER - LH,"steel box tube 20 x 40 x 1.2, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, zinc Z100 (J-FRAME-01, D-131)",1483.09,1,"front end mitred 45.00° and back end 63.43° off square, in the frame's plane, long points on its top face (the frame's outer edge); cut back for the 2 mm mitre plate (D-117, D-131)","none of its own: every joint hole is made after welding, in the frame (J-FRAME-01; the frame's drawing)",calculation (CAD; number from the master BOM's allocation (D-120); steel D-131)
+211101,L1,STILE FRONT,212103,WALL - FRAME STILE FRONT - SIDE LOWER - LH,"steel box tube 20 x 40 x 1.2, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, zinc Z100 (J-FRAME-01, D-131)",1139.92,1,"bottom and top ends both mitred 45.00° off square, in the frame's plane, long points on its front face (the frame's outer edge); cut back for the 2 mm mitre plate (D-117, D-131)","none of its own: every joint hole is made after welding, in the frame (J-FRAME-01; the frame's drawing)",calculation (CAD; number from the master BOM's allocation (D-120); steel D-131)
+211101,L1,STILE BACK,212104,WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH,"steel box tube 40 x 40 x 1, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, zinc Z100 (J-FRAME-01, D-131)",1140.5,1,"bottom and top ends both mitred 26.57° off square, in the frame's plane, long points on its back face (the frame's outer edge); cut back for the 2 mm mitre plate (D-117, D-131)","none of its own: every joint hole is made after welding, in the frame (J-FRAME-01; the frame's drawing)",calculation (CAD; number from the master BOM's allocation (D-120); steel D-131)
+211101,L1,STILE MID,212105,WALL - FRAME STILE MID - SIDE LOWER - LH,"steel box tube 20 x 40 x 0.8, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, zinc Z100 (J-FRAME-01, D-131)",1102.74,5,"square ends (fits between the rails, welded T joints, D-131)","none of its own: every joint hole is made after welding, in the frame (J-FRAME-01; the frame's drawing)",calculation (CAD; number from the master BOM's allocation (D-120); steel D-131)
+"""
+# every way of writing the ends the tests read (C05's own cases, #357, and the teams' rows): the first nine state
+# both end angles, the last four don't
+END_WORDINGS = ("front end mitred 45 deg, back end mitred 63.43 deg off square", "45 degrees and 30 Degrees",
+                "both ends mitred 45 deg; welded into the frame (D-131, J-FRAME-01)",
+                "both ends mitred 26.57 deg off square; welded into the frame", "mitred 30° at both ends",
+                "bottom and top ends both mitred 45.00° off square, in the frame's plane",
+                "square ends (fits between the rails, welded T joints, D-131)", "square cut",
+                "41.01° and 45° from square",
+                "front end mitred 45 deg; back end to suit", "both ends mitred to suit; 45 deg plate",
+                "mitred to its neighbours (angles on the frame drawing)", "ends both cut to suit")
+
+
 class D162CutListRow(unittest.TestCase):
     """D-162: a weldment member's drawing is its frame's cut list row, when the row states section, cut length,
     both end angles and quantity; a member keeps its own sheet only where the row can't say it."""
     CUT = FRONT_LISTS + "351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv"
     HEAD = "frame,member,member_part,name,section,length_mm,qty,ends,status\n"
+    ROW = {"section": "20 x 40 x 1.0", "length_mm": "1491.35", "qty": "1", "ends": ""}
 
     def made(self, ends, file_map=None):
         cut = {self.CUT: self.HEAD + f"351104,B01,352101,BACK RING BOTTOM,6063-T6 aluminium tube 20 x 20 x 1.5,272.0,1,{ends},calculation\n"}
@@ -295,6 +369,56 @@ class D162CutListRow(unittest.TestCase):
     def test_the_members_own_sheet_still_counts(self):
         sheet = {"v2/02-Drawings/front/352101_P01_FRONT-DECOR-FRAME-DL-BACK-RING-BOTTOM_DWG.pdf": "working tree"}
         self.assertEqual(self.made('mitred to its neighbours (angles on the frame drawing)', sheet)["dwg"], "yes")
+
+    def drawn(self, ends):
+        """True when check_parts takes the member's cut list row, ends as given, for its drawing."""
+        return self.made('"%s"' % ends)["dwg"].startswith("its frame's cut list row, 351104 (D-162)")
+
+    def test_angles_in_deg_or_degrees_count_as_well_as_the_degree_sign(self):
+        # Reviewer 6 on #354: CEILING's side and seam members, 'front end mitred 45 deg, back end mitred 63.43 deg
+        # off square'
+        rows = rc.d162_rows({CEILING_CUT: CEILING_ROWS})
+        for pn, frame in (("412101", "411101"), ("412102", "411101"), ("412202", "411102")):
+            self.assertEqual(rows[pn], (frame, []), pn)
+        self.assertEqual(rc.member_row_lacks(dict(self.ROW, ends="45 degrees and 30 Degrees")), [])
+        self.assertTrue(self.drawn("front end mitred 45 deg, back end mitred 63.43 deg off square"))
+
+    def test_one_angle_given_for_both_ends_states_both(self):
+        # the Lead's rulings: CEILING's front and back members, 'both ends mitred 45 deg' and 'both ends mitred 26.57
+        # deg off square'; WALL's front and back stiles, 'bottom and top ends both mitred 45.00° off square'
+        rows = rc.d162_rows({CEILING_CUT: CEILING_ROWS, WALL_CUT: WALL_ROWS})
+        for pn, frame in (("412103", "411101"), ("412104", "411101"), ("412203", "411102"), ("412204", "411102"),
+                          ("212103", "211101"), ("212104", "211101")):
+            self.assertEqual(rows[pn], (frame, []), pn)
+        self.assertEqual(rc.member_row_lacks(dict(self.ROW, ends="mitred 30° at both ends")), [])
+        for ends in ("both ends mitred 45 deg; welded into the frame (D-131, J-FRAME-01)",
+                     "bottom and top ends both mitred 45.00° off square, in the frame's plane"):
+            self.assertTrue(self.drawn(ends), ends)
+
+    def test_square_ends_need_no_angle(self):
+        # WALL's mid stiles, 'square ends (fits between the rails, welded T joints, D-131)'; CEILING's cross members,
+        # 'square cut'
+        rows = rc.d162_rows({CEILING_CUT: CEILING_ROWS, WALL_CUT: WALL_ROWS})
+        self.assertEqual(rows["212105"], ("211101", []))
+        self.assertEqual(rows["412105"], ("411101", []))
+        self.assertTrue(self.drawn("square ends (fits between the rails, welded T joints, D-131)"))
+
+    def test_one_angle_for_one_end_is_not_both(self):
+        for ends in END_WORDINGS[9:]:
+            self.assertEqual(rc.member_row_lacks(dict(self.ROW, ends=ends)), ["both end angles"], ends)
+            self.assertFalse(self.drawn(ends), ends)
+        for ends in END_WORDINGS[:9]:
+            self.assertEqual(rc.member_row_lacks(dict(self.ROW, ends=ends)), [], ends)
+
+    def test_every_row_reads_as_c05_reads_it(self):
+        # the checklist and C05 give the same answer on every row (C05's member_row_lacks, the Checker's #357)
+        _geometry, c_drawings = rc.load_checks()
+        if not hasattr(c_drawings, "member_row_lacks"):
+            self.skipTest("C05's member_row_lacks comes with the Checker's #357")
+        rows = [r for text in (CEILING_ROWS, WALL_ROWS) for r in csv.DictReader(io.StringIO(text))]
+        rows += [dict(self.ROW, ends=ends) for ends in END_WORDINGS]
+        for r in rows:
+            self.assertEqual(rc.member_row_lacks(r), c_drawings.member_row_lacks(r), r["ends"])
 
 
 class MakerAlternatives(unittest.TestCase):
@@ -443,6 +567,29 @@ class D89SoftGoods(unittest.TestCase):
         self.assertEqual(rc.soft_kind("BASE - SEAL HOLDER - LH"), "")
         self.assertEqual(rc.soft_kind("WALL - CAVITY FILL - SIDE LOWER - LH"), "felt or fill")
 
+    FILL_PIECES = ("WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
+                   "WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1")
+
+    def test_a_fill_piece_is_fill_with_its_size_and_code_left_out(self):
+        # the WALL Drawings Engineer's catch: the head noun read 'X' from the size, so WALL's fill pieces missed the
+        # fill ruling the mechanical check follows (the Lead's ruling on WALL's L1 sample, 2026-11-01)
+        for n in self.FILL_PIECES:
+            self.assertEqual((rc.head_noun(n), rc.soft_kind(n)), ("FILL", "felt or fill"), n)
+        row_text = ("part_number,name,size_mm,material,tolerance_mm\n111501," + self.FILL_PIECES[0] +
+                    ",240 x 1102.7 x 40,PET fill 24 kg/m3,±2\n")
+        line = self.foam(self.CADS, row_text, name=self.FILL_PIECES[0])
+        self.assertEqual((line["flat"], line["dwg"]), ("cut list", "cut list (D-89)"))
+
+    def test_the_checklist_reads_names_with_the_mechanical_checks_own_function(self):
+        # one reader for both tools: a change in C05's head_noun reaches the checklist
+        common = rc.checks_common()
+        old = common.head_noun
+        common.head_noun = lambda name: "FELT"
+        try:
+            self.assertEqual(rc.soft_kind("WALL - PANEL FRAME - SIDE LOWER - LH"), "felt or fill")
+        finally:
+            common.head_noun = old
+
     def test_a_felt_row_in_a_parts_list_serves_as_its_cut_list(self):
         fai = rc.fai_plan(PLAN, BOM)
         felt = row("511301", "make", "LINING - FELT - SIDE LOWER - LH", "PET felt 9 mm")
@@ -460,7 +607,8 @@ class D89SoftGoods(unittest.TestCase):
         spec.loader.exec_module(common)
         names = ["LINING - FELT - SIDE LOWER - LH", "LINING - FILL - CEILING - BAY A", "WALL - CAVITY FILL - SIDE LOWER - LH",
                  "BASE - SEAL MAT - F1", "BASE - FLOOR FOAM - F1", "FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112",
-                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH"]
+                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH",
+                 *self.FILL_PIECES, "WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH"]
         for n in names:
             self.assertEqual(rc.head_noun(n), common.head_noun(n), n)
             self.assertEqual(bool(rc.soft_kind(n)), common.is_soft(n), n)
