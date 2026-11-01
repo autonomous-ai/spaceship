@@ -12,6 +12,11 @@ Inputs (status in brackets):
   glide_h (Z 10) on preset glides [source / decided]; read from the skeleton's CSV.
 - Back band centre line pod_d / 2 - band_t / 2 (Y +830), its ends at pod_w / 2 - band_t
   (X -/+1210) against the side bands' inner walls (skeleton P04) [calculation].
+- D-129 (PM ruling 2026-11-01, the pallet 2 re-plan): at the two back corners the side bands
+  carry the keys, each against its inner wall from inside, with the stud bolts through that
+  1.5 wall; the back band, lowered between both side bands' studs at once, takes them in one
+  open slot at each end cap (its keyholes can't work: the band can't slide sideways onto
+  studs at both ends) [decided; the slot shape PROPOSED].
 - Front pieces: BASE's outer-face points, relayed by the PM on 2026-10-31 [source].
 - Key: 35 wide, 75 tall, 30 long on its centre line, its stud face cut at the
   carrier's mitre; studs 26 and 60 above its bottom; fixing holes 10.5 from its back
@@ -52,6 +57,9 @@ BACK_X = SK["pod_w"] / 2 - SK["band_t"]          # back band ends against the si
 KEY_LEN = 30.0         # PROPOSED: keeps the carrier's Ø7.0 holes 2 x 7 from its cut end
 STUD_Z = (26.0, 60.0)  # above the key's bottom, PROPOSED
 KEYHOLE_DROP = 10.0    # the moving piece is lowered 10 onto the studs (D-87)
+SLOT_BELOW = 2.0       # an open slot runs this far below the lower stud, so the band sits on its glides (PROPOSED)
+HEAD_GAP = 1.8         # each stud bolt's head off the face it stands from: the 1.5 plate and 0.3 (PROPOSED)
+BOLT_LEN = 16.0        # 838001, M6 x 16 (joints register H-01)
 FIX_X = 10.5           # fixing holes from the key's back face, PROPOSED (over 2 x the hole, C09)
 FIX_Y = 7.0            # either side of the centre line, PROPOSED (10.5 from the side faces)
 
@@ -86,13 +94,15 @@ def mitre_centre(outer, u_in, u_out):
 def joints():
     """(part, joint, carrier, keyhole piece, face centre, carrier direction, cut deg, source)."""
     rows = []
-    # back corners: square, keys in the back band's ends (skeleton P04)
-    rows.append(("111211", "back left corner", "back band 111103, left end",
-                 "left side band 111101, inner wall", (-BACK_X, BACK_Y), (-1.0, 0.0), 0.0,
-                 "skeleton P04: pod_w / 2 - band_t, pod_d / 2 - band_t / 2"))
-    rows.append(("111211", "back right corner", "back band 111103, right end",
-                 "right side band 111102, inner wall", (BACK_X, BACK_Y), (1.0, 0.0), 0.0,
-                 "skeleton P04: pod_w / 2 - band_t, pod_d / 2 - band_t / 2"))
+    # back corners (D-129): square, each key in a side band's back end with its stud face against the side
+    # band's inner wall from inside, so its face is the wall's inner face, 1.5 in from X -/+1210; the studs
+    # point into the pod, through the wall, into the back band's end caps (skeleton P04)
+    rows.append(("111211", "back left corner", "left side band 111101, back end, against its inner wall",
+                 "back band 111103, end cap at its left end", (-BACK_X - BAND_WALL, BACK_Y), (1.0, 0.0), 0.0,
+                 "skeleton P04: pod_w / 2 - band_t, pod_d / 2 - band_t / 2; D-129"))
+    rows.append(("111211", "back right corner", "right side band 111102, back end, against its inner wall",
+                 "back band 111103, end cap at its right end", (BACK_X + BAND_WALL, BACK_Y), (-1.0, 0.0), 0.0,
+                 "skeleton P04: pod_w / 2 - band_t, pod_d / 2 - band_t / 2; D-129"))
     # FL corner: left side band (heading -Y) turns onto FL1 toward the knee
     fl1_dir = unit((-1158.0 - -1250.0, -752.0 - -670.0))
     c, inner, turn = mitre_centre((-1250.0, -670.0), (0.0, -1.0), fl1_dir)
@@ -134,7 +144,8 @@ def build():
                 "stud_normal_x", "stud_normal_y", "key_back_centre_x", "key_back_centre_y",
                 "key_bottom_z", "key_top_z", "stud_z_low", "stud_z_high",
                 "keyhole_entry_z_low", "keyhole_entry_z_high",
-                "fix_hole_1_x", "fix_hole_1_y", "fix_hole_2_x", "fix_hole_2_y", "status", "source"])
+                "fix_hole_1_x", "fix_hole_1_y", "fix_hole_2_x", "fix_hole_2_y",
+                "hook", "slot_bottom_z", "stud_bolts_through", "head_gap", "bolt_engagement", "status", "source"])
     z0 = BAND_BOTTOM_Z + BAND_WALL
     for pn, joint, carrier, partner, (cx, cy), u, cut, src in rows:
         y = left(u)
@@ -146,12 +157,25 @@ def build():
         f1 = (fx + FIX_Y * y[0], fy + FIX_Y * y[1])
         f2 = (fx - FIX_Y * y[0], fy - FIX_Y * y[1])
         s1, s2 = z0 + STUD_Z[0], z0 + STUD_Z[1]
+        open_slot = "D-129" in src           # the back band goes straight down onto both side bands' studs
+        if open_slot:
+            hook = ("open slot: one 6.5 slot from the end cap's top edge, widening to 12 at its mouth, down past "
+                    "both studs; the band is lowered straight down between the side bands")
+            entries = ("", "")
+            through = "the side band's inner wall, 1.5: a 7.0 hole at each stud"
+            engage = BOLT_LEN - BAND_WALL - HEAD_GAP
+        else:
+            hook = "keyhole: a 12 entry 10 below each stud, a 6.5 slot up to it; on along the studs, then down 10"
+            entries = ("%.1f" % (s1 - KEYHOLE_DROP), "%.1f" % (s2 - KEYHOLE_DROP))
+            through = ""
+            engage = BOLT_LEN - HEAD_GAP
         w.writerow([pn, joint, carrier, partner, "%.2f" % cut, "%.2f" % cx, "%.2f" % cy,
                     "%.4f" % u[0], "%.4f" % u[1], "%.4f" % n[0], "%.4f" % n[1],
                     "%.2f" % bx, "%.2f" % by, "%.1f" % z0, "%.1f" % (z0 + 75.0),
-                    "%.1f" % s1, "%.1f" % s2, "%.1f" % (s1 - KEYHOLE_DROP), "%.1f" % (s2 - KEYHOLE_DROP),
+                    "%.1f" % s1, "%.1f" % s2, entries[0], entries[1],
                     "%.2f" % f1[0], "%.2f" % f1[1], "%.2f" % f2[0], "%.2f" % f2[1],
-                    "PROPOSED; positions calculation", src])
+                    hook, ("%.1f" % (s1 - SLOT_BELOW)) if open_slot else "", through, "%.1f" % HEAD_GAP,
+                    "%.1f" % engage, "PROPOSED; positions calculation", src])
     return out.getvalue(), turns
 
 
