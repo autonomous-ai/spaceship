@@ -211,7 +211,7 @@ class Part:
             return []
         return sorted({geom.part_number_of(b.name) for b in self.bodies} - {None})
 
-    def __init__(self, pn, team, step=None, pod_system=True, row=None, bent=None):
+    def __init__(self, pn, team, step=None, pod_system=True, row=None, bent=None, frame_members=False):
         self.pn = pn
         self.team = team
         self.step = step or inputs.own_step(pn)
@@ -235,7 +235,7 @@ class Part:
             self.file_name = nm["name"]
         self.name = self.row.get("name", "").strip()
         self.name_vi = (self.row.get("name_vi") or "").strip()
-        self.bodies, self.unit = geom.load_part(self.step, pn)
+        self.bodies, self.unit = geom.load_part(self.step, pn, frame_members=frame_members)
         if self.unit.get("members"):
             for mpn in sorted({geom.part_number_of(b.name) for b in self.bodies} - {None}):
                 mrow = inputs.parts_row(mpn, team)[0] or {}
@@ -3066,7 +3066,8 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
-    part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"))
+    part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"),
+                frame_members=bool(spec.get("cut_list")))      # a D-162 frame: its own file read as its members
     if spec.get("cut_list"):        # a welded frame's cut list in its team's CSV (D-162)
         try:
             part.cut_rows, part.cut_list_file = inputs.cut_list_rows(team, spec["cut_list"], pn)

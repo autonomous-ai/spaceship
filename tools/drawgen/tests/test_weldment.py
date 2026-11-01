@@ -227,13 +227,17 @@ def test_a_frame_takes_its_members_bodies():
 
 
 def test_a_frame_in_its_own_file_takes_its_members_bodies():
-    """WALL's 211101 in its own STEP: its top product is the document and every body is a member part, so it reads
-    as a frame of members, as from a team STEP; an ordinary part in its own file keeps its bodies as before."""
+    """WALL's 211101 in its own STEP: its top product is the document and every body is a member part, so once its
+    entry names a cut list it reads as a frame of members, as from a team STEP; until then it reads as before."""
     d = os.path.join(TMP, "own")
     os.makedirs(d, exist_ok=True)
     step = _weldment(os.path.join(d, "219980_P01_TEST-FRAME_STEP.step"), own=True)
-    bodies, unit = geom.load_part(step, "219980")
+    bodies, unit = geom.load_part(step, "219980", frame_members=True)
     assert sorted(b.name for b in bodies)[:2] == ["219981 TEST MEMBER LONG"] * 2 and unit.get("members"), unit
+    # without a cut list in its entry, the own file reads as it always did (WALL's L1 sheet stays as main draws it
+    # until WALL names its cut list: Reviewer 9 on #365)
+    bodies, unit = geom.load_part(step, "219980")
+    assert not unit.get("members") and all(b.name == "" or not b.name.startswith("2199") for b in bodies), unit
     spec = dict(SPEC, cut_list={"file": _cut_list(os.path.join(d, "cut.csv"), GOOD), "welded_in": ["219983"]})
     p = os.path.join(d, "frame.pdf")
     with _Rows({"219983": PLATE_ROW}):

@@ -197,9 +197,11 @@ def body_names(path, pn):
     return names, sf
 
 
-def load_part(path, pn):
+def load_part(path, pn, frame_members=False):
     """The bodies of part pn in a STEP file (its own file, or a team assembly holding it), with their names and
-    a unit check against the repo's reader. Raises when the file holds no solid of that part."""
+    a unit check against the repo's reader. Raises when the file holds no solid of that part. frame_members: the
+    part is a welded frame whose entry names its cut list (D-162), so its own file, if every body there is a member
+    part, is read as its members (otherwise it is read as it always was)."""
     bodies = []
     occurrences = 0
     for name, solids in read_step(path):
@@ -217,7 +219,7 @@ def load_part(path, pn):
         if own:
             leaves = [(name, solids) for name, solids in read_step(path) if solids]
             others = [name for name, _s in leaves if part_number_of(name) not in (None, pn)]
-            if leaves and len(others) == len(leaves):
+            if frame_members and leaves and len(others) == len(leaves):
                 # a welded frame in its own file whose every body is a member part (WALL's 211101, D-120): each body
                 # named by its member's number and name, as from a team STEP
                 bodies += [Body(name, s) for name, solids in leaves for s in solids]
