@@ -39,18 +39,24 @@ PARTS = {
     "spigot": {
         "drawing": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG",
         "scale": 5.0,
+        # TABULATED since the Lead's ruling of 2026-11-01 (J-FRONT-03): 831010 is 831001 with the pin 3 longer
+        "title": "HARDWARE - LOCATING SPIGOT - TABULATED: 831001, 831010",
         # views: name, Fusion orientation name, sheet centre (mm, A3 420 x 297, from the bottom left), style
         "views": [("front", "FrontViewOrientationType", (120.0, 185.0), "hidden"),
                   ("top", "TopViewOrientationType", (120.0, 85.0), "visible")],
         "notes": [
-            "NOTES (831001 P01, PROPOSED)",
-            "1. UNITS MM. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
+            "NOTES (831001, 831010 P01, PROPOSED) - TABULATED",
+            "1. UNITS MM. SCALE 5:1. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
             "2. MATERIAL STAINLESS STEEL A2 (1.4301 OR 1.4305). FINISH PASSIVATED, DEBURRED.",
-            "3. PIN Ø8 h9 (0 / -0.036), 7.24 ABOVE ITS SHOULDER, LEAD-IN 1 x 45°.",
+            "3. PIN Ø8 h9 (0 / -0.036), L ABOVE ITS SHOULDER (TABLE), LEAD-IN 1 x 45°. THE VIEWS SHOW 831001.",
+            {"indent": 5.0,
+             "table": [["PART", "L", "PROUD", "OVERALL", "POD", "WHERE"],
+                       ["831001", "7.24", "8.00", "15.24", "28", "BAND, SEAMS, CEILING, DL, DR, FLOOR F2"],
+                       ["831010", "10.24", "11.00", "18.24", "2", "DR'S LEDGE, UNDER DT"]]},
             "4. STUD M6x1-6g, 8 LONG (SHOWN AT THE 6g MEAN MAJOR Ø5.88). HEX SOCKET 4 AF x 3.5 DEEP.",
             "5. FITTED AT THE FACTORY INTO RIVNUT 838003 WITH THREADLOCKER; THE SHOULDER SITS ON THE RIVNUT'S "
-            "0.76 HEAD, SO THE PIN'S TOP IS 8.00 ABOVE THE TUBE FACE.",
-            "6. JOINTS REGISTER H-05. STEP: v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
+            "0.76 HEAD, SO THE PIN'S TOP STANDS THE TABLE'S PROUD ABOVE THE TUBE FACE.",
+            "6. JOINTS REGISTER H-05, H-45. ONE STEP PER PART NUMBER IN v2/03-Manufacturing/joints/.",
         ],
     },
     "keys": {

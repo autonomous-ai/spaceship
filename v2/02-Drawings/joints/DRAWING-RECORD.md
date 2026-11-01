@@ -4,7 +4,7 @@ Two drawings, as the PM approved (2026-10-31): the corner key family on one TABU
 
 | Drawing (Default Project / FocusPod v2 / joints, and the PDF here) | Covers | Sheet | Views (base views, first-angle, one scale) | Dimensions |
 |---|---|---|---|---|
-| `831001_P01_HARDWARE-LOCATING-SPIGOT_DWG` | 831001 | A3 | front (elevation, hidden lines) and from above, 5:1 | 6 |
+| `831001_P01_HARDWARE-LOCATING-SPIGOT_DWG` | **TABULATED** 831001 and 831010 (since 2026-11-01), drawn as 831001 | A3 | front (elevation, hidden lines) and from above, 5:1 | 6 |
 | `111211_P01_BASE-CORNER-KEY-TABULATED_DWG` | **TABULATED** 111211, 111212, 111213, 111214, drawn as the square 111211 | A3 | front (hidden lines), from the right (the stud face) and from above (hidden lines), 2:1 | 11 |
 
 **The key sheet is out of the repo (D-147 (3), 2026-11-01): a superseded drawing is removed until it is regenerated.** Its last version (in git at 084217c) showed 111211's first fixing holes (10.5 from the back face, 7.0 either side) and didn't list 111215, so after D-144 it was wrong for 111211. Until the redraw on the key design's newest version lands, 111211 to 111215 show as having no drawing, which is true. The redraw is Fusion's (a five-part tabulated sheet with tapped holes, D-139 and D-143) and comes in the key model's PR.
@@ -42,3 +42,8 @@ The sheet matched the STEP (block 30 x 35 x 75, holes at 26 and 60, the bottom h
 The Lead's drawing check from CEILING's sample, on these two sheets: no inserted pictures; the first-angle symbol draws right; two views made as visible-only show hidden lines anyway (the key's stud-face view shows the bottom holes, the spigot's top view the stud), which Fusion does when the style is set at creation, and both add information, so they stay; no dimension is placed twice.
 
 Offline: `test_joints_drawing.py` now also checks the notes' letter height and box, finding a solid and a hidden circle but not a hidden cone's dashes, and view B's sizes (0 failures).
+
+## The spigot sheet, tabulated (2026-11-01)
+
+The Lead's ruling on J-FRONT-03: DT's two spigots on DR's ledge stand 11 proud, so they still engage DT's holes 5. 831010 is 831001 with the pin 3 longer, a tabulated variant. The sheet's views don't change: they show 831001, as the native drawing has them since Reviewer 5's pass. So only the finish step changed, from the same raw export: the title (HARDWARE - LOCATING SPIGOT - TABULATED: 831001, 831010), TABULATED in the notes, the scale in note 1, the pin length L in note 3 with a table (PART, L, PROUD, OVERALL, POD, WHERE: 831001 7.24, 8.00, 15.24, 28; 831010 10.24, 11.00, 18.24, 2, DR's ledge under DT), note 5's proud from the table, and note 6 naming H-05 and H-45 with one STEP per number. Read back: the views' dimensions are the same as main's sheet, word for word; Created by and the PDF's author read Autonomous. A Reviewer's D-114 pass follows. Known from the first sheet: the pin's 8 sits on its dimension line.
+
