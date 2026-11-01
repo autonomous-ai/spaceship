@@ -9,7 +9,7 @@ Builds 810000 INTERIOR in pod coordinates (conventions.md section 4):
   810101 INTERIOR - WORK WALL LEDGE ASSY: 811101 ledge top (1.5 mm folded aluminium, its
          section a sketch extruded along the wall) and 2 x 818101 bracket envelopes (HOLD)
   810201 INTERIOR - LIGHT SHELF ASSY: 811201 back, 811202 LH, 811203 RH (1.0 mm folded
-         aluminium U), 811204 down channel RH, 811205 diffuser RH; cable holes at ELECTRICAL's
+         aluminium U), the LED profile RH (D-126: a bought profile set, one HOLD envelope); cable holes at ELECTRICAL's
          feed (X 355) and call-light drop (Y -209.5)
   818102 INTERIOR - SCREEN RAIL (HOLD envelope)
 
@@ -192,8 +192,8 @@ def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
 
 FOLDER = "Default Project/FocusPod v2"
 # part-only designs for drawings (D-89 parts 1 to 4): scope -> the layout keys it holds
-PART_SCOPES = {"ledge_assy": ("ledge", "bracket"), "shelf_assy": ("shelf_back", "shelf_lh", "shelf_rh", "dchan", "diffuser"),
-               "ledge": ("ledge",), "shelf_back": ("shelf_back",), "shelf_rh": ("shelf_rh",), "dchan": ("dchan",)}
+PART_SCOPES = {"ledge_assy": ("ledge", "bracket"), "shelf_assy": ("shelf_back", "shelf_lh", "shelf_rh", "lprofile"),
+               "ledge": ("ledge",), "shelf_back": ("shelf_back",), "shelf_rh": ("shelf_rh",)}
 
 
 def part_doc_name(key):
@@ -349,7 +349,7 @@ def run(_context):
         _o, ledge_assy = new_comp(root, "ledge_assy")
         _o, shelf_assy = new_comp(root, "shelf_assy")
         parents = {"ledge": ledge_assy, "bracket": ledge_assy, "shelf_back": shelf_assy, "shelf_lh": shelf_assy,
-                   "shelf_rh": shelf_assy, "dchan": shelf_assy, "diffuser": shelf_assy, "rail": root}
+                   "shelf_rh": shelf_assy, "lprofile": shelf_assy, "rail": root}
         comps = {}
         for key, name, kind, data in I.layout():
             if key not in comps:
