@@ -5,7 +5,7 @@
 
 One Fusion design, components per v2/00-Control/assembly-tree.md (POD with
 BASE, WALL, FRONT > DOOR AND GLAZING, CEILING, LINING, AIR, ELECTRICAL,
-INTERIOR). Every panel, lining, band and floor is an envelope body in its own
+INTERIOR). Every panel, lining and band is an envelope body in its own
 component: a fully constrained rectangle on an XY plane offset by a
 parameter, extruded by a parameter. The front decor blocks and the glass are
 faceted bodies measured from the v1 STEP (V1-FRONT-FACETS.md). Coordinates
@@ -30,7 +30,7 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-REV = "P04"     # pass D: DR on the band, floor out to the band, back frames to the roof, faceted front band
+REV = "P04"     # pass D: DR on the band, back frames to the roof, faceted front band; D-132: no floor, no threshold
 DOC_NAME = "100000_%s_POD-SKELETON_CAD" % REV
 CLOUD_FOLDER = "FocusPod v2"
 F3D_REL = "v2/01-CAD-Native/skeleton/%s.f3d" % DOC_NAME
@@ -55,10 +55,10 @@ PARAMS = [
     ("wall_depth", "1495 mm", "mm", "decided", "PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"),
     ("lin_gap", "4 mm", "mm", "assumption", "PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)"),
     ("seam_gap", "2.26 mm", "mm", "decided", "PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)"),
-    ("mat_t", "3 mm", "mm", "decided", "D-72, PM ruling 2026-10-31 (from BASE): the 3 mm floor mat under the floor ply"),
-    ("floor_t", "9 mm", "mm", "decided", "PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list), on the mat"),
-    ("thresh_h", "13 mm", "mm", "decided", "PM ruling 2026-10-31: 13 mm, a US-accessible threshold (D-18 had 20); the kick strip keeps its kick_gap above it"),
-    ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
+    ("mat_t", "0 mm", "mm", "decided", "D-132 (PM ruling 2026-11-01): no floor, so no floor mat (was 3, D-72)"),
+    ("floor_t", "0 mm", "mm", "decided", "D-132 (PM ruling 2026-11-01): no floor; people stand on the room floor (was 9)"),
+    ("thresh_h", "0 mm", "mm", "decided",
+     "D-132 (PM ruling 2026-11-01): no threshold, no step at the door; the door's drop seal closes on the room floor (was 13)"),
     ("decor_d", "205 mm", "mm", "source", "v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"),
     ("dl_w", "278 mm", "mm", "source", "B1 list F-DL 278 (v1 BOM DL)"),
     ("dr_w", "1016 mm", "mm", "source", "B1 list F-DR 1016 (v1 STEP solid 78)"),
@@ -69,7 +69,7 @@ PARAMS = [
     ("glass_t", "8.76 mm", "mm", "decided", "D-46 (4+4 laminate)"),
     ("glass_y", "699 mm", "mm", "source", "v1 STEP solid 238 centre Y = -699 (layout study data)"),
     ("kick_d", "20 mm", "mm", "assumption", "kick strip envelope depth (D-40 gives the height only)"),
-    ("kick_gap", "7 mm", "mm", "source", "FRONT door unit: 7 mm running gap between the threshold and the kick strip for the drop seal (Mechanical Checker F-002 on P03)"),
+    ("kick_gap", "7 mm", "mm", "source", "FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); since D-132 the PM puts the kick strip's bottom on the band's bottom line, glide_h, so the skeleton's kick envelope no longer uses it"),
     # stage B: the faceted front, measured from the v1 STEP (V1-FRONT-FACETS.md), Z shifted
     # -17 mm so v1's top (2417) meets the 2400 datum (D-21); X offsets from the side faces
     ("fr_dz", "17 mm", "mm", "calculation", "v1 front top 2417 (v2 frame) - pod_h 2400"),
@@ -104,7 +104,7 @@ PARAMS = [
     # derived
     ("fix_xbl", "door_xbr + (door_zb - fix_zb) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb)", "mm", "calculation", "F-014: fixed glass bottom-left, on the line glass_gap from the door's slanted edge (was v1's 1468)"),
     ("fix_xtl", "door_xbr + (door_zb - fix_zt) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb)", "mm", "calculation", "F-014: fixed glass top-left, on the same line (was v1's 1184)"),
-    ("floor_top", "mat_t + floor_t", "mm", "calculation", "D-72: the floor top, Z 12 (mat 3 + ply 9); the threshold stands thresh_h above the room floor"),
+    ("floor_top", "mat_t + floor_t", "mm", "calculation", "the floor top: Z 0, the room floor itself (D-132: no floor; was Z 12)"),
     ("wall_z0", "glide_h + band_h", "mm", "calculation", "base band top: glides + band"),
     ("panel_z0", "wall_z0 + seam_gap", "mm", "calculation", "walls stand one seam_gap above the band top (joints register 2.8, IF-01)"),
     ("wall_h", "pod_h - wall_z0", "mm", "calculation", "2290 = layout study v2_model wall_h"),
@@ -200,23 +200,22 @@ for code, ox0, ox1, ix0, ix1 in (("C1",) + BL_X + (XIL, "0 mm"), ("C2",) + BR_X 
         (ox0, ox1), (YW, YB), ("pod_h - outer_t", "pod_h"))
     env("LINING", code + "-CASS", "LINING - CASSETTE - CEILING - " + code, "L-CASS-HALF",
         (ix0, ix1), (YW, YB + " - stack_t"), ("pod_h - stack_t", "pod_h - stack_t + cass_t"))
-    # pass D (PM ruling): the floor runs out to the base band, closing the 41 mm trench
-    # under the wall stack (sides and back); its front edge stays at the walls' start
-    fx0, fx1 = (XL + " + band_t", "0 mm") if code == "C1" else ("0 mm", XR + " - band_t")
-    # D-72 (PM ruling from BASE): the 9 mm ply lies on a 3 mm floor mat, floor top Z 12
-    env("BASE", "F" + code[1], "BASE - THIN FLOOR PANEL - F" + code[1], "B-FLOOR",
-        (fx0, fx1), (YW, YB + " - band_t"), ("mat_t", "floor_top"))
-    env("BASE", "F%s-MAT" % code[1], "BASE - FLOOR MAT - F" + code[1], "B-FLOOR-MAT",
-        (fx0, fx1), (YW, YB + " - band_t"), ("0 mm", "mat_t"))
+    # D-132 (PM ruling 2026-11-01): no floor panels or floor mat; people stand on the room floor
 env("BASE", "BAND-BACK", "BASE - BASE BAND - BACK", "B-BAND-BACK",
     (XL + " + band_t", XR + " - band_t"), (YB + " - band_t", YB), ("glide_h", "wall_z0"))
 # The side bands and the faceted front band are polygons: see base_bands().
-env("BASE", "THRESHOLD", "BASE - DOOR THRESHOLD", "B-THRESH",
-    (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - thresh_d / 2", "-glass_y + thresh_d / 2"),
-    ("0 mm", "thresh_h"))
+# D-132: no door threshold; the door's drop seal closes on the room floor
+
+# Envelopes taken out of the shape in place (skeleton_update.py deletes them before it sets the values):
+# (code, reason). Their parameters stay, at 0, as a part may derive them.
+DROPPED = [
+    ("F1", "D-132: no floor panels"), ("F1-MAT", "D-132: no floor mat"),
+    ("F2", "D-132: no floor panels"), ("F2-MAT", "D-132: no floor mat"),
+    ("THRESHOLD", "D-132: no threshold; the door's drop seal closes on the room floor"),
+]
 env("GLAZING", "KICK", "FRONT - DOOR KICK STRIP", "D-40",
     (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - kick_d / 2", "-glass_y + kick_d / 2"),
-    ("thresh_h + kick_gap", "door_zb"))
+    ("glide_h", "door_zb"))          # the PM's ruling (2026-11-01, D-132): its bottom on the band's bottom line
 
 # Stage B bodies have no box expressions; the edit test checks these anchors
 # (code, bounding-box index 0..5 = xmin ymin zmin xmax ymax zmax, expression).
@@ -576,8 +575,8 @@ BANDS = [
 
 def base_bands(design, asm):
     """The side and front base bands as plan polygons, extruded from the glides to the
-    band top. Across the door opening there is no band: the threshold and the door's
-    kick strip carry the dark line (D-18, D-40). Returns {code: body}."""
+    band top. Across the door opening there is no band and no threshold (D-132): the door's
+    kick strip carries the dark line (D-18, D-40). Returns {code: body}."""
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
     out = {}
     for code, name, sid, pts, _why in BANDS:
