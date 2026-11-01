@@ -275,12 +275,16 @@ def skin_blocks(pn, src=None):
                                                           "on the panel drawing 210202 and in its DXF." if pos["back"]
                                                           else "RH is the mirror of LH; L1 = L2 and R1 = R2.")]
     notes = ["**GENERAL NOTES", "1. " + views_note(pos)] + body + [
-        ("4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
-         "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2); on a side skin also "
-         "one joint, 3 mm thick and as wide as the return allows up to 12, between the return and the frame's back "
-         "end: every skin face that meets a frame is bonded, none touches it (D-137)." if not pos["back"] else
-         "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
-         "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2)."),
+        ("4. Bond to the frame: Sikaflex-252, one joint at least 12 wide × 3 on every frame member, the 3 set by "
+         "fixing-tape pieces in line with the bead; both faces pre-treated with an abrasive pad, Aktivator-205 and "
+         "Primer-210; laid face down on a flat table with the ACP face as datum (bond spec section 8, D-137; "
+         "HOLD-B6); on a side skin also one joint, 3 mm thick and as wide as the return allows up to 12, between "
+         "the return and the frame's back end: every skin face that meets a frame is bonded, none touches it "
+         "(D-137)." if not pos["back"] else
+         "4. Bond to the frame: Sikaflex-252, one joint at least 12 wide × 3 on every frame member, the 3 set by "
+         "fixing-tape pieces in line with the bead; both faces pre-treated with an abrasive pad, Aktivator-205 and "
+         "Primer-210; laid face down on a flat table with the ACP face as datum (bond spec section 8, D-137; "
+         "HOLD-B6)."),
         "5. Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
         "6. Protect the coloured face; film stays on until the panel is installed.",
     ]
@@ -471,7 +475,7 @@ def assembly_blocks(pn, kind, src=None):
         notes = [
             "**GENERAL NOTES",
             "1. " + views_note(pos),
-            "2. Stack outside to inside: ACP skin 3 (%s), bond line 3 (SikaTack Panel-50, 12 × 3 on every member), "
+            "2. Stack outside to inside: ACP skin 3 (%s), bond line 3 (Sikaflex-252, 12 × 3 on every member), "
             "frame 40 (%s, welded galvanized steel, D-131), PET fill 40 in the bays (%s): outer panel 46. Then the 4 mm gap and the lining "
             "cassette 34 (%s, a separate part): 84 in all." % (skin, frame, fill, cass),
             "3. Site joints (joints register): %s Seam gap 2.26 at each stopped joint, set by the 1.5 mm stop washers."

@@ -43,9 +43,10 @@ SKIN_NOTES = [
     "Outside radius 2 min, per the maker's guide No. 01/2021/HDTC-VD; the first fold of each batch is a test fold "
     "that confirms the blank and the core left before the batch. The blank develops along the outer face at that "
     "radius: 0.86 less than the sum of the sharp outside lengths (the Lead's ruling, 2026-11-01).",
-    "BOND (D-137, bond spec): SikaTack Panel-50, one 12 x 3 joint on every frame member, and one 3 mm joint, as wide "
-    "as the return allows up to 12, between the return and the frame's back end; laid face down on a flat table with "
-    "the ACP face as datum.",
+    "BOND (D-137, bond spec section 8): Sikaflex-252, one joint at least 12 wide x 3 on every frame member, the 3 set "
+    "by fixing-tape pieces in line with the bead, and one 3 mm joint, as wide as the return allows up to 12, between "
+    "the return and the frame's back end; both faces pre-treated with an abrasive pad, Sika Aktivator-205 and Sika "
+    "Primer-210; laid face down on a flat table with the ACP face as datum.",
     "FILM (guide 1.1, 2.2): fit every panel with the arrows printed on its film the same way; peel the film by hand, "
     "no heat, within 45 days of the start of fitting; no marker, vinyl or tape on the coated face after that.",
     "Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",

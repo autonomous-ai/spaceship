@@ -393,10 +393,21 @@ def panel_rows(rep):
     return rows
 
 
+# A member's ends by name (the Lead's ruling of 2026-11-01: the frame drawing's cut list is the member's drawing, so
+# each end's angle goes with its end and the long points' face, and the welder can't flip a member): front and back
+# along a side rail, outer (at the pod's corner) and centre (at the closing seam) along a back rail, bottom and top
+# on a stile. The mitre runs from the frame's outer corner to its inner one, so the long points lie on the member's
+# face along the frame's outer edge. check_member_ends.py reads the same from the STEP.
+END_NAMES = {"RAIL": ("front", "back"), "RAIL_BACK": ("outer", "centre"), "STILE": ("bottom", "top")}
+LONG_FACE = {"RAIL BOTTOM": "bottom face", "RAIL TOP": "top face", "STILE FRONT": "front face",
+             "STILE BACK": "back face", "STILE OUTER": "corner-side face", "STILE CENTRE": "seam-side face"}
+
+
 def mitre_ends(key, prm, upper, back=False):
     """The cut at each end of a frame member (D-117): the mitre runs from the frame's outer corner to its inner
     corner, so a member's end is cut atan(other member's width / its own width) off square (45 where the two are
-    the same size, 26.57 on a 40 x 40 meeting a 20 x 40, 63.43 on the 20 x 40); studs are square."""
+    the same size, 26.57 on a 40 x 40 meeting a 20 x 40, 63.43 on the 20 x 40), each end named, with the face its
+    long point lies on (END_NAMES, LONG_FACE); studs are square."""
     import math
     tw, cw = prm.get("tube_w", 20.0), prm.get("corner_w", 40.0)
     top = prm.get("top_h", cw if upper else tw)
@@ -408,9 +419,14 @@ def mitre_ends(key, prm, upper, back=False):
              "STILE OUTER": ("RAIL BOTTOM", "RAIL TOP"), "STILE CENTRE": ("RAIL BOTTOM", "RAIL TOP")}
     if key not in meets:
         return "square ends (fits between the rails, welded T joints, D-131)"
-    angles = ["%.2f" % math.degrees(math.atan(width[o] / width[key])) for o in meets[key]]
-    return ("both ends mitred: %s and %s degrees off square (D-117), cut back for the 2 mm mitre plate and welded "
-            "(D-131)" % tuple(angles))
+    a = ["%.2f" % math.degrees(math.atan(width[o] / width[key])) for o in meets[key]]
+    names = END_NAMES["STILE" if key.startswith("STILE") else ("RAIL_BACK" if back else "RAIL")]
+    if a[0] == a[1]:
+        cut = "%s and %s ends both mitred %s° off square" % (names[0], names[1], a[0])
+    else:
+        cut = "%s end mitred %s° and %s end %s° off square" % (names[0], a[0], names[1], a[1])
+    return ("%s, in the frame's plane, long points on its %s (the frame's outer edge); cut back for the 2 mm mitre "
+            "plate (D-117, D-131)" % (cut, LONG_FACE[key]))
 
 
 def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, back, lower):

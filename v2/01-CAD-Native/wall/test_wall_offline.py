@@ -545,6 +545,51 @@ class FillDxfTest(unittest.TestCase):
         self.assertNotIn("BAD ", out.getvalue())
 
 
+class MemberEndsTest(unittest.TestCase):
+    """The Lead's ruling of 2026-11-01: the frame drawing's cut list is each member's drawing, so every member row
+    names each end's angle by its end and the long points' face, and they are the STEP's (check_member_ends.py)."""
+
+    def cme(self):
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
+        import check_member_ends
+        return check_member_ends
+
+    def test_every_d120_panel_lists_its_member_ends_as_its_step(self):
+        cme = self.cme()
+        steps = cme.panel_steps()
+        self.assertTrue(steps, "no D-120 panel STEP found")
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = cme.main(["x"] + steps)
+        self.assertEqual(rc, 0, out.getvalue()[-2000:])
+
+    def test_a_flipped_rail_is_caught(self):
+        cme = self.cme()
+        import csv
+        import glob
+        import tempfile
+        mf = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall")
+        step = glob.glob(os.path.join(mf, "210101_P01_*_STEP.step"))[0]
+        bom = glob.glob(os.path.join(mf, "210101_P01_*_BOM.csv"))[0]
+        rows = list(csv.DictReader(open(bom, encoding="utf-8")))
+        rail = [r for r in rows if r["part_number"].startswith("212") and "RAIL BOTTOM" in r["name"]][0]
+        m = re.search(r"front end mitred ([\d.]+)° and back end ([\d.]+)°", rail["note"])
+        self.assertTrue(m, rail["note"])
+        rail["note"] = rail["note"].replace(m.group(0), "front end mitred %s° and back end %s°" % (m.group(2),
+                                                                                                    m.group(1)))
+        with tempfile.TemporaryDirectory() as tmp:
+            p = os.path.join(tmp, "210101_flipped_BOM.csv")
+            with open(p, "w", encoding="utf-8", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+                w.writeheader()
+                w.writerows(rows)
+            bad = cme.check(step, p)
+        self.assertTrue(any(rail["part_number"] in b and "low end" in b for b in bad), bad)
+        self.assertTrue(any(rail["part_number"] in b and "high end" in b for b in bad), bad)
+
+
 class EditTestBackChecksTest(unittest.TestCase):
     """The edit test's back-panel checks read a D-131 frame right: each rail stops 1.41 short of the frame's corner
     for the mitre plate, and the 220 rule is set from the frame's end, not the rail's (dry run 8, B1 after the edit:
