@@ -59,4 +59,43 @@ ASSEMBLIES = {
             "the right run's at Y -209.5, both at Z 2250 (F-8102-06); the feed is plugged in at step 19.",
         ],
     },
+    # The ledge is seen as the room sees it, from the left (toward the right wall), with its plan from below; a section
+    # at 1:2 through the bracket at Y 464.32 (balloon 2 takes the other) shows the folded top sitting on it. The brackets are the list's HOLD envelopes
+    # until INTERIOR's next rebuild makes them made parts, when this sheet and 810000 are drawn again.
+    "810101": {
+        "principal": "left",
+        "views": ["below"],
+        "balloon_views": {"818101": "below"},
+        "sections": [
+            {"letter": "A", "point": [1036, 464.32, 1000], "normal": [0, -1, 0], "scale": 0.5, "slice": 10,
+             "window": [900, 1170, 905, 1075]},
+        ],
+        "notes": [
+            "Fitted on site after the clock (assembly guide, step 22): the ledge top 811101 on its brackets 818101 on "
+            "the right wall's lower panel R1, centred in the 1051 of wall beside the air column (Y -259.5 to 740.5), "
+            "its top at Z 1067, 5 mm off the felt so it never touches the floating lining (INTERIOR feature rationale "
+            "F-8101-01, F-8101-02; D-17, D-57).",
+            "The brackets carry the ledge into R1's stiles through stand-offs and clearance holes in R1's cassette "
+            "(F-8101-03).",
+            "HOLD: the brackets 818101 are drawn as their held envelopes (the parts list's HOLD rows, rated for a 225 N "
+            "lean at the front edge x 3), and their fixings are on hold with them. INTERIOR's next rebuild makes them "
+            "made parts on R1's studs, and this sheet is drawn again then.",
+        ],
+    },
+    # The INTERIOR GA: each assembly as fitted in the pod, and where it sits, from INTERIOR's feature rationale.
+    "810000": {
+        "notes": [
+            "INTERIOR as fitted in the pod (D-70): the light shelf 810201 along the tops of the side and back walls "
+            "(underside Z 2230), the work wall ledge 810101 on the right wall's lower panel R1 beside the air column "
+            "(top Z 1067), and the screen rail 818102 above it on R2 (centre Z 1300) (INTERIOR feature rationale "
+            "F-8102-02, F-8101-01, F-8103-01).",
+            "All of it is fitted on site: the light shelf at step 19, the ledge and the screen rail at step 22, after "
+            "the clock (assembly guide). The ledge and the rail stand 5 mm off the felt on stand-offs to WALL's "
+            "stiles, so the floating linings carry nothing (D-17, D-57); the light shelf screws to the wall "
+            "cassettes (F-8102-07).",
+            "HOLD: the ledge's brackets 818101 and the screen rail 818102 are drawn as their held envelopes, and every "
+            "fixing is on hold (F-8101-03, F-8103-02, F-8102-07). INTERIOR's next rebuild makes the brackets and the "
+            "rail made parts on R1's and R2's studs, and this sheet is drawn again then.",
+        ],
+    },
 }
