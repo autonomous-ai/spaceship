@@ -137,10 +137,12 @@ FAMILIES_EL = {
         ELS + ": call_y, shelf_z, call_z, grm_s", "felt only", "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
     ("SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM", 24.0, "y"): (
         "F38", "Mains inlet and LAN feed-through holes in B2's skin",
-        "powerCON TRUE1 TOP (cut-out 23.8) and etherCON NE8FDP (24), ELECTRICAL's selection E",
-        "X 120, clear of the closing seam member and its pin pocket; Z 313 and 375 (v1's positions + 15)",
-        ELS + ": inlet_x, inlet_z, lan_z, inlet_d", "fill cut-out F47 behind them", "±0.2 (CNC router, assumption)",
-        "routed with the skin blank (DXF)", "source (ELECTRICAL)"),
+        "powerCON TRUE1 TOP NAC3MPX-TOP and etherCON CAT6 NE8FDY-C6-B, turned 180° (D-133; ELECTRICAL's B2 inputs)",
+        "the inlet at X 120, Z 313; the jack at X 170, Z 375, moved right so the LAN keeps 50 or more from the mains "
+        "everywhere (the Lead's ruling and ELECTRICAL's check, 2026-11-01); each with F59's two screw holes",
+        ELS + "; ELECTRICAL's B2 inputs (WALL group, 2026-11-01): inlet_x, inlet_z, lan_x, lan_z, inlet_d",
+        "the fill cut-outs F47 behind them", "±0.2 (CNC router, assumption)", "routed with the skin blank (DXF)",
+        "source (ELECTRICAL)"),
     (TRAY, 19.1, "z"): (
         "F39", "Bushing holes for the light feed across the B2/B4 lining joint: G-B2-B4 in B2-CASS's top return and "
         "B4-CASS's bottom return", "Heyco 2836 SB 750-625 bushing (ELECTRICAL)",
@@ -175,13 +177,19 @@ OTHER_EL = {
             "of other features in the 8 band round it", "the felt edge there has no lip: the unit's front plate 320 x 284 "
             "covers it by 8 all round, 2 off the felt on four nylon spacers (ELECTRICAL)",
             "ELECTRICAL via the PM 2026-10-31 21:20 UTC", "", "±1", "source (ELECTRICAL)"),
-           ("F47", "{fill}", "Fill left out in the first bay: the unit (the cut-out's size, run on to the first stud so "
-            "no sliver stays), the sleeve 20 wide down to Z 301, the inlet and LAN connectors (X 108 to 160, Z 301 to "
-            "387)", "room for ELECTRICAL's factory-fitted parts; knife cut through the 40 fill", ELS,
-            "the unit's cut-out runs to the first stud as it moves", "±2 (knife, assumption)",
-            "source (ELECTRICAL); the unit's fixing HOLD (IF-12)"),
-           ("F48", "NO-PN-HOLD-H03", "The top clip zone on the first stud starts 0.75 from the cut-out's edge (X 395)",
-            "the clip (H03) needs its edge distance on the tray base there", "HOLD H03", "", "", "HOLD")],
+           ("F47", "{fill}", "Fill cut behind the skin in bay 1 below the unit, right through the batt: the inlet's rear "
+            "box and cord grip (X 66 to 148, Z 279 to 347), the strip by the centre stile to X 100 up to 40 under the lower "
+            "cross member (the mains cord's channel X 80 to 100), its jog to the mains passage (to X 123), the jack and the "
+            "band under it, and the LAN's 16 band along the jack's top and channel X 199 to 215 up to its passage; the "
+            "fill between the channels is its own piece (bay 7); no fill in the unit's space between the cross members",
+            "room for ELECTRICAL's connectors and cables, the two kept 50 or more apart everywhere (62 at the band, 76 "
+            "at the jogs; ELECTRICAL's rule), with no thin bridge of batt left; knife cut (D-128)",
+            "ELECTRICAL's envelopes and channels (WALL group, 2026-11-01); WALL's cut, agreed the same day",
+            "fixed at ELECTRICAL's places", "±2 (knife, assumption)", "source (ELECTRICAL); DECIDED (the cut)"),
+           ("F48", "NO-PN-HOLD-H03", "The top-front clip zone on the first stud's 60 stub above the unit (Z 1150.87 to "
+            "1210.87), its centre 50.06 under the cassette's top", "the first stud stops under the unit (the Lead's "
+            "approval of WALL's B2 frame, 2026-11-01): the stub carries the clip, 16.9 clear of the tray's unit cut-out",
+            "HOLD H03; clip_top_dz", "follows the cross member and the top rail", "", "HOLD")],
 }
 POSITIONS = {"2101": ("L1", "R1", "L2", "R2"), "2102": ("B1", "B2", "B3", "B4")}
 # D-117 and D-120: the frame's corners and parts once it is rebuilt that way (the reports show member parts)

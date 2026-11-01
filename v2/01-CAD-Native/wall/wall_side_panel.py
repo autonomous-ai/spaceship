@@ -440,6 +440,18 @@ EL_PARAMS = [
      _ELB2 + ": the LAN passage in the member's bottom wall, for the Heyco SB 437-5 bushing snapped in from below"),
     ("el_ps_lan_dt", "14 mm", "mm", "source",
      _ELB2 + ": the LAN passage in the member's top wall, lined by the unit's own bushing from above"),
+    # the LAN jack's column, moved right so the LAN keeps 50 from the mains everywhere (the Lead's default, ELECTRICAL's
+    # confirmation, 2026-11-01): 57 from the jack's flange to the mains channel at X 100
+    ("el_lan_x", "170 mm", "mm", "source", _ELB2 + ": the LAN jack at X 170, Z 375, the same cut-out, turned 180°"),
+    # the fill cut behind the skin (ELECTRICAL's envelopes and channels, 2026-11-01; WALL's cut agreed the same day)
+    ("el_box_l", "54 mm", "mm", "source", _ELB2 + ": the inlet's rear box and cord grip, X 66 to 148: 54 left of the inlet"),
+    ("el_box_r", "28 mm", "mm", "source", _ELB2 + ": the rear box 28 right of the inlet"),
+    ("el_box_h", "34 mm", "mm", "source", _ELB2 + ": the rear box Z 279 to 347: 34 each side of the inlet"),
+    ("el_jack_h", "16 mm", "mm", "source", _ELB2 + ": the jack's body X 154 to 186, Z 359 to 391: 16 round its centre"),
+    ("el_ch_m_x1", "100 mm", "mm", "source", _ELB2 + ": the mains cord's channel up at X 80 to 100, 20 wide; WALL "
+                                             "clears the fill from the centre stile to X 100 (no strip by its notches)"),
+    ("el_ch_jog", "40 mm", "mm", "assumption", "the cables' jog to their passages in the 40 under the lower cross member"),
+    ("el_ch_l_w", "16 mm", "mm", "source", _ELB2 + ": the LAN cable's channel 16 wide, up from the jack's top"),
     ("el_scr_d", "3.2 mm", "mm", "source",
      _ELB2 + ": each connector's two screw holes for M3 screws with nuts (Neutrik's own drawings: powerCON TRUE1 "
              "TOP NAC3MPX-TOP, etherCON NE8FDY-C6-B; D-133)"),
@@ -481,7 +493,8 @@ EL_USE = {
                      "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z", "el_tie_d")
                     + tuple("el_tie_b2_x%d" % i for i in range(1, 4)),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
-                      "el_sl_x", "el_sl_w", "el_pu_zc", "el_pu_h", "el_scr_d", "el_scr_dx", "el_scr_dz")
+                      "el_lan_x", "el_pu_zc", "el_pu_h", "el_scr_d", "el_scr_dx", "el_scr_dz", "el_box_l", "el_box_r",
+                      "el_box_h", "el_jack_h", "el_ch_m_x1", "el_ch_jog", "el_ch_l_w")
                      + B2_FRAME_EL,
     # B2's frame carries the unit: its cross members' heights, rivnuts and cable passages (ELECTRICAL, 2026-11-01)
     ("B2", "frame"): ("el_pu_zc", "el_pu_h") + B2_FRAME_EL,

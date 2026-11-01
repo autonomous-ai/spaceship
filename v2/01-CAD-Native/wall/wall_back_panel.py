@@ -498,7 +498,30 @@ def back_bays(design, zs):
     if not B2_UNIT:
         return [(x, zs) for x in xs]
     lo, up = (zs[0], "xm_z0"), ("xm_z1", zs[1])
-    return [(xs[0], lo), (xs[1], lo), (xs[0], up), (xs[1], up)] + [(x, zs) for x in xs[2:]]
+    # and a 7th: the piece between the mains and LAN channels in bay 1 below the unit (B2_ISLAND)
+    return [(xs[0], lo), (xs[1], lo), (xs[0], up), (xs[1], up)] + [(x, zs) for x in xs[2:]] + [B2_ISLAND]
+
+
+# B2's fill behind the skin (ELECTRICAL's envelopes and channels; WALL's cut, 2026-11-01): in bay 1 below the unit,
+# cut right through the batt (D-128). The mains cord runs up the cleared strip by the centre stile (its channel X 80 to
+# 100, then over to its passage at X 113 in the jog under the lower cross member); the LAN leaves the jack's top along
+# a 16 band, over to X 199 to 215 and up to its passage at X 207, so the two stay 50 or more apart everywhere (62 at the
+# band, 76 at the jog). The fill between them is a piece of its own (B2_ISLAND, the 7th bay), so neither piece has a
+# thin bridge. Each cut (label, x range, z range), in pod X and Z.
+_XIN = "(%s) + tube_w" % X_LOW                        # the centre stile's bay-side face
+B2_CUTS = [
+    ("INLET REAR BOX", ("el_inlet_x - el_box_l", "el_inlet_x + el_box_r"), ("el_inlet_z - el_box_h", "el_inlet_z + el_box_h")),
+    ("UNDER THE JACK", ("el_ch_m_x1", "el_lan_x + el_jack_h"), ("el_inlet_z + el_box_h", "el_lan_z + el_jack_h")),
+    ("MAINS CHANNEL", (_XIN, "el_ch_m_x1"), ("el_inlet_z - el_box_h", "xm_z0 - el_ch_jog")),
+    ("MAINS JOG", (_XIN, "el_ps_mains_x + el_ch_l_w / 2 + 2 mm"), ("xm_z0 - el_ch_jog", "xm_z0")),
+    ("LAN CHANNEL AND THE ISLAND", ("el_ch_m_x1", "el_ps_lan_x + el_ch_l_w / 2"), ("el_lan_z + el_jack_h", "xm_z0")),
+]
+B2_ISLAND = (("el_ch_m_x1", "el_ps_lan_x - el_ch_l_w / 2"), ("el_lan_z + el_jack_h", "xm_z0"))
+B2_ISLAND_NOTCHES = [
+    ("LAN BAND", ("el_lan_x - el_ch_l_w / 2", "el_ps_lan_x - el_ch_l_w / 2"),
+     ("el_lan_z + el_jack_h", "el_lan_z + el_jack_h + el_ch_l_w")),
+    ("MAINS JOG", ("el_ch_m_x1", "el_ps_mains_x + el_ch_l_w / 2 + 2 mm"), ("xm_z0 - el_ch_jog", "xm_z0")),
+]
 
 
 def build_fill_back(design, parent, out, yf, zs, members):
@@ -547,7 +570,7 @@ def build_fill_back(design, parent, out, yf, zs, members):
             copy_open.setdefault(i, []).append((mid(xr), ym, mid(zr)))
             continue
         box(design, c, "FILL NOTCH " + label, xr, yf, zr, "cut", c.bRepBodies.item(0))
-    el_fill_cutouts(design, pieces[0][0], yf)
+    el_fill_cutouts(design, pieces, yf)
     copies = []
     for i, (c, xr, zr, pn) in enumerate(pieces):
         if c is None:
@@ -880,15 +903,15 @@ def el_skin_holes(design, skin, plate):
     if POSITION != "B2":
         return plate
     sx_, sz_ = span(design, XS_LOW, XS_HIGH), ("(%s) + skin_setback" % Z0, "(%s) - skin_setback" % Z1)
-    for label, z in (("MAINS INLET", "el_inlet_z"), ("LAN FEED-THROUGH", "el_lan_z")):
-        el_inside(design, label, [("el_inlet_x - el_inlet_d / 2", "el_inlet_x + el_inlet_d / 2") + sx_,
+    for label, x, z in (("MAINS INLET", "el_inlet_x", "el_inlet_z"), ("LAN FEED-THROUGH", "el_lan_x", "el_lan_z")):
+        el_inside(design, label, [("%s - el_inlet_d / 2" % x, "%s + el_inlet_d / 2" % x) + sx_,
                                   ("(%s) - el_inlet_d / 2" % z, "(%s) + el_inlet_d / 2" % z) + sz_], 20.0)
-        hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1, {"x": "el_inlet_x", "z": z}, "el_inlet_d",
+        hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1, {"x": x, "z": z}, "el_inlet_d",
              "skin_t + 1 mm", "SKIN %s" % label)
         # its two M3 screw holes on the diagonal (Neutrik's drawings; ELECTRICAL's B2 inputs, 2026-11-01)
         for i, sg in enumerate(("+", "-"), 1):
             hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1,
-                 {"x": "el_inlet_x %s el_scr_dx" % sg, "z": "(%s) %s el_scr_dz" % (z, sg)}, "el_scr_d",
+                 {"x": "%s %s el_scr_dx" % (x, sg), "z": "(%s) %s el_scr_dz" % (z, sg)}, "el_scr_d",
                  "skin_t + 1 mm", "SKIN %s SCREW %d" % (label, i))
     if skin.bRepBodies.count != 1:
         raise RuntimeError("the skin split into %d bodies at the connectors' holes" % skin.bRepBodies.count)
@@ -896,22 +919,24 @@ def el_skin_holes(design, skin, plate):
     return skin.bRepBodies.item(0)
 
 
-B2_FILL_PENDING = ("B2's fill cut-outs wait for ELECTRICAL's connector envelopes behind the skin and its cable "
-                   "channels' widths (asked in WALL's group, 2026-11-01): under D-131 the unit's space has no fill, "
-                   "and the mains and LAN run up bay 1 in their own channels (X about 90, and 133 to 207)")
-
-
-def el_fill_cutouts(design, piece, yf):
-    """Panel B2: bay 1's lower fill piece cut away where ELECTRICAL's parts sit: the inlet's and the LAN jack's
-    bodies behind the skin and each cable's own channel up to its passage in the lower cross member (ELECTRICAL's
-    B2 inputs, 2026-11-01). Right through the piece: a knife cut (D-128). The unit's space between the cross members
-    takes no fill (back_bays), so it needs no cut-out."""
+def el_fill_cutouts(design, pieces, yf):
+    """Panel B2: ELECTRICAL's cut-outs behind the skin (B2_CUTS) through bay 1's piece below the unit, and the two notches
+    of the piece between the channels (B2_ISLAND_NOTCHES), each a knife cut right through the batt (D-128). The unit's
+    space between the cross members takes no fill (back_bays)."""
     if POSITION != "B2":
         return
-    if ARGS.get("dry") == "1":
-        print("step 5b: B2 fill: no ELECTRICAL cut-outs in this dry run (%s)" % B2_FILL_PENDING)
-        return
-    raise RuntimeError(B2_FILL_PENDING)
+    ys = ("(%s) - 1 mm" % yf[1], "(%s) + 1 mm" % yf[0])
+    for (c, _xr, _zr, _pn), cuts in ((pieces[0], B2_CUTS), (pieces[6], B2_ISLAND_NOTCHES)):
+        pb = bbox(c.bRepBodies.item(0))
+        for label, xr, zr in cuts:
+            want = [ev(design, e) for e in xr + zr]
+            if not (pb[0] < max(want[:2]) and pb[3] > min(want[:2]) and pb[2] < max(want[2:]) and pb[5] > min(want[2:])):
+                raise RuntimeError("FILL CUT-OUT %s misses %s" % (label, c.name))
+            box(design, c, "FILL CUT-OUT " + label, xr, ys, zr, "cut", c.bRepBodies.item(0))
+            if c.bRepBodies.count != 1:
+                raise RuntimeError("FILL CUT-OUT %s split %s" % (label, c.name))
+    print("step 5b: B2 fill: bay 1's piece cut for the inlet's box, the jack, the mains and LAN channels; the piece "
+          "between them notched for the LAN band and the mains jog")
 
 
 def build_tray_y(design, root, tray, xr, zr):
