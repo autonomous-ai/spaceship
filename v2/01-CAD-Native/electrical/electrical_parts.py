@@ -498,11 +498,13 @@ part("washer", "838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2"
      maker="HOLD: standard part, maker picked with the joints register", sku="ISO 7093-1 6.4 x 18 x 1.6, A2", size="M6",
      status=HOLD_BUY, source=JNT)
 P["washer"].update(grade="A2")
-part("rivnut", "838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", "710001", 4,
-     "aluminium", "plain, as supplied", 0.003, "assumption", maker="Sherex", sku="CAH3-610-4.2", size="M6",
-     status=HOLD_BUY, source=JNT,
-     note="set in B2's vertical members by the factory before the unit goes in (WALL's frame drawing shows the holes)")
-P["rivnut"].update(grade="5056", torque_nm="HOLD (D-48: spin-out test T06)", length_mm="14.86")
+part("rivnut", "838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm", "PI",
+     "710001", 4, "steel 1008/1010 (maker)", "zinc plated, trivalent passivation (maker)", 0.0067,
+     "calculation (the joints register's sizes: body Ø9.50 x 14.86, head Ø12.96 x 0.76, M6 bore, steel 7850 kg/m3)",
+     maker="Sherex", sku="CAL2-610-4.2", size="M6", status=HOLD_BUY, source=JNT,
+     note="set in B2's vertical members by the factory before the unit goes in, in round Ø10.00 +0.10 holes (D-163; "
+          "WALL's frame drawing shows the holes); the joints register's H-03")
+P["rivnut"].update(grade="steel 1008/1010", torque_nm="HOLD (D-48: spin-out test T06)", length_mm="14.86")
 
 # ---- wire and cable by length (unit: m; mass each = kg per m)
 def cable(key, pn, name, vi, parent, metres, kgm, sku, note):
@@ -1131,8 +1133,9 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'Häfele',
             '833.75.763: 24 V lead, 500 mm, 5 A, 18 AWG, clip to the strip and plug to the driver side, for 8 mm COB and '
             'SMD monochrome 2-wire strips; cULus mark; sold by Häfele America',
-            HAF_US + '/product/haefele-lighting-strip-light-led-3145-monochrome-6-w-m/P-01945841/ (lists it as the '
-            'required lead) ; ' + CAT26 + ' pp. 45 and 175',
+            CAT26 + ' p. 45: \'5 A/18 AWG lead ... For use with 8 mm (5/16") COB and SMD monochrome and tunable white '
+            '2-wire LED strips\' (also p. 175) ; ' + HAF_US + '/product/haefele-lighting-strip-light-led-3145-monochrome-6-w-m/'
+            'P-01945841/ (lists it as the required lead)',
             "replaces the UK's 12 V 833.74.695 (D-168); each harness end mates or splices its plug"),
  '718055': ('SOUTHWIRE 94664',
             'Southwire',
