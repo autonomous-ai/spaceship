@@ -5,7 +5,7 @@
 |---|---|---|---|---|---|
 | V2-INS-001 | 100000 POD · Pod hoàn chỉnh | P04 | DRAFT | 2026-10-31 | Packing and Assembly Engineer |
 
-Revision P04 is the pod's own revision: this guide is built on skeleton P04, and the files of part 100000 share one revision (conventions §7 and §8). This is the guide's first issue. It follows the general assembly and the subassembly drawings when they exist and doesn't replace them (guideline §5.1). Labels like **1-07** are the packing labels of [`910000_P01_PACKAGING-PLAN_PKG.md`](../../07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md); every number carries a status (conventions §9).
+Revision P04 is the pod's own revision: this guide is built on skeleton P04, and the files of part 100000 share one revision (conventions §7 and §8). This is the guide's first issue. It follows the general assembly and the subassembly drawings when they exist and doesn't replace them (guideline §5.1). Labels like **1-05** are the packing labels of [`910000_P01_PACKAGING-PLAN_PKG.md`](../../07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md); every number carries a status (conventions §9).
 
 ## Result
 
@@ -13,12 +13,12 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 2. **{{REG_BOLTS}} bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): {{N16}} × {{PN16}} (M6 × 16) and {{N25}} × {{PN25}} (M6 × 25) pins and lock screws**, each with its {{PNW}} washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit ({{DOOR_KG}} kg) and the fixed glass ({{FIX_KG}} kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
-5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
+5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. Pictures made before D-132 still show the floor panels and the threshold, faded, from step 3 on; the next picture run drops them. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
 
 | Front, from the right and above | Back, from the left and above |
 |---|---|
 | ![Front](../../01-CAD-Native/skeleton/100000_P04_POD-SKELETON-FRONT-ISO_IMG.png) | ![Back](../../01-CAD-Native/skeleton/100000_P04_POD-SKELETON-BACK-ISO_IMG.png) |
-| **Plan** | **Front base band, threshold and DR on the band** |
+| **Plan** | **Front base band and DR on the band** |
 | ![Plan](../../01-CAD-Native/skeleton/100000_P04_POD-SKELETON-TOP_IMG.png) | ![Base front](../../01-CAD-Native/skeleton/100000_P04_POD-SKELETON-BASE-FRONT_IMG.png) |
 
 ## 1. Before you start
@@ -27,7 +27,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **The one tool** is the 5 mm ball-end hex key {{PNKEY}}, in the OPEN FIRST kit (109000, label {{KIT_TAG}}). Nothing else counts as a tool (REQ-ASM-03).
 - **Handling aids** (not tools: ISS-047, ISS-064): 2 suction lifters (two-cup, each rated 40 kg or more; assumption), 2 step stools with 2 treads, a 600 mm spirit level, a utility knife for straps and film, cut-resistant gloves and safety shoes.
 - **The room:** see the [install sheet](100000_P04_POD-INSTALL-SHEET_INS.md): at least {{ROOM_H_GUIDE}} mm clear height, a floor flat within the glides' range, a door at least 810 mm wide (REQ-ASM-06), room round the 2500 × 1700 footprint to lay the parts out, and a 220 V socket for the mains inlet (prototype, REQ-SCP-02), connected by a qualified electrician.
-- **Directions:** left and right as seen from outside, facing the door (conventions §4). Position codes: walls L1 and L2 (left, lower and upper), R1 and R2 (right), B1 to B4 (back: lower left, lower right, upper left, upper right); ceiling C1 (left) and C2 (right); floor F1 and F2; decor blocks DL, DR, DT.
+- **Directions:** left and right as seen from outside, facing the door (conventions §4). Position codes: walls L1 and L2 (left, lower and upper), R1 and R2 (right), B1 to B4 (back: lower left, lower right, upper left, upper right); ceiling C1 (left) and C2 (right); decor blocks DL, DR, DT.
 - **The clock** (REQ-ASM-01; its start and stop are PROPOSED): it starts with the pallets unwrapped on site and stops with the pod closed, powered and the fans running, after the final check (step {{STEP_FINAL}}). Step {{STEP_LEDGE}} fits the ledge after the clock.
 
 ## 2. Safety
@@ -42,7 +42,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 3. How the joints work (read once)
 
-- **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the key goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay. The one exception is the roof grille: its 4 bolts go in from the roof with their washers (step 18, J-AIR-03).
+- **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the key goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay. The one exception is the roof grille: its 4 bolts go in from the roof with their washers (step {{STEP_ROOF}}, J-AIR-03).
 - **Spigots.** Every wall and ceiling part stands on two Ø8 spigots, a round hole at one end and a slot at the other, before its first bolt (REQ-ASM-04). If a part doesn't drop on, lift it and seat it again; never force it.
 - **Two bolts, one key.** {{PN16}} (M6 × 16) for the {{N16}} other bolts: each pulls its joint onto its 2.26 mm metal stop or its seat. {{PN25}} (M6 × 25) pins at the 10 closing-seam positions (B1–B2, B3–B4, C1–C2): snug only, they hold the faces level and pull nothing (joints register 2.10). Two more lock the soffit on its hanger studs (J-AIR-01).
 - **Order of tightening** (joints register 2.7, R-J9): closing-seam pins first, then the stopped seams; the side walls' top corner bolts and the ceiling's side bolts last, once both ceiling halves are in.
@@ -74,10 +74,10 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 | Fix | Steps | Priced on the 168-minute model | Owner |
 |---|---|---:|---|
-| The exhaust fan box fitted inside the soffit and the intake riser joined to the supply fan box at the factory, plug-in connectors, tool-free hooks for the soffit and the column, one hinged soffit underside | 15 to 17 | 11.4 min (calculation) | AIR (CEILING Engineer), FRONT |
+| The exhaust fan box fitted inside the soffit and the intake riser joined to the supply fan box at the factory, plug-in connectors, tool-free hooks for the soffit and the column, one hinged soffit underside | {{STEP_RISER}}, {{STEP_COLUMN}} and {{STEP_SOFFIT}} | 11.4 min (calculation) | AIR (CEILING Engineer), FRONT |
 | Glides preset at the factory, corner keys that hook in (12 fewer bolts), band pieces that locate on the keys | 2 | 11.8 min (calculation) | BASE, Joints Engineer |
-| The floor foam bonded under the floor panels at the factory, and every pallet 2 part set down at its place in step 1 | 1, 3 and every carry | 10.7 min (calculation) | Packing, BASE |
-| A factory-tested plug-in harness and a self-test button on the hub | 13, 20 | 8.1 min (calculation) | ELECTRICAL |
+| The floor foam bonded under the floor panels at the factory (D-132 then removed the floor), and every pallet 2 part set down at its place in step 1 | 1 and every carry | 10.7 min (calculation) | Packing, BASE |
+| A factory-tested plug-in harness and a self-test button on the hub | {{STEP_ELECTRICS}} and {{STEP_POWER}} | 8.1 min (calculation) | ELECTRICAL |
 
 The fifth, moving the film peeling after the clock, was rejected so the number stays honest. Instead the film covers only the {{FILM_FACES}} faces that show (the 8 wall skins, the 3 decor blocks and both faces of both glass panes; none on the roof skins) and each panel has a quick-release tab. Peeling now takes about {{FILM_MIN}} minutes of the clock, against {{FILM_ALL_MIN}} for film on all {{FILM_FACES_ALL}} faces without tabs: {{FILM_SAVES}} minutes saved. The layout study's 168 minutes didn't count film at all, so this is time the clock now carries honestly.
 
@@ -89,7 +89,7 @@ Unit times used:
 
 ## 7. Final check list (step {{STEP_FINAL}})
 
-- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the threshold's land when closed.
+- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; kick strip level with the band's bottom edge, about {{DOOR_GAP}} mm over the room floor (D-132); closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the room floor when closed.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
 - [ ] Bolts: all {{REG_BOLTS}} register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
 - [ ] Linings: all 10 cassettes on their clips, both ceiling cassettes on their safety catches, none touching anything but its clips.
@@ -99,7 +99,7 @@ Unit times used:
 
 ## 8. Taking it down
 
-Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; floor; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
+Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
 
 ## 9. Open items that touch this guide
 
