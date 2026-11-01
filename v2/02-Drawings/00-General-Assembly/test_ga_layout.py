@@ -20,6 +20,7 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+sys.path.insert(0, os.path.join(REPO, "tools", "fusion"))          # fusion_drawing, as the runner gives it
 CSV = os.path.join(REPO, "v2", "01-CAD-Native", "skeleton", "100000_P04_POD-SKELETON-PARAMETERS.csv")
 
 SHEET = (841.0, 594.0)                 # A1 landscape, ISO 5457
@@ -157,6 +158,9 @@ class LayoutTests(unittest.TestCase):
         sys.path.insert(0, HERE)
         import ga_pdf_check
         self.assertEqual(ns["SYMBOL_SIDES"], ga_pdf_check.SYMBOL)
+        import fusion_drawing                                     # the shared helper draws this outline
+        ring = fusion_drawing.symbol_outline(ns["_X0"], ns["_CY"], ns["_D"], ns["_BIG"], ns["_LEN"])
+        self.assertEqual(ring, [sides[0][0]] + [b for _a, b in sides])
 
     def test_the_sizes_come_from_the_skeleton(self):
         w, d, h = pod_size()

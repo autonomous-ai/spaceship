@@ -8,7 +8,7 @@
         v2/02-Drawings/00-General-Assembly
 
     or in one run: --arg step=all [--arg notes_png=... --arg notes_px=... --arg notes_py=...
-    --arg notes_scale=...] [--arg line_mode_file=PROBE.json], the notes PNG rendered from
+    --arg notes_scale=...], the notes PNG rendered from
     100000_P04_POD-GENERAL-ASSEMBLY_NOTES.txt by tools/fusion/sheet_notes.py.
 
 To make sheet 1 again, never delete a sheet (2026-10-31: deleting the old sheet
@@ -16,9 +16,12 @@ and saving crashed Fusion): promote the drawing's first version, the empty sheet
 start_drawing saved (ga_promote.py), then run step=all on it. The versions in
 between stay in the drawing's history.
 
-The projection symbol's sides are drawn in the form of Lines.add (a preview API)
-that the session's line probe found to work (ga_pdf_check.py probe, passed as
---arg line_mode_file); check the export with ga_pdf_check.py symbol.
+Views, the first-angle symbol, the notes picture and the dimensions come from the
+shared drawing helpers (tools/fusion/fusion_drawing.py, given to every script by
+run_script.py): the view style is set again after Fusion ignores it, the
+symbol's outline is one closed chain in its own sketch with the circles in
+another, the notes picture is scaled to its real width, and each dimension is
+placed once. Check the export with ga_pdf_check.py symbol.
 
 The drawing was started from the skeleton design with start_drawing.py's
 sequence, so every base view shows the whole pod. ISO, first-angle
@@ -36,22 +39,17 @@ block fields can't be set by script (a person fills them: DWG No.
 100000-GA, Rev. P04, DRAFT, scale 1:20, units mm).
 """
 
-import os
 import time
 
 import adsk
 import adsk.core
 import adsk.drawing
 import adsk.fusion
+# the shared drawing helpers (tools/fusion/fusion_drawing.py, PM 2026-11-01), given to
+# every script by run_script.py: GA sheet 1 is their first live use
+from fusion_drawing import DimensionSet, base_view, first_angle_symbol, insert_image
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-# tools/fusion/hatch.py, pasted in: the form of Lines.add a live probe showed
-# Fusion keeps (a preview API: on 2026-10-31 this symbol's closed 5-point chain
-# came out as a triangle in the PDF)
-_hatch_ns: dict = {}
-with open(os.path.join(ARGS.get("repo_root", "."), "tools", "fusion", "hatch.py"), encoding="utf-8") as _fh:
-    exec(compile(_fh.read(), "hatch.py", "exec"), _hatch_ns)
-chain_for, read_line_mode = _hatch_ns["chain_for"], _hatch_ns["read_line_mode"]
 SCALE = 1.0 / 20.0
 SHEET_NAME = "GA-1 ELEVATIONS"
 VO = adsk.drawing.ViewOrientationTypes
@@ -190,26 +188,9 @@ def step_views(sheet: "adsk.drawing.Sheet"):
     except Exception as e:  # noqa: BLE001 - a name is nice to have, not worth losing the views
         print("sheet name not set: %s" % e)
     for name, orientation, center in LAYOUT:
-        inp = sheet.views.createBaseViewInput()
-        vp = inp.viewParameters
-        vp.orientation = orientation
-        vp.scaleValue = SCALE if name != "iso" else SCALE * 0.75
-        vp.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
-        inp.placementPoint = dpt(*center)
-        v = sheet.views.add(inp)
-        if v is None:
-            raise RuntimeError("Views.add returned None for the %s view" % name)
-        want = SCALE if name != "iso" else SCALE * 0.75
-        if abs(v.scaleValue - want) > 1e-9:
-            v.scaleValue = want     # the input's scale was ignored in Phase 0
-        # Fusion ignores the style given in the input (hidden lines showed on every view,
-        # the iso too: CEILING 2026-11-01), so set it again on the made view and check it
-        visible = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
-        if v.style != visible:
-            v.style = visible
-            adsk.doEvents()
-        if v.style != visible:
-            raise RuntimeError("the %s view keeps its hidden lines (style %s)" % (name, v.style))
+        # the shared helper sets the style (visible edges) and the scale again on the made
+        # view and checks them: Fusion ignores the input's style (CEILING 2026-11-01)
+        base_view(sheet, orientation, SCALE if name != "iso" else SCALE * 0.75, center)
         print("added %s view at %s" % (name, center))
     describe(sheet)
 
@@ -241,7 +222,7 @@ def step_dims(sheet: "adsk.drawing.Sheet"):
     if sheet.drawingDimensions.count:
         raise RuntimeError("the sheet already has dimensions")
     right, front, left, back, top = (sheet.views.item(i) for i in range(5))
-    dims = sheet.drawingDimensions
+    dims = DimensionSet(sheet)          # the shared helper: each dimension placed once
     pod_w, pod_d, pod_h = pod_size()
     fe, le, te = extent(front), extent(left), extent(top)
 
@@ -250,7 +231,8 @@ def step_dims(sheet: "adsk.drawing.Sheet"):
         got = abs(xy(b)[axis] - xy(a)[axis]) / SCALE
         if abs(got - want) > 0.5:
             raise RuntimeError("%s would read %.1f mm, not %.1f; nothing kept" % (label, got, want))
-        dims.addLinearDimension(a, b, place, False)
+        if dims.linear(a, b, place, label=label) is None:
+            raise RuntimeError("%s is the same dimension as one placed already" % label)
         print("  dimension %s: %.1f mm (skeleton %.1f)" % (label, got, want))
 
     lx, hx, ly, hy = extremes(front)
@@ -264,50 +246,22 @@ def step_dims(sheet: "adsk.drawing.Sheet"):
 
 
 def step_symbol(sheet: "adsk.drawing.Sheet"):
-    """The first-angle symbol, its sides drawn in the form the session's line probe
-    found (--arg line_mode_file); none found: left out, and a GAP line says so."""
-    mode = read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
-    have = [sheet.sketches.item(i).name for i in range(sheet.sketches.count)]
-    if any(n.startswith(SYMBOL_NAME) for n in have):
-        raise RuntimeError("the sheet has the projection symbol already: %s" % have)
-    if mode == "none":
-        print("GAP: projection symbol left out: the line probe found no form of Lines.add "
-              "that draws a straight line")
-        return
-    sk = None
-    if mode == "chain":
-        # the outline as ONE closed chain in a sketch of its own: Fusion's PDF export keeps
-        # that exactly, but dropped a corner when the chain shared its sketch with the
-        # circles (GA sheet 1, 2026-10-31; live probe 2026-11-01)
-        sk = sheet.sketches.add(SYMBOL_NAME)
-        ring = [SYMBOL_SIDES[0][0]] + [b for _a, b in SYMBOL_SIDES]
-        if sk.lines.add([p2(*q) for q in ring]) is None:
-            raise RuntimeError("the projection symbol's outline wasn't made")
-        sk = sheet.sketches.add(SYMBOL_NAME + " CIRCLES")
-    else:
-        for k, (a, b) in enumerate(SYMBOL_SIDES):
-            if sk is None or mode == "own-sketch":
-                sk = sheet.sketches.add(SYMBOL_NAME if sk is None else "%s %d" % (SYMBOL_NAME, k))
-            if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:
-                raise RuntimeError("side %d of the projection symbol wasn't made" % k)
-        if mode == "own-sketch":
-            sk = sheet.sketches.add(SYMBOL_NAME + " CIRCLES")
-    for (cx, cy), r in SYMBOL_CIRCLES:
-        if sk.circles.addByCenterRadius(p2(cx, cy), r) is None:
-            raise RuntimeError("a circle of the projection symbol wasn't made")
-    print("projection symbol: 4 sides in the %r form, 2 circles, at %s" % (mode, SYMBOL_SIDES[0][0]))
+    """The first-angle symbol, by the shared helper: the outline one closed chain in its
+    own sketch, the circles in another (in one sketch, Fusion's PDF export dropped a
+    corner: GA sheet 1, 2026-10-31; one chain per sketch proven exact, probe 2026-11-01)."""
+    first_angle_symbol(sheet, _X0, _CY, small=_D, big=_BIG, length=_LEN, gap=_GAP, name=SYMBOL_NAME)
+    print("projection symbol: outline and circles in two sketches, at %s" % (SYMBOL_SIDES[0][0],))
 
 
 def step_notes(sheet: "adsk.drawing.Sheet"):
     """The general notes, rendered outside Fusion from the text file next to this
     drawing (tools/fusion/sheet_notes.py --render-only) and placed as an image."""
-    ii = sheet.images.createInput()
-    ii.imageFilePath = ARGS["notes_png"]
-    ii.position = p2(float(ARGS["notes_px"]), float(ARGS["notes_py"]))
-    ii.scale = float(ARGS["notes_scale"])
-    if not sheet.images.insert(ii):
-        raise RuntimeError("Images.insert returned False for the notes")
-    print("notes placed at (%s, %s), scale %s" % (ARGS["notes_px"], ARGS["notes_py"], ARGS["notes_scale"]))
+    # the shared helper scales the picture to its real width (it comes in 58.02 mm wide)
+    scale = insert_image(sheet, ARGS["notes_png"], float(ARGS["notes_px"]), float(ARGS["notes_py"]), NOTES_WIDTH)
+    asked = ARGS.get("notes_scale")
+    if asked and abs(float(asked) - scale) > 1e-3:
+        print("note: notes_scale %s given; the helper's %.6f (%g mm wide) is used" % (asked, scale, NOTES_WIDTH))
+    print("notes placed at (%s, %s), %g mm wide, scale %.6f" % (ARGS["notes_px"], ARGS["notes_py"], NOTES_WIDTH, scale))
 
 
 def run(_context):

@@ -36,6 +36,7 @@ import adsk
 import adsk.core
 import adsk.drawing
 import adsk.fusion
+from fusion_drawing import base_view         # shared helper (tools/fusion), given by run_script.py
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 SCALE = 1.0 / 20.0
@@ -147,24 +148,8 @@ def run(_context):
     doc = adsk.drawing.DrawingDocument.cast(app.activeDocument)
     sheet = doc.drawing.sheets.item(0)
     if sheet.views.count == 0:
-        inp = sheet.views.createBaseViewInput()
-        vp = inp.viewParameters
-        vp.orientation = orientation
-        vp.scaleValue = SCALE
-        vp.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
-        inp.placementPoint = dpt(*center)
-        v = sheet.views.add(inp)
-        if v is None:
-            raise RuntimeError("Views.add returned None")
-        if abs(v.scaleValue - SCALE) > 1e-9:
-            v.scaleValue = SCALE
-        # Fusion ignores the input's style (hidden lines showed: CEILING 2026-11-01)
-        visible = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
-        if v.style != visible:
-            v.style = visible
-            adsk.doEvents()
-        if v.style != visible:
-            raise RuntimeError("the %s view keeps its hidden lines (style %s)" % (sec, v.style))
+        # the shared helper sets the style (visible edges) and scale again and checks them
+        v = base_view(sheet, orientation, SCALE, center)
         print("placed the %s view at %s, 1:%g" % (sec, center, 1 / v.scaleValue))
     view = sheet.views.item(0)
     ex = extent(view)
