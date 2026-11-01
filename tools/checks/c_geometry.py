@@ -761,6 +761,83 @@ def _edge_accepted(rows, hole, edges, need):
     return None
 
 
+# D-178 (the Lead, 2026-11-01, on ELECTRICAL's question for the inlet's rear box): a maker's standard panel cut-out,
+# cited by the maker's own drawing (Neutrik's D-size: a Ø24 main hole with two Ø3.2 screw holes on 19 x 24, each
+# 15.3 from its centre, so about 1.7 mm of web), stands as an edge and spacing exception, but only on the parts that
+# carry that connector, each listed by part and feature in config/cutout-exceptions.csv. Only the cut-out's own webs
+# (its main hole to its screw holes) are excused; its distances to the part's edges and to other holes keep the rules,
+# and a cut-out no row lists keeps its findings: a new use needs its own row.
+CUTOUT_PLACE_TOL = 0.5      # mm: a row's place (the main hole's centre in the part's own coordinates)
+CUTOUT_PITCH_TOL = 0.1      # mm: the maker's tolerance on the screw pitch (Neutrik's D-size drawings, 19 +-0.1 x 24 +-0.1)
+PLACE = re.compile(r"\b([XYZ])\s*(-?\d+(?:\.\d+)?)", re.I)
+
+
+def load_cutout_exceptions(root):
+    """pn -> rows of v2/04-Checks/config/cutout-exceptions.csv (D-178)."""
+    p = os.path.join(root, "v2/04-Checks/config/cutout-exceptions.csv")
+    out = {}
+    if os.path.exists(p):
+        for row in read_csv(p):
+            if (row.get("part_number") or "").strip():
+                out.setdefault(row["part_number"].strip(), []).append(row)
+    return out
+
+
+def _cutout_screws(row, a, holes):
+    """The screw holes of row's cut-out around main hole a, or None when a isn't that cut-out: exactly the row's
+    number of screw holes in a's wall, each in its size range and set on the row's pitch (W x H across the hole
+    axis, either way round), symmetric about a's centre."""
+    lo, hi = num(row.get("main_dia_min_mm")), num(row.get("main_dia_max_mm"))
+    slo, shi = num(row.get("screw_dia_min_mm")), num(row.get("screw_dia_max_mm"))
+    n = int(num(row.get("screws")) or 0)
+    pitch = [float(x) for x in re.findall(r"\d+(?:\.\d+)?", row.get("pitch_mm") or "")]
+    if None in (lo, hi, slo, shi) or n < 1 or len(pitch) != 2 or not lo - 1e-6 <= a.diameter <= hi + 1e-6:
+        return None
+    place = {k.lower(): float(v) for k, v in PLACE.findall(row.get("place") or "")}
+    if any(abs(a.center["xyz".index(k)] - v) > CUTOUT_PLACE_TOL for k, v in place.items()):
+        return None
+    ax = sf.norm(a.axis)
+    half = sorted(p / 2.0 for p in pitch)
+    k = max(range(3), key=lambda i: abs(ax[i]))
+    square = abs(abs(ax[k]) - 1.0) < 1e-6           # the hole runs along X, Y or Z: check the pitch's two sides
+    screws, total = [], [0.0, 0.0, 0.0]
+    for b in holes:
+        if b is a or not slo - 1e-6 <= b.diameter <= shi + 1e-6 or abs(abs(sf.dot(sf.norm(b.axis), ax)) - 1.0) > 1e-4:
+            continue
+        d = sf._sub(b.center, a.center)
+        if abs(sf.dot(d, ax)) > 0.5:
+            continue                                 # another wall
+        across = sf._sub(d, sf._mul(ax, sf.dot(d, ax)))
+        r = sf.dot(across, across) ** 0.5
+        if abs(r - math.hypot(*half)) > CUTOUT_PITCH_TOL:
+            continue
+        if square:
+            i, j = [x for x in range(3) if x != k]
+            if any(abs(u - v) > CUTOUT_PITCH_TOL for u, v in zip(sorted((abs(across[i]), abs(across[j]))), half)):
+                continue
+        screws.append(b)
+        total = [total[x] + across[x] for x in range(3)]
+    if len(screws) != n or sum(v * v for v in total) ** 0.5 > CUTOUT_PITCH_TOL * n:
+        return None
+    return screws
+
+
+def cutout_pairs(rows, holes):
+    """{(id(main hole), id(screw hole))} for each cut-out the part's rows list. Each row covers one cut-out: at its
+    place when it gives one, else any one not already taken by a row with a place."""
+    pairs, taken = set(), set()
+    for row in sorted(rows, key=lambda r: not (r.get("place") or "").strip()):
+        for a in holes:
+            if id(a) in taken:
+                continue
+            screws = _cutout_screws(row, a, holes)
+            if screws is not None:
+                taken.add(id(a))
+                pairs.update((id(a), id(b)) for b in screws)
+                break
+    return pairs
+
+
 # the Lead's ruling (2026-11-01, CEILING's fan bulkheads): the 2-diameter rule is for fastener holes, not openings.
 # A round cut over the biggest fastener clearance, or one its part row names as an opening, is an opening, checked by
 # a web rule: material of at least 2 x the sheet's thickness, and at least 3 mm, to any edge and to the next hole, as
@@ -787,11 +864,12 @@ def _opening_web_need(hole, so):
 
 
 def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None, edge_exceptions=None,
-                        row_texts=None):
+                        row_texts=None, cutout_exceptions=None):
     """Per-part checks on a STEP file. materials: part number -> material text."""
     fs = []
     hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
     edge_exceptions = edge_exceptions if edge_exceptions is not None else load_edge_exceptions(root)
+    cutout_exceptions = cutout_exceptions if cutout_exceptions is not None else load_cutout_exceptions(root)
     s = load_step(path)
     r = rel(root, path)
     done = set()
@@ -847,6 +925,7 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
                     "calculation in the feature rationale." % need,
                     r, owner_for(r, pn), {"edge_mm": round(e, 2), "dia_mm": round(h.diameter, 2)}))
         # spacing between holes in the same wall
+        cutouts = cutout_pairs(cutout_exceptions.get(pn, []), holes) if holes else set()
         for i, a in enumerate(holes):
             for b in holes[i + 1:]:
                 if abs(abs(sf.dot(a.axis, b.axis)) - 1.0) > 1e-4:
@@ -854,6 +933,8 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
                 if abs(sf.dot((b.center[0] - a.center[0], b.center[1] - a.center[1], b.center[2] - a.center[2]),
                               a.axis)) > 0.5:
                     continue        # different walls
+                if (id(a), id(b)) in cutouts or (id(b), id(a)) in cutouts:
+                    continue        # a maker's panel cut-out's own web, listed by part and feature (D-178)
                 c2c = sf.line_distance(b.center, a.center, a.axis)
                 if opening[id(a)] or opening[id(b)]:
                     need, t = _opening_web_need(a if opening[id(a)] else b, so)
