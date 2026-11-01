@@ -164,8 +164,10 @@ def run(root, rev):
             for row in rows:
                 if row["part_number"]:
                     src_by_pn.setdefault(row["part_number"], rel(root, p))
+        cuboid_by_pn = c_drawings.strip_sides(per_part, c_geometry.load_step)     # D-125's plain strips
         findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn,
-                                              bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn)
+                                              bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn,
+                                              cuboid_by_pn=cuboid_by_pn)
         ran.add("C05")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,

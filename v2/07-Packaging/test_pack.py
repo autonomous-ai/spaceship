@@ -214,10 +214,14 @@ def test_numbers_match_the_master_bom():
     m = pack.Model()
     by_pn, _ = m.bom
     for tag, pn in (("1-06", "210102"), ("1-09", "210103"), ("1-10", "210104"), ("1-13", "510102"), ("1-14", "510104"),
-                    ("1-16", "510103"), ("2-14", "810201"), ("2-16", "810101"), ("1-01", "110401")):
+                    ("1-16", "510103"), ("2-14", "810201"), ("2-16", "810101"), ("1-01", "110401"),
+                    ("1-03", "210201"), ("1-04", "210202"), ("1-17", "510201"), ("1-18", "510202")):
         p = pack.PIECE[tag]
         assert p.pn == pn and by_pn[pn][0] == p.name, (tag, p.pn, p.name)
     assert "K13" not in failing(m)
+    # B3 and B4 carry WALL's names (its CAD files 210203/210204, 510203/510204), so their numbers fill in when WALL's lists merge
+    for tag, pos in (("1-07", "B3"), ("1-08", "B4"), ("1-19", "B3"), ("1-20", "B4")):
+        assert pack.PIECE[tag].name.endswith("BACK UPPER - " + pos), (tag, pack.PIECE[tag].name)
 
 
 def test_tbd_piece_takes_its_bom_number(tmp=Path(__file__).resolve().parent / "_bom_test.csv"):
