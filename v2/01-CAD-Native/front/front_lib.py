@@ -426,20 +426,25 @@ PARTS_LIST_COLUMNS = ["part_number", "name", "name_vi", "type", "process", "mate
 
 def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
     """rows: [(pn, name, vn, qty, type, material, mass, mass_status, status, source, note)];
-    mass "cad" = the component's mass from the model; the root row's mass is the sum of the others.
-    Every non-root part number must exist in the CAD with that many components, named 'PN NAME…'."""
+    mass "cad" = the component's mass from the model (one copy); mass None = a sub-assembly row (its parts below
+    carry the mass); the root row's mass is the sum of the others.
+    Every non-root part number must exist in the CAD named 'PN NAME…', placed as many times as the row's quantity
+    (copies of one component count once each, D-120)."""
     by_pn = {}
     for c in design.allComponents:
         if c.partNumber and c != design.rootComponent:
             by_pn.setdefault(c.partNumber, []).append(c)
+    root = design.rootComponent
     out = []
     for pn, name, vn, qty, typ, mat, mass, mstat, status, src, note in rows:
         if pn == root_pn:
             out.append([pn, root_name, root_vn, typ, mat, qty, "", mstat, status, src, note, "", ""])
             continue
         comps = by_pn.get(pn, [])
-        if len(comps) != (qty if isinstance(qty, int) else 1):
-            raise RuntimeError("%s: %d components in CAD, parts list says %s" % (pn, len(comps), qty))
+        placed = sum(root.allOccurrencesByComponent(c).count for c in comps)
+        if not comps or placed != (qty if isinstance(qty, int) else 1):
+            raise RuntimeError("%s: %d component(s) placed %d time(s) in CAD, parts list says %s" % (
+                pn, len(comps), placed, qty))
         if not comps[0].name.startswith("%s %s" % (pn, name)):
             raise RuntimeError("%s: CAD name %r does not start with %r" % (pn, comps[0].name, name))
         if mass == "cad":
@@ -659,7 +664,7 @@ def skin_panels(body, probe_mm=60.0):
         hits = root.findBRepUsingRay(o, n, adsk.fusion.BRepEntityTypes.BRepFaceEntityType, -1.0, False, hp)
         again = []
         for k in range(hits.count if hits else 0):
-            h, q = hits.item(k), hp.item(k) if k < hp.count else None
+            h, q = hits.item(k), adsk.core.Point3D.cast(hp.item(k)) if k < hp.count else None
             if h.body == body and h != fc and q is not None and q.distanceTo(o) * 10 < probe_mm:
                 again.append(h)
         if again:

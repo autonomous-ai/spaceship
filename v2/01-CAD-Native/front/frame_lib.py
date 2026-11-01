@@ -151,43 +151,166 @@ def axis3(axes, u, v):
 def build_members(design, comp, L, members, t_expr):
     """Each member: a fully constrained polygon, extruded, then shelled to a tube with its end faces open, to its own
     wall m["t"] when it has one (a parameter name or expression), else t_expr.
-    Returns {key: body}. A member whose shell fails stays solid and is reported (FRAME SHELL FAILED)."""
+    Returns {key: body}. A member whose shell fails stays solid and is reported (FRAME SHELL FAILED).
+    (Before D-120: every member a body of comp. build_member_components makes each its own component.)"""
+    return {m["key"]: build_one(design, comp, L, m, t_expr) for m in members}
+
+
+def build_one(design, comp, L, m, t_expr):
+    """One member in comp: its polygon extruded, then shelled to a tube with both ends open. Returns the body."""
     import adsk.core
     import adsk.fusion
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
-    bodies = {}
+    sk = L.poly(design, comp, L.plane_of(comp, m["axes"]), m["axes"], 0, "TUBE %s - %s" % (m["key"], m["name"]),
+                m["pts"])
+    f = L.extrude_span(comp, sk, m["along"], m["a"], m["b"], NEW, None, "EXTRUDE - TUBE %s" % m["key"])
+    if f.bodies.count != 1:
+        raise RuntimeError("tube %s: extrude made %d bodies" % (m["key"], f.bodies.count))
+    b = f.bodies.item(0)
+    b.name = "%s %s %s" % (m["key"], m["name"], m["section"])
+    ev = lambda e: L.ev(design, e)
+    num = member_numbers(m, ev)
+    if num["axis"] is None:
+        ax = tuple(1.0 if k == m["along"] else 0.0 for k in ("x", "y", "z"))
+    else:
+        ax = axis3(m["axes"], *num["axis"])
+    ends = adsk.core.ObjectCollection.create()
+    for fc in b.faces:
+        ok, nrm = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
+        # an end face leans on the tube's axis; where a wide tube meets a narrow one the mitre is long and
+        # oblique (about 14 degrees off the axis for 80 against 20), so the test is small but not zero
+        if abs(nrm.x * ax[0] + nrm.y * ax[1] + nrm.z * ax[2]) > 0.1:
+            ends.add(fc)
+    try:
+        if ends.count < 2:
+            raise RuntimeError("%d end faces" % ends.count)
+        si = comp.features.shellFeatures.createInput(ends, False)
+        si.insideThickness = adsk.core.ValueInput.createByString(m.get("t", t_expr))
+        sh = comp.features.shellFeatures.add(si)
+        sh.name = "SHELL - TUBE %s (ENDS OPEN)" % m["key"]
+    except Exception as exc:
+        print("FRAME SHELL FAILED|%s|%r" % (m["key"], exc))
+    return b
+
+
+# ---- D-120: every member its own component; a repeated part is copies of one component
+
+def shift_of(first, m):
+    """The shift from member `first` to its copy `m`, (dx, dy, dz) as expressions in model axes: the difference of
+    their first corners and of their extrusion starts. A component whose two expressions are the same text is 0."""
+    ax = {"x": 0, "y": 1, "z": 2}
+    out = ["0 mm", "0 mm", "0 mm"]
+    for k in (0, 1):
+        a, b = str(m["pts"][0][k]), str(first["pts"][0][k])
+        out[ax[m["axes"][k]]] = "0 mm" if a == b else "(%s) - (%s)" % (a, b)
+    a, b = str(m["a"]), str(first["a"])
+    out[ax[m["along"]]] = "0 mm" if a == b else "(%s) - (%s)" % (a, b)
+    return tuple(out)
+
+
+def solid_corners(m, ev):
+    """The member's outline corners in model mm, both ends: [(x, y, z)]."""
+    ax = {"x": 0, "y": 1, "z": 2}
+    out = []
+    for w in (ev(m["a"]), ev(m["b"])):
+        for u, v in m["pts"]:
+            p = [0.0, 0.0, 0.0]
+            p[ax[m["axes"][0]]], p[ax[m["axes"][1]]], p[ax[m["along"]]] = ev(u), ev(v), w
+            out.append(tuple(p))
+    return out
+
+
+def check_copies(members, parts, ev, tol=0.01):
+    """Each member that shares a part number with an earlier one must be that member moved by shift_of(), corner for
+    corner (same plane, extrusion axis, section and wall too). Returns [(key, first key, shift in mm)]; raises on any
+    that isn't."""
+    first, out = {}, []
     for m in members:
-        sk = L.poly(design, comp, L.plane_of(comp, m["axes"]), m["axes"], 0, "TUBE %s - %s" % (m["key"], m["name"]),
-                    m["pts"])
-        f = L.extrude_span(comp, sk, m["along"], m["a"], m["b"], NEW, None, "EXTRUDE - TUBE %s" % m["key"])
-        if f.bodies.count != 1:
-            raise RuntimeError("tube %s: extrude made %d bodies" % (m["key"], f.bodies.count))
-        b = f.bodies.item(0)
-        b.name = "%s %s %s" % (m["key"], m["name"], m["section"])
-        ev = lambda e: L.ev(design, e)
-        num = member_numbers(m, ev)
-        if num["axis"] is None:
-            ax = tuple(1.0 if k == m["along"] else 0.0 for k in ("x", "y", "z"))
-        else:
-            ax = axis3(m["axes"], *num["axis"])
-        ends = adsk.core.ObjectCollection.create()
-        for fc in b.faces:
-            ok, nrm = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
-            # an end face leans on the tube's axis; where a wide tube meets a narrow one the mitre is long and
-            # oblique (about 14 degrees off the axis for 80 against 20), so the test is small but not zero
-            if abs(nrm.x * ax[0] + nrm.y * ax[1] + nrm.z * ax[2]) > 0.1:
-                ends.add(fc)
-        try:
-            if ends.count < 2:
-                raise RuntimeError("%d end faces" % ends.count)
-            si = comp.features.shellFeatures.createInput(ends, False)
-            si.insideThickness = adsk.core.ValueInput.createByString(m.get("t", t_expr))
-            sh = comp.features.shellFeatures.add(si)
-            sh.name = "SHELL - TUBE %s (ENDS OPEN)" % m["key"]
-        except Exception as exc:
-            print("FRAME SHELL FAILED|%s|%r" % (m["key"], exc))
-        bodies[m["key"]] = b
-    return bodies
+        pn = parts[m["key"]][0]
+        if pn not in first:
+            first[pn] = m
+            continue
+        f = first[pn]
+        if (m["axes"], m["along"], m["section"], m.get("t")) != (f["axes"], f["along"], f["section"], f.get("t")):
+            raise RuntimeError("%s isn't a copy of %s (part %s): plane, axis, section or wall differ" % (m["key"], f["key"], pn))
+        d = [ev(e) for e in shift_of(f, m)]
+        cf, cm = solid_corners(f, ev), solid_corners(m, ev)
+        worst = max(abs(p[i] + d[i] - q[i]) for p, q in zip(cf, cm) for i in range(3))
+        if worst > tol:
+            raise RuntimeError("%s isn't %s moved by %s: corners off by %.3f mm" % (m["key"], f["key"], d, worst))
+        out.append((m["key"], f["key"], tuple(round(x, 3) for x in d)))
+    return out
+
+
+def place_by_shift(parent, occ, shift, name):
+    """Rigid joint: occ's origin onto a construction point at `shift` (expressions, in parent's space), where three
+    planes meet: each the parent's origin plane, or that plane offset by the shift's expression, so an edit moves it."""
+    import adsk.core
+    import adsk.fusion
+    planes = []
+    for base, e, tag in ((parent.yZConstructionPlane, shift[0], "X"), (parent.xZConstructionPlane, shift[1], "Y"),
+                         (parent.xYConstructionPlane, shift[2], "Z")):
+        if e in ("0", "0 mm"):
+            planes.append(base)
+            continue
+        pi = parent.constructionPlanes.createInput()
+        pi.setByOffset(base, adsk.core.ValueInput.createByString(e))
+        pl = parent.constructionPlanes.add(pi)
+        pl.name = "PLANE %s - %s" % (tag, name)
+        pl.isLightBulbOn = False
+        planes.append(pl)
+    ci = parent.constructionPoints.createInput()
+    ci.setByThreePlanes(planes[0], planes[1], planes[2])
+    pt = parent.constructionPoints.add(ci)
+    pt.name = "POINT - " + name
+    pt.isLightBulbOn = False
+    g_occ = adsk.fusion.JointGeometry.createByPoint(occ.component.originConstructionPoint.createForAssemblyContext(occ))
+    g_par = adsk.fusion.JointGeometry.createByPoint(pt)
+    ji = parent.joints.createInput(g_occ, g_par)
+    ji.setAsRigidJointMotion()
+    j = parent.joints.add(ji)
+    j.name = "PLACE - " + name
+    return j
+
+
+def build_member_components(design, frame_comp, L, members, t_expr, parts, rev):
+    """D-120: each frame member its own component under frame_comp, named 'PN NAME', with its part number.
+    parts: {member key: (pn, name, vn)}. The first member of a part number is built in place (an identity
+    occurrence, so its sketches keep the block's expressions and stay fully constrained) and shelled; each later
+    member with that number is a copy of its component, placed by place_by_shift() at its shift from the first.
+    Returns (native, comps, occs): the body in its own component, the component, and the occurrence in frame_comp's
+    context, each by member key (a copy shares the first's body and component)."""
+    import adsk.core
+    first, native, comps, occs = {}, {}, {}, {}
+    for m in members:
+        key = m["key"]
+        pn, name, vn = parts[key]
+        if pn in first:
+            f = first[pn]
+            occ = frame_comp.occurrences.addExistingComponent(comps[f["key"]], adsk.core.Matrix3D.create())
+            place_by_shift(frame_comp, occ, shift_of(f, m), "%s %s AS A COPY OF %s" % (pn, key, f["key"]))
+            native[key], comps[key], occs[key] = native[f["key"]], comps[f["key"]], occ
+            continue
+        occ = frame_comp.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        mc = occ.component
+        mc.name = ("%s %s" % (pn, name)).strip()
+        mc.partNumber = pn
+        mc.description = "%s | %s | %s" % (name, vn, rev)
+        native[key] = build_one(design, mc, L, m, t_expr)
+        first[pn] = m
+        comps[key], occs[key] = mc, occ
+    return native, comps, occs
+
+
+def root_bodies(frame_occ, native, occs):
+    """Each member's body in the root's context (through the frame's occurrence and its own), for the clash check
+    and the box report: a copy's body sits where its joint put it."""
+    return {k: native[k].createForAssemblyContext(occs[k].createForAssemblyContext(frame_occ)) for k in native}
+
+
+def frame_mass(frame_occ, occs):
+    """The welded frame's mass: every member occurrence's, copies counted once each (kg)."""
+    return sum(occs[k].createForAssemblyContext(frame_occ).physicalProperties.mass for k in occs)
 
 
 def cut_list_rows(members, ev, frame_pn):
@@ -257,3 +380,30 @@ def write_plate_dxf(path, body, along="y"):
     w = max(p[0] for p in pts) - u0
     h = max(p[1] for p in pts) - v0
     return round(w, 2), round(h, 2), holes, (round(u0, 2), round(v0, 2))
+
+
+ALLOCATION_REL = "v2/04-BOM/number-allocation.csv"
+
+
+def member_parts(repo_root, frame_pn, member_pn):
+    """{member key: (pn, name, name_vi)} from the master BOM's allocation list (D-120, #232). Each number must be
+    allocated to this frame and not cancelled, its quantity must be how many members use it, and a number used once
+    must be named after its member. Raises on any mismatch, so the model can't drift from Control's list."""
+    import collections
+    import csv
+    import os
+    with open(os.path.join(repo_root, ALLOCATION_REL), encoding="utf-8") as f:
+        rows = {r["part_number"]: r for r in csv.DictReader(f)}
+    count = collections.Counter(member_pn.values())
+    out = {}
+    for key, pn in member_pn.items():
+        r = rows.get(pn)
+        if r is None:
+            raise RuntimeError("member %s: %s isn't in %s" % (key, pn, ALLOCATION_REL))
+        if r["parent"].strip() != frame_pn or "CANCEL" in r["status"].upper():
+            raise RuntimeError("member %s: %s belongs to %r (%s), not to the frame %s" % (key, pn, r["parent"], r["status"], frame_pn))
+        if int(round(float(r["qty_per_parent"] or 0))) != count[pn]:
+            raise RuntimeError("%s: the allocation list says %s per frame, the frame has %d (%s)" % (
+                pn, r["qty_per_parent"], count[pn], ", ".join(k for k, v in member_pn.items() if v == pn)))
+        out[key] = (pn, r["name"].strip(), r["name_vi"].strip())
+    return out
