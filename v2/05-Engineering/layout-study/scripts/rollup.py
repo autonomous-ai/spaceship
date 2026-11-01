@@ -171,7 +171,7 @@ def dr_channels_kg(path=FRONT_FIXED_LIST):
 BASE_LIST = os.path.join(MANUF, "base", "110000_P01_BASE_BOM.csv")       # PR #55 (S44); P02 batch 1 (S54)
 BASE_TUBES = {"110101": "111101", "110102": "111102", "110103": "111103", "110106": "111106"}   # each band assembly's tube
 BASE_SHORT = {"110101": "the left side band", "110102": "the right side band", "110103": "the back band", "110106": "FR1"}
-BASE_OWN_LINES = {"118002": "glides", "111601": "blocks", "118001": "lip_m"}   # BASE parts with lines of their own here
+BASE_OWN_LINES = {"111602": "glides", "111601": "blocks", "118001": "lip_m"}   # BASE parts with lines of their own here
 
 
 def base_cad(path=BASE_LIST, elsewhere=()):
@@ -701,8 +701,8 @@ def lines(**adopt):
     glide = base["B-GLIDE"]
     ng = sum(bc["glides"].values())
     split = ", ".join(f"{n:g} on {BASE_SHORT[k]}" for k, n in bc["glides"].items())
-    L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), ng, bc["glide"], "assumption (CAD, HOLD)",
-              f"S54, CAD on main: BASE parts list 118002 P02 batch 1, a levelling glide on HOLD at each of its {ng:g} glides "
+    L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), ng, bc["glide"], "calculation (CAD)",
+              f"S54, CAD on main: BASE parts list 111602 P02 batch 1, BASE's made levelling glide (D-164) at each of its {ng:g} glides "
               f"({split}); this study had {glide.qty:g}; the front-left pieces and the intake piece add theirs, if any, in "
               "batches 2 and 3"))
     if thin:
@@ -874,7 +874,7 @@ def base_swaps():
             ("Base band piece, side RH", 1, side, own["110102"], src % "02"),
             ("Base band piece FR1, with its sill (not in the estimate)", 1, fr, own["110106"], src % "06"),
             ("Levelling glides: BASE's %g against this study's %g" % (ng, glide.qty), 1, glide.qty * bc["glide"],
-             ng * bc["glide"], "BASE 118002 P02 batch 1 (S54)"),
+             ng * bc["glide"], "BASE 111602 P02 batch 1 (S54, D-164)"),
             ("Corner keys, the 30 mm family", 6, base["B-KEY"].kg, sum(q * kg for q, kg in (JOINTS[pn] for pn in KEY_PNS)) / 6,
              "joints 111211 to 111214 P01, PR #139"),
             ("Glide load blocks (D-86's 0.4 kg), now BASE's %g blocks" % sum(bc["blocks"].values()), 1, LOAD_BLOCKS_KG,

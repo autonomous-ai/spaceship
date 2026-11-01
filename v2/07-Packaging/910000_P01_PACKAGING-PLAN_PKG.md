@@ -12,10 +12,10 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 ## Result
 
 1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **207 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **325 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 532 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 393.1 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 397.1 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 396.6 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+2. **Masses are the layout study's P04 roll-up**, 392.7 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 396.7 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 396.3 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **39 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 9; inside the crate the fixed glass lies on top because it goes in first.
-5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
+5. **Checks: FAIL: K1** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
 6. **PM rulings this plan follows** (packing group, 2026-10-31): the hinge halves that sit in DL ship fitted in DL, so the door travels 1177 mm wide (its 1175 glass and the magnetic seal half, FRONT's CAD); the door hangs before DT; the intake riser and the supply fan box ship apart and go into DR on site, so DR ships at 20 kg or less. And (2026-11-01): nothing rests on DR's felt panel, so DR lies face down with its felt up; the side bands carry the two back-corner keys, so the back band ships 2420 mm long on the 2438 mm deck (D-129); nothing overhangs either deck.
 
 ## 1. Pallets at a glance
@@ -23,8 +23,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 18 | 181.2 | 207 (457) | 1,641 (64.6) | 71.8 | 6.4 |
-| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 21 | 215.4 | 325 (716) | 1,563 (61.5) | 164.1 | 4.4 |
-| **Both** |  | 39 | **396.6** | **532** (1,173) |  |  |  |
+| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 21 | 215.1 | 325 (716) | 1,563 (61.5) | 164.1 | 4.4 |
+| **Both** |  | 39 | **396.3** | **532** (1,172) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -74,9 +74,9 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | --- | ---: | --- | --- | ---: | --- | --- |
 | Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.3 | 2200 × 1219 × 238 | 10, 11 |
 | Tier 2: DR face down, felt up, and the base band | 1030 | **2-03** | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2300 × 1030 × 236 | 9 |
-| Tier 2: DR face down, felt up, and the base band | 60 | **2-04** | BASE - BAND ASSY - BACK | 3.4 | 2430 × 60 × 128 | 2 |
-| Tier 2: DR face down, felt up, and the base band | 60 | **2-05** | BASE - BAND ASSY - SIDE - LH | 2.6 | 1540 × 60 × 128 | 2 |
-| Tier 2: DR face down, felt up, and the base band | 60 | **2-06** | BASE - BAND ASSY - SIDE - RH | 2.6 | 1540 × 60 × 128 | 2 |
+| Tier 2: DR face down, felt up, and the base band | 60 | **2-04** | BASE - BAND ASSY - BACK | 3.3 | 2430 × 60 × 128 | 2 |
+| Tier 2: DR face down, felt up, and the base band | 60 | **2-05** | BASE - BAND ASSY - SIDE - LH | 2.5 | 1540 × 60 × 128 | 2 |
+| Tier 2: DR face down, felt up, and the base band | 60 | **2-06** | BASE - BAND ASSY - SIDE - RH | 2.5 | 1540 × 60 × 128 | 2 |
 | Tier 3: DL on its side, DT, soffit, air column | 209 | **2-08** | FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2302 × 209 × 318 | 8 |
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-11** | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 1709 × 316 × 213 | 11 |
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-12** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 600 × 250 × 200 | 12 |
@@ -87,7 +87,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 4: air parts, light shelf, FR1 and cartons | 183 | **2-18** | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 1760 × 183 × 324 | 16 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-14** | BASE - SMALL PARTS CARTON | 1.1 | 600 × 150 × 400 | 2 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-15** | INTERIOR - WORK WALL LEDGE ASSY | 1.9 | 1000 × 120 × 250 | 22 |
-| Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-07** | BASE - BAND ASSY - FRONT - FIXED GLASS | 2.5 | 757 × 120 × 171 | 2 |
+| Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-07** | BASE - BAND ASSY - FRONT - FIXED GLASS | 2.4 | 757 × 120 × 171 | 2 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 90 | **2-13** | INTERIOR - LIGHT SHELF ASSY | 1.6 | 2342 × 90 × 70 | 19 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-19** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 18 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-20** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 18 |
@@ -154,10 +154,10 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-01** | 360002 | - | FRONT - FIXED GLASS UNIT | 28.7 | 2 | 9 |
 | **2-02** | 360001 | - | FRONT - DOOR UNIT | 48.6 | 2 | 10 |
 | **2-03** | 350003 | DR | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2 | 9 |
-| **2-04** | 110103 | - | BASE - BAND ASSY - BACK | 3.4 | 2 | 2 |
-| **2-05** | 110101 | - | BASE - BAND ASSY - SIDE - LH | 2.6 | 1 | 2 |
-| **2-06** | 110102 | - | BASE - BAND ASSY - SIDE - RH | 2.6 | 1 | 2 |
-| **2-07** | 110106 | - | BASE - BAND ASSY - FRONT - FIXED GLASS | 2.5 | 1 | 2 |
+| **2-04** | 110103 | - | BASE - BAND ASSY - BACK | 3.3 | 2 | 2 |
+| **2-05** | 110101 | - | BASE - BAND ASSY - SIDE - LH | 2.5 | 1 | 2 |
+| **2-06** | 110102 | - | BASE - BAND ASSY - SIDE - RH | 2.5 | 1 | 2 |
+| **2-07** | 110106 | - | BASE - BAND ASSY - FRONT - FIXED GLASS | 2.4 | 1 | 2 |
 | **2-08** | 350001 | DL | FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2 | 8 |
 | **2-09** | 610201 | - | AIR - SOFFIT | 14.8 | 2 | 16 |
 | **2-10** | 610101 | - | AIR - AIR COLUMN | 8.1 | 2 | 15 |
@@ -212,10 +212,10 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-01** | 360002 | FRONT - FIXED GLASS UNIT | Cụm vách kính cố định | - | 28.74 | calculation (CAD); magnetic seal HOLD | 2034 × 1031 × 12 | 9 |
 | **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 48.59 | calculation (CAD); hinges and pull HOLD | 2096 × 1177 × 149 | 10 |
 | **2-03** | 350003 | FRONT - DECOR BLOCK ASSY - DR | Khối trang trí phải (cụm) | DR | 18.86 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 2290 × 1020 × 216 | 9 |
-| **2-04** | 110103 | BASE - BAND ASSY - BACK | Viền chân nhôm - cạnh sau (cụm) | - | 3.44 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 2420 × 118 × 50 | 2 |
-| **2-05** | 110101 | BASE - BAND ASSY - SIDE - LH | Viền chân nhôm - cạnh trái (cụm) | - | 2.58 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 1530 × 118 × 50 | 2 |
-| **2-06** | 110102 | BASE - BAND ASSY - SIDE - RH | Viền chân nhôm - cạnh phải (cụm) | - | 2.59 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 1530 × 118 × 50 | 2 |
-| **2-07** | 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | Viền chân trước - dưới kính cố định (cụm) | - | 2.50 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source; calculation (CAD); magnetic seal HOLD | 747 × 161 × 110 | 2 |
+| **2-04** | 110103 | BASE - BAND ASSY - BACK | Viền chân nhôm - cạnh sau (cụm) | - | 3.31 | calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 2420 × 118 × 50 | 2 |
+| **2-05** | 110101 | BASE - BAND ASSY - SIDE - LH | Viền chân nhôm - cạnh trái (cụm) | - | 2.52 | calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 1530 × 118 × 50 | 2 |
+| **2-06** | 110102 | BASE - BAND ASSY - SIDE - RH | Viền chân nhôm - cạnh phải (cụm) | - | 2.51 | calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 1530 × 118 × 50 | 2 |
+| **2-07** | 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | Viền chân trước - dưới kính cố định (cụm) | - | 2.42 | calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source; calculation (CAD); magnetic seal HOLD | 747 × 161 × 110 | 2 |
 | **2-08** | 350001 | FRONT - DECOR BLOCK ASSY - DL | Khối trang trí trái (cụm) | DL | 12.30 | calculation (CAD) | 2292 × 308 × 199 | 8 |
 | **2-09** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.76 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 16 |
 | **2-10** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 15 |
@@ -237,7 +237,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS |  | - | 16.00 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **324.9** |  |  |  |
+|  |  | **Gross** |  |  | **324.6** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -257,15 +257,15 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 20.09 | calculation (CAD) | 1-09, 1-10 |
 | LINING | Ceiling cassettes, one part for both halves | 2 | 18.91 | calculation (CAD); fill provisional | 2-19, 2-20 |
 | LINING | Named clips and catches: 44 clips and 4 catch lanyards | 1 | 2.16 | assumption | A-5 × 0.592593, A-6 × 0.407407 |
-| BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.72 | calculation (CAD); confirmed (1.5 mm) | 2-04 |
-| BASE | Base band piece 100x40 - side LH, 1.5 mm wall | 1 | 1.70 | calculation (CAD); confirmed (1.5 mm) | 2-05 |
-| BASE | Base band piece 100x40 - side RH, 1.5 mm wall | 1 | 1.70 | calculation (CAD); confirmed (1.5 mm) | 2-06 |
-| BASE | Base band piece FR1 under the fixed glass, 1.5 mm wall, with its sill | 1 | 1.90 | calculation (CAD); confirmed (1.5 mm) | 2-07 |
+| BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.73 | calculation (CAD); confirmed (1.5 mm) | 2-04 |
+| BASE | Base band piece 100x40 - side LH, 1.5 mm wall | 1 | 1.73 | calculation (CAD); confirmed (1.5 mm) | 2-05 |
+| BASE | Base band piece 100x40 - side RH, 1.5 mm wall | 1 | 1.72 | calculation (CAD); confirmed (1.5 mm) | 2-06 |
+| BASE | Base band piece FR1 under the fixed glass, 1.5 mm wall, with its sill | 1 | 1.92 | calculation (CAD); confirmed (1.5 mm) | 2-07 |
 | BASE | Base band piece 100x40 - front-l, 1.5 mm wall | 1 | 0.33 | calculation; confirmed (1.5 mm) | 2-14 |
 | BASE | Base band piece 100x40 - front-r, the intake part, 1.5 mm wall | 1 | 0.39 | calculation; confirmed (1.5 mm) | 2-14 |
 | BASE | Corner key | 6 | 1.24 | calculation (CAD) | 2-05 × 2, 2-06 × 2, 2-14 × 2 |
-| BASE | Levelling glide (hex from above) | 9 | 1.35 | assumption (CAD, HOLD) | 2-04 × 3, 2-05 × 2, 2-06 × 2, 2-07 × 2 |
-| BASE | Glide load blocks: BASE's load block inside the band at each glide | 1 | 0.22 | calculation (CAD) | 2-04 × 0.333333, 2-05 × 0.222222, 2-06 × 0.222222, 2-07 × 0.222222 |
+| BASE | Levelling glide (hex from above) | 9 | 0.96 | calculation (CAD) | 2-04 × 3, 2-05 × 2, 2-06 × 2, 2-07 × 2 |
+| BASE | Glide load blocks: BASE's load block inside the band at each glide | 1 | 0.22 | calculation (CAD) | 2-04 × 0.3, 2-05 × 0.2, 2-06 × 0.2, 2-07 × 0.2 |
 | FRONT | Decor block - left | 1 | 12.30 | calculation (CAD) | 2-08 |
 | FRONT | Decor block - right | 1 | 18.32 | calculation (CAD) | 2-03 |
 | FRONT | Decor block - top | 1 | 7.84 | calculation (CAD) | 2-11 |
@@ -296,7 +296,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 
 | Check | What | Result | Pass |
 | --- | --- | --- | --- |
-| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 397.1 kg; 0 lines miscounted, 0 unknown | yes |
+| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 396.7 kg; 1 lines miscounted, 0 unknown | **NO** |
 | K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-03 FRONT - DECOR BLOCK ASSY - DR 18.9 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 39 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 928 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |

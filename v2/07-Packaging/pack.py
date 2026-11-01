@@ -333,7 +333,7 @@ def base_per_piece(pn, path=BASE_LIST):
     return out
 
 
-GLIDES, LIP_M = base_per_piece("118002"), base_per_piece("118001")   # by band assembly: the load blocks follow the glides
+GLIDES, LIP_M = base_per_piece("111602"), base_per_piece("118001")   # by band assembly: the load blocks follow the glides
 BLOCK_SHARE = {k: n / sum(GLIDES.values()) for k, n in GLIDES.items()}   # the load block line is one line (roll-up)
 # The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
 # U-seal 0.241 in four pieces, 745 bottom, 1446 right, 804 diagonal and 303 top (mm). The channels ship fitted in the parts
