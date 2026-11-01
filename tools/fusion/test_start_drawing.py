@@ -231,6 +231,76 @@ def go(fake, **kw):
     return code, logs
 
 
+class NudgeWiringTests(unittest.TestCase):
+    """start_drawing.py nudges an open of its run that sits idle, as run_script.py does (PM ruling 2026-11-01: today's
+    15-minute stall was a drawing open), inside its own lock only, and stops before the timeout path's checks."""
+
+    def test_the_nudger_runs_inside_the_lock_and_stops_before_the_timeout_checks(self):
+        events, made = [], []
+        tmp = tempfile.mkdtemp(prefix="sd-nudge-")
+        lockdir = os.path.join(tmp, "fusion.lock")
+
+        class Nudger:
+            def __init__(self, url, open_log, offset, run_label, after_s, every_s, log):
+                made.append({"url": url, "open_log": open_log, "offset": offset, "run_label": run_label,
+                             "after_s": after_s, "every_s": every_s})
+
+            def start(self):
+                events.append("nudger start")
+                return self
+
+            def stop(self):
+                events.append("nudger stopped")
+
+        class Mcp:
+            def __init__(self, url, timeout):
+                self.timed_out = True                      # a call of this run timed out
+
+        class Steps:
+            def __init__(self, url, timeout, mcp=None):
+                pass
+
+        keep = (rs.OpenNudger, rs.FusionMcp, rs.FusionLock.acquire, rs.FusionLock.release, rs.wait_for_fusion,
+                rs.guard_opens, rs.unhealthy_refusal, sd.Steps, sd.run_with_cleanup)
+
+        def acquire(self_, *a, **k):
+            r = keep[2](self_, *a, **k)
+            events.append("lock taken")
+            return r
+
+        def release(self_):
+            events.append("lock given back")
+            return keep[3](self_)
+
+        def busy(*_a, **_k):
+            events.append("busy wait")
+            return True
+
+        def guard(*_a, **_k):
+            events.append("open guard")
+            return []
+
+        def work(*_a, **_k):
+            events.append("drawing start")
+            return 0
+        rs.OpenNudger, rs.FusionMcp, rs.FusionLock.acquire, rs.FusionLock.release = Nudger, Mcp, acquire, release
+        rs.wait_for_fusion, rs.guard_opens, rs.unhealthy_refusal = busy, guard, (lambda *a, **k: None)
+        sd.Steps, sd.run_with_cleanup = Steps, work
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                rc = sd.main(["A_P01_X_CAD", "A_P01_X_DWG", "--lock", lockdir, "--label", "TEST"])
+        finally:
+            (rs.OpenNudger, rs.FusionMcp, rs.FusionLock.acquire, rs.FusionLock.release, rs.wait_for_fusion,
+             rs.guard_opens, rs.unhealthy_refusal, sd.Steps, sd.run_with_cleanup) = keep
+            shutil.rmtree(tmp, ignore_errors=True)
+        self.assertEqual(rc, 0)
+        self.assertEqual(events, ["lock taken", "nudger start", "drawing start", "nudger stopped", "busy wait",
+                                  "open guard", "lock given back"])
+        self.assertEqual(made, [{"url": rs.DEFAULT_URL, "open_log": lockdir + ".opens.log", "offset": 0,
+                                 "run_label": "TEST: start_drawing.py A_P01_X_CAD -> A_P01_X_DWG",
+                                 "after_s": rs.NUDGE_AFTER_S, "every_s": rs.NUDGE_EVERY_S}])
+
+
 class SequenceTests(unittest.TestCase):
     def test_happy_path_presses_ok_then_cancel_and_saves(self):
         f = FakeFusion()
