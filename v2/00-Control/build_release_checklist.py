@@ -443,6 +443,7 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     reg = {i["part_number"]: i for i in register if i["part_number"]}
     cut_lists = [p for p in paths if is_cut_list(p)]
     member_frame = d120_members(parts, cut_texts)
+    member_rows = d162_rows(cut_texts)
     frame_kinds = holders_kinds(parts, by_pn)
     made, bought, last_unit, seen = [], [], {}, {}
     for r in parts:
@@ -490,6 +491,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "yes"
             elif pn in tab_cover:
                 dwg = f"on {tab_cover[pn]}, tabulated (D-89)"
+            elif pn in member_rows and not member_rows[pn][1]:
+                dwg = f"its frame's cut list row, {member_rows[pn][0]} (D-162)"
+            elif pn in member_rows:
+                dwg = "no: its cut list row (D-162) doesn't give %s" % ", ".join(member_rows[pn][1])
             elif by_cut:
                 dwg = "cut list (D-89)"
             elif soft == "soft" and by_pn.get(pn, {}).get("DXF"):
@@ -532,8 +537,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             in_reg = (pn in reg) if hw else None
             given = reg_status.get(pn, "defer")  # the register wins where it states the product (D-63)
             hold = given == "hold" or (given == "defer" and bool(r["hold"]))
-            words = " ".join([r["name"], r["material"], r.get("sku", "")])
-            digits_sku = bool(r.get("maker", "").strip()) and bool(re.search(r"\b\d{4,}\b", " ".join([r.get("sku", ""), r["name"]])))
+            maker, sku_cell = r.get("maker", ""), r.get("sku", "")
+            picked = not (ALTERNATIVES.search(maker) or ALTERNATIVES.search(sku_cell))  # two candidates aren't a product
+            words = " ".join([r["name"], r["material"], sku_cell if picked else ""])
+            digits_sku = picked and bool(maker.strip()) and bool(re.search(r"\b\d{4,}\b", sku_cell))
             sku = "HOLD" if hold else ("yes" if given == "named" or SKU.search(words) or digits_sku else "no")
             rid = reg.get(pn, {}).get("id", "")
             found = {t for pats, ids in accept if any(p.fullmatch(pn) for p in pats) for t in ids}
@@ -546,6 +553,37 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             bought.append(line)
             seen[key] = line
     return made, bought
+
+
+ALTERNATIVES = re.compile(r"\bor\b|\bone to pick\b|\beither\b|\balternatives?\b", re.I)
+END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*°")
+SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends", re.I)
+
+
+def d162_rows(cut_texts):
+    """{member number: (its frame, what its cut list row lacks)} for every cut list row that names a member_part:
+    D-162 makes that row the member's drawing, so it must give the section, the cut length, both end angles and the
+    quantity. 'Angles on the frame drawing' doesn't state them."""
+    out = {}
+    for text in (cut_texts or {}).values():
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                member = cells.get("member_part", "")
+                if not re.fullmatch(r"\d{6}", member):
+                    continue
+                ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
+                lacks = [what for what, ok in (
+                    ("its section", bool(cells.get("section"))),
+                    ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
+                    ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))),
+                    ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
+                old = out.get(member)
+                if old is None or len(lacks) < len(old[1]):
+                    out[member] = (cells.get("frame", ""), lacks)
+        except csv.Error:
+            continue
+    return out
 
 
 def with_maker_cells(parts, sources):
