@@ -735,3 +735,145 @@ def check_components(root, step_paths, load):
                           {"bodies": n, "shapes": shapes, "files": len(d["files"])}))
     return fs
 
+
+# ----------------------------------------------------------------- C06: a part's copies match its own model
+
+def _quarter_turns():
+    """The 24 quarter-turn rotations of space (no mirror images)."""
+    import itertools
+    out = []
+    for perm in itertools.permutations(range(3)):
+        for signs in itertools.product((1, -1), repeat=3):
+            m = [[0] * 3 for _ in range(3)]
+            for i in range(3):
+                m[i][perm[i]] = signs[i]
+            det = (m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+                   + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]))
+            if det == 1:
+                out.append(m)
+    return out
+
+
+QUARTER_TURNS = _quarter_turns()
+
+
+def same_holes(own, copy, tol=0.1, dia_tol=0.15):
+    """Do two bodies of one part have the same hole layout, however the copy is turned in its own frame? Hole
+    centres about their own centroid (so a copy placed or modelled elsewhere still matches), every quarter turn tried,
+    hole sizes within dia_tol (a tapped hole drawn at Ø5.0 or at its 6H minor Ø5.03 is the same hole)."""
+    def layout(so):
+        hs = so.holes
+        if not hs:
+            return []
+        c = [sum(h.center[k] for h in hs) / len(hs) for k in range(3)]
+        return [(tuple(h.center[k] - c[k] for k in range(3)), h.diameter) for h in hs]
+    import math
+    a, b = layout(own), layout(copy)
+    if len(a) != len(b):
+        return False
+    for m in QUARTER_TURNS:
+        used = set()
+        for pc, d in b:
+            q = tuple(sum(m[i][j] * pc[j] for j in range(3)) for i in range(3))
+            hit = next((i for i, (oc, od) in enumerate(a) if i not in used and math.dist(q, oc) <= tol
+                        and abs(od - d) <= dia_tol), None)
+            if hit is None:
+                break
+            used.add(hit)
+        else:
+            return True
+    return False
+
+
+def body_sizes(so):
+    """A body's sizes, however it is turned: ('round', ((radius, length along the axis), ...)) from its outer round
+    faces (radius at least 1 mm, along the biggest one's axis), and ('box', three sides) when it has no outer round
+    face, so a detailed and a plain model of one part compare like with like."""
+    import stepfile as sf
+    outer = [f for f in so.faces if f.kind == "cylinder" and not sf._concave(f) and f.radius >= 1.0]
+    if outer:
+        big = max(outer, key=lambda f: f.radius)
+        ax, o = sf.norm(big.normal), big.origin
+        out = []
+        for f in outer:
+            if abs(abs(sf.dot(sf.norm(f.normal), ax)) - 1.0) > 1e-4:
+                continue
+            ts = [sf.dot(sf._sub(p, o), ax) for a in f.arcs for p in (a[0].o, a[2], a[3])] + \
+                 [sf.dot(sf._sub(p, o), ax) for p in f.points]
+            if not ts:
+                continue
+            for i, (r, lo, hi) in enumerate(out):
+                if abs(r - f.radius) <= 0.15:
+                    out[i] = (r, min(lo, min(ts)), max(hi, max(ts)))
+                    break
+            else:
+                out.append((f.radius, min(ts), max(ts)))
+        return ("round", tuple(sorted((round(r, 2), round(hi - lo, 2)) for r, lo, hi in out if hi - lo >= 0.5)))
+    if not so.box:
+        return ("box", ())
+    return ("box", tuple(sorted(round(so.box[k + 3] - so.box[k], 2) for k in range(3))))
+
+
+def _sizes_differ(a, b, tol=0.2):
+    """Only like with like: two boxes by their sides; two round parts by the length at each radius both have (a
+    detailed model may add small radii). A round body against a box can't be compared, so it isn't reported."""
+    if a[0] != b[0] or not a[1] or not b[1]:
+        return False
+    if a[0] == "box":
+        return any(abs(x - y) > tol for x, y in zip(a[1], b[1]))
+    common = [(la, lb) for ra, la in a[1] for rb, lb in b[1] if abs(ra - rb) <= 0.15]
+    return bool(common) and any(abs(la - lb) > tol for la, lb in common)
+
+
+def check_copies(root, step_paths, load):
+    """A part copied into another team's STEP (a washer, a spigot or a key in a panel or band) has to be the part its
+    own STEP holds (the file named after its number): the same hole layout (same_holes; any quarter turn of the copy
+    counts as the same) and the same sizes (body_sizes). An assembly built round an older or different copy has its
+    mating holes and fits set by the wrong part. A different hole layout is severe, different sizes major; one finding
+    per part and file team. Parts whose own STEP holds more than one shape are left to D-120."""
+    import os
+    bodies = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            bodies.setdefault(inst["part_number"], {}).setdefault(p, {})[so.id] = so
+    hits = {}
+    for pn, files in bodies.items():
+        own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
+        if not own or len(files[own[0]]) != 1:
+            continue
+        ref = next(iter(files[own[0]].values()))
+        ref_sizes = body_sizes(ref)
+        for f, sols in files.items():
+            if f in own:
+                continue
+            for so in sols.values():
+                holes_ok = same_holes(ref, so)
+                sizes = body_sizes(so)
+                if holes_ok and not _sizes_differ(ref_sizes, sizes):
+                    continue
+                r = rel(root, f)
+                team = owner_for(r, "")
+                if team == "PM":
+                    team = owner_for(r, pn)
+                h = hits.setdefault((pn, team), {"files": set(), "holes": False, "own": rel(root, own[0]),
+                                                 "ref": (len(ref.holes), ref_sizes), "copy": (len(so.holes), sizes)})
+                h["files"].add(r)
+                h["holes"] = h["holes"] or not holes_ok
+    fs = []
+    for (pn, team), h in sorted(hits.items()):
+        part_team = owner_for(h["own"], pn)
+        owner = team if part_team == team else "%s; %s" % (team, part_team)
+        what = "hole layout" if h["holes"] else "sizes"
+        fs.append(Finding(
+            "C06", "copy-differs", pn, "severe" if h["holes"] else "major",
+            "%s's body in %s isn't the part its own STEP %s holds: its %s differ (own STEP: %d holes, sizes %s; "
+            "the copy: %d holes, sizes %s), whichever way the copy is turned. The assembly's fits were set round the "
+            "copy." % (pn, ", ".join(sorted(os.path.basename(x) for x in h["files"])), os.path.basename(h["own"]),
+                       what, h["ref"][0], h["ref"][1][1], h["copy"][0], h["copy"][1][1]),
+            "Put the part's current model in the assembly (one component placed as copies, D-120) and check the "
+            "holes and fits round it; if the copy is right, the part's owner updates its own STEP.",
+            sorted(h["files"])[0], owner, {"files": len(h["files"])}))
+    return fs
+

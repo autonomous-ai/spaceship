@@ -115,3 +115,144 @@ The U-profile's box is X -66.63 to 964.13, Y -706.5 to -691.5 (15 on the glass p
 | Door unit | The free edge runs 4 mm from the door's latch edge; the magnetic seal pair (368003 here, 368006 on the door) closes it. |
 
 Fit order (PM ruling 2026-11-01): the bottom channel comes factory-fitted on BASE's sill; on site the pane drops into it, then DR slides in from the right onto the pane's right edges, then DT is lowered onto its top edge.
+
+## 350003 FRONT - DECOR BLOCK ASSY - DR, P01 stage 2 (DRAFT)
+
+Run 2026-10-31 20:2x UTC on Mac 1, Fusion 2706, through the shared lock, one run per design (build, save, export, pictures and the edit test), on skeleton P04 v4:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/dr_block.py --doc 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD \
+    --arg step=all --arg "desc=P01 stage 2: every frame tube shelled" \
+    --arg "edits=decor_d=215 mm;fix_xk=511 mm;fix_zk=1531 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step
+```
+
+### Result
+
+- bodies 38, timeline 146 items, unhealthy 0, loose sketches 0, parameters 181; clash pairs 0 (frame against skin, plates, panels, air parts and the glass channel)
+- frame 351306: 26 tubes of 20 × 20 × 1.5 (80 × 20 at the bolt line, 40 and 60 × 20 at the bottom and the band), every tube shelled with its ends open (0 failed), 5.72 kg, 15.05 m of tube (cut list `351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv`)
+- air intake past the frame: base opening 0.0422 m² gross, 0.0129 m² under the frame's bottom tubes, 0.0293 m² free (rule: 0.028 or more, PM ruling)
+- flat parts (D-89 part 4, DXF 1:1 in mm, layer CUT): back plate 351302 798.0 × 2284.0 with 6 holes; access panel 351305 255.4 × 2042.0 with 12 holes (7.0 for M6, and the column's two hook studs at X 971, Z 1700 and 1850); inner panel 351303 715.0 × 2038.5
+- felt 351304: same outline as the inner panel (stepped and slanted), so it keeps a drawing (D-89); its DXF is for the cutter
+- STEP: length unit cm, declared in the file (D-13); box X 230 to 1250, Y -850 to -635, Z 110 to 2400 (`step_check.py`), equal to the model's when re-read in Fusion (0.000 mm)
+- f3d 820,702 bytes; STEP 566,889 bytes; no names in the exports (f3d entries, STEP, CSV, DXF, picture metadata scanned)
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `350003_P01_FRONT-DECOR-BLOCK-ASSY-DR-FRONT_IMG.png`, `...-ISO_IMG.png`
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 351301 skin, ACP 3 mm at 1300 kg/m³ | 7.71 |
+| 351306 frame, 26 tubes shelled, 2700 kg/m³ | 5.72 |
+| 351302 back plate | 1.51 |
+| 351305 access panel | 3.87 |
+| 351303 inner panel | 1.67 |
+| 351304 felt, 1.8 kg/m² | 0.77 |
+| 350004 and 351402 to 351405: reserved air spaces where AIR's supply fan box assembly 610401 goes (its riser, transitions, fan box and two fans: AIR's parts and mass, not counted here, PM rulings 2026-11-01) | 0 |
+| **DR block** | **21.25** |
+
+The build's parts list said 33.92 kg with the air parts in it; after the PM rulings of 2026-11-01 (every air part, the supply fans included, is an AIR number in AIR's tree, so nothing is counted twice) the air rows were re-written as reserved air spaces with no mass and the fans' row dropped, from the script's own rows (same CAD). The next DR build writes the same list, names those spaces RESERVED AIR SPACE in the CAD and has no fan bodies. At 21.25 kg DR is over the 20 kg piece limit (D-03): the weight saving is proposed in the decor drawings' pull request.
+
+### Interfaces to other assemblies
+
+| With | What |
+|---|---|
+| BASE | Stands on the band top (Z 110); the riser's open foot sits 140 mm over the base air opening. |
+| Fixed glass | The right and diagonal channels sit behind the 17 mm slot in DR's inner-edge skin; no frame tube crosses the channel. |
+| Air column | Hooks onto 2 studs on the access panel (X 971, Z 1700 and 1850, rivnut 838003), pushed back and dropped 10 mm onto BASE's floor spigots; the access panel is screwed to the frame to carry about 10 kg (PM ruling). |
+| DT | Meets DT at X 449 under the top; joint HOLD (joints register). |
+
+## 350002 FRONT - DECOR BLOCK ASSY - DT, P01 stage 2 (DRAFT)
+
+Run 2026-10-31 20:2x UTC on Mac 1, Fusion 2706, through the shared lock, one run per design, on skeleton P04 v4:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/dt_block.py --doc 350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD \
+    --arg step=all --arg "desc=P01 stage 2: welded tube frame 351204 (13 tubes); back plate corner on the slope" \
+    --arg "edits=decor_d=215 mm;dt_xr=1690 mm;dl_w=283 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step
+```
+
+### Result
+
+- bodies 18, timeline 62 items, unhealthy 0, loose sketches 0, parameters 148; clash pairs 0
+- frame 351204: 13 tubes of 20 × 20 × 1.5, every tube shelled (0 failed), 2.51 kg, 8.52 m of tube (cut list `351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv`); its rail F02 carries the catch 368007 and the top stop 351203
+- back plate 351202 (D-89 part 4): 1694.75 × 274.0, no holes; its corner sits on the slope so it clears the skin
+- STEP: length unit cm, declared in the file (D-13); box X -1250 to 449, Y -850 to -645, Z 2094 to 2400 (`step_check.py`), equal to the model's when re-read in Fusion (0.000 mm)
+- f3d 364,297 bytes; STEP 243,290 bytes; no names in the exports
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `350002_P01_FRONT-DECOR-BLOCK-ASSY-DT-FRONT_IMG.png`, `...-ISO_IMG.png`
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 351201 skin, ACP 3 mm at 1300 kg/m³ | 2.85 |
+| 351204 frame, 13 tubes shelled | 2.51 |
+| 351202 back plate | 1.66 |
+| 351203 door top stop | 0.08 |
+| 368005 frame-stop seal, top run 796 mm (assumption) | 0.05 |
+| 368007 door catch (datasheet) | 0.05 |
+| **DT block** | **7.20** |
+
+### Interfaces to other assemblies
+
+| With | What |
+|---|---|
+| Door unit | The top stop 351203 and the seal 368005 stop the leaf; the catch 368007 holds its strike 368102 (35 N). |
+| Fixed glass | The top channel sits behind the 17 mm slot in DT's underside; the catch rail stands 3.5 behind it. |
+| DR, DL, ceiling | Joints HOLD (joints register); DT goes on last, after the door hangs (fit order: glass, DR, DT). |
+
+## 350001 FRONT - DECOR BLOCK ASSY - DL, P01 stage 2 (DRAFT)
+
+Run 2026-10-31 21:1x UTC on Mac 1, Fusion 2706, through the shared lock, one run per design, on skeleton P04 v4:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/dl_block.py --doc 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD \
+    --arg step=all --arg "desc=P01 stage 2: welded tube frame 351104 (hinge post, bolt-line post, rings)" \
+    --arg "edits=decor_d=215 mm;dl_w=283 mm;dl_y3=848 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step
+```
+
+### Result
+
+- bodies 36, timeline 116 items, unhealthy 0, loose sketches 0, parameters 150; clash pairs 0
+- frame 351104: 26 tubes of 20 × 20 × 1.5 with the 60 × 20 hinge post and bolt-line post, every tube shelled (0 failed), 4.67 kg, 11.76 m of tube (cut list `351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv`); the bolt-line post has 6 holes 14 round the J-FRONT-01 rivnut tails
+- back plate 351102 (D-89 part 4): 272.0 × 2281.0, 6 holes 9.53 for the J-FRONT-01 rivnuts
+- STEP: length unit cm, declared in the file (D-13); box X -1250 to -946, Y -844 to -645, Z 105 to 2397 (`step_check.py`), equal to the model's when re-read in Fusion (0.000 mm)
+- f3d 591,773 bytes; STEP 457,704 bytes; no names in the exports
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `350001_P01_FRONT-DECOR-BLOCK-ASSY-DL-FRONT_IMG.png`, `...-ISO_IMG.png`
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 351101 skin, ACP 3 mm at 3.9 kg/m² (this build; 3.5 kg/m², the selected sheet's, from the next build) | 4.59 |
+| 351104 frame, 26 tubes shelled | 4.67 |
+| 351102 back plate, 2 mm aluminium | 3.15 |
+| 351103 hinge-side stop, 4 lengths | 0.22 |
+| 368005 frame-stop seal, hinge-side run 1589 mm (assumption) | 0.07 |
+| **DL block** | **12.70** |
+
+### Interfaces to other assemblies
+
+| With | What |
+|---|---|
+| Door unit | The hinges' frame halves screw into the hinge post behind the three pockets (holes when the hinge is named, HOLD H01); the stop 351103 and the seal 368005 close the hinge side. |
+| WALL | J-FRONT-01: 6 bolts from the left wall into rivnuts in the back plate on X -1224. |
+| BASE, DT | J-FRONT-02 and J-FRONT-03 spigots: built into the blocks on the drawings branch (PM ruling 2026-11-01). |
+
+## 350001 DL, 350002 DT, 350003 DR: final builds for #105 (2026-11-01, supersede the stage-2 runs above)
+
+Rebuilt from their scripts through the shared lock, each in one run (build, save, export, pictures, edit test), with the PM rulings of 2026-11-01 applied: every air part is AIR's (DR keeps reserved air spaces only); DR under 19 kg as shipped (tube walls 1.0 / 1.2 / 1.5 by role, back plate 1.5 mm, two redundant tubes dropped, ACP at the selected sheet's 3.5 kg/m²); J-FRONT-02 and 03 (spigot holes and slots, DT's 2 mm aluminium back plate 2.26 off the ceiling with 4 rivnuts at Z 2374, DT's spigots on DR's ledge); the door stops as standard angles; the hinge-top corner butting instead of crossing; DT's underside notched and DL open at the bottom instead of skin holes near an edge (C09).
+
+| Block | Bodies | Clashes | Frame | Unit mass (calculation) | STEP box (re-read in Fusion: 0.000 mm) | Edit test |
+|---|---|---|---|---|---|---|
+| DR 350003 | 34 | 0 | 24 tubes, 4.16 kg | 18.32 kg; 18.87 shipped with its right and diagonal glass channels | X 230 to 1250, Y −850 to −634.5, Z 110 to 2400 | PASS, 28 anchors |
+| DT 350002 | 18 | 0 | 13 tubes, 2.76 kg | 7.84 kg | X −1250 to 449, Y −850 to −647.26, Z 2094 to 2400 | PASS, 17 anchors |
+| DL 350001 | 36 | 0 | 26 tubes, 4.67 kg | 12.30 kg | X −1250 to −942, Y −844 to −645, Z 105 to 2397 | PASS, 15 anchors |
+
+- DR's base: 0.0424 m² gross, 0.0128 m² under the frame's bottom tubes, 0.0296 m² free (0.028 or more: PM ruling).
+- The FRONT combined check (door unit, fixed glass unit, DR, DT, DL imported together): 0 overlaps between sub-assemblies; gaps as ruled (door leaf to the fixed pane 4.00, leaf top to DT 6.00, seals 0 on the leaf, DR's slot 1.00 each side of the channel).
+- Pictures checked by eye; no names in any export (f3d entries, STEP, CSV, DXF, picture metadata).
+- D-120's five findings stay open on these builds (Lead, 2026-11-01): the three frames 351104, 351204 and 351306, DL's stop 351103 and its seal pieces 368005 are components holding several bodies. Control allocated the member numbers in #232 (DL 352101 to 352116, DT 352201 to 352211, DR 352301 to 352321; the stop's pieces 351105 to 351107, 351103 cancelled once it is split); the rebuild follows on the decor drawings branch.
+- Run commands: `tools/fusion/run_script.py <late loader> --arg target=v2/01-CAD-Native/front/dX_block.py --doc 35000N_P01_FRONT-DECOR-BLOCK-ASSY-DX_CAD --arg step=all --arg edits=... --close`, the edits as in `EDIT-TEST-RECORD.md`.

@@ -700,6 +700,11 @@ def run(_context):
 FOLDER_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_folder.py")
 with open(FOLDER_HELPER_PATH, encoding="utf-8") as _fh:
     FOLDER_HELPER_SRC = _fh.read()
+# The shared drawing helpers (fusion_drawing.py, PM 2026-11-01): given to every script
+# as a module, the same way, so teams import them instead of copying code.
+DRAWING_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_drawing.py")
+with open(DRAWING_HELPER_PATH, encoding="utf-8") as _fh:
+    DRAWING_HELPER_SRC = _fh.read()
 
 
 # Document steps for --doc, --save and --close. Runs inside Fusion; ARGS is
@@ -707,6 +712,8 @@ with open(FOLDER_HELPER_PATH, encoding="utf-8") as _fh:
 # another name, and never calls close(True) (that opens a dialog).
 DOC_SCRIPT = '''import adsk.core, adsk.fusion, time
 ARGS = %(args)r
+DUP_WAIT_S = 30.0   # a design made a moment ago can be listed twice for ~10 s (CEILING 2026-11-01)
+DUP_PAUSE_S = 3.0
 
 def _folder(app, path):
     parts = [p for p in path.split("/") if p]
@@ -761,6 +768,41 @@ def run(_context):
                                    "nothing was opened or made (try again later): %%s" %% (
                                        name, ARGS["folder"], "an entry" if len(risky) == 1 else
                                        "%%d entries" %% len(risky), "; ".join(risky)))
+        if len(files) > 1:
+            # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the
+            # cloud lists it twice. Read the folder again for up to 30 s while it does;
+            # still twice after that: refused, as before. Reviewer 5 on #238: a re-read
+            # counts only when it shows one copy and no unreadable entry could be another
+            # (could_be, the rule safe_to_create uses), or when every copy is one file
+            # (the same id), so two different files never get through
+            def _ext(fs):
+                try:
+                    return (fs[0].fileExtension or "f3d").lower()
+                except Exception:
+                    return "f3d"
+
+            def _same_file(fs):
+                try:
+                    return len(set(f.id for f in fs)) == 1
+                except Exception:
+                    return False
+
+            ext = _ext(files)
+            if _same_file(files):
+                print("run_script: %%r is listed %%d times, all the same file; opening it" %% (name, len(files)))
+                files = files[:1]
+            t_end = time.time() + DUP_WAIT_S
+            while len(files) > 1 and time.time() < t_end:
+                print("run_script: %%r is listed %%d times; reading the folder again in %%g s"
+                      %% (name, len(files), DUP_PAUSE_S))
+                adsk.doEvents()
+                time.sleep(DUP_PAUSE_S)
+                again, u2, o2 = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: False)
+                seen = again.get(name, [])
+                if len(seen) == 1 and not could_be(u2, o2, ext):
+                    files = seen
+                elif len(seen) > 1 and _same_file(seen):
+                    files = seen[:1]
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
@@ -889,6 +931,11 @@ _FF = _types.ModuleType("fusion_folder")
 _FF.__file__ = %(ffpath)r
 exec(compile(_b64.b64decode(%(ffsrc)r).decode("utf-8"), %(ffpath)r, "exec"), _FF.__dict__)
 _sys.modules["fusion_folder"] = _FF
+# the shared drawing helpers, the same way: "from fusion_drawing import insert_image"
+_FD = _types.ModuleType("fusion_drawing")
+_FD.__file__ = %(fdpath)r
+exec(compile(_b64.b64decode(%(fdsrc)r).decode("utf-8"), %(fdpath)r, "exec"), _FD.__dict__)
+_sys.modules["fusion_drawing"] = _FD
 # Every document open is logged to a file next to the Fusion lock, start and end,
 # with the file's name, version and whether it was hidden, written at once, so a
 # run stuck in an open shows what it was opening (PM 2026-11-01, after a drawing
@@ -990,6 +1037,8 @@ def wrap_script(source, path, args, open_log=None, run_label=""):
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
                       "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
+                      "fdpath": DRAWING_HELPER_PATH,
+                      "fdsrc": base64.b64encode(DRAWING_HELPER_SRC.encode("utf-8")).decode("ascii"),
                       "team": team_roots(), "keep": keep_roots(),
                       "openlog": open_log or open_log_path(), "runlabel": run_label or os.path.basename(path)}
 
