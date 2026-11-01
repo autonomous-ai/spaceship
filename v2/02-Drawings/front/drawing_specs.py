@@ -200,7 +200,7 @@ SPECS = {
             "Door unit (D-56): leaf 361001, kick strip 361002 with the drop seal 368001 in its cavity and the U-seal "
             "368002 in its pocket; the strike 368102 (Sugatsune HT-MSG62-U10) of the magnetic catch in DT, packed to "
             "the 8.76 laminate by the 1.2 stainless shim 361004 behind its liner; the door's half 368006 of the 180 deg "
-            "magnetic seal, from Z 105; three hinges 368101 and the pull 368103 as reserved spaces (red), HOLD.",
+            "magnetic seal, from Z 105; three hinges 368101 (HOLD) and the pull 368103 as reserved spaces (red).",
             "No latch on the glass (PM ruling): the 35 N magnetic door-stop catch (Sugatsune HT-MSG62) in DT's underside "
             "holds the door at its top latch corner; the hinges hold it at its closed position; the 180 deg magnetic "
             "seal pulls edge to edge in the glass plane, so the fixed pane's free edge carries no closing load.",
@@ -217,9 +217,9 @@ SPECS = {
             "Brush seal 368009 (D-154) on the kick strip's hinge end, the same pile and tape 13.0 overall on the 11 mm "
             "slot to BASE's FL2 end plate (X -972), from the floor to Z 105, open over the drop seal's cavity end so its "
             "release button reaches the plate; fitted on site as 368008.",
-            "Pull pair 368103 (Häfele 903.10.390 with fixing set 909.00.900; HOLD: US supply, length, projection and "
-            "the laminate are quote questions) centred %.1f above the floor, its bar %.1f to %.1f, inside the US band "
-            "865 to 1220 (PM ruling 2026-11-01)." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
+            "Pull pair 368103: Häfele 903.10.390 with fixing set 909.00.900 (PM ruling 2026-11-01), centred %.1f above "
+            "the floor, its bar %.1f to %.1f, inside the US band 865 to 1220. US supply, overall length, projection "
+            "and the laminate are questions in the owner's quote request; no holes in the glass until they are answered." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
             "Mass of the unit as it hangs: %.2f kg (calculation; parts list)." % bom_mass("360001"),
             "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the room floor (D-132)." % v["kick_zb"],
         ],

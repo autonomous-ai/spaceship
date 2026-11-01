@@ -474,21 +474,23 @@ BOM_ROWS = [
      "its catch 368007 sits in DT's underside; no latch on the glass; on the 8.76 laminate with the shim %s behind "
      "its liner on the pod side (8.76 + 1.2 = 9.96 in its 10 mm slot)" % SHIM_PN),
     (SHIM_PN, SHIM_NAME, SHIM_VN, 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
-     "stainless steel EN 10088-2 1.4301 sheet 1.2 mm, finish: 2B, deburred, sharp edges broken", "cad",
+     "stainless steel EN 10088-2 1.4301 sheet 1.2 mm, finish: mill finish 2B, deburred, sharp edges broken", "cad",
      "calculation (CAD, 7900 kg/m3)", "DRAFT", "PM ruling 2026-11-01 (sourcing of 368102: our own part, not a HOLD)",
      "DXF " + DXF_SHIM_REL.split("/")[-1] + "; 60 x 19 x 1.2; it slides in behind the strike's CR liner on the pod "
-     "side, so the glass sits on rubber, never on steel; tolerance 60 and 19 +/-0.2, 1.2 +/-0.05 (PROPOSED)"),
+     "side, so the glass sits on rubber, never on steel; general tolerance ISO 2768-m (D-89 part 4), with 60 and 19 "
+     "+/-0.2 and 1.2 +/-0.05 (PROPOSED)"),
     ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)", 1,
      "bought, HOLD", "magnetic 180 deg glass-to-glass seal, door half; product not named", 0.15, "assumption",
      "HOLD: a question in the owner's quote request: no published pair fits the 8.76 laminate with a 4 mm edge gap "
      "(Häfele, FHC or REHAU; sourcing, PM ruling 2026-11-01)", "PM ruling 2026-10-31",
      "pairs with 368003 on the fixed pane; from Z 105, as 368003 (Mechanical Checker's seal line)"),
-    ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD",
+    ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought",
      "Häfele 903.10.390 back-to-back pull pair, grade 316 satin stainless, Ø19, 300 centres, M8, with the glass "
      "fixing set 909.00.900 (nylon washers, M8 bolts, glass 8 to 18 thick, Ø13 holes) (PM ruling 2026-11-01)", 0.8,
      "assumption (D-56)",
-     "HOLD: questions in the owner's quote request: US supply, the overall length (355 at most) and projection (70 at "
-     "most), and the laminated glass", "hardware selection C2; sourcing, PM ruling 2026-11-01",
+     "source (product kept, PM ruling 2026-11-01); US supply, the overall length (355 at most), the projection (70 at "
+     "most) and the laminated glass: questions in the owner's quote request", "hardware selection C2; sourcing, PM "
+     "ruling 2026-11-01",
      "reserved space as designed; no holes in the glass until the answers are in"),
     ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH", "Chổi chặn khe đầu thanh chắn chân cửa", 1,
      "bought (the pile with its tape), fitted on site",
