@@ -39,12 +39,18 @@ import fitz  # PyMuPDF
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import drawing_specs as S  # noqa: E402
+sys.path.insert(0, os.path.normpath(os.path.join(HERE, "..", "..", "..", "tools", "fusion")))
+import pdf_title_block as ptb  # noqa: E402  (the title block's fields, as the finish step writes them)
 
 MM = 25.4 / 72
 SYMBOL = "PROJECTION SYMBOL - FIRST ANGLE"
 TITLE_LABELS = {"Dept.", "Technical reference", "Created by", "Approved by", "Document type",
                 "Document status", "Title", "DWG No.", "Rev.", "Date of issue", "Sheet"}
-NAMES = re.compile(r"duy|huynh|uiv@|gmail", re.I)
+# The maker is Autonomous and nobody else (D-140; the repo is public, so no person's name or address is ever written here,
+# not even as a search pattern): the PDF's author and the title block's Created by read exactly Autonomous, and the
+# fields that carry nothing stay empty. Names to reject can come from the environment only (never committed).
+REJECT_ENV = "DRAWING_REJECT_NAMES"
+EMPTY_FIELDS = ("Dept.", "Technical reference", "Approved by", "Document type")
 VIEW_LINE = re.compile(r"view (\w+)\s+extent \(([-\d.]+), ([-\d.]+), ([-\d.]+), ([-\d.]+)\)")
 
 
@@ -266,6 +272,49 @@ def size_problems(spans, sp, width, boxes=None):
             if got.get(v, 0) != 1]
 
 
+def _field_words(page, label):
+    """The words on a title block field's value line: under its label, left of the next cell's line."""
+    hits = ptb.label_hits(page, label)
+    if not hits:
+        return None
+    lab = hits[0]
+    xs = [it[1].x for d in page.get_drawings() for it in d["items"] if it[0] == "l"
+          and abs(it[1].x - it[2].x) < 0.5 and lab.x0 + 20 < it[1].x < lab.x0 + 220
+          and min(it[1].y, it[2].y) < lab.y0 and max(it[1].y, it[2].y) > lab.y1]
+    right = min(xs) if xs else lab.x0 + 165.0
+    return [w[4] for w in page.get_text("words") if lab.x0 - 1 <= w[0] and w[2] <= right and w[1] > lab.y0 + 1
+            and ptb.CREATED_BAND[0] <= w[3] - lab.y1 <= ptb.CREATED_BAND[1]]
+
+
+def maker_problems(page, doc):
+    """The drawing names Autonomous as its maker and nobody else (D-140): the PDF's author is exactly Autonomous, the
+    title block's Created by reads exactly Autonomous (its date beside it), and the fields that carry nothing stay
+    empty. With DRAWING_REJECT_NAMES set (a pattern kept outside the repo), its names are rejected anywhere too."""
+    bad = []
+    author = (doc.metadata or {}).get("author") or ""
+    if author != ptb.CREATOR:
+        bad.append("the PDF's author is %r, not %r" % (author, ptb.CREATOR))
+    cb = ptb.created_by(page)
+    if cb is None:
+        bad.append("no Created by field in the title block")
+    else:
+        words = " ".join(w[4] for w in cb[1])
+        if words != ptb.CREATOR:
+            bad.append("Created by reads %r, not %r" % (words, ptb.CREATOR))
+    for label in EMPTY_FIELDS:
+        words = _field_words(page, label)
+        if words:
+            bad.append("the title block's %s field holds %r; it stays empty" % (label, " ".join(words)))
+    pat = os.environ.get(REJECT_ENV, "").strip()
+    if pat:
+        rx = re.compile(pat, re.I)
+        if rx.search(page.get_text()):
+            bad.append("a rejected name in the sheet's text (%s)" % REJECT_ENV)
+        if any(v and rx.search(str(v)) for v in (doc.metadata or {}).values()):
+            bad.append("a rejected name in the PDF's metadata (%s)" % REJECT_ENV)
+    return bad
+
+
 def text_problems(page, doc, boxes=None):
     """Letter heights and names over the whole sheet; a dimension value printed twice is a warning (outside the
     notes and title data boxes, whose part number and sizes are words, not dimensions)."""
@@ -286,11 +335,7 @@ def text_problems(page, doc, boxes=None):
         least = 1.8 if t in TITLE_LABELS else 2.5
         if size < least - 0.02:
             bad.append("text %r is %.2f mm (at least %.1f)" % (t, size, least))
-        if NAMES.search(t):
-            bad.append("an account name in the text: %r" % t)
-    for k, v in (doc.metadata or {}).items():
-        if v and NAMES.search(str(v)):
-            bad.append("an account name in the metadata (%s)" % k)
+    bad += maker_problems(page, doc)
     nums = Counter(t for t, size in dims if size > 4.0 and re.fullmatch(r"[Ø]?\d+(\.\d+)?", t))
     warn += ["dimension value %s is printed %d times: two features, or one size given twice?" % (t, n)
              for t, n in sorted(nums.items()) if n > 1]

@@ -351,5 +351,47 @@ class Supersede(unittest.TestCase):
         self.assertNotIn("deleteMe", src)
 
 
+
+class Maker(unittest.TestCase):
+    """D-140: the maker is Autonomous and nobody else, checked exactly (the repo is public: no person's name is
+    written in it, not even as a pattern; extra names to reject come from the environment only)."""
+
+    def page(self, author, created, approved=""):
+        doc = fitz.open()
+        pg = doc.new_page(width=842, height=595)
+        pg.insert_text((600, 500), "Created by", fontsize=6)
+        pg.insert_text((600, 515), created, fontsize=10)
+        pg.insert_text((700, 500), "Approved by", fontsize=6)
+        if approved:
+            pg.insert_text((700, 515), approved, fontsize=10)
+        doc.set_metadata({"author": author})
+        return doc, pg
+
+    def test_autonomous_passes(self):
+        doc, pg = self.page("Autonomous", "Autonomous")
+        self.assertEqual(C.maker_problems(pg, doc), [])
+
+    def test_other_maker_fails(self):
+        doc, pg = self.page("Someone Else", "Someone Else", approved="Someone")
+        found = " | ".join(C.maker_problems(pg, doc))
+        self.assertIn("author", found)
+        self.assertIn("Created by reads", found)
+        self.assertIn("Approved by field", found)
+
+    def test_names_only_from_the_environment(self):
+        src = open(os.path.join(HERE, "check_drawing_pdf.py"), encoding="utf-8").read()
+        self.assertNotIn("NAMES = re.compile", src)
+        doc, pg = self.page("Autonomous", "Autonomous")
+        old = os.environ.get(C.REJECT_ENV)
+        os.environ[C.REJECT_ENV] = "autonom"
+        try:
+            self.assertTrue(any("rejected name" in b for b in C.maker_problems(pg, doc)))
+        finally:
+            if old is None:
+                del os.environ[C.REJECT_ENV]
+            else:
+                os.environ[C.REJECT_ENV] = old
+
+
 if __name__ == "__main__":
     unittest.main()
