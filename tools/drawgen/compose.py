@@ -896,7 +896,11 @@ def draw(part, spec, out_path, today=None):
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             ry = ry - h - 58
     elif place:
-        rx, ry = 20 + GAP_PL + 14, main_bottom - 34
+        # under every view's title too (the principal's title sits 28 under it, its mapping up to three lines), with
+        # room over the row for the sections' hole callouts
+        under_titles = min([vd_.box()[1] - (28.0 if vd_ is pvd else 10.0) - 4.2 - 3.4 * 2
+                            for vd_ in list(vds.values()) + secs])
+        rx, ry = 20 + GAP_PL + 14, min(main_bottom - 34, under_titles - 12.0)
         right_limit = W - 10 - pl.table_w - 4 - 10
         for vd in place:
             w, h = vd.size()
@@ -1321,8 +1325,16 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 R = L - 2
                 sh.arc(S(far), R, lo, hi, W_THIN)
                 am = (lo + hi) / 2
-                sh.text(S(far)[0] + (R + 1.5) * math.cos(am), S(far)[1] + (R + 1.5) * math.sin(am),
-                        "%s°" % fmt(ang), 2.5, "left" if math.cos(am) >= 0 else "right", valign="mid")
+                # the value by the arc's middle, out along it until it touches no line (a narrow angle puts its own
+                # lines across a value written right at the arc)
+                ang_t = "%s°" % fmt(ang)
+                cands = []
+                for d_ in (1.5, 3.0, 5.0, 8.0, 12.0):
+                    px, py = S(far)[0] + (R + d_) * math.cos(am), S(far)[1] + (R + d_) * math.sin(am)
+                    cands += [(px, py, "left" if math.cos(am) >= 0 else "right"), (px, py, "center")]
+                pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
+                            cands[0])
+                sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
                 # true lengths along the two long faces, from the other (square) end
                 ve = vd.extent
                 other = ve[0] if abs(far[ax_k] - ve[0]) > abs(far[ax_k] - ve[2]) else ve[2]
@@ -1616,23 +1628,43 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
     tw = getattr(pl, "table_w", spec.get("table_w", TABLE_W))
     right_x0 = W - 10 - tw - 4
     y = H - 10 - 6
-    # ---- member balloons (frames): item numbers of the cut list on sheet 2
+    # ---- member balloons (frames): item numbers of the cut list on sheet 2. The usual place first; where its circle
+    # would touch a line or a text, or its leader cross a text, the next of: other offsets, the other side, other
+    # points along the member
     members = cut_list(part)
+    pb = pvd.box()
     for m in members:
         for b in m["bodies"]:
             e = project.extent(project.project(b.shape, P))
             horiz = (e[2] - e[0]) > (e[3] - e[1])
+            cands = []      # (anchor on the member, leader end, balloon centre)
             if horiz:
-                anchor = pvd.S((e[0] + 0.62 * (e[2] - e[0]), (e[1] + e[3]) / 2))
-                upper = anchor[1] > (pvd.box()[1] + pvd.box()[3]) / 2
-                off = (anchor[0] + 7, anchor[1] - 14 if upper else anchor[1] + 14)
+                for t in (0.62, 0.5, 0.75, 0.38, 0.85, 0.25):
+                    anchor = pvd.S((e[0] + t * (e[2] - e[0]), (e[1] + e[3]) / 2))
+                    sy = -1.0 if anchor[1] > (pb[1] + pb[3]) / 2 else 1.0
+                    for dy in (14.0, 18.0, 10.0):
+                        for sx in (1.0, -1.0):
+                            end = (anchor[0] + sx * 7.0, anchor[1] + sy * dy)
+                            cands.append((anchor, end, (end[0] + sx * 4.0, end[1])))
             else:
-                anchor = pvd.S(((e[0] + e[2]) / 2, e[1] + 0.55 * (e[3] - e[1])))
-                off = (anchor[0] + 10, anchor[1] + 7)
+                for t in (0.55, 0.45, 0.65, 0.35, 0.75, 0.25):
+                    anchor = pvd.S(((e[0] + e[2]) / 2, e[1] + t * (e[3] - e[1])))
+                    inner = 1.0 if anchor[0] < (pb[0] + pb[2]) / 2 else -1.0
+                    for sx in (1.0, -1.0) if inner > 0 else (1.0, -1.0):
+                        for dx in (10.0, 14.0, 18.0):
+                            for dy in (7.0, -7.0):
+                                end = (anchor[0] + sx * dx, anchor[1] + dy)
+                                cands.append((anchor, end, (end[0] + sx * 4.0, end[1])))
+
+            def free(c_):
+                anchor, end, cc = c_
+                circ = (cc[0] - 4.0, cc[1] - 4.0, cc[0] + 4.0, cc[1] + 4.0)
+                return sh.is_free(circ) and not any(sh._seg_box(anchor, end, b_, 0.3) for b_ in sh.boxes)
+            anchor, end, cc = next((c_ for c_ in cands if free(c_)), cands[0])
             sh.circle(anchor, 0.6, 0.18, fill=(0, 0, 0))
-            sh.line(anchor, off, 0.18)
-            sh.circle((off[0] + 4.0, off[1]), 4.0, 0.25)
-            sh.text(off[0] + 4.0, off[1], str(m["item"]), 3.5, "center", valign="mid", bold=True)
+            sh.line(anchor, end, 0.18)
+            sh.circle(cc, 4.0, 0.25)
+            sh.text(cc[0], cc[1], str(m["item"]), 3.5, "center", valign="mid", bold=True)
     sh.flush()
     # ---- hole tables, one per face
     cols = hole_cols(tw)
