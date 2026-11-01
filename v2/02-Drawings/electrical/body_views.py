@@ -5,12 +5,17 @@ finished PDF (body_drawing_text.py checks the printed circles the same way and p
 The body's design (the build, electrical_parts_cad.py): X along the width from the end that is datum B in the FRONT
 view, Y up from the bottom face (datum A), Z through the depth; the back face is datum C and the returns fold toward
 the open side, +Z when zs = +1 (the build prints "returns toward +Z"). The drawing is ISO first-angle (ISO 5456-2):
-the view from below sits above the FRONT, the view from above below it, the view from the left on its right and the
-view from the right on its left, so the back (C) is next to the FRONT in all four.
+the view from above below the FRONT, the view from the left on its right and the view from the right on its left, so
+the back (C) is next to the FRONT in all three. The bottom is view D, seen in the direction of arrow D (from below):
+Fusion's standard Bottom, which is the first-angle view from below turned 180 degrees (Reviewer 7's P1, #173), and
+the drawing API can't turn a view, project one or use a named view (it refuses any orientation value past the
+standard ones: probe of 2026-11-01). So D stands apart from the projected views, marked as turned.
 
 Each view below gives the direction it looks from (toward the viewer) and the model directions of the sheet's +x and
-+y, with the camera's right = looking direction x up. Fusion's standard Bottom orientation is this view from below
-turned 180 degrees (Reviewer 7, #173, 2026-11-01), which the check catches by its off-centre hole H04.
++y, with the camera's right = looking direction x up.
+
+Fusion's API lists a view's hidden circles too (the probe's Bottom gave H03, behind the bottom wall), while its PDF
+prints only the visible ones: the Fusion run allows a hidden hole's circle, the PDF check expects only the seen ones.
 
 Standard library only; the STEP is read with tools/checks/stepfile.py, loaded by its path.
 """
@@ -26,7 +31,8 @@ def views(zs):
     """{name: (toward, sheet x, sheet y)} as model unit vectors, for a body that opens toward zs * Z."""
     s = 1 if zs > 0 else -1
     return {"front": ((0, 0, s), (s, 0, 0), (0, 1, 0)),
-            "bottom": ((0, -1, 0), (s, 0, 0), (0, 0, s)),      # the view from below: the open side at the top
+            "bottom": ((0, -1, 0), (s, 0, 0), (0, 0, s)),      # the first-angle view from below: the open side on top
+            "d": ((0, -1, 0), (-s, 0, 0), (0, 0, -s)),         # view D, Fusion's Bottom: that view turned 180 degrees
             "top": ((0, 1, 0), (s, 0, 0), (0, 0, -s)),         # the view from above: the open side at the bottom
             "right": ((s, 0, 0), (0, 0, -s), (0, 1, 0)),       # from the right (+X side when zs = +1)
             "left": ((-s, 0, 0), (0, 0, s), (0, 1, 0))}
@@ -78,6 +84,12 @@ def opens_to(box):
     return 1 if abs(box[2]) < abs(box[5]) else -1
 
 
+def along(view, holes, zs):
+    """The holes whose axis runs along the view's looking direction, seen or behind a wall."""
+    toward = views(zs)[view][0]
+    return [h for h in holes if abs(abs(dot(h[1], toward)) - 1.0) < 1e-6]
+
+
 def seen(view, box, holes, zs, wall=3.0):
     """The holes a visible-edges view shows as circles: axis along its looking direction, in the outermost wall on
     the viewer's side (within `wall` mm of the box's face there; a hole in a wall further back is behind that wall
@@ -94,14 +106,17 @@ def on_sheet(view, box, point, extent, scale, zs):
             extent[1] + (dot(point, ay) - lowest(box, ay)) * scale)
 
 
-def expected(view, box, holes, extent, scale, zs):
-    """[(x, y, r)] sheet mm of the circles the view should show."""
-    return [on_sheet(view, box, c, extent, scale, zs) + (d / 2.0 * scale,) for c, _a, d in seen(view, box, holes, zs)]
+def expected(view, box, holes, extent, scale, zs, hidden=False):
+    """[(x, y, r)] sheet mm of the circles the view shows; with hidden, those of the holes behind a wall instead."""
+    pick = seen(view, box, holes, zs)
+    if hidden:
+        pick = [h for h in along(view, holes, zs) if h not in pick]
+    return [on_sheet(view, box, c, extent, scale, zs) + (d / 2.0 * scale,) for c, _a, d in pick]
 
 
-def compare(view, want, got, pos_tol=POS_TOL, size_tol=SIZE_TOL):
+def compare(view, want, got, may=(), pos_tol=POS_TOL, size_tol=SIZE_TOL):
     """Problems (strings) between the circles a view should show (`want`) and those it shows (`got`), both
-    [(x, y, r)] in sheet mm. Circles of no hole's size are left out of `got` by the caller only if it means to."""
+    [(x, y, r)] in sheet mm; a circle of `got` may also be one of `may` (a hidden hole's, which Fusion's API lists)."""
     probs, used = [], set()
     for x, y, r in want:
         best = None
@@ -119,11 +134,15 @@ def compare(view, want, got, pos_tol=POS_TOL, size_tol=SIZE_TOL):
         else:
             used.add(best[0])
     for i, (gx, gy, gr) in enumerate(got):
-        if i not in used:
-            probs.append("%s view: a circle of r %.2f at (%.2f, %.2f) that no STEP hole puts there" % (view, gr, gx, gy))
+        if i in used:
+            continue
+        if any(abs(gr - r) <= size_tol and ((gx - x) ** 2 + (gy - y) ** 2) ** 0.5 <= pos_tol for x, y, r in may):
+            continue
+        probs.append("%s view: a circle of r %.2f at (%.2f, %.2f) that no STEP hole puts there" % (view, gr, gx, gy))
     return probs
 
 
-def check_view(view, box, holes, extent, scale, zs, got):
-    """compare() for one view, against the STEP's holes."""
-    return compare(view, expected(view, box, holes, extent, scale, zs), got)
+def check_view(view, box, holes, extent, scale, zs, got, hidden_ok=False):
+    """compare() for one view, against the STEP's holes; hidden_ok lets a hidden hole's circle be there (the API)."""
+    may = expected(view, box, holes, extent, scale, zs, hidden=True) if hidden_ok else ()
+    return compare(view, expected(view, box, holes, extent, scale, zs), got, may)

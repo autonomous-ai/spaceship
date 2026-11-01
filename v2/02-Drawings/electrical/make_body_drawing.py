@@ -3,7 +3,7 @@ folded enclosure body (a folded part keeps its drawing, D-89), in one Fusion run
 
     python3 tools/fusion/start_drawing.py 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD \\
         711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG --sheet A2
-    python3 tools/fusion/run_script.py v2/02-Drawings/electrical/make_body_drawing.py --label "ELECTRICAL Engineer" \\
+    python3 tools/fusion/run_script.py v2/02-Drawings/electrical/make_body_drawing.py --label "ELECTRICAL" \\
         --doc 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG --save "views, dimensions, datums" --close
     python3 v2/02-Drawings/electrical/body_drawing_text.py --pdf \\
         v2/02-Drawings/electrical/.raw/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG.pdf \\
@@ -12,14 +12,15 @@ folded enclosure body (a folded part keeps its drawing, D-89), in one Fusion run
 The body's build set its design's Front (ViewCube) to the room side, +Y up (electrical_parts_cad.py, WALL's
 set_front method), so Fusion's standard views line up in ISO first-angle: TOP below the FRONT, the view from
 the LEFT on its right, the view from the RIGHT on its left; an iso at 1:5. Fusion's standard Bottom is the
-view from below turned 180 degrees (Reviewer 7's P1, #173: H04 printed 55 from the right and 18 from the
-front), so the view above the FRONT is made from the design's named view "711001 VIEW FROM BELOW"
-(body_named_view.py: looking up, the open side at the top, datum B on the left), passed as --arg below=N, the
-orientation value that picks it (found by the probe of 2026-11-01). The drawing API makes base views only and
-can't move them, so each centre is worked out from the part's size before the view is placed, and every view
-is measured against the size it should have and its holes against the STEP (body_views.py: each circle where
-the STEP's hole falls in that view, and no other): a view that doesn't match stops the run before any
-dimension is added (nothing wrong gets drawn). Dimensions attach to view geometry (WALL's helpers, copied);
+first-angle view from below turned 180 degrees (Reviewer 7's P1, #173: H04 printed 55 from the right and 18
+from the front), and the drawing API can't turn a view, project one or use the design's named view (the probe
+of 2026-11-01 got "invalid argument value" for every orientation value past the standard ones). So the bottom
+is view D, the reviewer's third choice: Fusion's Bottom, placed apart from the projected views (top right), and
+the finish step marks it "D (turned 180°)" with arrow D under the FRONT. The drawing API makes base views only
+and can't move them, so each centre is worked out from the part's size before the view is placed, and every
+view is measured against the size it should have and its holes against the STEP (body_views.py: each seen
+hole's circle where the STEP puts it in that view, and no other but a hidden hole's, which the API lists too):
+a view that doesn't match stops the run before any dimension is added (nothing wrong gets drawn). Dimensions attach to view geometry (WALL's helpers, copied);
 the H05-H08 pitch joins the holes' centres. Text can't go on a sheet through the API, so the data block,
 notes, hole table and hole tags are written into the exported PDF by body_drawing_text.py, which reads the
 views' outlines this run writes next to the raw PDF (.views.json).
@@ -56,11 +57,11 @@ TOL = 1.0                      # sheet mm: a placed view must be this close to i
 DATUM_LEAD = 4.0               # sheet mm from an edge to its datum box (the box is about 7 mm, beyond this point)
 PITCH_AT, WIDTH_AT = 7.0, 14.0  # sheet mm above the FRONT view: the H07-H08 pitch, then the width outside it
 STEP = "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step"
-NAMED_BELOW = "711001 VIEW FROM BELOW"
-# name, orientation, where (first-angle position against the FRONT); the view from below: the named view's value
+D_AT = (470.0, 345.0)          # sheet mm: view D, the bottom, apart from the projected views (top right)
+# name, orientation, where (first-angle position against the FRONT; D apart, marked as turned)
 VIEWS = [("front", "FrontViewOrientationType", "centre"),
          ("top", "TopViewOrientationType", "below"),
-         ("bottom", "below", "above"),
+         ("d", "BottomViewOrientationType", "apart"),
          ("left", "LeftViewOrientationType", "right"),
          ("right", "RightViewOrientationType", "left")]
 
@@ -85,12 +86,8 @@ def part_size():
 
 
 def orientation(code):
-    """A standard orientation by its name, or the view from below: the value given as --arg below=N."""
-    if code != "below":
-        return getattr(VO, code)
-    if "below" not in ARGS:
-        raise RuntimeError("--arg below=N is needed: the orientation value of the named view %s" % NAMED_BELOW)
-    return int(ARGS["below"])
+    """A standard orientation by its name."""
+    return getattr(VO, code)
 
 
 def expected(w, h, d):
@@ -99,7 +96,7 @@ def expected(w, h, d):
     W, H, D = w * SCALE, h * SCALE, d * SCALE
     return {"front": ((fx, fy), (W, H)),
             "top": ((fx, fy - H / 2 - GAP - D / 2), (W, D)),
-            "bottom": ((fx, fy + H / 2 + GAP + D / 2), (W, D)),
+            "d": (D_AT, (W, D)),
             "left": ((fx + W / 2 + GAP + D / 2, fy), (D, H)),
             "right": ((fx - W / 2 - GAP - D / 2, fy), (D, H))}
 
@@ -273,9 +270,10 @@ def check_holes(views):
     for name, _o, _w in VIEWS:
         got = [(x, y, r) for x, y, r, _c in circles_of(views[name])]
         want = BV.expected(name, box, holes, extent(views[name]), SCALE, zs)
+        may = BV.expected(name, box, holes, extent(views[name]), SCALE, zs, hidden=True)
         print("HOLES|%s|want %s|got %s" % (name, [tuple(round(v, 2) for v in c) for c in want],
                                            [tuple(round(v, 2) for v in c) for c in got]))
-        probs += BV.compare(name, want, got)
+        probs += BV.compare(name, want, got, may)
     if probs:
         raise RuntimeError("holes not where the STEP puts them: %s" % "; ".join(probs))
     print("holes: every view's circles where the STEP puts them (%d holes)" % len(holes))

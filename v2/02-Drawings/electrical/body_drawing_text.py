@@ -15,13 +15,15 @@ block, and the tags H01-H08, each beside its hole in the view that shows the hol
    the views' outlines next to the raw PDF, RAW.views.json); a turned or misplaced view stops it;
 2. stamps "Autonomous" under Created by, sets the PDF author and fills the title block (tools/fusion/
    pdf_clear_field.py, the shared finish step; D-140);
-3. writes the block, puts each tag where it crosses no line and no other text, and puts the two pitch dimensions
-   of H05-H08 in brackets: they are for reference, the table gives the positions (D-143: no position is
-   controlled twice);
+3. writes the block, puts each tag where it crosses no line and no other text, puts the two pitch dimensions
+   of H05-H08 in brackets (they are for reference, the table gives the positions; D-143: no position is
+   controlled twice), and marks view D: "D (turned 180°)" over it and arrow D under the FRONT, pointing up at the
+   bottom (Fusion's Bottom is the view from below turned 180 degrees, and the API can't turn it: Reviewer 7's P1);
 4. sets the creator to "Autonomous", keeps only the glyphs it uses of the font (the whole Arial Unicode made the
    sheet 15.3 MB; Reviewer 7, #173), saves, and re-reads the PDF: units, material, finish, tolerance, the table,
-   every tag beside its circle, centre marks on every hole, Autonomous in Created by, author and creator, no
-   maker line, and the drawing traps (tools/checks: letters, symbol, hidden lines, sizes printed twice).
+   every tag beside its circle, centre marks on every hole (Fusion's "Smart Centers" layer), view D's mark and
+   arrow, Autonomous in Created by, author and creator, no maker line, and the drawing traps (tools/checks:
+   letters, symbol, hidden lines, sizes printed twice).
 
 Letter sizes are capital heights (ISO 3098), as the reviewers measure them: 2.5 mm for every line, 3.5 mm for the
 headings. The font size is the capital height / 0.716, Arial's capital H measured by rendering it (716 px high at
@@ -58,6 +60,8 @@ ROW_H = 5.5                     # table row, mm: 2.5 mm letters with 1.5 mm abov
 # hole table columns: heading, width mm (the note takes the rest)
 COLUMNS = (("TAG", 10.0), ("FACE", 21.0), ("FROM B", 16.0), ("FROM A", 16.0), ("FROM C", 16.0), ("Ø THRU", 16.0),
            ("NOTE", None))
+MARKS = "Smart Centers"         # Fusion's PDF layer of centre marks and centre lines (probe of 2026-11-01)
+D_LABEL = "D (turned 180°)"     # over view D: Fusion's Bottom, the view from below turned 180 degrees
 TAG_GAP = 0.8                   # mm: a tag's whole text box (the font's ascent and descent) keeps this clear of
                                 # every line, circle and other text
 
@@ -185,6 +189,8 @@ def lines(date="2026-11-01"):
             ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data); the M4 "
              "clinch nut and its hole H05-H08 to confirm.", BODY_H, False),
             ("6. (236) and (238): the H05-H08 pitch, for reference; the hole table gives the positions.", BODY_H, False),
+            ("7. View D: the bottom, seen in the direction of arrow D (from below), drawn turned 180°: datum B is on its "
+             "right, C at its top.", BODY_H, False),
             ("", 1.5, False),
             ("HOLE TABLE (positions from the datums A, B, C)", HEAD_H, True)]
 
@@ -313,30 +319,34 @@ def write_block(page, rows, table, block=BLOCK):
 
 
 def geometry(page):
-    """(segments, circles, text boxes) on the page, sheet mm: segments (x0, y0, x1, y1), circles (cx, cy, r, layer)
-    from closed all-curve paths, text boxes (x0, y0, x1, y1, text)."""
+    """(segments, circles, text boxes) on the page, sheet mm: segments (x0, y0, x1, y1, layer), circles
+    (cx, cy, r, layer) from closed paths of 4 or more curves with a square box (a full turn: Fusion's bend-corner
+    arcs are single open curves), text boxes (x0, y0, x1, y1, text)."""
     sh = Sheet(page)
     segs, circles, texts = [], [], []
     for d in page.get_drawings():
         items = d["items"]
-        if items and all(it[0] == "c" for it in items) and len(items) >= 2:
+        layer = d.get("layer") or ""
+        if items and all(it[0] == "c" for it in items) and len(items) >= 4 and \
+                abs(items[0][1].x - items[-1][4].x) < 0.05 and abs(items[0][1].y - items[-1][4].y) < 0.05:
             x0, y0, x1, y1 = sh.rect_mm(d["rect"])
             w, h = x1 - x0, y1 - y0
             if w > 0 and abs(w - h) <= 0.02 * w + 0.02:
-                circles.append(((x0 + x1) / 2, (y0 + y1) / 2, (w + h) / 4, d.get("layer") or ""))
+                circles.append(((x0 + x1) / 2, (y0 + y1) / 2, (w + h) / 4, layer))
                 continue
         for it in items:
             if it[0] == "l":
-                segs.append(sh.mm(it[1]) + sh.mm(it[2]))
+                segs.append(sh.mm(it[1]) + sh.mm(it[2]) + (layer,))
             elif it[0] == "re":
                 x0, y0, x1, y1 = sh.rect_mm(it[1])
-                segs += [(x0, y0, x1, y0), (x1, y0, x1, y1), (x1, y1, x0, y1), (x0, y1, x0, y0)]
+                segs += [(x0, y0, x1, y0, layer), (x1, y0, x1, y1, layer), (x1, y1, x0, y1, layer),
+                         (x0, y1, x0, y0, layer)]
             elif it[0] == "qu":
                 q = [sh.mm(p) for p in (it[1].ul, it[1].ur, it[1].lr, it[1].ll)]
-                segs += [q[i] + q[(i + 1) % 4] for i in range(4)]
+                segs += [q[i] + q[(i + 1) % 4] + (layer,) for i in range(4)]
             elif it[0] == "c":
                 pts = [sh.mm(p) for p in it[1:5]]
-                segs += [pts[i] + pts[i + 1] for i in range(3)]       # the control polygon holds the curve
+                segs += [pts[i] + pts[i + 1] + (layer,) for i in range(3)]   # the control polygon holds the curve
     for blk in page.get_text("dict")["blocks"]:
         for ln in blk.get("lines", []):
             for sp in ln["spans"]:
@@ -348,7 +358,7 @@ def geometry(page):
 
 def _seg_hits_box(s, b):
     """Does segment s (x0, y0, x1, y1) touch box b (x0, y0, x1, y1)?"""
-    (ax, ay, bx, by), (x0, y0, x1, y1) = s, b
+    (ax, ay, bx, by), (x0, y0, x1, y1) = s[:4], b
     if max(ax, bx) < x0 or min(ax, bx) > x1 or max(ay, by) < y0 or min(ay, by) > y1:
         return False
     if x0 <= ax <= x1 and y0 <= ay <= y1:
@@ -398,9 +408,10 @@ def tag_spot(cx, cy, r, w, h, segs, circles, texts, keep_out, gap=TAG_GAP):
     return None
 
 
-def hole_circles(circles, layer="Visible"):
-    """The part's circles: those on Fusion's layer of visible edges."""
-    return [c for c in circles if c[3] == layer]
+def hole_circles(circles, layers=("Visible", "")):
+    """The part's circles: Fusion prints them on its "Visible" layer or on none (the probe's sheet had both), never
+    on a named sketch's or symbol's layer."""
+    return [c for c in circles if c[3] in layers]
 
 
 def view_problems(views_json, circles, box, holes, zs):
@@ -467,17 +478,51 @@ def reference_dims(page, values=PITCH):
     return len(hits)
 
 
-def centre_mark_problems(circles, segs, tol=0.15):
-    """Each hole circle needs a centre mark: a horizontal and a vertical line through its centre, reaching past it."""
+def centre_mark_problems(circles, segs, tol=0.15, layer=MARKS):
+    """Each hole circle needs its centre mark on Fusion's mark layer: a cross at its centre, and the centre lines
+    reaching past the circle on both sides, across and up (Fusion draws the cross and dashes beyond the circle)."""
     probs = []
+    marks = [s for s in segs if s[4] == layer]
     for x, y, r in circles:
-        hz = any(abs(s[1] - y) <= tol and abs(s[3] - y) <= tol and min(s[0], s[2]) <= x <= max(s[0], s[2])
-                 and abs(s[2] - s[0]) >= r for s in segs)
-        vt = any(abs(s[0] - x) <= tol and abs(s[2] - x) <= tol and min(s[1], s[3]) <= y <= max(s[1], s[3])
-                 and abs(s[3] - s[1]) >= r for s in segs)
-        if not (hz and vt):
+        hz = [s for s in marks if abs(s[1] - y) <= tol and abs(s[3] - y) <= tol]
+        vt = [s for s in marks if abs(s[0] - x) <= tol and abs(s[2] - x) <= tol]
+        cross = any(min(s[0], s[2]) <= x <= max(s[0], s[2]) for s in hz) and \
+            any(min(s[1], s[3]) <= y <= max(s[1], s[3]) for s in vt)
+        past = (min([min(s[0], s[2]) for s in hz] or [x]) < x - r and max([max(s[0], s[2]) for s in hz] or [x]) > x + r
+                and min([min(s[1], s[3]) for s in vt] or [y]) < y - r and max([max(s[1], s[3]) for s in vt] or [y]) > y + r)
+        if not (cross and past):
             probs.append("no centre mark on the circle r %.2f at (%.2f, %.2f)" % (r, x, y))
     return probs
+
+
+def view_d_marks(page, views_json, segs, texts):
+    """Arrow D under the FRONT, pointing up at the bottom, with its letter; "D (turned 180°)" over view D. Each
+    is placed where it touches no line and no text; returns their boxes (sheet mm) for the read-back."""
+    import fitz
+    sh = Sheet(page)
+    font = fitz.Font(fontfile=FONT)
+    size = font_size(HEAD_H)
+    asc, desc = font.ascender * size, -font.descender * size
+    fe, de = views_json["views"]["front"]["extent"], views_json["views"]["d"]["extent"]
+    x = (fe[0] + fe[2]) / 2
+    tail, tip = fe[1] - 15.0, fe[1] - 2.0
+    wd = font.text_length("D", fontsize=size)
+    arrow_box = (x - 1.0, tail, x + 1.8 + wd, tip)
+    lw = font.text_length(D_LABEL, fontsize=size)
+    lx, ly = (de[0] + de[2]) / 2 - lw / 2, de[3] + 3.0
+    label_box = (lx, ly - desc, lx + lw, ly + asc)
+    for what, box in (("arrow D", arrow_box), ("view D's mark", label_box)):
+        grown = (box[0] - TAG_GAP, box[1] - TAG_GAP, box[2] + TAG_GAP, box[3] + TAG_GAP)
+        hits = [s for s in segs if _seg_hits_box(s, grown)] + [t for t in texts if _boxes_touch(grown, t[:4])]
+        if hits:
+            raise SystemExit("%s would touch %s" % (what, hits[0]))
+    shaft_top = tip - 3.0                                    # the head: 3 long, 15 degrees each side (ISO 128)
+    sh.line(x, tail, x, shaft_top, width=0.35)
+    page.draw_polyline([sh.pt(x, tip), sh.pt(x - 0.8, shaft_top), sh.pt(x + 0.8, shaft_top), sh.pt(x, tip)],
+                       color=(0, 0, 0), fill=(0, 0, 0), width=0.1 * PT * sh.k, closePath=True)
+    sh.text(x + 1.8, tail + 1.0, "D", HEAD_H)
+    sh.text(lx, ly, D_LABEL, HEAD_H)
+    return arrow_box, label_box
 
 
 def clear_field(raw, out):
@@ -510,6 +555,8 @@ def finish_pdf(raw, out, views_path=None, step=STEP):
     page = doc[0]
     reference_dims(page)
     write_block(page, lines(), table_cells(rows))
+    segs, circles, texts = geometry(page)
+    view_d_marks(page, views_json, segs, texts)
     # the tags, after everything else, so they keep clear of it all
     segs, circles, texts = geometry(page)
     font = fitz.Font(fontfile=FONT)
@@ -550,6 +597,12 @@ def read_back(path, views_json, box, holes, zs, rows):
     vp, found = view_problems(views_json, parts, box, holes, zs)
     probs += vp
     probs += centre_mark_problems([c for _v, c in found], segs)
+    fe, de = views_json["views"]["front"]["extent"], views_json["views"]["d"]["extent"]
+    lab = [t for t in texts if t[4] == D_LABEL and de[0] <= (t[0] + t[2]) / 2 <= de[2] and 0 < t[1] - de[3] < 8]
+    letter = [t for t in texts if t[4] == "D" and fe[0] < t[0] < fe[2] and fe[1] - 20 < t[1] < fe[1]]
+    if len(lab) != 1 or len(letter) != 1:
+        probs.append("view D's mark over it (%d) or arrow D's letter under the FRONT (%d) is not there once" % (
+            len(lab), len(letter)))
     words = [t[4] for t in texts]
     for cells in table_cells(rows)[1:]:
         if not all(c in words for c in cells[:2] + cells[5:6]):

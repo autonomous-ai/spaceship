@@ -3,16 +3,23 @@ deleted (a deleted cloud file can't come back). Promoting an old version is not 
 2026-11-01 got an empty file that wouldn't open (PM warning).
 
     run inside a lock hold, right before start_drawing.py (the PR notes give the whole sequence):
-    python3 tools/fusion/run_script.py v2/02-Drawings/electrical/retire_dwg.py --label "ELECTRICAL Engineer"
+    python3 tools/fusion/run_script.py v2/02-Drawings/electrical/retire_dwg.py --label "ELECTRICAL" \
+        --arg retired=_SUPERSEDED-2026-11-01-2
 
-It opens no document. It refuses while the drawing is open in Fusion, or when the new name is taken; after the
-rename it reads the folder again and checks that the old name is free and the new one is there.
+The new name is the drawing's name plus --arg retired (D-141: NAME_SUPERSEDED-<date>; a second retirement on the
+same day adds -2, since the first took the plain name). It opens no document. It refuses while the drawing is
+open in Fusion, or when the new name is taken; after the rename it reads the folder again and checks that the
+old name is free and the new one is there. The rename goes into the build record.
 """
 
 import adsk.core
 
 DWG = "711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG"
-RETIRED = DWG + "_SUPERSEDED-2026-11-01"
+ARGS = globals().get("SCRIPT_ARGS", {})
+SUFFIX = ARGS.get("retired", "_SUPERSEDED-2026-11-01")
+if not SUFFIX.startswith("_SUPERSEDED-20"):
+    raise RuntimeError("--arg retired must read _SUPERSEDED-<date>[-n] (D-141), not %r" % SUFFIX)
+RETIRED = DWG + SUFFIX
 PROJECT, FOLDER = "Default Project", "FocusPod v2"
 
 
