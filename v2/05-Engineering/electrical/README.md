@@ -153,20 +153,21 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 
 | ID | Item | Question or check | Release condition |
 |---|---|---|---|
-| H-ELE-01 | Bushings and edge strip: Heyco 2836 in Ø19.1 holes through 0.5 mm steel (6), DR's back plate (G-DR, 1.0–2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT); an edge strip on the two slots | The 2836 is listed for panels up to 1.6 mm with no minimum given; G-DR and G-SOFFIT need a thicker-panel bushing if the plate is over 1.6 mm | Sample fit in a cassette return; FRONT and CEILING name their plate thickness |
+| H-ELE-01 | Bushings and edge strip | Named: Heyco 2836N thin panel bushing (locks in 0.5 to 1.6 mm sheet; the plain 2836 locks only at 1.6 mm), Heyco 12431 grommet channel (0.5 to 3.2 mm). Still open: DR's back plate (G-DR, 1.0-2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT) over 1.6 mm need a thicker-panel bushing | Sample fit in a cassette return; FRONT and CEILING give the plate thicknesses |
 | H-ELE-02 | 12 V supplies and the dimmable driver | Data confirmed; Class 2 marking checked for the US phase | Datasheets on file (parts list) |
 | H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | Panel-thickness range and depth behind the panel | Datasheet check; sample in a B2 skin |
-| H-ELE-04 | The US outlets' exact parts (D-133): the GFCI receptacle and the keystone jacks | Their drawings set the plate's openings (decorator 33.6 × 67, keystone 14.9 × 19.4) | The picked parts' drawings (no supplier contact) |
+| H-ELE-04 | The US outlets' parts (D-133) | Named: Pass & Seymour 1597TRW GFCI (1595TRW is no longer listed; the same decorator body) and Panduit NK688MWH keystone jacks. Their sheets give no panel cut-out: prove the decorator 33.6 x 67 and keystone 14.9 x 19.4 openings in the 1.5 mm plate | A sample of the front plate with both parts fitted |
 | H-ELE-05 | The hub's fan outputs | PWM or 0–10 V; current; connector | ISS-060 data |
 | H-ELE-06 | Inlet temperature sensor | Type set by the hub's sensor port; accuracy for the 4 K limit | ISS-060 data |
 | H-ELE-07 | Fan connectors at the fan boxes; the fans' 0 % PWM behaviour | Y-cable and harness end housing | Fan sample (ISS-077) |
 | H-ELE-08 | The hub's supply voltage | 12 V direct, or a 12-to-5 V converter in the hub zone | ISS-060 data |
-| H-ELE-09 | LED strips, call light bar, the shelf channel | Final strip by lumen check; the shelf's profile is INTERIOR's | Light-level test on the prototype (ISS-004) |
-| H-ELE-10 | Cable clips on 0.5 mm galvanised steel | Adhesive mount or clip, with its hold on the tray | Pull test on a cassette tray |
-| H-ELE-11 | ATO blade fuse holders (unit and column) | Part to name | Datasheet on file |
-| H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Part to name | Datasheet on file |
+| H-ELE-09 | LED strips, call light bar, the shelf's profile | Named: Häfele 833.74.176 (2168) and 833.74.156 (2165), 3000 K; feed lead 833.74.695; call light profile 2191 833.72.982 with end caps 833.72.853. Still open: the shelf's profile and satin cover (718101-718104): no maker sheet read gives a 23 x 12.5 surface profile with a satin cover of 86 % or more (D-127) | A profile family with its sheet, or the PM's call on a taller one (the look); light-level test on the prototype (ISS-004) |
+| H-ELE-10 | Cable clips on 0.5 mm galvanised steel | Named: Heyco 3904 (PMT 150) push-mount tie: it needs a Ø6.4 mm hole at each clip point in the cassette trays | WALL and CEILING add the holes to their trays (an interface); pull test on a cassette tray |
+| H-ELE-11 | ATO blade fuse holders (unit and column) | Named: Littelfuse FHAC0001ZXJ, with cover, 16 AWG leads, 20 A at 32 V DC; fuses Littelfuse 0287 ATOF 5, 2 and 1 A | Closed: datasheets on file |
+| H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Named: Panduit SP688E-C plugs, CC688IW couplers (two per channel at most, X1 and X2), NK688MWH jacks, Belden 3612 cable | Closed: datasheets on file (the plate cut-out under H-ELE-04) |
 | H-ELE-13 | Current sense module on PS2's output | Part to name, output to suit the hub's input | ISS-060 data |
-| H-ELE-14 | 3-channel 12 V PWM light controller, RS-485 | Part to name: at least 3 A per channel, common +12 V, holds or goes dark on a lost link | Datasheet on file; bench test with the strips |
+| H-ELE-14 | 3-channel 12 V PWM light controller | Named: ENTTEC CVC4 (73926), 4 channels at 5 A, common VCC, DMX512 over RS-485; holds the last frame when the data stops. Its fit in the unit (88 x 117.5 x 31.5) to check in the layout | Bench test with the strips |
+| H-ELE-15 | The body's holes for the named parts | PEM CLA-M4-1 clinch nuts need Ø5.94 +0.08 holes (H05-H08 are Ø5.4); the PEM FHA-M5-12 earth stud a Ø5.0 +0.08 hole (not cut yet); the NMLT-11 conduit connector a 1/2 in trade-size knockout (7/8 in, 22.2 mm, by common practice; H04 is Ø25) | The body's next rebuild and its drawing (ELECTRICAL follow-up) |
 
 ## 11. Tests (planned, not run: PLANNED / NOT TESTED)
 

@@ -32,7 +32,8 @@ COMMON_NOTES = [
     "sheet-metal parts ISO 2768-m (their DXF or drawing rules). Status of every number: parts list and harness list.",
     "Every harness segment is tested in the factory before it ships (D-87): continuity, polarity, no shorts, latch pull,",
     "label with its ID. Cables clip to the cassette tray only (D-26). Supply side = receptacle (female contacts).",
-    "Bought parts are on HOLD: no order, no supplier contact. From the electrical model and parts data.",
+    "Bought parts are named from their datasheets (those still on HOLD give their reason in the parts list 710000); "
+    "no order, no supplier contact. From the electrical model and parts data.",
 ]
 
 
@@ -53,15 +54,28 @@ def plug(s, x, y, color=INK, k=2.0):
     s.line(x + 0.4 * k, y - 1.0 * k, x + 0.4 * k, y + 1.0 * k, color, 0.5)
 
 
-def parts_table(s, pn, x, y, w, bottom):
-    """The assembly's parts list lines, every value in full (cells wrap)."""
+def product(pn):
+    """The named product's maker and number for a callout, or HOLD."""
+    return EP.PRODUCTS[pn][0] if pn in EP.PRODUCTS else "HOLD"
+
+
+def sheet_status(status):
+    """A bought line held with its reason shows HOLD here and keeps the reason in the parts list (710000)."""
+    if status.startswith("HOLD (") and status != EP.HOLD_BUY:
+        return "HOLD: the reason is in the parts list 710000"
+    return status
+
+
+def parts_table(s, pn, x, y, w, bottom, shares=(0.27, 0.27, 0.46)):
+    """The assembly's parts list lines, every value in full (cells wrap); shares: the name, material and status
+    columns' parts of the width the fixed columns leave."""
     s.text(x, y, "PARTS OF %s" % pn, K.TITLE, INK, True)
-    named = [("ITEM", 12), ("PART NO.", 20), ("NAME", 0.27), ("QTY", 14), ("UNIT", 12), ("MATERIAL / FINISH", 0.27),
-             ("STATUS", 0.46)]
+    named = [("ITEM", 12), ("PART NO.", 20), ("NAME", shares[0]), ("QTY", 14), ("UNIT", 12),
+             ("MATERIAL / FINISH", shares[1]), ("STATUS", shares[2])]
     fixed = sum(c for _n, c in named if c > 1)
     cols = [(n, c if c > 1 else (w - fixed) * c) for n, c in named]
     rows = [[str(i), p["part_number"], p["name"], str(p["qty_per_parent"]), EP.unit_of(k),
-             ", ".join(t for t in (p["material"], p["finish"]) if t) or "as supplied", p["status"]]
+             ", ".join(t for t in (p["material"], p["finish"]) if t) or "as supplied", sheet_status(p["status"])]
             for i, (k, p) in enumerate(children(pn), start=1)]
     y, left = s.table(x, y + 2.0, cols, rows, bottom)
     if left:
@@ -203,11 +217,14 @@ def sheet_power_unit(doc, v):
     tag(s, X(p["din_x"]), Z(p["din_zc"]), "3", MAINS)
     lx = X(W) + 10.0
     y = 42.0
-    for t, col in (("1  GFCI receptacle, tamper-resistant duplex NEMA 5-15R, UL 943 Class A (718007, HOLD)", MAINS),
+    for t, col in (("1  GFCI receptacle, tamper-resistant duplex NEMA 5-15R, UL 943 Class A (718007, %s)" % product("718007"),
+                    MAINS),
                    ("    in a decorator opening %.1f x %.0f, two 6-32 plate screws %.1f apart (718054)" % (
                        p["gfci_w"], p["gfci_h"], p["gfci_sp"]), INK),
-                   ("2  LAN keystone jacks, Cat6, snapped into %.1f x %.1f openings (718040, HOLD)" % (p["ks_w"], p["ks_h"]), SIG),
-                   ("3  breaker 1P 15 A, UL 489, through its %.0f x %.0f window (718003, HOLD)" % (p["din_w"], p["din_h"]), MAINS),
+                   ("2  LAN keystone jacks, Cat6, snapped into %.1f x %.1f openings (718040, %s)" % (
+                       p["ks_w"], p["ks_h"], product("718040")), SIG),
+                   ("3  breaker 1P 15 A, UL 489, through its %.0f x %.0f window (718003, %s)" % (
+                       p["din_w"], p["din_h"], product("718003")), MAINS),
                    ("US 120 V 60 Hz, UL-listed parts (D-133)", INK)):
         s.text(lx, y, t, K.BODY, col)
         y += s.line_pitch(K.BODY)
@@ -226,7 +243,7 @@ def sheet_power_unit(doc, v):
         s.label(sx + d * 2 + 0.6, sy + 65, lab, K.BODY, GREY, around=down)
     s.para(sx, sy + 108, "Unit fixed to B2's frame (fixing HOLD, WALL IF-12); cassette cut-out 4 mm clear all round "
            "(floating lining).", 230.0)
-    parts_table(s, pn, 24, 160, 546, bottom)
+    parts_table(s, pn, 24, 160, 546, bottom, shares=(0.44, 0.30, 0.26))   # the bought names carry maker and number
     s.first_angle_symbol(s.W - 10 - K.TB_W + 2, bottom - 14)   # a face view and a section (Reviewer 7)
     return s
 
@@ -299,12 +316,15 @@ def harness_material(s, rows, x, y, w, bottom):
         raise ValueError("the material list needs another sheet")
     y += 2.0 + K.BODY * K.CAP
     if holes:
-        y = s.para(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836 / edge strip, parts list 718041, "
-                   "718042)." % ", ".join(sorted(holes)), w)
+        y = s.para(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836N / edge strip Heyco 12431, parts "
+                   "list 718041, 718042)." % ", ".join(sorted(holes)), w)
     if any("Mini-Fit" in h["end_a"] + h["end_b"] for h in rows):
-        y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way" +
-                   ("; the kit feeds' 16 AWG: female 39-00-0078 (718056) and male (718057)." if any(
-                       "16 AWG" in h["cable"] for h in rows) else "."), w)
+        cables_here = " ".join(h["cable"] for h in rows)
+        y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037) on 18 AWG, one per "
+                   "way" + ("; the kit feeds' 16 AWG: female 39-00-0078 (718056) and male 39-00-0082 (718057)"
+                            if "16 AWG" in cables_here else "") +
+                   ("; 24 AWG cores: female 39-00-0047 (718077) and male 39-00-0049 (718078)" if "24 AWG" in cables_here
+                    else "") + ".", w)
     return y
 
 

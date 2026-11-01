@@ -110,7 +110,7 @@ part("w_draw", "710031", "ELECTRICAL - DRAW WIRE - CEILING ROUTE", "Điện - d�
 part("hubzone", "710041", "ELECTRICAL - HUB AND CONTROLS ZONE", "Điện - vùng cảm biến và nút bấm", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="fitted in the air column's 180 x 180 zone (D-61, D-70)")
 part("cord", "719001", "ELECTRICAL - CORD SET - 120 V US - 3 M (KIT)", "Điện - bộ dây nguồn 120 V (Mỹ) - 3 m", "HS", "710000", 1,
-     "", "", None, "calculation (sum of its parts)", process="ships loose in the installation kit; US 120 V 60 Hz, 15 A (D-133): a NEMA 5-15P plug, SJT 14/3 cord and the powerCON TRUE1 cord connector, UL listed as a set (UL 817, HOLD)")
+     "", "", None, "calculation (sum of its parts)", process="ships loose in the installation kit; US 120 V 60 Hz, 15 A (D-133): a NEMA 5-15P plug, SJOOW 14/3 cord and the powerCON TRUE1 cord connector, UL listed as a set (UL 817, HOLD)")
 
 
 # ------------------------------------------------------------------ harness list
@@ -514,24 +514,26 @@ for key, pn, name, vi, parent, qty, sku, mass, note in (
         ("rec2", "718030", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0", "Điện - giắc cái 2 chân", "710000", 1,
          "39-01-2025", 0.0015, "supply side of X6, the call light drop"),
         ("plug2", "718031", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0", "Điện - giắc đực 2 chân", "710000", 1,
-         "39-01-2026", 0.0015, "load side of X6"),
+         "39-01-3029", 0.0015, "load side of X6"),
         ("rec6", "718045", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0", "Điện - giắc cái 6 chân", "710000", 3,
          "39-01-2065", 0.0035, "the light feed at X1 (unit top), X4 (B2/B4) and X5 (shelf)"),
         ("plug6", "718046", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0", "Điện - giắc đực 6 chân", "710000", 3,
-         "39-01-2066", 0.0035, "the same joints"),
+         "39-01-3069", 0.0035, "the same joints"),
         ("rec4", "718032", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0", "Điện - giắc cái 4 chân", "710000", 3,
          "39-01-2045", 0.0025, "the voice kit's feeds A and B at X1 and X2, and the kit outlet X7 (16 AWG terminals 718056)"),
         ("plug4", "718033", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0", "Điện - giắc đực 4 chân", "710000", 3,
-         "39-01-2046", 0.0025, "X1, X2, and one empty housing as the kit outlet's cap"),
+         "39-01-3049", 0.0025, "X1, X2, and one empty housing as the kit outlet's cap"),
         ("rec10", "718034", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0", "Điện - giắc cái 10 chân", "710000", 3,
-         "39-01-2105 (unverified: the pattern of the 2, 4 and 6 way numbers)", 0.005,
+         "39-01-2105", 0.005,
          "air feed (2 + 2) and the hub link (6) in one housing at X1, X2, X3"),
         ("plug10", "718035", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0", "Điện - giắc đực 10 chân", "710000", 3,
-         "39-01-2106 (unverified: as above)", 0.005, "the same joints"),
-        ("term_f", "718036", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN", "Điện - chân giắc cái", "710000", 50,
-         "39-00-0039", 0.0003, "1 x 2 + 3 x 6 + 3 x 10 (the 4-way housings take 718056)"),
-        ("term_m", "718037", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN", "Điện - chân giắc đực", "710000", 50,
-         "39-00-0041", 0.0003, "1 x 2 + 3 x 6 + 3 x 10 (the 4-way housings take 718057)")):
+         "39-01-3109", 0.005, "the same joints"),
+        ("term_f", "718036", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN", "Điện - chân giắc cái", "710000", 32,
+         "39-00-0039", 0.0003, "1 x 2 + 3 x 6 + 3 x 4, the 18 AWG cores (the 4-way housings take 718056, the hub link's "
+         "24 AWG cores 718077)"),
+        ("term_m", "718037", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN", "Điện - chân giắc đực", "710000", 32,
+         "39-00-0041", 0.0003, "1 x 2 + 3 x 6 + 3 x 4, the 18 AWG cores (the 4-way housings take 718057, the hub link's "
+         "24 AWG cores 718078)")):
     part(key, pn, name, vi, "PI", parent, qty, "nylon UL94 V-0" if "term" not in key else "tin-plated brass", "", mass,
          "assumption", maker="Molex", sku=sku, status=HOLD_BUY, source=MOLEX,
          note=note + "; 18 AWG: 9 A (2 way), 8 A (4 and 6 way) per circuit, 600 V; UL E29179 (10 way: rating to confirm)")
@@ -551,6 +553,13 @@ part("term_f16", "718056", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TI
 part("term_m16", "718057", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN", "Điện - chân giắc đực 16 AWG", "PI",
      "710000", 8, "tin-plated brass", "", 0.0003, "assumption", maker="Molex", sku="5558 series, 16 AWG: part number to confirm",
      status=HOLD_BUY, source=MOLEX, note="2 x 4: the voice kit feeds' plugs at X1 and X2 (the cap housing has none)")
+part("term_f24", "718077", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 22-28 AWG TIN", "Điện - chân giắc cái 22-28 AWG", "PI",
+     "710000", 18, "tin-plated brass", "", 0.0003, "assumption", status=HOLD_BUY,
+     note="3 x 6: the hub link's 24 AWG cores in the 10-way receptacles at X1, X2, X3 (their 1.1 mm insulation is under "
+          "718036's 1.30 mm grip)")
+part("term_m24", "718078", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 22-28 AWG TIN", "Điện - chân giắc đực 22-28 AWG", "PI",
+     "710000", 18, "tin-plated brass", "", 0.0003, "assumption", status=HOLD_BUY,
+     note="3 x 6: the hub link's 24 AWG cores in the 10-way plugs at X1, X2, X3")
 
 # ---- protection where cables pass steel, clips, draw cord
 part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 9,
@@ -603,7 +612,7 @@ part("led_clip", "718104", "ELECTRICAL - LED PROFILE MOUNTING CLIP", "Điện - 
      note="3 on the 991 mm profile, about every 400 mm (assumption); the count follows the product's clip spacing (HOLD with the profile)")
 part("strip_call", "718051", "ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K", "Điện - LED dây đèn gọi video",
      "PI", "710024", 0.9, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.156 (3000 K: confirm)",
-     size="8 mm wide", status=HOLD_BUY, source=HAFELE, note="about 440 lm for the 0.9 m bar; qty in m")
+     size="8 mm wide", status=HOLD_BUY, source=HAFELE, note="about 420 lm for the 0.9 m bar (465 lm/m at 3000 K); qty in m")
 part("call_profile", "718052", "ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M", "Điện - thanh nhôm tán quang đèn gọi",
      "PI", "710024", 1, "aluminium + opal PMMA", "anodised, maker's standard (colour with INTERIOR)", 0.15, "assumption", maker="Häfele", sku="Loox5 profile, article HOLD (H-ELE-09)",
      status=HOLD_BUY, source=HAFELE, note="the maker recommends a diffuser profile for even light")
@@ -659,20 +668,446 @@ part("ycable", "718068", "ELECTRICAL - FAN Y-CABLE - 4-PIN PWM", "Điện - cáp
 # ---- cord set kit 719001 (ships loose; the US version changes only this, the inlet side and the socket)
 part("cord_conn", "718070", "ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP", "Điện - giắc dây nguồn", "PI", "719001", 1,
      "", "", 0.08, "assumption", maker="Neutrik", sku="mate of NAC3MPX-TOP, as selection E (NAC3F-TRUE1-S / NAC3FX-W-TOP): confirm",
-     status=HOLD_BUY, source=SEL, note="locking; UL 498 (as the inlet), for SJT 14/3 (its cable range to confirm)")
-part("cord_wire", "718071", "ELECTRICAL - CORD - SJT 14/3", "Điện - dây nguồn SJT 14/3", "PI", "719001", 3.0,
-     "PVC jacket, UL 62 type SJT, 300 V, 3 x 14 AWG", "", 0.13, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY,
+     status=HOLD_BUY, source=SEL, note="locking; UL 498 (as the inlet), for SJOOW 14/3 (cable OD 6-12 mm)")
+part("cord_wire", "718071", "ELECTRICAL - CORD - SJOOW 14/3", "Điện - dây nguồn SJOOW 14/3", "PI", "719001", 3.0,
+     "Carolprene (CPE) jacket, EPDM insulation, UL 62 type SJOOW, 300 V, 3 x 14 AWG", "black", 0.149,
+     "calculation (kg per m: 100 lb per 1000 ft, maker sheet)", sku="maker HOLD", status=HOLD_BUY,
      source="", note="3 m, 15 A (D-133); qty in m")
 part("plug_us", "718072", "ELECTRICAL - MAINS PLUG - NEMA 5-15P", "Điện - phích cắm NEMA 5-15P", "PI", "719001", 1, "", "", 0.06,
      "assumption", sku="15 A 125 V straight blade, industrial grade, UL 498; maker HOLD", status=HOLD_BUY, source="",
      note="D-133: US 120 V. The prototype is tested in Vietnam through a 220-to-110 V step-down transformer (the test set's, "
           "not a pod part)")
 
+# ---- lines the named products added (2026-11-01): the inlet's tab terminals, the conduit's connector, the call
+# light profile's end caps
+part("qd", "718074", "ELECTRICAL - FEMALE DISCONNECT - 0.250 IN - 16-14 AWG - INSULATED", "Điện - đầu cos cái 6,3 mm",
+     "PI", "710001", 3, "tin-plated brass, nylon insulation", "", 0.001, "assumption", status=HOLD_BUY,
+     note="the inlet NAC3MPX-TOP's three 1/4 in tabs (L, N, PE), on W01's 14 AWG")
+part("sleeve_fit", "718075", "ELECTRICAL - CONDUIT CONNECTOR - LFNC 1/2 IN - STRAIGHT", "Điện - đầu nối ống luồn dây 1/2 in",
+     "PI", "710001", 1, "nylon 6, as supplied", "as supplied", 0.01, "assumption", maker="Electri-Flex",
+     sku="NMLT-11 (UL and cUL E197675; 1/2 in trade-size knockout)", status=HOLD_BUY,
+     source="https://www.electriflex.com/wp-content/uploads/2016/07/Type-NMLT-NMSC-Nonmetallic-Type-B-Connectors-_-Electri-Flex-2.pdf",
+     note="the conduit 718017 into the unit's H04")
+part("call_caps", "718076", "ELECTRICAL - CALL LIGHT PROFILE END CAP (PAIR)", "Điện - nắp bịt thanh nhôm đèn gọi (cặp)",
+     "PI", "710024", 1, "plastic, silver", "as supplied", 0.004, "assumption", status=HOLD_BUY,
+     note="the 0.9 m call light bar's two ends")
+
 
 # D-89 part 4: flat sheet parts carry thickness and the general tolerance in their row
 P["pu_front"].update(thickness_mm="1.5", tolerance="ISO 2768-m; M4 holes true position Ø0.3; breaker window +0.5/0")
 P["hub_plate"].update(thickness_mm="1.5", tolerance="ISO 2768-m")
 P["pu_body"].update(thickness_mm="1.0", tolerance="ISO 2768-m (drawing 711001)")
+
+
+# ------------------------------------------------------------------ the bought products (named 2026-11-01)
+# Each bought line's product, named from its own datasheet or the maker's own page (the Lead's task of 2026-11-01:
+# US 120 V and UL listed on the mains side, D-133; Class 2 on the 12 V side, D-136; the light shelf plugs in, D-148).
+# The table sets the line's maker, part number (with the ratings and listing that matter), status and source, and adds
+# the maker and number to its name; a line that truly waits on a supplier's answer or another team's data stays HOLD
+# with its reason. Nothing is ordered and no supplier is contacted (guideline 4.3).
+NAMED_BUY = "source (datasheet); not ordered (guideline 4.3)"
+
+
+def held(reason):
+    return "HOLD (%s; no order, no supplier contact)" % reason
+
+
+PRODUCTS = {'718077': ('MOLEX 39-00-0047',
+            'Molex',
+            '39-00-0047: Mini-Fit female crimp terminal, 22-28 AWG, insulation 0.90-1.80 mm, tin-plated brass, bag',
+            'https://www.molex.com/en-us/products/part-detail/39000047 ; https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            '3 A per circuit at 24 AWG in a 7-10 way housing (PS-5556-001)'),
+ '718078': ('MOLEX 39-00-0049',
+            'Molex',
+            '39-00-0049: Mini-Fit male crimp terminal, 22-28 AWG, tin-plated brass, bag',
+            'https://www.molex.com/en-us/products/part-detail/39000049 ; https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            ''),
+ '718001': ('MEAN WELL LPV-60-12',
+            'Mean Well',
+            "LPV-60-12: 12 V 0-5 A, 60 W, 90-264 VAC; 'Class 2 power unit', UL1310, Class II",
+            'https://www.meanwellusa.com/upload/pdf/LPV-60/LPV-60-spec.pdf (rev 2026-09-07)',
+            'leads 600 mm: AC UL1015 18 AWG, DC UL1007 16 AWG (sheet)'),
+ '718002': ('ENTTEC CVC4 73926',
+            'ENTTEC',
+            '73926 (CVC4): 4-channel constant-voltage PWM LED dimmer, 12-24 V DC, 5 A per channel, common VCC, '
+            'DMX512 (RS-485) and RDM; 88 x 117.5 x 31.5 mm',
+            'https://cdn.enttec.com/pdf/assets/73926/73926_CVC4_DATASHEET.pdf',
+            "holds the last DMX frame when the data stops; channel 4 spare; its fit in the unit's controller space "
+            'to check in the layout'),
+ '718004': ('NEUTRIK NAC3MPX-TOP',
+            'Neutrik',
+            'NAC3MPX-TOP: UL 498 20 A 250 V AC (Recognized, file E343813); 1/4 in flat tabs',
+            'https://www.neutrik.com/en/product/nac3mpx-top',
+            'its 1/4 in tabs take the three disconnects 718074'),
+ '718005': ('NEUTRIK SCNAC-01',
+            'Neutrik',
+            'SCNAC-01: D-size sealing cover for NAC3MPX*, IP 65 closed',
+            'https://www.neutrik.com/en/product/scnac-01',
+            ''),
+ '718006': ('NEUTRIK NE8FDP',
+            'Neutrik',
+            'NE8FDP: etherCON CAT5e RJ45 feedthrough, D-size metal flange, panel up to 4 mm',
+            'https://www.neutrik.com/en/product/ne8fdp',
+            ''),
+ '718007': ('P&S 1597TRW',
+            'Pass & Seymour (Legrand)',
+            '1597TRW: radiant tamper-resistant 15 A 125 V self-test duplex GFCI, white; cULus listed E42190; 1.73 x '
+            '4.2 x 1.13 in',
+            'https://www.legrand.us/p/print/1597TRW.pdf (read 2026-11-01)',
+            "1595TRW is no longer listed (Legrand's search sends it to 1597TRW); the same 1.73 x 4.2 x 1.13 in body "
+            "and decorator face, so the front plate's opening stays"),
+ '718010': ('PHOENIX CONTACT NS 35/7,5 PERF 2000MM',
+            'Phoenix Contact',
+            '0843103: NS 35/7,5 PERF 2000MM, pack of 10, EN 60715 steel; one rail cut to 100 mm',
+            'https://www.phoenixcontact.com/pc/products/0843103 (sheet copy '
+            'https://docs.rs-online.com/6e9f/A700000016059116.pdf)',
+            ''),
+ '718011': ('LITTELFUSE FHAC0001ZXJ',
+            'Littelfuse',
+            'FHAC0001ZXJ: inline ATO fuse holder with cover, 16 AWG leads, 20 A at 32 V DC',
+            'Littelfuse catalog p.132 (copy https://static.chipdip.ru/lib/468/DOC012468626.pdf)',
+            ''),
+ '718012': ('LITTELFUSE 0287005.PXCN',
+            'Littelfuse',
+            '0287005.PXCN: ATOF 5 A 32 V DC, 1000 A interrupting; UL listed AU1410',
+            'Littelfuse ATOF 287 sheet (copy '
+            'https://datasheet.lcsc.com/datasheet/pdf/67d4e77c30c689b2c6a06a59b85b9e09.pdf)',
+            'the .PXCN pack is 2000; .L is 50'),
+ '718013': ('LITTELFUSE 0287005.PXCN',
+            'Littelfuse',
+            '0287005.PXCN: ATOF 5 A 32 V DC, 1000 A interrupting; UL listed AU1410',
+            'Littelfuse ATOF 287 sheet (copy '
+            'https://datasheet.lcsc.com/datasheet/pdf/67d4e77c30c689b2c6a06a59b85b9e09.pdf)',
+            ''),
+ '718014': ('PEM FHA-M5-12',
+            'PennEngineering (PEM)',
+            'FHA-M5-12: aluminium self-clinching flush-head stud M5 x 12, sheet 1.0 mm min., hole 5.0 +0.08',
+            'https://www.pemnet.com/products/product-finder/fha-m5-12/',
+            'nut torque 1.5 N m in aluminium (sheet)'),
+ '718015': ('FABORY 51460.060.001 DIN 6798 A',
+            'Fabory',
+            '51460.060.001: serrated lock washer, external teeth, DIN 6798 A, M6 (6.4), stainless A2',
+            'https://www.fabory.com/en/p/51460060001/generatePdf',
+            ''),
+ '718016': ('PANDUIT PV14-10R-C/PV14-14R-C',
+            'Panduit',
+            'PV14-10R-C (#10 stud, 4) and PV14-14R-C (1/4 in, 1): vinyl-insulated rings, 16-14 AWG; cULus 587H '
+            'E52164',
+            'https://www.panduit.com/en/products/wire-termination/electrical-terminals/ring-terminals/p204344.html#pn=PV14-10R-C',
+            ''),
+ '718017': ('ELECTRI-FLEX LIQUATITE NM-11',
+            'Electri-Flex',
+            'Liquatite Type NM 1/2 in (catalog 81011, 100 ft): LFNC-B, UL 1660 Type B, file E79308',
+            'https://www.electriflex.com/products/type-nm/',
+            ''),
+ '718019': ('FABORY 51340.040.008 DIN 7985-H',
+            'Fabory',
+            '51340.040.008: M4 x 8 Phillips raised cheese head, DIN 7985-H (ISO 7045 head 8 x 3.1), A2-70',
+            'https://www.fabory.com/en/p/51340040008/generatePdf',
+            ''),
+ '718020': ('ALPHA WIRE 461419 BK005/WH005/GR005',
+            'Alpha Wire',
+            '461419 BK005, WH005, GR005: UL 1015 AWM 105 C 600 V, 14 AWG 19/.0147 copper, 100 ft spools',
+            'https://www.alphawire.com/disteAPI/SpecPDF/DownloadProductSpecPdf?productPartNumber=461419',
+            ''),
+ '718021': ('ALPHA WIRE 461419 BK005/WH005',
+            'Alpha Wire',
+            '461419 BK005, WH005: UL 1015 AWM 105 C 600 V, 14 AWG, 100 ft spools',
+            'https://www.alphawire.com/disteAPI/SpecPDF/DownloadProductSpecPdf?productPartNumber=461419',
+            ''),
+ '718022': ('ALPHA WIRE 461419 GR005',
+            'Alpha Wire',
+            '461419 GR005: UL 1015 AWM 105 C 600 V, 14 AWG, green, 100 ft spool',
+            'https://www.alphawire.com/disteAPI/SpecPDF/DownloadProductSpecPdf?productPartNumber=461419',
+            ''),
+ '718023': ('SOUTHWIRE R40018-1',
+            'Southwire',
+            'R40018-1 (spec 13060): 2 x 18 AWG stranded, PVC, CL3R (also CMR, FPLR, CMG), 300 V, 60 C, OD 3.66 mm',
+            'https://cabletechsupport.southwire.com/en/tile/39/spec/13060/?country=US',
+            "cores about 1.3-1.45 mm (calculation), low in the terminal's 1.30-3.10 grip: prove a crimp sample"),
+ '718024': ('SOUTHWIRE R40049-1',
+            'Southwire',
+            'R40049-1 (spec 13060): 4 x 18 AWG stranded, PVC, CL3R, 300 V, 60 C, OD 4.22 mm',
+            'https://cabletechsupport.southwire.com/en/tile/39/spec/13060/?country=US',
+            'prove a crimp sample (as 718023)'),
+ '718025': ('BELDEN 9536',
+            'Belden',
+            '9536 060100: 6 x 24 AWG stranded, overall foil and drain, PVC, CMG, 300 V (UL AWM 2464)',
+            'https://catalog.belden.com/techdata/EN/9536_techdata.pdf',
+            "CMG stands in for CL2/CL3 by the NEC's cable substitution table (to confirm in the US rules phase, "
+            'ISS-083)'),
+ '718026': ('SOUTHWIRE R30042-1',
+            'Southwire',
+            'R30042-1 (spec 13066): 4 x 20 AWG stranded, foil shield and drain, PVC, CL3R, 300 V, OD 4.04 mm',
+            'https://cabletechsupport.southwire.com/en/tile/39/spec/13066/?country=US',
+            'no unshielded 20/4 in the CL3R range; the foil does no harm on PWM and tach'),
+ '718027': ('BELDEN 9534',
+            'Belden',
+            '9534 060100: 4 x 24 AWG stranded, overall foil and drain, PVC, CMG, 300 V (UL AWM 2464)',
+            'https://catalog.belden.com/techdata/EN/9534_techdata.pdf',
+            'CMG stands in for CL2/CL3 (as 718025)'),
+ '718028': ('BELDEN 3612',
+            'Belden',
+            '3612 0081000: Cat 6 U/UTP, 4 pair, 23 AWG solid, CMR (UL 1666), OD 5.87 mm',
+            'https://catalog.belden.com/techdata/EN/3612_techdata.pdf',
+            ''),
+ '718029': ('SOUTHWIRE R40015-1',
+            'Southwire',
+            'R40015-1 (spec 13060): 6 x 18 AWG stranded, PVC, CL3R, 300 V, 60 C, OD 5.38 mm',
+            'https://cabletechsupport.southwire.com/en/tile/39/spec/13060/?country=US',
+            ''),
+ '718030': ('MOLEX 39-01-2025 (5557-02R)',
+            'Molex',
+            '39-01-2025 (5557-02R-210): Mini-Fit Jr receptacle housing, dual row, 2 circuits, UL 94V-0; 9 A per '
+            'circuit at 18 AWG, 600 V; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39012025 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            ''),
+ '718031': ('MOLEX 39-01-3029 (5559-02P1)',
+            'Molex',
+            '39-01-3029 (5559-02P1-210): Mini-Fit Jr plug housing, dual row, 2 circuits, without panel mounting '
+            'ears, UL 94V-0; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39013029 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            '39-01-2026 was the panel-mount plug with ears: this free-hanging twin suits a cable-to-cable joint'),
+ '718032': ('MOLEX 39-01-2045 (5557-04R)',
+            'Molex',
+            '39-01-2045 (5557-04R-210): Mini-Fit Jr receptacle housing, 4 circuits, UL 94V-0; 8 A per circuit at '
+            '16-18 AWG, 600 V; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39012045 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            ''),
+ '718033': ('MOLEX 39-01-3049 (5559-04P1)',
+            'Molex',
+            '39-01-3049 (5559-04P1-210): Mini-Fit Jr plug housing, 4 circuits, without panel mounting ears, UL '
+            '94V-0; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39013049 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            '39-01-2046 was the panel-mount plug with ears'),
+ '718034': ('MOLEX 39-01-2105 (5557-10R)',
+            'Molex',
+            '39-01-2105 (5557-10R-210): Mini-Fit Jr receptacle housing, 10 circuits, UL 94V-0; 7 A per circuit at 18 '
+            'AWG, 3 A at 24 AWG, 600 V; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39012105 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            ''),
+ '718035': ('MOLEX 39-01-3109 (5559-10P1)',
+            'Molex',
+            '39-01-3109 (5559-10P1-210): Mini-Fit Jr plug housing, 10 circuits, without panel mounting ears, UL '
+            '94V-0; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39013109 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            '39-01-2106 was the panel-mount plug with ears'),
+ '718036': ('MOLEX 39-00-0039',
+            'Molex',
+            '39-00-0039: Mini-Fit female crimp terminal, 18-24 AWG, tin over copper on brass, insulation 1.30-3.10 '
+            'mm, bag',
+            'https://www.molex.com/en-us/products/part-detail/39000039 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            "for the 18 AWG cores; the hub link's 24 AWG cores (1.1 mm) take the 22-28 AWG terminal"),
+ '718037': ('MOLEX 39-00-0041',
+            'Molex',
+            '39-00-0041: Mini-Fit male crimp terminal, 24-18 AWG, matte tin on brass, bag',
+            'https://www.molex.com/en-us/products/part-detail/39000041 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            "for the 18 AWG cores; the hub link's 24 AWG cores take the 22-28 AWG terminal"),
+ '718038': ('PANDUIT SP688E-C',
+            'Panduit',
+            'SP688E-C: Cat 6 UTP RJ45 modular plug, 23-24 AWG, pack of 100; cULus, UL 1863 (E129886)',
+            'https://www.panduit.com/en/products/copper-systems/copper-connectors/copper-modular-plugs/p202336.html#pn=SP688E-C',
+            'suits the Belden 3612 cable (23 AWG solid, 5.87 mm)'),
+ '718039': ('PANDUIT CC688IW',
+            'Panduit',
+            'CC688IW: Mini-Com Cat 6 UTP RJ45 coupler module; UL 1863, UL 2043',
+            'https://www.panduit.com/en/products/copper-systems/connectors/jack-modules/cc688iw.html',
+            'Panduit allows up to two couplers per channel: X1 and X2 use both'),
+ '718040': ('PANDUIT NK688MWH',
+            'Panduit',
+            'NK688MWH: NetKey Cat 6 UTP RJ45 punchdown keystone jack, 22-26 AWG; UL 1863, UL 2043; dust cap PSL-DCJB '
+            'for the capped jack at X7',
+            'https://www.panduit.com/en/products/copper-systems/connectors/jack-modules/nk688mwh.html',
+            'the 14.9 x 19.4 cut-out in 1.5 mm plate to prove on a sample'),
+ '718041': ('HEYCO 2836N',
+            'Heyco',
+            '2836N (B 750-625N, black): thin panel snap bushing for a 19.1 mm hole, panels 0.5 to 1.6 mm, bore 15.9 '
+            'mm; UL Recognized E15331, 94V-2',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Thin-Panel-Snap-Bushings.pdf',
+            '2836 locks only in 1.6 mm sheet; 2836N locks in the 1.0 mm body and the 0.5 mm trays'),
+ '718042': ('HEYCO 12431 DS-125',
+            'Heyco',
+            '12431 (DS-125-48 in, 1.2 m): push-on nylon grommet channel for panels 0.5 to 3.2 mm, 94HB',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Grommet-Channels.pdf',
+            '0.5 mm is the bottom of its range: prove the grip on a sample'),
+ '718043': ('HEYCO 3904 PMT 150',
+            'Heyco',
+            '3904 (PMT 150): push-mount cable tie with wings, nylon 6/6, bundle to 44.5 mm, panels 0 to 3.2 mm, Ø6.4 '
+            'mm hole',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Nytye-Push-Mount-Cable-Ties.pdf',
+            'needs a Ø6.4 mm hole at each clip point in the cassette trays (an interface with WALL and CEILING)'),
+ '718044': ('ERIN ROPE SBN041000',
+            'Erin Rope',
+            'SBN041000: #4 (1/8 in, 3.2 mm) solid braid nylon cord, 575 lb break, 1000 ft',
+            'https://erinrope.com/solid-braid-nylon/',
+            ''),
+ '718045': ('MOLEX 39-01-2065 (5557-06R)',
+            'Molex',
+            '39-01-2065 (5557-06R-210): Mini-Fit Jr receptacle housing, 6 circuits, UL 94V-0; 8 A per circuit at 18 '
+            'AWG, 600 V; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39012065 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            "X5 is the light shelf's plug-in joint on site (D-148)"),
+ '718046': ('MOLEX 39-01-3069 (5559-06P1)',
+            'Molex',
+            '39-01-3069 (5559-06P1-210): Mini-Fit Jr plug housing, 6 circuits, without panel mounting ears, UL '
+            '94V-0; UL E29179',
+            'https://www.molex.com/en-us/products/part-detail/39013069 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            "39-01-2066 was the panel-mount plug with ears; X5 is the light shelf's plug-in joint on site (D-148)"),
+ '718047': ('PEM CLA-M4-1',
+            'PennEngineering (PEM)',
+            'CLA-M4-1: aluminium self-clinching nut M4, shank code 1 (sheet 1.0 mm min.), hole 5.94 +0.08',
+            'https://www.pemnet.com/products/product-finder/cla-m4-1/',
+            "the body's H05-H08 are Ø5.4 today: the clinch hole is 5.94 +0.08 (follow-up with the body's next "
+            'rebuild)'),
+ '718050': ('HÄFELE 833.74.176',
+            'Häfele',
+            '833.74.176: Loox5 LED 2168, 12 V, 6.0 W/m, 3000 K, 970 lm/m, Ra 92, R9 > 50; 5 m roll; cULus mark, '
+            'class III',
+            'https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf',
+            '3000 K comes in 5 m rolls only: 6.384 m per pod takes 2 rolls'),
+ '718051': ('HÄFELE 833.74.156',
+            'Häfele',
+            '833.74.156: Loox5 LED 2165, 12 V, 3.0 W/m, 3000 K, 465 lm/m, Ra 92; cULus mark, class III',
+            'https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf',
+            '0.9 m gives about 420 lm at 3000 K (465 lm/m, catalogue)'),
+ '718052': ('HÄFELE LOOX5 2191 833.72.982',
+            'Häfele',
+            '833.72.982: Loox5 profile 2191 for surface mounting, 2500 x 18 x 14 mm, silver anodised, opal white '
+            'diffuser; cut to 0.9 m',
+            'https://files.hafele.co.uk/CatalogFiles/www/25L1-56.pdf',
+            'dots not seen with strips of 120 LEDs/m or more (the 2165 has 160); end caps 718076'),
+ '718053': ('HÄFELE 833.74.695',
+            'Häfele',
+            '833.74.695: Loox5 5 A driver-to-light lead for 8 mm monochrome strip, 500 mm, clip-on',
+            'https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf',
+            'its far end is a Loox5 12 V plug: each harness end mates or splices it'),
+ '718055': ('SOUTHWIRE 94664',
+            'Southwire',
+            '94664 (spec 13090): 4 x 16 AWG stranded, PVC, CL3 (ETL), 300 V, 75 C, OD 5.84 mm',
+            'https://cabletechsupport.southwire.com/en/tile/39/spec/13090/?country=US',
+            "cores about 1.9-2.0 mm (calculation) suit the 16 AWG terminal's 1.80 mm minimum"),
+ '718056': ('MOLEX 39-00-0078',
+            'Molex',
+            '39-00-0078: Mini-Fit female crimp terminal, 16 AWG, tin over copper on brass, bag',
+            'https://www.molex.com/en-us/products/part-detail/39000078 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            ''),
+ '718057': ('MOLEX 39-00-0082',
+            'Molex',
+            '39-00-0082: Mini-Fit male crimp terminal, 16 AWG, insulation 1.80-3.10 mm, matte tin on brass, bag',
+            'https://www.molex.com/en-us/products/part-detail/39000082 ; '
+            'https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
+            ''),
+ '718061': ('E-SWITCH PV16F2B0SS',
+            'E-Switch',
+            'PV16F2B0SS: 16 mm anti-vandal momentary push button, stainless, SPDT, 2 A 24 V DC, IP67',
+            'https://configured-product-images.s3.amazonaws.com/2D/specs/PV16F2B0SS.pdf',
+            "panel hole Ø16.0 +0.2/0, 36.6 mm deep behind: 711005's button holes follow (its HOLD features)"),
+ '718062': ('E-SWITCH PV16F2B0SS',
+            'E-Switch',
+            'PV16F2B0SS: 16 mm anti-vandal momentary push button, stainless, SPDT, 2 A 24 V DC, IP67',
+            'https://configured-product-images.s3.amazonaws.com/2D/specs/PV16F2B0SS.pdf',
+            ''),
+ '718064': ('LITTELFUSE FHAC0001ZXJ',
+            'Littelfuse',
+            'FHAC0001ZXJ: inline ATO fuse holder with cover, 16 AWG leads, 20 A at 32 V DC',
+            'Littelfuse catalog p.132 (copy https://static.chipdip.ru/lib/468/DOC012468626.pdf)',
+            ''),
+ '718066': ('LITTELFUSE 0287002.PXCN',
+            'Littelfuse',
+            '0287002.PXCN: ATOF 2 A 32 V DC, 1000 A interrupting; UL listed AU1410',
+            'Littelfuse ATOF 287 sheet (copy '
+            'https://datasheet.lcsc.com/datasheet/pdf/67d4e77c30c689b2c6a06a59b85b9e09.pdf)',
+            ''),
+ '718067': ('LITTELFUSE 0287001.PXCN',
+            'Littelfuse',
+            '0287001.PXCN: ATOF 1 A 32 V DC, 1000 A interrupting; UL listed AU1410',
+            'Littelfuse ATOF 287 sheet (copy '
+            'https://datasheet.lcsc.com/datasheet/pdf/67d4e77c30c689b2c6a06a59b85b9e09.pdf)',
+            ''),
+ '718069': ('E-SWITCH PV16F2B0SS',
+            'E-Switch',
+            'PV16F2B0SS: 16 mm anti-vandal momentary push button, stainless, SPDT, 2 A 24 V DC, IP67',
+            'https://configured-product-images.s3.amazonaws.com/2D/specs/PV16F2B0SS.pdf',
+            ''),
+ '718070': ('NEUTRIK NAC3F-TRUE1-S',
+            'Neutrik',
+            'NAC3F-TRUE1-S: UL 498 20 A 250 V AC; cable OD 6-12 mm; 14 AWG; certified with SJOOW 14/3',
+            'https://www.neutrik.com/en/product/nac3f-true1-s',
+            'the cord 718071 is SJOOW 14/3, the US cable Neutrik certifies with it (not SJT)'),
+ '718071': ('CAROL 01360',
+            'Prysmian (Carol)',
+            '01360: type SJOOW 14/3, 300 V, 90 C, black Carolprene jacket, OD 9.27 mm; UL 62 flexible cord',
+            'https://na.prysmian.com/sites/na.prysmian.com/files/media/products/Carolprene%C2%AE%20Jacketed%20Type%20SJOOW.pdf',
+            '100 lb per 1000 ft: 0.149 kg/m (calculation)'),
+ '718072': ('LEVITON 5266-C',
+            'Leviton',
+            '5266-C: NEMA 5-15P industrial grade, 15 A 125 V; cord range 0.230-0.685 in; UL 498 file E13399',
+            'https://www.leviton.com/en/products/5266-c',
+            ''),
+ '718074': ('PANDUIT DNF14-250FIB-C',
+            'Panduit',
+            'DNF14-250FIB-C: fully insulated female disconnect, 0.250 x 0.032 in tab, 16-14 AWG; UL 310, CSA 22.2 '
+            'No.153',
+            'https://www.panduit.com/en/products/wire-termination/electrical-terminals/disconnects/p204674.html#pn=DNF14-250FIB-C',
+            ''),
+ '718076': ('HÄFELE 833.72.853',
+            'Häfele',
+            '833.72.853: end caps for Loox5 profile 2191, plastic, silver, pack of 2',
+            'https://files.hafele.co.uk/CatalogFiles/www/25L1-56.pdf',
+            '')}
+
+HOLDS = {'718003': "the breaker's own sheet (Eaton FAZ-C15/1-NA-L) can't be read: eaton.com and the distributors block "
+           "automated reads; Eaton's family catalog gives UL 489 at 240 Vac, C curve, 14 kA at 15-25 A",
+ '718048': "its length waits on what it screws into (CEILING's column), and no maker sheet was found for a black A2 "
+           'M4 pan head (plain A2: Fabory 51340.040.012)',
+ '718049': 'no maker sheet found for a black nylon 6/6 spacer 4.3 x 8 x 2 mm (the closest, RAF M0591-4-N, states no '
+           'colour or grade)',
+ '718054': 'no maker sheet found for a black 6-32 x 1/2 in oval head wallplate screw (packs are stainless or brown); '
+           'black matters on the black front plate',
+ '718063': "the pot's value, taper and supply are set by the hub's analog input (H-ELE-05, ISS-060)",
+ '718065': "the sensor type is set by the hub's sensor port (H-ELE-06, ISS-060): NTC, 1-Wire or I2C",
+ '718068': "Noctua's NA-SYC1 page can't be read automatically, so it isn't quoted from the maker; the harness end "
+           'waits on H-ELE-07',
+ '718073': "its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet",
+ '718075': "the connector's knockout: NMLT-11 takes a 1/2 in trade-size knockout (7/8 in, 22.2 mm, by common "
+           'practice; its sheet gives only the trade size) and H04 is Ø25 (assumption): the hole and the connector '
+           "are settled together in the body's next rebuild",
+ '718101': 'no maker sheet read gives a surface profile about 23 x 12.5 mm (20 mm base) with a satin cover of 86 % '
+           "or more; the one 86 % cover found (KLUS G-22S) fits a 24.5 mm high profile, which changes the shelf's "
+           'look (a PM call, D-126, D-127)',
+ '718102': 'follows the shelf profile 718101 (no satin cover of 86 % or more found for it)',
+ '718103': 'follows the shelf profile 718101',
+ '718104': 'follows the shelf profile 718101 (the count follows its clip spacing)'}
+
+
+def _name_products():
+    for p in P.values():
+        pn = p["part_number"]
+        if pn.startswith("83") and p["status"] == HOLD_BUY:     # the joints register names its hardware (D-63)
+            p["status"] = "source (joints register, D-63); not ordered (guideline 4.3)"
+            continue
+        if pn in PRODUCTS:
+            tag, maker, sku, src, add = PRODUCTS[pn]
+            p.update(maker=maker, sku=sku, status=NAMED_BUY, source=src)
+            p["name"] = "%s - %s" % (p["name"], tag)
+            if add:
+                p["note"] = "%s; %s" % (p["note"], add) if p["note"] else add
+        elif pn in HOLDS:
+            p["status"] = held(HOLDS[pn])
+
+
+_name_products()
 
 
 def _fill_sources():
