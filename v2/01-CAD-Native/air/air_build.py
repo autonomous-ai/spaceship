@@ -252,20 +252,33 @@ def cyl_join(comp, body, name, cx, cy, d, z0, z1, ctx):
 
 def place_turned(parent, occ, axis, xyz, name, ctx):
     """A copy turned 180 deg about the pod's Y or Z axis (D-120: one part, turned): a rigid joint takes the copy's
-    origin to xyz; which of the joint's flip and angle gives the turn is read back from the copy's transform, not
-    assumed (the ceiling's turned-copy probe does the same), and a turn none gives stops the build."""
-    j = CB.place(parent, occ, xyz, name, ctx)
+    origin to xyz. Which joint flip and angle give the turn is read back from the copy's transform, not assumed; each
+    try is a fresh joint with the setting on its input (Fusion refuses to edit a made joint without rolling the
+    timeline back, as the ceiling's turned-copy probe found), and a turn none gives stops the build."""
+    plane = CB.offset_plane(parent, parent.xYConstructionPlane, xyz[2], "PLANE - PLACE %s" % name)
+    sk = parent.sketches.add(plane)
+    sk.name = "PLACE - " + name
+    pt = sk.sketchPoints.add(adsk.core.Point3D.create(ctx.ev(xyz[0]) * CB.MM, ctx.ev(xyz[1]) * CB.MM, 0))
+    CB.dim_point(sk, pt, xyz[0], xyz[1], ctx)
+    if not sk.isFullyConstrained:
+        raise RuntimeError("placement sketch not fully constrained: " + name)
     want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[axis]
     tried = []
     for flip, angle in ((False, "180 deg"), (True, "0 deg"), (True, "180 deg")):
-        j.isFlipped = flip
-        j.angle.expression = angle
+        g_occ = adsk.fusion.JointGeometry.createByPoint(occ.component.originConstructionPoint.createForAssemblyContext(occ))
+        ji = parent.joints.createInput(g_occ, adsk.fusion.JointGeometry.createByPoint(pt))
+        ji.setAsRigidJointMotion()
+        ji.isFlipped = flip
+        ji.angle = adsk.core.ValueInput.createByString(angle)
+        j = parent.joints.add(ji)
+        j.name = "PLACE - " + name
         m = occ.transform2
         got = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
         tried.append((flip, angle, got))
         if all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
             print("%s: turned about %s by the joint's flip %s, angle %s" % (name, axis.upper(), flip, angle))
             return j
+        j.deleteMe()
     raise RuntimeError("no joint flip and angle turns %s about %s: %s" % (name, axis, tried))
 
 
