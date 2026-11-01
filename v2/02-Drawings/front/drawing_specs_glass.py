@@ -31,7 +31,7 @@ SPECS["pane"] = {
         "measured v1 pentagon; the four held edges run %.1f past it into hidden channels in the base band, DR and DT; "
         "the free edge runs parallel to the door's latch edge, %.1f off (PM rulings)." % (V_FIX["fg_bite"], V_FIX["fg_gap"]),
         "No holes. Edges ground and arrised before toughening. Tolerances (PROPOSED, the supplier confirms): sizes and "
-        "diagonals +/-1; corners at the knee and bottom right to the DXF.",
+        "diagonals +/-1 (the outline table on this sheet); corners at the knee and bottom right to the DXF.",
         "Fit order (PM ruling 2026-11-01): the bottom channel comes factory-fitted on BASE's sill; on site the pane "
         "drops into it, then DR from the side, then DT from above.",
     ],
@@ -39,6 +39,28 @@ SPECS["pane"] = {
                    "4+4 laminated toughened heat-soaked glass, grey PVB", "edges ground and arrised", "1:10", "A2",
                    [("MASS", "28.6 kg (calculation)")]),
 }
+# the pane's outline as a table on its sheet (Reviewer 8 on #339: no edge angles or diagonals): corners in the DXF's
+# frame (X right, Y up, as the front view; origin at the pane's left and bottom), corner angles and diagonals
+_REL = [(p[0] - min(xs), p[1] - PB[0][1]) for p in PB]
+_NAMES = ("bottom left", "bottom right", "knee", "top right", "top left")
+
+
+def _corner_angle(i, pts=_REL):
+    a, b, c = pts[i - 1], pts[i], pts[(i + 1) % len(pts)]
+    v1, v2 = (a[0] - b[0], a[1] - b[1]), (c[0] - b[0], c[1] - b[1])
+    return math.degrees(math.acos((v1[0] * v2[0] + v1[1] * v2[1]) / (math.hypot(*v1) * math.hypot(*v2))))
+
+
+_TAB = [("PANE OUTLINE (THE DXF'S FRAME: X RIGHT, Y UP, AS THE FRONT VIEW)", 330, 292),
+        ("CORNER", 300, 285), ("X", 335, 285), ("Y", 357, 285), ("ANGLE (DEG)", 382, 285)]
+for _i, (_nm, (_x, _y)) in enumerate(zip(_NAMES, _REL)):
+    _yy = 279.5 - 5.5 * _i
+    _TAB += [(_nm, 300, _yy), ("%.1f" % _x, 335, _yy), ("%.1f" % _y, 357, _yy), ("%.2f" % _corner_angle(_i), 382, _yy)]
+_TAB.append(("DIAGONALS", 330, 248))
+for _k, (_i, _j) in enumerate(((0, 2), (0, 3), (1, 3), (1, 4), (2, 4))):
+    _TAB.append(("%s to %s: %.1f" % (_NAMES[_i], _NAMES[_j], math.dist(_REL[_i], _REL[_j])), 330, 242.5 - 5.5 * _k))
+SPECS["pane"]["labels"] = _TAB
+
 SPECS["fixed_unit"] = {
     "design": doc("360002", "FRONT - FIXED GLASS UNIT", "CAD"),
     "drawing": doc("360002", "FRONT - FIXED GLASS UNIT", "DWG"),
