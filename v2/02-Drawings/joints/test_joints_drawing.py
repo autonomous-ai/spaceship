@@ -201,15 +201,25 @@ if fitz is not None:
     check([(round(c[0]), round(c[1]), c[2]) for c in found] == [(80, 70, True), (166, 220, False)],
           "hole circles: the solid and the hidden one found, the cone's dashes not (%s)" % found)
 
-    # view B, 111212 from above: its sizes read back from the sheet
+    # view B, 111212 from above, where the sheet puts it: its sizes read back from the sheet
     doc = fitz.open()
     page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
-    x0, y0, x1, y1 = JD.view_b(JD.Sheet(page), (290.0, 170.0))
+    vb_x, vb_y = JD.PARTS["keys"]["view_b"]["origin"]
+    x0, y0, x1, y1 = JD.view_b(JD.Sheet(page), (vb_x, vb_y))
     text = page.get_text()
     for want in ("37.84", "22.16", "A = 24.14°", "H01, H02 SQUARE", "TO THE STUD FACE"):
         check(want in text, "view B shows %s" % want)
-    check(abs((x0 - 290.0)) < 1e-6 and x1 > 290.0 + 37.84 * 2 and y1 < 240.0,
-          "view B: starts at the back face, reaches past the long side, stays above the title block (%.1f)" % y1)
+    check(abs((x0 - vb_x)) < 1e-6 and x1 > vb_x + 37.84 * 2 and y1 < 240.0 - 3.0,
+          "view B: starts at the back face, reaches past the long side, ends 3 or more above the title block "
+          "(%.1f)" % y1)
+    # and clear of the notes by finish()'s rule (2026-11-01: longer notes stopped the finish 2 mm into view B)
+    blank = os.path.join(tmp, "vb-blank.pdf")
+    d2 = fitz.open()
+    d2.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    d2.save(blank)
+    end = JD.add_notes(blank, os.path.join(tmp, "vb-notes.pdf"), JD.PARTS["keys"]["notes"])
+    check(y0 - 4.0 - 2 * JD.NOTE_MM >= end,
+          "view B (from %.1f mm) clear of the key sheet's notes (to %.1f mm), as finish() checks" % (y0, end))
     tan = math.tan(math.radians(24.14))
     check(abs(30 + 17.5 * tan - 37.84) < 0.005 and abs(30 - 17.5 * tan - 22.16) < 0.005,
           "view B: the long and short sides follow A = 24.14° about the centre line (as the table)")

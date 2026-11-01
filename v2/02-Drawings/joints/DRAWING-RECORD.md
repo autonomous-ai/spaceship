@@ -73,3 +73,10 @@ Reviewer 6 checked each key against its STEP (111212 to 111215 pass; 111211 matc
 - **Note 3:** 111213 is now "the opposite hand of view B's shape, at its own A" (24.02°, not 24.14°). **Note 1** gives the scale, 2:1, view B too.
 - **Hidden circles for H03 and H04:** kept. In first-angle projection a view from below sits above the front view, where the A3 sheet has no room at 2:1, and each hidden circle carries its tag and the table's position.
 
+**The redo in Fusion (D-139: the tabulated key sheet stays Fusion's):**
+- **11:47 UTC:** the 10:09 sheet renamed `111211_P01_BASE-CORNER-KEY-TABULATED_DWG_SUPERSEDED-2026-11-01-3` (D-141). Fusion's Server Verification Warning was up, and Create Drawing never opened, so the run stopped there with no new sheet. Nothing from that run is used (the Lead's steer).
+- **12:22 UTC:** a new sheet started on the key design's version 3 and annotated in one held session: 3 views, 10 dimensions (the two Ø5.04 gone), all native and linked to the model.
+- **The finish:** one more note line had closed the 4 mm and two note lines that `finish()` keeps between the notes and view B, so it stopped. Notes 3 and 4 are shorter (same facts), and view B sits 4 lower (it still ends 5 above the title block). `test_joints_drawing.py` now checks that gap, and view B's room above the title block, from the sheet's own settings, so a longer note fails the test before a finish.
+
+**Read back from the PDF:** right view 17.5, 26, 60, 35; front 75, 30; top 10.5 and 17.8 (x), 11.5 and 23.5 (y); view B 22.16, 37.84, A = 24.14°. No 5.04 anywhere on the sheet. H03's tag on the upper hole (10.5, +6), H04's on the lower (17.8, −6). Created by and the author read "Autonomous"; no maker named (D-147 (1)).
+

@@ -68,7 +68,7 @@ PARTS = {
             "2. MATERIAL EN AW-6061-T6. FINISH MILL FINISH, DEBURRED, NO SHARP EDGES.",
             "3. ONE BLOCK 35 x 75, 30 LONG ON ITS CENTRE LINE. THE STUD FACE IS CUT AT ANGLE A ABOUT ITS CENTRE "
             "LINE, LONG SIDE ON THE OUTSIDE OF THE TURN. THE THREE VIEWS SHOW 111211 (A=0); VIEW B SHOWS "
-            "111212 FROM ABOVE; 111213 IS THE OPPOSITE HAND OF VIEW B'S SHAPE, AT ITS OWN A.",
+            "111212 FROM ABOVE; 111213 IS ITS OPPOSITE HAND, AT ITS OWN A.",
             {"indent": 5.0,
              "table": [["PART", "A", "HAND", "LONG", "SHORT", "H03, H04 (X, Y)", "POD", "WHERE"],
                        ["111211", "0°", "-", "30.00", "30.00", "10.5, +6; 17.8, -6", "2", "BACK CORNERS"],
@@ -77,8 +77,8 @@ PARTS = {
                        ["111214", "7.25°", "LH", "32.23", "27.77", "10.5, ±7", "1", "LEFT KNEE"],
                        ["111215", "0°", "-", "30.00", "30.00", "10.5, ±7", "1", "FR1 INLINE"]]},
             "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60 ABOVE THE "
-            "BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°. THE VIEWS DRAW THE TAPPED HOLES "
-            "AT THE THREAD'S MINOR DIAMETER; THE M6x1-6H CALLOUTS GIVE THEIR SIZE.",
+            "BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°. TAPPED HOLES ARE DRAWN AT THE "
+            "MINOR DIAMETER; THE CALLOUTS GIVE THE SIZE.",
             "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, AT THE TABLE'S X (FROM THE "
             "BACK FACE) AND Y (FROM THE CENTRE LINE, +Y UP IN THE TOP VIEW). THE TOP VIEW GIVES Y FROM THE -Y SIDE "
             "FACE (17.5 + Y). ±0.1 TO THE BACK FACE AND THAT SIDE FACE (D-144).",
@@ -98,7 +98,9 @@ PARTS = {
             (lambda cs: min(TOP_HOLES(cs), key=lambda c: c[1]), ["H03 M6x1-6H", "15 DEEP"], (41.0, -11.0)),
             (lambda cs: max(TOP_HOLES(cs), key=lambda c: c[1]), ["H04 M6x1-6H", "15 DEEP"], (27.0, -13.0)),
         ],
-        "view_b": {"origin": (290.0, 170.0),
+        # 174 (was 170): Reviewer 6's note fixes made the notes 1 line longer; view B's top keeps 4 mm and two
+        # note lines below them (finish() and the drawing test check it) and it ends 5 above the title block (y 240)
+        "view_b": {"origin": (290.0, 174.0),
                    "label": "VIEW B, 2:1: 111212 (LH, FRONT LEFT CORNER) FROM ABOVE"},
     },
 }
