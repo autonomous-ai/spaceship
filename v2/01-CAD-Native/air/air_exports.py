@@ -250,8 +250,9 @@ def flat_cut_list(v):
             rows.append({"part_number": pn, "piece": n, "name": name, "name_vi": vn, "material": A.MATERIALS[mat][0],
                          "size_mm": "%.1f x %.1f x %.1f" % tuple(d), "qty_per_pod": 2 if key in ("lin_es", "lin_s") else 1,
                          "tolerance": "knife cut +/-2 (assumption)",
-                         "drawing": ("HOLD: a cut file with its notches (the AIR model's cut-outs)"
-                                     if any(t == n for t, _c in A.cutouts()) else "none (D-89: plain rectangle)"),
+                         "drawing": ("HOLD: a cut file with its notches or holes (the AIR model's cut-outs)"
+                                     if any(t == n for t, _c in A.cutouts()) or any(f == n for f, _k, _a in A.features())
+                                     else "none (D-89: plain rectangle)"),
                          "note": ("D-121: bonded to the fan box casing's wall (adhesive HOLD)" if lining else
                                   "its notches and openings knife cut with it, at the factory: see the AIR model's "
                                   "cut-outs")})
@@ -289,8 +290,8 @@ def size_tol(v, key):
         parts.append("%.1f x %.1f x %.1f" % tuple(d))
     size = "; ".join(sorted(set(parts)))
     if key in SOFT:
-        if any(t in names for t, _c in A.cutouts()):    # notched round the parts it fits: not a plain rectangle
-            return size, "knife cut +/-2 (assumption); notched as the AIR model's cut-outs show, cut file HOLD"
+        if any(t in names for t, _c in A.cutouts()) or any(n in names for n, _k, _a in A.features()):
+            return size, "knife cut +/-2 (assumption); notched or holed as the AIR model shows, cut file HOLD"
         return size, "knife cut +/-2 (assumption); a plain piece, no drawing (D-89)"
     if key in FLAT:
         return size, "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4)"
