@@ -6,9 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (d50a0a0), PR #324 (f824ebc), PR #320 (889fc54), PR #306 (b65cb37), PR #319 (2ffa0be), PR #337 (a41cab4), PR #346 (33a1418), PR #339 (3f1f850), PR #348 (32d4b2c), PR #313 (541fe7f), PR #343 (11b2298). The Mac's screen at run time: **unlocked**. 578 files in the CAD, drawing and manufacturing folders; the FAI plan's 91 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (e158d88), PR #320 (889fc54), PR #306 (b65cb37), PR #319 (2ffa0be), PR #337 (a41cab4), PR #346 (7825248), PR #350 (9e01e5b), PR #324 (94000e9), PR #313 (b56d2d7), PR #339 (3d1e088), PR #343 (1e1e9af), PR #310 (8f5c64a), PR #353 (cee0e4e), PR #348 (15e8a4e). The Mac's screen at run time: **unlocked**. 590 files in the CAD, drawing and manufacturing folders; the FAI plan's 91 characteristics, 11 functional checks and 20 bought-part test lines.
 
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/01-CAD-Native/base/110000_P01_BASE_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111103_P01_BASE-BAND-TUBE-BACK_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111301_P01_BASE-SILL-FIXED-GLASS_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111401_P01_BASE-FLOOR-PANEL-F1_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/BUILD-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/EDIT-TEST-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/MANIFEST.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/base_build.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/base_edit_test.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/base_p02.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/late_base.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON-PARAMETERS.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/BUILD-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/EDIT-TEST-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/pod_skeleton.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/skeleton_update.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #339 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #348 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #337 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #319 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #343 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #339 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #348 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #343 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-05_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-11_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-12_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/FEATURE-RATIONALE.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/base_cleanup.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/base_drawings.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/finish_pdfs.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/run_drawings.sh`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE-TUBE-CUT-LIST_SPEC.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE_DATA.json`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111301_P01_BASE-SILL-FIXED-GLASS_DXF.dxf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111301_P01_BASE-SILL-FIXED-GLASS_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111501_P01_BASE-FLOOR-FOAM-F1-CLOSED-CELL-3-MM_DXF.dxf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_DXF.dxf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/BASE-TEST-PLAN.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/make_outputs.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: PR #324 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: origin/ctl-d153-numbers changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #313 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #320 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #339 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #337 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #319 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #343 changed it, but main changed it later.
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #337 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #319 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #320 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #310 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #313 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #320 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #339 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #337 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #319 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #343 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -17,18 +17,18 @@ Read from main although an open PR changed them, because main changed them later
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | BASE | 3 | 8 | 0 | 0 | 3 | 1 | 5 |
-| CEILING | 8 | 15 | 0 | 0 | 5 | 0 | 5 |
+| CEILING | 9 | 14 | 0 | 0 | 5 | 0 | 5 |
 | CEILING (builds AIR, D-80) | 11 | 13 | 0 | 7 | 4 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 7 | 0 | 0 | 0 | 0 | 2 |
-| ELECTRICAL | 8 | 1 | 0 | 3 | 66 | 0 | 14 |
-| FRONT | 48 | 21 | 0 | 3 | 5 | 0 | 7 |
+| ELECTRICAL | 8 | 1 | 0 | 3 | 3 | 0 | 69 |
+| FRONT | 51 | 18 | 0 | 3 | 5 | 0 | 8 |
 | JOINTS | 3 | 8 | 0 | 0 | 0 | 0 | 0 |
-| WALL | 8 | 53 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 89 | 126 | 0 | 13 | 74 | 2 | 41 |
+| WALL | 14 | 47 | 0 | 0 | 5 | 1 | 5 |
+| **All, each number once** | 99 | 116 | 0 | 13 | 11 | 2 | 97 |
 
-116 of the 228 made numbers have no drawing yet; for 73 of them the drawing is the only gap, so their drawings can start now (D-84).
+99 of the 228 made numbers have no drawing yet; for 63 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CAD 17, STEP 11, FAI 8.
+What the open made numbers miss: drawing 99, DXF or cut list 32, BOM row 18, CAD 17, STEP 11, FAI 8.
 
 ## Made parts with no FAI line
 
@@ -72,18 +72,18 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 | 410102 | CEILING - PANEL ASSY - C2 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
 | 411101 | CEILING - PANEL FRAME - C1 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
 | 411102 | CEILING - PANEL FRAME - C2 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
-| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412102 | CEILING - FRAME SEAM MEMBER - C1 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412103 | CEILING - FRAME FRONT MEMBER - C1 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412202 | CEILING - FRAME SEAM MEMBER - C2 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412203 | CEILING - FRAME FRONT MEMBER - C2 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
-| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | PR #348 | yes | yes | yes | no | no: its cut list row (D-162) doesn't give both end angles | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412102 | CEILING - FRAME SEAM MEMBER - C1 | PR #348 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 412103 | CEILING - FRAME FRONT MEMBER - C1 | PR #348 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | PR #348 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
+| 412202 | CEILING - FRAME SEAM MEMBER - C2 | PR #348 | yes | yes | yes | no | no: its cut list row (D-162) doesn't give both end angles | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412203 | CEILING - FRAME FRONT MEMBER - C2 | PR #348 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | PR #348 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
 | 411301 | CEILING - SKIN - C1 | PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-P03, K-P04 | done |
 | 411302 | CEILING - SKIN - C2 | PR #348 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P06 | done |
-| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05, K-L10 | open: drawing |
+| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #348 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05, K-L10 | done |
 | 513101 | LINING - TRAY - CEILING | PR #348 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
 | 513102 | LINING - RIB - CEILING | PR #348 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02, K-L07 | done |
 | 513201 | LINING - FELT - CEILING | PR #348 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04, K-L08 | done |
@@ -143,18 +143,18 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 710000 | ELECTRICAL | PR #337 | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
-| 710001 | ELECTRICAL - POWER UNIT - B2 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #337 | yes | yes | yes | yes | yes | yes | yes | K-E01, K-E02 | HOLD |
-| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #337 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
-| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #337 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
-| 719001 | ELECTRICAL - CORD SET - 120 V US - 3 M (KIT) | PR #337 | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
+| 710000 | ELECTRICAL | PR #353 | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
+| 710001 | ELECTRICAL - POWER UNIT - B2 | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #353 | yes | yes | yes | yes | yes | yes | yes | K-E01, K-E02 | HOLD |
+| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #353 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
+| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #353 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #353 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
+| 719001 | ELECTRICAL - CORD SET - 120 V US - 3 M (KIT) | PR #353 | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
 
 ### FRONT
 
@@ -189,15 +189,15 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 | 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | PR #313 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
 | 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | PR #313 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
 | 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | PR #313 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
 | 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | PR #313 | yes | yes | yes | yes | no: its cut list row (D-162) doesn't give both end angles | yes | yes | K-J18 | open: drawing |
 | 352205 | FRONT - DECOR FRAME DT - BACK RING POST | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
@@ -265,42 +265,42 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 | 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 | 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 | 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
 | 511101 | LINING - TRAY - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511301 | LINING - FELT - SIDE LOWER - LH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211302 | WALL - SKIN - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
 | 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510102 | LINING - CASSETTE - SIDE LOWER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 510102 | LINING - CASSETTE - SIDE LOWER - RH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
 | 511102 | LINING - TRAY - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511302 | LINING - FELT - SIDE LOWER - RH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211103 | WALL - PANEL FRAME - SIDE UPPER - LH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211303 | WALL - SKIN - SIDE UPPER - LH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
 | 211503 | WALL - CAVITY FILL - SIDE UPPER - LH | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510103 | LINING - CASSETTE - SIDE UPPER - LH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 510103 | LINING - CASSETTE - SIDE UPPER - LH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
 | 511103 | LINING - TRAY - SIDE UPPER - LH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511303 | LINING - FELT - SIDE UPPER - LH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210104 | WALL - PANEL ASSY - SIDE UPPER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211104 | WALL - PANEL FRAME - SIDE UPPER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211304 | WALL - SKIN - SIDE UPPER - RH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
 | 211504 | WALL - CAVITY FILL - SIDE UPPER - RH | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510104 | LINING - CASSETTE - SIDE UPPER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 510104 | LINING - CASSETTE - SIDE UPPER - RH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
 | 511104 | LINING - TRAY - SIDE UPPER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511304 | LINING - FELT - SIDE UPPER - RH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211201 | WALL - PANEL FRAME - BACK LOWER - B1 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211401 | WALL - SKIN - BACK LOWER - B1 | PR #343 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P08 | done |
 | 211601 | WALL - CAVITY FILL - BACK LOWER - B1 | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510201 | LINING - CASSETTE - BACK LOWER - B1 | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 510201 | LINING - CASSETTE - BACK LOWER - B1 | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
 | 511201 | LINING - TRAY - BACK LOWER - B1 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511401 | LINING - FELT - BACK LOWER - B1 | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211202 | WALL - PANEL FRAME - BACK LOWER - B2 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211402 | WALL - SKIN - BACK LOWER - B2 | PR #343 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P08 | done |
 | 211602 | WALL - CAVITY FILL - BACK LOWER - B2 | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510202 | LINING - CASSETTE - BACK LOWER - B2 | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 510202 | LINING - CASSETTE - BACK LOWER - B2 | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
 | 511202 | LINING - TRAY - BACK LOWER - B2 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511402 | LINING - FELT - BACK LOWER - B2 | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 211501 | WALL CAVITY FILL SIDE LOWER LH | main | no | yes | yes | — | no | no | — | K-P05 | open: BOM row, drawing |
@@ -373,86 +373,78 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 718001 | ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2 - MEAN WELL LPV-60-12 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718002 | ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485 - ENTTEC CVC4 73926 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718003 | ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489 | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718004 | ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP - NEUTRIK NAC3MPX-TOP | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718005 | ELECTRICAL - INLET SEALING CAP - NEUTRIK SCNAC-01 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718006 | ELECTRICAL - LAN FEED-THROUGH - ETHERCON - NEUTRIK NE8FDP | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718007 | ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R - P&S 1597TRW | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718010 | ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM - PHOENIX CONTACT NS 35/7,5 PERF 2000MM | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718011 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - LITTELFUSE FHAC0001ZXJ | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718012 | ELECTRICAL - FUSE - ATO 5 A 32 V - LITTELFUSE 0287005.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718013 | ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS - LITTELFUSE 0287005.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718019 | ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD - FABORY 51340.040.008 DIN 7985-H | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718049 | ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718054 | ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718047 | ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM - PEM CLA-M4-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718014 | ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING - PEM FHA-M5-12 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718015 | ELECTRICAL - BONDING WASHER - SERRATED M6 A2 - FABORY 51460.060.001 DIN 6798 A | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718016 | ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG - PANDUIT PV14-10R-C/PV14-14R-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN - ELECTRI-FLEX LIQUATITE NM-11 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #337 | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #337 | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | PR #337 | H-03 | yes | J-T1, T06 | done |
-| 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) - ALPHA WIRE 461419 BK005/WH005/GR005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) - ALPHA WIRE 461419 BK005/WH005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN - ALPHA WIRE 461419 GR005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718073 | ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718074 | ELECTRICAL - FEMALE DISCONNECT - 0.250 IN - 16-14 AWG - INSULATED - PANDUIT DNF14-250FIB-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718075 | ELECTRICAL - CONDUIT CONNECTOR - LFNC 1/2 IN - STRAIGHT | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718026 | ELECTRICAL - CABLE - 4 X 20 AWG - SOUTHWIRE R30042-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718027 | ELECTRICAL - CABLE - 4 X 24 AWG SCREENED - BELDEN 9534 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718051 | ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K - HÄFELE 833.74.156 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718052 | ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M - HÄFELE LOOX5 2191 833.72.982 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718076 | ELECTRICAL - CALL LIGHT PROFILE END CAP (PAIR) - HÄFELE 833.72.853 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718044 | ELECTRICAL - DRAW CORD - NYLON 3 MM - ERIN ROPE SBN041000 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718048 | ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718060 | ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE) | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718061 | ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST - E-SWITCH PV16F2B0SS | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718062 | ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL - E-SWITCH PV16F2B0SS | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718063 | ELECTRICAL - LIGHT KNOB - POTENTIOMETER WITH KNOB | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718069 | ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST - E-SWITCH PV16F2B0SS | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718064 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN - LITTELFUSE FHAC0001ZXJ | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718065 | ELECTRICAL - INLET TEMPERATURE SENSOR | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718066 | ELECTRICAL - FUSE - ATO 2 A 32 V - LITTELFUSE 0287002.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718067 | ELECTRICAL - FUSE - ATO 1 A 32 V - LITTELFUSE 0287001.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718068 | ELECTRICAL - FAN Y-CABLE - 4-PIN PWM | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718070 | ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP - NEUTRIK NAC3F-TRUE1-S | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718071 | ELECTRICAL - CORD - SJOOW 14/3 - CAROL 01360 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718072 | ELECTRICAL - MAINS PLUG - NEMA 5-15P - LEVITON 5266-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718023 | ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2 - SOUTHWIRE R40018-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718024 | ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2 - SOUTHWIRE R40049-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718055 | ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2 - SOUTHWIRE 94664 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718029 | ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2 - SOUTHWIRE R40015-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718025 | ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2 - BELDEN 9536 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718028 | ELECTRICAL - CABLE - CAT6 U/UTP - BELDEN 3612 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718030 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0 - MOLEX 39-01-2025 (5557-02R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718031 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0 - MOLEX 39-01-3029 (5559-02P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718045 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0 - MOLEX 39-01-2065 (5557-06R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718046 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0 - MOLEX 39-01-3069 (5559-06P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718032 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0 - MOLEX 39-01-2045 (5557-04R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718033 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0 - MOLEX 39-01-3049 (5559-04P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718034 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0 - MOLEX 39-01-2105 (5557-10R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718035 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0 - MOLEX 39-01-3109 (5559-10P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718036 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN - MOLEX 39-00-0039 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718037 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN - MOLEX 39-00-0041 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718038 | ELECTRICAL - RJ45 PLUG - CAT6 - PANDUIT SP688E-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718039 | ELECTRICAL - RJ45 INLINE COUPLER - CAT6 - PANDUIT CC688IW | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718040 | ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP - PANDUIT NK688MWH | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718056 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN - MOLEX 39-00-0078 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718057 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN - MOLEX 39-00-0082 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718077 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 22-28 AWG TIN - MOLEX 39-00-0047 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718078 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 22-28 AWG TIN - MOLEX 39-00-0049 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718041 | ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON - HEYCO 2836N | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET - HEYCO 12431 DS-125 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY - HEYCO 3904 PMT 150 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718050 | ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K - HÄFELE 833.74.176 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718053 | ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM - HÄFELE 833.74.695 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
-| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718103 | ELECTRICAL - LED PROFILE END CAP | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718001 | ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718002 | ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718003 | ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718004 | ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718005 | ELECTRICAL - INLET SEALING CAP | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718006 | ELECTRICAL - LAN FEED-THROUGH - ETHERCON | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718007 | ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718010 | ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718011 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718012 | ELECTRICAL - FUSE - ATO 5 A 32 V | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718013 | ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718019 | ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718049 | ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718054 | ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718047 | ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718014 | ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718015 | ELECTRICAL - BONDING WASHER - SERRATED M6 A2 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718016 | ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #353 | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #353 | H-09 | yes | T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | PR #353 | H-03 | yes | J-T1, T06 | done |
+| 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718073 | ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718026 | ELECTRICAL - CABLE - 4 X 20 AWG | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718027 | ELECTRICAL - CABLE - 4 X 24 AWG SCREENED | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718051 | ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718052 | ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718044 | ELECTRICAL - DRAW CORD - NYLON 3 MM | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718048 | ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718060 | ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE) | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718061 | ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718062 | ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718063 | ELECTRICAL - LIGHT KNOB - POTENTIOMETER WITH KNOB | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718069 | ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718064 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718065 | ELECTRICAL - INLET TEMPERATURE SENSOR | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718066 | ELECTRICAL - FUSE - ATO 2 A 32 V | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718067 | ELECTRICAL - FUSE - ATO 1 A 32 V | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718068 | ELECTRICAL - FAN Y-CABLE - 4-PIN PWM | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718070 | ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718071 | ELECTRICAL - CORD - SJT 14/3 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718072 | ELECTRICAL - MAINS PLUG - NEMA 5-15P | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718023 | ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718024 | ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718029 | ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718025 | ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718028 | ELECTRICAL - CABLE - CAT6 U/UTP | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718030 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718031 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718045 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718046 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718032 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718033 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718034 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718035 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718036 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718037 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718038 | ELECTRICAL - RJ45 PLUG - CAT6 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718039 | ELECTRICAL - RJ45 INLINE COUPLER - CAT6 | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718040 | ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718041 | ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718050 | ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718053 | ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM | PR #353 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | PR #353 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | PR #353 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718103 | ELECTRICAL - LED PROFILE END CAP | PR #353 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | PR #353 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
 
 ### FRONT
 
@@ -468,6 +460,7 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 | 368006 | FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD | PR #339 | H-18 | HOLD | T13 | HOLD |
 | 368103 | FRONT - DOOR PULL PAIR - HOLD | PR #339 | H-24 | HOLD | T13 | HOLD |
 | 368008 | FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD | PR #339 | H-43 | HOLD | no | HOLD |
+| 368009 | FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD | PR #339 | no | HOLD | no | HOLD |
 | 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | main | H-19 | yes | F-03 | done |
 | 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | main | H-17 | HOLD | T13 | HOLD |
 
@@ -482,7 +475,7 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #343 | H-02 | HOLD | J-T2 | HOLD |
 | 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #343 | H-04 | HOLD | J-T3 | HOLD |
 | 518001 | LINING - CASSETTE CLIP | PR #343 | H-10 | HOLD | T07 | HOLD |
-| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | PR #343 | H-13 | yes | no | open: test |
+| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | PR #343 | H-13 | no | no | open: maker and SKU, test |
 | 848012 | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN | PR #343 | H-14 | HOLD | F-03 | HOLD |
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #343 | H-01P | yes | J-T1 | done |
 | 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | PR #343 | H-04B | HOLD | J-T3, J-T5 | HOLD |
@@ -493,7 +486,6 @@ What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CA
 |---|---|---|
 | 108001 | H-07 | POD - HEX KEY - 5 MM BALL END |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
-| 368009 | H-46 | FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD |
 | 838011 | H-44 | HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 200HV ZINC |
 
 ## How it's built
