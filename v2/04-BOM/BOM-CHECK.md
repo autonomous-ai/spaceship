@@ -195,7 +195,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 128 numbers, 118 not in a team's list yet, 4 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 128 numbers, 117 not in a team's list yet, 4 in use, 7 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -326,7 +326,7 @@ From `v2/04-BOM/number-allocation.csv`: 128 numbers, 118 not in a team's list ye
 | 611502 | AIR - INTAKE BOOT | 610401 | 1 | ALLOCATED |
 | 611303 | AIR - CARTRIDGE INLET GASKET | 610301 | 2 | ALLOCATED |
 | 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | ALLOCATED |
-| 351307 | FRONT - DECOR SEAM BAR - DR - REMOVABLE | 350003 | 1 | ALLOCATED |
+| 351307 | FRONT - DECOR SEAM BAR - DR - REMOVABLE | 350003 | 1 | CANCELLED |
 
 ## Rules
 
