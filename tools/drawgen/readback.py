@@ -442,18 +442,20 @@ def flat_feature_fails(data, planes, texts, tol=TOL):
         p0 = ch["pts"][0]
         fs = [f for f in planes if abs(abs(dot(f["n"], n)) - 1) < 1e-4 and
               all(abs(dot(sub(q, p0), n)) < 0.01 for q in f["pts"])]
-        where = "chamfer at the %s end" % ("+" if ch["sgn"] > 0 else "-")
+        where = "chamfer along the member" if ch.get("long") else "chamfer at the %s end" % ("+" if ch["sgn"] > 0 else "-")
         if not fs:
             fails.append("%s: the STEP has no face where the drawing says" % where)
             continue
         qs = [q for f in fs for q in f["pts"]]
-        la = max(dot(q, lax) for q in qs) - min(dot(q, lax) for q in qs)
-        ls = max(dot(q, side) for q in qs) - min(dot(q, side) for q in qs)
+        d1, d2 = ch.get("leg_dirs") or (lax, side)      # an end bevel: along the member and the side; a long one: across
+        la = max(dot(q, d1) for q in qs) - min(dot(q, d1) for q in qs)
+        ls = max(dot(q, d2) for q in qs) - min(dot(q, d2) for q in qs)
         v = _num(ch["text"])
         if v is None or abs(v - la) > tol or abs(v - ls) > tol or not ch["text"].endswith("x 45°"):
             fails.append("%s: the sheet says %s, the STEP's legs %.3f and %.3f" % (where, ch["text"], la, ls))
         tip = ch["tip"]
-        if not _text_near(texts, ch["text"], (tip[0], tip[1], tip[0], tip[1])):
+        at = ch.get("box") or (tip[0], tip[1], tip[0], tip[1])
+        if not _text_near(texts, ch["text"], at, pad=2.5 if ch.get("box") else 25.0):
             fails.append("%s: its size %s is not printed by it" % (where, ch["text"]))
     return fails
 
