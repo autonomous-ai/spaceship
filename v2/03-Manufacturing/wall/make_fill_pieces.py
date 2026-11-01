@@ -1,6 +1,6 @@
 """The distinct WALL cavity-fill pieces for D-120 (each piece its own component and number), from the build
 scripts' own formulas: the bays between the frame members and the pockets left beside every bolt the panel
-drives (FR-10), plus B2's ELECTRICAL cut-outs (F47).
+drives (FR-10), plus B2's ELECTRICAL cut-outs (F47) and its bays round the power unit.
 
     python3 v2/03-Manufacturing/wall/make_fill_pieces.py
 
@@ -89,8 +89,9 @@ def side_pieces():
 
 def back_pieces():
     out = []
-    for code in ("B1", "B3", "B4"):  # B2 waits for its layout (PM 2026-11-01; D-133)
-        v = t.resolve(t.load_back(code, "panel"))
+    for code in ("B1", "B2", "B3", "B4"):
+        ns = t.load_back(code, "panel")
+        v = t.resolve(ns)
         col, row = ("L" if code in ("B1", "B3") else "R"), (1 if code in ("B1", "B2") else 2)
         xlo = (-v["close_gap"] / 2 - v["half_fw"]) if col == "L" else v["close_gap"] / 2
         xhi = xlo + v["half_fw"]
@@ -98,7 +99,7 @@ def back_pieces():
         z1 = v["panel_z0"] + v["back_ph"] if row == 1 else v["panel_z0"] + v["back_oh"]
         p, n, tw, pw = v["stile_pitch"], int(round(v["stile_n_mid"])), v["tube_w"], v["pocket_w"]
         zs = (z0 + tw, z1 - v["top_h"])
-        bays = [(xlo + tw + k * p, xlo + (k + 1) * p) for k in range(n + 1)]
+        xs = [(xlo + tw + k * p, xlo + (k + 1) * p) for k in range(n + 1)]
         pockets = []
         for i in range(int(round(v["n_len_bolt"]))):
             xc = xlo + v["bolt_edge"] + i * v["len_bolt_pitch"]
@@ -111,17 +112,27 @@ def back_pieces():
             for j in range(3):
                 zc = z0 + v["bolt_edge"] + j * v["side_jnt_pitch"]
                 pockets.append((min(xin, xin + sg * pw), max(xin, xin + sg * pw), zc - pw / 2, zc + pw / 2))
-        if code == "B2":                 # ELECTRICAL's cut-outs in the first bay (EL_PARAMS; rationale F47)
-            pv = t.resolve(t.load_back("B2", "panel"))
-            stud = xlo + p + tw / 2
-            pockets += [(pv["el_cut_x0"], stud, pv["el_cut_z0"], pv["el_cut_z1"]),
-                        (pv["el_sl_x"] - pv["el_sl_w"] / 2, pv["el_sl_x"] + pv["el_sl_w"] / 2,
-                         pv["el_inlet_z"] - pv["el_inlet_d"] / 2, pv["el_cut_z0"]),
-                        (pv["el_inlet_x"] - pv["el_inlet_d"] / 2, pv["el_sl_x"] + pv["el_sl_w"] / 2,
-                         pv["el_inlet_z"] - pv["el_inlet_d"] / 2, pv["el_lan_z"] + pv["el_inlet_d"] / 2)]
-        for k, (b0, b1) in enumerate(bays):
-            out.append(piece(code, k + 1, b0, b1, zs, pockets, "2102%02d" % int(code[1]),
-                             "ELECTRICAL cut-outs (power unit, sleeve, inlet and LAN)" if code == "B2" and k == 0 else ""))
+        # (x range, z range, openings, note) per bay, in the builder's order (back_bays)
+        bays = [(x, zs, pockets, "") for x in xs]
+        if code == "B2":
+            # the builder's own bays and cuts round the power unit (the Lead's approval of WALL's B2 frame and ELECTRICAL's
+            # envelopes, 2026-11-01): bays 1 and 2 below and above the cross members, then 3 and 4, then the piece between
+            # the mains and LAN channels (B2_ISLAND); B2_CUTS through bay 1's piece below the unit
+            def ev(e):
+                return t.evaluate(e, v)
+
+            def rects(cuts):
+                return [(ev(x0), ev(x1), ev(z0_), ev(z1_)) for _l, (x0, x1), (z0_, z1_) in cuts]
+            lo, up = (zs[0], v["xm_z0"]), (v["xm_z1"], zs[1])
+            (ix0, ix1), (iz0, iz1) = ns["B2_ISLAND"]
+            bays = ([(xs[0], lo, pockets + rects(ns["B2_CUTS"]), "ELECTRICAL's cut-outs: the inlet's box, the jack, "
+                                                                 "the mains and LAN channels"),
+                     (xs[1], lo, pockets, ""), (xs[0], up, pockets, ""), (xs[1], up, pockets, "")]
+                    + [(x, zs, pockets, "") for x in xs[2:]]
+                    + [((ev(ix0), ev(ix1)), (ev(iz0), ev(iz1)), rects(ns["B2_ISLAND_NOTCHES"]),
+                        "between the mains and LAN channels")])
+        for k, ((b0, b1), zr, opens, note) in enumerate(bays):
+            out.append(piece(code, k + 1, b0, b1, zr, opens, "2102%02d" % int(code[1]), note))
     return out
 
 
@@ -289,8 +300,8 @@ def main():
           "own DXF (the full outline with every notch and opening, CUT layer, 1:1 mm, seen in its first bay: u to "
           "the right, v up) and needs no drawing (D-128); its parts-list rows give material, density, thickness, "
           "tolerance and part number. The fit column of FILL-PIECES.csv says how each bay takes its piece.", "",
-          "%d bays in %d positions, %d distinct forms. B2 waits for its layout (PM 2026-11-01: the unit's 373 mm "
-          "bay framed with welded cross members; the unit changes for D-133)." % (
+          "%d bays in %d positions, %d distinct forms. B2's bays follow its frame round the power unit (the Lead's "
+          "approval of WALL's B2 frame, 2026-11-01) and ELECTRICAL's cut-outs behind its skin." % (
               len(pieces), len({p["position"] for p in pieces}), len(forms)), "",
           "| Form | Number | Size w x h | Notches and openings (u, v ranges) | Bays it fills | DXF |",
           "|---|---|---|---|---|---|"]

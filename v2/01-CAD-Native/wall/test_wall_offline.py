@@ -349,7 +349,7 @@ class WallBackPanelTest(unittest.TestCase):
 
 # ELECTRICAL P01 (electrical_model.py, PR #64) with the PM's final sizes of 2026-10-31 20:38 UTC: where its
 # features sit in the right linings (mm)
-EL_SIDE_EXPECT = {"1": {"el_y_kit": 240.5, "el_y_cx": -298.0, "el_trunk_z": 1100.0, "el_kit_d": 60.0, "el_grm_d": 19.1,
+EL_SIDE_EXPECT = {"1": {"el_y_kit": 240.5, "el_y_fx": -312.0, "el_z_fx": 1162.5, "el_fx_d": 32.0, "el_trunk_z": 1100.0, "el_kit_d": 60.0,
                         "el_fs_y0": 2.0, "el_fs_y1": 20.0, "el_fs_dz": 60.0, "el_kit_dz": 80.0},
                   "2": {"el_call_y": -209.5, "el_call_z": 1450.0, "el_shelf_z": 2250.0, "el_grm_s": 12.0}}
 
@@ -383,7 +383,7 @@ class ElectricalInterfaceSideTest(unittest.TestCase):
                     boxes = {"FS-CNR": (yb + v["el_fs_y0"], yb + v["el_fs_y1"], v["el_trunk_z"] - v["el_fs_dz"],
                                         v["el_trunk_z"] + v["el_fs_dz"])}
                     holes = {"FA-KIT": (v["el_y_kit"], v["el_trunk_z"] + v["el_kit_dz"], v["el_kit_d"]),
-                             "FX-COL": (v["el_y_cx"], v["el_trunk_z"], v["el_grm_d"])}
+                             "FX-COL": (v["el_y_fx"], v["el_z_fx"], v["el_fx_d"])}
                 else:
                     boxes = {}
                     holes = {"FX-CALL0": (v["el_call_y"], v["el_shelf_z"], v["el_grm_s"]),
@@ -400,8 +400,10 @@ EL_BACK_EXPECT = {("B2", "cassette"): {"el_cut_x0": 91.0, "el_cut_x1": 395.0, "e
                                        "el_lt_x": 346.0, "el_y_bg": 787.5, "el_y_xc": 781.5, "el_grm_d": 19.1},
                   ("B4", "cassette"): {"el_lt_x": 346.0, "el_shelf_z": 2250.0, "el_ceil_x": 583.0, "el_ceil_z": 2330.0,
                                        "el_grm_s": 12.0, "el_shelf_d": 16.0},
-                  ("B2", "panel"): {"el_inlet_x": 120.0, "el_inlet_z": 313.0, "el_lan_z": 375.0, "el_inlet_d": 24.0,
-                                    "el_sl_x": 150.0, "el_cut_x0": 91.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0}}
+                  # ELECTRICAL's B2 inputs (2026-11-01): the jack moved to X 170 for 50 from the mains everywhere
+                  ("B2", "panel"): {"el_inlet_x": 120.0, "el_inlet_z": 313.0, "el_lan_x": 170.0, "el_lan_z": 375.0,
+                                    "el_inlet_d": 24.0, "el_cut_x0": 91.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0,
+                                    "el_ps_mains_x": 113.0, "el_ps_lan_x": 207.0, "el_rn_xl1": 160.0, "el_rn_xu1": 110.0}}
 
 
 class ElectricalInterfaceBackTest(unittest.TestCase):
@@ -460,6 +462,19 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
         self.assertGreaterEqual(zone[0], stub[0] - 1e-6)
         self.assertLessEqual(zone[1], stub[1] + 1e-6)
         self.assertGreater(zone[0] - c["el_cut_z1"], 15)                   # clear of the tray's unit cut-out
+
+    def test_b2_fill_cut_keeps_the_cables_apart(self):
+        """B2's fill cut behind the skin (ELECTRICAL's envelopes and channels, 2026-11-01): the mains side of the cut
+        (the cleared strip and its jog) stays 50 or more from the LAN side (the band along the jack's top and its channel
+        up to the passage), as ELECTRICAL's rule asks; the jack sits right of the inlet's box."""
+        ns = load_back("B2", "panel")
+        v = resolve(ns)
+        cuts = {lab: [evaluate(e, v) for e in xr + zr] for lab, xr, zr in ns["B2_CUTS"]}
+        mains_right = max(cuts["MAINS CHANNEL"][1], cuts["MAINS JOG"][1])
+        lan = [evaluate(e, v) for e in ns["B2_ISLAND_NOTCHES"][0][1]]              # the LAN band's x range
+        self.assertGreaterEqual(lan[0] - cuts["MAINS CHANNEL"][1], 50.0)                 # at the band (62)
+        self.assertGreaterEqual(v["el_ps_lan_x"] - v["el_ch_l_w"] / 2 - mains_right, 50.0)   # at the jogs (76)
+        self.assertGreater(v["el_lan_x"] - v["el_jack_h"], v["el_inlet_x"] + v["el_box_r"])  # the jack clear of the box
 
     def test_b2_frame_members_and_bays(self):
         """B2's frame: the perimeter, studs 2 and 3, and the four members round the unit, each with a number key the
@@ -616,7 +631,7 @@ class TrayCableTieTest(unittest.TestCase):
     """ELECTRICAL's 20 cable-tie holes (the Lead's relay of 2026-11-01 11:37 UTC): Ø6.4 in R1's, R2's, B4's and B2's tray
     backs at ELECTRICAL's places, each inside its tray's back with room round it; none in L1, L2, B1 or B3."""
 
-    WANT = {"R1": ("y", [767.0, 657.0, 476.2, 295.5, 185.5, -41.5, -268.4], "el_trunk_z", 1100.0),
+    WANT = {"R1": ("y", [767.0, 657.0, 476.2, 295.5, 185.5, 23.8, -268.4], "el_trunk_z", 1100.0),
             "R2": ("z", [1476.0, 1688.7, 1901.3, 2114.0, 2224.0], "el_call_y", -209.5)}
 
     def test_side_trays_carry_electricals_ties(self):
