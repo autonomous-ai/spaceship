@@ -6,9 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (2b0d809), PR #324 (f824ebc), PR #313 (92c34ed), PR #320 (889fc54), PR #306 (b65cb37), PR #305 (6877280), PR #319 (2ffa0be), PR #310 (ea04237), PR #337 (a41cab4), PR #339 (7d0bf01), PR #343 (f4e9a52), PR #303 (1fadcaf). The Mac's screen at run time: **unlocked**. 572 files in the CAD, drawing and manufacturing folders; the FAI plan's 91 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (d50a0a0), PR #324 (f824ebc), PR #320 (889fc54), PR #306 (b65cb37), PR #319 (2ffa0be), PR #337 (a41cab4), PR #346 (33a1418), PR #339 (3f1f850), PR #348 (32d4b2c), PR #313 (541fe7f), PR #343 (11b2298). The Mac's screen at run time: **unlocked**. 578 files in the CAD, drawing and manufacturing folders; the FAI plan's 91 characteristics, 11 functional checks and 20 bought-part test lines.
 
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #313 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: PR #324 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #313 changed it, but main changed it later.
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/01-CAD-Native/base/110000_P01_BASE_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111103_P01_BASE-BAND-TUBE-BACK_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111301_P01_BASE-SILL-FIXED-GLASS_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111401_P01_BASE-FLOOR-PANEL-F1_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/BUILD-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/EDIT-TEST-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/MANIFEST.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/base_build.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/base_edit_test.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/base_p02.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/base/late_base.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON-PARAMETERS.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON_CAD.f3d`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/BUILD-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/EDIT-TEST-RECORD.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/pod_skeleton.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/01-CAD-Native/skeleton/skeleton_update.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #339 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #348 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #337 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #319 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #343 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #339 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #348 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #343 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-05_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-11_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-12_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_IMG.png`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/FEATURE-RATIONALE.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/base_cleanup.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/base_drawings.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/finish_pdfs.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/02-Drawings/base/run_drawings.sh`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE-TUBE-CUT-LIST_SPEC.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE_DATA.json`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/110000_P01_BASE_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111301_P01_BASE-SILL-FIXED-GLASS_DXF.dxf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111301_P01_BASE-SILL-FIXED-GLASS_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111501_P01_BASE-FLOOR-FOAM-F1-CLOSED-CELL-3-MM_DXF.dxf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_DXF.dxf`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/BASE-TEST-PLAN.md`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/base/make_outputs.py`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: PR #324 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: origin/ctl-d153-numbers changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: origin/super-tab/27d785c6f21884cfd0149f0e-time104 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #313 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #320 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #339 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #337 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #319 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #343 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -16,33 +16,34 @@ Read from main although an open PR changed them, because main changed them later
 
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| BASE | 4 | 10 | 0 | 0 | 3 | 1 | 5 |
-| CEILING | 8 | 6 | 0 | 0 | 5 | 0 | 5 |
+| BASE | 3 | 8 | 0 | 0 | 3 | 1 | 5 |
+| CEILING | 8 | 15 | 0 | 0 | 5 | 0 | 5 |
 | CEILING (builds AIR, D-80) | 11 | 13 | 0 | 7 | 4 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 7 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 1 | 0 | 3 | 66 | 0 | 14 |
-| FRONT | 48 | 22 | 0 | 3 | 5 | 0 | 7 |
-| JOINTS | 3 | 7 | 0 | 0 | 0 | 0 | 0 |
+| FRONT | 48 | 21 | 0 | 3 | 5 | 0 | 7 |
+| JOINTS | 3 | 8 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 53 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 90 | 119 | 0 | 13 | 74 | 2 | 41 |
+| **All, each number once** | 89 | 126 | 0 | 13 | 74 | 2 | 41 |
 
-108 of the 222 made numbers have no drawing yet; for 73 of them the drawing is the only gap, so their drawings can start now (D-84).
+116 of the 228 made numbers have no drawing yet; for 73 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CAD 18, STEP 13, FAI 7.
+What the open made numbers miss: drawing 116, DXF or cut list 32, BOM row 18, CAD 17, STEP 11, FAI 8.
 
 ## Made parts with no FAI line
 
-7 made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:
+8 made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:
 
 | Team | Part | Name | From |
 |---|---|---|---|
-| BASE | 111301 | BASE - SILL - FIXED GLASS | PR #303 |
-| FRONT | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #320 |
-| FRONT | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #320 |
-| FRONT | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #320 |
-| JOINTS | 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343 |
-| JOINTS | 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343 |
+| BASE | 111301 | BASE - SILL - FIXED GLASS | main |
+| JOINTS | 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343, PR #348 |
+| JOINTS | 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343, PR #348 |
+| FRONT | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #313 |
+| FRONT | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #313 |
+| FRONT | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #313 |
 | JOINTS | 831009 | HARDWARE MITRE PLATE 40X40 45DEG | main |
+| JOINTS | 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | PR #346 |
 
 ## Made parts and assemblies
 
@@ -50,39 +51,45 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 110000 | BASE | PR #303 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
-| 110101 | BASE - BAND ASSY - SIDE - LH | PR #303 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
-| 111101 | BASE - BAND TUBE - SIDE - LH | PR #303 | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
-| 111601 | BASE - GLIDE DOUBLER - COMMON | PR #303 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
-| 110102 | BASE - BAND ASSY - SIDE - RH | PR #303 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111102 | BASE - BAND TUBE - SIDE - RH | PR #303 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
-| 110103 | BASE - BAND ASSY - BACK | PR #303 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111103 | BASE - BAND TUBE - BACK | PR #303 | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
-| 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | PR #303 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | PR #303 | yes | yes | yes | no | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: DXF or cut list |
-| 111301 | BASE - SILL - FIXED GLASS | PR #303 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 110401 | BASE FLOOR PANEL ASSY F1 | main | no | no | no | — | yes | no | — | K-J13, K-J14, K-F06, K-B01 | open: BOM row, CAD, STEP |
-| 111401 | BASE FLOOR PANEL F1 | main | no | yes | yes | yes | yes | no | — | K-B02, K-B03 | open: BOM row |
-| 111501 | BASE FLOOR FOAM F1 CLOSED CELL 3 MM | main | no | no | no | yes | no | no | — | K-B04 | open: BOM row, CAD, STEP, drawing |
+| 110000 | BASE | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
+| 110101 | BASE - BAND ASSY - SIDE - LH | main | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
+| 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
+| 110102 | BASE - BAND ASSY - SIDE - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111102 | BASE - BAND TUBE - SIDE - RH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
+| 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | main | yes | yes | yes | no | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: DXF or cut list |
+| 111301 | BASE - SILL - FIXED GLASS | main | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
 
 ### CEILING
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 410000 | CEILING | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
-| 410101 | CEILING - PANEL ASSY - C1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | done |
-| 410102 | CEILING - PANEL ASSY - C2 | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
-| 411101 | CEILING - PANEL FRAME - C1 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
-| 411102 | CEILING - PANEL FRAME - C2 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
-| 411301 | CEILING - SKIN - C1 | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-P03, K-P04 | done |
-| 411302 | CEILING - SKIN - C2 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P06 | done |
-| 510301 | LINING - CASSETTE - CEILING - COMMON | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05, K-L10 | open: drawing |
-| 513101 | LINING - TRAY - CEILING | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
-| 513102 | LINING - RIB - CEILING | main | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02, K-L07 | done |
-| 513201 | LINING - FELT - CEILING | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04, K-L08 | done |
-| 513301 | LINING - FILL - CEILING - BAY A | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
-| 513302 | LINING - FILL - CEILING - BAY B | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
-| 513303 | LINING - FILL - CEILING - BAY C | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
+| 410000 | CEILING | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
+| 410101 | CEILING - PANEL ASSY - C1 | PR #348 | yes | yes | yes | n/a | yes | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | done |
+| 410102 | CEILING - PANEL ASSY - C2 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
+| 411101 | CEILING - PANEL FRAME - C1 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
+| 411102 | CEILING - PANEL FRAME - C2 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
+| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412102 | CEILING - FRAME SEAM MEMBER - C1 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412103 | CEILING - FRAME FRONT MEMBER - C1 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412202 | CEILING - FRAME SEAM MEMBER - C2 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412203 | CEILING - FRAME FRONT MEMBER - C2 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | PR #348 | yes | yes | yes | no | no | yes | yes | K-J18 | open: DXF or cut list, drawing |
+| 411301 | CEILING - SKIN - C1 | PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-P03, K-P04 | done |
+| 411302 | CEILING - SKIN - C2 | PR #348 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P06 | done |
+| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05, K-L10 | open: drawing |
+| 513101 | LINING - TRAY - CEILING | PR #348 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
+| 513102 | LINING - RIB - CEILING | PR #348 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02, K-L07 | done |
+| 513201 | LINING - FELT - CEILING | PR #348 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04, K-L08 | done |
+| 513301 | LINING - FILL - CEILING - BAY A | PR #348 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
+| 513302 | LINING - FILL - CEILING - BAY B | PR #348 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
+| 513303 | LINING - FILL - CEILING - BAY C | PR #348 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
 
 ### CEILING (builds AIR, D-80)
 
@@ -153,73 +160,72 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 350001 | FRONT - DECOR BLOCK ASSY - DL | PR #320 | yes | yes | yes | n/a | no | yes | n/a | K-D18 | open: drawing |
-| 351101 | FRONT - DECOR SKIN - DL | PR #320 | yes | yes | yes | yes | no | yes | n/a | K-D19 | open: drawing |
-| 351104 | FRONT - DECOR FRAME - DL | PR #320 | yes | yes | yes | n/a | no | yes | n/a | K-D20 | open: drawing |
-| 351102 | FRONT - DECOR BACK PLATE - DL | PR #320 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D21 | done |
-| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #320 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #320 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #320 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #320 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
-| 351201 | FRONT - DECOR SKIN - DT | PR #320 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
-| 351204 | FRONT - DECOR FRAME - DT | PR #320 | yes | yes | yes | n/a | no | yes | n/a | K-D15 | open: drawing |
-| 351202 | FRONT - DECOR BACK PLATE - DT | PR #320 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
-| 351203 | FRONT - DOOR TOP STOP - DT | PR #320 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
-| 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #320 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
-| 351301 | FRONT - DECOR SKIN - DR | PR #320 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
-| 351306 | FRONT - DECOR FRAME - DR | PR #320 | yes | yes | yes | n/a | no | yes | n/a | K-D04, K-D05 | open: drawing |
-| 351302 | FRONT - DECOR BACK PLATE - DR | PR #320 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
-| 351305 | FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE | PR #320 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
-| 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #320 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-D09 | HOLD |
-| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | PR #320 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
-| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | PR #320 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
-| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | PR #320 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
-| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | PR #320 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
-| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | PR #320 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
-| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | PR #320 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
-| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | PR #320 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | PR #320 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 350001 | FRONT - DECOR BLOCK ASSY - DL | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D18 | open: drawing |
+| 351101 | FRONT - DECOR SKIN - DL | PR #313 | yes | yes | yes | yes | no | yes | n/a | K-D19 | open: drawing |
+| 351104 | FRONT - DECOR FRAME - DL | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D20 | open: drawing |
+| 351102 | FRONT - DECOR BACK PLATE - DL | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D21 | done |
+| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #313 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #313 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #313 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
+| 351201 | FRONT - DECOR SKIN - DT | PR #313 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
+| 351204 | FRONT - DECOR FRAME - DT | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D15 | open: drawing |
+| 351202 | FRONT - DECOR BACK PLATE - DT | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
+| 351203 | FRONT - DOOR TOP STOP - DT | PR #313 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
+| 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
+| 351301 | FRONT - DECOR SKIN - DR | PR #313 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
+| 351306 | FRONT - DECOR FRAME - DR | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D04, K-D05 | open: drawing |
+| 351302 | FRONT - DECOR BACK PLATE - DR | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
+| 351305 | FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
+| 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #313 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-D09 | HOLD |
+| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | PR #313 | yes | yes | yes | yes | no | yes | yes | K-J18 | open: drawing |
+| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | PR #313 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | PR #313 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
+| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
 | 360001 | FRONT - DOOR UNIT | PR #339 | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | PR #339 | yes | yes | yes | yes | yes | yes | n/a | K-F01, K-F02 | HOLD |
 | 361002 | FRONT - DOOR KICK STRIP | PR #339 | yes | yes | yes | yes | yes | yes | yes | K-F05, K-F06 | done |
@@ -231,16 +237,17 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 111211 | BASE - CORNER KEY - SQUARE - COMMON | PR #303 | yes | yes | yes | yes | yes | yes | yes | K-B08 | done |
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #303, PR #343 | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
-| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #303, PR #343, main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
-| 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
-| 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
+| 111211 | BASE - CORNER KEY - SQUARE - COMMON | main | yes | yes | yes | yes | yes | yes | yes | K-B08 | done |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #343, main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
+| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #343, PR #348, main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
+| 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343, PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
+| 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343, PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
 | 111212 | BASE CORNER KEY FRONT LH | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 111213 | BASE CORNER KEY FRONT RH | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 111214 | BASE CORNER KEY KNEE LH | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 111215 | BASE CORNER KEY SQUARE INLINE | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 831009 | HARDWARE MITRE PLATE 40X40 45DEG | main | no | no | yes | yes | no | no | — | no | open: BOM row, CAD, drawing, FAI |
+| 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | PR #346 | no | no | yes | — | on 831001, tabulated (D-89) | no | — | no | open: BOM row, CAD, FAI |
 
 ### WALL
 
@@ -314,30 +321,30 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 118002 | BASE - LEVELLING GLIDE - M10 - HOLD | PR #303 | H-25 | HOLD | no | HOLD |
-| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | PR #303 | H-27 | HOLD | no | HOLD |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #303 | H-01 | yes | J-T1, T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | PR #303 | H-03 | yes | J-T1, T06 | done |
-| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | PR #303 | H-31 | yes | J-T6 | done |
-| 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD | PR #303 | H-26 | HOLD | no | HOLD |
-| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | PR #303 | H-06 | HOLD | J-T4 | HOLD |
-| 838007 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 | PR #303 | H-28 | yes | no | open: test |
-| 838008 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD | PR #303 | H-29 | HOLD | no | HOLD |
+| 118002 | BASE - LEVELLING GLIDE - M10 - HOLD | main | H-25 | HOLD | no | HOLD |
+| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | main | H-27 | HOLD | no | HOLD |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | J-T6 | done |
+| 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD | main | H-26 | HOLD | no | HOLD |
+| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | main | H-06 | HOLD | J-T4 | HOLD |
+| 838007 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 | main | H-28 | yes | no | open: test |
+| 838008 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD | main | H-29 | HOLD | no | HOLD |
 
 ### CEILING
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 518001 | LINING - CASSETTE CLIP | main | H-10 | HOLD | T07 | HOLD |
-| 518002 | LINING - CEILING SAFETY CATCH | main | H-11 | HOLD | T08 | HOLD |
-| 108002 | POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE | main | H-12 | yes | T09 | done |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
-| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
-| 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | main | H-02 | HOLD | J-T2 | HOLD |
-| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | main | H-04 | HOLD | J-T3 | HOLD |
-| 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | main | H-04B | HOLD | J-T3, J-T5 | HOLD |
+| 518001 | LINING - CASSETTE CLIP | PR #348 | H-10 | HOLD | T07 | HOLD |
+| 518002 | LINING - CEILING SAFETY CATCH | PR #348 | H-11 | HOLD | T08 | HOLD |
+| 108002 | POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE | PR #348 | H-12 | yes | T09 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #348 | H-01 | yes | J-T1, T06 | done |
+| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #348 | H-01P | yes | J-T1 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | PR #348 | H-03 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #348 | H-09 | yes | T06 | done |
+| 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #348 | H-02 | HOLD | J-T2 | HOLD |
+| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #348 | H-04 | HOLD | J-T3 | HOLD |
+| 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | PR #348 | H-04B | HOLD | J-T3, J-T5 | HOLD |
 
 ### CEILING (builds AIR, D-80)
 
@@ -451,9 +458,9 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 368005 | FRONT - FRAME-STOP SEAL | PR #320 | H-20 | yes | F-03 | done |
-| 368007 | FRONT - DOOR CATCH - IN DT | PR #320 | H-23 | yes | F-02 | done |
-| 848013 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | PR #320 | H-34 | HOLD | T06 | HOLD |
+| 368005 | FRONT - FRAME-STOP SEAL | PR #313 | H-20 | yes | F-03 | done |
+| 368007 | FRONT - DOOR CATCH - IN DT | PR #313 | H-23 | yes | F-02 | done |
+| 848013 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | PR #313 | H-34 | HOLD | T06 | HOLD |
 | 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | PR #339 | H-15 | yes | T13 | done |
 | 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #339, main | H-16 | yes | F-03 | done |
 | 368101 | FRONT - DOOR HINGE - HOLD | PR #339 | H-21 | HOLD | T13 | HOLD |
@@ -486,6 +493,7 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 |---|---|---|
 | 108001 | H-07 | POD - HEX KEY - 5 MM BALL END |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
+| 368009 | H-46 | FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD |
 | 838011 | H-44 | HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 200HV ZINC |
 
 ## How it's built
@@ -497,7 +505,7 @@ What the open made numbers miss: drawing 108, DXF or cut list 24, BOM row 20, CA
 - The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: the Joints Engineer makes them and the teams place them by reference (D-95).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
 - D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: "on hold" does; "holds", "holder" and "threshold" don't.
-- D-113: the parts tools/drawgen draws (its specs.py: 111101, 111103, 211101, 211102) are never blocked by a locked screen, because drawgen doesn't run in Fusion.
+- D-113: the parts tools/drawgen draws (its specs.py: 111101, 111102, 111103, 111106, 211101, 211102) are never blocked by a locked screen, because drawgen doesn't run in Fusion.
 - D-128 (a felt or fill piece with through-openings or edge notches on its DXF and a full parts-list row) is read by the mechanical check's own functions (prism_shapes, felt_dxf_lacks), from the working tree only, as C05 reads it; a plain rectangle on a full cut-list row passes on D-89 first.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.
