@@ -33,6 +33,12 @@ Inputs (status in brackets):
     band's back end at Y 850 with the key turned either way. At FR1 that stepped hole
     would be 12.2 from the rail's end, so FR1 keeps the first layout under its own
     number, 111215.
+  The right back corner's key is the same 111211 turned 180 deg, so the two side bands' fixing
+  holes are not mirror images: BASE drills each band from its own rows here, never by mirroring.
+- The fixing holes' Ø5.0 drill, 18 deep with a 118 deg point, ends 19.5 above the key's bottom;
+  the lower stud hole's bottom is 26 - 5.03 / 2 above it, so the wall between them is 4.0,
+  measured straight up as if the holes were in line (they sit 6 or 7 off the centre line, so the
+  true wall is more); checked, at least 2.0 [calculation; the floor an assumption].
 
 Sign of the cut: in the key's own frame (x along the carrier toward the joint,
 z up, y = z cross x, so y points to the left of x), a positive cut makes the
@@ -82,6 +88,22 @@ TAP = 5.03             # the key's M6 tap drill: C09 wants 2 x it from every fac
 FIX_HOLE = 7.0         # the carrier's clearance hole: 2 x it from the carrier's cut end (PM ruling)
 FLANGE = 13.6          # 838010's flange, at most: the screws stay at least 14 apart (PM ruling)
 KEY_W = 35.0
+FIX_DRILL = 18.0       # the fixing holes' Ø5.0 drill depth: thread 15 + 3 for the point (joints register J-BASE-02)
+DRILL_TIP = 2.5 / math.tan(math.radians(59.0))   # a 118 deg point on the Ø5.0 drill stands 1.50 (calculation)
+STUD_WALL_MIN = 2.0    # the least wall between a fixing hole's drill point and the lower stud hole (assumption: the
+                       # drill depth's 0.5 and 1.5 of wall)
+
+
+def stud_wall():
+    """The wall from the fixing holes' drill points (FIX_DRILL + DRILL_TIP above the key's bottom) up to the lower
+    stud hole's bottom, measured straight up as if the holes were in line (the true wall is more: they sit off the
+    centre line). Refuses under STUD_WALL_MIN, so a deeper drill or a lower stud can't break into the stud hole."""
+    tip = FIX_DRILL + DRILL_TIP
+    wall = STUD_Z[0] - TAP / 2 - tip
+    if wall < STUD_WALL_MIN - 1e-6:
+        raise SystemExit("the fixing holes' drill points end %.2f above the key's bottom, %.2f below the lower stud "
+                         "hole: under %.1f" % (tip, wall, STUD_WALL_MIN))
+    return tip, wall
 
 
 def unit(v):
@@ -180,6 +202,7 @@ def check_holes(pn, joint, face, u, cut, src, holes):
 
 
 def build():
+    stud_wall()
     rows, checks, turns = joints()
     for name, (got, want) in checks.items():
         if math.hypot(got[0] - want[0], got[1] - want[1]) > 0.05:
@@ -234,7 +257,9 @@ def main():
         with open(OUT) as f:
             if f.read() != text:
                 raise SystemExit("corner-keys.csv is stale: run corner_keys.py")
-        print("corner-keys.csv is current")
+        tip, wall = stud_wall()
+        print("corner-keys.csv is current; the fixing holes' drill points end %.1f above the key's bottom, %.1f below "
+              "the lower stud hole" % (tip, wall))
         return
     with open(OUT, "w") as f:
         f.write(text)
