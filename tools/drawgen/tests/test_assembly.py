@@ -161,7 +161,10 @@ def test_unmodelled_rows_and_reference_parts():
     text = fitz.open(_made("410101")[0])[0].get_text()
     assert "3*" in text and "not in the STEP" in text
     _f, rep = _made("610101")
-    assert rep["data"]["refs"] == ["610301"]
+    # the hub zone 618101 left AIR's list in #378 (ELECTRICAL's hub fills that space), but its body stays in the column's
+    # STEP until the next AIR rebuild (the combined harness and soffit supports PR), so for now it draws as a reference
+    # outline too; once that rebuild lands, only the cartridge 610301 is a reference part here again
+    assert sorted(rep["data"]["refs"]) == ["610301", "618101"], rep["data"]["refs"]
     text = fitz.open(_made("610101")[0])[0].get_text()
     assert "reference outline" in text and "under 610000" in " ".join(text.split())
 
