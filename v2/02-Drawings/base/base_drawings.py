@@ -82,6 +82,22 @@ SPEC = {
         ("top", VO.TopViewOrientationType, 0.2, (420.0, 370.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.1, (420.0, 200.0)),
     ], [("front", True, "both"), ("top", False, "v")]),
+    # P02's subassemblies (their own designs, saved by base_build.py with --arg sub_list)
+    "110102": ("110102_P01_BASE-BAND-ASSY-SIDE-RH_DWG", "assembly", [      # A2; runs along Y; 110101's mirror
+        ("right", VO.RightViewOrientationType, 0.2, (300.0, 300.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (520.0, 215.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.1, (300.0, 180.0)),
+    ], [("right", True, "both"), ("top", False, "h")]),
+    "110106": ("110106_P01_BASE-BAND-ASSY-FRONT-FIXED-GLASS_DWG", "assembly", [   # A2; FR1 and its sill, along X
+        ("front", VO.FrontViewOrientationType, 0.5, (300.0, 300.0)),
+        ("top", VO.TopViewOrientationType, 0.5, (300.0, 210.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (300.0, 110.0)),
+    ], [("front", True, "both"), ("top", False, "v")]),
+    "110104": ("110104_P01_BASE-BAND-ASSY-FRONT-LH_DWG", "assembly", [     # A3; DL's two facets: the plan shows them
+        ("top", VO.TopViewOrientationType, 1.0, (190.0, 150.0)),
+        ("front", VO.FrontViewOrientationType, 1.0, (190.0, 250.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (330.0, 220.0)),
+    ], [("top", True, "both"), ("front", False, "v")]),
 }
 
 
