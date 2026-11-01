@@ -234,3 +234,122 @@ def test_route_bodies_have_no_gap_rule_and_a_clash_names_both_teams():
     fs = rf.findings_from(res, "assembly")
     assert [(f.check, f.severity, f.owner) for f in fs] == [("C01", "severe", "CEILING; ELECTRICAL")]
 
+
+
+# ----------------------------------------------------------------- run on main 9e0dcd1 (the checker's own faults)
+
+STEPS = ["/x/v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+         "/x/v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+         "/x/v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step",
+         "/x/v2/03-Manufacturing/base/110000_P01_BASE_STEP.step"]
+RESERVED = {"351404": {"owner": "AIR"}}
+ALLOW = [{"id": "BOLT-IN-THREAD", "a": r"\b(BOLT|SCREW)\b", "b": r"\b(RIVNUT|RIVET NUT|NUT|INSERT|CLINCH)\b",
+          "max_mm3": "0"},
+         {"id": "SCREW-IN-TAPPED-KEY", "a": r"\b(BOLT|SCREW)\b", "b": r"\b(CORNER|INLINE|KNEE) KEY\b",
+          "max_mm3": "260"}]
+
+
+def test_a_reserved_space_takes_its_owners_parts_but_no_one_elses():
+    space = "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE:1 / B1"
+    res = {"steps": STEPS, "clashes": [
+        {"a": "610000_P01_AIR_CAD:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1", "b": space, "mm3": 326455.5},
+        {"a": space, "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3",
+         "mm3": 90.6}]}
+    fs = rf.findings_from(res, "assembly", reserved=RESERVED)
+    assert len(fs) == 1 and "710023" in fs[0].subject and fs[0].owner == "ELECTRICAL; FRONT"
+
+
+def test_a_clash_reports_its_largest_overlap_once():
+    a = "610000_P01_AIR_CAD:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1"
+    res = {"steps": STEPS, "clashes": [
+        {"a": a, "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1", "mm3": 217790.1},
+        {"a": a, "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body5", "mm3": 247.1}]}
+    fs = rf.findings_from(res, "assembly")
+    assert len(fs) == 1 and fs[0].evidence["mm3"] == 217790.1 and fs[0].evidence["pairs"] == 2
+    assert "largest of 2 body pairs" in fs[0].message and fs[0].owner == "CEILING; ELECTRICAL"
+
+
+def _corner_bolt(**kw):
+    b = _bolt(bolt="110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - "
+                   "M6 X 16 - ISO 4762 8.8 ZINC:1 / Body1", length_mm=22.0, head=[-1217.8, 830.0, 37.5],
+              layers=[{"body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE "
+                               "- SIDE - LH:1 / Body1", "from_head_mm": 6.5, "to_mm": 7.75, "is_nut": False},
+                      {"body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - "
+                               "BACK - COMMON:1 / Body1", "from_head_mm": 8.0, "to_mm": 37.75, "is_nut": False}],
+              tool_blocked_by=[{"body": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - "
+                                        "BAND TUBE - SIDE - LH:1 / Body1", "segment": "room", "mm3": 438.3}])
+    b.update(kw)
+    return b
+
+
+def test_a_screw_in_a_tapped_key_has_its_thread_and_needs_one_and_a_half_diameters():
+    # F-017 / J-BASE-02: the base corner key is tapped; the stud engages 14 mm (22 - 8)
+    assert rf.findings_from({"steps": STEPS, "fasteners": [_corner_bolt(tool_blocked_by=[])]}, "assembly",
+                            allow_rows=ALLOW) == []
+    # without the allow rule the key isn't known as a thread
+    assert rules_of(rf.findings_from({"steps": STEPS, "fasteners": [_corner_bolt(tool_blocked_by=[])]},
+                                     "assembly")) == ["no-thread-found"]
+    # 8 mm of thread in it is under 1.5 x 6 = 9
+    short = _corner_bolt(tool_blocked_by=[], layers=[dict(_corner_bolt()["layers"][1], from_head_mm=14.0)])
+    fs = rf.findings_from({"steps": STEPS, "fasteners": [short]}, "assembly", allow_rows=ALLOW)
+    assert rules_of(fs) == ["short-engagement"] and "9.0 mm" in fs[0].message and fs[0].owner == "BASE"
+
+
+def test_a_factory_fitted_stud_is_only_blocked_by_its_own_band_piece():
+    factory = [{"pattern": r"BAND ASSY[^/]*/ 8380(01|10)\b", "why": "J-BASE-02"}]
+    fs = rf.findings_from({"steps": STEPS, "fasteners": [_corner_bolt()]}, "assembly", allow_rows=ALLOW)
+    assert rules_of(fs) == ["tool-blocked"]                 # the side band goes on after it, on site
+    assert rf.findings_from({"steps": STEPS, "fasteners": [_corner_bolt()]}, "assembly", allow_rows=ALLOW,
+                            factory=factory) == []
+    own_piece = {"body": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 "
+                         "/ Body1", "segment": "axis", "mm3": 50.0}
+    fs = rf.findings_from({"steps": STEPS, "fasteners": [_corner_bolt(tool_blocked_by=[own_piece])]}, "assembly",
+                          allow_rows=ALLOW, factory=factory)
+    assert rules_of(fs) == ["tool-blocked"]
+
+
+def test_a_bolt_is_never_blocked_by_its_own_bodies_and_a_stub_model_is_one_finding():
+    bolt = "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1"
+    whole = _bolt(bolt=bolt + " / Body2", length_mm=31.0,
+                  layers=[{"body": "w / 838003 HARDWARE - RIVET NUT - M6:1 / Body1", "from_head_mm": 8.0,
+                           "to_mm": 22.0, "is_nut": True}],
+                  tool_blocked_by=[{"body": bolt + " / Body1", "segment": "axis", "mm3": 276.5}])
+    assert rf.findings_from({"steps": STEPS, "fasteners": [whole]}, "assembly") == []
+    stub = dict(whole, length_mm=7.0, layers=[])
+    fs = rf.findings_from({"steps": STEPS, "fasteners": [stub]}, "assembly")
+    assert rules_of(fs) == ["fastener-model"] and "31.0 mm" in fs[0].message and fs[0].owner == "CEILING"
+    assert rf.nominal_length("HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2") == (6.0, 12.0, 15.3)
+    assert rf.nominal_length("HARDWARE - BOLT - M6 X 50") is None
+
+
+def test_a_saved_door_swing_that_moved_a_part_outside_the_door_is_set_aside():
+    rows = [{"moving": "DOOR[- ]UNIT|DOOR LEAF|DOOR KICK STRIP", "fixed_exclude": "HINGE", "direction": "outward"}]
+    swing = {"direction": "outward", "max_deg": 90.0, "rule": "r",
+             "moving": ["360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF:1 / Body1",
+                        "610000_P01_AIR_CAD:1 / 611105 AIR - KICK GRILLE:1 / Body1"],
+             "first_hit": {"angle_deg": 0.5, "moving": "610000_P01_AIR_CAD:1 / 611105 AIR - KICK GRILLE:1 / Body1",
+                           "hits": "x / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1", "mm3": 400.0}, "hits": []}
+    notes = []
+    assert rf.findings_from({"door_swing": [swing]}, "assembly", door_rows=rows, notes=notes) == []
+    assert notes and "611105 AIR - KICK GRILLE" in notes[0]
+    good = dict(swing, moving=swing["moving"][:1],
+                first_hit=dict(swing["first_hit"], moving=swing["moving"][0]))
+    fs = rf.findings_from({"door_swing": [good]}, "assembly", door_rows=rows)
+    assert rules_of(fs) == ["door-swing"] and fs[0].evidence["model"] == "assembly/fusion-swing"
+
+
+def test_todays_allow_list_reads_a_saved_run_both_ways():
+    # the run on 9e0dcd1 allowed AIR's HOLD riser transition through the fixed glass under HOLD-ON-GLASS; the rule is
+    # now for one file's own HOLD hardware on its own glass, so the saved clash comes back
+    hold_on_glass = {"id": "HOLD-ON-GLASS", "a": r"\bHOLD\b", "b": "DOOR LEAF|FIXED GLASS|LAMINATED", "max_mm3": "0",
+                     "scope": "same-file"}
+    res = {"steps": STEPS, "clashes": [
+        {"a": "610000_P01_AIR_CAD:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+         "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+         "mm3": 152005.9, "allowed": "HOLD-ON-GLASS"},
+        {"a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+         "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H1 BOTTOM:1 / Body1",
+         "mm3": 105120.0, "allowed": "HOLD-ON-GLASS"}]}
+    fs = rf.findings_from(res, "assembly", allow_rows=[hold_on_glass])
+    assert len(fs) == 1 and "618103" in fs[0].subject and fs[0].evidence["mm3"] == 152005.9
+    assert rf.findings_from(res, "assembly") == []           # no list given: the run's own marks stand
