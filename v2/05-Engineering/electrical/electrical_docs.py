@@ -44,7 +44,12 @@ OUT_PNG = "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM-SHEET%
 
 RHO_CU = 0.0178        # ohm mm2 / m, copper at 20 C (source: standard value)
 RHO_CU_60 = RHO_CU * (1 + 0.00393 * 40)   # at 60 C conductor temperature (calculation)
-V_BUS = 12.0
+
+def circuit_v(circuit):
+    """The voltage of a 12 or 24 V circuit: its supply's output (D-168), from the supply named first in the circuit;
+    the hub's signal and sense lines (hub I/O) count at the hub's 12 V."""
+    sid = circuit.split()[0]
+    return EP.BUS_V.get(sid, EP.BUS_V["PS3"])
 MAINS_V = 120                  # V, US 60 Hz (D-133, PM 2026-11-01; was 220 V for a Vietnam prototype)
 AWG14_MM2, AWG14_OHM_KM = 2.08, 8.28   # 14 AWG copper: area and resistance at 20 °C (source: AWG table)
 
@@ -158,7 +163,7 @@ def harness_rows(v):
         if a and area and h["circuit"] not in ("mains %d V" % MAINS_V, "PE", "LAN"):
             loop = 2 * L / 1000.0 * RHO_CU_60 / area / h.get("parallel", 1)
             r["drop_v"] = fmt(a * loop, 3)
-            r["drop_pct"] = fmt(100 * a * loop / V_BUS, 2)
+            r["drop_pct"] = fmt(100 * a * loop / circuit_v(h["circuit"]), 2)
         rows.append(r)
     return rows
 
@@ -170,49 +175,50 @@ HARNESS_HEADER = ["id", "harness_pn", "segment", "function", "from", "to", "rout
 
 # ------------------------------------------------------------------ load table
 LOAD_HEADER = ["id", "load", "supply", "fuse", "qty", "w_each_max", "w_total_max", "w_each_typical",
-               "w_total_typical", "a_total_max_12v", "w_status", "source", "note"]
+               "w_total_typical", "volts", "a_total_max", "w_status", "source", "note"]
 
 
-KIT_ROWS = ("LD06", "LD09")     # the voice kit's two feeds: each up to KIT_FEED_W, together KIT_PEAK_W
+KIT_ROWS = ("LD06",)     # the voice kit's one 24 V feed (D-168)
 
 
 def load_rows():
-    """The load table. w_total_max is each row's part of the pod's maximum, so the column adds up to it (the
-    install sheet sums it): the kit's two feeds each carry half of its 60 W peak there, though one feed alone may
-    reach 48 W (w_each_max, a_total_max_12v and the supply loading use that)."""
+    """The load table: each load at its supply's voltage (12 or 24 V, D-168); w_total_max adds up to the pod's
+    maximum (the install sheet sums it)."""
     rows = []
     for (lid, name, sup, fuse, qty, wmax, wtyp, st, src, note) in EP.LOADS:
-        total = EP.KIT_PEAK_W / len(KIT_ROWS) if lid in KIT_ROWS else qty * wmax
-        if lid in KIT_ROWS:
-            note = "%s; w_total_max is this feed's half of the kit's %.0f W peak (both feeds together)" % (
-                note, EP.KIT_PEAK_W)
+        volts = EP.BUS_V[sup]
         rows.append(dict(id=lid, load=name, supply=sup, fuse=fuse, qty=qty, w_each_max=fmt(wmax, 2),
-                         w_total_max=fmt(total, 2), w_each_typical=fmt(wtyp, 2),
-                         w_total_typical=fmt(qty * wtyp, 2), a_total_max_12v=fmt(qty * wmax / V_BUS, 3),
+                         w_total_max=fmt(qty * wmax, 2), w_each_typical=fmt(wtyp, 2),
+                         w_total_typical=fmt(qty * wtyp, 2), volts=fmt(volts, 0), a_total_max=fmt(qty * wmax / volts, 3),
                          w_status=st, source=src, note=note))
     return rows
 
 
 def supply_summary():
     out = []
-    for sid, _key, _o, rated, _amps, feeds, _why in EP.SUPPLIES:
+    for sid, key, outv, rated, _amps, feeds, _why in EP.SUPPLIES:
         wmax = sum(q * w for (_i, _n, s, _f, q, w, _t, _st, _src, _no) in EP.LOADS if s == sid)
         wtyp = sum(q * t for (_i, _n, s, _f, q, _w, t, _st, _src, _no) in EP.LOADS if s == sid)
-        out.append((sid, rated, wmax, wtyp, 100.0 * wmax / rated, feeds))
+        out.append((sid, rated, wmax, wtyp, 100.0 * wmax / rated, feeds, key, outv))
     return out
+
+
+def supply_loss(key, p_out):
+    """A supply's loss at an output (W): its sheet's efficiency, plus the no-load draw (assumption)."""
+    eff = EP.PARTS_DATA["ps_eff"][key]
+    return p_out / eff - p_out + EP.PARTS_DATA["ps_noload_w"]
 
 
 def calc_md(v, mass_of, harness):
     sup = supply_summary()
-    kit_over = max(0.0, 2 * EP.KIT_FEED_W - EP.KIT_PEAK_W)     # the kit's two feeds together peak at 60 W, not 96
-    tot_max = sum(s[2] for s in sup) - kit_over
+    tot_max = sum(s[2] for s in sup)
     tot_typ = sum(s[3] for s in sup)
     rated = sum(s[1] for s in sup)
-    eff = EP.PARTS_DATA["ps_eff"]
     noload = EP.PARTS_DATA["ps_noload_w"]
-    loss_typ = sum(s[3] / eff - s[3] for s in sup) + noload * len(sup)
-    loss_max = sum(s[2] / eff - s[2] for s in sup) - kit_over * (1 / eff - 1) + noload * len(sup)
-    ac_in_max = tot_max / eff + noload * len(sup)
+    loss_typ = sum(supply_loss(s[6], s[3]) for s in sup)
+    ac_in_max = sum(s[2] + supply_loss(s[6], s[2]) for s in sup)
+    kit_key = next(s[6] for s in sup if s[0] == "PS1")
+    kit_loss = supply_loss(kit_key, 40.0) - supply_loss(kit_key, 0.0)
     lines = []
     A = lines.append
     A("# ELECTRICAL P01: calculation results")
@@ -224,18 +230,18 @@ def calc_md(v, mass_of, harness):
     A("Every number here is a **calculation** from the load table (`710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv`), "
       "the harness list and the route model, unless marked. Inputs carry their own status in those files.")
     A("")
-    A("## 1. Supply loading (12 V)")
+    A("## 1. Supply loading (24 V and 12 V, D-168)")
     A("")
-    A("| Supply | Rated W | Load max W | Load typical W | Max load / rating | Feeds |")
-    A("|---|---:|---:|---:|---:|---|")
-    for sid, r, wm, wt, pct, feeds in sup:
-        A("| %s | %.0f | %.1f | %.1f | %.0f %% | %s |" % (sid, r, wm, wt, pct, feeds))
-    A("| **All** | **%.0f** | **%.1f** | **%.1f** | %.0f %% | REQ-ELE-03: about 125 W load, supply at least 150 W |" % (
+    A("| Supply | Output | Rated W | Load max W | Load typical W | Max load / rating | Feeds |")
+    A("|---|---|---:|---:|---:|---:|---|")
+    for sid, r, wm, wt, pct, feeds, _key, outv in sup:
+        A("| %s | %s | %.0f | %.1f | %.1f | %.0f %% | %s |" % (sid, outv, r, wm, wt, pct, feeds))
+    A("| **All** | | **%.0f** | **%.1f** | **%.1f** | %.0f %% | REQ-ELE-03: about 125 W load |" % (
         rated, tot_max, tot_typ, 100 * tot_max / rated))
     A("")
-    A("The voice kit's feeds A (PS1) and B (PS4) may each carry up to %.0f W, %.0f %% of their supply (PM ruling "
-      "2026-11-01), but the kit peaks at %.0f W on both together (REQ-VCK-04), so the total counts %.0f W for it." % (
-          EP.KIT_FEED_W, 100 * EP.KIT_FEED_W / 60.0, EP.KIT_PEAK_W, EP.KIT_PEAK_W))
+    A("The voice kit takes one 24 V Class 2 feed (D-168): its %.0f W peak is %.1f %% of PS1's %.0f W, under the %.1f W "
+      "cap (80 %%), and one source means no two Class 2 sources can share a 0 V." % (
+          EP.KIT_PEAK_W, 100 * EP.KIT_PEAK_W / sup[0][1], sup[0][1], EP.KIT_CAP_W))
     A("")
     A("Typical = one or two people, lights full, fans near the 53 l/s normal flow, no voice kit fitted. "
       "Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only "
@@ -243,9 +249,13 @@ def calc_md(v, mass_of, harness):
     A("")
     A("## 2. Mains side (US 120 V 60 Hz, D-133)")
     A("")
-    A("- Supplies' input at maximum load: %.0f W at %.0f %% efficiency (assumption from the maker's typical "
-      "figure, parts list) plus %.1f W no-load each: about **%.2f A at %d V**." % (
-          ac_in_max, eff * 100, noload, ac_in_max / MAINS_V, MAINS_V))
+    A("- Supplies' input at maximum load: %.0f W, each at its sheet's efficiency (LPV-60-12 83 %%, LPV-60-24 86 %%, "
+      "CLG-100-24 88.5 %%, at 230 V and full load) plus %.1f W no-load each (assumption): about **%.2f A at %d V** "
+      "(the LPV-60s have no PFC, so their current is somewhat higher than this; the breaker sizing below has wide "
+      "margin)." % (ac_in_max, noload, ac_in_max / MAINS_V, MAINS_V))
+    A("- Inrush (the breaker's C curve): the two LPV-60s draw 60 A for 525 us and the CLG-100 40 A for 1030 us, cold, "
+      "at 230 V (their sheets), about half at 120 V. Mean Well allows 6 LPV-60 or 5 CLG-100 on one 16 A C-curve breaker "
+      "at 230 V, so the three supplies switch on together within the 15 A C-curve breaker's instant trip (calculation).")
     A("- The breaker is 15 A, 1 pole, UL 489: 15 A x %d V = %.2f kW for the user outlets and the supplies together, "
       "%.2f kW continuous at 80 %% (NEC 210.19, 210.20). A laptop charger takes about 0.6 A; a 1.5 kW heater, the largest "
       "plug-in appliance on a 15 A US circuit, takes 12.5 A and still holds with the supplies (assumption)." % (
@@ -255,11 +265,12 @@ def calc_md(v, mass_of, harness):
     A("- The prototype is tested in Vietnam through a 220-to-110 V step-down transformer, part of the test set, not the "
       "pod (D-133); it must carry the outlets' load too (2 kVA or more, assumption).")
     A("")
-    A("## 3. Voltage drop on the 12 V circuits (copper at 60 °C, %.4f Ω mm²/m)" % RHO_CU_60)
+    A("## 3. Voltage drop on the 24 V and 12 V circuits (copper at 60 °C, %.4f Ω mm²/m)" % RHO_CU_60)
     A("")
     A("Loop resistance = 2 x length x ρ / area, divided by the number of parallel pairs. Each segment carries its own "
-      "maximum current (the loads beyond it at full power). Limit used: 3 % of 12 V from the supply to the farthest "
-      "load (assumption; the fans start at 7 V and run to 13.2 V, and the strips are specified at 12 V).")
+      "maximum current (the loads beyond it at full power). Limit used: 3 % of the circuit's voltage (24 V for the "
+      "lights and the kit, 12 V for the air) from the supply to the farthest load (assumption; the fans start at 7 V "
+      "and run to 13.2 V).")
     A("")
     A("| Segment | Circuit | Length mm | Area mm² x pairs | Max A | Drop V |")
     A("|---|---|---:|---:|---:|---:|")
@@ -274,8 +285,9 @@ def calc_md(v, mass_of, harness):
     A("|---|---:|---:|---|")
     for name, ids in EP.CIRCUIT_PATHS:
         d = sum(float(by_id[i]["drop_v"]) for i in ids)
-        A("| %s (%s) | %.2f | %.1f | %s |" % (name, " + ".join(ids), d, 100 * d / V_BUS,
-                                            "within" if d / V_BUS <= 0.03 else "**over**"))
+        vb = circuit_v(by_id[ids[0]]["circuit"])
+        A("| %s (%s) | %.2f | %.1f | %s |" % (name, " + ".join(ids), d, 100 * d / vb,
+                                            "within" if d / vb <= 0.03 else "**over**"))
     A("")
     W01_M = next(h["length_mm"] for h in harness if h["id"] == "W01") / 1000.0
     A("Mains conductors are left out: %.2f m of 14 AWG (%.2f mm², %.2f Ω/km at 20 °C) at the breaker's full 15 A drops "
@@ -296,7 +308,7 @@ def calc_md(v, mass_of, harness):
     A("| Heat source, typical | W |")
     A("|---|---:|")
     A("| Lights (already in C4's 30 W) | %.1f |" % lights)
-    A("| Supply losses, 3 units | %.1f |" % loss_typ)
+    A("| Supply losses, %d units | %.1f |" % (len(sup), loss_typ))
     A("| Sensor hub | %.1f |" % hub)
     A("| Supply fan pair at 53 l/s | %.1f |" % fan_s)
     A("| **Not yet in C4's 240 W** (losses + hub + supply fans) | **%.1f** |" % extra)
@@ -305,7 +317,7 @@ def calc_md(v, mass_of, harness):
       "The lights are %.1f W in the work scene: the down-light at full and the uplight on the rest of the 22 W the "
       "hub holds them to (PM ruling 2026-11-01), inside C4's 30 W for lights. With the voice kit at "
       "its 40 W average (D-88), the kit adds 40 W and its supply's loss about %.1f W more (calculation). For the Air "
-      "Engineer's 4 K check (D-50)." % (dT, lights, 40 / eff - 40))
+      "Engineer's 4 K check (D-50)." % (dT, lights, kit_loss))
     A("")
     A("## 5. Mass")
     A("")

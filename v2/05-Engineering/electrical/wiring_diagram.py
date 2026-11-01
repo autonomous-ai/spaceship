@@ -1,7 +1,7 @@
 """The ELECTRICAL P01 wiring diagram: three A1 sheets drawn with PyMuPDF.
 
 Sheet 1: the schematic: mains in the power unit, the three Class 2 supplies,
-every 12 V circuit to its loads, and every plug-in joint (X1 to X7).
+every 24 V and 12 V circuit to its loads, and every plug-in joint (X1 to X7).
 Sheet 2: the harness list.
 Sheet 3: two route views drawn to scale from the route model
 (`electrical_model.py`): the back wall and the right wall, seen from inside the
@@ -91,30 +91,38 @@ def sheet1(doc, rows, harness, v):
     s.textf(53, 35.6, "W01", 1.8, MAINS)
     s.textf(53, 38.4, "3 x 14", 1.8, MAINS)
     s.textf(53, 41.2, "AWG", 1.8, MAINS)
-    for i, (ps, ttl, sub) in enumerate((("PS1", "PS1 + PS4  2 x 60 W", "kit feeds A, B: 12 V each"),
-                                        ("PS2", "PS2  60 W + LIGHT CTRL", "3 ch PWM, RS-485, Class 2"),
-                                        ("PS3", "PS3  60 W", "12 V 5 A, Class 2"))):
+    for i, (ps, ttl, subs) in enumerate((
+            ("PS1", "PS1  96 W  CLG-100-24", ["kit feed, 24 V 4 A, Class 2", "input 90-295 V, PFC", "FG to the earth stud"]),
+            ("PS2", "PS2  60 W  LPV-60-24", ["24 V 2.5 A, Class 2; light", "controller, DMX512 in", "Class II (no PE)"]),
+            ("PS3", "PS3  60 W  LPV-60-12", ["12 V 5 A, Class 2", "input 100-240 V", "Class II (no PE)"]))):
         y = 60 + i * 42
-        s.boxf(62, y, 104, y + 26, ttl, [sub, "input 100-240 V", "Class II (no PE)"], SELV)
+        s.boxf(62, y, 104, y + 26, ttl, subs, SELV)
         s.line(79, 46, 79, y, MAINS, 0.4) if i == 0 else s.line(79, y - 16, 79, y, MAINS, 0.4)
         s.textf(80.5, y - 2, "W02 L N", 1.8, MAINS)
-    s.boxf(18, 60, 52, 82, "PE TERMINAL", ["inlet PE, receptacle", "ground, enclosure stud,", "B2 frame bond W03"], MAINS)
+    s.boxf(18, 60, 52, 82, "PE TERMINAL", ["inlet PE, receptacle", "ground, PS1 FG, earth", "stud, B2 frame bond W03"], MAINS)
+    s.line(52, 81, 62, 81, MAINS, 0.3)                    # PS1's FG lead (the CLG-100 is Class I) to the earth stud
+    s.textf(54.5, 80.2, "FG", 1.6, MAINS)
     s.line(24, 82, 24, 87, MAINS, 0.3)                    # W03 from the PE terminal to B2's frame (Reviewer 7: it was loose)
     for i, half in enumerate((3.0, 2.0, 1.0)):            # frame (chassis) ground symbol
         s.line(24 - half, 87 + i, 24 + half, 87 + i, MAINS, 0.3)
     s.textf(29, 88.2, "W03 14 AWG green to B2's frame", 1.7, MAINS)
     s.textf(29, 91.2, "(only B2 carries a mains part)", 1.7, MAINS)
     s.boxf(18, 104, 52, 126, "LAN", ["etherCON NE8FDP in B2,", "W04 Cat6 to keystone 1,", "keystone 2: W31 to the kit"], SIG)
-    # 12 V outputs leave the unit on the right side (H01, H02) and the top (H03), straight into the cable gap (plain cut-out)
-    for yk, fl in ((71, "F1 5 A"), (77, "F4 5 A")):          # the kit's feeds A (PS1) and B (PS4), never joined
-        s.fuse(116, yk, fl)
-        s.line(104, yk, 113.8, yk, SELV, 0.5)
-        s.line(118.2, yk, 150, yk, SELV, 0.5)
-    s.fuse(116, 115, "F2 5 A")
+    # the outputs leave the unit on the right side (H01, H02) and the top (H03), straight into the cable gap (plain
+    # cut-out). Each supply has its own output, fuse and 0 V; no two outputs meet anywhere (Class 2, D-168)
+    s.fuse(116, 71, "F1 5 A")                                 # PS1: the kit's one 24 V feed
+    s.line(104, 71, 113.8, 71, SELV, 0.5)
+    s.line(118.2, 71, 150, 71, SELV, 0.5)
+    s.line(104, 77, 150, 77, SELV, 0.5)
+    s.textf(122, 69.6, "+24 V", 1.6, SELV)
+    s.textf(122, 75.6, "0 V PS1", 1.6, SELV)
+    s.fuse(116, 115, "F2 5 A")                                # PS2: +24 V to the strips; the channels switch the returns
     s.line(104, 115, 113.8, 115, SELV, 0.5)
     s.line(118.2, 115, 150, 115, SELV, 0.5)
-    s.line(104, 157, 150, 157, SELV, 0.5)
     s.textf(106, 112, "PS2 out", 1.8, SELV)
+    s.textf(122, 118.8, "+24 V, UP- DOWN- CALL-", 1.6, SELV)
+    s.line(104, 157, 150, 157, SELV, 0.5)                     # PS3: +12 V x 2 and 0 V x 2 in W20, fused in the column
+    s.textf(114, 155.4, "+12 V, 0 V PS3", 1.6, SELV)
     s.line(104, 124, 112, 124, SIG, 0.3)
     s.line(112, 124, 112, 190, SIG, 0.3)
     s.line(112, 190, 150, 190, SIG, 0.3)
@@ -130,16 +138,16 @@ def sheet1(doc, rows, harness, v):
     for x, lab, y0 in ((150, "X1 unit / B2-CASS", 26), (200, "X2 corner, in R1-CASS", 26), (250, "X3 into the air column", 136)):
         s.textf(x + 1, y0 - 1.5, lab, 1.8, GREY, bold=True)
         s.line(x, y0, x, 236, GREY, 0.15, dashes="[1 1] 0")
-    # the kit's two feeds (PS1, PS4), one cable: plug pairs at X1 and X2
+    # the kit's one feed (PS1): +24 V and its own 0 V, two cores each, plug pairs at X1 and X2
     for yk in (71, 77):
         for x in (150, 200):
             s.plug(x, yk, "", SELV)
         s.line(150.4, yk, 199.6, yk, SELV, 0.5)
         s.line(200.4, yk, 240, yk, SELV, 0.5)
-    s.textf(152, 69.5, "W30b 4x16 AWG, feeds A, B  B2-CASS", 1.8, SELV)
+    s.textf(152, 69.5, "W30b 4x16 AWG, 2 per pole  B2-CASS", 1.8, SELV)
     s.textf(202, 69.5, "W30c  R1-CASS", 1.8, SELV)
     s.boxf(240, 64, 300, 84, "X7 VOICE KIT DROP (R1, behind the screen)",
-          ["two 12 V feeds, 5 A fuse each: Mini-Fit Jr 4-way, capped", "Cat6 keystone, capped; draw wire W32", "reached through felt plug FA-KIT"],
+          ["one 24 V Class 2 feed, 5 A fuse: Mini-Fit Jr 4-way, capped", "Cat6 keystone, capped; draw wire W32", "reached through felt plug FA-KIT"],
           SELV, 1.8)
     # light feed (PS2) up the back wall
     s.plug(150, 115, "", SELV)
@@ -152,7 +160,7 @@ def sheet1(doc, rows, harness, v):
     s.line(222.4, 115, 300, 115, SELV, 0.5)
     s.textf(242, 113.5, "W11 in the shelf (6 x 18 AWG feed)", 1.8, SELV)   # right of the Cat6 riser at X 240
     s.boxf(300, 104, 405, 128, "LIGHT SHELF  (back and side wall tops, D-70)",
-           ["uplight %.2f m and down-light 2 x %.3f m (Loox5 2168)," % (EP.UP_M, EP.DOWN_ROW),
+           ["uplight %.2f m and down-light 2 x %.2f m (24 V strips)," % (EP.UP_M, EP.DOWN_ROW),
             "call drop at Y %.1f (X6) down R2-CASS to the bar;" % v["call_y"],
             "hub keeps up + down + call at about 22 W"], SELV, 1.8)
     # air feed (PS3) + dimming signal to the column
@@ -209,7 +217,7 @@ def sheet1(doc, rows, harness, v):
            "and the sprinkler or alarm wiring point, ISS-052). Nothing is cut on site later (REQ-VCK-03)."], INK, 1.8)
     notes = [
         "1. Mains (red) exists only inside B2 and the power unit (D-10, IF-12). Nothing mains is connected on site.",
-        "2. Every 12 V circuit (blue) is Class 2: each supply is 60 W, the Class 2 limit at 12 V (compliance note).",
+        "2. Every 24 V and 12 V circuit (blue) is Class 2: each supply is a Class 2 power unit on its own sheet (UL 1310), and no two meet (D-168).",
         "3. Plug pairs: supply side receptacle (female), load side plug (male); Molex Mini-Fit Jr, keyed by way count.",
         "4. Every cable through sheet steel runs in a grommet; cables clip to the cassette tray only (D-26).",
         "5. Wire sizes and lengths: harness list (sheet 2 and the _SPEC.csv). Voltage drop under 3 %: calc-results.md.",

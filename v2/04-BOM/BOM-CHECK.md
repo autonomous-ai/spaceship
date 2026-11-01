@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 317 part lines (118 made, 199 bought, 87 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 353.7 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 320 part lines (118 made, 202 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -40,24 +40,26 @@ Read from: this working tree.
 **BASE**
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838006: the list still names it 'HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD'; the joints register's H-26 now names it 'HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9: HOLD (HOLD)
 - 838008 HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 
 **WALL**
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
@@ -104,6 +106,7 @@ Read from: this working tree.
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -117,20 +120,20 @@ Read from: this working tree.
 - 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
 - 618102 AIR - SUPPLY TRANSITION - HOLD: HOLD (HOLD)
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
 - 818102 INTERIOR - SCREEN RAIL - HOLD: HOLD (HOLD)
 
 **ELECTRICAL**
-- 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data))
+- 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD feature: the fixing to B2's frame (WALL, IF-12))
 - 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133))
-- 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (the breaker's own sheet (Eaton FAZ-C15/1-NA-L) can't be read: eaton.com and the distributors block automated reads; Eaton's family catalog gives UL 489 at 240 Vac, C curve, 14 kA at 15-25 A; no order, no supplier contact))
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT - MEAN WELL CLG-100-24: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
 - 718049 ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK: HOLD (HOLD (no maker sheet found for a black nylon 6/6 spacer 4.3 x 8 x 2 mm (the closest, RAF M0591-4-N, states no colour or grade); no order, no supplier contact))
 - 718054 ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK: HOLD (HOLD (no maker sheet found for a black 6-32 x 1/2 in oval head wallplate screw (packs are stainless or brown); black matters on the black front plate; no order, no supplier contact))
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
-- 718073 ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A: HOLD (HOLD (its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet; no order, no supplier contact))
-- 718075 ELECTRICAL - CONDUIT CONNECTOR - LFNC 1/2 IN - STRAIGHT: HOLD (HOLD (the connector's knockout: NMLT-11 takes a 1/2 in trade-size knockout (7/8 in, 22.2 mm, by common practice; its sheet gives only the trade size) and H04 is Ø25 (assumption): the hole and the connector are settled together in the body's next rebuild; no order, no supplier contact))
+- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 718073 ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A: HOLD (HOLD (its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet; no order, no supplier contact))
 - 718048 ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK: HOLD (HOLD (its length waits on what it screws into (CEILING's column), and no maker sheet was found for a black A2 M4 pan head (plain A2: Fabory 51340.040.012); no order, no supplier contact))
 - 718060 ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE): HOLD (HOLD (in-house module: interface data ISS-060))
 - 711005 ELECTRICAL - HUB ZONE COVER PLATE: HOLD (DRAFT; HOLD features: the hub window, button and knob holes (ISS-060) and the fixing holes (CEILING's column))
@@ -145,9 +148,6 @@ Read from: this working tree.
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
-**Joints register**
-- H-46 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD: no part number
-
 ## Reserved air spaces, not counted (D-105)
 
 Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
@@ -160,7 +160,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 155 numbers, 128 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 157 numbers, 130 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -313,6 +313,8 @@ From `v2/04-BOM/number-allocation.csv`: 155 numbers, 128 not in a team's list ye
 | 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
 | 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | ALLOCATED |
 | 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | ALLOCATED |
+| 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | 110101 110102 110106 | 3 | ALLOCATED |
+| 111602 | BASE - LEVELLING GLIDE - M10 - D40 | 110101 110102 110103 110106 | 9 | ALLOCATED |
 | 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | ALLOCATED |
 | 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
 | 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |

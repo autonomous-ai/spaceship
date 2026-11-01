@@ -186,7 +186,7 @@ def sheet_power_unit(doc, v):
     bottom = frame(s, pn, "ELECTRICAL - POWER UNIT - B2: ASSEMBLY", [
         "Wiring inside the unit: wiring diagram sheet 1 (710000). Leads out: W10a top (6-way), W20a/W24a/W30a/W31a right side.",
         "Factory test of the unit before B2 ships (US 120 V, D-133): ground continuity <= 0.1 ohm; dielectric withstand 1240 V AC "
-        "for 1 min, mains to ground (1000 V + 2 x 120 V); the GFCI's TEST button trips it; rails 12 V +/-3 %.",
+        "for 1 min, mains to ground (1000 V + 2 x 120 V); the GFCI's TEST button trips it; rails 24 V (PS1, PS2) and 12 V (PS3) +/-3 %.",
     ], scale="1:3 face, 2:1 section (schematic)")
     k = 1.0 / 3.0
     ox, oy = 24.0, 128.0
@@ -244,7 +244,9 @@ def sheet_power_unit(doc, v):
     s.para(sx, sy + 108, "Unit fixed to B2's frame (fixing HOLD, WALL IF-12); cassette cut-out 4 mm clear all round "
            "(floating lining).", 230.0)
     parts_table(s, pn, 24, 160, 546, bottom, shares=(0.44, 0.30, 0.26))   # the bought names carry maker and number
-    s.first_angle_symbol(s.W - 10 - K.TB_W + 2, bottom - 14)   # a face view and a section (Reviewer 7)
+    # a face view and a section (Reviewer 7): the symbol sits under the section, since the parts list (longer with the
+    # named products and D-168's supplies) now reaches the title block
+    s.first_angle_symbol(s.W - 10 - 45, 152)
     return s
 
 
@@ -321,7 +323,7 @@ def harness_material(s, rows, x, y, w, bottom):
     if any("Mini-Fit" in h["end_a"] + h["end_b"] for h in rows):
         cables_here = " ".join(h["cable"] for h in rows)
         y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037) on 18 AWG, one per "
-                   "way" + ("; the kit feeds' 16 AWG: female 39-00-0078 (718056) and male 39-00-0082 (718057)"
+                   "way" + ("; the kit feed's 16 AWG: female 39-00-0078 (718056) and male 39-00-0082 (718057)"
                             if "16 AWG" in cables_here else "") +
                    ("; 24 AWG cores: female 39-00-0047 (718077) and male 39-00-0049 (718078)" if "24 AWG" in cables_here
                     else "") + ".", w)
