@@ -192,7 +192,22 @@ def add_view(sheet, orientation, centre, scale):
     v = sheet.views.add(inp)
     if v is None:
         raise RuntimeError("Views.add returned None for %s" % orientation)
-    if abs(v.scaleValue - scale) > 1e-6:
+    # the view may still be computing when Views.add returns: reading its scale then raised "failed to read view
+    # scale" (the skin sample, 2026-11-01 11:11); let Fusion work and read again, for up to about 30 s
+    import time
+    for tries in range(60):
+        try:
+            got = v.scaleValue
+            break
+        except RuntimeError as exc:
+            if tries == 59:
+                raise RuntimeError("the %s view's scale still can't be read after 30 s (%s): its model may not "
+                                   "have loaded" % (orientation, exc))
+            adsk.doEvents()
+            time.sleep(0.5)
+    if tries:
+        print("VIEW|%s view readable after %d tries" % (orientation, tries))
+    if abs(got - scale) > 1e-6:
         v.scaleValue = scale            # the input's scale is ignored in this build (tools/fusion/README.md)
     # Fusion ignores the style given at creation and draws hidden lines on every view (CEILING's first sample,
     # PM check 2026-11-01): set it again on the view; the hole tables carry each face's holes
