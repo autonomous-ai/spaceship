@@ -747,31 +747,24 @@ def rotation(angle_deg, over):
     return tuple(tuple(sum(rz[r][k] * rx[k][c2] for k in range(3)) for c2 in range(3)) for r in range(3))
 
 
-def world_of(root, occ):
-    """The occurrence's transform in the design: its own at the root, a nested one's through its proxy in root (an
-    occurrence's own transform inside a sub-component misled turned-copy probes 6 and 7)."""
-    if occ.assemblyContext is None:
-        tok = occ.entityToken
-        for o in root.allOccurrences:
-            nat = o.nativeObject
-            if nat is not None and nat.entityToken == tok:
-                return o.transform2
-    return occ.transform2
+def _rot(m):
+    return tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
 
 
 def rot_of(occ, parent=None):
-    """occ's turn (3 x 3) in the design, relative to its parent component's one occurrence when `parent` is given
-    (identity for the root)."""
-    root = occ.component.parentDesign.rootComponent
-    m = world_of(root, occ)
-    ro = tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
-    if parent is None or parent == root:
-        return ro
+    """occ's turn (3 x 3) relative to its parent component, read in the design: through the parent's one occurrence
+    there (its proxy), as turned-copy probes 9 to 11 read it (an occurrence's own transform inside a sub-component misled
+    probes 6 and 7, and a native occurrence inside one has no entity token: AIR's dry run 3)."""
+    if parent is None:
+        return _rot(occ.transform2)
+    root = parent.parentDesign.rootComponent
     ps = root.allOccurrencesByComponent(parent)
+    if ps.count == 0:                   # the parent is the root itself
+        return _rot(occ.transform2)
     if ps.count != 1:
-        raise RuntimeError("%s has %d occurrences; its children's turns can't be read against one" % (parent.name, ps.count))
-    pm = ps.item(0).transform2
-    rp = tuple(tuple(pm.getCell(r, c) for c in range(3)) for r in range(3))
+        raise RuntimeError("%s has %d occurrences; a child's turn can't be read against one" % (parent.name, ps.count))
+    pp = ps.item(0)
+    rp, ro = _rot(pp.transform2), _rot(occ.createForAssemblyContext(pp).transform2)
     return tuple(tuple(sum(rp[k][r] * ro[k][c] for k in range(3)) for c in range(3)) for r in range(3))
 
 
