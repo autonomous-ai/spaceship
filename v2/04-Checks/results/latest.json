@@ -1,5 +1,5 @@
 {
- "rev": "75b3f86",
+ "rev": "5966c3e",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -12,13 +12,14 @@
    "right-base",
    "top"
   ],
-  "bodies_assembly": 444,
+  "bodies_assembly": 507,
   "shell_faces_assembly": [
    "left",
    "left-base",
    "top"
   ],
   "parts_lists": [
+   "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
    "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
@@ -38,6 +39,7 @@
    "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
   ],
   "part_steps": [
+   "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
    "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
    "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
    "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step",
@@ -131,6 +133,214 @@
    "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110"
   },
   {
+   "check": "C08",
+   "rule": "hole-size-M6-CLEARANCE-7",
+   "subject": "assembly SOFFIT RAIL DOOR holes Ø6.60",
+   "severity": "major",
+   "message": "610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig.",
+   "fix": "Make it Ø7.0 (+0.1/0) and give its position Ø0.4 from the spigot hole on the drawing; if this is a factory joint, not a site joint, say so in the feature rationale",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly",
+    "dia_mm": 6.6,
+    "count": 2
+   },
+   "key": "C08|hole-size-M6-CLEARANCE-7|assembly SOFFIT RAIL DOOR holes Ø6.60"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611106",
+   "severity": "major",
+   "message": "611106 AIR - COLUMN FOOT PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611106"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611103",
+   "severity": "major",
+   "message": "611103 AIR - COLUMN CORNER ANGLE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611103"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611107",
+   "severity": "major",
+   "message": "611107 AIR - COLUMN PLENUM SIDE PLATE - LOW in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611107"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611108",
+   "severity": "major",
+   "message": "611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611108"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611301",
+   "severity": "major",
+   "message": "611301 AIR - CARTRIDGE CASING in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611301"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611302",
+   "severity": "major",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'Pyrotek Sorberpoly 2D 40 kg/m3'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611302"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611201",
+   "severity": "major",
+   "message": "611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611201"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611207",
+   "severity": "major",
+   "message": "611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611207"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611208",
+   "severity": "major",
+   "message": "611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611208"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611205",
+   "severity": "major",
+   "message": "611205 AIR - SOFFIT TOP RAIL - DOOR SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611205"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611209",
+   "severity": "major",
+   "message": "611209 AIR - SOFFIT TOP RAIL - ROOM SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611209"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611206",
+   "severity": "major",
+   "message": "611206 AIR - SOFFIT END PLATE - LEFT in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611206"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611210",
+   "severity": "major",
+   "message": "611210 AIR - SOFFIT DOOR-SIDE PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611210"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611401",
+   "severity": "major",
+   "message": "611401 AIR - FAN BOX CASING - EXHAUST in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611401"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611402",
+   "severity": "major",
+   "message": "611402 AIR - FAN BOX CASING - SUPPLY in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611402"
+  },
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "618101",
+   "severity": "minor",
+   "message": "618101 AIR - SENSOR HUB ZONE - HOLD in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv is missing: mass.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|row-incomplete|618101"
+  },
+  {
    "check": "C06",
    "rule": "duplicate-number",
    "subject": "111211",
@@ -141,6 +351,36 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C06|duplicate-number|111211"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348",
+   "severity": "severe",
+   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates.",
+   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "edge_mm": 8.5,
+    "dia_mm": 6.6
+   },
+   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348",
+   "severity": "severe",
+   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates.",
+   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "edge_mm": 8.5,
+    "dia_mm": 6.6
+   },
+   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348"
   },
   {
    "check": "C06",
@@ -461,6 +701,86 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
+   "subject": "610301",
+   "severity": "major",
+   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY) is one component holding 4 bodies of 2 different shapes (CARTRIDGE EXHAUST, CARTRIDGE SUPPLY, LAYER 1 EXHAUST, LAYER 1 SUPPLY, LAYER 2 EXHAUST, LAYER 2 SUPPLY, LAYER 3 EXHAUST, LAYER 3 SUPPLY) in 610000_P01_AIR_STEP.step (4 bodies); 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 2,
+    "files": 2
+   },
+   "key": "C06|bodies-not-components|610301"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611103",
+   "severity": "major",
+   "message": "611103 AIR - COLUMN CORNER ANGLE is one component holding 3 bodies of 2 different shapes (COLUMN ANGLE BL, COLUMN ANGLE FL, COLUMN ANGLE FR) in 610000_P01_AIR_STEP.step (3 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 3,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611103"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611104",
+   "severity": "major",
+   "message": "611104 AIR - COLUMN FILL is one component holding 2 bodies of 2 different shapes (COLUMN FILL FRONT, COLUMN FILL LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611104"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611105",
+   "severity": "major",
+   "message": "611105 AIR - KICK GRILLE is one component holding 2 bodies of 2 different shapes (KICK GRILLE FRONT, KICK GRILLE LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611105"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611203",
+   "severity": "major",
+   "message": "611203 AIR - SOFFIT FILL is one component holding 2 bodies of 2 different shapes (SOFFIT FILL FRONT, SOFFIT FILL UNDER) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611203"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
    "subject": "831001",
    "severity": "major",
    "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS is one component holding 2 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (2 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (2 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (2 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
@@ -493,6 +813,22 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
+   "subject": "838002",
+   "severity": "major",
+   "message": "838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC is one component holding 4 bodies of 2 different shapes (LOCK SCREW 1 HEAD, LOCK SCREW 1 SHANK, LOCK SCREW 2 HEAD, LOCK SCREW 2 SHANK) in 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|838002"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
    "subject": "838003",
    "severity": "major",
    "message": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (9 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
@@ -519,6 +855,30 @@
     "files": 4
    },
    "key": "C06|copy-differs|831001"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "611301",
+   "severity": "major",
+   "message": "611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|611301"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "611302",
+   "severity": "major",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|611302"
   },
   {
    "check": "C05",
@@ -1374,6 +1734,186 @@
   },
   {
    "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610000",
+   "severity": "major",
+   "message": "610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610000"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610101",
+   "severity": "major",
+   "message": "610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610101"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610201",
+   "severity": "major",
+   "message": "610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610201"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610301",
+   "severity": "major",
+   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610301"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610401",
+   "severity": "major",
+   "message": "610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610401"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610402",
+   "severity": "major",
+   "message": "610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610402"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611103",
+   "severity": "severe",
+   "message": "611103 AIR - COLUMN CORNER ANGLE has no drawing PDF (611103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611103"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611104",
+   "severity": "major",
+   "message": "611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611104"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611105",
+   "severity": "severe",
+   "message": "611105 AIR - KICK GRILLE has no drawing PDF (611105_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611105"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611301",
+   "severity": "severe",
+   "message": "611301 AIR - CARTRIDGE CASING has no drawing PDF (611301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611301"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611302",
+   "severity": "severe",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 has no drawing PDF (611302_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611302"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611401",
+   "severity": "severe",
+   "message": "611401 AIR - FAN BOX CASING - EXHAUST has no drawing PDF (611401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611401"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611402",
+   "severity": "severe",
+   "message": "611402 AIR - FAN BOX CASING - SUPPLY has no drawing PDF (611402_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611402"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611501",
+   "severity": "severe",
+   "message": "611501 AIR - INTAKE RISER has no drawing PDF (611501_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611501"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611601",
+   "severity": "severe",
+   "message": "611601 AIR - ROOF SLEEVE has no drawing PDF (611601_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611601"
+  },
+  {
+   "check": "C05",
    "rule": "letter-height",
    "subject": "710000",
    "severity": "major",
@@ -1830,14 +2370,14 @@
   {
    "id": "1-12",
    "name": "CEILING - PANEL ASSY - C2",
-   "kg": 10.547,
+   "kg": 10.306,
    "dims": [
     1495.0,
     1200.61,
     60.0
    ],
    "ships_as": "upright",
-   "status": "calculation; calculation (CAD)"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-13",
@@ -2046,26 +2586,26 @@
   {
    "id": "2-10",
    "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 13.405,
+   "kg": 15.388,
    "dims": [
     2332.0,
     360.0,
     220.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; calculation; fill provisional"
+   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional"
   },
   {
    "id": "2-11",
    "name": "AIR - AIR COLUMN",
-   "kg": 9.735,
+   "kg": 8.147,
    "dims": [
     2105.0,
     360.0,
     217.0
    ],
    "ships_as": "long",
-   "status": "calculation; fill provisional"
+   "status": "calculation (CAD); fill provisional"
   },
   {
    "id": "2-12",
@@ -2130,38 +2670,38 @@
   {
    "id": "2-17",
    "name": "AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS",
-   "kg": 14.086,
+   "kg": 12.95,
    "dims": [
     1845.0,
     460.0,
     199.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation"
+   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot and mesh assumption"
   },
   {
    "id": "2-18",
    "name": "AIR - CARTRIDGE - SUPPLY",
-   "kg": 10.8,
+   "kg": 10.55,
    "dims": [
     1750.0,
     314.0,
     173.0
    ],
    "ships_as": "long",
-   "status": "calculation"
+   "status": "calculation (CAD)"
   },
   {
    "id": "2-19",
    "name": "AIR - CARTRIDGE - EXHAUST",
-   "kg": 10.8,
+   "kg": 10.55,
    "dims": [
     1750.0,
     314.0,
     173.0
    ],
    "ships_as": "long",
-   "status": "calculation"
+   "status": "calculation (CAD)"
   },
   {
    "id": "2-20",
@@ -2202,6 +2742,23 @@
  ],
  "shipping_source": "v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv",
  "fastener_schedule": [
+  {
+   "part_number": "838002",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
+   "qty_parts_list": "2",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+   "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
   {
    "part_number": "831001",
    "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
@@ -2415,8 +2972,8 @@
    "finish": "zinc plated",
    "torque_nm": "snug only: a pin, not a clamp (joints register 2.10)",
    "qty_parts_list": "4",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -3197,8 +3754,8 @@
    "finish": "zinc plated",
    "torque_nm": "snugged, not torqued: a pin (register 2.10)",
    "qty_parts_list": "3",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -3689,9 +4246,26 @@
    "grade": "steel, property class 8.8 (ISO 898-1)",
    "finish": "zinc plated",
    "torque_nm": "",
+   "qty_parts_list": "2",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838002",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -3707,8 +4281,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "3",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3",
