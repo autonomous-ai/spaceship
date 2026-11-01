@@ -44,6 +44,27 @@ Run 2026-11-01, ended 07:05 UTC, on Mac 1 through the Fusion lock: `joints_hardw
 - STEP check (`tools/fusion/step_check.py --expect`): 831007 X 0..28.284, Y 0..40, Z −1..1, largest difference 0.0003 mm, MATCH; 831008 X 0..44.721, 0.0004, MATCH; 831009 X 0..56.569, 0.0005, MATCH. Each file says cm, as Fusion writes it (D-13).
 - Exports: `.f3d` `v2/01-CAD-Native/joints/831007_P01_HARDWARE-MITRE-PLATE-TABULATED_CAD.f3d`; STEP and DXF (R12, mm, the rectangle on layer CUT; D-89 part 4, so no drawing) in `v2/03-Manufacturing/joints/`, `831007_P01_HARDWARE-MITRE-PLATE-20X40-45DEG_*`, `831008_P01_HARDWARE-MITRE-PLATE-20X40-TO-40X40_*`, `831009_P01_HARDWARE-MITRE-PLATE-40X40-45DEG_*`; rows in `V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv`.
 
+## D-144 update run (version 3 of the key design)
+
+Run 2026-11-01, 07:51 to 08:19 UTC queued and run, on Mac 1 through the Fusion lock: `joints_keys_d144_update.py` by the late loader with `--doc 111211_P01_BASE-CORNER-KEY-TABULATED_CAD --close`, after `check_api.py` (0 name errors). It opened version 2 and saved **version 3** in place (never a copy).
+- **D-144** (PM ruling 2026-11-01): a new parameter `fix_step` (the −y fixing hole's step along x), `fix_y` per number, and the −y hole's offset from the back edge changed from `fix_x` to `fix_x + fix_step` (its own model parameter). Saved state 111211: `fix_y` 6, `fix_step` 7.3, so its fixing holes are at **(10.5, +6.0) and (17.8, −6.0)**.
+- **Five STEPs, each with its own part number** (C06), each checked by the run against its layout before export: 111211 (cut 0, holes as above), 111212 (−24.14°), 111213 (+24.02°), 111214 (−7.25°) and **111215** (cut 0, the FR1 key: holes at (10.5, ±7.0)). `step_check --expect`: all five MATCH (0.004 mm or less). The holes read straight from the STEP files: 111211 (10.5, 6.0) and (17.8, −6.0), 111215 (10.5, ±7.0), the stud axes at y 0, Z 26 and 60 on both.
+- Edit test: `fix_step` 7.3 → 8 → 7.3 moved the −y hole from x 17.8 to 18.5 and back: **PASS**. Closed without keeping the per-STEP changes or the test.
+- `joints_hardware_build.py` builds the same from scratch (`fix_step`, the stepped −y hole, five variants).
+
+## Exact mitres for 111212 and 111214 (export run, 2026-11-01, 10:08 UTC)
+
+BASE's ask, relayed by the Lead: cut 111212's face at the mitre's exact 24.1446°. Version 3's exports took corner-keys.csv's 2-decimal angles, so 111212 was cut at −24.14 and the knee 111214 at −7.25; the mitres are −24.1446 and −7.2546 (`corner_keys.py`, which now writes the cut to 4 decimals and, with `--check`, fails if the build script's `KEY_VARIANTS` drift from the mitres). 111213's +24.02 is already exact; 111211 and 111215 are square.
+
+`joints_keys_exact_cut_export.py` by the late loader on the saved design (version 3, opened with `--doc`), after `check_api.py` (0 name errors), in the same held Fusion session as the key sheet's redraw. For each of the two it set `cut_angle`, `fix_y` 7 and `fix_step` 0 and the part number, checked the fixing holes and the long side, exported the STEP, and the design closed **without saving** (its saved state, 111211 square, is unchanged, so the drawing's reference stays current).
+
+| Part | `cut_angle` | Body box (mm) | Long side, the mitre's | Fixing holes | STEP check (`step_check.py --expect`) |
+|---|---|---|---|---|---|
+| 111212 (LH) | −24.1446° | X 0..37.8445, Y ±17.5, Z 0..75 | 37.8445 | (10.5, ±7) | **MATCH** (0.0000 mm); the cut face reads 24.1446° from square (`tools/checks/stepfile.py`) |
+| 111214 (knee) | −7.2546° | X 0..32.2277, Y ±17.5, Z 0..75 | 32.2277 | (10.5, ±7) | **MATCH** (0.0000 mm); the cut face reads 7.2546° |
+
+The drawing gives these angles to 0.01° (24.14°, 7.25°) with ±0.25°, and its long and short sides (37.84 / 22.16, 32.23 / 27.77) don't change at 0.01.
+
 ## Exports
 
 - `.f3d`: `v2/01-CAD-Native/joints/111211_P01_BASE-CORNER-KEY-TABULATED_CAD.f3d`, `831001_P01_HARDWARE-LOCATING-SPIGOT_CAD.f3d`, `831002_P01_HARDWARE-STOP-WASHER_CAD.f3d`, each exported right after its save.

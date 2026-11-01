@@ -64,12 +64,15 @@ def view_geometry(part, view, scale, centre):
     elif part == "keys" and view == "top":             # X right, Y up: 30 x 35
         segs += [(0, -17.5, 30, -17.5), (30, -17.5, 30, 17.5), (30, 17.5, 0, 17.5), (0, 17.5, 0, -17.5)]
         segs += [(0, -2.5, 30, -2.5), (0, 2.5, 30, 2.5)]  # hidden: stud holes seen from above
-        circs += [(10.5, -7.0, 2.5), (10.5, 7.0, 2.5)]    # hidden: fixing holes
+        circs += FIXING_HOLES                              # hidden: fixing holes (111211's, D-144)
         off = (15.0, 0.0)
     to = lambda x, y: (cx + (x - off[0]) * scale, cy + (y - off[1]) * scale)
     lines = [to(a, b) + to(c, d) for a, b, c, d in segs]
     circles = [to(x, y) + (r * scale,) for x, y, r in circs]
     return lines, circles
+
+
+FIXING_HOLES = [(17.8, -6.0, 2.5), (10.5, 6.0, 2.5)]
 
 
 def measured(kind, a, b, place, scale):
@@ -85,7 +88,7 @@ WANT = {
     ("spigot", "top"): [4.0],
     ("keys", "front"): [75.0, 30.0],
     ("keys", "right"): [35.0, 26.0, 60.0, 17.5, 5.0],
-    ("keys", "top"): [10.5, 10.5, 24.5, 5.0],
+    ("keys", "top"): [17.8, 11.5, 23.5, 10.5, 5.0],   # D-144: the stepped hole's x and y, the other's y and x
 }
 
 for part, cfg in JD.PARTS.items():
@@ -107,6 +110,22 @@ for part, cfg in JD.PARTS.items():
         clear = max(xs) < bx0 - 5 or min(ys) > 297 - by1 + 5
         check(clear and min(xs) > 10 and min(ys) > 10 and max(ys) < 287,
               "%s %s view stays on the sheet and clear of the notes box" % (part, name))
+        # every dimension's text well inside the frame (x 20 to 410, y 10 to 287): Fusion puts a vertical
+        # dimension's text up to about 8 left of its placement (the key sheet's 60 read back at x 18.7 for a
+        # placement at 29, on the frame line; the visual pass, 2026-11-01), so placements keep 12 clear of the
+        # frame's sides; a horizontal one's text sits up to about 5 above it, so 8 clear of its top and bottom
+        far = [p for _k, _a, _b, p in dims if not (32 <= p[0] <= 398 and 18 <= p[1] <= 279)]
+        check(not far, "%s %s view: every dimension placed inside the frame with room for its text %s"
+              % (part, name, far))
+
+_saved = FIXING_HOLES[:]
+FIXING_HOLES[:] = [(10.5, -7.0, 2.5), (10.5, 7.0, 2.5)]
+_cfg = JD.PARTS["keys"]
+_name, _o, _centre, _st = [v for v in _cfg["views"] if v[0] == "top"][0]
+_lines, _circles = view_geometry("keys", "top", _cfg["scale"], _centre)
+_got = [measured(k, a, b, pl, _cfg["scale"]) for k, a, b, pl in JD.plan_dims("keys", "top", _lines, _circles, _cfg["scale"])]
+check(_got == [10.5, 10.5, 24.5, 5.0], "keys top view, holes in line: no x dimension twice %s" % _got)
+FIXING_HOLES[:] = _saved
 
 # notes as PDF text, read back the way the mechanical check reads a drawing
 try:

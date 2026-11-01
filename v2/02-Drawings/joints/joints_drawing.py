@@ -55,29 +55,31 @@ PARTS = {
     },
     "keys": {
         "drawing": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG",
-        "title": "BASE - CORNER KEY - TABULATED: 111211, 111212, 111213, 111214",
+        "title": "BASE - CORNER KEY - TABULATED: 111211, 111212, 111213, 111214, 111215",
         "scale": 2.0,
-        "views": [("front", "FrontViewOrientationType", (175.0, 185.0), "hidden"),
-                  ("right", "RightViewOrientationType", (80.0, 185.0), "visible"),
+        "views": [("front", "FrontViewOrientationType", (175.0, 191.0), "hidden"),     # D-144: 6 up, room for
+                  ("right", "RightViewOrientationType", (88.0, 191.0), "visible"),     # the top view's 10.5;
+                  # 8 right of x 80 (the visual pass, 2026-11-01): its 60, stacked left of the 26, sat on the frame
                   ("top", "TopViewOrientationType", (175.0, 65.0), "hidden")],
         "notes": [
-            "NOTES (111211 TO 111214 P01, PROPOSED) - TABULATED",
+            "NOTES (111211 TO 111215 P01, PROPOSED) - TABULATED",
             "1. UNITS MM. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
             "2. MATERIAL EN AW-6061-T6. FINISH MILL FINISH, DEBURRED, NO SHARP EDGES.",
             "3. ONE BLOCK 35 x 75, 30 LONG ON ITS CENTRE LINE. THE STUD FACE IS CUT AT ANGLE A ABOUT ITS CENTRE "
-            "LINE, LONG SIDE ON THE OUTSIDE OF THE TURN. THE THREE VIEWS SHOW 111211 (A = 0); VIEW B SHOWS "
+            "LINE, LONG SIDE ON THE OUTSIDE OF THE TURN. THE THREE VIEWS SHOW 111211 (A=0); VIEW B SHOWS "
             "111212 FROM ABOVE; 111213 IS 111212'S OPPOSITE HAND (MIRRORED ABOUT THE CENTRE LINE).",
             {"indent": 5.0,
-             "table": [["PART", "A", "HAND", "LONG SIDE", "SHORT SIDE", "PER POD", "WHERE"],
-                       ["111211", "0°", "-", "30.00", "30.00", "3", "BACK CORNERS, FR1 INLINE"],
-                       ["111212", "24.14°", "LH", "37.84", "22.16", "1", "FRONT LEFT CORNER"],
-                       ["111213", "24.02°", "RH", "37.80", "22.20", "1", "FRONT RIGHT CORNER"],
-                       ["111214", "7.25°", "LH", "32.23", "27.77", "1", "LEFT KNEE"]]},
+             "table": [["PART", "A", "HAND", "LONG", "SHORT", "H03, H04 (X, Y)", "POD", "WHERE"],
+                       ["111211", "0°", "-", "30.00", "30.00", "10.5, +6; 17.8, -6", "2", "BACK CORNERS"],
+                       ["111212", "24.14°", "LH", "37.84", "22.16", "10.5, ±7", "1", "FRONT LEFT"],
+                       ["111213", "24.02°", "RH", "37.80", "22.20", "10.5, ±7", "1", "FRONT RIGHT"],
+                       ["111214", "7.25°", "LH", "32.23", "27.77", "10.5, ±7", "1", "LEFT KNEE"],
+                       ["111215", "0°", "-", "30.00", "30.00", "10.5, ±7", "1", "FR1 INLINE"]]},
             "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60 ABOVE THE "
             "BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°. THE VIEWS SHOW THE TAPPED HOLES "
             "AT THE 6H MEAN MINOR Ø5.04 (TAP DRILL Ø5.0).",
-            "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, 10.5 FROM THE BACK FACE, "
-            "7.0 EITHER SIDE OF THE CENTRE LINE.",
+            "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, AT THE TABLE'S X (FROM THE "
+            "BACK FACE) AND Y (FROM THE CENTRE LINE, +Y AS SHOWN), ±0.1 (D-144).",
             "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv; ONE STEP PER PART "
             "NUMBER IN v2/03-Manufacturing/joints/.",
         ],
@@ -86,8 +88,11 @@ PARTS = {
         "tags": [
             (lambda cs: min(RIGHT_HOLES(cs), key=lambda c: c[1]), ["H02", "M6x1-6H THRU"], (9.0, 1.0)),
             (lambda cs: max(RIGHT_HOLES(cs), key=lambda c: c[1]), ["H01", "M6x1-6H THRU"], (9.0, 1.0)),
-            (lambda cs: min(TOP_HOLES(cs), key=lambda c: c[1]), ["H04 M6x1-6H", "15 DEEP"], (-23.0, -1.0)),
-            (lambda cs: max(TOP_HOLES(cs), key=lambda c: c[1]), ["H03 M6x1-6H", "15 DEEP"], (9.0, 1.5)),
+            # D-144: the stepped holes' tags both to the right of the top view (its right edge is x 205): dx takes
+            # each text past that edge; dy lifts them, so the lower one ends 3.5 above the title block (sheet y 240)
+            # and they stay 14 apart (the visual pass, 2026-11-01: at the holes' height H03 ended 1 from the block)
+            (lambda cs: min(TOP_HOLES(cs), key=lambda c: c[1]), ["H04 M6x1-6H", "15 DEEP"], (41.0, -11.0)),
+            (lambda cs: max(TOP_HOLES(cs), key=lambda c: c[1]), ["H03 M6x1-6H", "15 DEEP"], (27.0, -13.0)),
         ],
         "view_b": {"origin": (290.0, 170.0),
                    "label": "VIEW B, 2:1: 111212 (LH, FRONT LEFT CORNER) FROM ABOVE"},
@@ -145,7 +150,8 @@ def plan_dims(part, view, lines, circles, scale):
     elif part == "keys" and view == "front":
         bl, tl, br = corner(pts, "bl"), corner(pts, "tl"), corner(pts, "br")
         out.append(("linear", bl, tl, (x0 - 10.0, (y0 + y1) / 2)))                  # 75
-        out.append(("linear", bl, br, ((x0 + x1) / 2, y0 - 10.0)))                  # 25
+        out.append(("linear", bl, br, ((x0 + x1) / 2, y1 + 10.0)))                  # 30, above: the gap below
+        # is the top view's (its stepped hole's x, D-144)
     elif part == "keys" and view == "right":
         bl, br = corner(pts, "bl"), corner(pts, "br")
         out.append(("linear", bl, br, ((x0 + x1) / 2, y0 - 10.0)))                  # 35
@@ -163,7 +169,11 @@ def plan_dims(part, view, lines, circles, scale):
             out.append(("linear", bl, (cs[0][0], cs[0][1]), (x0 - 8.0, (y0 + cs[0][1]) / 2)))   # 10 from the side
             if len(cs) > 1:     # from the corner, never centre to centre: two hidden circles' centres
                 # gave a dimension with no model link, which showed the sheet distance (28 for 14)
-                out.append(("linear", bl, (cs[-1][0], cs[-1][1]), (x1 + 8.0, (y0 + cs[-1][1]) / 2)))  # 24.5
+                stepped = abs(cs[-1][0] - cs[0][0]) > 0.5      # D-144's 111211: the holes aren't in line
+                side = x0 - 16.0 if stepped else x1 + 8.0         # stepped: both y on the left, the tags right
+                out.append(("linear", bl, (cs[-1][0], cs[-1][1]), (side, (y0 + cs[-1][1]) / 2)))      # 23.5 / 24.5
+                if stepped:                              # the other hole's own x, above, in the gap
+                    out.append(("linear", bl, (cs[-1][0], cs[-1][1]), ((x0 + cs[-1][0]) / 2, y1 + 6.0)))
             out.append(("diameter", cs[-1], None, (cs[-1][0] + 12.0, cs[-1][1] + 10.0)))
     return out
 
@@ -250,7 +260,7 @@ def annotate(sheet, part, views, cfg):
     return n
 
 
-def projection_symbol(sheet, x0=236.0, y0=72.0, d=5.0, big=10.0, length=10.0, gap=4.0):
+def projection_symbol(sheet, x0=252.0, y0=72.0, d=5.0, big=10.0, length=10.0, gap=4.0):
     sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
     p2 = adsk.core.Point2D.create
     pts = [p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
@@ -452,7 +462,7 @@ def add_notes(pdf_in, pdf_out, notes, box=NOTES_BOX):
 
 
 # ------------------------------------------------------------------ hole tags at the holes (guideline 6.2)
-def hole_circles(page, dia_on_sheet, tol=0.3):
+def hole_circles(page, dia_on_sheet, tol=0.3, join=1.6):
     """Centres (sheet mm) of the circles of one diameter on the sheet: the solid ones Fusion writes as curves
     and the hidden ones it writes as short straight dashes (clustered, then fitted). [(x, y, solid)]."""
     import math
@@ -466,9 +476,12 @@ def hole_circles(page, dia_on_sheet, tol=0.3):
         elif kinds == {"l"} and max(r.width, r.height) / k < 3.5 and abs((d.get("width") or 0) - W_THIN) < 0.05:
             for it in d["items"]:
                 pts += [(it[1].x / k, it[1].y / k), (it[2].x / k, it[2].y / k)]
-    groups = []                                  # dash ends within 3.5 mm of a group join it
+    # dash ends within `join` of a group join it: a hidden circle's dashes are 1 mm apart (Fusion's 1 mm gaps),
+    # and 1.6 keeps a circle 2 mm from another hidden line apart from it (D-144's stepped holes pass the stud
+    # holes' hidden lines at 2 mm on the 2:1 sheet; 3.5 merged them and the fit failed)
+    groups = []
     for p in pts:
-        near = [g for g in groups if any(math.hypot(p[0] - q[0], p[1] - q[1]) < 3.5 for q in g)]
+        near = [g for g in groups if any(math.hypot(p[0] - q[0], p[1] - q[1]) < join for q in g)]
         merged = [p] + [q for g in near for q in g]
         groups = [g for g in groups if g not in near] + [merged]
     for g in groups:
@@ -514,7 +527,7 @@ def add_tags(sheet, tags, circles):
 
 
 # ------------------------------------------------------------------ the angled key from above (111212)
-def view_b(sheet, origin, scale=2.0, a_deg=-24.14):
+def view_b(sheet, origin, scale=2.0, a_deg=-24.1446):
     """111212 from above, drawn from the model's sizes (the drawing's design is saved as 111211, so Fusion
     can't show this cut): the block 30 long on its centre line and 35 across, its stud face cut at angle A
     about the centre line; the hook stud holes square to that face; the fixing holes from below. Sheet x is
@@ -575,7 +588,16 @@ def view_b(sheet, origin, scale=2.0, a_deg=-24.14):
     sheet.arrow(arc[0], arc[2])
     sheet.arrow(arc[-1], arc[-3])
     mid = S((x_bot + (R + 1.5) * math.cos((a0 + a1) / 2), -W / 2 + (R + 1.5) * math.sin((a0 + a1) / 2)))
-    sheet.text((mid[0] + 1.0, mid[1] + 1.5), "A = %.2f°" % abs(a_deg), DIM_MM)
+    # the label starts 1.5 past the face line where that line passes the text's height, so the line never crosses
+    # the "A" (the visual pass, 2026-11-01: it did at the arc's middle)
+    f0 = S((x_bot, -W / 2))
+    f1 = S((x_bot + face_dir[0] * (R + 3.0), -W / 2 + face_dir[1] * (R + 3.0)))
+
+    def face_x(y):
+        return f0[0] + (y - f0[1]) * (f1[0] - f0[0]) / (f1[1] - f0[1]) if abs(f1[1] - f0[1]) > 1e-9 else f0[0]
+    base = mid[1] + 1.5
+    x_lab = max(mid[0] + 1.0, face_x(base), face_x(base - DIM_MM * 0.72)) + 1.5
+    sheet.text((x_lab, base), "A = %.2f°" % abs(a_deg), DIM_MM)
     # the hole direction, named at the axis past the face
     tip = S(out_end)
     sheet.text((tip[0] + 1.5, tip[1] - 1.0), "H01, H02 SQUARE")

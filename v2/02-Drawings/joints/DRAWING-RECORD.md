@@ -5,9 +5,9 @@ Two drawings, as the PM approved (2026-10-31): the corner key family on one TABU
 | Drawing (Default Project / FocusPod v2 / joints, and the PDF here) | Covers | Sheet | Views (base views, first-angle, one scale) | Dimensions |
 |---|---|---|---|---|
 | `831001_P01_HARDWARE-LOCATING-SPIGOT_DWG` | 831001 | A3 | front (elevation, hidden lines) and from above, 5:1 | 6 |
-| `111211_P01_BASE-CORNER-KEY-TABULATED_DWG` | **TABULATED** 111211, 111212, 111213, 111214, drawn as the square 111211 | A3 | front (hidden lines), from the right (the stud face) and from above (hidden lines), 2:1 | 11 |
+| `111211_P01_BASE-CORNER-KEY-TABULATED_DWG` | **TABULATED** 111211, 111212, 111213, 111214, 111215, drawn as the square 111211 with its D-144 holes | A3 | front (hidden lines), from the right (the stud face) and from above (hidden lines), 2:1 | 12 |
 
-**The key sheet is out of the repo (D-147 (3), 2026-11-01): a superseded drawing is removed until it is regenerated.** Its last version (in git at 084217c) showed 111211's first fixing holes (10.5 from the back face, 7.0 either side) and didn't list 111215, so after D-144 it was wrong for 111211. Until the redraw on the key design's newest version lands, 111211 to 111215 show as having no drawing, which is true. The redraw is Fusion's (a five-part tabulated sheet with tapped holes, D-139 and D-143) and comes in the key model's PR.
+**The key sheet is back (D-144, 2026-11-01).** #300 took its old version out of the repo (D-147 (3)); this redraw on the key design's version 3 replaces it. How it was drawn is below.
 
 ## How they are made
 
@@ -42,3 +42,24 @@ The sheet matched the STEP (block 30 x 35 x 75, holes at 26 and 60, the bottom h
 The Lead's drawing check from CEILING's sample, on these two sheets: no inserted pictures; the first-angle symbol draws right; two views made as visible-only show hidden lines anyway (the key's stud-face view shows the bottom holes, the spigot's top view the stud), which Fusion does when the style is set at creation, and both add information, so they stay; no dimension is placed twice.
 
 Offline: `test_joints_drawing.py` now also checks the notes' letter height and box, finding a solid and a hidden circle but not a hidden cone's dashes, and view B's sizes (0 failures).
+
+## The key sheet for D-144 (2026-11-01)
+
+D-144 stepped 111211's fixing holes ((10.5, +6) and (17.8, −6)) and added 111215 (FR1's square key, the first holes); D-147 (3) took the old sheet out until this redraw. The sheet is Fusion's under D-139 and D-143 (a five-part tabulated sheet with tapped holes, which the generator refuses until their callouts land), said to the Lead before the run.
+
+**In Fusion:**
+- **08:19 UTC, a slip:** a first D-144 redraw deleted the drawing it replaced instead of renaming it, against D-141 (ruled 06:55); the delete step was older than the rule and wasn't rechecked. Owned to the Lead. Only this sheet; its PDF is in git at 084217c.
+- **09:26 UTC:** that redraw (its version 2) renamed `111211_P01_BASE-CORNER-KEY-TABULATED_DWG_SUPERSEDED-2026-11-01` (D-141), a new sheet started on the key design's version 3 and annotated: 3 views, 12 dimensions.
+- **10:09 UTC, after the visual pass below:** that sheet renamed `111211_P01_BASE-CORNER-KEY-TABULATED_DWG_SUPERSEDED-2026-11-01-2`, a new one started on version 3 and annotated with the right view 8 to the right: 3 views, 12 dimensions, all native and linked to the model. Every step in one held session, with the exact-mitre STEP export (the build record).
+
+**Layout, from D-144's bigger table and my visual pass:**
+- Front and right views 6 up (sheet y 191) to widen the gap over the top view; the front view's 30 above it; the stepped hole's 10.5 above the top view, in that gap; both its y dimensions (11.5, 23.5) on the left, so the tags have the right side.
+- H03 and H04 tags right of the top view, lifted so the lower one ends 3.5 above the title block (at the holes' height H03 ended 1 from it); the first-angle symbol moved right (x 252).
+- The right view 8 right (x 88): its 60, stacked left of the 26, read back at x 18.7 on the frame line (19.98); now 26.7. `test_joints_drawing.py` now checks that every dimension sits inside the frame with room for its text (it fails with the view back at x 80).
+- Note 3 writes (A=0) so it can't split over a line; view B's angle label starts past its face line, which crossed the A; view B drawn at the mitre's exact −24.1446° (its sizes don't change at 0.01).
+- The finish finds the stepped holes' hidden circles with a 1.6 join (at 3.5 they merged with the stud holes' hidden lines).
+
+**Read back from the PDF:** right view 17.5, 26, 60, 35, Ø5.04; front 75, 30; top 10.5 and 17.8 (the holes' x), 11.5 and 23.5 (their y), Ø5.04; view B 22.16, 37.84, A = 24.14°. Created by and the PDF's author read "Autonomous"; no maker named in the notes (D-147 (1)).
+
+**Checks:** `test_joints_drawing.py` 0 failures; the mechanical check against main closes the key sheet's no-drawing findings for 111211 to 111215 and 111215's missing STEP (the pull request's checks). A Reviewer's D-114 visual pass follows.
+
