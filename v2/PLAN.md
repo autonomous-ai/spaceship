@@ -16,7 +16,7 @@ Get the v2 prototype design right. **The look stays exactly the same.** That mea
 
 It's built from a complete, editable design package, so the prototype matches the drawings.
 
-**US rules are in scope for v2, prototype included (D-134):** the UL 962 listing path, fire ratings of every material, the sprinkler and smoke strategy, ADA, US safety glazing marks, US emissions and labelling, and NEC for the mains side. The mains side is US 120 V, 60 Hz on the prototype: UL-listed parts, tamper-resistant NEMA 5-15R sockets, a 120 V cord and inlet, tested in Vietnam through a step-down transformer (D-133). The roof can take a sprinkler head or open on alarm, there is no step at the door (D-132), the door is wide and its pull light. **Later:** updates to the product page.
+**Designed for US use (D-134):** the mains side is US 120 V, 60 Hz on the prototype, on UL-listed parts: tamper-resistant NEMA 5-15R sockets and a 120 V cord and inlet, tested in Vietnam through a step-down transformer (D-133). **Later, not in the v2 prototype:** certification work (the UL 962 listing, fire test reports, the sprinkler and smoke strategy, emission certificates, glazing marks) and updates to the product page (D-134). We don't design them out, though. The roof should be able to take a sprinkler head or open on alarm, and there is no step at the door (D-132), the door wide and the door pull light.
 
 ## 10x better than the big guys
 
