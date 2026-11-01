@@ -131,7 +131,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 8](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (10.3 kg).
+- **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (10.9 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the 5 mm hex key.
 - **Person A:** With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 7.
@@ -222,7 +222,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 17. Soffit and exhaust cartridge
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-10** AIR - SOFFIT (15.4 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
+- **Parts:** **2-10** AIR - SOFFIT (14.8 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** 2 × 838002 M6 × 25 (J-AIR-01). Tool: the 5 mm hex key.
 - **Person A:** With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.
 - **Person B:** Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.
