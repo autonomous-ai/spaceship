@@ -28,9 +28,50 @@ WALL_FRAME = {
                  "after welding, before the holes; straighten cold or reject, never clamp flat (J-FRAME-01).",
 }
 
+# WALL side skins (D-139: drawn by drawgen as V-grooved and folded panels, #341): the 3 mm Alcorest ACP with its 46 mm
+# back return folded round the frame's back end. The groove, the fold and the film rules are the maker's own:
+# Nhom Viet Dung, "Huong dan thi cong tam ACP Alcorest" No. 01/2021/HDTC-VD (sections 1.1, 2.1, 2.2, 4.1, 4.4, 4.5,
+# figures 4.4 and 4.5), the guide for the panel HW-SEL A1 lists (Alcorest outdoor, 3 x 0.21, PE core, PVDF).
+SKIN_GROOVE = ("groove A of the Alcorest guide: a 110° V on the back face with a 2 mm flat root, leaving 0.1 to 0.5 of "
+               "core on the 0.21 outer skin; fold 90°, outside radius over 2 (guide 01/2021/HDTC-VD, 4.4, 4.5)")
+SKIN_NOTES = [
+    "GROOVE AND FOLD (Alcorest guide 01/2021/HDTC-VD, 4.1, 4.4, 4.5, figures 4.4 and 4.5): rout the groove from the "
+    "back with a carbide end mill (2 to 4 flutes, 20 000 to 30 000 rpm, 3 to 5 m/min) or a carbide disc cutter (for "
+    "example 12 in, 3 000 to 5 000 rpm, 5 m/min) shaped to the 110° V with its 2 mm flat root. The root never touches "
+    "the outer aluminium: 0.1 to 0.5 of core stays on it. Clamp the panel between two rigid supports and fold evenly "
+    "along the whole edge; an outside radius under 2 cracks the face and voids the maker's warranty.",
+    "TEST FOLD: groove and fold one piece of the same colour and thickness before the batch (guide 4.4); it sets the "
+    "core left at the root and the fold allowance, which the blank (the sum of the outside lengths) is cut to (HOLD H16).",
+    "BOND (D-137, bond spec): SikaTack Panel-50, one 12 x 3 joint on every frame member, and one 3 mm joint, as wide "
+    "as the return allows up to 12, between the return and the frame's back end; laid face down on a flat table with "
+    "the ACP face as datum.",
+    "FILM (guide 1.1, 2.2): fit every panel with the arrows printed on its film the same way; peel the film by hand, "
+    "no heat, within 45 days of the start of fitting; no marker, vinyl or tape on the coated face after that.",
+    "Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
+]
+SKIN_TOLERANCE = ("cut sizes ±0.5 (CNC router; assumption, guideline 6.3); the fold line's place and the blank's "
+                  "allowance from the test fold (HOLD H16); fold 90° ±1° (assumption); colour difference between "
+                  "panels ΔE 2 or less (Alcorest guide 2.1).")
+
+
+def _skin(hand):
+    """A side skin's entry: LH skins (L1, L2) have their outer face at -X, RH skins (R1, R2) at +X."""
+    out = "-X" if hand == "LH" else "+X"
+    inner = "+X" if hand == "LH" else "-X"
+    return {"bent": {"vgroove": SKIN_GROOVE}, "notes": SKIN_NOTES, "tolerance": SKIN_TOLERANCE,
+            "corner": out + "-Y-Z", "datum_faces": {"A": "-Z", "B": "-Y", "C": inner},
+            "datum_words": {"A": "bottom edge (flush with the frame's bottom)",
+                            "B": "front edge (2.26 seam to the decor block)",
+                            "C": "back face (bonded to the frame through the 3 mm line)"}}
+
+
 PARTS = {
     "211101": WALL_FRAME,
     "211102": WALL_FRAME,
+    "211301": _skin("LH"),
+    "211302": _skin("RH"),
+    "211303": _skin("LH"),
+    "211304": _skin("RH"),
 }
 
 _FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with a full parts-list row (WALL's D-123 "
