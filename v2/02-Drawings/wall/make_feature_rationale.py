@@ -78,7 +78,9 @@ OTHER_BACK = [
      "stile_pitch_max 400; pitch = (half_fw - 20) / 3 (calculation)", "follows half_fw (edit test)",
      "cut list ±0.5 (assumption)", "DECIDED (D-85)"),
     ("F12", "{frame}", "Rails run the full frame width; stiles fit between them (square butt ends)",
-     "a continuous bottom rail sits on its gasket in one line", "member joint method HOLD (H11)", "", "", "HOLD"),
+     "a continuous bottom rail sits on its gasket in one line", "member joints: internal cleats per D-115 (corner and T "
+     "cleats, crimped, structural adhesive; no welds; the cleats come from the Joints Engineer)", "", "",
+     "DECIDED (D-115); cleats to come"),
     ("F13", "{fill}", "Fill pockets 60 x 60 x 40 beside every bolt this panel drives (bottom rail, corner, and the "
      "ceiling bolts on B3/B4, the pins on B2/B4)", "the key reaches the access holes from inside before the cassette "
      "goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
@@ -248,7 +250,9 @@ OTHER = [
     ("F11", "{frame}", "Back stile 40 x 40 x 1.2", "room for the corner rivnut, its Ø20 stop washer and the bolt "
      "(37+ mm overlap instead of 17)", "PM ruling R-J3; %s 2.4, FR-06" % REG, "", "", "confirmed"),
     ("F12", "{frame}", "Rails run the full frame length; stiles fit between them (square butt ends)",
-     "a continuous bottom rail sits on the band and its gasket in one line", "member joint method HOLD (H11)", "", "", "HOLD (joint method)"),
+     "a continuous bottom rail sits on the band and its gasket in one line", "member joints: internal cleats per D-115 "
+     "(corner and T cleats, crimped, structural adhesive; no welds; the cleats come from the Joints Engineer)", "", "",
+     "DECIDED (D-115); cleats to come"),
     ("F13", "{fill}", "Fill pockets 60 x 60 x 40, beside every bolt this panel drives (4 above F01, 3 beside F07)",
      "the 5 mm key reaches F02 and F08 from inside the pod before the cassette goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
     ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end",

@@ -1038,7 +1038,7 @@ def build_panel(design, root):
 
 
 def build_frame(design, frame, out, xf, yf, zs):
-    # rails run the full frame length; stiles fit between them (butt joints, member joint method HOLD H11)
+    # rails run the full frame length; stiles fit between them, butt cut: internal cleats join them (D-115)
     out["RAIL - BOTTOM"] = tube(design, frame, "RAIL - BOTTOM", xf, yf, (Z0, "(%s) + tube_w" % Z0), "y")
     out["RAIL - TOP"] = tube(design, frame, "RAIL - TOP", xf, yf, ("(%s) - top_h" % Z1, Z1), "y")
     print("step 2: rails", [(k, size(bbox(v))) for k, v in out.items()])
@@ -1406,6 +1406,7 @@ def run(_context):
         sf_ns = {"__name__": "__fusion_set_front__", "__file__": sf, "SCRIPT_ARGS": {"inside": INSIDE}}
         with open(sf, "r", encoding="utf-8") as fh:
             exec(compile(fh.read(), sf, "exec"), sf_ns)
+        print("helper file %s" % os.path.realpath(sf))
         sf_ns["run"](None)
         ver = save_holding_props(app, doc, root, pn, desc, "%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py")))
         print("saved %s (version %s), part number %s, description %r" % (doc.name, ver, root.partNumber,
@@ -1414,4 +1415,5 @@ def run(_context):
         ns = {"__name__": "__fusion_post__", "__file__": path, "SCRIPT_ARGS": dict(ARGS, pn=pn)}
         with open(path, "r", encoding="utf-8") as fh:
             exec(compile(fh.read(), path, "exec"), ns)
+        print("helper file %s" % os.path.realpath(path))
         ns["run"](None)
