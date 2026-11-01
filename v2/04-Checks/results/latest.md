@@ -1,6 +1,6 @@
-# Mechanical check run: 0d355cd on 2026-11-01
+# Mechanical check run: 7309f94 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `0d355cd`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `7309f94`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 90** (36 severe, 54 major, 0 minor). Register numbers in brackets.
 
