@@ -56,7 +56,6 @@ TREE = [
     ("sof_fill", "soffit", 1, "air report 7e: the piece under the cartridge"),
     ("sof_fill_f", "soffit", 1, "air report 7e: the front piece"),
     ("egrille", "soffit", 1, "air report 7e: exhaust grille 265 x 336"),
-    ("stud", "soffit", 4, "PM ruling 2026-11-01: 4 hanger studs into the ceiling's rivnuts (number from the joints register, D-63)"),
     ("hinge", "soffit", 4, "D-87: hinged underside, 2 per section"), ("latch", "soffit", 4, "D-87: 2 push latches per section"),
     ("ebox", "soffit", 1, "D-87: fitted in the soffit at the factory"),
     ("box", "ebox", 1, "air report 7e: 294 x 314 x 173; 3 mm (D-124)"), ("fan", "ebox", 2, "PM ruling 2026-11-01: 618401 for all four fans"),
@@ -124,7 +123,6 @@ HOLD_MASS = {"hub": (0.0, "assumption: space only (in-house module, its mass is 
                        "transition's own design (walls, vanes, outlet lip seal) is HOLD"),
              "rtrans": (1.47, "calculation: a 1 mm galvanised steel duct of 0.187 m2, from the riser's top (139 x 155) to the "
                         "fan box's bottom (300 x 155) over 205, FRONT's reserved space, until the AIR follow-up designs it"),
-             "stud": (0.012, "assumption: an M6 shoulder stud, about 12 g"),
              "hinge": (0.04, "assumption: a small concealed hinge, about 40 g"),
              "latch": (0.02, "assumption: a push latch, about 20 g"),
              "pad": (0.004, "calculation: 40 x 15 x 5 rubber at about 1300 kg/m3 (product HOLD)"),
@@ -261,6 +259,12 @@ def size_tol(v, key):
 # the hardware rows of AIR's parts list, all joints register parts (D-63): key in air_model.HARDWARE -> (parent key,
 # material, finish, maker, sku, torque, source)
 HARDWARE_ROWS = {
+    "stud": ("soffit", "steel, property class 8.8 (ISO 898-1)", "zinc plated",
+             "HOLD: any maker to ISO 4762, picked at the RFQ", "ISO 4762 M6 x 16 - 8.8 - zinc plated",
+             "snug only, into the ceiling's rivnuts (HOLD-01 for the rivnut)",
+             "D-90 (HOLD-18): the soffit's four hanger studs, heads under the door-side and room-side rails, into the "
+             "ceiling's rivnuts; the register's 838001 (the Sourcing Engineer's find, the Lead's ruling 2026-11-01: "
+             "618104 cancelled)"),
     "lock": ("soffit", "steel, property class 8.8 (ISO 898-1)", "zinc plated",
              "HOLD: any maker to ISO 4762, picked at the RFQ", "ISO 4762 M6 x 25 - 8.8 - zinc plated",
              "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
@@ -301,6 +305,9 @@ def parts_list(v, mass):
         m = mass.get(pn)
         if kind == "HS":
             mass_txt, mstat = "", "calculation (sum of its parts)"
+        elif kind == "reserved air space":
+            # D-105's type: no mass, no drawing, no BOM line; the checks keep the space (the Lead's ruling 2026-11-01)
+            mass_txt, mstat = "-", "not counted: a reserved space; the in-house sensor hub that fills it is ELECTRICAL's"
         elif kind == "HOLD" or (kind == "PI" and key in HOLD_MASS):   # a bought part whose product is on HOLD
             hm, hs = HOLD_MASS.get(key, (0.0, "assumption: space only"))
             mass_txt, mstat = "%.3f" % hm, hs
@@ -318,13 +325,16 @@ def parts_list(v, mass):
             each = (sum(m) / max(1, qty_pod(key))) if m else None
             mass_txt, mstat = ("%.3f" % each if each is not None else ""), "calculation (Fusion, CAD geometry x density)"
         size, tol = size_tol(v, pkey) if kind == "MP" else ("", "")
-        held = kind == "HOLD" or name.endswith("- HOLD")
+        reserved = kind == "reserved air space"
+        held = not reserved and (kind == "HOLD" or name.endswith("- HOLD"))
         maker, sku = MAKER.get(pkey, ("HOLD", "HOLD: chosen at the RFQ") if held else ("", ""))
         r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": A.PARTS[parent][0] if parent else "",
              "qty_per_parent": q, "qty_per_pod": qty_pod(key), "material": A.MATERIALS[mat][0] if mat else "",
              "finish": FINISH.get(key, ""), "process": PROCESS.get(key, ""), "maker": maker, "sku": sku,
              "torque": "", "size_mm": size, "tolerance": tol, "mass_each_kg": mass_txt,
-             "mass_status": mstat, "revision": REV, "status": "HOLD" if held or pkey == "fan" else "DRAFT",
+             "mass_status": mstat, "revision": REV,
+             "status": ("HOLD: reserved space; ELECTRICAL lists the hub (the Lead's ruling 2026-11-01)" if reserved
+                        else "HOLD" if held or pkey == "fan" else "DRAFT"),
              "source": src}
         rows.append(r)
         by_key[key] = r
@@ -346,7 +356,7 @@ def parts_list(v, mass):
     def total(key):
         r = by_key[key]
         if r["kind"] != "HS":
-            return float(r["mass_each_kg"] or 0.0)
+            return float(r["mass_each_kg"]) if r["mass_each_kg"] not in ("", "-") else 0.0
         return sum(q * total(k) for k, q in kids.get(key, []))
     for key, r in by_key.items():
         if r["kind"] == "HS":

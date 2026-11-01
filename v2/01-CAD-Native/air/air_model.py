@@ -257,10 +257,11 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "sleeve": ("611601", "AIR - ROOF SLEEVE", "Ống thải qua mái", "MP", "steel"),
     "rgrille": ("611602", "AIR - ROOF GRILLE", "Lưới thải mái", "MP", "perf50"),
     "fan": ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V 140 mm", "PI", "fan"),
-    "stud": ("618104", "AIR - SOFFIT HANGER STUD - HOLD", "Vít treo hộp gió (chờ)", "HOLD", "hold"),
     "hinge": ("618105", "AIR - SOFFIT UNDERSIDE HINGE - HOLD", "Bản lề mặt dưới hộp gió (chờ)", "HOLD", "hold"),
     "latch": ("618106", "AIR - SOFFIT UNDERSIDE LATCH - HOLD", "Chốt bấm mặt dưới hộp gió (chờ)", "HOLD", "hold"),
-    "hub": ("618101", "AIR - SENSOR HUB ZONE - HOLD", "Vùng bộ cảm biến (chờ)", "HOLD", "hold"),
+    # the in-house sensor hub's space (the Sourcing Engineer's find, the Lead's ruling 2026-11-01): not bought, a reserved
+    # space the checks keep (D-105's type); ELECTRICAL lists the hub itself
+    "hub": ("618101", "AIR - SENSOR HUB ZONE - HOLD", "Vùng bộ cảm biến (chờ)", "reserved air space", None),
     "trans": ("618102", "AIR - SUPPLY TRANSITION - HOLD", "Ống chuyển cấp (chờ)", "HOLD", "hold"),
     "rtrans": ("618103", "AIR - RISER TRANSITION - HOLD", "Ống chuyển hút (chờ)", "HOLD", "hold"),
     # how the supply fan box assembly rests in DR (PM rulings 2026-11-01; Control's numbers and names, #279)
@@ -273,6 +274,10 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
 # joint hardware from the joints register used in AIR (D-63): the soffit's two captive lock
 # screws (PM ruling 2026-11-01), into the ceiling's rivnuts; their captive retainer is HOLD
 HARDWARE = {
+    # the soffit's four hanger studs are the register's M6 x 16 socket head bolt 838001 (D-90, HOLD-18; the Sourcing
+    # Engineer's find, the Lead's ruling 2026-11-01: 618104 cancelled), into the ceiling's rivnuts
+    "stud": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", 4,
+             0.0062),
     "lock": ("838002", "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
              "Bulong lục giác chìm M6 × 25 (chốt mối nối khép)", 2, 0.0079),
     # the roof grille's fixings (the Air Engineer, 2026-11-01, Packing's open item from #265): the grille goes on from

@@ -708,7 +708,7 @@ def run(_context):
                         comp = occ.component
                         setup(comp)
                     made[n] = (comp, maker(comp, n, u))
-                    set_material(design, comp, "riser" if key == "lock" else key)
+                    set_material(design, comp, "riser" if key in ("lock", "stud") else key)
                 else:
                     occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
                 CB.place(parent, occ, (u[0], u[2], u[4]), n, ctx)
@@ -755,7 +755,13 @@ def run(_context):
         for key in ("sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door",
                     "sof_end", "sof_fill", "sof_fill_f", "egrille"):
             comp_with(sof, key, names_of(key))
-        copies(sof, "stud", units_of("stud"), stud_maker("HANGER STUD"))
+        hs = A.HARDWARE["stud"]
+
+        def stud_setup(sd):
+            # the register's M6 x 16 socket head bolt 838001 (D-90, HOLD-18; the Lead's ruling 2026-11-01)
+            sd.name, sd.partNumber = "%s %s" % (hs[0], hs[1]), hs[0]
+            sd.description = "%s | %s | PI | %s | the soffit's hanger stud (D-90)" % (hs[1], hs[2], A.REV)
+        copies(sof, "stud", units_of("stud"), stud_maker("HANGER STUD"), setup=stud_setup)   # steel, as the riser
         copies(sof, "hinge", units_of("hinge"), box_maker("HINGE ENVELOPE"))
         copies(sof, "latch", units_of("latch"), box_maker("LATCH ENVELOPE"))
         hp = A.HARDWARE["lock"]
