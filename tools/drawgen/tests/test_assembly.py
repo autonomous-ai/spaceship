@@ -21,8 +21,11 @@
    C (C a median plane on a size), and a build-up from A that reads the same on a left- and a right-hand cassette;
    the read-back fails a datum off its face or size, a wrong build-up value or face, and a centre line off its part.
 9. A sub-assembly's number owns every solid under it in the STEP (the read-back's rule, as drawing's).
+10. A balloon's point must be in sight: an arrow ends on an outline drawn in its view, a dot's point is the first
+    surface on its sight line (the read-back fails one on the felt under the tray).
 """
 
+import csv
 import json
 import os
 import shutil
@@ -35,6 +38,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 import fitz  # noqa: E402
 
 import assembly  # noqa: E402
+import inputs  # noqa: E402
 import readback  # noqa: E402
 from compose import NotDrawable  # noqa: E402
 from sheet import Sheet  # noqa: E402
@@ -186,6 +190,53 @@ def test_units_join_and_printed_widths():
     assert assembly._join(lines) == t
 
 
+def test_a_count_in_sets_is_counted_as_pieces():
+    """WALL's #343 lists its cassette clips as 518003, '4 set' (a female and a male part each): a count in sets is
+    counted as pieces are (the Lead, 2026-11-01), so the one placement holding the four clip zones splits into its
+    four bodies, the interface sizes go to each zone and the sheet reads back; the table prints '4 set' as the list
+    says; and a set count the STEP doesn't hold is refused. Here on main's 510101, its clip row given in sets in a
+    copy of WALL's list, which both the drawing and the read-back read."""
+    team, entry = assembly.assemblies()["510101"]
+    _own, _kids, src = assembly.list_rows("510101", team)
+    real = inputs.team_lists
+
+    def in_sets(qty):
+        with open(src, newline="", encoding="utf-8") as fh:
+            rd = csv.DictReader(fh)
+            cols, rows = rd.fieldnames, list(rd)
+        _me, kids = assembly.children_of(rows, "510101", {"510101"}, src)
+        clip = [r for r in kids if (r.get("part_number") or "").strip() == "518001"]
+        assert len(clip) == 1, clip
+        clip[0].update(unit="set", qty=qty)
+        dst = os.path.join(TMP, "sets-%s" % qty, os.path.basename(src))
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with open(dst, "w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, cols)
+            w.writeheader()
+            w.writerows(rows)
+        inputs.team_lists = lambda t: [dst if p == src else p for p in real(t)] if t == team else real(t)
+
+    try:
+        in_sets("4")
+        assy = assembly.Assy("510101", team, entry)
+        clip = next(it for it in assy.table_items if it.pn == "518001")
+        assert len(clip.occs) == 1 and getattr(clip.occs[0], "pieces", False), "the four clip zones weren't split"
+        final, rep = assembly.generate("510101", team, entry, os.path.join(TMP, "sets"))
+        fails, st = assembly.check(final)
+        assert not fails, fails
+        assert st["interfaces"] == 8, st
+        text = " ".join(fitz.open(final)[0].get_text().split())
+        assert "4 set" in text, "the table doesn't print the list's '4 set'"
+        in_sets("3")
+        try:
+            assembly.Assy("510101", team, entry)
+            raise AssertionError("3 sets drawn where the STEP holds 4 clip zones")
+        except NotDrawable as e:
+            assert "the list has 3 of 518001 under it, the STEP 4" in str(e), e
+    finally:
+        inputs.team_lists = real
+
+
 def test_shafts_cut_along_their_axis_are_drawn_whole():
     """ISO 128-50: the entry's spigots and glide stems are drawn whole where a section cuts them, not hatched; a
     spigot the plane doesn't cut (in front of section C) is not drawn in it at all. The entry may name more such
@@ -287,6 +338,83 @@ def test_a_sub_assemblys_number_owns_its_parts_solids():
     own = {id(x) for x in sols.get("510301", [])}
     for pn in ("513101", "513102", "513201"):
         assert sols.get(pn) and {id(x) for x in sols[pn]} <= own, pn
+
+
+def _mark(final, dst, change, tip, end):
+    """A copy of a sheet with its drawing data changed and an arrowhead (pointing down) or a dot drawn at tip (sheet
+    mm), so only the visibility check can catch it."""
+    doc = fitz.open(final)
+    page = doc[0]
+    data = readback.read_data(doc)
+    mm = 72.0 / 25.4
+    H = data["sheet_h"]
+    P = lambda x, y: fitz.Point(x * mm, (H - y) * mm)
+    sh = page.new_shape()
+    if end == "arrow":
+        sh.draw_polyline([P(tip[0], tip[1]), P(tip[0] - 0.5, tip[1] + 3.0), P(tip[0] + 0.5, tip[1] + 3.0)])
+        sh.finish(width=0.1 * mm, color=(0, 0, 0), fill=(0, 0, 0), closePath=True)
+    else:
+        sh.draw_circle(P(tip[0], tip[1]), 0.6 * mm)
+        sh.finish(width=0.1 * mm, color=(0, 0, 0), fill=(0, 0, 0))
+    sh.commit()
+    change(data)
+    txt = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    esc = txt.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+    doc.xref_set_key(doc.pdf_catalog(), "DrawgenData", "(%s)" % esc)
+    doc.save(dst)
+    doc.close()
+    return dst
+
+
+def test_readback_fails_a_balloon_on_a_hidden_point():
+    """The Lead's case: a balloon's point on its part but out of sight (the felt under the tray, seen from above),
+    with an arrowhead or dot drawn where it projects. It is on its part and the mark is there, so only the
+    visibility check catches it: an arrow must end on an outline drawn in its view, and a dot's point must be the
+    first surface on its sight line."""
+    final, rep = _made("510301")
+    data = rep["data"]
+    v = [x for x in data["views"] if x["name"] == "principal"][0]
+    p3 = (-583.0, 300.0, 2325.5)                # on the felt's back face, under the tray's base and a fill bay
+    tip = (v["off"][0] + v["scale"] * assembly.vdot(p3, v["x"]), v["off"][1] + v["scale"] * assembly.vdot(p3, v["y"]))
+    for end, want in (("arrow", "doesn't end on an outline"), ("dot", "is hidden in its view")):
+        def change(d, end=end):
+            b = [x for x in d["balloons"] if x["pn"] == "513201"][0]
+            b.update({"view": "principal", "end": end, "tip": list(tip), "tip3d": list(p3)})
+        bad = _mark(final, os.path.join(TMP, "t_hidden_%s.pdf" % end), change, tip, end)
+        fails, _st = assembly.check(bad)
+        assert any("balloon 3:" in f and want in f for f in fails), (end, fails)
+        assert not any("not on 513201" in f or "no %s drawn" % ("arrowhead" if end == "arrow" else "dot") in f
+                       for f in fails), (end, fails)
+
+
+def test_an_assembly_class_brings_its_own_kind_sources_and_extra():
+    """The hooks the whole-pod GA builds on (Fusion Engineer 2's pod_assembly.py): make() draws an assembly already
+    built; the sheet's kind and sources come from it, and its extra(sh, views, sides) step draws more annotation
+    after the sizes and before the balloons, its return kept in the drawing data. A sheet of another kind is not
+    this module's to read back."""
+    team, entry = assembly.assemblies()["610101"]
+
+    class Pod(assembly.Assy):
+        kind = "pod"
+
+        def sources(self):
+            return super().sources() + [{"role": "master BOM", "path": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+                                         "sha256_12": "test"}]
+
+        def extra(self, sh, views, sides):
+            P = views["principal"]
+            x0, y0, x1, y1 = P.box()
+            sh.text(x0, y0 - 30.0, "EXTRA", 2.5)
+            return {"labels": ["EXTRA"]}
+    a = Pod("610101", team, entry)
+    out = os.path.join(TMP, "pod.pdf")
+    rep = assembly.make("610101", team, entry, out, assy=a)
+    data = rep["data"]
+    assert data["kind"] == "pod" and data["extra"] == {"labels": ["EXTRA"]}, (data["kind"], data.get("extra"))
+    assert [s_["role"] for s_ in data["sources"]] == ["STEP", "parts list", "master BOM"], data["sources"]
+    assert "EXTRA" in fitz.open(out)[0].get_text()
+    fails, _st = assembly.check(out)
+    assert fails and "not an assembly sheet" in fails[0], fails
 
 
 def test_never_goes_over_a_fusion_drawing():

@@ -2,7 +2,7 @@
 first-angle symbol, the notes and title images, the PDF), with AIR's specs.
 
     python3 tools/fusion/run_script.py v2/02-Drawings/interior/make_drawing_interior.py \\
-        --arg parts=ledge,shelf_back --label "CEILING Engineer (INTERIOR)" --timeout 1200
+        --arg parts=ledge_assy,shelf_assy --label "CEILING Engineer (INTERIOR)" --timeout 1200
 """
 
 import importlib

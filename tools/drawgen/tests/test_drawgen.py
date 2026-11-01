@@ -523,6 +523,72 @@ def test_folds_along_any_line():
     assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
 
 
+class _RowSays:
+    """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
+
+    def __init__(self, page, tag, old, new):
+        self.page, self.tag, self.old, self.new = page, tag, old, new
+
+    def get_text(self, *a, **k):
+        out = self.page.get_text(*a, **k)
+        if a != ("words",):
+            return out
+        rows = [w for w in out if w[4] == self.tag and any(abs((v[1] + v[3]) / 2 - (w[1] + w[3]) / 2) < 0.6 and
+                                                            v[4] in ("UP", "DOWN") for v in out)]
+        assert len(rows) == 1, rows
+        y = (rows[0][1] + rows[0][3]) / 2
+        hit = [w for w in out if abs((w[1] + w[3]) / 2 - y) < 0.6 and w[4] == self.old]
+        assert len(hit) == 1, (self.old, [w[4] for w in out if abs((w[1] + w[3]) / 2 - y) < 0.6])
+        return [w if w is not hit[0] else w[:4] + (self.new,) + w[5:] for w in out]
+
+    def __getattr__(self, name):
+        return getattr(self.page, name)
+
+
+def test_any_line_bend_table_is_read_back():
+    """Reviewer 15 on #369: the read-back never read the bend table of folds along any line, so a sheet printing every
+    UP as DOWN, 150° for 30° or R2 for R1 read back PASS. Each printed row is now read against the sheet's record, and
+    each recorded bend against the STEP: a fold on its axis, the angle it sweeps, and its direction (which skin is the
+    fold's inside, and whether the DXF is mirrored). On the test duct, each plant fails."""
+    import copy
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct_table")
+    os.makedirs(d, exist_ok=True)
+    step = duct_piece.build_step(os.path.join(d, "219970_P01_TEST-DUCT_STEP.step"))
+    good = duct_piece.write_dxf(os.path.join(d, "219970_DXF.dxf"))
+    row = dict(ROW, part_number="219970", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219970.pdf")
+    compose.make("219970", "none", dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good}),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    data = readback.read_data(fitz.open(p))
+    faces = readback.step_faces(step, "219970")
+    printed = readback.bend_table_rows(page)
+    assert sorted(printed) == sorted(r_["tag"] for r_ in data["flat"]["rows"]), printed
+    assert readback.unfold_table_fails(data, page, faces) == []
+    b30 = next(r_ for r_ in data["flat"]["rows"] if round(r_["angle"]) == 30)
+    tag = b30["tag"]
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "UP", "DOWN"), faces)
+    assert f == ["bend %s's row prints DOWN; the sheet's record is UP" % tag], f
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "30°", "150°"), faces)
+    assert f == ["bend %s's row prints its angle 150; the sheet's record is 30" % tag], f
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "R1", "R2"), faces)
+    assert f == ["bend %s's row prints its inside radius 2; the sheet's record is 1" % tag], f
+    # the record against the STEP: an angle the fold doesn't sweep, a direction the fold and the DXF don't give
+    dd = copy.deepcopy(data)
+    next(b_ for b_ in dd["flat"]["unfold"]["bends"] if b_["tag"] == tag)["angle"] = 150.0
+    f = readback.unfold_table_fails(dd, page, faces)
+    assert any("bend %s: the sheet records 150°; its fold in the STEP sweeps 30°" % tag in x for x in f), f
+    dd = copy.deepcopy(data)
+    dd["flat"]["unfold"]["T"][0] = not dd["flat"]["unfold"]["T"][0]
+    f = readback.unfold_table_fails(dd, page, faces)
+    assert len([x for x in f if "the STEP's fold and the DXF give DOWN" in x]) == len(dd["flat"]["rows"]), f
+
+
 def test_a_sharp_v_groove_is_refused():
     """D-161 (Reviewer 6 on #341): a V-grooved ACP fold bends its outer skin round a radius (2 mm minimum), so a model
     that leaves the fold sharp would develop as the plain sum of the outside lengths, 0.86 too long. A test skin
@@ -677,7 +743,7 @@ def test_refuses_a_folded_sheet():
         assert "folded" in str(e), e
 
 
-def _tray(path, cuts=None):
+def _tray(path, cuts=None, cone=None):
     """A 200 x 150 x 30 tray of 1 mm sheet folded sharp up all four sides (6 mm open corners), with a Ø8 hole through
     its front wall at X 60, Z 15: two runs of bends, square to each other, and a hole on a folded flange. cuts: also a
     10 x 30 slot along X in the base (centre X 130, Y 75) and a 40 x 16 cut-out with R3 corners in the left wall
@@ -728,7 +794,13 @@ def _tray(path, cuts=None):
             e.Next()
         mk.Build()
         tools.append(mk.Shape())
-    elif cuts == "triangle":
+    if cone == "csk":           # the front wall's Ø8 countersunk Ø9 x 90° from its outside (y 0)
+        from OCP.BRepPrimAPI import BRepPrimAPI_MakeCone
+        tools.append(BRepPrimAPI_MakeCone(gp_Ax2(gp_Pnt(60, -0.5, 15), gp_Dir(0, 1, 0)), 5.0, 0.0, 5.0).Shape())
+    elif cone == "dimple":      # a cone in the base that meets no hole
+        from OCP.BRepPrimAPI import BRepPrimAPI_MakeCone
+        tools.append(BRepPrimAPI_MakeCone(gp_Ax2(gp_Pnt(100, 75, -0.5), gp_Dir(0, 0, 1)), 3.0, 0.0, 3.0).Shape())
+    if cuts == "triangle":
         from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
         from OCP.BRepPrimAPI import BRepPrimAPI_MakePrism
         from OCP.gp import gp_Vec
@@ -863,6 +935,73 @@ def test_rounded_cutouts_and_slots():
         raise AssertionError("read a triangle cut-out")
     except ValueError as e:
         assert "cut-outs drawgen can't size yet (40 x 30)" in str(e), e
+
+
+def _csk_plate(path, csk_r=5.2):
+    """A 100 x 60 x 3 plate with two Ø5.5 holes: one countersunk from the top (90°, Ø2 csk_r at the face), one plain."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCone, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    sh = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 100, 60, 3).Shape()
+    for tl in (BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(30, 30, -1), gp_Dir(0, 0, 1)), 2.75, 5).Shape(),
+               BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(70, 30, -1), gp_Dir(0, 0, 1)), 2.75, 5).Shape(),
+               BRepPrimAPI_MakeCone(gp_Ax2(gp_Pnt(30, 30, 3.5), gp_Dir(0, 0, -1)), csk_r + 0.5, 0.0, csk_r + 0.5).Shape()):
+        c = BRepAlgoAPI_Cut(sh, tl)
+        c.Build()
+        sh = c.Shape()
+    w = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    return path
+
+
+def test_countersinks_are_called_out():
+    """D-143 (the Lead: BASE's sill 111302 and FRONT's channel holes are countersunk): each countersink is called out
+    with its hole, 'Ø5.5, CSK Ø10.4 x 90°', and read back against the STEP's own cone (its two circles), both ways.
+    A plate's sheet read against a STEP whose countersink is Ø11 fails. In bent sheet mode a countersunk hole in a
+    folded wall draws the same way (its DXF cuts the bore); a cone that meets no hole is refused, never taken for a
+    corner relief's cut end."""
+    import sheetmetal
+    d = os.path.join(TMP, "csk")
+    os.makedirs(d, exist_ok=True)
+    step = _csk_plate(os.path.join(d, "219989_P01_TEST-CSK-PLATE_STEP.step"))
+    other = _csk_plate(os.path.join(d, "219989_P01_TEST-CSK-PLATE-11_STEP.step"), csk_r=5.5)
+    row = dict(ROW, part_number="219989", name="TEST - CSK PLATE")
+    p = os.path.join(d, "219989.pdf")
+    compose.make("219989", "none", SPEC, p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    sizes = sorted(readback.row_size_text(page, t) for t in ("H01", "H02"))
+    assert sizes == ["Ø5.5", "Ø5.5, CSK Ø10.4 x 90°"], sizes
+    f2, _st = readback.check(p, step_path=other)
+    assert any("its row says CSK Ø10.4 x 90°; the STEP's is Ø11 x 90°" in x for x in f2), f2
+    # bent sheet mode: the test tray's front-wall hole countersunk Ø9 x 90°
+    tray = _tray(os.path.join(d, "219988_P01_TEST-TRAY-CSK_STEP.step"), cone="csk")
+    good, _b = _tray_dxf(os.path.join(d, "219988_DXF.dxf"))
+    trow = dict(ROW, part_number="219988", name="TEST - TRAY CSK", process="laser cut, brake bend")
+    p2 = os.path.join(d, "219988.pdf")
+    compose.make("219988", "none", dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": good}), p2, step=tray,
+                 row=trow)
+    fails, _st = readback.check(p2)
+    assert not fails, fails
+    assert readback.row_size_text(fitz.open(p2)[0], "H01") == "Ø8, CSK Ø9 x 90°", readback.row_size_text(
+        fitz.open(p2)[0], "H01")
+    dimple = _tray(os.path.join(d, "219987_P01_TEST-TRAY-DIMPLE_STEP.step"), cone="dimple")
+    try:
+        compose.make("219987", "none", dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": good}),
+                     os.path.join(d, "x.pdf"), step=dimple, row=dict(trow, part_number="219987"))
+        raise AssertionError("drew a tray with a cone that is no countersink")
+    except compose.NotDrawable as e:
+        assert "a cone (a countersink or a dimple this tool doesn't read)" in str(e), e
+    assert sheetmetal is not None
 
 
 def test_unpinned_bend_directions_are_refused():
