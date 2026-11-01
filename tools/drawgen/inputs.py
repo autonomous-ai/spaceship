@@ -137,6 +137,47 @@ def match_feature(rows, body_name, dia, axis_letter, centre3):
     return None
 
 
+SIZE_XY = re.compile(r"(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)")
+RANGE = re.compile(r"\b([XYZ])\s+(-?\d+(?:\.\d+)?)\s+to\s+(-?\d+(?:\.\d+)?)")
+
+
+def cutout_rows(pn, team):
+    """The registers' other-features rows for pn that name a size 'a x b' (WALL's | ID | Part | Feature | Why | ... |
+    tables): [{id, function, mating, size, ranges {axis: (lo, hi)}, file}]."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(DRAWINGS, team, "FEATURE-RATIONALE*.md"))):
+        with open(p, encoding="utf-8") as fh:
+            for line in fh:
+                cells = [c.strip() for c in line.strip().strip("|").split("|")]
+                if len(cells) < 4 or not re.fullmatch(r"F[A-Z0-9-]*\d+[A-Z]?", cells[0] or "-"):
+                    continue
+                if not cells[1].startswith(pn):
+                    continue
+                m = SIZE_XY.search(cells[2])
+                if not m:
+                    continue
+                out.append({"id": cells[0], "function": cells[2].split("(")[0].strip(), "mating": "",
+                            "size": (float(m.group(1)), float(m.group(2))),
+                            "ranges": {a: (float(lo), float(hi)) for a, lo, hi in RANGE.findall(cells[2])},
+                            "file": rel(p)})
+    return out
+
+
+def match_cutout(rows, length, width, box):
+    """The register row for a cut-out (#355's P2, Reviewer 6): its size either way round within 0.05, and every
+    range the row states (X 91 to 395 ...) its extent on that axis within 0.5 (box: x0, y0, z0, x1, y1, z1); the
+    one row that fits, else None."""
+    fit = []
+    for r in rows:
+        a, b = r["size"]
+        if not ((abs(a - length) <= 0.05 and abs(b - width) <= 0.05) or (abs(a - width) <= 0.05 and abs(b - length) <= 0.05)):
+            continue
+        k = {"X": 0, "Y": 1, "Z": 2}
+        if all(abs(box[k[ax]] - lo) <= 0.5 and abs(box[3 + k[ax]] - hi) <= 0.5 for ax, (lo, hi) in r["ranges"].items()):
+            fit.append(r)
+    return fit[0] if len(fit) == 1 else None
+
+
 def short_function(fn):
     """The register's function cell up to its first ':' or ';' (the clause that names the feature), whole: the
     table wraps it, never cuts it."""
