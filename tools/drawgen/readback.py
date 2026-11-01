@@ -533,6 +533,51 @@ def flat_fails(data, texts, page_text, tol=TOL):
     return fails
 
 
+def profile_fails(data, texts, page_text):
+    """A bent part's sections across its runs of bends (Reviewer 10 on #380: a sheet drawn again lost them all, and
+    the read-back passed): every run the sheet records must have a section on the sheet, titled, with each flange it
+    shows sized (its outside length printed by it), or be the same as a drawn one (the same flanges shown, the same
+    fold angles), whose title then says typical."""
+    fl = data.get("flat")
+    if not fl:
+        return []
+    profs = fl.get("profiles")
+    if profs is None or len(profs) != len(fl["chains"]):
+        return ["the sheet doesn't record a section across each run of bends"]
+    fails = []
+    names = {v["name"] for v in data["views"]}
+    words = " ".join(page_text.split())
+    rnd = lambda xs: [round(x, 3) for x in xs]
+    sized = set()
+    for i, (ch, p) in enumerate(zip(fl["chains"], profs)):
+        what = "run %d of bends (flanges %s)" % (i + 1, " / ".join(_fmtv(L) for L in ch["flanges"]))
+        if not p:
+            fails.append("%s has no section across it on the sheet" % what)
+            continue
+        L = p["section"]
+        if ("section %s-%s" % (L, L)) not in names or ("SECTION %s-%s" % (L, L)) not in words:
+            fails.append("%s: its section %s-%s is not on the sheet" % (what, L, L))
+            continue
+        own = fl["chains"][p["of"]]
+        if p["of"] != i:
+            if rnd(ch["flanges"][k] for k in p["shown"]) != rnd(own["flanges"][k] for k in p["shown"]) or \
+                    rnd(ch["angles"]) != rnd(own["angles"]):
+                fails.append("%s is said to be shown by section %s-%s, but its flanges or folds differ" % (what, L, L))
+            # the title's lines: the "SECTION L-L" line and the lines stacked under it, from the same left edge
+            heads = [t for t in texts if t[4].startswith("SECTION %s-%s" % (L, L))]
+            if not any("typical" in t[4] and abs(t[0] - h[0]) < 1.0 and h[1] - 30.0 <= t[1] <= h[1]
+                       for h in heads for t in texts):
+                fails.append("section %s-%s shows %s too, but its title doesn't say typical" % (L, L, what))
+        if L in sized:
+            continue
+        sized.add(L)
+        for k in p["shown"]:
+            want = _fmtv(own["flanges"][k])
+            if not _text_near(texts, want, p["box"]):
+                fails.append("section %s-%s doesn't print flange %d's outside length %s" % (L, L, k + 1, want))
+    return fails
+
+
 def vgroove_radius_fails(data, faces):
     """A V-grooved panel's folds against the STEP's own faces (the repo's reader): each fold's outside radius, as the
     sheet records it, must be a convex cylinder of the STEP along that run's bend lines (Reviewer 6 on #341: the
@@ -939,6 +984,7 @@ def check(pdf_path, step_path=None, verbose=False):
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
+    fails += profile_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
     fails += vgroove_radius_fails(data, faces)
     two_wall = bool(two_wall_pairs(data["features"]))

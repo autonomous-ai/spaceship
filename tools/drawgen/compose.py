@@ -422,6 +422,7 @@ def profile_section(part, r, v, kept, letters):
         prev = getattr(part, "_profile_keys", {})
         if key in prev:
             prev[key].typical = True
+            prev[key].profile["also"].append(ch)     # this run is shown by that section (the read-back checks it)
             return None
         kept = geom.window_keep(kept, v, *window)
         loops = [face_loops(f, v) for f in cut_faces(kept, r.point, r.n)]
@@ -445,7 +446,7 @@ def profile_section(part, r, v, kept, letters):
     vd.name = "removed"
     vd.r = r
     vd.profile = {"chain": ch, "shown": shown, "window": window, "P3": P3, "marks": marks + [None], "typical": False,
-                  "ends": ends}
+                  "ends": ends, "also": []}
     vd.typical = False
     r.vd = vd
     r.letter = vd.letter
@@ -562,15 +563,22 @@ def flat_dims(sh, part, fv):
         row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
 
 
-def flat_data(part, pl):
+def flat_data(part, pl, removed=()):
     """A bent part's flat pattern as the sheet gives it, for the read-back: its DXF, the K-factor and radius, the
     chains' outside flange lengths, fold angles and thickness, each bend's row, how each flange unfolds into the flat
-    (the reading the holes pinned, or one of several the DXF's symmetry makes the same part) and where the flat view
-    sits."""
+    (the reading the holes pinned, or one of several the DXF's symmetry makes the same part), where the flat view
+    sits, and which section across the bends shows each chain (its own, or one it is the same as) and where."""
     fl = getattr(part, "flat", None)
     if not fl:
         return None
     fv = (getattr(pl, "flats", None) or [None])[0]
+    profiles = []
+    for ch in fl.chains:
+        vd = next((v for v in removed if getattr(v, "profile", None) and
+                   (v.profile["chain"] is ch or any(c is ch for c in v.profile["also"]))), None)
+        profiles.append({"section": vd.letter, "of": next(j for j, c in enumerate(fl.chains) if c is vd.profile["chain"]),
+                         "shown": list(vd.profile["shown"]), "box": vd.box(), "typical": bool(vd.typical)}
+                        if vd else None)
     return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
             "vgroove": bool(fl.vgroove),
             "chains": [{"t": ch.t, "flanges": [L for L, _d in ch.flanges], "angles": [f.angle for f in ch.folds],
@@ -580,7 +588,7 @@ def flat_data(part, pl):
             "rows": [{"tag": r_["tag"], "axis": r_["axis"], "at": r_["at"], "dir": r_["dir"], "angle": r_["angle"],
                       "r": r_["r"], "printed_at": r_.get("printed_at")} for r_ in fl.rows],
             "map": fl.map.record(), "readings": fl.readings,
-            "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None}
+            "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None, "profiles": profiles}
 
 
 def bent_flat(part, team, bent):
@@ -1199,6 +1207,10 @@ def _trace(view, point, normal, ext):
 
 def draw(part, spec, out_path, today=None):
     """Write the drawing PDF of part to out_path. spec: per-part options (see specs.py). Returns a report dict."""
+    # each attempt draws afresh: make() draws a sheet again with its flat a step smaller or a scale smaller, and that
+    # draw must not take the sections of the attempt it replaces as already drawn (Reviewer 10 on #380: 511101 lost
+    # both its profile sections that way)
+    part._profile_keys = {}
     pl = plan_views(part, spec)
     if spec.get("datums") == "spigot":
         dat = spigot_origin(part, spec)
@@ -2807,7 +2819,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                   row["dir"], "%s°" % fmt(row["angle"]), ("R%s" % fmt(row["r_out"])) if row.get("r_out") else "sharp",
                   str(fl.vgroove)] for row in fl.rows]
         rounded = any(row.get("r_out") for row in fl.rows)
-        head = ["FOLDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
+        head = ["FOLDS B1-B%d: %s; sheet %s thick" % (len(fl.rows), os.path.basename(fl.path), fmt(fl.chains[0].t)),
                 "V-groove and fold: UP, the fold closes toward the viewer of the flat pattern as drawn; %s" % (
                     "each line at the middle of its fold's outside arc (the flat develops along the outer face: each leg "
                     "to its arc, plus the arc)" if rounded else
@@ -3191,5 +3203,5 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             "angles": getattr(pl, "angle_marks", []),
             "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
     if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
-        out["flat"] = flat_data(part, pl)
+        out["flat"] = flat_data(part, pl, removed)
     return out

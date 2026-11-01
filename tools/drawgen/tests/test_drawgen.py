@@ -532,6 +532,11 @@ def test_bent_sheet_p3s():
     assert data["flat"]["view"]["scale"] == 0.5, data["flat"]["view"]
     text = " ".join(" ".join(pg.get_text().split()) for pg in doc)
     assert "sheet 1 thick" in text and "±0.5 (test list) (its parts list)" in text, text[-900:]
+    # the same sheet without its thickness fails its read-back (Reviewer 10 on #380)
+    page1 = " ".join(doc[0].get_text().split())
+    assert "sheet 1 thick" in page1
+    f0 = readback.flat_fails(data, readback.text_boxes(doc[0], data["sheet_h"]), page1.replace("sheet 1 thick", "sheet thick"))
+    assert f0 == ["the sheet's thickness 1 is not printed (guideline 6.1)"], f0
     # 811101: its section is cut short across the long base, so a zigzag break line marks the cut
     p2 = os.path.join(d, "811101.pdf")
     compose.make("811101", "interior", {"tolerance": "test", "bent": {"radius": 1.5, "radius_why": "test"}}, p2)
@@ -543,6 +548,57 @@ def test_bent_sheet_p3s():
             if it[0] == "l":
                 lens.append(round(math.dist(it[1], it[2]) / MM, 2))
     assert lens.count(1.26) + lens.count(1.27) >= 2 and lens.count(2.53) >= 1, sorted(set(lens))[:40]
+
+
+def test_a_sheet_drawn_again_keeps_its_sections():
+    """Reviewer 10 on #380: make() draws a sheet again when its flat runs off (the flat a step smaller) or its
+    sections do (a scale smaller), and the second draw took the first attempt's sections across the bends as drawn
+    already: WALL's 511101 came out with none, and its read-back passed. Each attempt now draws afresh, the sheet
+    records which section shows each run of bends, and the read-back fails a run that no section shows."""
+    import copy
+    d = os.path.join(TMP, "redrawn")
+    os.makedirs(d, exist_ok=True)
+    real, calls, force = compose.draw, [], []
+
+    def counted(part, spec, *a, **k):
+        calls.append(dict(spec))
+        out = real(part, spec, *a, **k)
+        if force and len(calls) == 1:
+            raise compose._Smaller(out[6])       # as if its sections ran off the sheet: the next smaller scale
+        return out
+    compose.draw = counted
+    try:
+        p = os.path.join(d, "511101.pdf")
+        compose.make("511101", "wall", {"tolerance": "test", "bent": True}, p)
+        assert len(calls) == 2 and calls[1].get("_flat_cap") and not calls[0].get("_flat_cap"), calls
+        calls.clear()
+        force.append(True)
+        p2 = os.path.join(d, "811101.pdf")
+        compose.make("811101", "interior", {"tolerance": "test", "bent": {"radius": 1.5, "radius_why": "test"}}, p2)
+        assert len(calls) == 2 and calls[1].get("_max_scale") and not calls[0].get("_max_scale"), calls
+    finally:
+        compose.draw = real
+    for path, runs in ((p, 2), (p2, 1)):
+        doc = fitz.open(path)
+        data = readback.read_data(doc)
+        prof = data["flat"]["profiles"]
+        assert len(prof) == runs and all(prof), prof
+        fails, _st = readback.check(path)
+        assert not fails, fails
+        text = " ".join(doc[0].get_text().split())
+        assert all(("SECTION %s-%s" % (q["section"], q["section"])) in text for q in prof), text[:600]
+        tb = readback.text_boxes(doc[0], data["sheet_h"])
+        gone = copy.deepcopy(data)
+        gone["flat"]["profiles"][-1] = None
+        f2 = readback.profile_fails(gone, tb, doc[0].get_text())
+        assert len(f2) == 1 and "has no section across it on the sheet" in f2[0], f2
+    # 511101: its two runs show the same flanges at their ends, so one section shows both and says typical
+    data = readback.read_data(fitz.open(p))
+    a, b = data["flat"]["profiles"]
+    assert a["section"] == b["section"] and a["of"] == b["of"] == 0 and a["typical"], data["flat"]["profiles"]
+    tb = readback.text_boxes(fitz.open(p)[0], data["sheet_h"])
+    f3 = readback.profile_fails(data, [t for t in tb if "typical" not in t[4]], fitz.open(p)[0].get_text())
+    assert len(f3) == 1 and "its title doesn't say typical" in f3[0], f3
 
 
 def test_a_sharp_v_groove_is_refused():
