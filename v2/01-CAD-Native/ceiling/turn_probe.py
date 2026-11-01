@@ -9,6 +9,10 @@ point: (0, 0, 110), where a turn about Y through the block's mid height sends th
 turn about Z through its mid width. For each joint flip and angle it prints the copy's rotation and the block's
 box, then which setting gives each turn, so place_turned's read-back is known to find one. Closes the design
 without saving whatever happens.
+
+Second probe (2026-11-01): the first fixed run read every copy unmoved (identity, not even the move to the
+point), so the copy's place is read three times after each joint: at once, after adsk.doEvents(), and after
+Design.computeAll(), with the joint's health; the build reads it the first way that shows the joint's effect.
 """
 
 import adsk.core
@@ -24,6 +28,13 @@ def bbox_mm(body):
     b = body.boundingBox
     return tuple(round(v / MM, 3) for v in (b.minPoint.x, b.maxPoint.x, b.minPoint.y, b.maxPoint.y,
                                             b.minPoint.z, b.maxPoint.z))
+
+
+def place_of(occ):
+    m = occ.transform2
+    rot = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
+    move = tuple(round(m.getCell(r, 3) / MM, 3) for r in range(3))
+    return rot, move, bbox_mm(occ.bRepBodies.item(0))
 
 
 def run(_context):
@@ -46,9 +57,10 @@ def run(_context):
         ext.startExtent = adsk.fusion.OffsetStartDefinition.create(adsk.core.ValueInput.createByReal(50 * MM))
         comp.features.extrudeFeatures.add(ext)
         print("block in its own place:", bbox_mm(occ.bRepBodies.item(0)))
-        found = {}
+        found, when = {}, {}
         for axis in ("y", "z"):
             copy = root.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
+            print("copy %s: grounded %s" % (axis.upper(), copy.isGrounded))
             tx, ty, tz = TARGET[axis]
             pin = root.constructionPlanes.createInput()
             pin.setByOffset(root.xYConstructionPlane, adsk.core.ValueInput.createByReal(tz * MM))
@@ -66,21 +78,26 @@ def run(_context):
                     ji.isFlipped = flip
                     ji.angle = adsk.core.ValueInput.createByString(angle)
                     j = root.joints.add(ji)
-                    m = copy.transform2
-                    rot = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
-                    move = tuple(round(m.getCell(r, 3) / MM, 3) for r in range(3))
-                    box = bbox_mm(copy.bRepBodies.item(0))
-                    ok = all(abs(rot[r][c] - WANT[axis][r][c]) < 1e-6 for r in range(3) for c in range(3))
-                    print("turn about %s: flip %-5s angle %-7s rotation %s move %s box %s%s" % (
-                        axis.upper(), flip, angle, rot, move, box, "  <- the turn" if ok else ""))
-                    if ok and axis not in found:
-                        found[axis] = (flip, angle, box)
+                    reads = [("at once", place_of(copy))]
+                    adsk.doEvents()
+                    reads.append(("after doEvents", place_of(copy)))
+                    design.computeAll()
+                    reads.append(("after computeAll", place_of(copy)))
+                    print("turn about %s: flip %-5s angle %-7s joint health %s %s" % (
+                        axis.upper(), flip, angle, j.healthState, j.errorOrWarningMessage or ""))
+                    for label, (rot, move, box) in reads:
+                        ok = all(abs(rot[r][c] - WANT[axis][r][c]) < 1e-6 for r in range(3) for c in range(3))
+                        print("    %-17s rotation %s move %s box %s%s" % (label, rot, move, box,
+                                                                       "  <- the turn" if ok else ""))
+                        if ok and axis not in found:
+                            found[axis], when[axis] = (flip, angle, box), label
                     j.deleteMe()
+                    adsk.doEvents()
         for axis in ("y", "z"):
             if axis in found:
                 flip, angle, box = found[axis]
-                print("TURN %s: flip %s, angle %s; the block lands at %s (want %s)" % (
-                    axis.upper(), flip, angle, box, BOX[axis]))
+                print("TURN %s: flip %s, angle %s, read %s; the block lands at %s (want %s)" % (
+                    axis.upper(), flip, angle, when[axis], box, BOX[axis]))
             else:
                 print("TURN %s: no flip and angle gives it" % axis.upper())
         print("TURN PROBE:", "PASS" if len(found) == 2 and all(
