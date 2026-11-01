@@ -75,12 +75,12 @@
   {
    "component": "352201 FRONT - DECOR FRAME DT - BACK RING BOTTOM",
    "index": 2,
-   "expression": "dt_zb + dt_skin_t"
+   "expression": "dt_zb + dt_fo"
   },
   {
    "component": "352203 FRONT - DECOR FRAME DT - BACK RING TOP",
    "index": 5,
-   "expression": "pod_h - dt_skin_t"
+   "expression": "pod_h - dt_fo"
   },
   {
    "component": "352204 FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL",
