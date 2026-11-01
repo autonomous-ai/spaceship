@@ -98,7 +98,7 @@ FAMILY_OWNERS = {
 
 
 # D-95: the base corner and inline keys have one source, the Joints Engineer; the teams place them by reference
-JOINTS_KEYS = re.compile(r"^11121[1-4]$")
+JOINTS_KEYS = re.compile(r"^11121[1-5]$")     # the base keys, Joints' parts: 111211 to 111214, and FR1's 111215 (D-144)
 
 
 def owner_for(path="", part_number=""):
@@ -152,12 +152,21 @@ FASTENER_WORDS = re.compile(r"^HARDWARE - (BOLT|SCREW|NUT|WASHER|RIVNUT|RIVET NU
 SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 
 
+# a size or a code in the function field ('F01 240 X 1102.7', '40 X 40', 'M6') is no word of the function
+SIZE_OR_CODE = re.compile(r"\b\d[\d.,]*(?:\s*[X\u00d7]\s*\d[\d.,]*)*\b|\b[A-Z]+\d[\w.]*\b")
+PIECE = ("PIECE", "PIECES")
+
+
 def head_noun(name):
     """The last word of a part name's FUNCTION field (conventions section 5): 'BASE - SEAL HOLDER - LH'
-    gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, 'FRONT - DROP SEAL - ATHMER' gives SEAL."""
+    gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, 'FRONT - DROP SEAL - ATHMER' gives SEAL. Sizes and
+    codes are left out, and a piece of a soft good is that good: 'WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE
+    LOWER - COMMON' gives FILL (the Lead's ruling on WALL's L1 sample, 2026-11-01)."""
     fields = [f.strip() for f in (name or "").upper().split(" - ")]
     func = fields[1] if len(fields) > 1 else fields[0]
-    words = re.findall(r"[A-Z][A-Z-]*", func)
+    words = re.findall(r"[A-Z][A-Z-]*", SIZE_OR_CODE.sub(" ", func))
+    if len(words) >= 2 and words[-1] in PIECE and SOFT_HEADS.fullmatch(words[-2]):
+        return words[-2]
     return words[-1] if words else ""
 
 
@@ -213,12 +222,14 @@ def walk_files(root, top, exts=None, skip=("/proof/", "/.raw/", "/__pycache__/")
     return sorted(out)
 
 
-def export_ref(ref, repo=REPO_ROOT, dest=None):
+def export_ref(ref, repo=REPO_ROOT, dest=None, ref_rows=False):
     """Check out a git ref (for example origin/main or a PR head) into a
     fresh folder with git archive, so a run checks exactly that revision.
     Returns (folder, short sha). The rule files in v2/04-Checks/config and
     stacks come from this checkout, so a revision without them is still
-    checked with the current rules."""
+    checked with the current rules. ref_rows: a team's PR that adds rows to
+    a rule file (an edge exception or a clash allowance its ruling asks for)
+    keeps them: the ref's rows that the current file lacks are added to it."""
     import shutil
     import subprocess
     import tarfile
@@ -233,8 +244,25 @@ def export_ref(ref, repo=REPO_ROOT, dest=None):
         src = os.path.join(repo, sub)
         if os.path.isdir(src):
             dst = os.path.join(dest, sub)
+            theirs = {}
+            if ref_rows and os.path.isdir(dst):
+                for f in os.listdir(dst):
+                    if f.endswith(".csv"):
+                        with open(os.path.join(dst, f), encoding="utf-8") as fh:
+                            theirs[f] = fh.read().splitlines()
             shutil.rmtree(dst, ignore_errors=True)
             shutil.copytree(src, dst)
+            for f, lines in theirs.items():
+                p = os.path.join(dst, f)
+                if not os.path.exists(p) or not lines:
+                    continue
+                with open(p, encoding="utf-8") as fh:
+                    text = fh.read()
+                ours = text.splitlines()
+                extra = [l for l in lines[1:] if l.strip() and l not in ours]
+                if extra and lines[0] == (ours[0] if ours else ""):     # the same columns: add the PR's rows
+                    with open(p, "a", encoding="utf-8") as fh:
+                        fh.write(("" if not text or text.endswith("\n") else "\n") + "\n".join(extra) + "\n")
     return dest, sha
 
 

@@ -196,10 +196,29 @@ def test_gap_rules_reproduce_f001_f002_on_skeleton_and_pass_when_fixed():
     bodies = c_geometry.bodies_of(ROOT, SKEL)
     keys = {f.key for f in c_geometry.check_gap_rules(ROOT, "skeleton", bodies, rules)}
     assert "C02|gap-SEAM-GAPS|skeleton SEAM-GAPS" in keys
-    assert "C02|gap-KICK-OVER-THRESHOLD|skeleton KICK-OVER-THRESHOLD" in keys
+    assert not any("KICK" in k for k in keys)    # D-151: the skeleton's thresh_h is no longer the kick strip's datum
     assert not any("LINING-FLOATS" in k for k in keys)          # the linings float in P03
-    fixed = [_B("KICK", (-961, -709, 27, 214, -689, 105)), _B("THRESHOLD", (-961, -729, 0, 214, -669, 20))]
-    assert c_geometry.check_gap_rules(ROOT, "skeleton", fixed, rules) == []
+
+
+def test_the_kick_strip_runs_on_the_bands_bottom_line_over_the_room_floor():
+    # D-151 (D-132: no threshold): the kick strip's bottom at glide_h, Z 10, over the room floor, the plane Z 0
+    rules = c_geometry.load_gap_rules(ROOT)
+    old = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))]          # threshold + 7 with no threshold
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", old, rules)
+    assert [(f.rule, f.severity) for f in fs] == [("gap-KICK-OVER-FLOOR", "severe")] and "7.0 mm" in fs[0].message
+    ok = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 10, 214, -689, 105)),
+          _B("AIR - KICK GRILLE", (900, -700, 2, 1100, -690, 100))]                 # not the door's strip
+    assert c_geometry.check_gap_rules(ROOT, "assembly", ok, rules) == []
+    # BASE's lip seals are named for the room floor but aren't it: the strip's end 4.5 mm off a lip (D-150's slot,
+    # which FRONT's brush 368008 closes) is no kick-over-floor finding (the Lead, 2026-11-01, BASE's #303)
+    lips = ok + [_B("110000_P01_BASE_CAD:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:1 / LIP ENVELOPE",
+                    (218.5, -810, 0, 220.5, -691.5, 10)),
+                 _B("110000_P01_BASE_CAD:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:2 / LIP ENVELOPE",
+                    (-961, -650, 0, 214, -648, 10))]
+    assert c_geometry.check_gap_rules(ROOT, "assembly", lips, rules) == []
+    low = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))] + lips[2:]
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", low, rules)
+    assert len(fs) == 1 and "ROOM FLOOR (Z 0)" in fs[0].message and "7.0 mm" in fs[0].message
 
 
 def test_alignment_flags_offset_mating_holes_only():
@@ -1379,13 +1398,13 @@ def test_a_duplicate_name_goes_to_the_list_that_is_off(tmp_path):
 def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
     # the owner's rule 9 is for sheet parts: a 60 mm access hole near a felt's edge can't tear out
     def plate(name):
-        x0, x1, y0, y1 = -73.5, 500.0, -73.5, 500.0
+        x0, x1, y0, y1 = -31.0, 500.0, -31.0, 500.0         # a 1 mm web round a Ø60 opening (the Lead's web rule)
         rim = (sf.Frame(), 30.0, (30.0, 0, 0), (30.0, 0, 0), True)
         face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
                        [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
                         ((x0, y1, 0), (x0, y0, 0))])
         so = sf.Solid(1, name)
-        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 9.0, [])], []
+        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 1.0, [])], []
         return so
 
     class FakeStep:
@@ -1401,8 +1420,8 @@ def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
                               ("511102", "LINING - TRAY - SIDE LOWER - RH", True)):
         monkeypatch.setattr(c_geometry, "load_step", lambda _p, s=FakeStep(pn, name): s)
         fs = [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, {}, hole_rules=[],
-                                                         edge_exceptions={}) if f.rule == "edge-distance"]
-        assert bool(fs) == flagged, name
+                                                         edge_exceptions={}) if f.rule in ("edge-distance", "opening-web")]
+        assert bool(fs) == flagged, name                    # the tray's Ø60 is an opening: its 1 mm web fails
 
 
 def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main():
@@ -1626,3 +1645,170 @@ def test_the_acp_skins_bays_are_275_clear_or_less():
     assert c_geometry.check_acp_bays(ROOT, "assembly", frame(295.0)) == []            # 275 clear: passes
     other = [_B("410000_P01_CEILING_CAD:1 / 411101 CEILING - PANEL FRAME - C1:1 / X", (0, 0, 0, 1200, 40, 1100))]
     assert c_geometry.acp_bays(other) == {}                          # the rule is for the wall panels' ACP
+
+
+def test_a_bought_profile_we_mitre_and_drill_is_a_made_part_with_a_drawing(tmp_path):
+    # D-143 (3): FRONT's 368004, Bohle's U-profile cut into 4 mitred pieces with holes, needs one table drawing
+    row = {"part_number": "368004", "name": "FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+           "_raw": {"kind": "bought by length, 4 pieces mitred", "note": "outer lengths 745 / 1446 mm"}}
+    seal = {"part_number": "368002", "name": "FRONT - GLAZING U-SEAL", "_raw": {"kind": "bought by length, 4 pieces"}}
+    bolt = {"part_number": "838001", "name": "HARDWARE - BOLT", "_raw": {"kind": "bought, drilled through"}}
+    holes = {"368004": ["a hole"], "368002": [], "838001": ["a hole"]}
+    why = c_drawings.processed_bought([("x.csv", [row, seal, bolt])], holes)
+    assert list(why) == ["368004"] and "D-143" in why["368004"]
+    assert c_drawings.processed_bought([("x.csv", [row])], {"368004": []}) == {}       # no holes: a cut length only
+    as_front = dict(row, _raw={"type": "bought by length, 4 pieces mitred"})            # FRONT's column name
+    assert list(c_drawings.processed_bought([("x.csv", [as_front])], holes)) == ["368004"]
+    m = tmp_path / "v2/03-Manufacturing/front"
+    m.mkdir(parents=True)
+    fs = c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}, made_why=why)
+    assert [(f.rule, f.severity) for f in fs] == [("no-drawing", "major")] and "D-143" in fs[0].message
+    assert c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}) == []
+
+
+def test_the_base_keys_are_joints_parts_from_111211_to_111215():
+    # D-144: FR1's key became 111215, a Joints part like 111211 to 111214
+    from common import owner_for, JOINTS_KEYS
+    assert all(JOINTS_KEYS.match("11121%d" % i) for i in range(1, 6)) and not JOINTS_KEYS.match("111216")
+    assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "111215") == "Joints Engineer"
+
+
+def test_a_pre_check_keeps_the_rule_rows_a_pr_adds(tmp_path):
+    # FRONT's #313 added D-145's edge exception to the checks' own list: a pre-check must read it, while the
+    # current rules still win for everything else
+    import subprocess
+    from common import export_ref
+    repo = tmp_path / "repo"
+    cfg = repo / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    run = lambda *a: subprocess.run(["git", "-C", str(repo)] + list(a), check=True, capture_output=True)
+    run("init", "-q")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n351305,7.0\n")
+    run("add", "-A")
+    run("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "pr")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n368004,3.4\n")   # ours now
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "a"), ref_rows=True)
+    rows = open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read().splitlines()
+    assert rows == ["part_number,hole_dia_mm", "111601,13.0", "368004,3.4", "351305,7.0"]
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "b"))
+    assert "351305,7.0" not in open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read()
+
+
+def test_walls_l1_names_a_wrapped_step_string_and_the_teams_own_finish():
+    # the Lead's ruling on WALL's L1 sample (2026-11-01): fix the checks, don't rename parts
+    from common import head_noun, is_soft
+    # (1) a fill piece is fill, wherever the size sits in the function field
+    n = "WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON"
+    assert head_noun(n) == "FILL" and is_soft(n)
+    assert head_noun("BASE - SEAL HOLDER - LH") == "HOLDER" and not is_soft("BASE - SEAL HOLDER - LH")
+    assert head_noun("WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH") == "BACK"
+    assert head_noun("LINING - FILL - CEILING - BAY A") == "FILL" and head_noun("FRONT - DROP SEAL - ATHMER") == "SEAL"
+    # (2) Fusion wraps a long STEP string across lines; the line break is no part of the name
+    assert sf._decode("'WALL - FILL - SIDE LOWER - COMMO\nN'") == "WALL - FILL - SIDE LOWER - COMMON"
+    assert sf._decode("'A\r\nB'") == "AB"
+    # (3) the team's own row gives the finish; the master BOM's empty row doesn't hide it
+    team = {"part_number": "831007", "name": "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL",
+            "material": "steel plate 2.0, galvanized", "grade": "", "finish": "galvanized Z100", "_raw": {}}
+    skin = {"part_number": "211301", "name": "WALL - SKIN - SIDE LOWER - LH", "material": "ACP aluminium", "grade": "",
+            "finish": "PVDF", "_raw": {}}
+    master = dict(team, material="", finish="", _raw={"row_type": "part"})
+    plists = [("/r/v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", [team, skin]),
+              ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
+    assert c_parts.materials_by_pn("/r", plists)["831007"] == "steel plate 2.0, galvanized galvanized Z100"
+    assert c_parts.check_mixed_metals("/r", plists, [("831007", "211301", "x.step")]) == []
+    bare = [("/r/v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", [dict(team, material="", finish=""), skin]),
+            ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
+    fs = c_parts.check_mixed_metals("/r", bare, [("831007", "211301", "x.step")])
+    assert [f.rule for f in fs] == ["bare-steel-on-aluminium"]         # with no material at all, the name still speaks
+
+
+def test_an_opening_takes_the_web_rule_and_a_fastener_hole_the_two_diameter_rule(monkeypatch, tmp_path):
+    # the Lead's ruling on CEILING's fan bulkheads (2026-11-01): a Ø135 fan bore is an opening; its rim needs
+    # max(2 x t, 3 mm) of material to an edge or the next hole; the fan's own screw holes keep 2 diameters
+    def plate_with(holes, width=300.0, height=150.0, t=1.5):
+        s = sf.Solid(1, "bulkhead")
+        corners = [(0, 0), (width, 0), (width, height), (0, height)]
+        lt = [((*corners[i], t), (*corners[(i + 1) % 4], t)) for i in range(4)]
+        lb = [((*corners[i], 0.0), (*corners[(i + 1) % 4], 0.0)) for i in range(4)]
+        rt = [_arc((x, y, t), (0, 0, 1), (1, 0, 0), d / 2, 0, 0) for x, y, d in holes]
+        rb = [_arc((x, y, 0.0), (0, 0, 1), (1, 0, 0), d / 2, 0, 0) for x, y, d in holes]
+        s.faces.append(sf.Face(1, "plane", (0, 0, t), (0, 0, 1), None, True, [p for l in lt for p in l], rt, lt))
+        s.faces.append(sf.Face(2, "plane", (0, 0, 0), (0, 0, -1), None, True, [p for l in lb for p in l], rb, lb))
+        for k, (x, y, d) in enumerate(holes):
+            s.faces.append(sf.Face(3 + k, "cylinder", (x, y, 0), (0, 0, 1), d / 2, False, [rt[k][2], rb[k][2]],
+                                   [rt[k], rb[k]], []))
+        for i in range(4):
+            a, b = corners[i], corners[(i + 1) % 4]
+            n = sf.norm(((b[1] - a[1]), -(b[0] - a[0]), 0.0))
+            s.faces.append(sf.Face(20 + i, "plane", (*a, 0.0), n, None, True, [(*a, 0.0), (*b, 0.0), (*a, t), (*b, t)],
+                                   [], [((*a, 0.0), (*b, 0.0)), ((*a, t), (*b, t))]))
+        s.box = (0, 0, 0, width, height, t)
+        s.thickness = sf._sheet_thickness(s)
+        s.holes = sf._holes(s)
+        return s
+    # two Ø135 bores: 7.5 mm rims to the long edges, 9 mm between them; a fan screw hole Ø4.3 4 mm from an edge
+    plate = plate_with([(75.0, 75.0, 135.0), (219.0, 75.0, 135.0), (150.0, 146.0, 4.3)])
+    assert len(plate.holes) == 3
+
+    class FakeStep:
+        def instances(self):
+            return [{"solid": 1, "part_number": "611403", "name": "AIR - FAN BULKHEAD - EXHAUST", "path": ["611403"],
+                     "frame": sf.Frame()}]
+
+        def solid(self, sid):
+            return plate
+    monkeypatch.setitem(c_geometry.load_step.__defaults__[0], str(tmp_path / "x.step"), FakeStep())
+    fs = c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, [])
+    got = sorted((f.rule, round(f.evidence.get("web_mm", f.evidence.get("edge_mm", 0)), 1)) for f in fs)
+    assert ("edge-distance", 4.0) in got                         # the screw hole: 4 < 2 x 4.3 to the top edge
+    assert not any(r == "edge-distance" and v > 5 for r, v in got)   # no 2-diameter rule on the bores
+    assert not any(r == "hole-spacing" for r, _v in got)
+    # 7.5 and 6 mm rims and the 9 mm web pass max(2 x 1.5, 3) = 3; a 2 mm rim doesn't
+    assert not any(r == "opening-web" for r, _v in got)
+    plate = plate_with([(69.5, 75.0, 135.0), (219.0, 75.0, 135.0), (150.0, 146.0, 4.3)])          # a 2 mm rim
+    fs = c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, [])
+    webs = [f for f in fs if f.rule == "opening-web"]
+    assert len(webs) == 1 and webs[0].evidence["web_mm"] == 2.0 and "3.0 mm" in webs[0].message
+    # a smaller cut its row names as an opening is an opening too
+    small = sf.Hole(1, (10.0, 10.0, 0.75), (0.0, 0.0, 1.0), 16.0, 1.5, [])
+    assert c_geometry.is_opening(small, "AIR - BULKHEAD; Ø16 cable opening") and not c_geometry.is_opening(small, "")
+
+
+def _box_body(label, box, file="v2/03-Manufacturing/front/350003_P01_X_STEP.step"):
+    """A body whose solid is its box's six flat faces, outward normals."""
+    x0, y0, z0, x1, y1, z1 = box
+    faces = []
+    for k, (lo, hi) in enumerate(((x0, x1), (y0, y1), (z0, z1))):
+        for val, sgn in ((lo, -1.0), (hi, 1.0)):
+            n = [0.0, 0.0, 0.0]
+            n[k] = sgn
+            o = [x0, y0, z0]
+            o[k] = val
+            others = [i for i in range(3) if i != k]
+            pts = []
+            for a in (box[others[0]], box[others[0] + 3]):
+                for b in (box[others[1]], box[others[1] + 3]):
+                    q = [0.0, 0.0, 0.0]
+                    q[k], q[others[0]], q[others[1]] = val, a, b
+                    pts.append(tuple(q))
+            faces.append(sf.Face(len(faces) + 1, "plane", tuple(o), tuple(n), None, True, pts, [], []))
+    solid = sf.Solid(1, label.split(" / ")[-2])
+    solid.faces = faces
+    return c_geometry.Body(label, solid, sf.Frame(), box, file, "", None)
+
+
+def test_every_bonded_skin_sits_bond_t_off_its_frame():
+    # D-137 (the Lead, 2026-11-01): FRONT's decor frames were modelled right on their skins, with no glue line
+    top = "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1"
+    skin = _box_body(top + " / 351301 FRONT - DECOR SKIN - DR:1 / Body1", (0, -650, 0, 400, -647, 2000))
+    def tube(name, y0):
+        return _box_body(top + " / 351306 FRONT - DECOR FRAME - DR:1 / %s:1 / Body1" % name, (0, y0, 0, 20, y0 + 20, 2000))
+    on = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -647.0), tube("TUBE B", -647.0)], bt=3.0)
+    assert [(f.rule, f.severity) for f in on] == [("bond-line", "severe")] and "2 frame member face(s)" in on[0].message
+    ok = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -644.0), tube("TUBE B", -644.0)], bt=3.0)
+    assert ok == []
+    thick = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -642.0)], bt=3.0)
+    assert [(f.rule, f.severity) for f in thick] == [("bond-line", "major")]
+    far = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -630.0)], bt=3.0)   # 17 mm behind: not bonded
+    assert far == []
+    assert c_geometry.bond_t(ROOT) == 3.0              # the skeleton's own parameter
