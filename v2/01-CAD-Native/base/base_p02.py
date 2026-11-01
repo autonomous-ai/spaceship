@@ -55,6 +55,12 @@ P02_PARAMS = [
     ("fep_t", "2 mm", "mm", "assumption",
      "FL2's door-end plate: 2 mm aluminium, welded into FL2's door end flush with DL's door face, from FL2's inner face "
      "to the kick strip's back line (the PM's ruling of 2026-11-01 on the door's hinge side, as D-150)"),
+    ("fep_pad_t", "8 mm", "mm", "assumption",
+     "the strike pad on FL2's door-end plate for the drop seal's release button (HOLD): 11 - the button's standout + its "
+     "stroke from athmer's button drawing; at most 8, so 3 stays clear of the kick strip's end (FRONT, 2026-11-01)"),
+    ("fep_pad_w", "12 mm", "mm", "source", "the button's window across the glass line, Y -705 to -693 (FRONT, 2026-11-01)"),
+    ("fep_pad_h", "65 mm", "mm", "source",
+     "the button's window from the kick strip's bottom line (glide_h, Z 10) up to Z 75 (FRONT, 2026-11-01)"),
     ("gl_fl2", "145 mm", "mm", "calculation",
      "FL2's glide along its centre line from the knee face's centre: the support under DL and the door's hinges "
      "(about 650 N, DL 12.3 kg and the 48.6 kg door, FRONT's lists), 60 from DL's slot spigot rivnut (40 needed) "
@@ -282,6 +288,26 @@ def step_p02_fl2(design):
     ff.name = "FULL ROUND - FL2 DOOR-END PLATE'S BACK EDGE (ON THE KICK STRIP'S BACK LINE)"
     if c.bRepBodies.count != 1:
         raise RuntimeError("FL2: %d bodies after the plate's full round" % c.bRepBodies.count)
+    # the strike pad for the drop seal's release button (the Lead and FRONT, 2026-11-01): on the plate's door face in the
+    # button's window, fep_pad_t proud (HOLD until athmer's button drawing). It starts 0.5 inside the plate, so the
+    # join overlaps a volume and stays one body
+    x_in = "%s + dl_w - 0.5 mm" % XL_
+    pl = offset_plane(c, "yz", x_in, v(x_in), "PLANE - FL2 STRIKE PAD - 0.5 INSIDE THE DOOR-END PLATE")
+    ya, yb2 = "-glass_y - fep_pad_w / 2", "-glass_y + fep_pad_w / 2"
+    za, zb = "glide_h", "glide_h + fep_pad_h"
+    xv = v(x_in)
+    skp = c.sketches.add(pl)
+    skp.name = "SECTION - FL2 STRIKE PAD (HOLD) - THE DROP SEAL BUTTON'S WINDOW"
+    polygon(design, skp, [(ey, ez, (xv, v(ey), v(ez))) for ey, ez in ((ya, za), (yb2, za), (yb2, zb), (ya, zb))], Y, Z)
+    check_sketch(skp)
+    ep = c.features.extrudeFeatures.createInput(one_profile(skp), adsk.fusion.FeatureOperations.JoinFeatureOperation)
+    dirp = adsk.fusion.ExtentDirections.PositiveExtentDirection if pl.geometry.normal.x > 0 else \
+        adsk.fusion.ExtentDirections.NegativeExtentDirection
+    ep.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("fep_pad_t + 0.5 mm")), dirp)
+    ep.participantBodies = [c.bRepBodies.item(0)]
+    c.features.extrudeFeatures.add(ep).name = "EXTRUDE - FL2 STRIKE PAD fep_pad_t (HOLD), JOINED (WELDED)"
+    if c.bRepBodies.count != 1:
+        raise RuntimeError("FL2: %d bodies after the strike pad" % c.bRepBodies.count)
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     down = Z.copy()
     down.scaleBy(-1)

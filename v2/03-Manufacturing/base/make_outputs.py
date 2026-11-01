@@ -108,7 +108,8 @@ PART_INFO = {
                "plate: the PM's ruling of 2026-11-01 on the door's hinge side (as D-150)",
                "DL's second facet, its block out to DL's door face (in view at the door opening, D-132); the door-end plate "
                "carries that face on inward to the kick strip's back line, from the band's bottom line up, with the lip "
-               "118001 under it: the face FRONT's hinge-side brush closes on; one glide"),
+               "118001 under it: the face FRONT's hinge-side brush closes on; on it, a welded strike pad (HOLD, 8 at most) for "
+               "the drop seal's release button (FB-33); one glide"),
     "111212": ("aluminium EN AW-6061 T6 block (joints register J-BASE-02)", "mill finish (hidden)",
                "the Joints Engineer's part", "calculation", "DRAFT",
                "joints register J-BASE-02; the Joints Engineer's part (model, STEP and tabulated drawing 111211 to 111214), "
