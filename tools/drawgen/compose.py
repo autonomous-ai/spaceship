@@ -1625,6 +1625,33 @@ def draw(part, spec, out_path, today=None):
     for dv in details:
         dv.origin_name = dv.parent.origin_name
 
+    def origins():
+        """Each origin place_marks draws: its sheet point, name, the side its name goes and where (label_y)."""
+        out = []
+        for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
+            o2 = vd.S(vd.view.to2d(getattr(vd, "origin3d", None) or O))
+            if part.features:
+                bx = vd.box()
+                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+                # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the
+                # label below (or above) the outline, clear of the edge
+                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+                lab_y = None
+                if inside:
+                    lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
+                out.append((o2, vd.origin_name, away, lab_y))
+        for dv in details:
+            oc = dv.view.to2d(O)
+            x0, x1, y0, y1 = dv.window
+            if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
+                o2 = dv.S(oc)
+                bx = dv.box()
+                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+                lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
+                out.append((o2, dv.origin_name, away, lab_y))
+        return out
+
     def place_marks():
         # 1. centre marks and the detail circles (lines)
         jobs, letters = [], []
@@ -1653,28 +1680,8 @@ def draw(part, spec, out_path, today=None):
             jobs.append((vd, vd.group.feats))
         sh.flush()
         # 2. the origins: arrows, then their names where they are clear
-        for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
-            o2 = vd.S(vd.view.to2d(getattr(vd, "origin3d", None) or O))
-            if part.features:
-                bx = vd.box()
-                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-                # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the
-                # label below (or above) the outline, clear of the edge
-                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
-                lab_y = None
-                if inside:
-                    lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
-                sh.origin_mark(o2, vd.origin_name, away=away, label_y=lab_y)
-        for dv in details:
-            oc = dv.view.to2d(O)
-            x0, x1, y0, y1 = dv.window
-            if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
-                o2 = dv.S(oc)
-                bx = dv.box()
-                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
-                lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
-                sh.origin_mark(o2, dv.origin_name, away=away, label_y=lab_y)
+        for o2, name, away, lab_y in origins():
+            sh.origin_mark(o2, name, away=away, label_y=lab_y)
         # 3. each detail's letter beside its circle, on the outer side first (away from the view's middle)
         for vd, dv, c, r in letters:
             vb = vd.box()
@@ -1692,6 +1699,7 @@ def draw(part, spec, out_path, today=None):
         sh.flush()
 
     pl.place_marks = place_marks
+    pl.origins = origins
     return sh, pl, vds, secs, removed, dat, scale, report, groups
 
 
@@ -2018,6 +2026,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     P = pl.principal
     O = dat["O"]
     pvd = vds["principal"]
+    # the origins' circles and arrows are drawn last (place_marks), where their origins put them: every label placed
+    # before then keeps clear of them already (CEILING's 411101: O1's +Y arrow ran through the 63.43° mitre value)
+    for o2, _nm, _away, _lab_y in pl.origins():
+        sh.reserve_lines(sh.origin_lines(o2))
     # ---- cutting planes on the principal view
     ext = pvd.extent
     for vd in secs:
@@ -2065,6 +2077,33 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     a, b = pvd.S((e[0], e[1])), pvd.S((e[2], e[3]))
     sh.dim_linear((a[0], a[1]), (b[0], a[1]), "down", 15.0, fmt(e[2] - e[0]), 3.0)
     sh.dim_linear((a[0], a[1]), (a[0], b[1]), "left", 15.0, fmt(e[3] - e[1]), 3.0)
+    # frame members: the stiles' centre lines from the frame's front end are ordinates over the principal view (drawn
+    # below), worked out here so that a dimension over that view keeps its value off their lines (WALL's 211101: the
+    # 746.37 ordinate line ran through the 1483.09 length)
+    stiles = [(b, project.extent(project.project(b.shape, P))) for b in part.bodies
+              if "STILE" in (b.name or "").upper()]
+    st_lines = []
+    if stiles:
+        st_ext = pvd.extent
+        ox = P.to2d(O)[0]
+        st_end = st_ext[0] if abs(ox - st_ext[0]) <= abs(ox - st_ext[2]) else st_ext[2]
+        st_top = pvd.box()[3]
+        st_level = st_top + 13.0
+        st_front = pvd.S((st_end, 0))[0]
+        st_marks = [(pvd.S(((be[0] + be[2]) / 2, 0))[0], abs((be[0] + be[2]) / 2 - st_end)) for _b, be in stiles]
+        # values written up their extension lines; one closer than a letter's height to the last is jogged sideways
+        # (ISO 129-1 ordinate dimensions)
+        st_items = sorted([(st_front, "0")] + [(x, fmt(v)) for x, v in st_marks], key=lambda t: t[0])
+        if st_end != st_ext[0]:
+            st_items = st_items[::-1]
+        last = None
+        for i, (x, txt) in enumerate(st_items):
+            lx = x
+            if last is not None and abs(lx - last) < 5.0:
+                lx = last + (5.0 if st_end == st_ext[0] else -5.0)
+            st_items[i] = (x, lx, txt)
+            last = lx
+        st_lines = [(min(x, lx), max(x, lx)) for x, lx, _t in st_items]
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
     angle_texts = []
@@ -2181,7 +2220,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 a_, b_ = xs[0], xs[-1]
             if abs(abs(b_ - a_) - (e2[2] - e2[0])) < 0.005:
                 continue            # the overall length already (FRONT's 352203: 1694.75 printed twice)
-            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5)
+            # over the principal, the stiles' ordinate lines cross this one: its value goes where none of them does
+            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5,
+                          avoid=st_lines if stiles and vd2 is pvd else ())
             vd2.top_used = 16.0
     pl.angle_marks = []
     for ang_t, cands in angle_texts:
@@ -2280,41 +2321,22 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             sh.arrow(tip, (-u[0], -u[1]), 3.0, 1.1)
             sh.text(q[0], q[1], avd.letter, 3.5, "center", bold=True)
     # frame members: the stiles' centre lines from the frame's front end (ordinate, ISO 129-1), over the view
-    stiles = [b for b in part.bodies if "STILE" in (b.name or "").upper()]
     if stiles:
-        e0 = pvd.extent
-        top = pvd.box()[3]
-        level = top + 13.0
-        ox = P.to2d(O)[0]
-        end = e0[0] if abs(ox - e0[0]) <= abs(ox - e0[2]) else e0[2]
-        x_front = pvd.S((end, 0))[0]
-        marks = []
-        for b in stiles:
-            be = project.extent(project.project(b.shape, P))
-            cx = (be[0] + be[2]) / 2
-            marks.append((pvd.S((cx, 0))[0], abs(cx - end)))
+        top, level = st_top, st_level
+        for _b, be in stiles:
             # the stile's centre line through the view
+            cx = (be[0] + be[2]) / 2
             sh.centre_line(pvd.S((cx, be[1] + 4)), pvd.S((cx, be[3] - 4)))
-        # values written up their extension lines; one closer than a letter's height to the last is jogged sideways
-        # (ISO 129-1 ordinate dimensions)
-        items = sorted([(x_front, "0")] + [(x, fmt(v)) for x, v in marks], key=lambda t: t[0])
-        if end != e0[0]:
-            items = items[::-1]
-        last = None
-        for x, txt in items:
-            lx = x
-            if last is not None and abs(lx - last) < 5.0:
-                lx = last + (5.0 if end == e0[0] else -5.0)
+        for x, lx, txt in st_items:
             sh.line((x, top + 1.0), (x, level - 1.0), W_THIN)
             sh.line((x, level - 1.0), (lx, level + 1.5), W_THIN)
             sh.text(lx + 1.25, level + 2.0, txt, 2.5, "left", rotate=90)
-            last = lx
         lab = "STILE CENTRE LINES FROM THE FRONT END"
-        ymax = level + 2.0 + max(sh.text_width(fmt(v), 2.5) for _x, v in marks) + 3.0
-        if end == e0[0]:
-            sh.text(x_front, ymax, lab, 2.5, "left")
+        ymax = level + 2.0 + max(sh.text_width(fmt(v), 2.5) for _x, v in st_marks) + 3.0
+        if st_end == st_ext[0]:
+            sh.text(st_front, ymax, lab, 2.5, "left")
         else:
-            sh.text(x_front, ymax, lab, 2.5, "right")
+            sh.text(st_front, ymax, lab, 2.5, "right")
     # the spigot hole and slot from the frame's end faces (joints register R-J13: 100 from each end)
     bview = dat["B"].group.view if dat.get("B") else None
     if dat.get("B") and bview in vds:
