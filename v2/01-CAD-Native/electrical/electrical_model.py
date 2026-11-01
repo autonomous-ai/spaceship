@@ -67,8 +67,8 @@ PARAMS = [
      "half the corner slot in B2-CASS's end return, Y 776-787: inside its gap (from 775.5) and clear of R1-CASS's back lip (from 788)"),
     ("grm_c", "2 mm", "mm", "assumption", "grommet envelope: space taken on the pocket side of a return"),
     # ---- the power unit (PROPOSED by ELECTRICAL, DECIDED by the PM)
-    ("pu_w", "296 mm", "mm", "assumption", "power unit width (X): two 86 x 86 plates side by side, the RCBO window and the vents; narrowed by 4 mm so its right side (X 391) clears B2's first stud (X 395.75) by 4.75 mm (WALL, through the PM, 2026-10-31)"),
-    ("pu_h", "260 mm", "mm", "assumption", "power unit height (Z): plates over the RCBO window, the three supplies behind"),
+    ("pu_w", "296 mm", "mm", "assumption", "power unit width (X): the GFCI receptacle, the two LAN keystone jacks, the breaker window and the vents (D-133; sized first for two 86 x 86 plates); narrowed by 4 mm so its right side (X 391) clears B2's first stud (X 395.75) by 4.75 mm (WALL, through the PM, 2026-10-31)"),
+    ("pu_h", "260 mm", "mm", "assumption", "power unit height (Z): the devices above the vents, the three supplies behind (D-133)"),
     ("pu_d", "72 mm", "mm", "calculation",
      "power unit depth (Y) from the felt face: 78 to the frame's skin side (84 - 3 ACP - 3 bond line) less 6 clear"),
     ("pu_x0", "95 mm", "mm", "assumption",

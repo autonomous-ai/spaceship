@@ -425,7 +425,7 @@ def air_parts(fill):
          "and C2 and drops in through the slot after the soffit hangs, onto a gasket on the fan box's top (the Air "
          "Engineer, 2026-11-01)"),
     ]
-KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
+KEY_PNS = ("111211", "111212", "111213", "111214", "111215")  # the corner key family: square (back), front LH and RH, knee LH, square (inline, D-144)
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
@@ -657,8 +657,8 @@ def lines(**adopt):
     n_keys = sum(q for q, _ in keys)
     assert n_keys == key.qty, (n_keys, key.qty)
     L.append(("BASE", "Corner key", key.qty, sum(q * kg for q, kg in keys) / n_keys, "calculation (CAD)",
-              "S45, CAD on main: the joints' made hardware list, the corner key family 111211 to 111214, 30 mm thick (3 square, "
-              "front LH and RH, knee LH)"))
+              "S45, CAD on main: the joints' made hardware list, the corner key family 111211 to 111215, 30 mm thick (2 square "
+              "at the back corners, 1 square inline, front LH and RH, knee LH; D-144)"))
     glide = base["B-GLIDE"]
     L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), glide.qty, bc["glide"], "assumption (CAD, HOLD)",
               "S44, CAD on main: BASE parts list 118002 P01, a levelling glide on HOLD"))

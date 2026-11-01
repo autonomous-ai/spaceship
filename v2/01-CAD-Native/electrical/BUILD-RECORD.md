@@ -31,6 +31,17 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 | STEP export | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step`: AP214, length unit cm declared in the file (D-13), 8 products (710000 and the 7 components), 40 solids (`tools/fusion/step_check.py`; its box reads vertices only, so it misses the cylinders' round extents by up to 5.6 mm: the Fusion re-read below is the exact check); no personal names |
 | STEP re-read in Fusion | 40 bodies, box equal to the design's, max difference 0.000 mm |
 
+## Front plate 711002 rebuilt for D-133 (US devices)
+
+Run 2026-11-01 at about 06:11 UTC on Mac 1, Fusion 2706.1.17: only the front plate, for the US devices' openings (the GFCI receptacle's decorator opening 33.6 × 67 with its two Ø3.8 plate-screw holes 96.8 apart, two keystone openings 14.9 × 19.4, the breaker window 19 × 45, the devices' row at 180 above the unit's bottom and the top vents at 120). The body 711001 and the hub plate 711005 didn't change and weren't rebuilt.
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_parts_cad.py --label "ELECTRICAL Engineer" \
+    --arg parts=front --arg export=1
+```
+
+Opened Default Project / FocusPod v2 / `711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD` at version 4 and saved it as the next version. Box 320 × 284 × 1.5 mm; volume 128,264 mm³, 0.344 kg at 2.68 g/cm³ (the parts list's mass); timeline 3 features, 0 unhealthy, 0 loose sketches; 31 parameters. Exports from the same version: the `.f3d`, the STEP (Fusion's cm, declared, D-13) and the DXF in mm, 60 lines and 6 circles, all on layer CUT (D-89 part 4).
+
 ## Earlier runs (kept for the record)
 
 - 2026-10-31 20:55: the rebuild with every skeleton-linked value, the 296 mm unit and the moved exits passed the same checks with 41 bodies (the slot S-PU-X and the bushing G-PU-TOP still in) and the crossing at Z 2337.5; its edit test passed.
@@ -45,4 +56,7 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 
 ## Not in this run
 
-- The Fusion drawing of the folded enclosure body 711001 follows on its own branch (D-91). The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01).
+- The Fusion drawing of the folded enclosure body 711001 is on its own branch (D-91, PR #173). Drawn 2026-11-01 at about 06:32 UTC in one held Fusion session: the first drawing (started 2026-10-31) was renamed `711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG_SUPERSEDED-2026-11-01`, kept, not deleted (`retire_dwg.py`; PM ruling: no promote, no delete); `tools/fusion/start_drawing.py` started a fresh A2 drawing of the body's design version 3; `make_body_drawing.py` added 6 views (visible edges only), 3 dimensions and datums A, B, C, all as expected; `body_drawing_text.py` finished the PDF (text block, the account name cleared). Read back: no hidden lines, a 4-corner first-angle symbol, each size printed once, letters 2.5 mm or more (C05's check: clear). The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01).
+- 711001's drawing redrawn 2026-11-01 for Reviewer 7's Hold on #173, in two held Fusion sessions on Mac 1:
+  - 10:06 UTC, a probe. The body's design got version 4, which only adds a named view, "711001 VIEW FROM BELOW" (a camera; no geometry change, so the repo's f3d and STEP, version 3's, hold the same part). The current drawing was opened, tried and closed unsaved: the drawing API refused every orientation value past the standard ones ("invalid argument value" for 10 to 16), so a base view can't use the named view, and it can't turn or project one; centre marks set on the made view for round cuts printed (Fusion's "Smart Centers" layer), those set in the view's input didn't; a dimension between two hole centres worked; the API lists hidden holes' circles too, which the PDF doesn't print. The named view stays in version 4, unused.
+  - 10:52 UTC, the redraw. `retire_dwg.py` renamed the drawing `711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG_SUPERSEDED-2026-11-01-2`, kept, not deleted (D-141); `tools/fusion/start_drawing.py` started a fresh A2 drawing of design version 4; `make_body_drawing.py` placed the 6 views at their expected sizes (the bottom as view D: Fusion's Bottom, which is the view from below turned 180 degrees, placed apart at the top right), checked every view's circles against the STEP's 8 holes (hidden ones allowed), and added the H05-H08 pitch (236, 238) from the holes' centres, the three overall sizes, datums A, B, C and the centre marks; saved and closed. `body_drawing_text.py` finished the PDF (0.11 MB): Autonomous in Created by, author and creator; the hole table; tags H01-H08; the pitch printed as (236) and (238), for reference; "D (turned 180°)" and arrow D; read back clean.

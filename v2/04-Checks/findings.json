@@ -1,5 +1,5 @@
 {
- "next": 339,
+ "next": 347,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -1351,7 +1351,7 @@
    "evidence": {},
    "key": "C05|no-drawing|110101",
    "id": "F-040",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1360,9 +1360,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "5a996ab",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 cf96ecc",
+   "closed": "2026-11-01 5a996ab"
   },
   {
    "check": "C05",
@@ -1387,7 +1393,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -1494,7 +1500,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111211",
    "id": "F-045",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "Joints group 2026-11-01",
@@ -1508,9 +1514,14 @@
      "date": "2026-11-01",
      "rev": "f3013d7",
      "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 2b0d809",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3094,7 +3105,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3119,7 +3130,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -3149,7 +3160,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -3204,7 +3215,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111212",
    "id": "F-100",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Joints group 2026-11-01",
@@ -3218,9 +3229,14 @@
      "date": "2026-11-01",
      "rev": "f3013d7",
      "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 2b0d809",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3235,7 +3251,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111213",
    "id": "F-101",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Joints group 2026-11-01",
@@ -3249,9 +3265,14 @@
      "date": "2026-11-01",
      "rev": "f3013d7",
      "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 2b0d809",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3266,7 +3287,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111214",
    "id": "F-102",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Joints group 2026-11-01",
@@ -3280,9 +3301,14 @@
      "date": "2026-11-01",
      "rev": "f3013d7",
      "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 2b0d809",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3407,7 +3433,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3432,7 +3458,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3457,7 +3483,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3482,7 +3508,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3507,7 +3533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3532,7 +3558,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3557,7 +3583,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3582,7 +3608,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3607,7 +3633,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3632,7 +3658,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3657,7 +3683,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3682,7 +3708,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3707,7 +3733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3732,7 +3758,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3757,7 +3783,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3782,7 +3808,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3807,7 +3833,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -3832,7 +3858,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4335,7 +4361,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C01",
@@ -4394,7 +4420,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4408,7 +4434,7 @@
    "evidence": {},
    "key": "C05|no-drawing|410101",
    "id": "F-139",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "CEILING group 2026-11-01",
@@ -4417,9 +4443,15 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "5a996ab",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 cf96ecc",
+   "closed": "2026-11-01 5a996ab"
   },
   {
    "check": "C05",
@@ -4444,7 +4476,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4469,7 +4501,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4494,7 +4526,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4519,7 +4551,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4544,7 +4576,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4569,7 +4601,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4676,7 +4708,7 @@
    "evidence": {},
    "key": "C05|no-drawing|711001",
    "id": "F-149",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e06fa22",
    "posted": "ELECTRICAL group 2026-11-01",
@@ -4685,9 +4717,15 @@
      "date": "2026-11-01",
      "rev": "e06fa22",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "2b0d809",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 5a996ab",
+   "closed": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -4742,7 +4780,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4767,7 +4805,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4792,7 +4830,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4817,7 +4855,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4842,7 +4880,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4867,7 +4905,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -4999,7 +5037,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5028,7 +5066,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5057,7 +5095,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5086,7 +5124,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5115,7 +5153,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5144,7 +5182,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5173,7 +5211,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5202,7 +5240,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5231,7 +5269,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5260,7 +5298,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5289,7 +5327,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5318,7 +5356,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5347,7 +5385,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5376,7 +5414,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5405,7 +5443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5434,7 +5472,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5463,7 +5501,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5488,7 +5526,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5513,7 +5551,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5538,7 +5576,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5563,7 +5601,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5588,7 +5626,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5613,7 +5651,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5638,7 +5676,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5663,7 +5701,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5688,7 +5726,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5713,7 +5751,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5802,7 +5840,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5831,7 +5869,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5860,7 +5898,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5889,7 +5927,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5918,7 +5956,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -5947,7 +5985,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5972,7 +6010,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -5997,7 +6035,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6022,7 +6060,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6047,7 +6085,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6072,7 +6110,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6097,7 +6135,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6122,7 +6160,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6147,7 +6185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6172,7 +6210,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6197,7 +6235,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6222,7 +6260,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6247,7 +6285,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6272,7 +6310,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6297,7 +6335,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6322,7 +6360,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6347,7 +6385,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6402,7 +6440,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6427,7 +6465,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6441,7 +6479,7 @@
    "evidence": {},
    "key": "C05|hidden-lines|111211",
    "id": "F-214",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "Joints group, 2026-11-01",
@@ -6450,9 +6488,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2774e80",
+   "closed": "2026-11-01 e796357"
   },
   {
    "check": "C05",
@@ -6466,7 +6510,7 @@
    "evidence": {},
    "key": "C05|dimension-twice|111211",
    "id": "F-215",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "Joints group, 2026-11-01",
@@ -6475,9 +6519,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2774e80",
+   "closed": "2026-11-01 e796357"
   },
   {
    "check": "C05",
@@ -6532,7 +6582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -6546,7 +6596,7 @@
    "evidence": {},
    "key": "C05|letter-height|710000",
    "id": "F-218",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6555,9 +6605,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6571,7 +6627,7 @@
    "evidence": {},
    "key": "C05|letter-height|710001",
    "id": "F-219",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6580,9 +6636,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6596,7 +6658,7 @@
    "evidence": {},
    "key": "C05|letter-height|710011",
    "id": "F-220",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6605,9 +6667,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6621,7 +6689,7 @@
    "evidence": {},
    "key": "C05|letter-height|710021",
    "id": "F-221",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6630,9 +6698,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6646,7 +6720,7 @@
    "evidence": {},
    "key": "C05|letter-height|710023",
    "id": "F-222",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6655,9 +6729,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6671,7 +6751,7 @@
    "evidence": {},
    "key": "C05|letter-height|710024",
    "id": "F-223",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6680,9 +6760,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6696,7 +6782,7 @@
    "evidence": {},
    "key": "C05|letter-height|710031",
    "id": "F-224",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6705,9 +6791,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6721,7 +6813,7 @@
    "evidence": {},
    "key": "C05|letter-height|710041",
    "id": "F-225",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -6730,9 +6822,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -6757,7 +6855,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C08",
@@ -6786,7 +6884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6811,7 +6909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6836,7 +6934,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6861,7 +6959,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6886,7 +6984,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6911,7 +7009,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6936,7 +7034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6961,7 +7059,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -6986,7 +7084,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7011,7 +7109,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7036,7 +7134,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7061,7 +7159,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7086,7 +7184,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7111,7 +7209,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7136,7 +7234,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -7161,7 +7259,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7186,7 +7284,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -7214,7 +7312,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -7242,7 +7340,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7271,7 +7369,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7300,7 +7398,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7329,7 +7427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7358,7 +7456,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7387,7 +7485,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7416,7 +7514,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7441,7 +7539,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7466,7 +7564,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7491,7 +7589,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7505,7 +7603,7 @@
    "evidence": {},
    "key": "C05|no-drawing|610101",
    "id": "F-255",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5966c3e",
    "posted": "CEILING group, 2026-11-01",
@@ -7514,9 +7612,15 @@
      "date": "2026-11-01",
      "rev": "5966c3e",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "5a996ab",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 cf96ecc",
+   "closed": "2026-11-01 5a996ab"
   },
   {
    "check": "C05",
@@ -7541,7 +7645,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7566,7 +7670,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7591,7 +7695,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7616,7 +7720,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7641,7 +7745,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7666,7 +7770,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7691,7 +7795,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7716,7 +7820,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7741,7 +7845,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7766,7 +7870,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7791,7 +7895,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7816,7 +7920,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -7841,7 +7945,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7866,7 +7970,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7891,7 +7995,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7916,7 +8020,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -7941,7 +8045,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -7969,7 +8073,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -7997,7 +8101,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -8025,7 +8129,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -8053,7 +8157,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -8081,7 +8185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C09",
@@ -8109,7 +8213,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -8158,7 +8262,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C01",
@@ -9517,7 +9621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9545,7 +9649,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9573,7 +9677,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9601,7 +9705,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9629,7 +9733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9657,7 +9761,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9685,7 +9789,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9713,7 +9817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9740,7 +9844,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9767,7 +9871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C11",
@@ -9794,7 +9898,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -9824,7 +9928,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -9851,7 +9955,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -9889,7 +9993,7 @@
     }
    ],
    "closed": "2026-11-01 a8cd10a",
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -9927,7 +10031,7 @@
     }
    ],
    "closed": "2026-11-01 a8cd10a",
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -9954,7 +10058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -9970,7 +10074,7 @@
    },
    "key": "C05|drawing-author|710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
    "id": "F-328",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -9979,9 +10083,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -9997,7 +10107,7 @@
    },
    "key": "C05|drawing-author|710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
    "id": "F-329",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10006,9 +10116,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10024,7 +10140,7 @@
    },
    "key": "C05|drawing-author|710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
    "id": "F-330",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10033,9 +10149,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10051,7 +10173,7 @@
    },
    "key": "C05|drawing-author|710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
    "id": "F-331",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10060,9 +10182,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10078,7 +10206,7 @@
    },
    "key": "C05|drawing-author|710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
    "id": "F-332",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10087,9 +10215,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10105,7 +10239,7 @@
    },
    "key": "C05|drawing-author|710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
    "id": "F-333",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10114,9 +10248,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10132,7 +10272,7 @@
    },
    "key": "C05|drawing-author|710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
    "id": "F-334",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10141,9 +10281,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10159,7 +10305,7 @@
    },
    "key": "C05|drawing-author|710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
    "id": "F-335",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "ELECTRICAL group, 2026-11-01",
@@ -10168,9 +10314,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "23aeade",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 e796357",
+   "closed": "2026-11-01 23aeade"
   },
   {
    "check": "C05",
@@ -10261,7 +10413,239 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 6028cf8"
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "368004",
+   "severity": "major",
+   "message": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|368004",
+   "id": "F-339",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2774e80",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2774e80",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "111215",
+   "severity": "major",
+   "message": "111215 BASE - CORNER KEY - SQUARE - INLINE is in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|111215",
+   "id": "F-340",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 e796357",
+   "posted": "Joints group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111215",
+   "severity": "severe",
+   "message": "111215 BASE - CORNER KEY - SQUARE - INLINE has no drawing PDF (111215_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111215",
+   "id": "F-341",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 e796357",
+   "posted": "Joints group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "e796357",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-KICK-OVER-FLOOR",
+   "subject": "assembly KICK-OVER-FLOOR",
+   "severity": "severe",
+   "message": "KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it",
+   "fix": "Kick strip bottom at glide_h (Z 10) in door_unit.py, keeping its 60 degree push-side taper (D-151)",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "rules": [
+     {
+      "id": "KICK-OVER-FLOOR",
+      "gap_mm": 20.0,
+      "a": "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+      "b": "ROOM FLOOR (Z 0)"
+     }
+    ]
+   },
+   "key": "C02|gap-KICK-OVER-FLOOR|assembly KICK-OVER-FLOOR",
+   "id": "F-342",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6f2bff3",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6f2bff3",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351101 FRONT - DECOR SKIN - DL:1",
+   "severity": "severe",
+   "message": "351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 17
+   },
+   "key": "C02|bond-line|assembly 351101 FRONT - DECOR SKIN - DL:1",
+   "id": "F-343",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 cf96ecc",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351201 FRONT - DECOR SKIN - DT:1",
+   "severity": "severe",
+   "message": "351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351201 FRONT - DECOR SKIN - DT:1",
+   "id": "F-344",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 cf96ecc",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351301 FRONT - DECOR SKIN - DR:1",
+   "severity": "severe",
+   "message": "351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351301 FRONT - DECOR SKIN - DR:1",
+   "id": "F-345",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 cf96ecc",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2b0d809"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "108002",
+   "severity": "major",
+   "message": "108002 is named 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE' in the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', and hardware names come from the register (D-99). The names differ in PANEL-50 (gone), PRIMER-210 (new), SIKAFLEX-252 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (0 CAD, 7 parts lists).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING; WALL",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv"
+    ],
+    "register": "POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE"
+   },
+   "key": "C06|name-mismatch|108002",
+   "id": "F-346",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2b0d809",
+   "posted": "CEILING group, WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2b0d809",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }

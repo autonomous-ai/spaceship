@@ -212,18 +212,23 @@ def all_strokes(page, sheet_h):
     return segs
 
 
-MAKER = re.compile(r"\b(made|created|drawn|designed|generated|produced|prepared)\s+by\s+([^\s,;]+)", re.I)
+def _c_drawings():
+    _stepfile()                 # puts tools/checks on the path
+    import c_drawings
+    return c_drawings
 
 
 def note_makers(doc):
-    """[(sheet, phrase)] for each 'made by X' and the like on the sheets, other than the title block's CREATED BY
-    Autonomous: the Lead's ruling (2026-11-01) is that a note names the source, never an agent, a role or a script as
-    the maker."""
+    """[(sheet, phrase)] for each note that names a maker other than Autonomous: an agent, a role, a script or tool, a
+    team or a person. A process is no maker ("holes made by drilling after welding", "made by bending the flange").
+    The Lead's ruling on #302; the rule is the mechanical check's own (tools/checks/c_drawings.py: its reading of
+    'made by ...' lines and names_a_maker), so the two can't differ."""
+    cd = _c_drawings()
     out = []
     for n, page in enumerate(doc, start=1):
-        for m in MAKER.finditer(page.get_text()):
-            if m.group(2).strip(":.") != "Autonomous":
-                out.append((n, " ".join(m.group(0).split())))
+        for phrase, maker in cd._note_makers(page):
+            if maker.strip().lower() != "autonomous" and cd.names_a_maker(maker):
+                out.append((n, "%s %s" % (phrase, maker)))
     return out
 
 
@@ -276,6 +281,281 @@ def step_holes(step_path, pn):
             hm = h.moved(fr)
             out.append({"c": tuple(hm.center), "axis": tuple(hm.axis), "dia": hm.diameter, "occ": occ})
     return out
+
+
+def _num(t):
+    try:
+        return float(t.split()[0])
+    except (ValueError, IndexError, AttributeError):
+        return None
+
+
+def _text_near(texts, want, box, pad=25.0):
+    """True when the sheet has the text `want` inside box (sheet mm) grown by pad."""
+    x0, y0, x1, y1 = box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad
+    return any(t[4] == want and t[0] >= x0 and t[2] <= x1 and t[1] >= y0 and t[3] <= y1 for t in texts)
+
+
+def step_faces(step_path, pn, pm=None):
+    """Every face of the part's solids from the repo's STEP reader, placed (as step_planes): kind, points, and for a
+    cylinder its axis point, direction, radius and whether it is concave."""
+    sfm = _stepfile()
+    sf = sfm.StepFile(step_path)
+    out = []
+    for inst in sf.instances():
+        nm = inst["part_number"] or ""
+        if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")):
+            continue
+        s = sf.solid(inst["solid"])
+        fr = inst["frame"]
+
+        def mv(q):
+            q = fr.point(q)
+            if pm:
+                q = tuple(sum(pm["m"][i][j] * q[j] for j in range(3)) + pm["t"][i] for i in range(3))
+            return q
+
+        def rot(v):
+            v = fr.vector(v)
+            if pm:
+                v = tuple(sum(pm["m"][i][j] * v[j] for j in range(3)) for i in range(3))
+            return v
+        key = (inst["solid"], tuple(round(v, 3) for v in fr.o) + tuple(round(v, 3) for v in fr.x))
+        for f in s.faces:
+            d = {"kind": f.kind, "pts": [mv(q) for q in f.points], "solid": key}
+            if f.kind == "plane" and f.normal is not None:
+                d["n"] = rot(f.normal)
+            if f.kind == "cylinder" and f.origin is not None:
+                d.update({"o": mv(f.origin), "d": rot(f.normal), "r": f.radius, "concave": sfm._concave(f)})
+            out.append(d)
+    return out
+
+
+def open_slot_fails(data, faces, rows, texts, tol=TOL):
+    """Each open slot against the STEP (the repo's reader, no OCC): a concave half-round end of its radius on its
+    axis; its table row's X and Y at that axis in its view; and the sizes its view prints, measured from the part's
+    own points in the wall it goes through: the width, the radius, the end's centre to the edge, the mouth at the
+    edge (the nearest corners either side) and the taper's length (from the last corners at the width)."""
+    fails = []
+    views = {v["origin"]: v for v in data["views"] if v["origin"]}
+    allp = [q for f in faces for q in f["pts"]]
+    for f in data["features"]:
+        if f["kind"] != "open_slot":
+            continue
+        if not allp:
+            fails.append("%s: the STEP has no faces for this part" % f["tag"])
+            continue
+        ax, r = f["axis"], f["r"]
+        hit = [c for c in faces if c["kind"] == "cylinder" and c.get("concave") and abs(c["r"] - r) < 0.005 and
+               abs(abs(dot(c["d"], ax)) - 1) < 1e-4 and _line_dist(f["entry"], c["o"], c["d"]) < tol]
+        if not hit:
+            fails.append("%s: the STEP has no half-round end R%.2f on the slot's axis" % (f["tag"], r))
+            continue
+        cy = hit[0]
+        d = cy["d"]
+        ts = [dot(sub(q, cy["o"]), d) for q in cy["pts"]]
+        t0, t1 = min(ts), max(ts)
+        cc = tuple(cy["o"][i] + d[i] * (t0 + t1) / 2 for i in range(3))
+        along = f["along"]
+        lat = (ax[1] * along[2] - ax[2] * along[1], ax[2] * along[0] - ax[0] * along[2], ax[0] * along[1] - ax[1] * along[0])
+        near = []
+        for q in allp:
+            t = dot(sub(q, cy["o"]), d)
+            if t0 - 1e-3 <= t <= t1 + 1e-3:
+                qq = sub(q, cc)
+                a_, l_ = dot(qq, along), dot(qq, lat)
+                if abs(l_) < 6 * r:
+                    near.append((a_, l_))
+        edge = max(a_ for a_, _l in near)
+        at_edge = [l_ for a_, l_ in near if abs(a_ - edge) < 1e-3 and abs(l_) > r - 1e-3]
+        lpos, lneg = [l_ for l_ in at_edge if l_ > 0], [-l_ for l_ in at_edge if l_ < 0]
+        mouth = (min(lpos) + min(lneg)) if lpos and lneg else None
+        sides = [a_ for a_, l_ in near if abs(abs(l_) - r) < 1e-3 and -1e-3 < a_ < edge - 1e-3]
+        taper = (edge - max(sides)) if sides and mouth and mouth > 2 * r + 1e-3 else 0.0
+        got = {"width": 2 * cy["r"], "r": cy["r"], "edge": edge, "mouth": mouth, "taper": taper}
+        dims = f.get("dims") or {}
+        if not dims:
+            fails.append("%s: the open slot is not sized in any view" % f["tag"])
+        for key, txt in dims.items():
+            v = _num(txt.lstrip("R"))
+            if v is None or got.get(key) is None or abs(v - got[key]) > tol:
+                fails.append("%s: its view prints %s %s, the STEP %s" % (f["tag"], key, txt, got.get(key)))
+            elif f.get("dims_box") and not _text_near(texts, txt, f["dims_box"]):
+                fails.append("%s: its %s %s is not printed by its view" % (f["tag"], key, txt))
+        if dims and "taper" not in dims and taper > tol:
+            fails.append("%s: the STEP's slot tapers over %.2f, the sheet gives no taper" % (f["tag"], taper))
+        row = rows.get(f["tag"])
+        v = views.get(f["table_origin"])
+        if row and v:
+            Ov = v.get("origin3d") or data["origin"]
+            ex, ey = dot(sub(cc, Ov), v["x"]), dot(sub(cc, Ov), v["y"])
+            if math.hypot(ex - row[0], ey - row[1]) > tol:
+                fails.append("%s: table X %s Y %s, the STEP's slot end at X %.2f Y %.2f" % (f["tag"], row[0], row[1], ex, ey))
+    return fails
+
+
+def _fmt(v):
+    t = ("%.2f" % v).rstrip("0").rstrip(".")
+    return "0" if t in ("-0", "") else t
+
+
+def _norm(v):
+    L = math.sqrt(dot(v, v)) or 1.0
+    return tuple(c / L for c in v)
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def end_cut_fails(data, faces, texts, near=30.0):
+    """Every end cut of every member, found by the repo's reader: on each solid that is a member (longest along the
+    line square to its two longest flat faces that aren't parallel), a flat face 1.1° to 88.9° from square to that
+    line and 6 mm or more across the member the way it slopes (a mitre, a compound cut's main face; not a 1 x 45°
+    bevel). Its angle from square
+    must print within `near` mm of where a drawn view puts the face (FRONT's #320: 8 tubes printed none, their
+    mitres seen only face on). A part the assembly STEP holds several times passes when one copy (the drawn one)
+    does."""
+    by = {}
+    for f in faces:
+        if f["kind"] == "plane" and f.get("n") and len(f["pts"]) >= 3:
+            by.setdefault(f["solid"], []).append(f)
+    views = [v for v in data["views"] if v.get("off") and v.get("scale")]
+    per_solid = []
+    for sid, fs in by.items():
+        def span(f):
+            return max(math.dist(a, b) for a in f["pts"] for b in f["pts"])
+        fs_s = sorted(fs, key=lambda f: -span(f))
+        n1 = _norm(fs_s[0]["n"])
+        n2 = next((_norm(f["n"]) for f in fs_s[1:] if abs(dot(_norm(f["n"]), n1)) < 0.5), None)
+        if n2 is None:
+            continue
+        ax = _norm(_cross(n1, n2))
+        allp = [q for f in fs for q in f["pts"]]
+        ext = lambda d: max(dot(q, d) for q in allp) - min(dot(q, d) for q in allp)
+        if ext(ax) < 1.5 * max(ext(n1), ext(n2)):
+            continue                # not a member: a plate, a block
+        fails = []
+        for f in fs:
+            n = _norm(f["n"])
+            c = abs(dot(n, ax))
+            if not (0.019 < c < 0.9998):
+                continue
+            u = _norm(_cross(ax, n))        # along the cut's hinge line, across the member
+            w = _norm(_cross(u, ax))        # across the member the way the cut slopes
+            across = max(dot(q, w) for q in f["pts"]) - min(dot(q, w) for q in f["pts"])
+            if across < 6.0:
+                continue            # a 1 x 45° bevel or a small facet: narrow the way it slopes (bevels are checked
+                                    # as chamfers)
+            want = _fmt(math.degrees(math.acos(c))) + "°"
+            cen = tuple(sum(q[i] for q in f["pts"]) / len(f["pts"]) for i in range(3))
+            ok = False
+            for v in views:
+                P = lambda q: (v["off"][0] + v["scale"] * dot(q, v["x"]), v["off"][1] + v["scale"] * dot(q, v["y"]))
+                pt = P(cen)
+                pp = [P(q) for q in f["pts"]]
+                reach = near + 1.5 * max(math.dist(a, b) for a in pp for b in pp)     # the label sits by the cut's arc
+                if any(t[4] == want and math.hypot((t[0] + t[2]) / 2 - pt[0], (t[1] + t[3]) / 2 - pt[1]) <= reach
+                       for t in texts):
+                    ok = True
+                    break
+            if not ok:
+                fails.append("an end cut %s from square (at %.1f, %.1f, %.1f) is printed nowhere near its end" % (
+                    want, cen[0], cen[1], cen[2]))
+        per_solid.append(fails)
+    if data.get("occurrences", 1) > 1 and per_solid:
+        return [] if any(not f for f in per_solid) else per_solid[0]
+    return [x for f in per_solid for x in f]
+
+
+def _line_dist(p, a, d):
+    v = sub(p, a)
+    L = math.sqrt(dot(d, d)) or 1.0
+    t = dot(v, d) / L
+    return math.sqrt(max(dot(v, v) - t * t, 0.0))
+
+
+def flat_feature_fails(data, planes, texts, tol=TOL):
+    """Notches and chamfers against the STEP's own flat faces (the repo's reader, no OCC): each notch's back face and
+    two sides are where the drawing says, and its width, length and place across, measured from those faces and the
+    part's own end and side faces, are what the sheet prints beside it (a notch said to be the same as the drawn one
+    measures the same); each chamfer's faces have the legs its callout gives, equal, at 45°."""
+    fails = []
+    views_all = data.get("views", [])
+    allp = [q for f in planes for q in f["pts"]]
+    if not allp:
+        return ["the STEP has no flat faces for this part"]
+    for k, nt in enumerate(data.get("notches", [])):
+        lax, ac = nt["lax"], nt["across"]
+        sv = [dot(q, lax) for q in allp]
+        end = max(sv) if nt["sgn"] > 0 else min(sv)
+        a_all = [dot(q, ac) for q in allp]
+        plo, phi = min(a_all), max(a_all)
+        sb, lo, hi = nt["s_back"], nt["lo"], nt["hi"]
+        s0, s1 = min(end, sb), max(end, sb)
+        back = [f for f in planes if abs(abs(dot(f["n"], lax)) - 1) < 1e-4 and
+                all(abs(dot(q, lax) - sb) < 0.01 and lo - 0.01 <= dot(q, ac) <= hi + 0.01 for q in f["pts"])]
+        sides = [[f for f in planes if abs(abs(dot(f["n"], ac)) - 1) < 1e-4 and
+                  all(abs(dot(q, ac) - a_) < 0.01 for q in f["pts"]) and
+                  abs(min(dot(q, lax) for q in f["pts"]) - s0) < 0.01 and
+                  abs(max(dot(q, lax) for q in f["pts"]) - s1) < 0.01] for a_ in (lo, hi)]
+        where = "notch at the %s end" % ("+" if nt["sgn"] > 0 else "-")
+        if not back or not sides[0] or not sides[1]:
+            fails.append("%s: the STEP has no notch faces where the drawing says" % where)
+            continue
+        got = {"width": hi - lo, "length": abs(end - sb)}
+        tx = nt["texts"]
+        if not tx:
+            fails.append("%s: not sized on the sheet" % where)
+            continue
+        ref = phi if abs(tx["ref"] - phi) < abs(tx["ref"] - plo) else plo
+        got["pos"] = min(abs(ref - lo), abs(ref - hi))
+        for key in ("width", "length", "pos"):
+            v = _num(tx[key])
+            if v is None or abs(v - got[key]) > tol:
+                fails.append("%s: the sheet's %s %s, the STEP %.3f" % (where, key, tx[key], got[key]))
+        if nt["drawn"] and nt["box"]:
+            for key in ("width", "length", "pos"):
+                if not _text_near(texts, tx[key], nt["box"]):
+                    fails.append("%s: its %s %s is not printed by its view" % (where, key, tx[key]))
+    for ch in data.get("chamfers", []):
+        n, lax, side = ch["n"], ch["lax"], ch["side_n"]
+        p0 = ch["pts"][0]
+        fs = [f for f in planes if abs(abs(dot(f["n"], n)) - 1) < 1e-4 and
+              all(abs(dot(sub(q, p0), n)) < 0.01 for q in f["pts"])]
+        where = "chamfer along the member" if ch.get("long") else "chamfer at the %s end" % ("+" if ch["sgn"] > 0 else "-")
+        if not fs:
+            fails.append("%s: the STEP has no face where the drawing says" % where)
+            continue
+        qs = [q for f in fs for q in f["pts"]]
+        d1, d2 = ch.get("leg_dirs") or (lax, side)      # an end bevel: along the member and the side; a long one: across
+        la = max(dot(q, d1) for q in qs) - min(dot(q, d1) for q in qs)
+        ls = max(dot(q, d2) for q in qs) - min(dot(q, d2) for q in qs)
+        v = _num(ch["text"])
+        if v is None or abs(v - la) > tol or abs(v - ls) > tol or not ch["text"].endswith("x 45°"):
+            fails.append("%s: the sheet says %s, the STEP's legs %.3f and %.3f" % (where, ch["text"], la, ls))
+        # the callout by the chamfer itself, as the STEP places it (Reviewer 6 on #331: a callout moved 40 to 67 mm
+        # away, its record moved with it, still passed): within 25 mm (plus 1.5 times the chamfer's narrower side on
+        # paper) of the middle of its faces, as some drawn view projects them
+        cen = tuple(sum(q[i] for q in qs) / len(qs) for i in range(3))
+        near_it = False
+        for v in [v for v in views_all if v.get("off") and v.get("scale")]:
+            P = lambda q: (v["off"][0] + v["scale"] * dot(q, v["x"]), v["off"][1] + v["scale"] * dot(q, v["y"]))
+            pc = P(cen)
+            pp = [P(q) for q in qs]
+            narrow = min(max(a[0] for a in pp) - min(a[0] for a in pp), max(a[1] for a in pp) - min(a[1] for a in pp))
+            reach = 25.0 + 1.5 * narrow
+            if any(t[4] == ch["text"] and math.hypot((t[0] + t[2]) / 2 - pc[0], (t[1] + t[3]) / 2 - pc[1]) <= reach
+                   for t in texts):
+                near_it = True
+                break
+        if not near_it:
+            fails.append("%s: its size %s is not printed by it" % (where, ch["text"]))
+        tip = ch["tip"]
+        at = ch.get("box") or (tip[0], tip[1], tip[0], tip[1])
+        if not _text_near(texts, ch["text"], at, pad=2.5 if ch.get("box") else 25.0):
+            fails.append("%s: its size %s is not where the sheet's record puts it" % (where, ch["text"]))
+    return fails
 
 
 def two_wall_pairs(features, tol=0.05):
@@ -365,6 +645,7 @@ def check(pdf_path, step_path=None, verbose=False):
             continue
         x, y, size = rows[tag]
         stats["rows"] += 1
+        # an open slot's round end reads as a hole of its width at the end's centre (the repo's reader)
         if f["kind"] != "hole":
             continue
         v = views[f["table_origin"]]
@@ -453,6 +734,12 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("sheet %d: a note names a maker ('%s')" % (pg, phrase))
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
+    faces = step_faces(step_path, data["pn"], data.get("placement"))
+    tb = text_boxes(page, data["sheet_h"])
+    if data.get("notches") or data.get("chamfers") or any(f["kind"] == "open_slot" for f in data["features"]):
+        fails += open_slot_fails(data, faces, rows, tb)
+        fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
+    fails += end_cut_fails(data, faces, tb)
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")

@@ -52,7 +52,9 @@ class Typed(tuple):
 
 
 def _decode(s):
-    s = s[1:-1].replace("''", "'")
+    # Fusion wraps a long string across lines ('...COMMO', new line, 'N'); a line break in a STEP file carries no
+    # meaning, so it is no part of the string (the Lead's ruling on WALL's L1 sample, 2026-11-01)
+    s = s[1:-1].replace("\r", "").replace("\n", "").replace("''", "'")
     # \X2\hhhh...\X0\ (UTF-16 hex) and \X\hh (ISO 8859-1) as Fusion writes them
     def x2(m):
         h = m.group(1)
