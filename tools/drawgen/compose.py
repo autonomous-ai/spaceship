@@ -264,6 +264,10 @@ class Part:
         # pocket, an uneven chamfer) would be drawn without a size, so the part is refused
         self.notches, self.chamfers, self.plates = [], [], []
         for b in self.bodies:
+            lax = geom.member_axis(b)
+            if lax is not None and not plain_section(b, lax):
+                raise NotDrawable("%s body %s is a profile whose section isn't a plain rectangle or rectangular tube: its "
+                                  "section's sizes aren't drawn yet (D-139: Fusion, or the profile reading)" % (pn, b.name))
             nt, ch, plt, odd = geom.flat_features(b, [ft.f for ft in self.features if ft.body is b and ft.kind != "hole"])
             if odd:
                 raise NotDrawable("%s body %s has flat faces this tool can't size yet: %s%s" % (
@@ -349,6 +353,7 @@ class Part:
         return "%s_%s_%s_DWG" % (self.pn, self.rev, self.file_name)
 
 
+EXTRUDED_WORDS = re.compile(r"\bextru(?:ded|sion|sions)\b", re.I)
 BENT_WORDS = re.compile(r"\b(?:bend|bends|bent|fold|folds|folded|brake|v-groove|groove and fold|press brake)\b", re.I)
 
 
@@ -361,6 +366,8 @@ def folded_or_bent(part):
     m = BENT_WORDS.search(proc)
     if m:
         return "bent or folded (its parts list says '%s')" % m.group(0)
+    if EXTRUDED_WORDS.search(proc + " " + (part.row.get("type") or "")):
+        return None         # an extrusion's open section is its profile, not a fold (plain_section judges it)
     for b in part.bodies:
         pls = geom.planes(b)
         if not pls:
@@ -380,13 +387,20 @@ def folded_or_bent(part):
                         dirs.append(d)
         if len(dirs) < 2:
             continue
-        # open or closed cross-section, across the long direction, at three places (one may cut through a hole)
-        lk = max(range(3), key=lambda k: b.size[k])
-        n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        # open or closed cross-section, at three places (one may cut through a hole), across the line both wall
+        # directions run along (a tube's axis, a fold's line); with more directions, across the longest side. A tube
+        # shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it closes
+        if len(dirs) == 2:
+            n = geom.canon_dir(geom.vnorm(geom.vcross(dirs[0], dirs[1])))
+        else:
+            lk = max(range(3), key=lambda k: b.size[k])
+            n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), n) for v in geom._vertices_of(b.shape)]
+        s0, s1 = min(sv), max(sv)
         from OCP.TopAbs import TopAbs_WIRE
         opens = 0
         for t in (0.31, 0.47, 0.63):
-            pt = tuple(b.box[k] + t * b.size[k] if k == lk else b.centroid[k] for k in range(3))
+            pt = vadd(b.centroid, vmul(n, s0 + t * (s1 - s0) - vdot(b.centroid, n)))
             faces = cut_faces(geom.half_space_keep(b.shape, pt, n), pt, n)
             wires = 0
             for f in faces:
@@ -398,6 +412,77 @@ def folded_or_bent(part):
         if opens == 3:
             return "a folded sheet (body %s: sheet faces in %d directions, open cross-section)" % (b.name, len(dirs))
     return None
+
+
+def _rectangle(wire):
+    """True when a wire is four straight edges, each parallel or square to the first."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.GeomAbs import GeomAbs_Line
+    dirs = []
+    e = TopExp_Explorer(wire, TopAbs_EDGE)
+    while e.More():
+        ed = TopoDS.Edge_s(e.Current())
+        if BRepAdaptor_Curve(ed).GetType() != GeomAbs_Line:
+            return False
+        vs = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(ed)]
+        if len(vs) != 2:
+            return False
+        dirs.append(geom.vnorm(geom.vsub(vs[1], vs[0])))
+        e.Next()
+    return len(dirs) == 4 and all(abs(vdot(d, dirs[0])) < 1e-6 or abs(abs(vdot(d, dirs[0])) - 1) < 1e-6 for d in dirs)
+
+
+def _convex(wire, lax):
+    """True when a wire is straight edges round a convex outline (seen along lax)."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepTools import BRepTools_WireExplorer
+    from OCP.GeomAbs import GeomAbs_Line
+    u = vnorm(vcross(lax, (1.0, 0.0, 0.0) if abs(lax[0]) < 0.9 else (0.0, 1.0, 0.0)))
+    v = vcross(lax, u)
+    pts = []
+    ex = BRepTools_WireExplorer(wire)
+    while ex.More():
+        if BRepAdaptor_Curve(ex.Current()).GetType() != GeomAbs_Line:
+            return False
+        p = geom.pnt(BRep_Tool.Pnt_s(ex.CurrentVertex()))
+        pts.append((vdot(p, u), vdot(p, v)))
+        ex.Next()
+    if len(pts) < 3:
+        return False
+    sgn = 0
+    for i in range(len(pts)):
+        a, b_, c = pts[i - 1], pts[i], pts[(i + 1) % len(pts)]
+        cr = (b_[0] - a[0]) * (c[1] - b_[1]) - (b_[1] - a[1]) * (c[0] - b_[0])
+        if abs(cr) < 1e-9:
+            continue
+        if sgn and (cr > 0) != (sgn > 0):
+            return False
+        sgn = cr
+    return True
+
+
+def plain_section(b, lax):
+    """True when a straight member's cross-section, at some station clear of its holes, is a solid convex outline (a
+    bar, or a block with an angled side face, as the corner keys) or a rectangle with one rectangular bore (a
+    rectangular tube): shapes its views, its section and its material line define. An angle, a channel or a custom
+    extrusion (FRONT's kick strip 361002) has a profile to size, which drawgen doesn't do yet (D-139 keeps a
+    profile's dimensioned section with Fusion)."""
+    from OCP.TopAbs import TopAbs_WIRE
+    sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), lax) for v in geom._vertices_of(b.shape)]
+    s0, s1 = min(sv), max(sv)
+    for t in (0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8):
+        pt = vadd(b.centroid, vmul(lax, s0 + t * (s1 - s0) - vdot(b.centroid, lax)))
+        faces = cut_faces(geom.half_space_keep(b.shape, pt, lax), pt, lax)
+        if len(faces) != 1:
+            continue
+        wires = []
+        e = TopExp_Explorer(faces[0], TopAbs_WIRE)
+        while e.More():
+            wires.append(TopoDS.Wire_s(e.Current()))
+            e.Next()
+        if (len(wires) == 1 and _convex(wires[0], lax)) or (len(wires) == 2 and all(_rectangle(w) for w in wires)):
+            return True
+    return False
 
 
 def principal_view(part):
