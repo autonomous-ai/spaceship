@@ -79,6 +79,24 @@ def run(_context):
         if d > TOL:
             bad.append(("box off", code, round(d, 3)))
     print("member boxes against the layout: worst %.3f mm" % worst)
+    # the mitre plates (D-131, J-FRAME-01): two 831007 at the front corners, two 831008 at the back, each in its corner
+    pl_want = M.plate_boxes(vals, half)
+    pl_got = {pn: [C.bb_mm(b) for o in seen.get(pn, []) for b in o.bRepBodies] for pn in ("831007", "831008")}
+    pw = 0.0
+    for name, pkey, b in pl_want:
+        pn = M.HARDWARE[M.PLATE_HW[pkey]][0]
+        e6 = [b[0], b[2], b[4], b[1], b[3], b[5]]
+        cands = pl_got.get(pn, [])
+        if not cands:
+            bad.append(("no plate", name, pn))
+            continue
+        best = min(cands, key=lambda c: max(abs(p - q) for p, q in zip(c, e6)))
+        d = max(abs(p - q) for p, q in zip(best, e6))
+        cands.remove(best)
+        pw = max(pw, d)
+        if d > TOL:
+            bad.append(("plate off", name, round(d, 3)))
+    print("mitre plates: %d against the layout, worst %.3f mm" % (len(pl_want), pw))
     # mitre angles from the end faces
     for o in occs:
         pn = o.component.partNumber

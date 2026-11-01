@@ -739,11 +739,107 @@ def build_frame_members(fcomp, half, ctx):
     return members
 
 
+# how a copy is turned into place (D-120's copies; the turned-copy probes of 2026-11-01): "joint", a rigid joint to a
+# sketch point with the angle (and flip) on the joint's input, read back and checked; or "asbuilt", the copy set turned
+# in place and held by a rigid as-built joint to a locator placed by a plain joint at the point
+TURN_METHOD = "joint"
+
+
+def rotation(angle_deg, over):
+    """3 x 3: turned over about its own X first (when `over`), then turned about Z by angle_deg."""
+    import math
+    c, s_ = math.cos(math.radians(angle_deg)), math.sin(math.radians(angle_deg))
+    rz = ((c, -s_, 0.0), (s_, c, 0.0), (0.0, 0.0, 1.0))
+    if not over:
+        return rz
+    rx = ((1.0, 0.0, 0.0), (0.0, -1.0, 0.0), (0.0, 0.0, -1.0))
+    return tuple(tuple(sum(rz[r][k] * rx[k][c2] for k in range(3)) for c2 in range(3)) for r in range(3))
+
+
+def rot_of(occ):
+    m = occ.transform2
+    return tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
+
+
+def place_rotated(parent, occ, xyz, want, name, ctx, settings):
+    """Place a copy at xyz (expressions, the parent's frame) turned by the rotation `want` (3 x 3), by TURN_METHOD; the
+    result is read back after a full compute, and a copy that doesn't land turned stops the build. settings: the
+    joint's (flip, angle) to try, in order."""
+    def ok():
+        ctx.design.computeAll()
+        got = rot_of(occ)
+        return all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3))
+    if TURN_METHOD == "joint":
+        pt = place_point(parent, xyz, name, ctx)
+        tried = []
+        for flip, angle in settings:
+            j = joint_to_point(parent, occ, pt, name, flip, angle)
+            if ok() and j.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState:
+                return j
+            tried.append((flip, angle, rot_of(occ), j.healthState))
+            j.deleteMe()
+        raise RuntimeError("no joint setting turns %s as wanted: %s" % (name, tried))
+    loc = parent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+    loc.component.name = "LOCATOR - %s" % name
+    joint_to_point(parent, loc, place_point(parent, xyz, "LOCATOR - " + name, ctx), "LOCATOR - " + name)
+    m = adsk.core.Matrix3D.create()
+    for r in range(3):
+        for c in range(3):
+            m.setCell(r, c, want[r][c])
+        m.setCell(r, 3, ctx.ev(xyz[r]) * MM)
+    occ.transform2 = m
+    ab = parent.asBuiltJoints.createInput(occ, loc, None)
+    ab.setAsRigidJointMotion()
+    j = parent.asBuiltJoints.add(ab)
+    if not ok():
+        raise RuntimeError("%s: the as-built joint didn't hold the copy turned" % name)
+    return j
+
+
+def plate_part(fcomp, pkey, ctx):
+    """A mitre plate's occurrence under fcomp (D-131, J-FRAME-01; the register's 831007 or 831008): the part built once
+    in its own frame (its outline plate_local over the frame's depth, centred on Z 0, so a turned-over copy keeps its
+    place), later ones copies of it (D-120)."""
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
+    if pkey in shared:
+        return fcomp.occurrences.addExistingComponent(shared[pkey], adsk.core.Matrix3D.create())
+    pn, name, vn, kind, _u, _n1, _n2, _kg, _st = M.HARDWARE[M.PLATE_HW[pkey]]
+    occ = fcomp.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+    c = occ.component
+    c.name = "%s %s" % (pn, name)
+    c.partNumber = pn
+    c.description = "%s | %s | %s | %s | joints register %s" % (name, vn, kind, M.REV,
+                                                                  "H-40" if pkey == "mp45" else "H-41")
+    poly_xy_body(c, "MITRE PLATE", M.plate_local(pkey), "-frame_t / 2", "frame_t / 2", ctx)
+    set_material(c, ctx, "steel_fr")
+    shared[pkey] = c
+    return occ
+
+
+def build_plates(fcomp, half, ctx):
+    """The four mitre plates welded into this frame's corners (J-FRAME-01), each turned to its mitre, a back seam or a
+    C2 back side plate turned over too (M.plate_places)."""
+    corners = {n: o for n, _k, o, _i in M.plate_corners(half)}
+    for name, pkey, _xyz, angle, over in M.plate_places(ctx.vals, half):
+        occ = plate_part(fcomp, pkey, ctx)
+        want = rotation(angle, over)
+        a = "%.4f deg" % angle
+        b = "%.4f deg" % (angle + 180.0)
+        settings = [(False, a), (True, b), (True, a), (False, b)] if over else [(False, a), (True, b)]
+        # the outer corner's own expressions, so the plate follows an edit; the angle is the sections' (fixed)
+        xyz = (corners[name][0], corners[name][1], "%s + frame_t / 2" % M.ZF0)
+        place_rotated(fcomp, occ, xyz, want, "%s %s" % (half, name), ctx, settings)
+
+
 def build_frame(assy, half, ctx):
-    """The frame of one half: an assembly (D-120) of its member components (build_frame_members)."""
+    """The frame of one half: an assembly (D-120) of its member components (build_frame_members) and the mitre plates
+    welded into its corners (build_plates, D-131)."""
     key = "frame_c1" if half == "C1" else "frame_c2"
     occ, comp = new_comp(assy, key, ctx)
     build_frame_members(comp, half, ctx)
+    build_plates(comp, half, ctx)
     return occ, comp
 
 

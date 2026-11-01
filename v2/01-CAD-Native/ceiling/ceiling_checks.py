@@ -35,6 +35,9 @@ def expected(design):
         for code, name, _axis, b in M.frame_members(half):
             x0, x1, y0, y1, z0, z1 = (ev(e) for e in b)
             out["%s %s" % (half, name)] = [x0, y0, z0, x1, y1, z1]
+        vals = param_values(design)
+        for name, pkey, b in M.plate_boxes(vals, half):          # the mitre plates (D-131, J-FRAME-01)
+            out["%s %s %s" % (half, "MITRE", name)] = [b[0], b[2], b[4], b[1], b[3], b[5]]
         sx, sy, sz = (ev(e) for e in M.SKIN_PLACES[half])
         b = [ev(e) for e in M.skin_box()]
         out["SKIN %s" % half] = [b[0] + sx, b[2] + sy, b[4] + sz, b[1] + sx, b[3] + sy, b[5] + sz]
@@ -119,9 +122,9 @@ def check(design):
         if d > TOL:
             bad.append((k, round(d, 3)))
     groups = {"513102": "RIB", "513301": "FILL BAY", "513302": "FILL BAY", "513303": "FILL BAY",
-              "518001": "CLIP", "518002": "CATCH"}
+              "518001": "CLIP", "518002": "CATCH", "831007": "MITRE", "831008": "MITRE"}
     for half in ("C1", "C2"):
-        for prefix in ("RIB", "FILL BAY", "CLIP", "CATCH"):
+        for prefix in ("RIB", "FILL BAY", "CLIP", "CATCH", "MITRE"):
             keys = [k for k in exp if k.startswith("%s %s" % (half, prefix))]
             acts = []
             for pn, pre in groups.items():

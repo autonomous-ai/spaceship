@@ -365,7 +365,7 @@ def evaluate(params, overrides=None):
 
 
 def ev(vals, expr):
-    env = {"ceil": math.ceil, "floor": math.floor, "abs": abs, "min": min, "max": max}
+    env = {"ceil": math.ceil, "floor": math.floor, "abs": abs, "min": min, "max": max, "sqrt": math.sqrt}
     return float(eval(to_python(expr), {"__builtins__": {}}, dict(env, **vals)))
 
 
@@ -521,6 +521,46 @@ def plate_outline(vals, half, name):
     if clean[0] == clean[-1]:
         clean.pop()
     return clean
+
+
+def plate_local(pkey):
+    """The plate's outline in its own frame [(x, y) expressions]: X along its mitre from the outer corner (0) to the inner
+    corner, Y across its mp_t thickness, the two outer tips ground flush (plate_outline); its standard side, the one C1's
+    side corners use (a back seam corner takes it turned over about its X axis)."""
+    t = "mp_t / 2"
+    L = plate_length(pkey)
+    if pkey == "mp45":
+        a_up, a_dn = t, t                                          # tan 45 deg
+    else:
+        a_up, a_dn = "%s * tube_w / back_w" % t, "%s * back_w / tube_w" % t
+    return [("0 mm", "0 mm"), (a_up, t), (L, t), (L, "-(%s)" % t), (a_dn, "-(%s)" % t)]
+
+
+def plate_places(vals, half):
+    """[(name, plate key, origin (x, y, z) mm, angle about Z in degrees, turned over)] for the build: each plate's origin
+    at its outer corner at the frame's mid depth, its X turned to the mitre's direction, and turned over about its own X
+    where the corner's outline is the standard one mirrored (plate_outline against plate_local)."""
+    import math
+    out = []
+    for name, pkey, o, i in plate_corners(half):
+        ox, oy, ix, iy = (ev(vals, e) for e in (o[0], o[1], i[0], i[1]))
+        L = math.hypot(ix - ox, iy - oy)
+        ux, uy = (ix - ox) / L, (iy - oy) / L
+        nx, ny = -uy, ux
+        got = sorted((round((x - ox) * ux + (y - oy) * uy, 4), round((x - ox) * nx + (y - oy) * ny, 4))
+                     for x, y in plate_outline(vals, half, name))
+        std = sorted((round(ev(vals, a), 4), round(ev(vals, b), 4)) for a, b in plate_local(pkey))
+        mir = sorted((a, round(-b, 4) + 0.0) for a, b in std)
+        got = [(a, b + 0.0) for a, b in got]
+        if got == std:
+            over = False
+        elif got == mir:
+            over = True
+        else:
+            raise ValueError("%s %s: the plate's outline is neither the standard one nor it turned over" % (half, name))
+        zc = ev(vals, ZF0) + vals["frame_t"] / 2
+        out.append((name, pkey, (ox, oy, zc), math.degrees(math.atan2(uy, ux)), over))
+    return out
 
 
 def plate_boxes(vals, half):
