@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class, parse_file_name, Finding, owner_for  # noqa: E402
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
+import c_frames  # noqa: E402
 import c_drawings  # noqa: E402
 import c_stacks  # noqa: E402
 import register  # noqa: E402
@@ -90,6 +91,10 @@ def run(root, rev):
         findings += c_geometry.check_unmatched(root, "assembly", asm)
         findings += c_geometry.check_hole_sizes(root, "assembly", asm)
         ran |= {"C08", "C08:assembly"}
+    frame_fs, frames_ran = c_frames.check_frames(root, asm)       # D-131: steel and gauges on every frame member
+    findings += frame_fs
+    if frames_ran:
+        ran.add("C11:frames")
     stack_fs, stack_report = c_stacks.check_stacks(root)
     findings += stack_fs
     if stack_report:
