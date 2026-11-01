@@ -7,7 +7,9 @@ environment:
 
 1. A frame with no body of its own (its members are parts under it, D-120) takes every solid under its first
    placement, each body named by its member's number and name; its quantity is its own placements' count. Its STEP
-   is found through its members, and the read-back's holes and faces come from the same set.
+   is found through its members, and the read-back's holes and faces come from the same set. A frame in its own file
+   whose every body is a member part (WALL's 211101) reads the same way. Each hole takes its own member's register
+   row first, then the frame's own, never another member's.
 2. An entry can name a cut list file in its team's folder (D-162): its rows for the frame, one per member number
    with the quantity summed. Balloons match bodies by member number, and each number's bodies must equal its
    quantity, both ways. A number with two lengths or two ends texts is refused, and so is a bought part under the
@@ -47,6 +49,18 @@ ROW = {"part_number": "219980", "name": "TEST - WELDED FRAME", "name_vi": "", "m
 SPEC = {"tolerance": "test", "notes": ["FRAME: test weldment."]}
 
 
+def _holes(sh, centres):
+    """Ø8.5 holes through the top wall (Z 18.5 to 20) at these (x, y)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeCylinder
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    for x, y in centres:
+        c = BRepAlgoAPI_Cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, 15.0), gp_Dir(0, 0, 1)), 4.25, 10).Shape())
+        c.Build()
+        sh = c.Shape()
+    return sh
+
+
 def _tube(x0, y0, length, along_x, mitre=0.0):
     """A 20 x 20 x 1.5 box tube, length along X (or Y), from (x0, y0, 0); mitre: both ends cut that many degrees from
     square in plan (the long points on its -Y face), as a frame's corner members are."""
@@ -80,7 +94,7 @@ def _tube(x0, y0, length, along_x, mitre=0.0):
     return sh
 
 
-def _weldment(path, bought=False):
+def _weldment(path, bought=False, own=False, holes=False):
     """A test assembly '219970 TEST ASSY' holding the frame '219980 TEST FRAME' (no body of its own) at 0,0,0, as a
     team STEP holds CEILING's 411101: two long members 219981 (300, both ends mitred 45° in plan), two short ones
     219982
@@ -104,13 +118,20 @@ def _weldment(path, bought=False):
     def name(lab, s):
         TDataStd_Name.Set_s(lab, TCollection_ExtendedString(s))
 
-    top = st.NewShape()
-    name(top, "219970 TEST ASSY")
-    frame = st.NewShape()
-    name(frame, "219980 TEST FRAME")
+    if own:                 # the frame in its own file, its top product the document (as Fusion writes WALL's 211101)
+        frame = st.NewShape()
+        name(frame, "219980_P01_TEST-FRAME_CAD")
+    else:
+        top = st.NewShape()
+        name(top, "219970 TEST ASSY")
+        frame = st.NewShape()
+        name(frame, "219980 TEST FRAME")
     # no holes here: the repo's STEP reader reads Fusion's hole faces, not the ones OCC writes; the after-weld holes
     # are read back on CEILING's own frames below
-    parts = [("219981 TEST MEMBER LONG", _tube(0, 0, 300, True, mitre=45.0)),
+    long_a = _tube(0, 0, 300, True, mitre=45.0)
+    if holes:               # two after-weld holes in one long member (the register test: OCC finds them)
+        long_a = _holes(long_a, [(100, 10), (200, 10)])
+    parts = [("219981 TEST MEMBER LONG", long_a),
              ("219981 TEST MEMBER LONG", _tube(0, 200, 300, True, mitre=45.0)),
              ("219982 TEST MEMBER SHORT", _tube(0, 20, 180, False)),
              ("219982 TEST MEMBER SHORT", _tube(280, 20, 180, False)),
@@ -123,7 +144,8 @@ def _weldment(path, bought=False):
         name(lab, nm)
         count[nm] = count.get(nm, 0) + 1
         name(st.AddComponent(frame, lab, TopLoc_Location()), "%s:%d" % (nm, count[nm]))   # as Fusion names them
-    name(st.AddComponent(top, frame, TopLoc_Location()), "219980 TEST FRAME:1")
+    if not own:
+        name(st.AddComponent(top, frame, TopLoc_Location()), "219980 TEST FRAME:1")
     st.UpdateAssemblies()
     w = STEPCAFControl_Writer()
     w.SetNameMode(True)
@@ -202,6 +224,44 @@ def test_a_frame_takes_its_members_bodies():
     # an ordinary part keeps its data as it was: no members flag
     _b, u2 = geom.load_part(step, "219981")
     assert "members" not in u2, u2
+
+
+def test_a_frame_in_its_own_file_takes_its_members_bodies():
+    """WALL's 211101 in its own STEP: its top product is the document and every body is a member part, so it reads
+    as a frame of members, as from a team STEP; an ordinary part in its own file keeps its bodies as before."""
+    d = os.path.join(TMP, "own")
+    os.makedirs(d, exist_ok=True)
+    step = _weldment(os.path.join(d, "219980_P01_TEST-FRAME_STEP.step"), own=True)
+    bodies, unit = geom.load_part(step, "219980")
+    assert sorted(b.name for b in bodies)[:2] == ["219981 TEST MEMBER LONG"] * 2 and unit.get("members"), unit
+    spec = dict(SPEC, cut_list={"file": _cut_list(os.path.join(d, "cut.csv"), GOOD), "welded_in": ["219983"]})
+    p = os.path.join(d, "frame.pdf")
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
+    assert not fails, fails
+
+
+def test_a_hole_takes_its_own_members_row_then_the_frames():
+    """A frame of members' hole is matched in its own member's register rows first (CEILING lists them so), then in
+    the frame's own rows (WALL lists its after-weld holes there), never in another member's rows (the Lead's rule on
+    #365): a row of another member that fits the hole exactly is never taken."""
+    d = os.path.join(TMP, "reg")
+    os.makedirs(d, exist_ok=True)
+    step = _weldment(os.path.join(d, "219970_P01_TEST-ASSY_STEP.step"), holes=True)
+    row = lambda i, body: {"id": i, "body": body, "dia": 8.5, "axis": "Z", "function": i, "mating": "", "tolerance": "",
+                           "status": "", "file": "test"}
+    regs = {"219982": [dict(row("F-OTHER", "TEST MEMBER SHORT"), centres=[(100.0, 10.0), (200.0, 10.0)])],
+            "219981": [dict(row("F-MEMBER", "TEST MEMBER LONG"), centres=[(100.0, 10.0)])],
+            "219980": [dict(row("F-FRAME", "RAIL"), centres=[(200.0, 10.0)])]}
+    real = inputs.feature_rows
+    inputs.feature_rows = lambda pn, team: regs.get(pn, [])
+    try:
+        part = compose.Part("219980", "none", step=step, row=ROW)
+    finally:
+        inputs.feature_rows = real
+    got = sorted((round(ft.f.entry[0]), (ft.reg or {}).get("id")) for ft in part.features if ft.kind == "hole")
+    assert got == [(100, "F-MEMBER"), (200, "F-FRAME")], got
 
 
 def test_a_frame_draws_and_reads_back_with_its_cut_list():

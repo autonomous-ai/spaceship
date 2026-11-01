@@ -303,34 +303,39 @@ class Part:
             self.notches += nt
             self.chamfers += ch
             self.plates += plt
-        # a frame of members (D-120): its register lists each hole under its member, so each hole is matched in its
-        # own member's rows only (pooled, a member's Ø7 bolt hole could fit another member's row)
+        # a frame of members (D-120): a hole is matched in its own member's register rows first (CEILING lists each
+        # hole under its member), then in the frame's own rows (WALL lists the after-weld holes there), never in
+        # another member's (pooled, a member's Ø7 bolt hole could fit another member's row)
         members = self._member_pns()
         own = (lambda body: geom.part_number_of(body.name)) if members else (lambda body: None)
+        frame_rows = inputs.feature_rows(pn, team)
         rows1 = {m: inputs.feature_rows(m, team) for m in members}
-        self.reg = inputs.feature_rows(pn, team) + [r for m in members for r in rows1[m]]
+        self.reg = frame_rows + [r for m in members for r in rows1[m]]
+
+        def match1(body, dia, axl, c):
+            m = own(body)
+            tries = [(rows1.get(m, []), ""), (frame_rows, "")] if m else [(self.reg, body.name)]
+            return next((r for r in (inputs.match_feature(rg, bn, dia, axl, c) for rg, bn in tries) if r), None)
         for ft in self.features:
-            m = own(ft.body)
-            reg, bname = (rows1.get(m, []), "") if m else (self.reg, ft.body.name)
             ax = axis_name(ft.f.axis)
             if ax and ft.kind == "hole":
                 ctr = vadd(ft.f.entry, vmul(ft.f.axis, ft.f.depth / 2))
-                ft.reg = inputs.match_feature(reg, bname, ft.f.dia, ax[1], ctr)
+                ft.reg = match1(ft.body, ft.f.dia, ax[1], ctr)
             elif ax and ft.kind == "slot":
                 # the register lists a slot as the two arcs of its ends
                 half = (ft.f.length - ft.f.width) / 2
                 for sgn in (1, -1):
                     c = vadd(vadd(ft.f.entry, vmul(ft.f.along, sgn * half)), vmul(ft.f.axis, ft.f.depth / 2))
-                    ft.reg = ft.reg or inputs.match_feature(reg, bname, ft.f.width, ax[1], c)
+                    ft.reg = ft.reg or match1(ft.body, ft.f.width, ax[1], c)
         b = [bb.box for bb in self.bodies]
         self.box = tuple(min(x[k] for x in b) for k in range(3)) + tuple(max(x[3 + k] for x in b) for k in range(3))
         # the second register layout (BASE): matched by size, wall and a named pod coordinate
         if not any(ft.reg for ft in self.features):
             rows_b0 = inputs.feature_rows_b(team, pn)
-            rows_bm = {m: inputs.feature_rows_b(team, m) for m in members}     # each member's own rows
+            rows_bm = {m: inputs.feature_rows_b(team, m) for m in members}     # a member's own rows, then the frame's
             for ft in self.features:
                 m = own(ft.body)
-                rows_b = rows_bm.get(m, []) if m else rows_b0
+                tries_b = [rows_bm.get(m, []), rows_b0] if m else [rows_b0]
                 nrm = ft.f.normal
                 k = max(range(3), key=lambda i: abs(nrm[i]))
                 if k == 2:
@@ -340,11 +345,13 @@ class Part:
                 dia = ft.f.entry_dia if ft.kind == "keyhole" else ft.f.dia
                 along = max(range(3), key=lambda i: ft.body.size[i])
                 if ft.kind == "open_slot":
-                    r = inputs.match_open_slot_b(inputs.feature_rows_b(team, m or pn, sizeless=True), ft.f.width,
-                                                 ft.f.mouth)
+                    r = next((x for x in (inputs.match_open_slot_b(inputs.feature_rows_b(team, q, sizeless=True),
+                                                                   ft.f.width, ft.f.mouth)
+                                          for q in ([m, pn] if m else [pn])) if x), None)
                 else:
-                    r = inputs.match_feature_b(rows_b, dia, wall, ft.f.entry, keyhole=(ft.kind == "keyhole"),
-                                               along=along)
+                    kh = ft.kind == "keyhole"
+                    r = next((x for x in (inputs.match_feature_b(rb, dia, wall, ft.f.entry, keyhole=kh, along=along)
+                                          for rb in tries_b) if x), None)
                 if r:
                     ft.reg = {"id": r["id"], "function": r["title"], "mating": r["function"], "file": r["file"]}
 

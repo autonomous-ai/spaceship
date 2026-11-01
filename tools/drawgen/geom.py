@@ -210,14 +210,23 @@ def load_part(path, pn):
             continue
         for s in solids:
             bodies.append(Body("", s))
+    members = False
     if not bodies:
         # a part's own file: the product may carry the document name (PN_REV_NAME_CAD) or PN_1
         own = os.path.basename(path).startswith(pn + "_")
         if own:
-            for name, solids in read_step(path):
-                for s in solids:
-                    bodies.append(Body("", s))
-    members = False
+            leaves = [(name, solids) for name, solids in read_step(path) if solids]
+            others = [name for name, _s in leaves if part_number_of(name) not in (None, pn)]
+            if leaves and len(others) == len(leaves):
+                # a welded frame in its own file whose every body is a member part (WALL's 211101, D-120): each body
+                # named by its member's number and name, as from a team STEP
+                bodies += [Body(name, s) for name, solids in leaves for s in solids]
+                members = True
+                occurrences = 1
+            else:
+                for name, solids in leaves:
+                    for s in solids:
+                        bodies.append(Body("", s))
     if not bodies:
         # a welded frame with no body of its own (D-120: its members are parts under it): every solid under its first
         # placement, each body named by its member's number and name; its quantity is its own placements' count
