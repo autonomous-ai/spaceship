@@ -61,7 +61,10 @@ TUBE = re.compile(r"\btube\b|\d+\s*x\s*\d+\s*x\s*\d|profile|6063|\bframe\b", re.
 METAL = re.compile(r"alumin|steel|zinc", re.I)
 COATED = re.compile(r"galvani|\+Z\b|stainless|\bA2\b|\bzinc\b|plated|anodi[sz]ed|mill finish|powder|painted", re.I)
 SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{3,}\b|\b(?:ISO|EN|DIN) \d{3,}")
-PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD", re.I)
+# HOLD is a whole word, in any case (Reviewer 6, #211): "on hold" counts; "holds", "holder" and "threshold" don't.
+# PRODUCT_HOLD reads the joints register's status cell, HOLD_WORD a made part's material, grade or status.
+PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD\b", re.I)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
 PRODUCT_NAMED = re.compile(r"\b(?:part|product|system)\b[^;]*\b(?:DECIDED|source)\b", re.I)
 TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
@@ -505,14 +508,15 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
 def made_hold(r, rows):
     """A made part on HOLD (PM, 2026-11-01): its own material, grade or status says HOLD. Read from the part's own
     parts-list rows (its number in the part-number column, not a row of another part that names it) and their columns
-    named exactly material, grade or status (not mass_status or process_status), and from the BOM's material."""
-    if "HOLD" in (r.get("material") or "").upper():
+    named exactly material, grade or status (not mass_status or process_status), and from the BOM's material.
+    HOLD counts as a whole word only ("holds", "holder" and "threshold" don't; Reviewer 6, #211)."""
+    if HOLD_WORD.search(r.get("material") or ""):
         return True
     pn = r.get("part_number")
     for cells, _p in rows:
         if not any(re.fullmatch(r"part_?(?:number|no)|pn", (k or "").strip(), re.I) and v == pn for k, v in cells.items()):
             continue
-        if any(re.fullmatch(r"material|grade|status", (k or "").strip(), re.I) and "HOLD" in (v or "").upper()
+        if any(re.fullmatch(r"material|grade|status", (k or "").strip(), re.I) and HOLD_WORD.search(v or "")
                for k, v in cells.items()):
             return True
     return False
@@ -691,7 +695,8 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
             "- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP "
             "reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch "
             "shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or "
-            "status says HOLD shows HOLD.",
+            "status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: \"on hold\" "
+            "does; \"holds\", \"holder\" and \"threshold\" don't.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
             "that names the number or its register ID.",
