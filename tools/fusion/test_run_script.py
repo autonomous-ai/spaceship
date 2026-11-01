@@ -39,9 +39,13 @@ class FakeFusion(http.server.ThreadingHTTPServer):
     def __init__(self, delay=0.6):
         super().__init__(("127.0.0.1", 0), FakeHandler)
         self.delay = delay
+        self.slow_delay = delay    # for a script holding SLOW_IN_FUSION
+        self.serial = False        # True: one script at a time, like Fusion's main thread
+        self.main = threading.Lock()
         self.active = 0
         self.max_active = 0
         self.scripts = []          # (arrival time, script text)
+        self.done = []             # (end time, script text)
         self.mutex = threading.Lock()
         self.thread = threading.Thread(target=self.serve_forever, daemon=True)
         self.thread.start()
@@ -74,12 +78,15 @@ class FakeHandler(http.server.BaseHTTPRequestHandler):
             if m:                                  # the runner's wrapper: unwrap
                 script = base64.b64decode(m.group(1)).decode("utf-8")
             with srv.mutex:
-                srv.active += 1
-                srv.max_active = max(srv.max_active, srv.active)
                 srv.scripts.append((time.time(), script))
-            time.sleep(srv.delay)
-            with srv.mutex:
-                srv.active -= 1
+            with (srv.main if srv.serial else contextlib.nullcontext()):
+                with srv.mutex:
+                    srv.active += 1
+                    srv.max_active = max(srv.max_active, srv.active)
+                time.sleep(srv.slow_delay if "SLOW_IN_FUSION" in script else srv.delay)
+                with srv.mutex:
+                    srv.active -= 1
+                    srv.done.append((time.time(), script))
             fail = "RAISE_IN_FUSION" in script
             text = json.dumps({"success": not fail,
                                "message": "fake ran %d chars" % len(script),
@@ -363,6 +370,27 @@ class LockTests(unittest.TestCase):
         self.assertEqual(owner["token"], holder.token)
         self.assertTrue(self.lock().release_held(holder.token))
 
+    def test_extend_keeps_the_lock_or_the_joined_hold_and_says_why(self):
+        # PM ruling 2026-11-01: while a timed-out run waits for Fusion, no waiter may
+        # clear its lock as expired
+        lk = self.lock(hold_s=2)
+        lk.acquire(1)
+        self.assertTrue(lk.extend(600, note="waiting for Fusion to finish"))
+        owner = lk.read_owner()
+        self.assertGreater(owner["expires"], time.time() + 590)
+        self.assertIn("waiting for Fusion to finish", rs.describe_owner(owner))
+        self.assertTrue(lk.release())
+        self.assertFalse(lk.extend(600))                   # not ours any more
+        holder = self.lock(pid=None, hold_s=2)
+        holder.acquire(1)
+        joiner = self.lock(hold_s=1)
+        joiner.acquire(0.2, token=holder.token)
+        self.assertTrue(joiner.extend(600, note="busy"))
+        self.assertGreater(self.lock().read_owner()["expires"], time.time() + 590)
+        joiner.release()
+        self.assertNotIn("busy", self.lock().read_owner())  # the note goes with the run
+        self.assertTrue(self.lock().release_held(holder.token))
+
     def test_finished_joined_run_is_not_shown_as_running(self):
         owner = {"label": "x", "since": time.time(), "joined": {"script": "s.py", "pid": dead_pid()}}
         self.assertNotIn("now running", rs.describe_owner(owner))
@@ -500,9 +528,50 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse(os.path.exists(self.lockdir))
 
     def test_unreachable_fusion_gives_back_the_lock(self):
-        code, _out, _err = self.runner(self.script, "--url", "http://127.0.0.1:9/mcp",
-                                       "--timeout", "2")
+        code, _out, err = self.runner(self.script, "--url", "http://127.0.0.1:9/mcp",
+                                      "--timeout", "2")
         self.assertEqual(code, 2)
+        self.assertFalse(os.path.exists(self.lockdir))
+        self.assertNotIn("keeping the Fusion lock", err)      # nothing to wait for
+
+    def write(self, name, marker):
+        path = os.path.join(self.tmp, name)
+        with open(path, "w") as fh:
+            fh.write("def run(_context):\n    print(%r)\n" % marker)
+        return path
+
+    def test_a_timed_out_call_keeps_the_lock_until_fusion_answers(self):
+        # PM ruling 2026-11-01. Live 00:15: a build ran past its time limit, the runner
+        # gave the lock back at once, and the next run started on a busy Fusion.
+        # a free Fusion runs the read-only check at once; the build holds it for 4 s
+        self.fake.serial, self.fake.delay, self.fake.slow_delay = True, 0.05, 4.0
+        slow, second = self.write("slow.py", "SLOW_IN_FUSION"), self.write("second.py", "SECOND_RUN")
+        p1 = self.runner(slow, "--url", self.fake.url, "--timeout", "1", "--busy-poll", "0.5",
+                         "--busy-wait", "30", wait=False)
+        t0 = time.time()
+        while not self.fake.scripts and time.time() - t0 < 10:
+            time.sleep(0.05)
+        p2 = self.runner(second, "--url", self.fake.url, "--lock-wait", "60", wait=False)
+        _out1, err1 = p1.communicate(timeout=60)
+        _out2, err2 = p2.communicate(timeout=60)
+        self.assertEqual(p1.returncode, 2, err1)
+        self.assertEqual(p2.returncode, 0, err2)
+        self.assertIn("keeping the Fusion lock", err1)
+        self.assertIn("Fusion answers again", err1)
+        slow_end = [t for t, s in self.fake.done if "SLOW_IN_FUSION" in s][0]
+        second_in = [t for t, s in self.fake.scripts if "SECOND_RUN" in s][0]
+        self.assertGreaterEqual(second_in, slow_end)        # the next run waited for Fusion itself
+        self.assertFalse(os.path.exists(self.lockdir))
+
+    def test_a_fusion_that_never_answers_gets_the_lock_back_with_a_loud_warning(self):
+        self.fake.serial, self.fake.delay, self.fake.slow_delay = True, 0.05, 6.0
+        slow = self.write("slow.py", "SLOW_IN_FUSION")
+        t0 = time.time()
+        code, _out, err = self.runner(slow, "--url", self.fake.url, "--timeout", "1",
+                                      "--busy-poll", "0.5", "--busy-wait", "2")
+        self.assertEqual(code, 2)
+        self.assertIn("WARNING: Fusion still hasn't answered", err)
+        self.assertLess(time.time() - t0, 5.5)              # gave up after the wait, not the script
         self.assertFalse(os.path.exists(self.lockdir))
 
     def test_sigterm_gives_back_the_lock(self):
@@ -662,6 +731,33 @@ class FreshModulesTests(unittest.TestCase):
             trees = rs.git_worktrees("/nonexistent-folder-for-a-test")
         self.assertEqual(trees, ["/nonexistent-folder-for-a-test"])
         self.assertIn("warning: git worktree list failed", err.getvalue())
+
+    def test_the_home_folder_and_above_are_never_swept(self):
+        # PM, after #157: a worktree right in the home folder must not make home a root
+        home = os.path.realpath(os.path.expanduser("~"))
+        rs.git_worktrees = lambda repo_root=None: [self.trees["MAIN"], os.path.join(home, "a-worktree"),
+                                                   self.trees["A"]]
+        roots = [os.path.realpath(r) for r in rs.team_roots()]
+        self.assertNotIn(home, roots)
+        self.assertFalse(any(home.startswith(r.rstrip("/") + "/") for r in roots), roots)
+        self.assertIn(os.path.realpath(self.trees["A"]), roots)
+
+    def test_modules_under_fusions_add_in_folder_are_never_dropped(self):
+        # a team folder that happens to hold a Fusion add-in: the add-in's module stays
+        addins = os.path.join(self.trees["B"], "Autodesk", "AddIns")
+        os.makedirs(addins)
+        with open(os.path.join(addins, "fake_addin_module.py"), "w") as fh:
+            fh.write("LOADED = True\n")
+        sys.path.insert(0, addins)
+        import fake_addin_module
+        keep_roots = rs.keep_roots
+        rs.keep_roots = lambda: keep_roots() + [addins]
+        try:
+            self.assertEqual(self.run_as("B", []), ["B"])
+            self.assertIs(sys.modules.get("fake_addin_module"), fake_addin_module)   # not dropped
+        finally:
+            rs.keep_roots = keep_roots
+            sys.modules.pop("fake_addin_module", None)
 
     def test_main_python_and_odd_modules_are_safe(self):
         import json as _json

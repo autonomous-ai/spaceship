@@ -168,6 +168,13 @@ def test_cad_masses_from_main():
     assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
     hw = next(r for k, r in rows.items() if k.startswith("M6 bolts, rivnuts"))
     assert rollup.basis(hw) == "CAD, main (part)", hw
+    assert "D-117" in hw[5] and "cleats assumption" in hw[4], hw                 # the cleat allowance rides on this line
+    assert "cam" not in hw[1].lower(), hw                                          # D-116: no cam connectors
+    rc, uk = rollup.register_counts(), rollup.fixings_unit_kg()
+    assert set(rc) == set(uk) == set(rollup.FIXING_PNS), (rc, uk)
+    (ns, ks), (nw, kw) = rollup.JOINTS["831001"], rollup.JOINTS["831002"]
+    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nw * kw + rollup.CLEATS_KG
+    assert abs(hw[3] - want) < 1e-9, (hw[3], want)
     fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
     f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}
     assert abs(fx[3] - f["360002"]) < 1e-9 and rollup.basis(fx) == "CAD, main", fx
@@ -182,7 +189,7 @@ def test_cad_masses_from_main():
     ld = next(r for k, r in rows.items() if k.startswith("Work-wall ledge"))
     assert abs(sh[3] - rollup.INTERIOR["shelf"]) < 1e-9 and rollup.basis(sh) == "CAD, main", sh
     assert abs(ld[3] - rollup.INTERIOR["ledge"] - rollup.INTERIOR["rail"]) < 1e-9 and rollup.basis(ld) == "CAD, main", ld
-    assert len(rollup.cad_swaps()) == 19
+    assert len(rollup.cad_swaps()) == 20
 
 
 def test_rollup_items_the_packing_plan_reads():
