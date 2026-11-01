@@ -122,10 +122,10 @@ SKELETON = "100000_P04_POD-SKELETON_CAD"
 # D-131 (PM, 2026-11-01): the frames turn to welded, galvanized steel, L1 first as the sample panel; the other
 # panels follow after its review (Lead). Specs for a held position are skipped, so a queued run builds no panel
 # out of turn. "ALL" holds every position (while the builder is being changed). After L1's single rebuild the Lead
-# took WALL's order (2026-11-01): L2, then B1 with B3, then B4. R1 and R2 wait for INTERIOR's fixings on D-131's
-# studs (the Lead's ruling of 16:03: each fixing's stud, its rivnuts' Z, the stand-off's size); B2 waits for
-# ELECTRICAL's power unit under D-133.
-ON_HOLD = {"R1", "R2", "B2"}
+# took WALL's order (2026-11-01): L2, then B1 with B3, then B4. R1 and R2 build once Control's number rows are in
+# (212206, 212406, R1's F15 to F18: the Lead's ruling that WALL's rebuild PR carries them); B2 waits for its fresh dry
+# run after ELECTRICAL's passage move and bend changes, and for Control's re-issued F19 and F22 rows.
+ON_HOLD = {"B2"}
 
 
 def preflight(app):
