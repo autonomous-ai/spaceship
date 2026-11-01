@@ -1,20 +1,31 @@
 # CEILING drawing register
 
-Drawings of the ceiling's parts and assemblies, where they are made, and their state. Under D-139 a part drawing
-comes from the drawing generator (`tools/drawgen`, from the part's STEP); Fusion makes only the assembly sheets and
-the parts the generator can't draw yet (bent parts). Every drawing needs the reviewer's D-114 visual pass before it
-counts. Fusion cloud files live in Default Project / FocusPod v2.
+Drawings of the ceiling's parts and assemblies, where they are made, and their state. Under D-139 every part drawing
+comes from the drawing generator (`tools/drawgen`, from the part's STEP); bent sheet too since its bent sheet mode
+(#335, the Lead's ruling 2026-11-01), and the assembly sheets from its assembly mode. Fusion makes only what the
+generator can't draw yet, said first with why. Every drawing needs the reviewer's D-114 visual pass before it counts.
+Fusion cloud files live in Default Project / FocusPod v2.
 
-| Drawing | Part | Made in | Why there | State (2026-11-01) |
-|---|---|---|---|---|
-| `513102_P01_LINING-RIB-CEILING_DWG` | 513102 rib | Fusion | bent hat section (the generator refuses bends) | PDF read-back check PASS; waits for the D-114 visual pass |
-| `513101_P01_LINING-TRAY-CEILING_DWG` | 513101 tray | Fusion | bent tray | the 07:40 UTC drawing printed Fusion's hole table empty (check FAIL); to be renamed `_SUPERSEDED-2026-11-01` and drawn again without the table, its two holes dimensioned, once the drawing start's timeout fix merges |
-| `510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG` | 510301 cassette | the drawing generator's assembly mode | a sub-assembly sheet needs its parts table with balloons, fixings and order (guideline 5.2), which Fusion's API can't draw | the 10:27 UTC Fusion sheet failed Reviewer 5's D-114 pass on those; the Lead's ruling: the generator draws it, with WALL's six cassette assemblies (the Air Engineer); its entry facts posted. The Fusion sheet stays in the cloud, unused |
+| Drawing | Part | Made in | State (2026-11-01, 13:00 UTC) |
+|---|---|---|---|
+| `513102_P01_LINING-RIB-CEILING_DWG` | 513102 rib | the generator's bent sheet mode | Fusion's sheet is out of this PR (D-147: Reviewer 5's Hold stood). The generator draws it in #348, which carries the rib's DXF fix (the blank was 1 mm short) and its real folds; it reads back PASS on a scratch run. It waits for the generator's count check to take a part placed in two cassettes. |
+| `513101_P01_LINING-TRAY-CEILING_DWG` | 513101 tray | the generator's bent sheet mode | Waits for the generator to take a second fold on a flange: each return turns in again as the 12 mm lip (8 folds), in the Drawing Generator Engineer's queue. |
+| `510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG` | 510301 cassette | the generator's assembly mode | A sub-assembly sheet needs its parts table with balloons, fixings and order (guideline 5.2), which Fusion's API can't draw (the Lead's ruling on Reviewer 5's D-114 pass); the cassette's entry facts went to the Air Engineer. |
+| `410101`, `412102` to `412104`, `412203`, `412204` | the C1 panel assembly and the frames' members | the generator (assembly and part modes) | In #348, on its build v10 STEP: read-back PASS. The other members and the two frames' weldment sheets wait for generator hooks (shared parts, frames without a body of their own: D-162, the Air Engineer's). |
 
 ## Superseded cloud files
 
 Kept, renamed `NAME_SUPERSEDED-<date>` by `ceiling_cleanup.py supersede=` (the PM's rule, 2026-11-01 06:55 UTC: no
-cloud file is ever deleted). None yet.
+cloud file is ever deleted). Read back from the folder at 11:49 UTC (a read-only listing).
+
+| Renamed (UTC) | Now named | What it was |
+|---|---|---|
+| 10:22 | `513102_P01_LINING-RIB-CEILING_DWG_SUPERSEDED-2026-11-01` | the rib's Fusion sheet of 06:54 |
+| 10:24 | `513101_P01_LINING-TRAY-CEILING_DWG_SUPERSEDED-2026-11-01` | the tray's Fusion sheet of 07:40 (its hole table printed empty) |
+| 11:21 | `513102_P01_LINING-RIB-CEILING_DWG_SUPERSEDED-2026-11-01-2` | the rib's Fusion sheet of 10:24 (its thickness printed ".5") |
+
+Not renamed: `513101_P01_LINING-TRAY-CEILING_DWG` (version 2, 11:23 UTC), the tray's last Fusion sheet, made before
+the Lead moved the tray to the generator. Its PDF was never committed; the cloud file stays as it is.
 
 ## Deleted before the rule
 
