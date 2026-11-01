@@ -127,7 +127,7 @@ def write(page, rect, text, sizes, one_line=False):
     wraps inside its cell."""
     for size in sizes:
         if one_line:
-            if fitz.get_text_length(text, fontname=FONT, fontsize=size) <= rect.width and 0.97 * size <= rect.height:
+            if fitz.Font(FONT).text_length(text, fontsize=size) <= rect.width and 0.97 * size <= rect.height:
                 page.insert_text((rect.x0, rect.y1 - 0.25 * size), text, fontsize=size, fontname=FONT)
                 return size
         elif page.insert_textbox(rect, text, fontsize=size, fontname=FONT) >= 0:
