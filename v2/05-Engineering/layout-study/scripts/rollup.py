@@ -232,6 +232,8 @@ T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 fram
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the solid kick strip of PR #27's first list (S36) and D-85's hollow budget
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
+CLEATS_N, CLEAT_KG = 120, 0.020  # internal aluminium cleats in the WALL and CEILING frames, about 120 joints at up to 20 g
+                                 # each (D-115, assumption) until the Joints Engineer's cleat models land
 ELEC_KG_RELAYED = 4.94        # kg: ELECTRICAL as relayed before its CAD merged (S43), the estimate in the swap table
 ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: the relayed lights and call light the estimate's strip share used
 LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
@@ -464,11 +466,12 @@ def lines(**adopt):
                   "the first allowance: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70), and the screen rail"))
     pt = base["K-FIX"]
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
-    L.append(("WALL", pt.name.split(" - ", 1)[1].capitalize() + ", spigots and stop washers", pt.qty,
-              pt.kg + ns * ks + nw * kw, "calculation (part CAD)",
+    L.append(("WALL", pt.name.split(" - ", 1)[1].capitalize() + ", spigots and stop washers, frame cleats", pt.qty,
+              pt.kg + ns * ks + nw * kw + CLEATS_N * CLEAT_KG, "calculation (part CAD); cleats assumption",
               f"part CAD on main: {ns} spigots 831001 and {nw} stop washers 831002 from the joints' made hardware list "
               f"({ns * ks + nw * kw:.2f} kg, S45); the bolts, rivnuts, cam connectors and gaskets this study's model "
-              f"({pt.kg:.2f} kg) until the joints register gives their masses"))
+              f"({pt.kg:.2f} kg) until the joints register gives their masses; and a {CLEATS_N * CLEAT_KG:.1f} kg allowance for "
+              f"about {CLEATS_N} internal frame cleats at up to {CLEAT_KG * 1000:.0f} g (D-115, S47) until their models land"))
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
         L.append(("LATER", "Voice cockpit kit reserve, outside the 420 kg cap", 1, pt.kg, pt.status,
@@ -704,7 +707,8 @@ def rollup_md(rows):
     md.append(f"- **Interior and allowances.** The light shelf ({allow['Light shelf']:.1f} kg) and the work-wall ledge with "
               f"the screen rail ({allow['Work-wall ledge']:.1f} kg) are INTERIOR's CAD (D-70, D-85); the named clips "
               f"({allow['Named clips and catches: 44 clips and 4 catch lanyards']:.1f} kg) stay an allowance (assumption) until "
-              f"they're named; the two ceiling lights go (D-70), {2 * p('light_kg'):.1f} kg less.")
+              f"they're named, and so do the WALL and CEILING frames' internal cleats ({CLEATS_N * CLEAT_KG:.1f} kg, D-115), "
+              f"carried on the fixings kit's line; the two ceiling lights go (D-70), {2 * p('light_kg'):.1f} kg less.")
     md.append("")
     md.append("| Assembly | kg |")
     md.append("|---|---:|")
