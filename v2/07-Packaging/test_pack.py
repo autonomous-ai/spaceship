@@ -142,8 +142,8 @@ def test_d87_in_the_steps():
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
     assert pack.PIECE["2-10"].kg <= 20 and pack.PIECE["2-17"].kg <= 20
     assert len(tags) == 42
-    step20 = next(s for s in pack.STEPS if s["n"] == 20)
-    assert all(o["secs"] < 600 for o in step20["ops"])
+    power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
+    assert all(o["secs"] < 600 for o in power["ops"])
 
 
 def test_step_picture_script_and_data():
@@ -212,6 +212,59 @@ def test_d129_keys_on_the_side_bands():
     tiers, _ = m.tiers2()
     lane = next(ln for t in tiers for ln in t["lanes"] if any(i["tag"] == "2-04" for i in ln["items"]))
     assert lane["length"] <= pack.MINE["pal_long_l_exact"].value, lane["length"]
+
+
+def test_roof_sleeve_goes_on_after_the_soffit():
+    # #263: the roof sleeve and grille ride loose with C2 and go on in their own step, after the soffit hangs
+    m = pack.Model()
+    kind, c2, _ = m.cad["1-12"]
+    assert kind == "box" and c2[2] > 60, c2                 # C2 with the sleeve seated in its slot
+    assert m.cad["2-10"][1][2] < 240, m.cad["2-10"]          # the soffit without it
+    soffit = next(s["n"] for s in pack.STEPS if "2-10" in s["tags"])
+    sleeve = next(s for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
+    assert sleeve["n"] == soffit + 1 and sleeve["n"] <= pack.CLOCK_LAST_STEP
+    assert [s["n"] for s in pack.STEPS] == list(range(1, len(pack.STEPS) + 1))
+
+
+def test_design_review_glass_handling():
+    # design review 2026-11-01: both people carry DR while stays hold the glass; the door stands on packers; panes tilt up
+    def ops(title):
+        return [o["text"] for o in next(s for s in pack.STEPS if s["title"].startswith(title))["ops"]]
+    ten, eleven = ops("Fixed glass"), ops("Door")
+    assert any("glass stay on" in o for o in ten) and any("glass stay off" in o for o in ten), ten
+    assert any("tilt" in o for o in ten) and any("tilt" in o for o in eleven), (ten, eleven)
+    assert any("packers" in o for o in eleven), eleven
+    dr = next(o for o in next(s for s in pack.STEPS if s["title"].startswith("Fixed glass"))["ops"] if "2-03" in o["text"])
+    assert dr["who"] == 2, dr                      # DR (2.3 m) is carried by both people
+    kit = pack.PIECE["2-22"]
+    assert "glass stays" in kit.extra_note and "setting packers" in kit.extra_note, kit.extra_note
+
+
+def test_install_sheet_numbers():
+    # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
+    outs = pack.outputs(pack.Model())
+    sheet = outs[pack.OUT_INSTALL]
+    room = pack.sk("pod_h") + pack.MINE["roof_work"].value
+    assert f"at least {room:g} mm" in sheet, room
+    assert f"within {pack.MINE['glide_max'].value - pack.MINE['glide_min'].value:g} mm" in sheet
+    assert "120 V" in sheet and "{{" not in sheet
+
+
+def test_elevator_rule():
+    # K15: every piece leans into the install sheet's car through its door; DR's wide face needs the wide door
+    m = pack.Model()
+    assert "K15" not in failing(m) and m.no_lift == [] and "2-03" in m.no_typical, (m.no_lift, m.no_typical)
+    car = (pack.MINE["lift_car_w"].value, pack.MINE["lift_car_d"].value, pack.MINE["lift_car_h"].value)
+    assert not pack.goes_in(pack.moving_size(pack.PIECE["2-03"]), car, (914, 2134))     # a 36 in door can't take DR
+    assert pack.tilt_in(2430, 50, 1295, 2286, 2134)                                         # the back band leans in
+    assert not pack.tilt_in(2430, 50, 1295, 2000, 2134)                                     # but not under a 2 m ceiling
+
+
+def test_export_wood_is_ispm15():
+    # every solid-wood packaging part is heat-treated and ISPM 15 stamped, or US ports refuse it
+    wood = [it for it in pack.PACKAGING if it.get("wood")]
+    assert {it["pn"] for it in wood} == {"918001", "918002", "911001", "911003"}, wood
+    assert all("ISPM 15" in it["name"] for it in wood), [it["name"] for it in wood]
 
 
 def test_lanes_follow_the_parts():

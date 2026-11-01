@@ -23,6 +23,8 @@ as soon as the owner's parts list carries its exact name, and every number on a 
 import argparse
 import copy
 import csv
+import itertools
+import math
 import json
 import io
 import re
@@ -41,8 +43,10 @@ OUT_LIST = HERE / "910000_P01_PACKING-LIST_BOM.csv"
 OUT_PLAN = HERE / "910000_P01_PACKAGING-PLAN_PKG.md"
 OUT_SVG = {1: HERE / "910001_P01_PALLET-1-48X40_PKG.svg", 2: HERE / "910002_P01_PALLET-2-96X48_PKG.svg"}
 OUT_GUIDE = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE_INS.md"
+OUT_INSTALL = GUIDE_DIR / "100000_P04_POD-INSTALL-SHEET_INS.md"
 TPL_PLAN = HERE / "templates" / "packing-plan.md"
 TPL_GUIDE = HERE / "templates" / "assembly-guide.md"
+TPL_INSTALL = HERE / "templates" / "install-sheet.md"
 
 sys.path.insert(0, str(LAY / "scripts"))
 from inputs import P as LAYP  # noqa: E402  (the layout study's inputs: value, unit, status, source, note)
@@ -113,6 +117,27 @@ MINE = {
     "wrap": N(5, "mm", "assumption", "this plan", "per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box"),
     "dr_bed": N(10, "mm", "assumption", "this plan", "foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01)"),
     "cad_tol": N(0.5, "mm", "assumption", "this plan", "check K14: how far a CAD box may pass the planned size (rounding)"),
+    # installation kit aids (design review 2026-11-01)
+    "stay_kg": N(1.5, "kg", "assumption", "this plan", "one clamp-on glass stay: a padded clamp on the fixed glass's top edge with a telescopic prop to the base band, so the glass stands while both people bring DR (step 10)"),
+    "packer_h": N(7, "mm", "source", "step 11 (FRONT's door: the 7 mm running gap over the threshold)", "the setting packers the door stands on at hinge height while it is hung"),
+    "packer_kg": N(0.05, "kg", "assumption", "this plan", "a pair of plastic setting packers"),
+    "kit_aids_l": N(900, "mm", "assumption", "this plan", "the kit carton's length, for the collapsed glass stays"),
+    # the room (install sheet, IF-17)
+    "roof_work": N(150, "mm", "assumption", "this plan", "clear above the roof at its slot: room to drop the 68 mm roof sleeve in and for hands and a short driver at the grille's screws (step 18)"),
+    "spigot_lift": N(20, "mm", "assumption", "this plan", "DT and the ceiling halves are lifted over their 8 mm locating spigots and lowered on (J-FRONT-03, J-CEIL-01)"),
+    "glide_min": N(8.5, "mm", "confirmed", "PM ruling on F-018 (joints register)", "the lowest glide setting: the band's bottom 8.5 mm above the floor"),
+    "glide_max": N(15, "mm", "assumption", "ISS-054 (PROPOSED): the glides take the floor's 10 ± 5 mm", "the highest glide setting"),
+    "lay_out": N(1000, "mm", "assumption", "this plan", "clear round the footprint while the pod goes together: the parts set down at their places (step 1) and the step stools"),
+    # getting the pieces in (install sheet, check K15; US review 2026-11-01)
+    "lift_door_w": N(1070, "mm", "calculation", "this plan, check K15", "the elevator's door: DR's 1030 mm face in its wrap goes across it with 20 mm a side for hands; a 42 in (1067) door is 3 mm short, so in practice 48 in"),
+    "lift_door_h": N(2134, "mm", "source", "a common US elevator door, 84 in", "the elevator's door height"),
+    "lift_car_w": N(2032, "mm", "source", "a common US passenger car, 80 in (the Lead's US review)", "the car's inside width"),
+    "lift_car_d": N(1295, "mm", "source", "a common US passenger car, 51 in (the Lead's US review)", "the car's inside depth"),
+    "lift_car_h": N(2286, "mm", "calculation", "this plan, check K15", "the car's inside height, 90 in: the soffit doesn't lean in under 84 in"),
+    "typ_door_w": N(914, "mm", "source", "a common US passenger elevator door, 36 in (the Lead's US review)", "for the pieces a typical car can't take"),
+    "typ_car_h": N(2438, "mm", "source", "a common US passenger car, 8 ft", "for the pieces a typical car can't take"),
+    "lifter": N(100, "mm", "assumption", "this plan", "a suction lifter stands this far off the face of the pane it holds"),
+    "hand_gap": N(20, "mm", "assumption", "this plan", "room a side for hands and the wrap when a piece goes through a door"),
     # stated limits
     "pal_std_l_exact": N(1219.2, "mm", "calculation", "requirements C1", "48 in exactly; the controlling number for 'fits the pallet'"),
     "pal_std_w_exact": N(1016.0, "mm", "calculation", "requirements C1", "40 in exactly"),
@@ -141,6 +166,12 @@ TIME = {
     "t_carry_staged_s": N(20, "s", "assumption", "this plan (D-87)", "carry a pallet 2 part that step 1 set down at its place: a few steps"),
     "t_level_preset_s": N(240, "s", "assumption", "this plan (D-87)", "check the band with the spirit level and turn only the glides that are out; glides preset at the factory"),
     "t_hook_s": N(120, "s", "assumption", "this plan (D-87)", "hang a part on its tool-free hooks and check it"),
+    "t_tilt_s": N(60, "s", "assumption", "this plan (design review)", "tilt a pane up in the crate on its padded long edge, both lifters at its top edge, onto the padded glass rest"),
+    "t_stay_on_s": N(60, "s", "assumption", "this plan (design review)", "clamp one glass stay on the fixed glass and set its prop"),
+    "t_stay_off_s": N(30, "s", "assumption", "this plan (design review)", "take one glass stay off"),
+    "t_packer_s": N(30, "s", "assumption", "this plan (design review)", "lay the setting packers under the door, or slide them out"),
+    "t_sleeve_s": N(90, "s", "assumption", "this plan (#263)", "from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box"),
+    "t_grille_s": N(120, "s", "assumption", "this plan (#263)", "screw the roof grille on over the sleeve (AIR's screws not listed yet)"),
     "t_selftest_s": N(180, "s", "assumption", "this plan (D-87)", "power on and the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail"),
     "t_peel_tab_s": N(6, "s", "assumption", "this plan (D-87)", "pull one film panel off by its quick-release tab"),
     "t_peel_s": N(20, "s", "assumption", "this plan", "find the edge of a film panel with no tab and peel it, for comparison"),
@@ -166,9 +197,11 @@ OTHER_FIXINGS = [
     dict(step=16, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
          status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
          text="the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02)"),
-    dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not in INTERIOR's parts list yet (HOLD)", status="HOLD (D-70)",
+    dict(step=18, where="Roof grille over the sleeve", owner="AIR", count=0, size="screws not listed yet (AIR)",
+         status="HOLD", note="time is in the step", text="the roof grille's screws (AIR's parts list names none yet; #263)"),
+    dict(step=20, where="Light shelf", owner="INTERIOR", count=0, size="not in INTERIOR's parts list yet (HOLD)", status="HOLD (D-70)",
          note="time is in the step", text="the light shelf's fixings (INTERIOR's parts list 810201 names none yet)"),
-    dict(step=22, where="Ledge and screen rail", owner="INTERIOR", count=0, size="brackets and rail on HOLD; screws not listed yet",
+    dict(step=23, where="Ledge and screen rail", owner="INTERIOR", count=0, size="brackets and rail on HOLD; screws not listed yet",
          status="HOLD (D-70, IF-16)", note="time is in the step",
          text="the ledge's 2 brackets 818101 on R1's stiles, on stand-offs through R1's cassette, and the screen rail 818102 on stand-offs to R2's stiles (INTERIOR; both HOLD)"),
 ]
@@ -324,8 +357,8 @@ PIECES = [
     Piece("1-11", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 8, "CEILING"),
     Piece("1-12", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(sk("wall_depth"), sk("half_pw"), 48), "CEILING 410000 P01 STEP with AIR's roof grille 611602 on its roof slot (AIR 610000 P01 STEP): 46 + 2", 1, 8, "CEILING",
-          note="roof slot grille fitted at the factory (PROPOSED); the roof sleeve rides in the soffit (roll-up)"),
+          S(sk("wall_depth"), sk("half_pw"), 70), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame) and the grille 611602 over it (AIR 610000 P01 STEP): 70 thick", 1, 8, "CEILING",
+          note="the roof sleeve and grille ride loose with C2 (#263): the sleeve seated in C2's roof slot and taped, the grille taped flat over it; both come off at unpacking and go on after the soffit hangs (guide step 18)"),
     Piece("1-13", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
           S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
     Piece("1-14", "510104", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
@@ -371,9 +404,9 @@ PIECES = [
           "FRONT 350001 P01 STEP: its hinge-side stops stand 30 mm past the skin", 2, 9, "FRONT",
           note="the hinge halves that sit in DL ship fitted in it (PM ruling); stands on its outer side, stops and seals up"),
     Piece("2-10", "610201", "AIR - SOFFIT", "Hộp gió trên cửa", "-",
-          [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2322, 359, 280),
-          "AIR 610000 P01 STEP: the soffit 610201 with its exhaust fan box and fans, 2322 x 359 x 233, and the roof sleeve 611601 standing on the fan box up to Z 2400 (the roll-up puts it in the soffit; AIR to confirm)", 2, 17, "AIR",
-          note="exhaust fan box 610402 with its 2 fans fitted inside the soffit's right end at the factory (D-87); the roof sleeve on it; the exhaust cartridge ships on its own (2-19)"),
+          [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2322, 359, 233),
+          "AIR 610000 P01 STEP: the soffit 610201 with its exhaust fan box and fans (the roof sleeve ships with C2, #263)", 2, 17, "AIR",
+          note="exhaust fan box 610402 with its 2 fans fitted inside the soffit's right end at the factory (D-87), the roof sleeve's gasket on its top; the exhaust cartridge ships on its own (2-19)"),
     Piece("2-11", "610101", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2108, 359, 212),
           "AIR 610000 P01 STEP: the column 610101 with its faces, angles, plates, fill and kick grille, without the supply cartridge", 2, 16, "AIR"),
     Piece("2-12", "350002", "FRONT - DECOR BLOCK ASSY - DT", "Khối trang trí trên (cụm)", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1699, 306, 203),
@@ -382,14 +415,14 @@ PIECES = [
           S(600, 250, 200), "carton (assumption)", 2, 13, "ELECTRICAL", carton=True),
     Piece("2-14", "810201", "INTERIOR - LIGHT SHELF ASSY", "Kệ đèn hắt (cụm)", "-", [("SHELF", 1)], S(2332, 80, 60),
           "bundle (assumption): INTERIOR's parts list 810201, the 2332 back shelf and the two 991 side shelves (60 x 40 sections) "
-          "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
+          "two high, the down channel and the diffuser inside them", 2, 20, "INTERIOR"),
     Piece("2-15", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
           [("BAND_FL", 1), ("BAND_FR", 0.337), ("KEY", 2)], S(600, 400, 150),
           "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111211",
           2, 2, "BASE", carton=True, note="mesh piece share of the front-r line by length, 371 of 1100 mm (calculation); the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
     Piece("2-16", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
           "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "
-          "and the screen rail 818102 (HOLD)", 2, 22, "INTERIOR", carton=True,
+          "and the screen rail 818102 (HOLD)", 2, 23, "INTERIOR", carton=True,
           note="one carton with the screen rail 818102 (HOLD), as the roll-up's ledge line carries both"),
     Piece("2-17", "610401", "AIR - SUPPLY FAN BOX", "Hộp quạt cấp", "-",
           [("RISER", 1), ("FANBOX_S", 1), ("FANS", 0.5)], S(2005, 516, 203),
@@ -400,12 +433,12 @@ PIECES = [
     Piece("2-19", "610301", "AIR - SPLITTER CARTRIDGE - COMMON", "Ống tiêu âm (dùng chung)", "-", [("CART_E", 1)], S(1750, 314, 173),
           "AIR 610000 P01 STEP: the same part, as it sits in the soffit", 2, 17, "AIR", note="the exhaust path's cartridge"),
     Piece("2-20", "510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung)", "C1", [("CC", 1)], S(1163, 1048, 74),
-          "CEILING 410000 P01 STEP: 1160 x 1045 x 74, the tray with its ribs, felt, fill bays, clips and catches; returns 1163 x 1048 (PR #32)", 2, 18, "LINING"),
+          "CEILING 410000 P01 STEP: 1160 x 1045 x 74, the tray with its ribs, felt, fill bays, clips and catches; returns 1163 x 1048 (PR #32)", 2, 19, "LINING"),
     Piece("2-21", "510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung)", "C2", [("CC", 1)], S(1163, 1048, 74),
-          "as 2-22", 2, 18, "LINING"),
-    Piece("2-22", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(300, 150, 80),
-          "carton (assumption)", 2, 1, "KIT", carton=True, extra_kg=0.5,
-          extra_note="not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, this guide, the label map (assumption)"),
+          "as 2-20", 2, 19, "LINING"),
+    Piece("2-22", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(900, 150, 80),
+          "carton (assumption), long enough for the 2 collapsed glass stays", 2, 1, "KIT", carton=True, extra_kg=0.5 + 2 * 1.5 + 0.05,
+          extra_note="not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, 2 clamp-on glass stays (step 10), 2 setting packers (step 11), this guide, the label map (assumption)"),
     # ---------------- allowances: roll-up mass that rides inside the pieces above, with no label of its own
     Piece("A-1", "-", "40 x 40 corner edge tubes in L2, R2, C1, C2 (D-63)", "", "-", [("TUBES", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
     Piece("A-2", "-", "Bond beyond L1 and R1 (D-71)", "", "-", [("BOND", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
@@ -443,7 +476,7 @@ SKEL = {
 # Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
 # "inside" from above with the ceiling and the front hidden, to show the linings.
 STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "back", 9: "front", 10: "front", 11: "front",
-             12: "front", 14: "inside", 18: "inside"}
+             12: "front", 14: "inside", 19: "inside"}
 OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
 
 
@@ -469,19 +502,19 @@ def step_bodies_json():
 PACKAGING = [
     dict(pn="910001", name="PACKAGING - PALLET LOAD 1 - 48 X 40", kind="assembly", qty=1, kg=None, status="-", src="this plan"),
     dict(pn="910002", name="PACKAGING - PALLET LOAD 2 - 96 X 48", kind="assembly", qty=1, kg=None, status="-", src="this plan"),
-    dict(pn="918001", name="PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, 4-WAY (GMA)", kind="bought", qty=1, kg=lay("pal_std_kg"),
+    dict(pn="918001", name="PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA)", kind="bought", qty=1, kg=lay("pal_std_kg"), wood=True,
          status=LAYP["pal_std_kg"].status, src="layout study S14 (PHS S-4840, 44 lb)", pallet=1),
-    dict(pn="918002", name="PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, 4-WAY", kind="bought", qty=1, kg=lay("pal_long_kg"),
+    dict(pn="918002", name="PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY", kind="bought", qty=1, kg=lay("pal_long_kg"), wood=True,
          status=LAYP["pal_long_kg"].status, src="layout study S15 (Uline H-1627, 107 lb)", pallet=2),
-    dict(pn="911001", name="PACKAGING - GLASS CRATE", kind="made", qty=1, kg=MINE["crate_kg"].value,
+    dict(pn="911001", name="PACKAGING - GLASS CRATE: ISPM 15 STAMPED TIMBER RUNNERS, RAILS AND LID SLATS, PLYWOOD SIDES", kind="made", qty=1, kg=MINE["crate_kg"].value, wood=True,
          status="assumption", src="this plan (crate_kg)", pallet=2),
     dict(pn="911002", name="PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR)", kind="made", qty=1, kg=MINE["glass_rest_kg"].value,
          status="assumption", src="this plan (glass_rest_kg); flat-packed in the crate", pallet=2),
-    dict(pn="911003", name="PACKAGING - TIER SEPARATOR (BATTENS ON POSTS)", kind="made", qty=4, kg=MINE["sep_kg"].value,
+    dict(pn="911003", name="PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS", kind="made", qty=4, kg=MINE["sep_kg"].value, wood=True,
          status="assumption", src="this plan (sep_kg)", pallet=2),
-    dict(pn="918010", name="PACKAGING - PROTECTION SET, 48 X 40: edge boards, corner guards, foam interleaf, PE sheets, cap board, straps, film",
+    dict(pn="918010", name="PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film",
          kind="bought", qty=1, kg=lay("pack_kg_std"), status=LAYP["pack_kg_std"].status, src="layout study pack_kg_std", pallet=1),
-    dict(pn="918011", name="PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film",
+    dict(pn="918011", name="PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film",
          kind="bought", qty=1, kg=lay("pack_kg_long"), status=LAYP["pack_kg_long"].status, src="layout study pack_kg_long", pallet=2),
     dict(pn="911010", name="PACKAGING - PART LABEL, 100 X 150 MM, ONE PER PIECE", kind="made", qty=None, kg=0.0, status="-", src="this plan"),
     dict(pn="911011", name="PACKAGING - PALLET LABEL AND DOCUMENT POUCH, 2 PER PALLET", kind="made", qty=4, kg=0.0, status="-", src="this plan"),
@@ -610,17 +643,24 @@ STEPS = [
          ops=[carry("2-09"), op("stand DL on the band", 2, lay("t_place_s"), 1, "t_place_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=10, title="Fixed glass, then the right decor block DR", tags=["2-01", "2-03"],
-         A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.",
-         B="Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.",
-         check="Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
-         ops=[carry("2-01"), op("set the fixed glass in the sill's channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
-              carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s")],
+         A="Opens the crate. With B, tilts the fixed glass up on its padded long edge, both suction lifters at its top edge, onto the padded glass rest; then both carry it upright and drop its bottom edge into the U-channel already fitted on the sill, onto its setting blocks. A clamps the 2 glass stays from the kit on its top edge and sets their props on the base band, so the glass stands on its own.",
+         B="With A, carries DR (2.3 m, 18 kg) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.",
+         caution="Nobody carries DR alone and nobody holds the glass by hand while DR comes in: the stays hold the glass, both people carry DR (2.3 m; the 2-person rule).",
+         check="Glass seated in all three channels so far, its free edge plumb; DR on its stops; both stays back in the kit. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
+         ops=[op("tilt the fixed glass up onto the glass rest", 2, TIME["t_tilt_s"].value, 1, "t_tilt_s"),
+              carry("2-01"), op("set the fixed glass in the sill's channel", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
+              op("clamp a glass stay on", 1, TIME["t_stay_on_s"].value, 2, "t_stay_on_s"),
+              carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s"),
+              op("take a glass stay off", 1, TIME["t_stay_off_s"].value, 2, "t_stay_off_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=11, title="Door (before DT)", tags=["2-02"],
-         A="With B, lifts the door unit out of the crate on 2 suction lifters (about 25 kg each), carries it upright and lowers its hinge halves onto DL's.",
-         B="Secures the hinges as the named set requires (HOLD), then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold. The hinges hold the door at its closed position; there is no lock (D-83).",
+         A="Lays the 2 setting packers from the kit (7 mm) on the threshold where the door's bottom corners land. With B, tilts the door unit up in the crate on its padded long edge, both suction lifters at its top edge (each lifts about 12 kg at the start), onto the padded glass rest; then both carry it upright (about 25 kg each) and stand it on the packers, so its hinge halves meet DL's at their height, and lower them on.",
+         B="Secures the hinges as the named set requires (HOLD), slides the packers out, then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold. The hinges hold the door at its closed position; there is no lock (D-83).",
          check="The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.",
-         ops=[carry("2-02"), op("hang the door and adjust", 2, lay("t_door_prehung_min") * 60, 1, "t_door_prehung_min")],
+         ops=[op("lay the setting packers", 1, TIME["t_packer_s"].value, 1, "t_packer_s"),
+              op("tilt the door up onto the glass rest", 2, TIME["t_tilt_s"].value, 1, "t_tilt_s"),
+              carry("2-02"), op("hang the door and adjust", 2, lay("t_door_prehung_min") * 60, 1, "t_door_prehung_min"),
+              op("slide the setting packers out", 1, TIME["t_packer_s"].value, 1, "t_packer_s")],
          joints={}),
     dict(n=12, title="Top decor block DT, from above", tags=["2-12"],
          A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.",
@@ -659,41 +699,50 @@ STEPS = [
               op("plug the hub", 1, lay("t_connector_s"), 1, "t_connector_s")],
          joints={}),
     dict(n=17, title="Soffit and exhaust cartridge", tags=["2-10", "2-19"],
-         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.",
+         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof slot.",
          B="Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
-         check="Soffit underside at Z 2120, level; the fan box meets the roof sleeve; the door still clears.",
+         check="Soffit underside at Z 2120, level; the fan box's top gasket square under the roof slot; the door still clears.",
          ops=[carry("2-10"), op("hang the soffit on its hanger studs", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
               carry("2-19"), op("lift the cartridge in", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s"),
               op("close the hinged underside", 1, TIME["t_face_s"].value, 1, "t_face_s")],
          joints={"J-AIR-01": 2}),
-    dict(n=18, title="Ceiling linings: 2 cassettes", tags=["2-20", "2-21"],
+    dict(n=18, title="Roof sleeve and grille", tags=[],
+         parts="the roof sleeve 611601 and the roof grille 611602, which came off C2 (1-12) at unpacking",
+         A="From a step stool outside the front right corner, drops the roof sleeve down through C2's roof slot onto the soft gasket on the exhaust fan box's top, its flange on the roof (#263); then screws the roof grille on over it.",
+         B="Inside, opens the soffit's hinged underside and checks from below that the sleeve sits square on its gasket all round; closes the underside.",
+         check="Sleeve square on its gasket all round; grille flat and screwed down; no light through the slot with the pod lit.",
+         ops=[op("drop the roof sleeve onto its gasket", 1, TIME["t_sleeve_s"].value, 1, "t_sleeve_s"),
+              op("screw the grille on", 1, TIME["t_grille_s"].value, 1, "t_grille_s"),
+              op("soffit underside open and closed, to check the sleeve", 1, TIME["t_face_s"].value, 2, "t_face_s")],
+         joints={}),
+    dict(n=19, title="Ceiling linings: 2 cassettes", tags=["2-20", "2-21"],
          A="With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.",
          B="Hooks the 2 safety catches of each cassette before A lets go.",
          check="Both catches on each cassette; front edges 3 mm behind the soffit.",
          ops=[carry("2-20"), carry("2-21"), op("lift each cassette onto its clips", 2, lay("t_place_overhead_s"), 2, "t_place_overhead_s"),
               op("hook a safety catch", 1, TIME["t_catch_s"].value, 4, "t_catch_s")],
          joints={}),
-    dict(n=19, title="Light shelf", tags=["2-14"],
+    dict(n=20, title="Light shelf", tags=["2-14"],
          A="Fits the light shelf along the tops of the side and back walls: the back shelf, the two side shelves, and the down-light channel with its diffuser on the right wall (INTERIOR 810201).",
          B="Plugs the light shelf feed.",
          check="Shelves straight; no cable shows.",
          ops=[carry("2-14"), op("fit and plug the light shelf", 1, TIME["t_light_shelf_s"].value, 1, "t_light_shelf_s")],
          joints={}),
-    dict(n=20, title="Power on and self-test: fans run", tags=[],
+    dict(n=21, title="Power on and self-test: fans run", tags=[],
          A="A qualified electrician connects the mains inlet (220 V for the prototype, REQ-SCP-02) and switches on.",
          B="Presses the hub's self-test button: both fan pairs, the lights and the sensors run, and it shows pass or fail (D-87). Then checks air out at the kick grille and into the soffit grille, and the CO2 reading.",
-         check="Self-test passes and the fans run on both paths. The clock stops after step 21's final check (REQ-ASM-01: closed, powered, fans running).",
+         check="Self-test passes and the fans run on both paths. The clock stops after the final check, the next step (REQ-ASM-01: closed, powered, fans running).",
          ops=[op("power on and self-test", 2, TIME["t_selftest_s"].value, 1, "t_selftest_s")],
          joints={}),
-    dict(n=21, title="Final check and film", tags=[],
+    dict(n=22, title="Final check and film", tags=[],
          A="Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the threshold land when closed.",
          B="Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.",
          check="Every check in the final check list is ticked.",
          ops=[op("check door, seals and fans; clean", 2, lay("t_final_min") * 60, 1, "t_final_min"),
               op("pull one film panel by its tab", 1, TIME["t_peel_tab_s"].value, int(MINE["film_faces"].value), "t_peel_tab_s")],
          joints={}),
-    dict(n=22, title="Work-wall ledge and screen rail", tags=["2-16"],
+    dict(n=23, title="Work-wall ledge and screen rail", tags=["2-16"],
          A="Holds the 1000 mm ledge on the right (work) wall's lower panel R1, on its 2 brackets.",
          B="Fixes the ledge's brackets to R1's stiles and the screen rail to R2's stiles (INTERIOR 810101 and 818102, D-70).",
          check="Ledge level and firm.",
@@ -701,7 +750,7 @@ STEPS = [
               op("fix the ledge and the screen rail", 1, TIME["t_ledge_one_s"].value, 1, "t_ledge_one_s")],
          joints={}),
 ]
-CLOCK_LAST_STEP = 21     # REQ-ASM-01 clock: steps 1 to 21; step 22 is fit-out after it (PROPOSED)
+CLOCK_LAST_STEP = 22     # REQ-ASM-01 clock: steps 1 to 22; step 23 is fit-out after it (PROPOSED)
 
 # The joints register's bolt count (section 3.9), pinned from PR #23 at aed1590 for when the file isn't on this branch.
 REGISTER_PINNED = {"J-WALL-01": (16, "M6 x 16"), "J-WALL-02": (12, "M6 x 16"), "J-WALL-03": (6, "M6 x 25"),
@@ -798,7 +847,7 @@ CAD = {
     "1-05": dict(step="wall/210101_P01_*_STEP.step"), "1-06": dict(step="wall/210102_P01_*_STEP.step"),
     "1-09": dict(step="wall/210103_P01_*_STEP.step"), "1-10": dict(step="wall/210104_P01_*_STEP.step"),
     "1-11": dict(step=CEIL_STEP, sub="410101"),
-    "1-12": dict(step=CEIL_STEP, sub="410102", plus=[dict(step=AIR_STEP, sub="611602")]),
+    "1-12": dict(step=CEIL_STEP, sub="410102", plus=[dict(step=AIR_STEP, sub="611601"), dict(step=AIR_STEP, sub="611602")]),
     "1-13": dict(step="wall/510102_P01_*_STEP.step"), "1-14": dict(step="wall/510104_P01_*_STEP.step"),
     "1-15": dict(step="wall/510101_P01_*_STEP.step"), "1-16": dict(step="wall/510103_P01_*_STEP.step"),
     "1-17": dict(step="wall/510201_P01_*_STEP.step"), "1-18": dict(step="wall/510202_P01_*_STEP.step"),
@@ -817,8 +866,7 @@ CAD = {
     "2-12": dict(step="front/350002_P01_*_STEP.step"),
     "2-14": dict(parts=[dict(step=INT_STEP, sub="810201")]),
     "2-16": dict(parts=[dict(step=INT_STEP, sub="810101"), dict(step=INT_STEP, sub="818102")]),
-    "2-10": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-19)"},
-                 plus=[dict(step=AIR_STEP, sub="611601")]),
+    "2-10": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-19)"}),
     "2-11": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-18)"}),
     "2-17": dict(step=AIR_STEP, sub="610401"),
     "2-18": dict(step=AIR_STEP, sub="610101", keep={"610301"}),
@@ -897,6 +945,42 @@ def cad_size(tag):
     if not solids:
         raise ValueError(f"{tag}: its CAD entry picks no solid from {spec['step']}")
     return "box", box_dims(solids), files
+
+
+# ------------------------------------------------------------------------------------------- getting it in (K15)
+def tilt_in(L, t, D, H, dh, step=5.0):
+    """A piece L long and t thick in the car's depth-height plane, leaned into a car D deep and H tall through a door dh
+    high: its lower back corner slides along the floor to the door while its front end stays inside the car, at the
+    flattest angle that allows. False if it would hit the car's ceiling or the door head before it is wholly inside."""
+    b = -L
+    while True:
+        c = (D - b) / L
+        phi = 0.0 if c >= 1 else math.acos(max(-1.0, c))
+        if L * math.sin(phi) + t * math.cos(phi) > H:
+            return False
+        if b >= t * math.sin(phi):
+            return True
+        if math.cos(phi) < 1e-9 or -b * math.tan(phi) + t / math.cos(phi) > dh:
+            return False
+        b += step
+
+
+def goes_in(dims, car, door):
+    """Some face of the piece goes across the door (with room for hands) and it leans in (tilt_in)."""
+    cw, cd, ch = car
+    dw, dh = door
+    gap = 2 * MINE["hand_gap"].value
+    return any(across + gap <= dw and across + gap <= cw and tilt_in(L, t, cd, ch, dh)
+               for across, t, L in itertools.permutations(dims))
+
+
+def moving_size(p):
+    """A piece as it is carried: in its wrap, a carton as it is, a pane on its suction lifters."""
+    a, b, c = p.dims
+    if p.glass:
+        return (a, b, c + MINE["lifter"].value)
+    w = 0.0 if p.carton else MINE["wrap"].value
+    return (a + 2 * w, b + 2 * w, c + 2 * w)
 
 
 # ------------------------------------------------------------------------------------------- time model
@@ -1151,6 +1235,23 @@ class Model:
         self.check_skeleton()
         self.check_numbers()
         self.check_cad_sizes()
+        self.check_delivery()
+
+    def check_delivery(self):
+        """K15: every piece goes into the install sheet's elevator, leaned in through its door; the glass out of its crate."""
+        car = (MINE["lift_car_w"].value, MINE["lift_car_d"].value, MINE["lift_car_h"].value)
+        door = (MINE["lift_door_w"].value, MINE["lift_door_h"].value)
+        typ_car = (MINE["lift_car_w"].value, MINE["lift_car_d"].value, MINE["typ_car_h"].value)
+        typ_door = (MINE["typ_door_w"].value, MINE["lift_door_h"].value)
+        self.no_lift = [p.tag for p in self.shipped() if not goes_in(moving_size(p), car, door)]
+        self.no_typical = [p.tag for p in self.shipped() if not goes_in(moving_size(p), typ_car, typ_door)]
+        cr = self.crate()
+        crate = (MINE["crate_l"].value, MINE["crate_w"].value, cr["outside_h"])
+        self.crate_in = goes_in(crate, car, door)
+        self.check("K15", "Every piece goes into the install sheet's elevator, leaned in through its door (the glass out of its crate)",
+                   f"car {car[0]:g} x {car[1]:g} x {car[2]:g} mm inside, door {door[0]:g} x {door[1]:g}: not in: "
+                   f"{self.no_lift or 'none'}; a typical car with a {typ_door[0]:g} mm door: not in: {self.no_typical or 'none'}; "
+                   f"the crate itself: {'goes in' if self.crate_in else 'opened at the entrance'}", not self.no_lift)
 
     def check_cad_sizes(self):
         """K14: every piece's planned size holds its own CAD box, as it ships (a bundle or carton: each of its parts)."""
@@ -1287,6 +1388,11 @@ def gen_tables(m):
     T["HEAVIEST"] = f"{heaviest.name} ({heaviest.tag}) at {heaviest.kg:.1f} kg"
     T["PN16"], T["PN25"], T["PNW"], T["PNKEY"] = m.pn["M6 x 16"], m.pn["M6 x 25"], m.pn["washer"], m.pn["key"]
     T["KIT_TAG"] = next(p.tag for p in m.shipped() if p.pn == "109000")
+    T["N_STEPS"] = str(len(STEPS))
+    T["ROOM_H_GUIDE"] = f"{sk('pod_h') + max(MINE['roof_work'].value, MINE['spigot_lift'].value):g}"
+    T["STEP_POWER"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Power on")))
+    T["STEP_FINAL"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Final check")))
+    T["STEP_LEDGE"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Work-wall ledge")))
     T["WRAP"] = f"{MINE['wrap'].value:g}"
     T["DR_BED"] = f"{MINE['dr_bed'].value:g}"
     none = [p for p in m.shipped() if m.cad.get(p.tag, (None,))[0] is None]
@@ -1419,7 +1525,7 @@ def guide_tables(m, T):
     steps_md = []
     srow = []
     for st, tr in zip(STEPS, m.steps):
-        parts = ", ".join(f"**{t}** {ux(PIECE[t].name)} ({PIECE[t].kg:.1f} kg)" for t in st["tags"]) or "none"
+        parts = ", ".join(f"**{t}** {ux(PIECE[t].name)} ({PIECE[t].kg:.1f} kg)" for t in st["tags"]) or st.get("parts") or "none"
         bolts = []
         for j, c in st["joints"].items():
             size = m.register.get(j, (0, 'M6 x 16'))[1]
@@ -1443,7 +1549,7 @@ def guide_tables(m, T):
         srow.append([st["n"], st["title"], len(st["tags"]), tr["bolts"], tr["other"], f"{tr['two'] / 60:.1f}", f"{tr['one'] / 60:.1f}",
                      f"**{tr['elapsed'] / 60:.1f}**" + ("" if st["n"] <= CLOCK_LAST_STEP else " (after)")])
     G["STEPS"] = "\n".join(steps_md)
-    G["AIR_MIN"] = f0(sum(tr["elapsed"] for st, tr in zip(STEPS, m.steps) if st["n"] in (15, 16, 17)) / 60)
+    G["AIR_MIN"] = f0(sum(tr["elapsed"] for st, tr in zip(STEPS, m.steps) if st["n"] in (15, 16, 17, 18)) / 60)
     G["LEVEL_MIN"] = f0(lay("t_level_min"))
     G["COLUMN_FITTED_KG"] = f1(PIECE["2-11"].kg + PIECE["2-18"].kg)
     G["COLUMN_OVER_KG"] = f1(PIECE["2-11"].kg + PIECE["2-18"].kg - MINE["part_limit_kg"].value)
@@ -1641,10 +1747,50 @@ def crate_mass(self):
 Model.crate_mass = crate_mass
 
 
+def install_tables(m, T):
+    """The install sheet's numbers (IF-17): room height, floor, power, air, getting the pallets in."""
+    I = dict(T)
+    pod_h = sk("pod_h")
+    I["POD_W"], I["POD_D"], I["POD_H"] = f"{sk('pod_w'):g}", f"{sk('pod_d'):g}", f"{pod_h:g}"
+    I["ROOF_WORK"] = f"{MINE['roof_work'].value:g}"
+    I["SPIGOT_LIFT"] = f"{MINE['spigot_lift'].value:g}"
+    I["H_SPIGOTS"] = f"{pod_h + MINE['spigot_lift'].value:g}"
+    I["ROOM_H"] = f"{pod_h + max(MINE['roof_work'].value, MINE['spigot_lift'].value):g}"
+    I["GLIDE_MIN"], I["GLIDE_MAX"] = f"{MINE['glide_min'].value:g}", f"{MINE['glide_max'].value:g}"
+    I["FLOOR_PV"] = f"{MINE['glide_max'].value - MINE['glide_min'].value:g}"
+    I["LAY_OUT"] = f"{MINE['lay_out'].value / 1000:g}"
+    I["LAY_W"] = f"{sk('pod_w') + 2 * MINE['lay_out'].value:g}"
+    I["LAY_D"] = f"{sk('pod_d') + 2 * MINE['lay_out'].value:g}"
+    with open(REPO / "v2/05-Engineering/electrical/710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv", encoding="utf-8") as f:
+        loads = [r for r in csv.DictReader(f) if r["id"].startswith("LD")]
+    I["LOAD_W"] = f"{sum(float(r['w_total_max'] or 0) for r in loads):.0f}"
+    try:
+        sleeve = box_of(cad_solids(dict(step=AIR_STEP, sub="611601"))[0])
+        I["SLOT"] = f"X {sleeve[0]:.0f} to {sleeve[3]:.0f}, Y {sleeve[1]:.0f} to {sleeve[4]:.0f} (AIR 610000 P01 STEP, the roof sleeve)"
+    except (FileNotFoundError, ValueError):
+        I["SLOT"] = "behind DR, near the front right corner (AIR's CAD not found)"
+    for k in ("lift_door_w", "lift_door_h", "lift_car_w", "lift_car_d", "lift_car_h", "typ_door_w"):
+        I[k.upper()] = f"{MINE[k].value:g}"
+        I[k.upper() + "_IN"] = f"{MINE[k].value / 25.4:.0f}"
+    I["NOT_TYPICAL"] = (", ".join(f"{PIECE[t].pos if PIECE[t].pos != '-' else PIECE[t].name} ({t}, "
+                                  f"{' × '.join(f'{v:g}' for v in moving_size(PIECE[t]))} mm as carried)" for t in m.no_typical) or "nothing")
+    I["DR_FACE"] = f"{moving_size(PIECE['2-03'])[1]:g}"
+    longest = max(m.shipped(), key=lambda p: p.dims[0])
+    I["LONGEST"] = f"{longest.name} ({longest.tag}), {longest.dims[0]:g} mm"
+    return I
+
+
+def box_of(solids):
+    """The box of some solids in pod mm: (x0, y0, z0, x1, y1, z1)."""
+    return (tuple(min(sl["box"][k] for sl in solids) for k in range(3))
+            + tuple(max(sl["box"][k + 3] for sl in solids) for k in range(3)))
+
+
 def outputs(m):
     T = gen_tables(m)
     G = guide_tables(m, T)
     return {
+        OUT_INSTALL: fill(TPL_INSTALL.read_text(encoding="utf-8"), install_tables(m, T)),
         OUT_LIST: packing_csv(m),
         OUT_PLAN: fill(TPL_PLAN.read_text(encoding="utf-8"), T),
         OUT_SVG[1]: svg_pallet1(m),

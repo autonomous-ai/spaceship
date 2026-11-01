@@ -332,13 +332,16 @@ def air_cad(path=AIR_LIST):
     densities the CAD gives the column's and soffit's fill and the cartridge layers, and the layers per cartridge."""
     import csv
     import re
-    rows = {}
+    rows, hw = {}, {}
     with open(path, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             rows.setdefault(r["part_number"], r)
+            if r["kind"] == "PI" and r["part_number"][:2] in ("83", "84"):     # joints register hardware (D-63)
+                hw[r["parent"]] = hw.get(r["parent"], 0.0) + float(r["qty_per_parent"]) * float(r["mass_each_kg"])
     rho = lambda pn: float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", rows[pn]["material"]).group(1))
     return dict(kg={pn: float(r["mass_each_kg"]) for pn, r in rows.items()}, fill_rho=rho("611104"),
-                sof_fill_rho=rho("611203"), layer_rho=rho("611302"), n_layers=float(rows["611302"]["qty_per_parent"]))
+                sof_fill_rho=rho("611203"), layer_rho=rho("611302"), n_layers=float(rows["611302"]["qty_per_parent"]),
+                register_hw=hw)
 
 
 AIR = air_cad()
@@ -373,9 +376,9 @@ def air_parts(fill):
     col_fill, sof_fill = k["611104"] * fill / AIR["fill_rho"], k["611203"] * fill / AIR["sof_fill_rho"]
     sc = t3 / AIR_FBOX_T_CAD
     col = k["610101"] - k["611104"] + col_fill
-    sof = k["610201"] - k["610402"] - k["611203"] + sof_fill
+    sof = k["610201"] - k["610402"] - k["611203"] - AIR["register_hw"].get("610201", 0.0) + sof_fill
     sbox = k["611402"] * sc + k["618102"] + k["618103"] + un["supply bulkhead"] + un["supply linings"]
-    ebox = k["611401"] * sc + un["exhaust bulkhead"] + un["exhaust linings"] + k["611601"]
+    ebox = k["611401"] * sc + un["exhaust bulkhead"] + un["exhaust linings"]
     cad = "S52, CAD on main: AIR parts list "
     lay = (f"{AIR['n_layers']:.0f} layers 611302 at {AA.CART_LAYER_KG_M3:.0f} kg/m3 (D-116; the CAD has "
            f"{AIR['layer_rho']:.0f} until the AIR follow-up)")
@@ -387,9 +390,10 @@ def air_parts(fill):
          "calculation (CAD)", f"{cad}610101 P01 {k['610101']:.3f}, its fill 611104 at {fill:g} kg/m3 (D-81; the CAD has "
          f"{AIR['fill_rho']:.0f} until the AIR follow-up); the hub zone 618101 is the in-house module's (no mass here)"),
         ("Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, "
-         "hinges, latches, lock screws", sof, "calculation (CAD); hinges, latches and studs HOLD",
-         f"{cad}610201 P01 {k['610201']:.3f} less its exhaust fan box {k['610402']:.3f} (the next line but one), its fill "
-         f"611203 at {fill:g} kg/m3 (D-81; the CAD has {AIR['sof_fill_rho']:.0f})"),
+         "hinges, latches", sof, "calculation (CAD); hinges, latches and studs HOLD",
+         f"{cad}610201 P01 {k['610201']:.3f} less its exhaust fan box {k['610402']:.3f} (the next line but one) and its "
+         f"lock screws {AIR['register_hw'].get('610201', 0.0):.3f} (the joints register counts them in the fixings kit's "
+         f"line), its fill 611203 at {fill:g} kg/m3 (D-81; the CAD has {AIR['sof_fill_rho']:.0f})"),
         ("Supply fan box 610401 with its two transitions, in the right block", sbox,
          "calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses",
          f"{cad}610401 P01: {sbox:.2f} kg = casing 611402 {k['611402'] * sc:.2f} (the CAD's {k['611402']:.3f} at "
@@ -398,11 +402,11 @@ def air_parts(fill):
          f"yet (D-121, the air report's sizes): a {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['supply bulkhead']:.2f} and "
          f"50 mm linings at {AA.FANBOX_LINING_KG_M3:g} kg/m3 where they fit, {rooms['supply']['lined']:.3f} m2, "
          f"{un['supply linings']:.2f}; the fans are in their own line"),
-        ("Exhaust fan box 610402 and roof sleeve 611601, in the soffit", ebox,
+        ("Exhaust fan box 610402, in the soffit", ebox,
          "calculation (CAD at 2 mm, scaled to D-124's 3 mm)",
          f"{cad}610402 P01: {ebox:.2f} kg = casing 611401 {k['611401'] * sc:.2f} (the CAD's {k['611401']:.3f} at "
          f"{AIR_FBOX_T_CAD:g} mm x {t3:g}/{AIR_FBOX_T_CAD:g}: D-124's {t3:g} mm casing, which the model gets in the AIR "
-         f"follow-up) + the roof sleeve {k['611601']:.3f} + not in the CAD yet (D-121, the air report's sizes): the fans' "
+         f"follow-up) + not in the CAD yet (D-121, the air report's sizes): the fans' "
          f"sealed {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['exhaust bulkhead']:.2f} and 50 mm linings where they fit, "
          f"{rooms['exhaust']['lined']:.3f} m2, {un['exhaust linings']:.2f}; the fans are in their own line"),
         ("Intake riser 611501, in the right block", k["611501"] + AIR_RISER_FOOT_KG + AA.BOOT_KG,
@@ -410,7 +414,11 @@ def air_parts(fill):
          f"{cad}611501 P01 {k['611501']:.3f} (1 mm galvanised steel, 139 x 155 x 1340; D-130's 150 deep comes with the "
          f"AIR follow-up), {AIR_RISER_FOOT_KG:g} kg for its foot and the mesh band piece's extra over the band it replaces, "
          f"and {AA.BOOT_KG:g} kg for D-130's sealed intake boot and the cartridges' gaskets (the air report's assumptions)"),
-        ("Roof slot grille 611602", k["611602"], "calculation (CAD)", f"{cad}611602 P01"),
+        ("Roof slot grille 611602 and roof sleeve 611601, with C2", k["611602"] + k["611601"], "calculation (CAD)",
+         f"{cad}611602 P01 {k['611602']:.3f} and 611601 P01 {k['611601']:.3f}: the sleeve fills C2's roof slot, so it "
+         "can't ride on the exhaust fan box while the soffit is lifted and slid onto its studs; it ships with the grille "
+         "and C2 and drops in through the slot after the soffit hangs, onto a gasket on the fan box's top (the Air "
+         "Engineer, 2026-11-01)"),
     ]
 KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
 
