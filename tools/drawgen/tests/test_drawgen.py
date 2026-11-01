@@ -382,6 +382,29 @@ def test_tapped_holes_wait_for_their_callouts():
         raise AssertionError("drew a part with tapped holes")
 
 
+def test_long_words_break_at_separators():
+    """A word wider than its cell (a long drawing number in the title block, FRONT's 352211) breaks after its '_'
+    or '-', each line inside the cell, and nothing is lost."""
+    from sheet import Sheet
+    sh = Sheet("A3")
+    word = "352211_P01_FRONT-DECOR-FRAME-DT-CHAMFER-CROSS-TUBE-3-OFF_DWG"
+    lines = sh.wrap(word, 2.5, 115.6, True)
+    assert len(lines) > 1 and "".join(lines) == word, lines
+    assert all(sh.text_width(l_, 2.5, True) <= 115.6 for l_ in lines), lines
+    sentence = "a normal sentence wraps at spaces"
+    ls = sh.wrap(sentence, 2.5, 40)
+    assert " ".join(ls) == sentence and all(sh.text_width(l_, 2.5) <= 40 for l_ in ls), ls
+
+
+def test_a_repeated_part_is_drawn_once():
+    """A part an assembly STEP holds several times (BASE's glide doubler 111601, 5 in the band assembly) loads
+    as one occurrence, with the count kept for the drawing's quantity note and its check against the list."""
+    import geom
+    bodies, unit = geom.load_part(os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base",
+                                               "110000_P01_BASE_STEP.step"), "111601")
+    assert len(bodies) == 1 and unit["occurrences"] == 5, (len(bodies), unit)
+
+
 def main():
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     ok = 0

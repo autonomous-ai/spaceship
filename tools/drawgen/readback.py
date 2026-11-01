@@ -255,9 +255,11 @@ def step_holes(step_path, pn):
         if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")):
             continue
         s = sf.solid(inst["solid"])
+        fr = inst["frame"]
+        occ = tuple(round(v, 3) for v in tuple(fr.o) + tuple(fr.x) + tuple(fr.y))   # the occurrence's placement
         for h in s.holes:
-            hm = h.moved(inst["frame"])
-            out.append({"c": tuple(hm.center), "axis": tuple(hm.axis), "dia": hm.diameter})
+            hm = h.moved(fr)
+            out.append({"c": tuple(hm.center), "axis": tuple(hm.axis), "dia": hm.diameter, "occ": occ})
     return out
 
 
@@ -370,8 +372,13 @@ def check(pdf_path, step_path=None, verbose=False):
         used.update(j for j, h in enumerate(holes) if abs(h["dia"] - f["dia"]) < 0.011 and
                     abs(abs(dot(h["axis"], v["n"])) - 1) < 1e-6 and
                     math.hypot(dot(sub(h["c"], Ov), v["x"]) - best[2], dot(sub(h["c"], Ov), v["y"]) - best[3]) < TOL)
+    if data.get("occurrences", 1) > 1 and used:
+        drawn_occ = {holes[j].get("occ") for j in used}
+        skip = {j for j, h in enumerate(holes) if h.get("occ") not in drawn_occ}
+    else:
+        skip = set()
     for j, h in enumerate(holes):
-        if j not in used:
+        if j not in used and j not in skip:
             fails.append("STEP hole Ø%.2f at (%.2f, %.2f, %.2f) is in no hole table" % ((h["dia"],) + h["c"]))
     # 2. drawn circles
     circles = pdf_circles(page, data["sheet_h"])
