@@ -1461,6 +1461,16 @@ def test_a_view_square_to_an_angled_face_starts_a_row_under_the_others():
             assert e.what == what and e.scale == 0.5, (e.what, e.scale)
     tops = compose._row([("removed", "D", 400.0, 5.0), ("detail", "E", 200.0, 50.0)], 74.0, 360.8, 555.0, 0.5)
     assert tops[1] is None, tops
+    # Reviewer 18 on #405: on #369's f3d59e0, 611703 has one fold section, so view E fits beside D-D and its flat
+    # pattern ran past the row's end at 555 (586.9 to 637.4): the sheet was drawn again at 1:5. The flat starts a row
+    # under them, under D-D, the view above it there (the row's tallest, E, would leave it no room for its title)
+    row = [("removed", "D", 100.0, 5.5), ("aux", "E", 252.9, 126.0), ("flat", None, 50.5, 101.2)]
+    tops = compose._row(row, 74.0, 310.0, 555.0, 0.5)
+    want = [(74.0, 310.0), (254.0, 310.0), (74.0, 310.0 - 5.5 - 58)]
+    assert all(near(t, w) for t, w in zip(tops, want)) and len(tops) == 3, tops
+    # with no room even there, with its title, it stays past the end: the run-off check then draws the sheet smaller
+    tops = compose._row(row, 74.0, 200.0, 555.0, 0.5)
+    assert near(tops[2], (254.0 + 252.9 + 80, 200.0)), tops
 
 
 def test_the_row_starts_under_every_views_origin_mark():

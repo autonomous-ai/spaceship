@@ -1385,19 +1385,38 @@ def _row(items, rx0, ry, right_limit, scale):
     detail with no room (its parent view keeps its tags). A view square to an angled face that runs past the row's end
     starts a row of its own under it, when it fits there (AIR's 611703: view F after the two sections across its
     folds); else the sheet is drawn again at the next smaller scale (_Smaller), naming the view, or the sections when
-    they already ran off the row (AIR's 611702: nine of them before its view N)."""
+    they already ran off the row (AIR's 611702: nine of them before its view N). A section or a flat pattern past the
+    row's end starts a row under it too, when it fits there with its title (611703 on #369's f3d59e0: its flat after
+    D-D and view E); else it stays, and the run-off check draws the sheet smaller. In a row under others, a view sits
+    58 under the views above it that it overlaps (their titles, then its own callouts), not under the row's tallest:
+    611703's flat fits under D-D, beside view E."""
     out, rx, row_h = [], rx0, 0.0
+    above, cur = [], []         # the views placed in the rows above, and in this one: (x0, x1, bottom)
+
+    def top_at(x0, x1, level, over):
+        ys = [b - 58 for a0, a1, b in over if a0 < x1 + 40 and x0 - 40 < a1]
+        return min(ys) if ys else level
+
     for kind, letter, w, h in items:
-        if kind in ("detail", "aux") and (rx + w + 40 > right_limit or ry - h - 40 < 20):
-            below = ry - row_h - 58
-            if kind == "aux" and rx > rx0 and rx0 + w + 40 <= right_limit and below - h - 40 >= 20:
-                rx, ry, row_h = rx0, below, 0.0
-            elif kind == "aux":
-                raise _Smaller(scale, what=None if rx > right_limit else "view %s (square to an angled face)" % letter)
-            else:
+        top = top_at(rx, rx + w, ry, above)
+        wrap = None             # True: an angled view past the end; False: a section or flat pattern past it
+        if kind in ("detail", "aux") and (rx + w + 40 > right_limit or top - h - 40 < 20):
+            if kind == "detail":
                 out.append(None)
                 continue
-        out.append((rx, ry))
+            wrap = True
+        elif kind != "detail" and rx > rx0 and rx + w > right_limit:
+            wrap = False
+        if wrap is not None:
+            below = ry - row_h - 58
+            t2 = top_at(rx0, rx0 + w, below, above + cur)
+            if rx > rx0 and rx0 + w + 40 <= right_limit and t2 - h - 40 >= 20:
+                above, cur = above + cur, []
+                rx, ry, row_h, top = rx0, below, 0.0, t2
+            elif wrap:
+                raise _Smaller(scale, what=None if rx > right_limit else "view %s (square to an angled face)" % letter)
+        out.append((rx, top))
+        cur.append((rx, rx + w, top - h))
         rx += w + 80
         row_h = max(row_h, h)
     return out
