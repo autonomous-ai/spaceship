@@ -55,7 +55,7 @@ def tab_rows(kind, back):
     return out
 
 
-def render(name, lines, width_mm, size_pt=7.0, lead=1.35, title=None, border=True):
+def render(name, lines, width_mm, size_pt=10.0, lead=1.35, title=None, border=True):
     """Lines of text (wrapped to width_mm) in a bordered block, rendered to PNG. Returns (path, w_mm, h_mm)."""
     font = fitz.Font(fontfile=FONT)
     pad = 2.0 * PT

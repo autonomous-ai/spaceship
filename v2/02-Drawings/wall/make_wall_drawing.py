@@ -194,6 +194,12 @@ def add_view(sheet, orientation, centre, scale):
         raise RuntimeError("Views.add returned None for %s" % orientation)
     if abs(v.scaleValue - scale) > 1e-6:
         v.scaleValue = scale            # the input's scale is ignored in this build (tools/fusion/README.md)
+    # Fusion ignores the style given at creation and draws hidden lines on every view (CEILING's first sample,
+    # PM check 2026-11-01): set it again on the view; the hole tables carry each face's holes
+    if v.style != adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType:
+        v.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
+    if v.style != adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType:
+        raise RuntimeError("view %s keeps hidden lines after the style is set" % orientation)
     return v
 
 
@@ -241,6 +247,11 @@ def frame_dims(sheet, views, scale, right=False):
                  if abs(xy(ln.startPoint)[0] - xy(ln.endPoint)[0]) < 0.01
                  and abs(xy(ln.startPoint)[1] - xy(ln.endPoint)[1]) > 0.8 * (e[3] - e[1])})
     near = [x for i, x in enumerate(xs) if i % 2 == (1 if right else 0) and e[0] + 0.5 < x < e[2] - 0.5]
+    kept = []                         # never the same dimension twice (PM check 2026-11-01)
+    for x in near:
+        if all(abs(x - y) > 0.5 for y in kept):
+            kept.append(x)
+    near = kept
     for k, x in enumerate(near):
         tgt = nearest_end(v, (x, e[1] + 20.0 * scale), tol=20.0 * scale + 0.6)
         dim(sheet, o, tgt, ((xb + x) / 2, e[1] - 8.0 - 4.5 * (k % 3)))
@@ -273,14 +284,16 @@ def datum(sheet, letter, line, place):
 
 
 def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
-    """ISO first-angle symbol (as the Phase 0 proof drew it)."""
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
+    """ISO first-angle symbol: the truncated cone's outline in a sketch of its own (sharing one with the circles
+    drew it as a triangle: CEILING's first sample, PM check 2026-11-01), the two circles in another."""
+    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - OUTLINE")
     pts = [p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
            p2(x0, y0 + d / 2), p2(x0, y0 - d / 2)]
     sk.lines.add(pts)
+    sk2 = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - CIRCLES")
     cx = x0 + length + gap + big / 2
-    sk.circles.addByCenterRadius(p2(cx, y0), big / 2)
-    sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
+    sk2.circles.addByCenterRadius(p2(cx, y0), big / 2)
+    sk2.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
 MAPPING = os.path.join(HERE, "image_mapping.json")
