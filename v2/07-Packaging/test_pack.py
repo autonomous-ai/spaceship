@@ -287,17 +287,19 @@ def test_numbers_match_the_master_bom():
 
 
 def test_tbd_piece_takes_its_bom_number(tmp=Path(__file__).resolve().parent / "_bom_test.csv"):
-    # when an owner's list lands with the piece's exact name, the label gets the number without a code change
-    dr = pack.PIECE["2-11"]          # the air column: AIR's list hasn't landed
-    assert dr.pn_declared.startswith("TBD")
+    # when an owner's list lands with the piece's exact name, the label gets the number without a code change;
+    # the example is a piece still TBD in the real BOM (it was the air column until AIR's list landed, PR #91)
+    tag, dr = next((t, pc) for t, pc in sorted(pack.PIECE.items())
+                   if pc.pn_declared.startswith("TBD") and pc.pn == pc.pn_declared)
+    vi = dr.vi + " (thử)"
 
     def add(rows):
-        rows.append(dict(rows[-1], part_number="699999", name=dr.name, name_vi="Cột dẫn gió (thử)"))
+        rows.append(dict(rows[-1], part_number="699999", name=dr.name, name_vi=vi))
     _bom_copy(add, tmp)
     try:
         m = pack.Model(bom_path=tmp)
-        assert dr.pn == "699999" and dr.vi == "Cột dẫn gió (thử)", (dr.pn, dr.vi)
-        assert "2-11" in m.filled and "K13" not in failing(m)
+        assert dr.pn == "699999" and dr.vi == vi, (tag, dr.pn, dr.vi)
+        assert tag in m.filled and "K13" not in failing(m)
     finally:
         tmp.unlink()
         pack.Model()   # back to the real BOM
