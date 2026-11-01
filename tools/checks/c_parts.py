@@ -21,7 +21,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import (register_names, name_words, reserved_spaces, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
+from common import (register_names, name_words, reserved_spaces, JOINTS_KEYS, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
                     parse_file_name, is_soft)
 
 ALIASES = {
@@ -228,15 +228,33 @@ def check_parts_lists(root, plists):
         # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
         names = {name_words(n) for _f, n in uses}
         if len(names) > 1:
-            # a hardware number takes the joints register's name (D-99): the lists that differ from it own the fix
-            off = [(f, n) for f, n in uses if pn in reg and name_words(n) != name_words(reg[pn])] or uses
+            # which name is right: the joints register's for hardware (D-99); the Joints Engineer's own list for the
+            # base keys (D-95); else the name the team lists agree on. The master BOM copies the team lists, so a
+            # name only it differs on means it needs a rebuild (the PM's).
+            team = [(f, n) for f, n in uses if not is_master(f)]
+            if pn in reg:
+                ref, why = reg[pn], " The joints register names it '%s' (D-99)." % reg[pn]
+            elif JOINTS_KEYS.match(pn) and any("/joints/" in f for f, _n in team):
+                ref = next(n for f, n in team if "/joints/" in f)
+                why = " The Joints Engineer's list names it '%s', and the teams place the keys by reference (D-95)." % ref
+            elif team and len({name_words(n) for _f, n in team}) == 1:
+                ref, why = team[0][1], ""
+            else:
+                ref, why = None, ""
+            off = [(f, n) for f, n in uses if ref is not None and name_words(n) != name_words(ref)] or uses
+            if ref is not None and all(is_master(f) for f, _n in off):
+                owner, fix = "Control", "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py)."
+            elif ref is not None:
+                f0 = next(f for f, _n in off if not is_master(f))
+                owner = owner_for(f0, "" if JOINTS_KEYS.match(pn) else pn)
+                fix = "Use '%s' in %s." % (ref, ", ".join(sorted({f for f, _n in off})))
+            else:
+                owner = owner_for(uses[0][0], pn)
+                fix = "One number is one form, fit and function (conventions section 6)."
             fs.append(Finding("C06", "duplicate-number", pn, "major",
                               "Part number %s is used for different names: %s.%s" % (
-                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses),
-                                  " The joints register names it '%s' (D-99)." % reg[pn] if pn in reg else ""),
-                              ("Use the register's name in %s." % ", ".join(sorted({f for f, _n in off})) if pn in reg
-                               else "One number is one form, fit and function (conventions section 6)."),
-                              off[0][0], owner_for(off[0][0], pn)))
+                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses), why),
+                              fix, off[0][0], owner))
     return fs
 
 
@@ -406,7 +424,9 @@ def check_cad_match(root, plists, step_products):
             continue
         for row in rows:
             pn = row["part_number"]
-            if pn_class(pn) in ("part", "assembly") and pn not in step_products:
+            stepped = any(os.path.basename(f).startswith(pn + "_") for info in step_products.values() for f in info["files"])
+            if pn_class(pn) in ("part", "assembly") and pn not in step_products and not stepped:   # a STEP named
+                # for it whose top carries another number is the top-part-number finding, not this one
                 fs.append(Finding("C06", "bom-not-in-cad", pn, "major",
                                   "%s %s is in %s but in no STEP file in v2/03-Manufacturing." % (pn, row["name"], r),
                                   "Export its STEP from the native CAD (same revision), or take it off the list.", r,
@@ -648,3 +668,70 @@ def check_mixed_metals(root, plists, contacts):
                               "Coat the steel part (zinc, powder) or separate them with an isolating layer.", f,
                               owner_for(f, a)))
     return fs
+
+
+# ----------------------------------------------------------------- C06: every part its own component (D-120)
+
+ROUTE_COMPONENT = re.compile(r"^7100\d\d")       # ELECTRICAL's route model: routes, pockets, grommets, spaces (D-92)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
+
+
+def check_components(root, step_paths, load):
+    """D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.
+    A component (one product definition in a STEP) that holds several bodies is reported, one finding per part
+    number and team: copies of one part should be one component placed several times; different pieces (a frame's
+    members, D-115; a fill's bay pieces) each their own component, the part becoming an assembly of them.
+    Left out, as ruled: ELECTRICAL's route components (D-92), HOLD spaces and placeholders without a number,
+    reserved spaces, and ENVELOPE bodies standing in for hardware (D-104)."""
+    from c_drawings import body_shape
+    reserved = reserved_spaces(root)
+    hits = {}                                     # (pn, owner) -> {"name", "files": [(file, n, names, shapes)]}
+    for p in step_paths:
+        s = load(p)
+        bodies, info = defaultdict(dict), {}
+        for inst in s.instances():
+            bodies[inst["pd"]].setdefault(inst["solid"], None)
+            info[inst["pd"]] = (inst["part_number"] or "", inst["name"] or "")
+        r = rel(root, p)
+        for pd, sids in bodies.items():
+            if len(sids) < 2:
+                continue
+            raw, name = info[pd]
+            m = re.match(r"^(\d{6})(?!\d)", raw)
+            if not m or ROUTE_COMPONENT.match(m.group(1)) or HOLD_WORD.search(name) or m.group(1) in reserved:
+                continue
+            pn = m.group(1)
+            solids = [s.solid(sid) for sid in sids]
+            real = [so for so in solids if not re.search(r"\bENVELOPE\b", so.name or "", re.I)]
+            if len(real) < 2:
+                continue
+            owner = owner_for(r, "")
+            if owner == "PM":
+                owner = owner_for(r, pn)
+            d = hits.setdefault((pn, owner), {"name": name, "files": []})
+            d["files"].append((r, len(real), sorted({(so.name or "").strip() for so in real}),
+                               len({body_shape(so) for so in real})))
+    fs = []
+    for (pn, owner), d in sorted(hits.items()):
+        n = max(f[1] for f in d["files"])
+        shapes = max(f[3] for f in d["files"])
+        where = "; ".join("%s (%d bodies)" % (os.path.basename(f[0]), f[1]) for f in d["files"])
+        names = sorted({x for f in d["files"] for x in f[2]})
+        label = d["name"] if d["name"].startswith(pn) else ("%s %s" % (pn, d["name"])).strip()
+        if shapes == 1:
+            msg = ("%s is one component holding %d bodies, all copies of one part, in %s. D-120 (build plan rule 2, "
+                   "BP-04): every part is its own component, never a loose body; copies are one component placed "
+                   "several times." % (label, n, where))
+            fix = ("Make it one component and place it %d times (copies of one component), then export the STEP "
+                   "again (D-120)." % n)
+        else:
+            msg = ("%s is one component holding %d bodies of %d different shapes (%s) in %s. D-120 (build plan rule "
+                   "2, BP-04): every part is its own component with its own number, never a loose body." % (
+                       label, n, shapes, ", ".join(names)[:300], where))
+            fix = ("Make each piece its own component with its own part number (the master BOM assigns them), so this "
+                   "number becomes an assembly of them; copies of one piece are one component placed several times "
+                   "(D-120; for the frames, D-115's cleated members).")
+        fs.append(Finding("C06", "bodies-not-components", pn, "major", msg, fix, d["files"][0][0], owner,
+                          {"bodies": n, "shapes": shapes, "files": len(d["files"])}))
+    return fs
+

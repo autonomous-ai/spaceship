@@ -272,8 +272,8 @@ class Steps:
     """Talks to Fusion (MCP), its dialogs (accessibility) and the Mac. Split
     out so the offline tests can replace all three."""
 
-    def __init__(self, url, timeout):
-        self.mcp = rs.FusionMcp(url, timeout)
+    def __init__(self, url, timeout, mcp=None):
+        self.mcp = mcp or rs.FusionMcp(url, timeout)
         self.mcp.initialize()
 
     def run(self, source, read_only=False):
@@ -636,6 +636,11 @@ def main(argv=None):
     ap.add_argument("--keep-open", action="store_true", help="leave the drawing open")
     ap.add_argument("--url", default=rs.DEFAULT_URL)
     ap.add_argument("--timeout", type=float, default=120.0, help="seconds per Fusion call")
+    ap.add_argument("--busy-wait", type=float, default=rs.BUSY_WAIT_S, metavar="S",
+                    help="after a call times out, keep the lock while Fusion may still be "
+                         "running it, for up to S more seconds (default %(default)g; as run_script.py)")
+    ap.add_argument("--busy-poll", type=float, default=rs.BUSY_POLL_S, metavar="S",
+                    help="...trying a read-only check every S seconds (default %(default)g)")
     ap.add_argument("--lock", default=None)
     ap.add_argument("--lock-wait", type=float, default=1200.0)
     ap.add_argument("--lock-front", default="", metavar="REASON",
@@ -676,9 +681,10 @@ def main(argv=None):
     except KeyboardInterrupt:
         print("start_drawing: stopped while waiting for the Fusion lock", file=sys.stderr)
         return 3
+    mcp = rs.FusionMcp(opts.url, opts.timeout)
     try:
         try:
-            steps = Steps(opts.url, opts.timeout)
+            steps = Steps(opts.url, opts.timeout, mcp=mcp)
         except rs.McpError as e:
             print("start_drawing: %s" % e, file=sys.stderr)
             return 2
@@ -697,6 +703,16 @@ def main(argv=None):
             os.remove(rest)
         return code
     finally:
+        if mcp.timed_out:
+            # as run_script.py (#181, PM ruling 2026-11-01): never hand Fusion to the
+            # next run while it may still be busy with a call of this one
+            try:
+                rs.wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll,
+                                   log=lambda m: print("start_drawing: %s" % m.replace("run_script: ", ""),
+                                                       file=sys.stderr, flush=True))
+            except KeyboardInterrupt:
+                print("start_drawing: stopped while waiting for Fusion to answer; Fusion lock "
+                      "given back", file=sys.stderr)
         lock.release()
 
 

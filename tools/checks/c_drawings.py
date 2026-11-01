@@ -36,6 +36,32 @@ def pdf_text(path):
     return None
 
 
+# D-112: part drawings made by the STEP-driven generator (tools/drawgen) say so in the PDF's Creator or Producer
+# field. They are checked by the same rules; a finding on one goes to the generator's group, which regenerates it.
+GENERATOR = re.compile(r"\bdrawgen\b", re.I)
+GENERATOR_OWNER = "Drawing Generator"
+GENERATOR_FIX = " This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it."
+
+
+def made_by_generator(path):
+    """True when the PDF's Creator or Producer field names drawgen (D-112)."""
+    try:
+        import fitz  # PyMuPDF
+        try:
+            with fitz.open(path) as doc:
+                meta = doc.metadata or {}
+        except Exception:
+            return False
+        return any(GENERATOR.search(str(meta.get(k) or "")) for k in ("creator", "producer"))
+    except ImportError:
+        pass
+    exe = shutil.which("pdfinfo")
+    if exe:
+        out = subprocess.run([exe, path], capture_output=True, text=True, timeout=60).stdout
+        return any(GENERATOR.search(line) for line in out.splitlines() if line.startswith(("Creator:", "Producer:")))
+    return False
+
+
 def index_files(root):
     """pn -> {doctype: [(rev, path)]} for every conventions-named file."""
     idx = {}
@@ -62,6 +88,34 @@ def hole_axes(step_holes):
         else:
             axes.append(h)
     return axes
+
+
+def two_wall_axes(holes):
+    """Hole axes of one body with holes in two walls (a tube drilled through both walls): D-113 wants a section or
+    the opposite view for them."""
+    return sum(1 for a in hole_axes(holes)
+               if sum(1 for h in holes if abs(abs(sum(x * y for x, y in zip(a.axis, h.axis))) - 1.0) < 1e-4 and
+                      _off_axis(h.center, a) < 0.05) >= 2)
+
+
+def _off_axis(p, a):
+    d = [p[k] - a.center[k] for k in range(3)]
+    t = sum(d[k] * a.axis[k] for k in range(3))
+    return max(sum(x * x for x in d) - t * t, 0.0) ** 0.5
+
+
+def body_shape(solid):
+    """A body's shape, however it is placed or turned: face and hole counts, hole sizes and the total length of
+    its straight edges. Copies of one part share it (seven washers at different angles); a frame's members of
+    different lengths don't."""
+    edges = sum(sum((a[k] - b[k]) ** 2 for k in range(3)) ** 0.5 for f in solid.faces for a, b in f.lines)
+    return (len(solid.faces), len(solid.holes), tuple(sorted(round(h.diameter, 2) for h in solid.holes)),
+            round(edges, 1))
+
+
+# D-113 (PM, 2026-11-01), for the generator's drawings: a section (or the opposite view) wherever holes go through
+# both walls of a tube, labelled; and bent parts stay in Fusion
+SECTION_LABEL = re.compile(r"\bSECTION\s+([A-Z])\s*[-\u2013]\s*\1\b|\b([A-Z])\s*[-\u2013]\s*\2\b|\bVIEW(?:ED)?\s+(?:[A-Z]\b|FROM\b)")
 
 
 # D-89 (PM rule, 2026-11-01): a part covered by a tabulated drawing that lists its part number counts
@@ -312,7 +366,8 @@ def missing_drawing_severity(root):
     return v
 
 
-def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None):
+def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
+                   bends_by_pn=None, two_wall_by_pn=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -321,6 +376,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     faces_by_pn = faces_by_pn or {}
     src_by_pn = src_by_pn or {}
     flat_by_pn = flat_by_pn or {}      # pn -> (ok, thickness, why) from the STEP (D-89 part 4)
+    bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (D-113)
+    two_wall_by_pn = two_wall_by_pn or {}   # pn -> hole axes through two walls of one body (D-113)
     fs = []
     idx = index_files(root)
     missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
@@ -353,12 +410,14 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             tab_revs = {rv for rv, _p, _own in tab[pn]}
             if cad_revs and not (tab_revs & cad_revs):
                 rv, tp, own = sorted(tab[pn])[-1]
+                gen = made_by_generator(tp)
                 fs.append(Finding("C05", "rev-mismatch", pn, "major",
                                   "%s: its tabulated drawing %s is revision %s but its CAD/STEP is revision %s." % (
                                       label, os.path.basename(tp), "/".join(sorted(tab_revs)),
                                       "/".join(sorted(cad_revs))),
-                                  "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
-                                  rel(root, tp), owner))
+                                  "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." +
+                                  (GENERATOR_FIX if gen else ""),
+                                  rel(root, tp), GENERATOR_OWNER if gen else owner))
             continue
         kind = soft_kind(names.get(pn, ""))
         if not pdfs and kind == "soft" and files.get("DXF"):
@@ -417,11 +476,22 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
         rv, pdf = sorted(pdfs)[-1]
         rp = rel(root, pdf)
+        gen = made_by_generator(pdf)
+        if gen:                                     # D-112: the generator's group fixes its own drawings
+            owner, gen_fix = GENERATOR_OWNER, GENERATOR_FIX
+        else:
+            gen_fix = ""
+        if gen and bends_by_pn.get(pn):
+            fs.append(Finding("C05", "generated-bent-part", pn, "major",
+                              "%s has %d bends in its STEP, but its drawing %s was made by tools/drawgen; D-113 keeps "
+                              "bent parts, brackets included, in Fusion." % (label, bends_by_pn[pn], os.path.basename(rp)),
+                              "Leave this part to Fusion: take it off the generator's list and delete the generated "
+                              "drawing once Fusion's is in (D-113).", rp, owner))
         if cad_revs and not (revs & cad_revs):
             fs.append(Finding("C05", "rev-mismatch", pn, "major",
                               "%s: drawing revision %s but CAD/STEP revision %s." % (
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
-                              "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
+                              "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." + gen_fix,
                               rp, owner))
         if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
             continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
@@ -440,10 +510,18 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                 lacks.append("finish")
         if not re.search(r"ISO\s*2768|ISO\s*22081|GENERAL TOLERANCE|TOLERANCE|±|\+/-", up):
             lacks.append("tolerances (a general rule or values on the dimensions)")
+        if gen and two_wall_by_pn.get(pn) and not SECTION_LABEL.search(up):
+            fs.append(Finding("C05", "no-section", pn, "major",
+                              "%s has %d hole axes through two walls in its STEP, but its generated drawing %s has no "
+                              "section label (SECTION A-A, or A-A) and no opposite view label (VIEW B, VIEW FROM)." % (
+                                  label, two_wall_by_pn[pn], os.path.basename(rp)),
+                              "Draw a section through those holes, hatched per ISO 128-50, or the opposite view, and "
+                              "label it (D-113)." + gen_fix, rp, owner))
         if lacks:
             fs.append(Finding("C05", "drawing-content", pn, "major",
                               "%s drawing %s doesn't state: %s." % (label, os.path.basename(rp), ", ".join(lacks)),
-                              "Add them to the title block or the notes (guideline sections 3.1, 6.3, 9).", rp, owner))
+                              "Add them to the title block or the notes (guideline sections 3.1, 6.3, 9)." + gen_fix,
+                              rp, owner))
         n_axes = len(hole_axes(holes_by_pn.get(pn, [])))
         if cls == "part" and n_axes:
             tags = set(re.findall(r"\bH\d{2}\b", up))
@@ -454,10 +532,11 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   "%s has %d hole axes in its STEP, but drawing %s has no hole tags, no hole table "
                                   "and no diameter callouts." % (label, n_axes, os.path.basename(rp)),
                                   "Tag every hole (H01...), dimension it to its centre from the datums or put it in "
-                                  "a hole table with X (mm) and Y (mm) (guideline section 6.2).", rp, owner))
+                                  "a hole table with X (mm) and Y (mm) (guideline section 6.2)." + gen_fix, rp, owner))
             elif tags and len(tags) < n_axes and not table:
                 fs.append(Finding("C05", "holes-untagged", pn, "major",
                                   "%s has %d hole axes in its STEP but %d hole tags on drawing %s and no hole "
                                   "table." % (label, n_axes, len(tags), os.path.basename(rp)),
-                                  "Tag the rest, or show they share a tag through a pattern note.", rp, owner))
+                                  "Tag the rest, or show they share a tag through a pattern note." + gen_fix, rp,
+                                  owner))
     return fs

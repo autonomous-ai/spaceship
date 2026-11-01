@@ -271,6 +271,94 @@ class RefsAndPacking(unittest.TestCase):
         self.assertEqual(src[bom.REGISTER][0], "register v2")              # main's newer register wins
         self.assertIn("v2/03-Manufacturing/front/360001_P01_X_BOM.csv", src)  # the branch's own list is read
 
+    def test_a_stacked_branch_keeps_no_old_copy_of_a_list_main_merged_since(self):
+        # AIR's branch sat on CEILING's PR; CEILING then squash-merged a newer list. Main's list wins until AIR
+        # changes that list itself, later.
+        import os
+        import subprocess
+        import tempfile
+        ceil = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv"
+        air = "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv"
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a, when="2026-11-01T00:00:00"):
+                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
+                return subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                                      check=True, capture_output=True, text=True, env=env).stdout
+
+            def put(path, text, msg, when):
+                Path(d, path).parent.mkdir(parents=True, exist_ok=True)
+                Path(d, path).write_text(text, encoding="utf-8")
+                g("add", "-A")
+                g("commit", "-q", "-m", msg, when=when)
+
+            g("init", "-q")
+            g("checkout", "-q", "-b", "main")
+            put(bom.REGISTER, "register", "start", "2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "ceiling")
+            put(ceil, "part_number\n411301\n", "CEILING, first version", "2026-11-01T01:00:00")
+            g("checkout", "-q", "-b", "air")
+            put(air, "part_number\n611101\n", "AIR", "2026-11-01T02:00:00")
+            g("checkout", "-q", "main")
+            put(ceil, "part_number\n411301\n411302\n", "CEILING (#32), squash-merged", "2026-11-01T05:00:00")
+            old = bom.ROOT
+            bom.ROOT = Path(d)
+            try:
+                src = bom.load_sources(["main", "air"])
+                g("checkout", "-q", "air")
+                put(ceil, "part_number\n411301\n411302\n611999\n", "AIR edits CEILING's list", "2026-11-01T06:00:00")
+                later = bom.load_sources(["main", "air"])
+            finally:
+                bom.ROOT = old
+        self.assertIn("411302", src[ceil][0])                # main's merged list, not AIR's old copy
+        self.assertTrue(src[ceil][1].startswith("main"), src[ceil][1])
+        self.assertTrue(src[air][1].startswith("air"))       # AIR's own list is read
+        self.assertIn("611999", later[ceil][0])              # AIR's own later change wins
+
+    def test_a_rebase_keeps_the_author_time_and_a_dropped_branch_edit_is_named(self):
+        # A rebase gives each commit a new committer time and keeps its author time: AIR's rebased copy of CEILING's
+        # old list (authored 01:00, committed 06:00) still loses to CEILING's squash merge on main (05:00). And a
+        # branch's own edit of the joints register, older than main's, falls back to main's copy and is listed.
+        import os
+        import subprocess
+        import tempfile
+        ceil = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv"
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a, when="2026-11-01T00:00:00", committed=None):
+                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": committed or when}
+                return subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                                      check=True, capture_output=True, text=True, env=env).stdout
+
+            def put(path, text, when, committed=None):
+                Path(d, path).parent.mkdir(parents=True, exist_ok=True)
+                Path(d, path).write_text(text, encoding="utf-8")
+                g("add", "-A", when=when)
+                g("commit", "-q", "-m", path, when=when, committed=committed)
+
+            g("init", "-q")
+            g("checkout", "-q", "-b", "main")
+            put(bom.REGISTER, "register v1", "2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "air")
+            put(ceil, "part_number\n411301\n", "2026-11-01T01:00:00", committed="2026-11-01T06:00:00")
+            put(bom.REGISTER, "register v1, AIR's edit", "2026-11-01T02:00:00", committed="2026-11-01T06:00:00")
+            g("checkout", "-q", "main")
+            put(ceil, "part_number\n411301\n411302\n", "2026-11-01T05:00:00")
+            put(bom.REGISTER, "register v2", "2026-11-01T05:30:00")
+            old = bom.ROOT
+            bom.ROOT = Path(d)
+            bom.FELL_BACK.clear()
+            try:
+                src = bom.load_sources(["main", "air"])
+                fell = list(bom.FELL_BACK)
+                lines = bom.fell_back_lines({"air": "PR #91"}, keep=bom.wanted)
+            finally:
+                bom.ROOT = old
+                bom.FELL_BACK.clear()
+        self.assertIn("411302", src[ceil][0])               # main's merged list, by author time
+        self.assertEqual(src[bom.REGISTER][0], "register v2")
+        self.assertEqual(sorted(fell), [("air", ceil), ("air", bom.REGISTER)])
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(any(x.startswith(f"`{bom.REGISTER}`: PR #91 changed it, but main changed it later") for x in lines), lines)
+
     def test_a_packing_list_adds_only_packaging_items(self):
         pk = ("label,part_number,name,name_vi,pallet,kg,kg_status,class\n"
               "1-01,111501,BASE - SEAL MAT - F1,,1,1.05,calculation,MP\n"
@@ -288,6 +376,127 @@ class RefsAndPacking(unittest.TestCase):
         parts, skipped, register, reg_where = bom.build(src)
         _, missing = bom.check(parts, register, reg_where, [path])
         self.assertTrue(missing["Packing and Assembly"][0].startswith("no packaging items"), missing)
+
+
+class NumberAllocation(unittest.TestCase):
+    """D-120: the master BOM gives out frame-member and fill-piece numbers before a team's list uses them."""
+    HDR = "part_number,name,name_vi,kind,team,parent,qty_per_parent,qty_per_pod,basis,status,note\n"
+    ROW = ("412101,CEILING - FRAME SIDE MEMBER - C1,Trần trái - thanh cạnh của khung,MP,CEILING,411101,1,1,"
+           "\"aluminium 20 x 40 x 1.2, 1455.00 long\",ALLOCATED,\n")
+
+    def go(self, alloc, team_rows=""):
+        sources = {bom.ALLOCATION: self.HDR + alloc}
+        if team_rows:
+            sources[CEIL] = CEIL_HDR + team_rows
+        return run(sources)
+
+    def test_a_free_number_is_a_master_row_with_no_mass(self):
+        parts, _, register, fails, _ = self.go(self.ROW)
+        self.assertEqual(fails, [])
+        rows = [r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "allocated number"]
+        self.assertEqual(len(rows), 1)
+        r = rows[0]
+        self.assertEqual((r["part_number"], r["group"], r["make_buy"], r["qty_per_pod"]), ("412101", "CEILING", "make", 1.0))
+        self.assertIsNone(r.get("mass_each_kg"))
+        self.assertIn("not in any parts list yet", r["note"])     # the mechanical check reads it as a placeholder
+        self.assertEqual(r["name_vi"], "Trần trái - thanh cạnh của khung")
+        pod = bom.master_rows(parts, register, {})[0]
+        self.assertEqual(pod["mass_total_kg"], 0)                 # it adds no mass
+
+    def test_a_team_using_it_for_the_same_item_takes_it(self):
+        team = "412101,CEILING - FRAME SIDE MEMBER - C1,,MP,411101,1,1,aluminium 6063-T6,0.31,calculation,P01,DRAFT,list\n"
+        parts, _, register, fails, _ = self.go(self.ROW, team)
+        self.assertEqual(fails, [])
+        self.assertFalse([r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "allocated number"])
+        self.assertIn("| 412101 | CEILING - FRAME SIDE MEMBER - C1 | 411101 | 1 | in use |",
+                      bom.report(parts, [], register, {}, fails, {}, {}, []))
+
+    def test_a_team_using_it_for_another_item_fails(self):
+        team = "412101,CEILING - SKIN - C1,,MP,410101,1,1,ACP 3 mm,6.2,calculation,P01,DRAFT,list\n"
+        _, _, _, fails, _ = self.go(self.ROW, team)
+        self.assertTrue(any(f.startswith("allocated number 412101") and "CEILING - SKIN - C1" in f for f in fails), fails)
+
+    def test_a_cancelled_number_is_never_reused(self):
+        team = "412101,CEILING - FRAME SIDE MEMBER - C1,,MP,411101,1,1,aluminium 6063-T6,0.31,calculation,P01,DRAFT,list\n"
+        _, _, _, fails, _ = self.go(self.ROW.replace("ALLOCATED", "CANCELLED"), team)
+        self.assertTrue(any(f.startswith("cancelled number 412101 used") for f in fails), fails)
+        parts, _, register, fails2, _ = self.go(self.ROW.replace("ALLOCATED", "CANCELLED"))
+        self.assertEqual(fails2, [])
+        self.assertFalse([r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "allocated number"])
+
+    def test_bad_rows_fail(self):
+        bad = (self.ROW.replace("412101", "410501")                          # an assembly-band number for a made part
+               + self.ROW.replace("412101", "211000")                       # a reserved old number (D-28)
+               + self.ROW.replace("412101", "992101")                       # no such family
+               + self.ROW + self.ROW                                        # allocated twice
+               + self.ROW.replace("412101", "412102").replace("ALLOCATED", "TAKEN"))
+        _, _, _, fails, _ = self.go(bad)
+        for want in ("allocated 410501", "outside the MP band", "allocated 211000", "reserved old number",
+                     "family 99 is not in conventions", "allocated twice", "status 'TAKEN'"):
+            self.assertTrue(any(want in f for f in fails), (want, fails))
+
+    def test_the_real_list_is_clean(self):
+        path = bom.ROOT / bom.ALLOCATION
+        text = path.read_text(encoding="utf-8")
+        alloc = bom.parse_allocation(text, "working tree")
+        self.assertGreater(len(alloc), 0)
+        self.assertEqual(len({a["part_number"] for a in alloc}), len(alloc))
+        bom.ALLOCATED[:] = alloc
+        try:
+            fails = bom.check_allocation([], {})
+        finally:
+            bom.ALLOCATED.clear()
+        self.assertEqual(fails, [])
+        for a in alloc:
+            self.assertTrue(a["name"] and a["name_vi"] and a["basis"] and a["parent"], a["part_number"])
+            self.assertIn(a["team"], ("WALL", "CEILING"))
+
+
+class FallBackReport(unittest.TestCase):
+    """The files read from main over a branch's own edit: the report's section, its filter and the printed lines."""
+    CEIL = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv"
+    FELL = [("origin/air", CEIL), ("origin/air", "v2/03-Manufacturing/air/NOTES.md"),
+            ("origin/air", "v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md")]
+
+    def setUp(self):
+        bom.FELL_BACK[:] = self.FELL
+
+    def tearDown(self):
+        bom.FELL_BACK.clear()
+
+    def test_the_report_lists_only_the_lists_it_reads(self):
+        text = bom.report([], [], [], {}, [], {}, {}, ["origin/main", "origin/air"])
+        self.assertIn("Read from main although a branch changed them, because main changed them later:", text)
+        self.assertIn(f"- `{self.CEIL}`: origin/air changed it, but main changed it later", text)
+        self.assertNotIn("NOTES.md", text)                 # not a parts list: the BOM never reads it
+        self.assertNotIn("PACKAGING-PLAN", text)           # a packing output, not the packing list
+
+    def test_no_fallback_no_section(self):
+        bom.FELL_BACK.clear()
+        self.assertNotIn("Read from main although", bom.report([], [], [], {}, [], {}, {}, []))
+
+    def test_main_prints_them(self):
+        import contextlib
+        import io
+        out, old = io.StringIO(), bom.load_sources
+        bom.load_sources = lambda refs: {}
+        try:
+            with contextlib.redirect_stdout(out):
+                bom.main(["--no-write", "--ref", "origin/main", "--ref", "origin/air"])
+        finally:
+            bom.load_sources = old
+        self.assertIn(f"  read from main: `{self.CEIL}`: origin/air changed it", out.getvalue())
+        self.assertNotIn("NOTES.md", out.getvalue())
+
+    def test_the_lines_are_printed(self):
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            bom.print_fell_back({"origin/air": "PR #91"})
+        self.assertEqual(out.getvalue().splitlines(),
+                         [f"  read from main: `{self.CEIL}`: PR #91 changed it, but main changed it later, so main's copy is "
+                          "read until that branch rebases"])
 
 
 class FamilyRows(unittest.TestCase):

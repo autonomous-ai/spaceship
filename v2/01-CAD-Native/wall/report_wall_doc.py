@@ -32,9 +32,9 @@ def holes(body):
     slot reports its real centre too (flagged partial)."""
     out = []
     for f in body.faces:
-        g = f.geometry
-        if g.surfaceType != adsk.core.SurfaceTypes.CylinderSurfaceType:
+        if f.geometry.surfaceType != adsk.core.SurfaceTypes.CylinderSurfaceType:
             continue
+        g = adsk.core.Cylinder.cast(f.geometry)
         ax = max(range(3), key=lambda i: abs((g.axis.x, g.axis.y, g.axis.z)[i]))
         o = (g.origin.x * 10, g.origin.y * 10, g.origin.z * 10)
         fb = box(f)
@@ -55,8 +55,8 @@ def run(_context):
     rep = {"document": doc.name, "version": doc.dataFile.versionNumber if doc.dataFile else None,
            "saved": doc.isSaved, "modified": doc.isModified, "components": [], "parameters": []}
     for c in design.allComponents:
-        comp = {"part_number": c.partNumber, "name": c.name, "description": c.description,
-                "is_root": c == design.rootComponent, "bodies": []}
+        comp: dict = {"part_number": c.partNumber, "name": c.name, "description": c.description,
+                      "is_root": c == design.rootComponent, "bodies": []}
         for b in c.bRepBodies:
             pp = b.physicalProperties
             comp["bodies"].append({"name": b.name, "box": box(b), "volume_mm3": r(b.volume * 1000.0, 1),

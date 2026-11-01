@@ -29,7 +29,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class  # noqa: E402
+from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class, parse_file_name, Finding, owner_for  # noqa: E402
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
 import c_drawings  # noqa: E402
@@ -67,8 +67,10 @@ def run(root, rev):
         if not bodies:
             continue
         findings += c_geometry.check_shell(root, mdl, bodies)
-        if c_geometry.shell_ready(mdl, bodies):
-            ran |= {"C01", "C01:" + mdl}
+        faces = c_geometry.shell_faces_ready(mdl, bodies)
+        if faces:
+            ran |= {"C01", "C01:" + mdl} | {"C01:%s-%s" % (mdl, z) for z in faces}
+        inputs["shell_faces_" + mdl] = sorted(faces)
         if rules:
             findings += c_geometry.check_gap_rules(root, mdl, bodies, rules)
             ran |= {"C02:" + mdl}
@@ -99,9 +101,19 @@ def run(root, rev):
     inputs["part_steps"] = [rel(root, p) for p in per_part]
     # STEP products for the BOM match and the drawings
     step_products, holes_by_pn, usage, faces_by_pn, flat_by_pn = {}, {}, {}, {}, {}
+    bends_by_pn, two_wall_by_pn, shapes_by_pn = {}, {}, {}
     for p in per_part:
         s = c_geometry.load_step(p)
         counts, _tops = s.usage_counts()
+        fn = parse_file_name(p)
+        if fn and _tops and fn["pn"] not in _tops:
+            r = rel(root, p)
+            findings.append(Finding(
+                "C06", "top-part-number", fn["pn"], "major",
+                "%s's top component carries part number '%s', not %s from its file name (conventions section 6); "
+                "until it does, the assembled checks leave this file out." % (os.path.basename(r), _tops[0], fn["pn"]),
+                "Set the root component's part number to %s in the native design and export the STEP again." % fn["pn"],
+                r, owner_for(r, fn["pn"])))
         for prod in s.products():
             pn = prod["part_number"]
             d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"]})
@@ -109,12 +121,25 @@ def run(root, rev):
             d["count"] = max(d["count"], counts.get(pn, 0))
         for inst in s.instances():
             so = s.solid(inst["solid"])
-            holes_by_pn.setdefault(inst["part_number"], so.holes)
+            if so.voids:                # a sealed void inside: read by its outer shell, noted here
+                inputs.setdefault("solids_with_voids", []).append(
+                    "%s: %s (%d void%s; outer shell used)" % (os.path.basename(p), inst["name"], so.voids,
+                                                            "s" if so.voids > 1 else ""))
+            pn = inst["part_number"]
+            # the holes of every different body of a part (a frame's members), once per shape: copies of one part
+            # (seven washers under one number) and the same part in a second file count once
+            shape = c_drawings.body_shape(so)
+            if shape not in shapes_by_pn.setdefault(pn, set()):
+                shapes_by_pn[pn].add(shape)
+                holes_by_pn.setdefault(pn, []).extend(so.holes)
+                two_wall_by_pn[pn] = two_wall_by_pn.get(pn, 0) + c_drawings.two_wall_axes(so.holes)
+                bends_by_pn[pn] = max(bends_by_pn.get(pn, 0), len(so.bends))
             faces_by_pn.setdefault(inst["part_number"], []).append(len(so.faces))
             fl = sf.flat_plate(so)
             if not fl[0] or inst["part_number"] not in flat_by_pn:      # one body that isn't flat decides
                 flat_by_pn[inst["part_number"]] = fl
             usage.setdefault(inst["part_number"], []).append((rel(root, p), 1, [" / ".join(inst["path"][1:])]))
+    findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
     if plists:
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
@@ -139,7 +164,8 @@ def run(root, rev):
             for row in rows:
                 if row["part_number"]:
                     src_by_pn.setdefault(row["part_number"], rel(root, p))
-        findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn)
+        findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn,
+                                              bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn)
         ran.add("C05")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,

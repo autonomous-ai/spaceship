@@ -25,7 +25,6 @@ driven from their own bay; B1/B3 have a plain Ø7.0 hole.
 """
 
 import os
-
 ARGS = globals().get("SCRIPT_ARGS", {})
 POSITION = ARGS.get("pos", "B1").upper()
 if POSITION not in ("B1", "B2", "B3", "B4"):
@@ -35,6 +34,11 @@ SCRIPT_ARGS = dict(ARGS, side="L", row=str(_ROW), part=ARGS.get("part", "panel")
 _LIB = os.path.join(ARGS["repo_root"], "v2/01-CAD-Native/wall/wall_side_panel.py")
 with open(_LIB, "r", encoding="utf-8") as _fh:
     exec(compile(_fh.read(), _LIB, "exec"), globals())       # helpers; tables and builders replaced below
+# the library's names, bound here as well so tools/fusion/check_api.py (which can't follow the exec) sees them
+(HW_PARTS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, build_hardware, ev, hole, hw_site, new_comp,
+ pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi) = [globals()[_n] for _n in (
+    "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "build_hardware", "ev", "hole",
+    "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of", "span", "vi")]
 
 import adsk.core      # noqa: E402  (already imported by the library; named here for readers)
 import adsk.fusion    # noqa: E402
@@ -490,7 +494,7 @@ def build_tray_y(design, root, tray, xr, zr):
         lip.name = "FLANGE - TRAY LIPS HOLDING THE FELT"
         body = tray.bRepBodies.item(0)
         big = max((fc for fc in body.faces if fc.geometry.objectType == adsk.core.Plane.classType()
-                   and abs(fc.geometry.normal.y) > 0.99), key=lambda fc: fc.area)
+                   and abs(adsk.core.Plane.cast(fc.geometry).normal.y) > 0.99), key=lambda fc: fc.area)
         fp = tray.flatPattern or tray.createFlatPattern(big)
         print("FLAT|%s|%s" % (tray.partNumber, size(bbox(fp.flatBody))))
     finally:

@@ -2,6 +2,8 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-10-31 21:17 UTC in one lock hold (the cloud copy is the version this run saved) with the glass rebuild and the four part-only designs: the hardware's CAD names are the joints register's (D-99), and the strike is named FRONT - DOOR STRIKE - ENVELOPE, a stand-in for the product (D-104), so its expected overlap with the leaf is no clash (F-103). Same geometry and results as the run below: clash pairs 4, all expected; leaf 43.854 kg, unit 48.59 kg; STEP re-read 0.000 mm; edit test PASS (31 anchors). The parts list is in the process and finish columns, same values.
+
 Run 2026-10-31 18:5x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
 
 ```sh
@@ -68,6 +70,8 @@ The hinge set's rating stays at least 60 kg (PM ruling 2026-10-31: the unit plus
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01 (DRAFT)
 
+Rebuilt 2026-10-31 21:18 UTC in the same lock hold: the magnetic seal half's CAD name is the joints register's, FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD (D-99). Same geometry and results as the run below: clash pairs 0; gap to the door 4.00 mm square to the edge; unit 29.54 kg; STEP re-read 0.000 mm; edit test PASS (16 anchors). Parts list in the process and finish columns, same values.
+
 Run 2026-10-31 18:3x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
 
 ```sh
@@ -89,7 +93,7 @@ Cloud copy: Default Project / FocusPod v2 / `360002_P01_FRONT-FIXED-GLASS-UNIT_C
 - f3d 202,381 bytes; STEP 91,936 bytes; no names in the exports (f3d entries, STEP, CSV, DXF, pictures scanned)
 - edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `360002_P01_FRONT-FIXED-GLASS-UNIT-FRONT_IMG.png` (front, from outside), `...-ISO_IMG.png`: the channel shows on the four held edges, none on the free edge
 
-The U-profile's box is X -66.63 to 964.13, Y -706.5 to -691.5 (15 on the glass plane), Z 95 to 2135. Pane corners in its DXF (X from its leftmost point, Y from its bottom): (285.09, 0), (1026.24, 0), (826.05, 1427.46), (301.39, 2033), (0, 2033). U-profile cut lengths, base / mouth: bottom 744.7 / 729.5, right 1446.5 / 1424.8, diagonal 803.8 / 792.6, top 303.5 / 294.5; mitres 41.0°, 73.5°, 65.5°. Bottom piece: 4 holes 3.4, countersunk 90° to 7 inside, at X 269.4, 484.3, 699.2, 914.1 (50 from each end, 214.9 apart).
+The U-profile's box is X -66.63 to 964.13, Y -706.5 to -691.5 (15 on the glass plane), Z 95 to 2135. Pane corners in its DXF (X from its leftmost point, Y from its bottom): (285.09, 0), (1026.24, 0), (826.05, 1427.46), (301.39, 2033), (0, 2033). U-profile cut lengths, base / mouth: bottom 744.7 / 729.5, right 1446.5 / 1424.8, diagonal 803.8 / 792.6, top 303.5 / 294.5; mitres 41.0°, 73.5°, 65.5°. Bottom piece: 4 holes 3.4, countersunk 90° to 7 inside, at X 269.4, 484.3, 699.2 (50 from the left end, 214.9 apart) and 905.0 (59.1 from the right end, clear of BASE's FR1 joint at X 915; PM ruling 2026-11-01, BASE's last sill rivnut moved with it).
 
 ### Mass (calculation)
 
