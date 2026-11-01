@@ -37,7 +37,8 @@ ZINC = re.compile(r"\bZ\s?(\d{2,3})\b")
 YIELD = re.compile(r"(\d{3})\s*MPa", re.I)
 GALV = re.compile(r"galvani[sz]|\bZ\s?\d{2,3}\b|\bzinc\b", re.I)
 TOUCH_UP = re.compile(r"zinc[- ]rich", re.I)
-SITE_HOLES = (8.5, 9.53, 9.63, 19.0)        # spigot, rivnut (838003's hole, +0.10), access hole (joints register)
+# spigot, rivnut (838003's hole: Ø9.53 +0.10 until each part is rebuilt, then D-163's Ø10.00 +0.10), access hole
+SITE_HOLES = (8.5, 9.53, 9.63, 10.0, 10.1, 19.0)
 
 
 # ----------------------------------------------------------------- the spec
