@@ -1682,3 +1682,31 @@ def test_a_pre_check_keeps_the_rule_rows_a_pr_adds(tmp_path):
     assert rows == ["part_number,hole_dia_mm", "111601,13.0", "368004,3.4", "351305,7.0"]
     dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "b"))
     assert "351305,7.0" not in open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read()
+
+
+def test_walls_l1_names_a_wrapped_step_string_and_the_teams_own_finish():
+    # the Lead's ruling on WALL's L1 sample (2026-11-01): fix the checks, don't rename parts
+    from common import head_noun, is_soft
+    # (1) a fill piece is fill, wherever the size sits in the function field
+    n = "WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON"
+    assert head_noun(n) == "FILL" and is_soft(n)
+    assert head_noun("BASE - SEAL HOLDER - LH") == "HOLDER" and not is_soft("BASE - SEAL HOLDER - LH")
+    assert head_noun("WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH") == "BACK"
+    assert head_noun("LINING - FILL - CEILING - BAY A") == "FILL" and head_noun("FRONT - DROP SEAL - ATHMER") == "SEAL"
+    # (2) Fusion wraps a long STEP string across lines; the line break is no part of the name
+    assert sf._decode("'WALL - FILL - SIDE LOWER - COMMO\nN'") == "WALL - FILL - SIDE LOWER - COMMON"
+    assert sf._decode("'A\r\nB'") == "AB"
+    # (3) the team's own row gives the finish; the master BOM's empty row doesn't hide it
+    team = {"part_number": "831007", "name": "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL",
+            "material": "steel plate 2.0, galvanized", "grade": "", "finish": "galvanized Z100", "_raw": {}}
+    skin = {"part_number": "211301", "name": "WALL - SKIN - SIDE LOWER - LH", "material": "ACP aluminium", "grade": "",
+            "finish": "PVDF", "_raw": {}}
+    master = dict(team, material="", finish="", _raw={"row_type": "part"})
+    plists = [("/r/v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", [team, skin]),
+              ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
+    assert c_parts.materials_by_pn("/r", plists)["831007"] == "steel plate 2.0, galvanized galvanized Z100"
+    assert c_parts.check_mixed_metals("/r", plists, [("831007", "211301", "x.step")]) == []
+    bare = [("/r/v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", [dict(team, material="", finish=""), skin]),
+            ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
+    fs = c_parts.check_mixed_metals("/r", bare, [("831007", "211301", "x.step")])
+    assert [f.rule for f in fs] == ["bare-steel-on-aluminium"]         # with no material at all, the name still speaks

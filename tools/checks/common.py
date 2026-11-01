@@ -152,12 +152,21 @@ FASTENER_WORDS = re.compile(r"^HARDWARE - (BOLT|SCREW|NUT|WASHER|RIVNUT|RIVET NU
 SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 
 
+# a size or a code in the function field ('F01 240 X 1102.7', '40 X 40', 'M6') is no word of the function
+SIZE_OR_CODE = re.compile(r"\b\d[\d.,]*(?:\s*[X\u00d7]\s*\d[\d.,]*)*\b|\b[A-Z]+\d[\w.]*\b")
+PIECE = ("PIECE", "PIECES")
+
+
 def head_noun(name):
     """The last word of a part name's FUNCTION field (conventions section 5): 'BASE - SEAL HOLDER - LH'
-    gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, 'FRONT - DROP SEAL - ATHMER' gives SEAL."""
+    gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, 'FRONT - DROP SEAL - ATHMER' gives SEAL. Sizes and
+    codes are left out, and a piece of a soft good is that good: 'WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE
+    LOWER - COMMON' gives FILL (the Lead's ruling on WALL's L1 sample, 2026-11-01)."""
     fields = [f.strip() for f in (name or "").upper().split(" - ")]
     func = fields[1] if len(fields) > 1 else fields[0]
-    words = re.findall(r"[A-Z][A-Z-]*", func)
+    words = re.findall(r"[A-Z][A-Z-]*", SIZE_OR_CODE.sub(" ", func))
+    if len(words) >= 2 and words[-1] in PIECE and SOFT_HEADS.fullmatch(words[-2]):
+        return words[-2]
     return words[-1] if words else ""
 
 
