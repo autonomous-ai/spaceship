@@ -231,10 +231,10 @@ WALL_PARAMS = [
      "Sherex CAH3-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not "
      "modelled"),
     ("m6_d", "6 mm", "mm", "calculation", "M6 threads shown at their 6 mm major diameter (no modelled thread)"),
-    ("spigot_pin_d", "8 mm", "mm", "source", "joints register H-05: Ø8 stainless pin (PROPOSED, assumption sizes)"),
-    ("spigot_proud", "8 mm", "mm", "source", "joints register H-05: stands 8 proud (read as: of the joint face)"),
-    ("spigot_thread_l", "10 mm", "mm", "assumption",
-     "M6 thread into the spigot rivnut; H-05 gives no length; 10 stays inside the rivnut's 10.16"),
+    ("spigot_pin_d", "8 mm", "mm", "source", "joints register H-05: Ø8 stainless pin; the part itself is Joints' "
+                                             "831001 STEP, placed as it is (F-189)"),
+    ("spigot_proud", "8 mm", "mm", "source", "joints register H-05 and Joints' README: the pin's top 8.00 above the "
+                                             "tube face (Z 7.24 above its origin on the rivnut head)"),
 ]
 
 # ELECTRICAL's interface features in WALL parts (ELECTRICAL P01, electrical_model.py, PR #64, and the PM's
@@ -721,7 +721,7 @@ def pattern_feat(comp, feats, axis, count_expr, pitch_expr, label):
     return pat
 
 
-HW_SITES = []          # rivnut sites recorded by the joint features, built as bodies by build_hardware
+HW_SITES = []          # rivnut sites recorded by the joint features, given their hardware by place_hardware
 ALLOWED_CLASH = []     # body name pairs that overlap by design (a spigot's thread in its rivnut's bore)
 
 
@@ -804,64 +804,6 @@ def name_along(comp, axis, known, first, prefix):
         b.name = "%s %d" % (prefix, i + 1)
         out[b.name] = b
     return out
-
-
-def build_hardware(design, root, out):
-    """The joint hardware the panel carries from the factory, as bodies (joints register 2.1; sizes H-03, H-05,
-    H-08): at every rivnut hole an H-03 rivnut, with an H-08 stop washer under its head at a stopped joint, and an
-    H-05 spigot in each spigot rivnut. One body per site, patterned like its holes, so an edit moves them with
-    the holes. The rivnut is its installed envelope: head, and the body to its installed length (the bulge inside
-    the tube is not modelled); threads are shown at 6 mm. The bolts stay in the parts list (bought, ISO)."""
-    if not HW_SITES:
-        return
-    comps = {}
-    n0 = len(out)
-    for s in HW_SITES:
-        ax, face, o, pos, lab = s["axis"], s["face"], s["out"], s["pos"], s["label"]
-        sg = "+" if o > 0 else "-"
-        made = []
-        if s["washer"]:
-            c = comps.get("stopw") or comps.setdefault("stopw", new_comp(root, "stopw"))
-            w = cyl(design, c, "STOP WASHER %s" % lab, ax, face, o, pos, "stopw_od", "stopw_t", "stopw_id")
-            made.append((c, w, "STOP WASHER - %s" % lab))
-            head0 = "(%s) %s stopw_t" % (face, sg)
-        else:
-            head0 = face
-        c = comps.get("rivnut") or comps.setdefault("rivnut", new_comp(root, "rivnut"))
-        head = cyl(design, c, "RIVNUT HEAD %s" % lab, ax, head0, o, pos, "rivnut_head_d", "rivnut_head_t", "m6_d")
-        shank = cyl(design, c, "RIVNUT BODY %s" % lab, ax, head0, -o, pos, "rivnut_body_d", "rivnut_len", "m6_d")
-        made.append((c, join_bodies(c, head, [shank], "RIVNUT %s" % lab), "RIVNUT - %s" % lab))
-        if s["spigot"]:
-            c = comps.get("spigot") or comps.setdefault("spigot", new_comp(root, "spigot"))
-            top = "(%s) %s rivnut_head_t" % (head0, sg)
-            pin = cyl(design, c, "SPIGOT PIN %s" % lab, ax, top, o, pos, "spigot_pin_d",
-                      "spigot_proud - rivnut_head_t" + (" - stopw_t" if s["washer"] else ""))
-            thread = cyl(design, c, "SPIGOT THREAD %s" % lab, ax, top, -o, pos, "m6_d", "spigot_thread_l")
-            made.append((c, join_bodies(c, pin, [thread], "SPIGOT %s" % lab), "SPIGOT - %s" % lab))
-        for c, b, name in made:
-            if s["pat"]:
-                pax, cnt, pitch = s["pat"]
-                known = [q for q in c.bRepBodies if not q == b]
-                pattern_feat(c, [b], pax, cnt, pitch, name)
-                out.update(name_along(c, pax, known, b, name))
-            else:
-                b.name = name
-                out[name] = b
-        if s["spigot"]:
-            rv = [nm for c, b, nm in made if nm.startswith("RIVNUT")][0]
-            sp = [nm for c, b, nm in made if nm.startswith("SPIGOT")][0]
-            if s["pat"]:
-                cnt = int(round(design.userParameters.itemByName(s["pat"][1]).value)) if not s["pat"][1].isdigit() \
-                    else int(s["pat"][1])
-                ALLOWED_CLASH.extend(("%s %d" % (rv, i + 1), "%s %d" % (sp, i + 1)) for i in range(cnt))
-            else:
-                ALLOWED_CLASH.append((rv, sp))
-    for key, label in (("rivnut", "ALUMINIUM 5056 RIVNUT"), ("stopw", "ALUMINIUM STOP WASHER"),
-                       ("spigot", "STAINLESS SPIGOT")):
-        if key in comps:
-            set_material(design, list(comps[key].bRepBodies), key, label)
-    print("step 7: joint hardware, %d bodies in %d components (%s)" % (
-        len(out) - n0, len(comps), ", ".join(c.partNumber for c in comps.values())))
 
 
 def settle_props(app, root, pn, desc, seconds=30.0):
@@ -1072,33 +1014,88 @@ def root_occ(design, comp):
     return occs.item(0) if occs.count else None
 
 
-def poly_on_x(design, comp, x_expr, pts, label):
-    """A fully constrained closed polygon on a plane normal to X at x_expr: pts = [(y_expr, z_expr), ...], every
-    corner dimensioned from the sketch origin by its expressions."""
-    pl = plane_at(design, comp, "x", x_expr, label)
+def poly_plan(sxy, exprs):
+    """How to constrain a closed polygon (pure, tested offline): sxy = the corners' sketch coordinates, exprs =
+    each corner's (sketch-x expression, sketch-y expression). A side that runs along a sketch axis gets its
+    vertical or horizontal constraint, which ties its two corners along that axis; each group of tied corners is
+    then dimensioned once from the sketch origin, so no dimension repeats a constraint (the L1 run of 2026-11-01
+    failed on exactly that: Fusion constrains such sides itself). Returns (sides: [(i, 'V' or 'H')], dims: [(i,
+    sketch axis 'x' or 'y', expression)]). Raises when tied corners carry different expressions (the tie would
+    override one of them on an edit)."""
+    n = len(sxy)
+    parent = {"x": list(range(n)), "y": list(range(n))}
+
+    def find(ax, i):
+        while parent[ax][i] != i:
+            parent[ax][i] = parent[ax][parent[ax][i]]
+            i = parent[ax][i]
+        return i
+    sides = []
+    for i in range(n):
+        j = (i + 1) % n
+        if abs(sxy[i][0] - sxy[j][0]) < 1e-9:
+            sides.append((i, "V"))
+            parent["x"][find("x", i)] = find("x", j)
+        elif abs(sxy[i][1] - sxy[j][1]) < 1e-9:
+            sides.append((i, "H"))
+            parent["y"][find("y", i)] = find("y", j)
+    dims, seen = [], {}
+    for i in range(n):
+        for k, ax in enumerate(("x", "y")):
+            root = find(ax, i)
+            if root in seen.setdefault(ax, {}):
+                if seen[ax][root] != exprs[i][k]:
+                    raise ValueError("corners tied along sketch %s carry %r and %r" % (ax, seen[ax][root], exprs[i][k]))
+                continue
+            seen[ax][root] = exprs[i][k]
+            dims.append((i, ax, exprs[i][k]))
+    return sides, dims
+
+
+def poly_on(design, comp, axis, plane_expr, pts, label):
+    """A fully constrained closed polygon on a plane normal to `axis` at plane_expr: pts = [(a, b), ...], the
+    corners' expressions in the plane's other two axes in xyz order (axis x: (y, z); y: (x, z)). Constrained as
+    poly_plan says: straight sides vertical or horizontal, each tied group of corners dimensioned once from the
+    sketch origin by its expressions."""
+    pl = plane_at(design, comp, axis, plane_expr, label)
     sk = comp.sketches.add(pl)
     sk.name = "SKETCH - %s" % label
-    x = ev(design, x_expr)
-    sp = [sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(
-        x * MM, ev(design, y) * MM, ev(design, z) * MM))) for y, z in pts]
-    for i in range(len(sp)):
-        sk.sketchCurves.sketchLines.addByTwoPoints(sp[i], sp[(i + 1) % len(sp)])
+    other = [a for a in "xyz" if a != axis]
+    v = ev(design, plane_expr)
+    sp = []
+    for a, b in pts:
+        c = {axis: v, other[0]: ev(design, a), other[1]: ev(design, b)}
+        sp.append(sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM,
+                                                                                    c["z"] * MM))))
+    lines = [sk.sketchCurves.sketchLines.addByTwoPoints(sp[i], sp[(i + 1) % len(sp)]) for i in range(len(sp))]
+    # each corner's expressions along the sketch's own x and y
+    sa = {m: sketch_axis_of(sk, m) for m in other}
+    exprs = [tuple(e for m, e in sorted(((sa[other[0]], a), (sa[other[1]], b)))) for a, b in pts]
+    sides, dims = poly_plan([(q.geometry.x, q.geometry.y) for q in sp], exprs)
+    gc = sk.geometricConstraints
+    kinds = {"V": adsk.fusion.VerticalConstraint.classType(), "H": adsk.fusion.HorizontalConstraint.classType()}
+    for i, kind in sides:
+        if not any(c.objectType == kinds[kind] for c in lines[i].geometricConstraints):
+            (gc.addVertical if kind == "V" else gc.addHorizontal)(lines[i])
     H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
     V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
-    for q, (y, z) in zip(sp, pts):
-        for axis, e in (("y", y), ("z", z)):
-            sa = sketch_axis_of(sk, axis)
-            if abs(ev(design, e)) < 1e-6:
-                (sk.geometricConstraints.addVerticalPoints if sa == "x" else
-                 sk.geometricConstraints.addHorizontalPoints)(q, sk.originPoint)
-            else:
-                g = q.geometry
-                sk.sketchDimensions.addDistanceDimension(sk.originPoint, q, H if sa == "x" else V,
-                                                         adsk.core.Point3D.create(g.x + 0.3, g.y + 0.3, 0)
-                                                         ).parameter.expression = "abs(%s)" % e
+    for i, ax, e in dims:
+        q = sp[i]
+        if abs(ev(design, e)) < 1e-6:
+            (gc.addVerticalPoints if ax == "x" else gc.addHorizontalPoints)(q, sk.originPoint)
+        else:
+            g = q.geometry
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, q, H if ax == "x" else V,
+                                                     adsk.core.Point3D.create(g.x + 0.3, g.y + 0.3, 0)
+                                                     ).parameter.expression = "abs(%s)" % e
     if not sk.isFullyConstrained:
         raise RuntimeError("sketch not fully constrained: " + sk.name)
     return sk, pl
+
+
+def poly_on_x(design, comp, x_expr, pts, label):
+    """poly_on on a plane normal to X (a side wall's frame plane): pts = [(y_expr, z_expr), ...]."""
+    return poly_on(design, comp, "x", x_expr, pts, label)
 
 
 def mitre(design, comp, body, tri, label, x_lo):
@@ -1339,31 +1336,66 @@ def joint_features(design, members, out):
 HW_PARTS_BUILT = {}
 
 
+# Joints' own STEPs of the shared parts (one source, as D-95 for the keys; F-189), placed as they are. Their
+# origins (v2/01-CAD-Native/joints/README.md): the spigot's on its axis at the top of its rivnut's head, +Z up the
+# pin; the washer's on its axis at its bottom face, +Z through its 1.5.
+JOINTS_STEP = {"spigot": "v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
+               "stopw": "v2/03-Manufacturing/joints/831002_P01_HARDWARE-STOP-WASHER_STEP.step"}
+JOINTS_BODY = {"spigot": "SPIGOT", "stopw": "STOP WASHER"}
+
+
+def import_joints_part(design, root, key):
+    """Joints' STEP of a shared part imported once into the root as its own component, renamed with the
+    register's number and name; its one body keeps Joints' shape, origin and axes. Returns (component, body)."""
+    app = adsk.core.Application.get()
+    path = os.path.join(ARGS["repo_root"], JOINTS_STEP[key])
+    if not os.path.isfile(path):
+        raise RuntimeError("Joints' STEP %s is missing" % JOINTS_STEP[key])
+    n0 = root.occurrences.count
+    opts = app.importManager.createSTEPImportOptions(path)
+    opts.isViewFit = False
+    if not app.importManager.importToTarget(opts, root):
+        raise RuntimeError("could not import %s" % JOINTS_STEP[key])
+    new = [root.occurrences.item(i) for i in range(n0, root.occurrences.count)]
+    if len(new) != 1:
+        raise RuntimeError("importing %s added %d occurrences, not 1" % (JOINTS_STEP[key], len(new)))
+    occ = new[0]
+    c = occ.component
+    while c.bRepBodies.count == 0 and c.occurrences.count == 1:      # a STEP product wrapped in an assembly
+        c = c.occurrences.item(0).component
+    if c.bRepBodies.count != 1:
+        raise RuntimeError("%s holds %d bodies, not 1" % (JOINTS_STEP[key], c.bRepBodies.count))
+    m = occ.transform2
+    if any(abs(m.getCell(r, k) - (1.0 if r == k else 0.0)) > 1e-9 for r in range(4) for k in range(4)):
+        raise RuntimeError("%s came in moved; Joints' origin is the joint datum" % JOINTS_STEP[key])
+    pn, name, vn = PARTS[key]
+    c.name = "%s %s" % (pn, name)
+    c.partNumber = pn
+    c.description = "%s | %s | %s | Joints' STEP %s" % (name, vn, REV, os.path.basename(JOINTS_STEP[key]))
+    b = c.bRepBodies.item(0)
+    b.name = JOINTS_BODY[key]
+    return c, b
+
+
 def hw_part(design, root, key):
-    """One component per hardware part (D-120), its body built once about the component's origin, axis +Z: the
-    washer from Z 0 up; the rivnut's head from Z 0 up and its body down (Z 0 = the underside of the head); the
-    spigot's pin up and its thread down from Z 0 (= the top of the rivnut head). Every copy is placed by a rigid
-    joint (or a pattern of jointed copies), so it follows its hole on an edit. Returns (component, body, the
-    joint circle's diameter expression)."""
+    """One component per hardware part (D-120), placed by joints. The spigot 831001 and the stop washer 831002
+    are Joints' own STEPs (one source, F-189); the rivnut 838003 is WALL's envelope of the Sherex part (no maker
+    model in the repo): its head from Z 0 up, its body down (Z 0 = the underside of the head). Every copy is
+    placed by a rigid joint (or a pattern of jointed copies), so it follows its hole on an edit. Returns
+    (component, body, the joint circle's diameter expression)."""
     if key in HW_PARTS_BUILT:
         return HW_PARTS_BUILT[key]
-    c = new_comp(root, key)
-    o = {"x": "0 mm", "y": "0 mm"}
-    if key == "stopw":
-        b = cyl(design, c, "STOP WASHER", "z", "0 mm", +1, o, "stopw_od", "stopw_t", "stopw_id")
-        b.name, ring = "STOP WASHER", "stopw_od"
-    elif key == "rivnut":
+    if key in JOINTS_STEP:
+        c, b = import_joints_part(design, root, key)
+        ring = {"stopw": "stopw_od", "spigot": "spigot_pin_d"}[key]
+    else:
+        c = new_comp(root, key)
+        o = {"x": "0 mm", "y": "0 mm"}
         head = cyl(design, c, "RIVNUT HEAD", "z", "0 mm", +1, o, "rivnut_head_d", "rivnut_head_t", "m6_d")
         shank = cyl(design, c, "RIVNUT BODY", "z", "0 mm", -1, o, "rivnut_body_d", "rivnut_len", "m6_d")
         b = join_bodies(c, head, [shank], "RIVNUT")
         b.name, ring = "RIVNUT", "rivnut_head_d"
-    else:
-        pin = cyl(design, c, "SPIGOT PIN", "z", "0 mm", +1, o, "spigot_pin_d", "spigot_proud - rivnut_head_t")
-        thread = cyl(design, c, "SPIGOT THREAD", "z", "0 mm", -1, o, "m6_d", "spigot_thread_l")
-        b = join_bodies(c, pin, [thread], "SPIGOT")
-        b.name, ring = "SPIGOT", "spigot_pin_d"
-    set_material(design, [b], key, {"rivnut": "ALUMINIUM 5056 RIVNUT", "stopw": "ALUMINIUM STOP WASHER",
-                                    "spigot": "STAINLESS SPIGOT"}[key])
+        set_material(design, [b], key, "ALUMINIUM 5056 RIVNUT")
     HW_PARTS_BUILT[key] = (c, b, ring)
     return HW_PARTS_BUILT[key]
 
@@ -1374,9 +1406,12 @@ def circle_edge(body, dia_mm, centre=None, axis=None):
     found = []
     for e in body.edges:
         g = e.geometry
-        if g.objectType != adsk.core.Circle3D.classType():
+        if g.objectType == adsk.core.Circle3D.classType():
+            cg = adsk.core.Circle3D.cast(g)
+        elif g.objectType == adsk.core.Arc3D.classType():       # an imported circle split in two arcs
+            cg = adsk.core.Arc3D.cast(g)
+        else:
             continue
-        cg = adsk.core.Circle3D.cast(g)
         if abs(cg.radius * 20.0 - dia_mm) > 0.02:
             continue
         p = {"x": cg.center.x * 10.0, "y": cg.center.y * 10.0, "z": cg.center.z * 10.0}

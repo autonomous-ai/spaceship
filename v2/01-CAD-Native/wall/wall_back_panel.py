@@ -39,12 +39,12 @@ with open(_LIB, "r", encoding="utf-8") as _fh:
 # the library's names, bound here as well so tools/fusion/check_api.py (which can't follow the exec) sees them
 (HW_PARTS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, ev, hole, hw_site, new_comp,
  pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi, el_params, el_inside, EL_KIND,
- child, member_numbers, fill_numbers, mitre_triangles, place_hardware) = [
+ child, member_numbers, fill_numbers, mitre_triangles, place_hardware, poly_on) = [
     globals()[_n] for _n in (
         "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "ev",
         "hole", "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of",
         "span", "vi", "el_params", "el_inside", "EL_KIND", "child", "member_numbers", "fill_numbers",
-        "mitre_triangles", "place_hardware")]
+        "mitre_triangles", "place_hardware", "poly_on")]
 
 import adsk.core      # noqa: E402  (already imported by the library; named here for readers)
 import adsk.fusion    # noqa: E402
@@ -80,7 +80,7 @@ _KEEP = {"skin_t", "tube_w", "bond_t", "tube_d", "tube_t", "stud_t", "stile_pitc
          "bolt_d", "access_d", "rivnut_d", "spigot_d", "spigot_slot", "spigot_edge", "bolt_edge", "pocket_w", "felt_t",
          "tray_t", "tray_h", "lip_w", "bend_r", "felt_c", "gap_h", "clip_zone_h", "clip_zone_dz", "bolt_line_y",
          "stopw_od", "stopw_id", "stopw_t", "rivnut_head_d", "rivnut_head_t", "rivnut_body_d", "rivnut_len", "m6_d",
-         "spigot_pin_d", "spigot_proud", "spigot_thread_l"}
+         "spigot_pin_d", "spigot_proud"}
 WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
     ("lead_in", "1 mm", "mm", "source",
      "joints register 2.10 (R-J9): 1 x 45 degree lead-in on the top edge of each closing-seam face, so the panel "
@@ -170,33 +170,8 @@ def tube_z(design, comp, label, xr, yr, zr, t="tube_t"):
 
 
 def poly_on_y(design, comp, y_expr, pts, label):
-    """A fully constrained closed polygon on a plane normal to Y at y_expr (the back frame lies in XZ): pts =
-    [(x_expr, z_expr), ...], every corner dimensioned from the sketch origin by its expressions (the library's
-    poly_on_x, turned for the back wall)."""
-    pl = plane_at(design, comp, "y", y_expr, label)
-    sk = comp.sketches.add(pl)
-    sk.name = "SKETCH - %s" % label
-    y = ev(design, y_expr)
-    sp = [sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(
-        ev(design, x) * MM, y * MM, ev(design, z) * MM))) for x, z in pts]
-    for i in range(len(sp)):
-        sk.sketchCurves.sketchLines.addByTwoPoints(sp[i], sp[(i + 1) % len(sp)])
-    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
-    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
-    for q, (x, z) in zip(sp, pts):
-        for axis, e in (("x", x), ("z", z)):
-            sa = sketch_axis_of(sk, axis)
-            if abs(ev(design, e)) < 1e-6:
-                (sk.geometricConstraints.addVerticalPoints if sa == "x" else
-                 sk.geometricConstraints.addHorizontalPoints)(q, sk.originPoint)
-            else:
-                g = q.geometry
-                sk.sketchDimensions.addDistanceDimension(sk.originPoint, q, H if sa == "x" else V,
-                                                         adsk.core.Point3D.create(g.x + 0.3, g.y + 0.3, 0)
-                                                         ).parameter.expression = "abs(%s)" % e
-    if not sk.isFullyConstrained:
-        raise RuntimeError("sketch not fully constrained: " + sk.name)
-    return sk, pl
+    """The library's poly_on on a plane normal to Y (the back frame's plane): pts = [(x_expr, z_expr), ...]."""
+    return poly_on(design, comp, "y", y_expr, pts, label)
 
 
 def tri_cut_y(design, comp, body, tri, label, what):

@@ -121,7 +121,15 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["tube_t"], 1.2)               # D-85: perimeter members keep 1.2 (they carry the rivnuts)
         self.assertEqual(v["stud_t"], 1.0)               # D-85: intermediate studs at 1.0
         self.assertAlmostEqual(v["rivnut_head_t"] + v["stopw_t"], v["seam_gap"])   # the 2.26 metal stop (R-J5)
-        self.assertLess(v["spigot_thread_l"], v["rivnut_len"] + v["rivnut_head_t"])  # thread stays in the rivnut
+        # the spigot is Joints' 831001 STEP (F-189): its pin top stands where WALL's rule puts it, and its M6 stud
+        # stays inside the rivnut below its origin on the rivnut head
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "..", "tools", "checks"))
+        import stepfile
+        sf = stepfile.StepFile(os.path.join(HERE, "..", "..", "03-Manufacturing", "joints",
+                                            "831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step"))
+        zs = [p[2] for i in sf.instances() for p in sf.solid(i["solid"]).points()]
+        self.assertAlmostEqual(max(zs), v["spigot_proud"] - v["rivnut_head_t"], places=2)
+        self.assertLess(-min(zs), v["rivnut_len"] + v["rivnut_head_t"])
         self.assertEqual(v["tray_h"], 34)                # returns the full cassette depth, lips hold the felt
         self.assertEqual(v["gap_h"], 24)                 # air gap behind the felt (D-17's 25 less the lip sheet)
         self.assertAlmostEqual(v["cass_len"], 1445)      # decor back plate to past the back cassette's face (D-57)
@@ -415,6 +423,34 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
         self.assertGreater(v["el_cut_x0"] - 8, v["seam_gap"] / 2 + v["lip_w"])
         self.assertLess(v["el_cut_z1"] + 8, v["panel_z0"] + v["back_ph"] - v["lip_w"])
         self.assertGreater(v["el_cut_z0"] - 8, v["panel_z0"] + v["lip_w"])
+
+
+class PolygonPlanTest(unittest.TestCase):
+    """poly_plan: straight sides get their constraint and each tied group of corners one dimension, so a sketch is
+    fully constrained with nothing repeated (the L1 run of 2026-11-01 failed on a repeated dimension)."""
+
+    def plan(self):
+        return load("panel", "L", "1")["poly_plan"]
+
+    def test_mitre_triangle(self):
+        sides, dims = self.plan()([(-2.0, -2.0), (-2.0, 22.0), (22.0, 22.0)],
+                                  [("ya", "za"), ("ya", "zc"), ("yc", "zc")])
+        self.assertEqual(sides, [(0, "V"), (1, "H")])
+        self.assertEqual(dims, [(0, "x", "ya"), (0, "y", "za"), (1, "y", "zc"), (2, "x", "yc")])
+        self.assertEqual(len(sides) + len(dims), 2 * 3)          # 3 corners, 2 degrees of freedom each
+
+    def test_slanted_triangle_and_rectangle(self):
+        plan = self.plan()
+        sides, dims = plan([(0.0, 0.0), (1.0, 0.5), (0.3, 2.0)], [("a", "b"), ("c", "d"), ("e", "f")])
+        self.assertEqual((sides, len(dims)), ([], 6))
+        sides, dims = plan([(0.0, 0.0), (5.0, 0.0), (5.0, 3.0), (0.0, 3.0)],
+                           [("x0", "y0"), ("x1", "y0"), ("x1", "y1"), ("x0", "y1")])
+        self.assertEqual(len(sides) + len(dims), 2 * 4)
+        self.assertEqual([d[2] for d in dims], ["x0", "y0", "x1", "y1"])
+
+    def test_tied_corners_must_share_their_expression(self):
+        with self.assertRaises(ValueError):
+            self.plan()([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0)], [("a", "b"), ("a2", "c"), ("d", "c")])
 
 
 class FillPiecesInThePanelTest(unittest.TestCase):
