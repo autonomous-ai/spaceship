@@ -73,3 +73,15 @@ Same method, in the same run as each build:
 | DL | decor_d 215; dl_w 283; dl_y3 848 | 308.0 x 199.0 x 2292.0 | 313.0 x 213.0 x 2292.0 | 308.0 x 199.0 x 2292.0 | none (worst 0.020) | PASS, 15 anchors |
 
 0 unhealthy items and 0 loose sketches in every state.
+
+## 350002 DT and 350001 DL: D-120 rebuilds (2026-11-01)
+
+Same method, in the same run as each build, the frames now made of member components and copies:
+
+| Block | Edits | Before (box mm) | After the edits | Reverted | Anchors off | Result |
+|---|---|---|---|---|---|---|
+| DT | decor_d 215; dt_xr 1690; dl_w 283 | 1699.0 x 202.8 x 306.0 | 1690.0 x 212.8 x 306.0 | 1699.0 x 202.8 x 306.0 | none (worst 0.010) | PASS, 17 anchors |
+| DL | decor_d 215; dl_w 283; dl_y3 848 | 308.0 x 199.0 x 2292.0 | 313.0 x 213.0 x 2292.0 | 308.0 x 199.0 x 2292.0 | none (worst 0.010) | PASS, 15 anchors |
+
+0 unhealthy items and 0 loose sketches in every state; the copies follow the edits through their joints.
+

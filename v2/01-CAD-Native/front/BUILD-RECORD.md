@@ -256,3 +256,19 @@ Rebuilt from their scripts through the shared lock, each in one run (build, save
 - Pictures checked by eye; no names in any export (f3d entries, STEP, CSV, DXF, picture metadata).
 - D-120's five findings stay open on these builds (Lead, 2026-11-01): the three frames 351104, 351204 and 351306, DL's stop 351103 and its seal pieces 368005 are components holding several bodies. Control allocated the member numbers in #232 (DL 352101 to 352116, DT 352201 to 352211, DR 352301 to 352321; the stop's pieces 351105 to 351107, 351103 cancelled once it is split); the rebuild follows on the decor drawings branch.
 - Run commands: `tools/fusion/run_script.py <late loader> --arg target=v2/01-CAD-Native/front/dX_block.py --doc 35000N_P01_FRONT-DECOR-BLOCK-ASSY-DX_CAD --arg step=all --arg edits=... --close`, the edits as in `EDIT-TEST-RECORD.md`.
+
+## 350002 DT and 350001 DL: D-120 rebuilds (2026-11-01, supersede the #105 rows above for these two blocks)
+
+Each frame is a weldment assembly that keeps its number, each tube its own component with Control's member number (#232); a repeat is a copy of the first tube's component, placed by a rigid joint at its shift (expressions of the parameters), proved corner for corner in every build (the COPIES line). DL's hinge-side stop 351103 is split into its pieces 351105 to 351107 (351103 cancelled) and its frame-stop seal 368005 into one component per piece. Built through the shared lock with the late-bound loader: DT on 2026-11-01 05:54 UTC (the sample), its lists re-exported at 06:17 UTC in the format below; DL at 06:18 UTC.
+
+| Block | Bodies | Clashes | Frame | Copies | Unit mass (calculation) | STEP box (re-read in Fusion: 0.000 mm) | Edit test |
+|---|---|---|---|---|---|---|---|
+| DT 350002 | 18 | 0 | 13 tubes as 11 parts, 2.76 kg | 352211 three times (C01, C02, C03 at X +555.28, +984.82) | 7.84 kg | X −1250 to 449, Y −850 to −647.24, Z 2094 to 2400 | PASS, 17 anchors |
+| DL 350001 | 36 | 0 | 26 tubes as 16 parts, 4.67 kg | 352105 and 352106 four times, 352109 and 352110 three times (the rings at Z +612.25, +754.5, +1366.75, +1988.75); the stop's 351106 and the seal's middle piece twice (Z +754.5) | 12.29 kg | X −1250 to −942, Y −844 to −645, Z 105 to 2397 | PASS, 15 anchors |
+
+- Every component holds one body (the STEPs read back with `stepfile`: DT 16 components and 18 solids, DL 24 and 36; each part number placed as its parts list says). Fusion's STEP writes the three 368005 seal pieces' product ids as 368005, 368005_1 and 368005_2 (one bought part, three cut lengths); the parts list carries one 368005 row, bought by length.
+- Parts lists (D-120): the block's list keeps the frame as one row, its mass the sum of its tubes, typed as a weldment assembly; the tubes are listed in the frame's own list (`351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv`, `351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv`), each part once with its copies as its quantity, so the master BOM counts each tube once and the roll-up reads the block as before. The cut lists key each tube by its member and its part number (column `member_part`).
+- Mechanical checks on this tree: no C06 or C11 finding on DL's or DT's parts (the D-120 multi-body findings on 351104, 351204, 351103 and 368005 are gone); C05 lists their drawings as still to make. Master BOM: no part without a number or a mass, no duplicate number. Roll-up and packing rerun: DL 12.29 kg (12.30 before: the members' summed masses), the pod unchanged to 0.01 kg.
+- The FRONT combined check (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies, the gaps as ruled.
+- No names in any export (f3d entries read through zstd, STEP, CSV, DXF).
+
