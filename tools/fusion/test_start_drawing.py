@@ -65,6 +65,8 @@ class FakeFusion:
         self.ax_error_after_click = ax_error_after_click   # a press that works but reports an error
         self.late_swaps_to_base_view = late_swaps_to_base_view
         self.click_log = []                       # (button, Fusion's command at the click)
+        self.click_titles = []                    # (button, the dialog title it was asked to press in)
+        self.ok_raises = None                     # an exception every OK press raises (a timed-out call)
 
     def _tick(self):
         nxt = []
@@ -149,6 +151,9 @@ class FakeFusion:
             raise sd.StartError("accessibility call failed (fake)")
         self.clicks.append(button)
         self.click_log.append((button, self.cmd))
+        self.click_titles.append((button, title))
+        if button == "OK" and self.ok_raises is not None:
+            raise self.ok_raises
         dialog = self.cmd in (sd.CREATE_CMD, sd.BASE_VIEW_CMD)
         if dialog and self.ax_late:
             self.ax_late -= 1
@@ -330,6 +335,44 @@ class SequenceTests(unittest.TestCase):
         self.assertGreater(f.clicks.count("OK"), 1)
         self.assertEqual(len(f.saved), 0)
 
+    # 2026-11-01 07:41: CEILING's OK press hit the 30 s accessibility timeout; the start tool didn't catch
+    # it, so its cleanup never ran and the Create Drawing dialog stayed open for every later run
+    def test_an_accessibility_timeout_is_a_start_error(self):
+        def timed_out(*_a, **_k):
+            raise subprocess.TimeoutExpired("osascript", 30)
+        with self.assertRaises(sd.StartError) as cm:
+            sd.Steps.osa(sd.AX_CLICK, "OK", "Create Drawing", run=timed_out)
+        self.assertIn("timed out", str(cm.exception))
+
+    def test_a_timed_out_ok_press_still_cleans_up(self):
+        f = FakeFusion()
+        f.ok_raises = sd.StartError("accessibility call timed out after 30 s")
+        code, logs = go(f)
+        self.assertEqual(code, 1, logs)
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                      # the dialog was cancelled
+        self.assertEqual(f.click_titles[-1], ("Cancel", "Create Drawing"))   # in that exact dialog
+        self.assertEqual(f.cancels, 0)                            # through accessibility, not Fusion's own
+        self.assertEqual(len(f.saved), 0)
+
+    def test_an_unexpected_error_still_cleans_up(self):
+        # any error that escapes the steps (here the raw timeout, as before the fix) gets the cleanup too
+        f = FakeFusion()
+        f.ok_raises = subprocess.TimeoutExpired("osascript", 30)
+        code, logs = go(f)
+        self.assertEqual(code, 1, logs)
+        self.assertEqual(f.cmd, sd.IDLE_CMD)
+        self.assertEqual(f.click_titles[-1], ("Cancel", "Create Drawing"))
+
+    def test_the_cleanup_cancels_only_this_starts_dialog_when_fusion_cant_say(self):
+        # MCP lost after OK: Fusion can't name its command, so the cleanup asks for the Base View dialog the
+        # start was at, never any dialog with OK and Cancel
+        f = FakeFusion(mcp_dies_after_queue=True)
+        f.cmd = sd.IDLE_CMD
+        go(f)
+        cancels = [t for b, t in f.click_titles if b == "Cancel"]
+        self.assertTrue(cancels)
+        self.assertNotIn("", cancels)
+
     def test_cleanup_presses_cancel_through_accessibility_first(self):
         # PM ruling 2026-10-31: ending an open Create Drawing by script killed Fusion
         f = FakeFusion(ok_found=False)                          # OK can't be pressed
@@ -456,7 +499,7 @@ class SequenceTests(unittest.TestCase):
         f.click = lambda button, title: "none"                  # nothing can close it
         sd_cancel = sd.cancel_dialogs
         try:
-            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: sd_cancel(steps, log, 2, 0.001)
+            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: sd_cancel(steps, log, 2, 0.001, **kw)
             self.assertEqual(go(f)[0], 4)
         finally:
             sd.cancel_dialogs = sd_cancel
@@ -473,7 +516,7 @@ class SequenceTests(unittest.TestCase):
         f = FakeFusion(mcp_dies_after_queue=True)
         sd_cancel = sd.cancel_dialogs
         try:
-            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: sd_cancel(steps, log, 2, 0.001)
+            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: sd_cancel(steps, log, 2, 0.001, **kw)
             code, logs = go(f)
         finally:
             sd.cancel_dialogs = sd_cancel
@@ -529,7 +572,7 @@ class SequenceTests(unittest.TestCase):
         f = FakeFusion(drawing_after=10 ** 6)                   # Fusion stays busy, no dialog to cancel
         sd_cancel = sd.cancel_dialogs
         try:
-            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: sd_cancel(steps, log, 2, 0.001)
+            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: sd_cancel(steps, log, 2, 0.001, **kw)
             code, _ = go(f)
         finally:
             sd.cancel_dialogs = sd_cancel
@@ -583,7 +626,7 @@ class SequenceTests(unittest.TestCase):
         orig_run, orig_cancel = sd.run_with_cleanup, sd.cancel_dialogs
         sd.Steps, rs.wait_for_fusion = fake_steps, fake_wait
         sd.run_with_cleanup = lambda *a, **_k: orig_run(*a[:7], waits=FAST)   # run_batch passes waits 8th
-        sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: orig_cancel(steps, log, 2, 0.001)
+        sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: orig_cancel(steps, log, 2, 0.001, **kw)
         env_token = os.environ.pop(rs.TOKEN_ENV, None)
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
