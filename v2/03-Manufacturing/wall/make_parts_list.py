@@ -240,6 +240,12 @@ def hw_row(pn, qty, unit, note, bodies=None, source=REG):
     if mass == "cad":
         if bodies:
             mass = round(sum(b["mass_kg"] for b in bodies) / len(bodies), 5)
+            # the modelled body must weigh what the part does: a STEP-imported body left at Fusion's default steel
+            # (the aluminium stop washer at 2.7 g, the L1 sample of 2026-11-01) is caught here
+            if h.get("calc") and abs(mass - h["calc"]) > 0.15 * h["calc"]:
+                raise SystemExit("%s: the CAD body weighs %.5f kg each, its calculation %.5f (%s): check the body's "
+                                 "material (%s)" % (pn, mass, h["calc"], h["calc_basis"],
+                                                    ", ".join(sorted({str(b.get("material")) for b in bodies}))))
         else:                            # a report from before the hardware was modelled
             mass, h["basis"] = h["calc"], h["calc_basis"]
     return row(level=1, part_number=pn, name=h["name"], name_vi=h["vi"], kind=h["kind"], material=h["material"],

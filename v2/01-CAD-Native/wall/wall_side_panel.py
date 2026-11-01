@@ -1701,6 +1701,11 @@ def import_joints_part(design, root, key):
     c.description = "%s | %s | %s | Joints' STEP %s" % (name, vn, REV, os.path.basename(JOINTS_STEP[key]))
     b = c.bRepBodies.item(0)
     b.name = JOINTS_BODY[key]
+    # a STEP brings no material, so Fusion gives the body its default steel: the part's own material, for its mass
+    # (the L1 sample of 10:0x weighed the aluminium stop washer as steel, 2.7 g, not 0.92)
+    dk, label = {"stopw": ("stopw", "ALUMINIUM STOP WASHER"), "spigot": ("spigot", "STAINLESS SPIGOT")}.get(
+        key, ("plate", "STEEL PLATE 2.0 GALVANIZED"))
+    set_material(design, [b], dk, label)
     return c, b
 
 
