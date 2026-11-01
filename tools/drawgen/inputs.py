@@ -93,6 +93,53 @@ def parts_row(pn, team):
     return best[1], best[2], best[3]
 
 
+def cut_list_rows(team, cfg, pn):
+    """A welded frame's cut list from the team CSV its entry names (D-162), as the parts list's level-2 cut rows read,
+    and that file: its rows whose frame is pn, one per member number (D-120: one number is one member; a number with
+    two lengths or two ends texts is refused), the quantity their sum, the name the member's number and name (its
+    bodies carry the same). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty,
+    ends (holes when present). Welded-in made parts the entry names (a frame's mitre plates) follow, from their
+    parts-list rows, as having their own drawing."""
+    path = os.path.join(MANUF, team, cfg["file"])
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh) if (r.get("frame") or "").strip() == pn]
+    out, by = [], {}
+    for r in rows:
+        num = (r.get("member_part") or "").strip()
+        if not num:
+            raise ValueError("cut list %s: a row of %s has no member number" % (os.path.basename(path), pn))
+        length, ends = (r.get("length_mm") or "").strip(), (r.get("ends") or "").strip()
+        q = float((r.get("qty") or "1").strip() or 1)
+        if num in by:
+            o = by[num]
+            if (o["cut_length_mm"], o["note"]) != (length, ends):
+                raise ValueError("cut list %s: member %s has two lengths or two ends texts (D-120)" % (
+                    os.path.basename(path), num))
+            o["_q"] += q
+            continue
+        o = {"kind": "cut", "member_part": num, "name": "%s %s" % (num, (r.get("name") or "").strip()),
+             "size_mm": (r.get("section") or "").strip(), "material": (r.get("section") or "").strip(),
+             "cut_length_mm": length, "tolerance": cfg.get("tolerance", ""), "note": ends,
+             "holes": (r.get("holes") or "").strip(), "_q": q}
+        by[num] = o
+        out.append(o)
+    if not out:
+        raise ValueError("cut list %s has no row for %s" % (os.path.basename(path), pn))
+    for wpn in cfg.get("welded_in", ()):
+        row = parts_row(wpn, team)[0]
+        if not row:
+            raise ValueError("welded-in part %s has no parts-list row" % wpn)
+        q = (row.get("qty_per_parent") or row.get("qty") or "").strip()
+        out.append({"kind": "cut", "member_part": wpn, "name": "%s %s" % (wpn, (row.get("name") or "").strip()),
+                    "size_mm": (row.get("material") or "").strip(), "material": (row.get("material") or "").strip(),
+                    "cut_length_mm": "-", "tolerance": "", "note": "welded in; its own drawing %s" % wpn,
+                    "_q": float(q or 0)})
+    for o in out:
+        q = o.pop("_q")
+        o["qty"] = ("%d" % q) if q == int(q) else ("%g" % q)
+    return out, path
+
+
 # ------------------------------------------------------------------ feature rationale
 
 FR_ROW = re.compile(r"^\|\s*(F\d+[A-Z]?)\s*\|\s*(\d{6})\s+([^|]*?)\s*\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)\|"

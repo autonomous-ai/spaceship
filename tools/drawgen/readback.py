@@ -272,7 +272,8 @@ def step_holes(step_path, pn):
     out = []
     for inst in sf.instances():
         nm = inst["part_number"] or ""
-        if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")):
+        if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")
+                or any((x or "").startswith(pn) for x in inst.get("path", ()))):    # a welded frame's members (D-120)
             continue
         s = sf.solid(inst["solid"])
         fr = inst["frame"]
@@ -304,7 +305,8 @@ def step_faces(step_path, pn, pm=None):
     out = []
     for inst in sf.instances():
         nm = inst["part_number"] or ""
-        if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")):
+        if not (nm.startswith(pn) or (inst["name"] or "").startswith(pn) or os.path.basename(step_path).startswith(pn + "_")
+                or any((x or "").startswith(pn) for x in inst.get("path", ()))):    # a welded frame's members (D-120)
             continue
         s = sf.solid(inst["solid"])
         fr = inst["frame"]

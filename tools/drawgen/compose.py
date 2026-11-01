@@ -230,6 +230,13 @@ class Part:
         self.name = self.row.get("name", "").strip()
         self.name_vi = (self.row.get("name_vi") or "").strip()
         self.bodies, self.unit = geom.load_part(self.step, pn)
+        if self.unit.get("members"):
+            for mpn in sorted({geom.part_number_of(b.name) for b in self.bodies} - {None}):
+                mrow = inputs.parts_row(mpn, team)[0] or {}
+                kind = (mrow.get("kind") or mrow.get("type") or "").strip().upper()
+                if kind in ("PI", "HOLD"):
+                    raise NotDrawable("%s: %s %s under the frame is a bought part (%s in its parts list), not frame "
+                                      "material" % (pn, mpn, mrow.get("name", ""), kind))
         self.occurrences = self.unit.get("occurrences", 1)
         self.qty_words = None
         if self.occurrences > 1:
@@ -786,8 +793,9 @@ def find_step(pn, team):
         if not nm or nm["doc"] != "STEP":
             continue
         try:
-            for name, solids in geom.read_step(os.path.join(folder, f)):
-                if geom.part_number_of(name) == pn and solids:
+            for name, solids, anc in geom.read_step(os.path.join(folder, f), paths=True):
+                # the part itself, or a welded frame that holds its members (D-120)
+                if solids and (geom.part_number_of(name) == pn or any(geom.part_number_of(nm) == pn for _k, nm in anc)):
                     return os.path.join(folder, f)
         except RuntimeError:
             continue
@@ -2633,7 +2641,10 @@ def cut_list(part):
         if (r.get("kind") or "").strip().lower() != "cut":
             continue
         key = member_key(r.get("name"))
-        bodies = [b for b in part.bodies if member_key(b.name) == key]
+        if r.get("member_part"):    # a team cut list (D-162): by member number
+            bodies = [b for b in part.bodies if geom.part_number_of(b.name) == r["member_part"]]
+        else:
+            bodies = [b for b in part.bodies if member_key(b.name) == key]
         rows.append({"item": len(rows) + 1, "member": key, "profile": (r.get("size_mm") or "").strip(),
                      "material": (r.get("material") or "").strip(), "length": (r.get("cut_length_mm") or "").strip(),
                      "qty": (r.get("qty") or "").strip(), "tol": (r.get("tolerance") or "").strip(),
@@ -2785,12 +2796,15 @@ def cut_list_table(sh, part, members, x, y, width):
              ("QTY", 14, "c"), ("ENDS, TOLERANCE", width - 154, "l")]
     crow = []
     for m in members:
+        words = m["note"] + " " + m["tol"]
+        square = "square" in words.lower() and not re.search(r"\d\s*(°|deg)", words)   # no angle given
         crow.append([str(m["item"]), m["member"], m["profile"], m["length"], m["qty"],
-                     ("%s; %s" % ("square-cut ends" if "square" in (m["note"] + m["tol"]).lower() else m["note"],
-                                  m["tol"].split(",")[0])).strip("; ")])
+                     ("%s; %s" % ("square-cut ends" if square else m["note"], m["tol"].split(",")[0])).strip("; ")])
     mat = part.row.get("material", "")
+    src = getattr(part, "cut_list_file", None)
     return sh.table(x, y, ccols, crow, size=2.5,
-                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""), mat], title_size=2.5)
+                    title=["CUT LIST (%s %s)" % ("cut list" if src else "parts list",
+                                                 os.path.basename(src or part.list_file or "")), mat], title_size=2.5)
 
 
 def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
@@ -2939,6 +2953,19 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"))
+    if spec.get("cut_list"):        # a welded frame's cut list in its team's CSV (D-162)
+        try:
+            part.cut_rows, part.cut_list_file = inputs.cut_list_rows(team, spec["cut_list"], pn)
+        except ValueError as e:
+            raise NotDrawable("%s: %s" % (pn, e))
+        have = {}
+        for b in part.bodies:
+            have[geom.part_number_of(b.name)] = have.get(geom.part_number_of(b.name), 0) + 1
+        want = {r["member_part"]: int(float(r["qty"])) for r in part.cut_rows}
+        for num in sorted(set(have) | set(want), key=str):
+            if have.get(num, 0) != want.get(num, 0):
+                raise NotDrawable("%s: member %s has %d bodies under the frame, its cut list %d (D-120)" % (
+                    pn, num, have.get(num, 0), want.get(num, 0)))
     # rivet holes: an entry lists its rivet hole sizes with the rivet (BASE's D-130 boot: blind rivets in 3.3, 4.2
     # and about 5.0 holes, the tap drills' sizes too; the PM's ruling): those holes are no tap drills, and their
     # table rows name the rivet
