@@ -1,5 +1,5 @@
 {
- "next": 173,
+ "next": 188,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1443,7 +1443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -1499,7 +1499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3082,7 +3082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3107,7 +3107,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -3137,7 +3137,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -3203,7 +3203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3228,7 +3228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3253,7 +3253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C01",
@@ -3302,7 +3302,7 @@
    "evidence": {},
    "key": "C06|row-incomplete|211102",
    "id": "F-104",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 87586c1",
    "posted": "WALL group 2026-11-01",
@@ -3311,9 +3311,15 @@
      "date": "2026-11-01",
      "rev": "87586c1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 68c1a4d",
+   "closed": "2026-11-01 2f76545"
   },
   {
    "check": "C09",
@@ -3371,7 +3377,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3396,7 +3402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3421,7 +3427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3446,7 +3452,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3471,7 +3477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3496,7 +3502,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3521,7 +3527,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3546,7 +3552,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3571,7 +3577,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3596,7 +3602,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3621,7 +3627,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3646,7 +3652,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3671,7 +3677,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3696,7 +3702,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3721,7 +3727,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3746,7 +3752,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3771,7 +3777,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3796,7 +3802,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3821,7 +3827,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -3846,7 +3852,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C01",
@@ -4287,7 +4293,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C01",
@@ -4346,7 +4352,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4371,7 +4377,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4396,7 +4402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4421,7 +4427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4446,7 +4452,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4471,7 +4477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4496,7 +4502,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4521,7 +4527,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4546,7 +4552,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4571,7 +4577,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4596,7 +4602,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4621,7 +4627,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -4676,7 +4682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4701,7 +4707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4726,7 +4732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4751,7 +4757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4776,7 +4782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4801,7 +4807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4826,7 +4832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C05",
@@ -4851,7 +4857,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -4876,7 +4882,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 4969faf"
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -4897,14 +4903,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -4925,14 +4932,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -4953,14 +4961,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -4981,14 +4990,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -5009,14 +5019,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -5037,14 +5048,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -5065,14 +5077,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -5093,14 +5106,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -5121,14 +5135,15 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "CEILING group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
@@ -5149,67 +5164,127 @@
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "CEILING group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
    "rule": "bodies-not-components",
    "subject": "831001",
    "severity": "major",
-   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS is one component holding 2 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (2 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS is one component holding 2 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (2 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (2 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (2 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
    "fix": "Make it one component and place it 2 times (copies of one component), then export the STEP again (D-120).",
    "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
    "owner": "WALL",
    "evidence": {
     "bodies": 2,
     "shapes": 1,
-    "files": 2
+    "files": 4
    },
    "key": "C06|bodies-not-components|831001",
    "id": "F-170",
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2f76545"
   },
   {
    "check": "C06",
    "rule": "bodies-not-components",
    "subject": "831002",
    "severity": "major",
-   "message": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL is one component holding 7 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (7 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
+   "message": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL is one component holding 7 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (7 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (4 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
    "fix": "Make it one component and place it 7 times (copies of one component), then export the STEP again (D-120).",
    "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
    "owner": "WALL",
    "evidence": {
     "bodies": 7,
     "shapes": 1,
-    "files": 4
+    "files": 6
    },
    "key": "C06|bodies-not-components|831002",
    "id": "F-171",
    "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 4969faf",
-   "posted": "",
+   "posted": "WALL group, 2026-11-01 (D-120)",
    "history": [
     {
      "date": "2026-11-01",
      "rev": "4969faf",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2f76545"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "838003",
+   "severity": "major",
+   "message": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (9 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
+   "fix": "Make it one component and place it 9 times (copies of one component), then export the STEP again (D-120).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "bodies": 9,
+    "shapes": 1,
+    "files": 6
+   },
+   "key": "C06|bodies-not-components|838003",
+   "id": "F-172",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 4969faf",
+   "posted": "WALL group, 2026-11-01 (D-120)",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "4969faf",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2f76545"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "211201",
+   "severity": "major",
+   "message": "211201 WALL - PANEL FRAME - BACK LOWER - B1 is one component holding 6 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - CENTRE, STILE - MID 1, STILE - MID 2, STILE - OUTER) in 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_STEP.step (6 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "bodies": 6,
+    "shapes": 5,
+    "files": 2
+   },
+   "key": "C06|bodies-not-components|211201",
+   "id": "F-173",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
      "event": "opened"
     }
    ]
@@ -5217,27 +5292,347 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
-   "subject": "838003",
+   "subject": "211202",
    "severity": "major",
-   "message": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
-   "fix": "Make it one component and place it 9 times (copies of one component), then export the STEP again (D-120).",
-   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "message": "211202 WALL - PANEL FRAME - BACK LOWER - B2 is one component holding 6 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - CENTRE, STILE - MID 1, STILE - MID 2, STILE - OUTER) in 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (6 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
    "owner": "WALL",
    "evidence": {
-    "bodies": 9,
-    "shapes": 1,
-    "files": 4
+    "bodies": 6,
+    "shapes": 5,
+    "files": 1
    },
-   "key": "C06|bodies-not-components|838003",
-   "id": "F-172",
+   "key": "C06|bodies-not-components|211202",
+   "id": "F-174",
    "status": "OPEN",
    "source": "auto",
-   "found": "2026-11-01 4969faf",
+   "found": "2026-11-01 2f76545",
    "posted": "",
    "history": [
     {
      "date": "2026-11-01",
-     "rev": "4969faf",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "211601",
+   "severity": "major",
+   "message": "211601 WALL - CAVITY FILL - BACK LOWER - B1 is one component holding 3 bodies of 3 different shapes (FILL - BAY 1, FILL - BAY 2, FILL - BAY 3) in 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (3 bodies); 211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_STEP.step (3 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "bodies": 3,
+    "shapes": 3,
+    "files": 2
+   },
+   "key": "C06|bodies-not-components|211601",
+   "id": "F-175",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "211602",
+   "severity": "major",
+   "message": "211602 WALL - CAVITY FILL - BACK LOWER - B2 is one component holding 3 bodies of 3 different shapes (FILL - BAY 1, FILL - BAY 2, FILL - BAY 3) in 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (3 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "bodies": 3,
+    "shapes": 3,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|211602",
+   "id": "F-176",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210201",
+   "severity": "major",
+   "message": "210201 WALL - PANEL ASSY - BACK LOWER - B1 has no drawing PDF (210201_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210201",
+   "id": "F-177",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210202",
+   "severity": "major",
+   "message": "210202 WALL - PANEL ASSY - BACK LOWER - B2 has no drawing PDF (210202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210202",
+   "id": "F-178",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211201",
+   "severity": "severe",
+   "message": "211201 WALL - PANEL FRAME - BACK LOWER - B1 has no drawing PDF (211201_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211201",
+   "id": "F-179",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211202",
+   "severity": "severe",
+   "message": "211202 WALL - PANEL FRAME - BACK LOWER - B2 has no drawing PDF (211202_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211202",
+   "id": "F-180",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211601",
+   "severity": "major",
+   "message": "211601 WALL - CAVITY FILL - BACK LOWER - B1 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "v2/03-Manufacturing/wall/211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211601",
+   "id": "F-181",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211602",
+   "severity": "major",
+   "message": "211602 WALL - CAVITY FILL - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211602",
+   "id": "F-182",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510201",
+   "severity": "major",
+   "message": "510201 LINING - CASSETTE - BACK LOWER - B1 has no drawing PDF (510201_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510201",
+   "id": "F-183",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510202",
+   "severity": "major",
+   "message": "510202 LINING - CASSETTE - BACK LOWER - B2 has no drawing PDF (510202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510202",
+   "id": "F-184",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511201",
+   "severity": "severe",
+   "message": "511201 LINING - TRAY - BACK LOWER - B1 has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/511201_P01_LINING-TRAY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511201",
+   "id": "F-185",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511202",
+   "severity": "severe",
+   "message": "511202 LINING - TRAY - BACK LOWER - B2 has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511202",
+   "id": "F-186",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511402",
+   "severity": "major",
+   "message": "511402 LINING - FELT - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511402",
+   "id": "F-187",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2f76545",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2f76545",
      "event": "opened"
     }
    ]
