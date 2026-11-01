@@ -105,6 +105,23 @@ AIR_PARAMS = [
     ("fan_s", "140 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
     ("fan_t", "25 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
     ("lock_hole", "7.0 mm", "mm", "source", "the joints register's R-J6: M6 bolt clearance holes 7.0 (the mechanical checks' C08 found 6.6 here, 0.31 mm of float over a rivnut)"),
+    # ---- FRONT's panel screws that stand into AIR's space (D-130's one panel on its stops; the Lead's rulings
+    #      2026-11-01: heads stay 7.6 proud; the supply cartridge lifted 6 over B01's two; B08's three relieved in
+    #      the soffit's door plate and fill, nothing showing from below; B07's lowest moved clear by FRONT)
+    ("fr_hd_d", "10 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): M6 x 16 socket heads, ISO 4762, 10 across"),
+    ("fr_hd_h", "6 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): M6 socket heads 6 high"),
+    ("fr_wsh_d", "12 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): plain washers ISO 7089 M6, 12 across"),
+    ("fr_wsh_t", "1.6 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): plain washers ISO 7089 M6, 1.6 thick (head and washer 7.6 proud)"),
+    ("fr_scr_clr", "1 mm", "mm", "assumption", "AIR's clearance round FRONT's screw heads and washers, and in each relief"),
+    ("b08_x1", "499.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's first screw"),
+    ("b08_x2", "823.5 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's second screw"),
+    ("b08_x3", "1148.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's third screw"),
+    ("b08_z", "2140.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's three screws' height"),
+    ("b01_x1", "997.2 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's first screw, under the supply cartridge"),
+    ("b01_x2", "1148.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's second screw, under the supply cartridge"),
+    ("b01_z", "130.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's two screws' height (washers to Z 136; the cartridge from Z 140)"),
+    ("b07_x", "939.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw, moved 4 clear of the column's left face"),
+    ("b07_z", "259.8 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw's height"),
     ("blk_t", "2 mm", "mm", "source", "the air report's sizing (calc.py, D-121): each fan box's 2 mm aluminium bulkhead, the fans mounted on it"),
     ("fan_bore", "135 mm", "mm", "source", "the air report's fan bore (calc.py FAN_BORE 0.135 m): the bulkhead's opening at each fan"),
     ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
@@ -416,6 +433,40 @@ def stud_points():
             for side in ("L", "R") for edge, y in (("DOOR", yd), ("ROOM", yr))]
 
 
+FRONT_SCREWS = [("B08 1", "b08_x1", "b08_z"), ("B08 2", "b08_x2", "b08_z"), ("B08 3", "b08_x3", "b08_z"),
+                ("B01 1", "b01_x1", "b01_z"), ("B01 2", "b01_x2", "b01_z"), ("B07 LOW", "b07_x", "b07_z")]
+
+
+def front_screw_boxes():
+    """[(name, washer box, head box)]: FRONT's panel screws that stand into AIR's space, from DR's panel face (FRONT's
+    named value, YD) into the pod: a plain washer then a socket head, 7.6 proud in all (not AIR's parts: what AIR
+    keeps clear of, or relieves)."""
+    out = []
+    for name, x, z in FRONT_SCREWS:
+        w, h = "fr_wsh_d / 2", "fr_hd_d / 2"
+        out.append((name, ("%s - %s" % (x, w), "%s + %s" % (x, w), YD, "%s + fr_wsh_t" % YD, "%s - %s" % (z, w), "%s + %s" % (z, w)),
+                    ("%s - %s" % (x, h), "%s + %s" % (x, h), "%s + fr_wsh_t" % YD, "%s + fr_wsh_t + fr_hd_h" % YD,
+                     "%s - %s" % (z, h), "%s + %s" % (z, h))))
+    return out
+
+
+def door_stud_pockets():
+    """(stud name, pocket box) in the soffit's door-side plate round each door-side stud's head: the head plus hd_c
+    all round, from the head room's floor to the rail. With DR's panel face at Y -641.14 the plate reaches 0.86 into
+    the heads (FRONT's DR rebuild); the pockets clear them whichever face is built."""
+    return [(name, ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x, YD, "%s + dp_t" % YD, ZBT, ZRB))
+            for name, x, _y in stud_points() if name.endswith("DOOR")]
+
+
+def b08_fill_pockets():
+    """(screw name, pocket box) in the fill under the exhaust cartridge round each of B08's heads (the fill starts
+    clr off DR's panel face, the heads stand 7.6 proud): the head plus fr_scr_clr all round and behind."""
+    return [(name, ("%s - fr_hd_d / 2 - fr_scr_clr" % x, "%s + fr_hd_d / 2 + fr_scr_clr" % x, "%s + clr" % YD,
+                    "%s + fr_wsh_t + fr_hd_h + fr_scr_clr" % YD, "%s - fr_hd_d / 2 - fr_scr_clr" % z,
+                    "%s + fr_hd_d / 2 + fr_scr_clr" % z))
+            for name, x, z in FRONT_SCREWS if name.startswith("B08")]
+
+
 def lock_points():
     """(name, x, y) of the soffit's two captive lock screws: in the room-side rail, into cross member 1's lock rivnuts
     (PM ruling 2026-11-01, option b for DR's new panel face: off the door-side rail, whose edge came too close), at the
@@ -605,6 +656,11 @@ def features():
         out.append((rail, "zcircle", (x, y, zr0, zr1, "key_w")))
     for _n, x, y in lock_points():
         out.append(("SOFFIT RAIL ROOM", "zcircle", (x, y, zr0, zr1, "lock_hole")))
+    # B08's three panel screws through the soffit's door-side plate: the washer plus fr_scr_clr round (the Lead's
+    # ruling 2026-11-01: reliefs in the door plate, pockets in the fill, nothing showing from below)
+    for name, x, z in FRONT_SCREWS:
+        if name.startswith("B08"):
+            out.append(("SOFFIT DOOR PLATE", "ycircle", (x, z, YD, "%s + dp_t" % YD, "fr_wsh_d + 2 * fr_scr_clr")))
     # D-121: a fan bore in each bulkhead over each fan (the exhaust fans hang under theirs, the supply fans stand on theirs)
     for name, x, y, z in fan_points():
         tag = "EXHAUST" if name.startswith("EXHAUST") else "SUPPLY"
@@ -622,7 +678,8 @@ def features():
 def cutouts():
     """(body name to cut, cutter box): the hub zone through the front face and the fill
     behind it, the exhaust grille's opening in the soffit underside, the room-side stud heads'
-    pockets in the soffit's front face."""
+    pockets in the soffit's front face, the door-side stud heads' pockets in the door-side plate,
+    and B08's head pockets in the fill under the exhaust cartridge."""
     lay = {name: bx for _k, name, bx in layout()}
     hub = lay["SENSOR HUB ZONE"]
     eg = lay["EXHAUST GRILLE"]
@@ -633,6 +690,8 @@ def cutouts():
         # a head pocket: the head plus 1.5 all round (the room-side studs' and the lock screws')
         out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
                                           "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
+    out += [("SOFFIT DOOR PLATE", bx) for _n, bx in door_stud_pockets()]
+    out += [("SOFFIT FILL UNDER", bx) for _n, bx in b08_fill_pockets()]
     return out
 
 

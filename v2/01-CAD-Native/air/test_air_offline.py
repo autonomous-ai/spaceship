@@ -95,6 +95,7 @@ class Fits(unittest.TestCase):
         cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
         cut |= {("SOFFIT FACE FRONT", n) for n in LAY if (n.startswith("STUD") and n.endswith("ROOM HEAD"))
                 or (n.startswith("LOCK") and n.endswith("HEAD"))}                              # head pockets
+        cut |= {("SOFFIT DOOR PLATE", n + " HEAD") for n, _b in A.door_stud_pockets()}           # (PocketsHold checks them)
         # the casings are hollow: their bulkheads and linings sit inside (D-121; FanBoxInside checks them)
         cut |= {("%s FAN BOX" % t, n) for t in ("EXHAUST", "SUPPLY") for _k, n, _b in A.fan_box_inner() if t in n}
         names = list(LAY)
@@ -325,7 +326,86 @@ class Hold18(unittest.TestCase):
             for other, (_k, ob) in LAY.items():
                 if other == name or (other == "SOFFIT FACE FRONT" and ("ROOM" in name or name.startswith("LOCK"))):
                     continue
+                if other == "SOFFIT DOOR PLATE" and name.endswith("DOOR HEAD"):     # its pocket (PocketsHold)
+                    continue
                 self.assertGreaterEqual(gap(room, ob), -1e-9, "%s: %s under its head" % (name, other))
+
+
+class PocketsHold(unittest.TestCase):
+    """The door-side plate's pockets hold each door-side stud's head and the room under it (HOLD-18's 1.5), and
+    land in the plate whichever panel face DR has."""
+
+    def test_heads_inside_their_pockets(self):
+        plate = b6("SOFFIT DOOR PLATE")
+        for n, bx in A.door_stud_pockets():
+            p = tuple(A.ev(V, e) for e in bx)
+            h = b6(n + " HEAD")
+            self.assertLessEqual(p[0], h[0] - V["hd_c"] + 1e-9, n)          # the head plus hd_c across
+            self.assertGreaterEqual(p[1], h[1] + V["hd_c"] - 1e-9, n)
+            self.assertLessEqual(p[4], h[4] - V["hd_c"] + 1e-9, n)          # the room under the head, up to its top
+            self.assertGreaterEqual(p[5], h[5] - 1e-9, n)
+            self.assertLessEqual(p[2], plate[2] + 1e-9, n)                  # through the plate's thickness
+            self.assertGreaterEqual(p[3], plate[3] - 1e-9, n)
+            self.assertLess(gap(p, plate), 0.0, n)                          # the cut finds the plate
+
+
+class FrontScrews(unittest.TestCase):
+    """FRONT's panel screws that stand 7.6 into AIR's space (DR rebuild, 2026-11-01): every AIR body keeps
+    fr_scr_clr off each washer and head, except where AIR relieves them, and the reliefs hold them: B08's three
+    through the soffit's door-side plate (round, the washer plus the clearance) and into the fill under the exhaust
+    cartridge (pockets); nothing shows from below (the underside stays whole); the cartridge 4 clear over B01's."""
+
+    RELIEVED = {"SOFFIT DOOR PLATE": "round", "SOFFIT FILL UNDER": "pocket"}
+
+    def test_clear_or_relieved(self):
+        pockets = {n: tuple(A.ev(V, e) for e in bx) for n, bx in A.b08_fill_pockets()}
+        clr = V["fr_scr_clr"]
+        for sname, wb, hb in A.front_screw_boxes():
+            parts = [tuple(A.ev(V, e) for e in wb), tuple(A.ev(V, e) for e in hb)]
+            for other, (_k, _ob) in LAY.items():
+                for piece in pieces(other):
+                    for part in parts:
+                        g = gap(part, piece)
+                        if g >= clr - 1e-9:
+                            continue
+                        how = self.RELIEVED.get(other) if sname.startswith("B08") else None
+                        self.assertIsNotNone(how, "%s is %.2f off %s's washer or head (wants %g)" % (other, g, sname, clr))
+                        if how == "pocket":
+                            p = pockets[sname]
+                            for k in range(3):
+                                if k == 1:          # the head's door side is the plate's business, not the fill's
+                                    self.assertGreaterEqual(p[3], part[3] + clr - 1e-9, sname)
+                                    continue
+                                self.assertLessEqual(p[2 * k], part[2 * k] - clr + 1e-9, sname)
+                                self.assertGreaterEqual(p[2 * k + 1], part[2 * k + 1] + clr - 1e-9, sname)
+
+    def test_door_plate_reliefs_round_the_washers(self):
+        holes = [(n, a) for n, k, a in A.features() if n == "SOFFIT DOOR PLATE" and k == "ycircle"]
+        b08 = [(x, z) for name, x, z in A.FRONT_SCREWS if name.startswith("B08")]
+        self.assertEqual(len(holes), len(b08))
+        for (_n, a), (x, z) in zip(holes, b08):
+            self.assertEqual((a[0], a[1]), (x, z))
+            self.assertGreaterEqual(A.ev(V, a[4]) / 2 - V["fr_wsh_d"] / 2, V["fr_scr_clr"] - 1e-9)
+            self.assertAlmostEqual(A.ev(V, a[2]), V["dr_acc_face_y"])
+
+    def test_nothing_shows_from_below(self):
+        """The undersides carry no relief: their one cut is the exhaust grille's opening (the Ø12 washers stop 2.1
+        over the undersides' top face, so the 1 mm relief the Ø18 washers needed is gone)."""
+        under = ("SOFFIT UNDERSIDE LEFT", "SOFFIT UNDERSIDE RIGHT", "SOFFIT UNDERSIDE FIXED")
+        cuts = [(t, tuple(A.ev(V, e) for e in b)) for t, b in A.cutouts() if t in under]
+        eg = b6("EXHAUST GRILLE")
+        self.assertEqual([(t, b[:4]) for t, b in cuts], [("SOFFIT UNDERSIDE LEFT", eg[:4])])
+        self.assertFalse([n for n, _k, _a in A.features() if n in under])
+        for sname, wb, _hb in A.front_screw_boxes():
+            if sname.startswith("B08"):
+                top = max(b6(n)[5] for n in under)
+                self.assertGreaterEqual(A.ev(V, wb[4]) - top, V["fr_scr_clr"] - 1e-9, sname)
+
+    def test_cartridge_over_b01(self):
+        c = b6("CARTRIDGE SUPPLY")
+        for sname, wb, _hb in A.front_screw_boxes():
+            if sname.startswith("B01"):
+                self.assertAlmostEqual(c[4] - A.ev(V, wb[5]), 4.0, msg=sname)
 
 
 class PlaceCheck(unittest.TestCase):
@@ -371,8 +451,14 @@ class FrontInterface(unittest.TestCase):
                 self.assertGreaterEqual(bx[2], yd - 1e-9, "%s reaches into DR's access panel" % name)
 
     def test_door_rail_clear_of_the_sleeve(self):
-        self.assertLessEqual(b6("SOFFIT RAIL DOOR")[3], pieces("ROOF SLEEVE")[0][2] - 1.0 + 1e-9)
-        self.assertAlmostEqual(b6("SOFFIT RAIL DOOR")[3] - b6("SOFFIT RAIL DOOR")[2], 22.5)
+        """1 clear of the roof sleeve, and wide enough to carry each door-side stud's whole head on its fork (22.5 wide
+        with DR's panel face at Y -643.5, 20.14 at -641.14: the head's door-side edge still 1.14 inside it)."""
+        r = b6("SOFFIT RAIL DOOR")
+        self.assertLessEqual(r[3], pieces("ROOF SLEEVE")[0][2] - 1.0 + 1e-9)
+        for n, _b in A.door_stud_pockets():
+            h = b6(n + " HEAD")
+            self.assertLessEqual(r[2], h[2] - 1.0 + 1e-9, n)
+            self.assertGreaterEqual(r[3], h[3] + 1.0 - 1e-9, n)
 
     def test_same_as_front(self):
         """AIR keeps no copy of FRONT's named values (the Lead, 2026-11-01): its list holds only the place they
