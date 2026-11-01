@@ -912,7 +912,7 @@ def seal_runs(design):
     xi, yb = "%s + band_t" % XL, "%s - band_t" % YB
     runs = [("seal_l", "band_l", "X = %.2f (side band LH, inner face)" % v(xi), Y_MITRE_IN, yb,
              [(xi, Y_MITRE_IN), ("%s + seal_t" % xi, Y_MITRE_IN), ("%s + seal_t" % xi, yb), (xi, yb)]),
-            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), xi, "%s - band_t" % XR,
+            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), "%s + seal_t" % xi, "%s - band_t - seal_t" % XR,
              [("%s + seal_t" % xi, "%s - seal_t" % yb), ("%s - band_t - seal_t" % XR, "%s - seal_t" % yb),
               ("%s - band_t - seal_t" % XR, yb), ("%s + seal_t" % xi, yb)])]
     if P02_ON:
@@ -925,6 +925,7 @@ def build_seal_envelopes(design):
     extruded up to seal_leg above the band's bottom: the room its leg and its fin, bent on the room floor, take. The
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
+    fins = globals()["p02_seal_fins"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
         sk = comp.sketches.add(comp.xYConstructionPlane)
@@ -932,6 +933,14 @@ def build_seal_envelopes(design):
         polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
         check_sketch(sk)
         extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+        if key in fins:
+            # a fin past the plan envelope, below the band's bottom line only (p02_seal_fins), joined to it
+            sk2 = comp.sketches.add(comp.xYConstructionPlane)
+            sk2.name = "PLAN - BASE SEAL LIP - FIN BELOW THE BAND'S BOTTOM"
+            polygon(design, sk2, [P(design, ex, ey) for ex, ey in fins[key]], X, Y)
+            check_sketch(sk2)
+            extrude(comp, one_profile(sk2), "glide_h", "EXTRUDE - BASE SEAL LIP - FIN UP TO glide_h, JOINED",
+                    adsk.fusion.FeatureOperations.JoinFeatureOperation, body=single_body(comp))
         single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
         n += 1
     print("step 6: base seal envelopes: %d runs (D-132)" % n)
@@ -1475,10 +1484,18 @@ def step9_checks(design):
         raise RuntimeError("step 9 checks failed")
 
 
+# D-144 (#300) moved the back corners' fixing holes in corner-keys.csv (6.0 either side, at 10.5 and 17.8 from the
+# key's back face). This branch keeps the layout before it, as Joints' 111211 STEP still has it; the follow-up rebuild
+# takes D-144 with the new key STEP. Until then the check names the difference and fails only if the side band's
+# fixing holes match neither layout. Source: corner-keys.csv before #300 (main, parent of e796357).
+PRE_D144_FIX = {"back left corner": ((-1231.0, 837.0), (-1231.0, 823.0)),
+                "back right corner": ((1231.0, 823.0), (1231.0, 837.0))}
+
+
 def back_corner_check(design):
     """D-129: the back corners as built against the Joints Engineer's corner-keys.csv (one source, D-95):
     each key's back face centre and bottom, the side band's fixing and stud bolt holes, and the back band's
-    slot ends. Returns the names of what is off by 0.05 mm or more."""
+    slot ends. Returns the names of what is off by 0.05 mm or more (the D-144 fixing holes: PRE_D144_FIX)."""
     path = os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv")
     with open(path, encoding="utf-8") as fh:
         rows = [r for r in csv.DictReader(fh) if r["joint"] in ("back left corner", "back right corner")]
@@ -1500,8 +1517,11 @@ def back_corner_check(design):
         want_key = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]), float(r["key_bottom_z"]))
         got_keys = [tuple(mm(c) for c in (o.transform2.translation.x, o.transform2.translation.y,
                                           o.transform2.translation.z)) for o in keys]
+        fix_ok, fix_name = all(near(fix, w) for w in want_fix), "fixing holes"
+        if not fix_ok and all(near(fix, w) for w in PRE_D144_FIX.get(r["joint"], ())):
+            fix_ok, fix_name = True, "fixing holes OFF against D-144, as before it (the next branch takes D-144):"
         checks = [
-            ("fixing holes", all(near(fix, w) for w in want_fix)),
+            (fix_name, fix_ok),
             ("stud bolt holes", all(near(studs, w) for w in want_studs)),
             ("key position", any(max(abs(a - b) for a, b in zip(g, want_key)) < 0.05 for g in got_keys)),
             ("back band slot end", near(slot_ends, (float(r["face_centre_y"]), float(r["slot_end_z"])))),
