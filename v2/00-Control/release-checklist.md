@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (c3e88d9), PR #203 (f1fd14e), PR #105 (fb72a96), PR #91 (39e42a1), PR #225 (4028516), PR #215 (0428163). The Mac's screen at run time: **unlocked**. 455 files in the CAD, drawing and manufacturing folders; the FAI plan's 88 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (18897bb), PR #203 (f1fd14e), PR #91 (39e42a1), PR #105 (16adda2). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 88 characteristics, 11 functional checks and 20 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -19,14 +19,14 @@ Read from: main (c3e88d9), PR #203 (f1fd14e), PR #105 (fb72a96), PR #91 (39e42a1
 | CEILING (builds AIR, D-80) | 8 | 17 | 0 | 6 | 1 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
-| FRONT | 4 | 18 | 0 | 0 | 4 | 1 | 5 |
+| FRONT | 5 | 17 | 0 | 0 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 36 | 98 | 0 | 11 | 10 | 2 | 93 |
+| **All, each number once** | 37 | 97 | 0 | 11 | 10 | 2 | 93 |
 
-94 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
+93 of the 145 made numbers have no drawing yet; for 79 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 94, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 93, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -146,7 +146,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
 | 351201 | FRONT - DECOR SKIN - DT | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
 | 351204 | FRONT - DECOR FRAME - DT | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D15 | open: drawing |
-| 351202 | FRONT - DECOR BACK PLATE - DT | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D16 | open: drawing |
+| 351202 | FRONT - DECOR BACK PLATE - DT | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
 | 351203 | FRONT - DOOR TOP STOP - DT | PR #105 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
 | 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
 | 351301 | FRONT - DECOR SKIN - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
@@ -399,7 +399,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 - The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: the Joints Engineer makes them and the teams place them by reference (D-95).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
 - D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: "on hold" does; "holds", "holder" and "threshold" don't.
-- D-113: the parts tools/drawgen draws (its specs.py: 111101, 211101, 211102, 211501, 211502, 211503, 211504) are never blocked by a locked screen, because drawgen doesn't run in Fusion.
+- D-113: the parts tools/drawgen draws (its specs.py: 111101, 111103, 211101, 211102, 211501, 211502, 211503, 211504) are never blocked by a locked screen, because drawgen doesn't run in Fusion.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.
 - A register number's product status comes from the joints register: on HOLD, or named (DECIDED or from a source), or left to the parts list; a team number's from its parts list.
