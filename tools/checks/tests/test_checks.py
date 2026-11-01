@@ -1337,3 +1337,86 @@ def test_a_solid_with_a_sealed_void_reads_by_its_outer_shell():
         assert sb.voids == 1 and sa.voids == 0
         assert sb.box == sa.box and len(sb.holes) == len(sa.holes) == 1
         assert any(i["solid"] == 256 for i in b.instances())        # still found as a solid of its product
+
+
+def _felt_dxf(path, body, blocks=""):
+    """A small ASCII DXF in mm: body is the ENTITIES section's records, blocks its BLOCKS section's."""
+    path.write_text("0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nBLOCKS\n" + blocks +
+                    "0\nENDSEC\n0\nSECTION\n2\nENTITIES\n" + body + "0\nENDSEC\n0\nEOF\n")
+
+
+def _dxf_rect(w, h, layer="CUT"):
+    return ("0\nLWPOLYLINE\n8\n%s\n90\n4\n70\n1\n10\n0\n20\n0\n10\n%g\n20\n0\n10\n%g\n20\n%g\n10\n0\n20\n%g\n"
+            % (layer, w, w, h, h))
+
+
+def _dxf_circle(x, y, r, layer="CUT"):
+    return "0\nCIRCLE\n8\n%s\n10\n%g\n20\n%g\n40\n%g\n" % (layer, x, y, r)
+
+
+def test_a_felt_with_openings_passes_on_its_dxf_and_row(tmp_path):
+    # D-128, extending D-89 part (3): a felt or fill piece with through-openings or edge notches only needs no drawing
+    # when its DXF gives the full outline with every opening and its row gives material, density or grade, thickness,
+    # tolerance and part number. A pocket keeps the drawing.
+    felt = _profile(sf.Frame(), length=1000.0, w=500.0, h=9.0, t=None, holes=((300.0, 50.0),))
+    shape, why = c_drawings.prism_shape(felt)
+    assert why == "" and shape == {"thickness": pytest.approx(9.0), "sides": (500.0, 1000.0), "loops": 2}
+    assert c_drawings.prism_shape(_profile(sf.Frame(), w=40.0, h=40.0, t=2.0))[0] is None      # a tube's inner face
+    assert c_drawings.prism_shape(_profile(sf.Frame(), w=30.0, h=3.0, t=None, chamfer=1.0))[0] is None
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    dxf = d / "511302_P01_LINING-FELT-SIDE-LOWER-RH_DXF.dxf"
+    unplaced = "0\nBLOCK\n8\n0\n2\nSPARE\n10\n0\n20\n0\n" + _dxf_circle(100, 100, 10) + "0\nENDBLK\n"
+    _felt_dxf(dxf, _dxf_rect(1000, 500) + _dxf_circle(300, 250, 25), unplaced)
+    assert c_drawings.dxf_shapes(str(dxf)) == {"loops": 2, "open": 0, "size": (500.0, 1000.0), "units": "4"}
+    row = {"part_number": "511302", "name": "LINING - FELT - SIDE LOWER - RH", "kind": "MP",
+           "material": "PET felt 9 mm, 1800 g/m2", "size_mm": "9 x 1000 x 500", "tolerance": "±1 on length and width"}
+    names = {"511302": row["name"]}
+    def found(change=None, shape_why=(shape, "")):
+        _write_csv(d / "210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv", [dict(row, **(change or {}))])
+        fs = c_drawings.check_drawings(str(tmp_path), {"511302"}, {"511302": felt.holes}, names,
+                                       {"511302": [len(felt.faces)]}, prism_by_pn={"511302": shape_why})
+        return " ".join(f.message for f in fs)
+    assert found() == ""                                                      # the DXF and the row stand in
+    _write_csv(d / "210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv", [row])
+    assert "D-89's cut-list route doesn't apply" in " ".join(       # without D-128 the opening keeps the drawing
+        f.message for f in c_drawings.check_drawings(str(tmp_path), {"511302"}, {"511302": felt.holes}, names,
+                                                     {"511302": [len(felt.faces)]}, prism_by_pn={}))
+    assert "density or grade" in found({"material": "polyester"})
+    assert "thickness (9 mm" in found({"size_mm": "12 x 1000 x 500"})
+    assert "through features only" in found({"size_mm": "9 x 1000 x 500, two pockets"})
+    assert "a piece cut straight through (a face sits between" in found(shape_why=(None, "a face sits between the "
+                                                                                       "sheet's two faces (a pocket)"))
+    _felt_dxf(dxf, _dxf_rect(1000, 500))                                               # the opening left out of the DXF
+    assert "every opening in its DXF (the STEP has 2 closed shapes, the DXF 1)" in found()
+    _felt_dxf(dxf, _dxf_rect(1000, 500) + "0\nINSERT\n8\nCUT\n2\nHOLE\n10\n300\n20\n250\n",       # placed by an INSERT: counts
+         "0\nBLOCK\n8\n0\n2\nHOLE\n10\n0\n20\n0\n" + _dxf_circle(0, 0, 25) + "0\nENDBLK\n")
+    assert found() == ""
+    _felt_dxf(dxf, _dxf_rect(1000, 500) + _dxf_circle(300, 250, 25) + _dxf_circle(10, 10, 2, layer="POCKET"))
+    assert "CUT and MARK layers only" in found()
+
+
+def test_a_drawgen_part_stays_severe_on_a_locked_screen(tmp_path, monkeypatch):
+    # D-113: drawgen doesn't wait for the screen, so under D-84's auto mode its parts keep a missing drawing severe
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    _write_csv(cfg / "policy.csv", [{"key": "missing_drawing_severity", "value": "auto-screen-lock",
+                                     "status_source": "test"}])
+    (tmp_path / "tools/drawgen").mkdir(parents=True)
+    (tmp_path / "tools/drawgen/specs.py").write_text(
+        'SPECS = {"111101": ("base", "part", {}), "211501": ("wall", "tabulated", {"covers": ["211501", "211502"]})}\n')
+    assert c_drawings.drawgen_parts(str(tmp_path)) == {"111101", "211501", "211502"}
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: True)
+    sev = {f.subject: f.severity for f in c_drawings.check_drawings(str(tmp_path), {"111101", "211502", "111999"}, {})
+           if f.rule == "no-drawing"}
+    assert sev == {"111101": "severe", "211502": "severe", "111999": "major"}
+
+
+def test_a_parts_holes_come_from_its_own_step_first():
+    # an older copy of corner key 111211 in BASE's assembly had its bottom holes 9 mm away from the key's own STEP;
+    # adding both gave C05 six hole axes for a four-hole key
+    import run_checks
+    files = {"v2/03-Manufacturing/base/110000_P01_BASE_STEP.step": 1,
+             "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step": 2}
+    assert run_checks.own_file_first("111211", files).endswith("111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step")
+    assert run_checks.own_file_first("111999", files).endswith("110000_P01_BASE_STEP.step")
