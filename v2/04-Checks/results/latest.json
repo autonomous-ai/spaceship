@@ -1,5 +1,5 @@
 {
- "rev": "23aeade",
+ "rev": "6f2bff3",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -226,6 +226,28 @@
     "bays_over": 3
    },
    "key": "C09|acp-bay|assembly 211202 BACK LOWER - B2"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-KICK-OVER-FLOOR",
+   "subject": "assembly KICK-OVER-FLOOR",
+   "severity": "severe",
+   "message": "KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it",
+   "fix": "Kick strip bottom at glide_h (Z 10) in door_unit.py, keeping its 60 degree push-side taper (D-151)",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "rules": [
+     {
+      "id": "KICK-OVER-FLOOR",
+      "gap_mm": 20.0,
+      "a": "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+      "b": "ROOM FLOOR (Z 0)"
+     }
+    ]
+   },
+   "key": "C02|gap-KICK-OVER-FLOOR|assembly KICK-OVER-FLOOR"
   },
   {
    "check": "C08",
