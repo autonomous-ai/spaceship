@@ -610,6 +610,7 @@ SIL_PATHS = {   # name: (length m, free area m2, casing face width toward the po
 CASINGS = {     # DECIDED: al20
     "al08": ("aluminium 0.8 mm", "alu", 0.8),
     "al20": ("aluminium 2.0 mm", "alu", 2.0),
+    "al30": ("aluminium 3.0 mm", "alu", 3.0),
     "st10": ("steel 1.0 mm", "steel", 1.0),
 }
 LINING_KG_M3 = 40.0    # polyester lining board, about 40 kg/m3 (ASSUME): the PR #11 layouts kept for the record
@@ -759,6 +760,79 @@ def intake_free(key):
 
 
 D60_FREE["intake"] = intake_free(D60_INTAKE)
+
+# D-60 fan boxes (D-121, D-124). Each box is the room on the side of its fan bulkhead that faces the pod's double
+# wall, and gets that side's sound power: the supply box's plenum above its fans (the 50 mm under them is the top of the
+# riser and counts with the riser's breakout), and the exhaust box's plenum under its fans, which sit at the top on a
+# sealed bulkhead and blow straight into the roof sleeve, so all the air passes them (D-121, ISS-089). The 50 mm linings
+# go only where they fit (D-121, on AIR #91's sizes): in the supply box on its two short end walls, from half a fan above
+# the fans to the top; in the exhaust box on its two long walls, full height under the fans (they continue the
+# cartridge's two outer layers, so the passages stay open and the fans keep 35 mm clear), and on its far end up to
+# 50 mm under the fans. Each room's open face lets sound out: what goes down a cartridge comes back only as far as the
+# far grille reflects it, after the passages twice; the supply's top also loses what the column's top plenum reflects
+# where it meets the passages (calculation).
+FANBOX_CASING = "al30"       # D-124: both fan box casings in 3 mm aluminium (was 2 mm), for the boost's noise margin
+FANBOX_BULKHEAD_MM = 2.0     # the fans' level bulkhead, aluminium (ASSUME; inside the box, so not a sound barrier)
+FAN_T = 0.025                # m: Noctua NF-A14 depth, 140 x 140 x 25 (selection F1)
+FAN_BORE = 0.135             # m: the round hole for each fan in its bulkhead (ASSUME)
+FANBOX_SUP_FAN_Z = 0.050     # m: the supply fans' underside above the box's open bottom (AIR #91)
+FANBOX_LIN_GAP = 0.070       # m: the supply box's end-wall linings start half a fan above the fans (calculation)
+FANBOX_LIN_UNDER = 0.050     # m: the exhaust box's far-end lining stops this far under the bulkhead (calculation)
+FANBOX_BARE_ALPHA = 0.05     # ASSUME: bare aluminium, the bulkhead and the fans' faces, every band
+
+
+def fanbox_rooms(casing=FANBOX_CASING):
+    """The D-60 fan box rooms: radiating face toward the pod, lined area (50 mm), bare area and open face (m2); fill (m)
+    between the casing and the face toward the pod; casing key."""
+    t = CASINGS[casing][2] / 1000
+    lin = D60["lin"] / 1000
+    (bx0, bx1), (by0, by1), (bz0, bz1) = D60["sup_box"]
+    sw, sd, sh = (bx1 - bx0) / 1000, (by1 - by0) / 1000, (bz1 - bz0) / 1000
+    wi, di = sw - 2 * t, sd - 2 * t                       # inside; open at the bottom and the top
+    h_up = sh - FANBOX_SUP_FAN_Z - FAN_T                  # the plenum above the fans
+    s_lined = 2 * di * (h_up - FANBOX_LIN_GAP)
+    supply = dict(rad_area=sw * h_up, lined=s_lined, bare=2 * (wi + di) * h_up - s_lined + wi * di,
+                  opens=[(wi * di, "cart_top")], fill=0.040, wall=casing)
+    (ex0, ex1), (ey0, ey1), (ez0, ez1) = D60["exh_box"]
+    ew, ed, eh = (ex1 - ex0) / 1000, (ey1 - ey0) / 1000, (ez1 - ez0) / 1000
+    li, wj = ew - t, ed - 2 * t                           # inside; open on the cartridge face and the top
+    h_in = eh - t - FAN_T - FANBOX_BULKHEAD_MM / 1000     # the plenum under the fans and their bulkhead
+    e_lined = 2 * li * h_in + (wj - 2 * lin) * (h_in - FANBOX_LIN_UNDER)
+    walls = wj * h_in + 2 * li * h_in + 2 * li * wj       # far end, long walls, floor, bulkhead and fans' faces
+    exhaust = dict(rad_area=ew * ed + ew * (eh - FAN_T - FANBOX_BULKHEAD_MM / 1000), lined=e_lined,
+                   bare=walls - e_lined, opens=[(wj * h_in, "cart_face")], fill=D60["fill"] / 1000, wall=casing)
+    return dict(supply=supply, exhaust=exhaust)
+
+
+def cart_entry_reflection():
+    """Share of the sound power reflected where the column's top plenum meets the cartridge's passages:
+    ((S1 - S2) / (S1 + S2))^2 (calculation)."""
+    (cx0, cx1), (cy0, cy1), _ = D60["col"]
+    s1 = (cx1 - cx0 - D60["skin"]) * (cy1 - cy0 - D60["skin"]) / 1e6
+    s2 = D60["ngap"] * D60["gap"] * (D60["cart"][0] - 4.0) / 1e6
+    return ((s1 - s2) / (s1 + s2)) ** 2
+
+
+def open_alpha(kind, path, i, f, derate=None):
+    """Share of the sound reaching a fan box room's open face that doesn't come back into it (calculation)."""
+    il = part_il(path["pod"][0], SIL_DERATE if derate is None else derate)[i]
+    back = (1 - 10 ** (-end_reflection(f, path["grille"]) / 10)) * 10 ** (-2 * il / 10)
+    if kind == "cart_top":
+        return (1 - cart_entry_reflection()) * (1 - back)
+    share = D60["ngap"] * D60["gap"] / (D60["cart"][1] - 4.0)     # the passages' share of the cartridge's end
+    return share * (1 - back) + (1 - share) * LINING_DATA[D60["lin"]][i]
+
+
+def fanbox_r(bx, path, i, f, derate=None):
+    """Room constant (m2) of a D-60 fan box room in band i: R = A / (1 - A/S) over its lined, bare and open areas."""
+    a = bx["lined"] * LINING_DATA[D60["lin"]][i] + bx["bare"] * FANBOX_BARE_ALPHA
+    s_tot = bx["lined"] + bx["bare"]
+    for area, kind in bx["opens"]:
+        a += area * open_alpha(kind, path, i, f, derate)
+        s_tot += area
+    return a / (1 - a / s_tot)
+
+
 FRAME_ANGLE_KG_M = 0.26    # aluminium angle 25 x 25 x 2 mm for the column and soffit frames (calculation: 2.7 g/cm3)
 CASS_KG_M2 = 7850 * 0.0005 + TRAY_KG_M2 + PET_FELT9_KG_M2   # ceiling lining cassette: 0.5 mm tray, returns, felt
 
@@ -786,8 +860,19 @@ def d60_parts(casing="al20"):
     sof_l, sof_d, sof_h = (sx1 - sx0) / 1000, (sy1 - sy0) / 1000, (sz1 - sz0) / 1000
     lo_w, lo_d, lo_l = (x / 1000 for x in D60["riser_lo"])
     up_w, up_d, up_l = (x / 1000 for x in D60["riser_up"])
-    box = 2 * (0.30 * 0.155 + 0.30 * 0.30 + 0.155 * 0.30)
-    ebox = 2 * (0.294 * d + 0.294 * w + d * w)
+    fb_kg_m2 = MAT["alu"][0] * CASINGS[FANBOX_CASING][2] / 1000
+    bulk_kg_m2 = MAT["alu"][0] * FANBOX_BULKHEAD_MM / 1000
+    t_fb = CASINGS[FANBOX_CASING][2] / 1000
+    holes = 2 * math.pi / 4 * FAN_BORE ** 2
+    (bx0, bx1), (by0, by1), (bz0, bz1) = D60["sup_box"]
+    sw, sd, sh = (bx1 - bx0) / 1000, (by1 - by0) / 1000, (bz1 - bz0) / 1000
+    box = 2 * (sw + sd) * sh                                      # four walls; open at the bottom and the top
+    box_bulk = (sw - 2 * t_fb) * (sd - 2 * t_fb) - holes
+    (ex0, ex1), (ey0, ey1), (ez0, ez1) = D60["exh_box"]
+    ew, ed, eh = (ex1 - ex0) / 1000, (ey1 - ey0) / 1000, (ez1 - ez0) / 1000
+    ebox = ew * ed + 2 * ew * eh + ed * eh                        # floor, long walls, far end; open face and top
+    ebox_bulk = (ew - t_fb) * (ed - 2 * t_fb) - holes
+    rooms = fanbox_rooms()
     rows = [
         ("Supply cartridge, in the air column", f"{D60['cart'][0]:.0f} x {D60['cart'][1]:.0f} x {D60['cart'][2]:.0f}",
          d60_cartridge_kg(casing), f"{CASINGS[casing][0]} casing, three 50 mm layers at {CART_LAYER_KG_M3:.0f} kg/m3"),
@@ -799,10 +884,15 @@ def d60_parts(casing="al20"):
          (sof_d + sof_h) * sof_l * face + fill * (w + d) * L * FILL_KG_M3 + 2 * sof_l * FRAME_ANGLE_KG_M + 0.9,
          "underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption)"),
         ("Supply fan box and transition, in the right block", "300 x 155 x 300 + transition",
-         (box + 0.35) * al + 0.6 * 0.050 * FANBOX_LINING_KG_M3,
-         "2 mm aluminium, 50 mm lining at 32 kg/m3; transition 0.35 m2 (calculation)"),
+         box * fb_kg_m2 + box_bulk * bulk_kg_m2 + 0.35 * al
+         + rooms["supply"]["lined"] * D60["lin"] / 1000 * FANBOX_LINING_KG_M3,
+         f"3 mm aluminium casing (D-124), a 2 mm bulkhead; 50 mm linings at 32 kg/m3 where they fit, "
+         f"{rooms['supply']['lined']:.3f} m2 (D-121); transition 0.35 m2 of 2 mm aluminium (calculation)"),
         ("Exhaust fan box and roof sleeve, in the soffit", "294 x 314 x 173",
-         (ebox + 0.093) * al + 0.42 * 0.050 * FANBOX_LINING_KG_M3, "2 mm aluminium, 50 mm lining at 32 kg/m3"),
+         ebox * fb_kg_m2 + ebox_bulk * bulk_kg_m2 + 0.093 * al
+         + rooms["exhaust"]["lined"] * D60["lin"] / 1000 * FANBOX_LINING_KG_M3,
+         f"3 mm aluminium casing (D-124), a 2 mm bulkhead; 50 mm linings at 32 kg/m3 where they fit, "
+         f"{rooms['exhaust']['lined']:.3f} m2 (D-121); sleeve 0.093 m2 of 2 mm aluminium"),
         ("Intake riser with a mesh allowance, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
          (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5,
          "1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption)"),
@@ -1364,7 +1454,12 @@ def path_noise12(path, q_ls, derate=SIL_DERATE, tone_250=0.0, fan_key=FAN_PICK):
                     brk += 10 ** ((lwb + room(rf, i)) / 10)
             cum = [c + x for c, x in zip(cum, part_il(p, derate))]
     bx = path.get("box")
-    if bx:   # lined fan box, reverberant, behind a filled double wall (as fan12_noise)
+    if bx and "lined" in bx:   # a D-60 fan box room (D-121, D-124), reverberant, behind a filled double wall
+        rdw, _ = wall_pair_r(bx["wall"], bx["fill"])
+        for i, f in enumerate(BANDS):
+            lwb = side[i] + 10 * math.log10(bx["rad_area"] / fanbox_r(bx, path, i, f, derate)) - rdw[i]
+            brk += 10 ** ((lwb + room(rf, i)) / 10)
+    elif bx:   # lined fan box, reverberant, behind a filled double wall (as fan12_noise): the PR #11 layouts
         rdw, _ = wall_pair_r("al20", bx["fill"])
         lined = 2 * (bx["wid"] + bx["dep"]) * bx["h"] + bx["wid"] * bx["dep"]
         al = LINING_DATA[bx["lin"]]
@@ -1455,13 +1550,11 @@ def d60_paths(casing="al20"):
                   bends=1, wall=casing)],
         room=[part("plain", lo_l, lo_w, lo_d, fill=fill, free=(lo_w - 0.002) * (lo_d - 0.002), wall="st10"),   # behind the column
               part("plain", up_l, up_w, up_d, fill=0.005, free=(up_w - 0.002) * (up_d - 0.002), bends=2, wall="st10")],
-        box=dict(wid=0.30, dep=0.155, h=0.30, fill=0.040, lin=50.0, rad_area=0.30 * 0.30),
-        grille=D60_FREE["kick"], opening=D60_FREE["intake"], r=1.0)
+        box=fanbox_rooms()["supply"], grille=D60_FREE["kick"], opening=D60_FREE["intake"], r=1.0)
     exhaust = dict(
         pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=fill, rad=w + d, bends=1, wall=casing)],
         room=[part("plain", 0.10, 0.285, 0.294, face=False)],
-        box=dict(wid=0.294, dep=d, h=w, fill=fill, lin=50.0, rad_area=0.294 * (d + w)),
-        grille=D60_FREE["exh_grille"], opening=D60_FREE["roof"], r=1.5)
+        box=fanbox_rooms()["exhaust"], grille=D60_FREE["exh_grille"], opening=D60_FREE["roof"], r=1.5)
     return [supply, exhaust]
 
 
@@ -1881,8 +1974,11 @@ def t_d60_sizes():
          "to the fans; the supply fan inlet sensor (D-50) sits in the fan box inlet"),
         ("Supply fans and box", f"{bx1 - bx0:.0f} x {by1 - by0:.0f} x {bz1 - bz0:.0f}",
          f"X {f(bx0, bx1)}, Y {f(by0, by1)}, Z {f(bz0, bz1)}, inside the right block",
-         "two Noctua NF-A14 industrialPPC-3000 PWM on a level bulkhead, blowing up; 2 mm aluminium, 50 mm lining; 44 mm "
-         "fill to the block's inner face, which lifts off here (D-59); a transition carries the air right to the opening"),
+         f"two Noctua NF-A14 industrialPPC-3000 PWM on a level bulkhead {FANBOX_SUP_FAN_Z * 1000:.0f} mm above the open "
+         f"bottom, blowing up; 3 mm aluminium (D-124); 50 mm linings on the two short end walls only, from "
+         f"{FANBOX_LIN_GAP * 1000:.0f} mm above the fans to the top (D-121): on the long walls they would choke the air; "
+         "44 mm fill to the block's inner face, which lifts off here (D-59); a transition carries the air right to the "
+         "opening"),
         ("Intake riser", f"{lo_w:.0f} to {up_w:.0f} wide x {lo_d:.0f} deep x {lo_l + up_l:.0f}",
          f"X {riser_x0:.0f} to {riser_x0 + lo_w:.0f}, Y {SKEL['yf'] + SKEL['decor_d'] - DECOR_SKIN - lo_d:.0f} to "
          f"{SKEL['yf'] + SKEL['decor_d'] - DECOR_SKIN:.0f}, Z 105 to {105 + lo_l:.0f}, behind the column; then it widens "
@@ -1905,7 +2001,10 @@ def t_d60_sizes():
          "passages along X; fill and clearances as the column"),
         ("Exhaust fans and box", f"{ex1 - ex0:.0f} x {ey1 - ey0:.0f} x {ez1 - ez0:.0f}",
          f"X {f(ex0, ex1)}, Y {f(ey0, ey1)}, Z {f(ez0, ez1)}, the soffit's right end",
-         "two NF-A14 lying flat, blowing up into the roof sleeve; 2 mm aluminium, 50 mm lining"),
+         "two NF-A14 lying flat at the top on a sealed level bulkhead, blowing straight up into the roof sleeve, so all "
+         "the air passes them (D-121, ISS-089); 3 mm aluminium (D-124); 50 mm linings on the two long walls, full height "
+         "under the fans, which continue the cartridge's outer layers, and on the far end up to "
+         f"{FANBOX_LIN_UNDER * 1000:.0f} mm under the fans (D-121)"),
         ("Roof slot (CEILING)", f"{rx1 - rx0:.0f} x {ry1 - ry0:.0f}",
          f"through the roof panel above the exhaust box, X {f(rx0, rx1)}, Y {f(ry0, ry1)}",
          f"sleeve through the {SKEL['pod_h'] - SKEL['outer_t'] - sz1:.0f} mm gap and the {SKEL['outer_t']:.0f} mm roof panel; grille 50% free or more, {D60_FREE['roof']:.3f} m2 free; "

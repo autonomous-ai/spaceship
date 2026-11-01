@@ -186,6 +186,110 @@ def cut_list_lacks(root, pn, thickness=False):
     return best
 
 
+# D-125 (PM, 2026-11-01), extending D-89: a plain straight-cut strip or sheet with no features passes on a full
+# parts-list line instead of a drawing: material and grade, thickness, length, width, finish and tolerance.
+def cuboid_sides(solid):
+    """The three sides of a body that is a plain rectangular block (six flat faces in three square pairs, no holes,
+    no bends), smallest first; None for any other shape."""
+    fs = solid.faces
+    if len(fs) != 6 or any(f.kind != "plane" for f in fs) or solid.holes or solid.bends:
+        return None
+    dirs = []
+    for f in fs:
+        if not any(abs(abs(sum(a * b for a, b in zip(f.normal, d))) - 1.0) < 1e-6 for d in dirs):
+            dirs.append(f.normal)
+    if len(dirs) != 3 or any(abs(sum(a * b for a, b in zip(dirs[i], dirs[j]))) > 1e-6
+                             for i in range(3) for j in range(i + 1, 3)):
+        return None
+    pts = list(solid.points())
+    if not pts:
+        return None
+    sides = [max(sum(a * b for a, b in zip(p, d)) for p in pts) - min(sum(a * b for a, b in zip(p, d)) for p in pts)
+             for d in dirs]
+    return tuple(round(x, 3) for x in sorted(sides))
+
+
+def is_strip(sides):
+    """A strip or sheet rather than a block or a bar: thin, at most 25 mm and half its width (as flat_plate reads a
+    sheet)."""
+    return bool(sides) and sides[0] <= 25.0 and sides[0] <= 0.5 * sides[1]
+
+
+PLUS_MINUS = re.compile(r"±|\+\s*/\s*-|\+\s*\d+(?:\.\d+)?\s*/\s*-?\s*\d")    # ±0.5, +/-1, +0/-0.5, +0.10/0
+
+
+def tolerance_cover(tolerance_texts, row_texts):
+    """D-125 (PM, 2026-11-01): which cut sizes, of 'length' and 'width', a parts-list line's tolerance covers. One
+    general tolerance covers both (ISO 2768, or a ± on the cut sizes, all sizes, or no size named); otherwise each
+    takes its own (a ± naming the length or the width). A bought strip whose width comes from the supplier says
+    "width as supplied" anywhere in its line. A ± on the thickness, bends, angles, holes or flatness covers neither;
+    the thickness takes the sheet's own tolerance, as its grade names it."""
+    cover = set()
+    if any(re.search(r"\bwidth\s+as\s+supplied\b", t or "", re.I) for t in row_texts):
+        cover.add("width")
+    for text in tolerance_texts:
+        for clause in re.split(r"[;,]", text or ""):
+            if re.search(r"ISO\s*2768", clause, re.I):
+                cover |= {"length", "width"}
+                continue
+            if not PLUS_MINUS.search(clause):
+                continue
+            named = False
+            if re.search(r"\blength|\blong\b", clause, re.I):
+                cover.add("length")
+                named = True
+            if re.search(r"\bwidth|\bwide\b", clause, re.I):
+                cover.add("width")
+                named = True
+            if not named and not re.search(r"thick|\bbent\b|\bbend|angle|°|hole|position|flat|square", clause, re.I):
+                cover |= {"length", "width"}          # on the cut sizes, all sizes, or no size named
+    return cover
+
+
+def strip_row_lacks(root, pn, sides):
+    """D-125: None when no list has a row for pn; else (what the most complete row lacks, its file). A full row
+    gives the material with its grade (a grade on HOLD counts as stated, as C11 holds such rows; the part stays HOLD
+    until the grade is named), the thickness, width and length as in the STEP, the finish, a tolerance covering both
+    cut sizes (tolerance_cover), and names no feature (hole, slot, notch, pocket, cut-out). Any .csv under
+    v2/03-Manufacturing or v2/02-Drawings counts, as for D-89. The release checklist calls this function (and
+    cuboid_sides, is_strip) rather than copying it: keep their names and arguments."""
+    from common import read_csv
+    from c_parts import GRADE_HINT, VAGUE_FINISH
+    best = None
+    for top in ("v2/03-Manufacturing", "v2/02-Drawings"):
+        for p in walk_files(root, top, exts=(".csv",)):
+            for row in read_csv(p):
+                if not any((v or "").strip() == pn for v in row.values() if isinstance(v, str)):
+                    continue
+                lacks = []
+                mat = " ".join(v for _k, v in _cell(row, r"material|grade"))
+                if not mat:
+                    lacks.append("material")
+                elif not (GRADE_HINT.search(mat) or re.search(r"\b(?:grade|alloy)\b\s*:?\s*\w", mat, re.I)):
+                    lacks.append("the material's grade")
+                nums = [float(x) for _k, v in _cell(row, r"size|dimension|length|width|thick|^[lwt]_?mm$")
+                        for x in re.findall(r"\d+(?:\.\d+)?", v)]
+                if any(not any(abs(n - x) <= max(0.1, 0.002 * x) for n in nums) for x in sides):
+                    lacks.append("thickness, width and length as in its STEP (%s mm)" % " x ".join("%g" % x for x in sides))
+                fin = " ".join(v for _k, v in _cell(row, r"finish"))
+                if not fin or VAGUE_FINISH.search(fin):
+                    lacks.append("finish")
+                texts = [v for v in row.values() if isinstance(v, str)]
+                tols = [v for _k, v in _cell(row, r"tol")] + [v for v in texts if PLUS_MINUS.search(v)]
+                missing = [x for x in ("length", "width") if x not in tolerance_cover(tols, texts)]
+                if missing:
+                    lacks.append("a tolerance on the %s (one general tolerance on the cut sizes, such as ISO 2768-m "
+                                 "or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip)"
+                                 % " and the ".join(missing))
+                feats = sorted({m.group(0).lower() for v in row.values() if isinstance(v, str)
+                                for m in FEATURE_WORDS.finditer(v)})
+                if feats:
+                    lacks.append("a plain piece (its row names %s)" % " and ".join(feats))
+                if best is None or len(lacks) < len(best[0]):
+                    best = (lacks, rel(root, p))
+    return best
+
+
 def soft_kind(name):
     """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89)."""
     if not is_soft(name):
@@ -367,7 +471,7 @@ def missing_drawing_severity(root):
 
 
 def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
-                   bends_by_pn=None, two_wall_by_pn=None):
+                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -378,6 +482,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     flat_by_pn = flat_by_pn or {}      # pn -> (ok, thickness, why) from the STEP (D-89 part 4)
     bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (D-113)
     two_wall_by_pn = two_wall_by_pn or {}   # pn -> hole axes through two walls of one body (D-113)
+    cuboid_by_pn = cuboid_by_pn or {}  # pn -> sides of its one shape when that is a plain rectangular block (D-125)
     fs = []
     idx = index_files(root)
     missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
@@ -452,14 +557,23 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   ", thickness" if kind == "soft" else "", need),
                               r_where, owner))
             continue
+        d125 = ""
+        sides = cuboid_by_pn.get(pn)
+        if not pdfs and cls == "part" and not kind and is_strip(sides):
+            row = strip_row_lacks(root, pn, sides)
+            if row is not None and not row[0]:
+                continue        # D-125: a plain straight-cut strip or sheet, given in full by its parts-list row
+            d125 = " D-125 (a plain straight-cut strip or sheet on a full parts-list row) doesn't apply: %s." % (
+                "no parts list has a row for it" if row is None else
+                "its row in %s doesn't give %s" % (row[1], ", ".join(row[0])))
         if not pdfs and cls == "part" and files.get("DXF"):
             # D-89 part 4: a flat sheet part goes on its DXF and its parts-list row
             lacks = flat_cut_lacks(root, pn, files, holes_by_pn.get(pn), flat_by_pn.get(pn))
             if not lacks:
                 continue
             fs.append(Finding("C05", "no-drawing", pn, missing_sev,
-                              "%s has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: %s." % (
-                                  label, "; ".join(lacks)),
+                              "%s has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: %s.%s" % (
+                                  label, "; ".join(lacks), d125),
                               "Make its drawing; or, for a flat part cut from sheet with no bends and no machined "
                               "features, give the full outline and every hole in its DXF and material, thickness, "
                               "finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
@@ -467,8 +581,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             continue
         if not pdfs:
             fs.append(Finding("C05", "no-drawing", pn, missing_sev if cls == "part" else "major",
-                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s." % (
-                                  label, pn, " though its CAD is in %s" % r_where if r_where else ""),
+                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s" % (
+                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
                               r_where, owner))
             continue

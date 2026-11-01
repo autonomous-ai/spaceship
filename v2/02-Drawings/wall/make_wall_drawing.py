@@ -288,10 +288,21 @@ STACK_X, STACK_Y0, STACK_GAP, STACK_TOP = 410.0, 72.0, 4.0, 405.0   # right colu
 ORDER = ("data", "parts", "table", "pockets", "notes")             # bottom to top
 
 
+def stack_at(pn):
+    """Where this drawing's note images stack: (x, y0, top) in sheet mm, bottom-up. The default is the right
+    column above the title block; --arg images_at="PN=X,Y0[,TOP];..." moves it for a drawing whose hole tables
+    took that column (Fusion places hole tables itself, top right; the API can't move them)."""
+    for item in (ARGS.get("images_at") or "").split(";"):
+        if "=" in item and item.split("=", 1)[0].strip() == pn:
+            vals = [float(v) for v in item.split("=", 1)[1].split(",")]
+            return vals[0], vals[1], vals[2] if len(vals) > 2 else STACK_TOP
+    return STACK_X, STACK_Y0, STACK_TOP
+
+
 def images(sheet, pn, cfg):
-    """The note images, stacked bottom-up in the right column (lower-left corners at x 410, from y 72), placed
-    with the measured Images.insert mapping (image_mapping.json). Until that mapping is measured nothing is
-    placed: an inserted image can't be moved or deleted, so a guess would cost the drawing."""
+    """The note images, stacked bottom-up (by default in the right column: lower-left corners at x 410, from
+    y 72; stack_at), placed with the measured Images.insert mapping (image_mapping.json). Until that mapping is
+    measured nothing is placed: an inserted image can't be moved or deleted, so a guess would cost the drawing."""
     with open(os.path.join(ARGS["repo_root"], MAPPING)) as fh:
         mp = json.load(fh)
     if not mp.get("width_at_scale_1_mm") or not mp.get("anchor"):
@@ -304,22 +315,24 @@ def images(sheet, pn, cfg):
     with open(os.path.join(ARGS["repo_root"], HERE, ".images", "%s_images.json" % pn)) as fh:
         meta = json.load(fh)
     names = [n for n in ORDER if n in meta and n in [c for c, _at in cfg["images"]]]
-    y, placed = STACK_Y0, 0
+    sx, y, top = stack_at(pn)
+    total = sum(meta[n]["h_mm"] for n in names) + STACK_GAP * max(len(names) - 1, 0)
+    if y + total > top:                    # check the whole stack first: never place half of it
+        raise RuntimeError("note images don't fit (%.1f mm from y %.1f, top %.1f); nothing placed" % (total, y, top))
+    placed = 0
     for name in names:
         m = meta[name]
         # at scale 1 an image comes out width_at_scale_1_mm wide (the sheet sets it), keeping its aspect ratio
         scale = m["w_mm"] / mp["width_at_scale_1_mm"]
         w, h = m["w_mm"], m["h_mm"]
-        if y + h > STACK_TOP:
-            raise RuntimeError("note images don't fit the right column (%s ends at %.1f mm)" % (name, y + h))
         dx, dy = {"lower-left": (0.0, 0.0), "upper-left": (0.0, h), "center": (w / 2, h / 2)}[mp["anchor"]]
         ii = sheet.images.createInput()
         ii.imageFilePath = m["path"]
-        ii.position = p2(STACK_X + dx, y + dy)
+        ii.position = p2(sx + dx, y + dy)
         ii.scale = scale
         if not sheet.images.insert(ii):
             raise RuntimeError("image %s not inserted" % name)
-        print("IMAGE|%s|lower-left (%.1f, %.1f)|%s x %.1f mm|scale %.5f" % (name, STACK_X, y, w, h, scale))
+        print("IMAGE|%s|lower-left (%.1f, %.1f)|%s x %.1f mm|scale %.5f" % (name, sx, y, w, h, scale))
         y += h + STACK_GAP
         placed += 1
     return placed

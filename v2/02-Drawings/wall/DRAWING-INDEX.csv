@@ -25,10 +25,10 @@ drawing,covers,status,note
 211204_P01_WALL-PANEL-FRAME-BACK-UPPER-B4_DWG,211204,to do,frame B4
 510204_P01_LINING-CASSETTE-BACK-UPPER-B4_DWG,510204,to do,cassette B4
 211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG,211301 211302 211303 211304,to do,"tabulated: the side skins (RH the mirror of LH; L1 = L2, R1 = R2)"
-211401_P01_WALL-SKIN-BACK-LOWER-B1_DWG,211401 211402 211403 211404,to do,tabulated: the back skins (one flat rectangle)
 511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG,511101 511102 511103 511104,to do,tabulated: the side trays (LH = RH; upper ones shorter)
 511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG,511201 511202 511203 511204,to do,tabulated: the back trays (LH = RH; upper ones shorter)
 211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_DWG,211501 211502 211503 211504,to do,"tabulated: the side fills (the bays have pockets, so they get a drawing)"
 211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_DWG,211601 211602 211603 211604,to do,tabulated: the back fills (pin and ceiling pockets listed per part)
+"(no drawing, D-89 part 4)",211401 211402 211403 211404,cut list,"back skins: flat ACP cut by CNC router from their DXFs (outline and holes, B2's inlet and LAN holes included); material, thickness, finish and ISO 2768-m in the parts-list rows"
 "(no drawing, D-89)",511301 511302 511303 511304,cut list,"side felt: knife-cut pieces; size, material, tolerance and part number in the parts list; 511302 (R1) and 511304 (R2) carry ELECTRICAL's openings and are cut from their DXFs (a flat part with its DXF, D-89 part 4)"
 "(no drawing, D-89)",511401 511402 511403 511404,cut list,"back felt: knife-cut pieces; size, material, tolerance and part number in the parts list; 511402 (B2) and 511404 (B4) carry ELECTRICAL's openings and are cut from their DXFs (a flat part with its DXF, D-89 part 4)"

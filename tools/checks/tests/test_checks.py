@@ -536,6 +536,50 @@ def test_every_part_is_its_own_component_not_a_body(tmp_path):
     assert got["831002"].owner == "WALL"           # WALL placed the Joints Engineer's washer: WALL fixes its model
 
 
+def test_a_plain_strip_passes_on_its_full_parts_list_row(tmp_path):
+    # D-125, extending D-89: a plain straight-cut strip or sheet with no features needs no drawing when its row gives
+    # material and grade, thickness, length, width, finish and tolerance. INTERIOR's diffuser strip 811205 is the first
+    strip = _profile(sf.Frame(), length=991.0, w=28.0, h=1.5, t=None)
+    sides = c_drawings.cuboid_sides(strip)
+    assert sides == pytest.approx((1.5, 28.0, 991.0)) and c_drawings.is_strip(sides)
+    assert c_drawings.cuboid_sides(_profile(sf.Frame(), length=991.0, w=28.0, h=1.5, t=None,
+                                            holes=((300.0, 5.0),))) is None              # a hole: not plain
+    assert c_drawings.cuboid_sides(_profile(sf.Frame(), w=40.0, h=40.0, t=2.0)) is None  # a tube
+    assert c_drawings.cuboid_sides(_profile(sf.Frame(), w=30.0, h=3.0, t=None, chamfer=1.0)) is None
+    assert not c_drawings.is_strip((20.0, 20.0, 500.0))                                  # a square bar
+    d = tmp_path / "v2/03-Manufacturing/interior"
+    d.mkdir(parents=True)
+    row = {"part_number": "811205", "name": "INTERIOR - LIGHT SHELF - DIFFUSER RH", "kind": "MP",
+           "material": "Opal polycarbonate (grade HOLD: picked with ELECTRICAL's down-light strips)",
+           "finish": "opal, as supplied", "process": "cut to length",
+           "size_mm": "991.0 long, section 28.0 x 1.5, 1.5 sheet", "tolerance": "±0.5 on cut sizes (assumption)"}
+    def found(**change):
+        _write_csv(d / "810000_P01_INTERIOR-PARTS-LIST_BOM.csv", [dict(row, **change)])
+        fs = c_drawings.check_drawings(str(tmp_path), {"811205"}, {}, {"811205": row["name"]},
+                                       cuboid_by_pn={"811205": sides})
+        return " ".join(f.message for f in fs)
+    assert found() == ""                                                   # the full row stands in for a drawing
+    assert "D-125" in found(finish="") and "finish" in found(finish="")
+    assert "the material's grade" in found(material="polycarbonate")
+    assert "1.5 x 28 x 991" in found(size_mm="980.0 long, section 28.0 x 1.5")   # not the STEP's length
+    assert "tolerance on the length and the width" in found(tolerance="")
+    assert "hole" in found(process="cut to length, one cable hole")
+    # the tolerance covers both cut sizes (PM, 2026-11-01); the thickness takes the sheet's own, as its grade names it
+    assert "tolerance on the width" in found(tolerance="cut length +/-1 (assumption)")       # 811205's line today
+    assert found(tolerance="cut length +/-1, width as supplied (assumption)") == ""          # a bought strip
+    assert found(tolerance="cut length +/-1 (assumption)", size_mm="991.0 long, 28.0 wide (width as supplied), 1.5 "
+                 "sheet") == ""
+    assert found(tolerance="ISO 2768-m") == "" and found(tolerance="length ±1; width ±0.5") == ""
+    assert found(tolerance="cut +/-0.5") == ""                                               # no size named: both
+    assert "tolerance on the length and the width" in found(tolerance="thickness ±0.1, hole positions ±0.2")
+    assert c_drawings.tolerance_cover(["cut length +0/-0.5", "end angle ±0.25°"], []) == {"length"}
+    assert c_drawings.tolerance_cover(["bent ±0.5"], ["width as supplied"]) == {"width"}
+    assert c_drawings.tolerance_cover(["+0.2/0"], []) == {"length", "width"}            # one-sided, no size named
+    # a bar or block isn't a strip: it keeps its drawing whatever its row says
+    assert "D-125" not in " ".join(f.message for f in c_drawings.check_drawings(
+        str(tmp_path), {"811205"}, {}, {"811205": row["name"]}, cuboid_by_pn={"811205": (20.0, 20.0, 500.0)}))
+
+
 def test_run_with_ref_leaves_no_export_behind():
     import glob
     import subprocess

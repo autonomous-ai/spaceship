@@ -651,6 +651,78 @@ class RunnerTests(unittest.TestCase):
 
 
 
+class OpenLogTests(unittest.TestCase):
+    """Every document open is logged next to the lock, start and end (PM 2026-11-01: a
+    drawing open started at 00:23 and never ended, and nothing said what it was)."""
+
+    def fake_core(self):
+        import types
+        core = types.ModuleType("adsk.core")
+        core.RESULT = []
+
+        class Documents:
+            def open(self, dataFile, visible=True):
+                if dataFile.name == "BAD_CAD":
+                    raise RuntimeError("3 : the open failed")
+                return "opened %s" % dataFile.name
+        core.Documents = Documents
+        return core
+
+    def run_wrapped(self, core, log, name, visible):
+        import types
+        adsk = types.ModuleType("adsk")
+        adsk.core = core
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "fusion_folder")}
+        sys.modules.update({"adsk": adsk, "adsk.core": core})
+        script = ("import adsk.core\n"
+                  "class F:\n    name = %r\n    versionNumber = 4\n"
+                  "def run(_c):\n    adsk.core.RESULT.append(adsk.core.Documents().open(F(), %r))\n" % (name, visible))
+        try:
+            ns = {}
+            exec(compile(rs.wrap_script(script, "/x/team.py", {}, open_log=log, run_label="TEST run: team.py"),
+                         "wrapper", "exec"), ns)
+            ns["run"](None)
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+
+    def lines(self, log):
+        with open(log) as fh:
+            return fh.read().splitlines()
+
+    def test_a_hidden_open_is_logged_at_start_and_end(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.fake_core()
+        self.run_wrapped(core, log, "X_P01_CAD", False)
+        self.assertEqual(core.RESULT, ["opened X_P01_CAD"])
+        start, end = self.lines(log)
+        self.assertIn("start open X_P01_CAD v4 HIDDEN; run: TEST run: team.py", start)
+        self.assertRegex(end, r"end open X_P01_CAD v4 after [0-9.]+ s: ok$")
+
+    def test_a_failed_open_is_logged_and_still_raises(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        with self.assertRaises(RuntimeError):
+            self.run_wrapped(self.fake_core(), log, "BAD_CAD", True)
+        start, end = self.lines(log)
+        self.assertIn("start open BAD_CAD v4 visible", start)
+        self.assertIn("error 3 : the open failed", end)
+
+    def test_the_logger_is_installed_once_per_fusion_session(self):
+        # Fusion keeps the class between runs: a second run must not log every open twice
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.fake_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        self.run_wrapped(core, log, "Y_P01_CAD", True)
+        self.assertEqual([l.split(" open ")[1].split(" v4")[0] for l in self.lines(log) if " start " in l],
+                         ["X_P01_CAD", "Y_P01_CAD"])
+
+    def test_the_log_sits_next_to_the_lock(self):
+        self.assertEqual(rs.open_log_path("/tmp/x.lock"), "/tmp/x.lock.opens.log")
+
+
 class FreshModulesTests(unittest.TestCase):
     """Fusion keeps Python modules between runs: every run must import its own files,
     not a module of the same name another run loaded (live 2026-10-31), and a team's
