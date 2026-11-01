@@ -125,7 +125,7 @@ class HelperTests(unittest.TestCase):
 
     # 2. the first-angle symbol: outline alone in its sketch, circles in another
     def test_the_symbol_outline_is_one_closed_chain_alone_in_its_sketch(self):
-        s = self.sheet()
+        s = self.sheet(w=841.0, h=594.0)                                 # A1, as GA sheet 1
         fd.first_angle_symbol(s, 560.0, 40.0)
         outline, circles = s.sketches.list
         self.assertEqual(outline.name, fd.SYMBOL_NAME)
@@ -138,10 +138,47 @@ class HelperTests(unittest.TestCase):
         self.assertEqual(circles.rings, [((579.0, 40.0), 5.0), ((579.0, 40.0), 2.5)])
 
     def test_a_second_symbol_on_the_same_sheet_is_refused(self):
-        s = self.sheet()
+        s = self.sheet(w=841.0, h=594.0)
         fd.first_angle_symbol(s, 560.0, 40.0)
         with self.assertRaises(RuntimeError):
             fd.first_angle_symbol(s, 560.0, 40.0)
+
+    # FRONT and CEILING 2026-11-01: an outline edge on the border's line printed as a triangle
+    def test_a_symbol_on_the_border_line_is_refused(self):
+        s = self.sheet()                                                # A2: frame 20..584 x 10..410
+        with self.assertRaises(RuntimeError) as cm:
+            fd.first_angle_symbol(s, 20.0, 100.0)                       # left edge on the frame
+        self.assertIn("border", str(cm.exception))
+        self.assertEqual(s.sketches.list, [])                           # nothing drawn
+        with self.assertRaises(RuntimeError):
+            fd.first_angle_symbol(s, 300.0, 12.0)                       # foot on the bottom line
+
+    def test_a_symbol_6_mm_in_from_the_border_is_accepted(self):
+        s = self.sheet()
+        fd.first_angle_symbol(s, 26.0, 21.0)                            # 6 mm in, as FRONT placed it
+        self.assertEqual(len(s.sketches.list), 2)
+
+    def test_a_symbol_on_or_near_the_title_block_is_refused(self):
+        s = self.sheet()                                                # A2: title block 404..584 x 10..57
+        for x0, cy in ((390.0, 30.0), (450.0, 50.0), (450.0, 65.0)):     # touching, inside, 3 mm above
+            with self.assertRaises(RuntimeError) as cm:
+                fd.first_angle_symbol(s, x0, cy)
+            self.assertIn("title block", str(cm.exception))
+        fd.first_angle_symbol(s, 450.0, 68.0)                           # 6 mm above it: fine
+
+    def test_by_default_the_symbol_sits_just_left_of_the_title_block(self):
+        s = self.sheet()
+        fd.first_angle_symbol(s)
+        outline = s.sketches.list[0].chains[0]
+        xs = [p[0] for p in outline]
+        self.assertAlmostEqual(min(xs), 404.0 - 6.0 - 24.0)              # its right end 6 mm from the block
+        self.assertAlmostEqual(min(p[1] for p in outline), 21.0 - 5.0)   # foot 6 mm above the frame
+        self.assertIsNone(fd.symbol_clear(s, fd.symbol_box(min(xs), 21.0)))
+
+    def test_the_frame_and_title_block_follow_the_sheet_size(self):
+        a1 = self.sheet(w=841.0, h=594.0)
+        self.assertEqual(fd.frame_box(a1), (20.0, 10.0, 831.0, 584.0))
+        self.assertEqual(fd.title_block_box(a1), (651.0, 10.0, 831.0, 57.0))
 
     # 3. the view style given at creation is ignored by Fusion
     def test_the_view_style_is_set_again_on_the_made_view(self):
