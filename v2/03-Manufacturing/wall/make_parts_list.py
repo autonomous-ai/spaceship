@@ -106,12 +106,13 @@ HW = {
     "518001": dict(name="LINING - CASSETTE CLIP", vi="Kẹp treo cassette", kind="HOLD", material="HOLD (H03, HOLD-08)",
                    finish="", maker="HOLD-08", sku="HOLD-08: rated 8.3 kg shear, 8.0 kg pull-out, captive lock",
                    torque="", mass=0.04, mstat="assumption", basis="about 40 g each (D-81's working figure, H-10)"),
-    "108002": dict(name="POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
+    # the register's name (H-12) since #340: D-137 moves the bond to Sikaflex-252 for the galvanized steel frames
+    "108002": dict(name="POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE",
                    vi="Bộ keo dán ACP", kind="PI",
-                   material="SikaTack Panel-50 (ETA 19/0511), Sika Aktivator-205, Sika Panel Primer, "
-                            "SikaTack Panel Fixing Tape", finish="",
-                   maker="Sika", sku="SikaTack Panel-50 system (bond spec V2-ENG-BND)", torque="", mass=0.49,
-                   mstat="calculation", basis="bond spec: about 8.7 m of 12 x 3 bead per side panel"),
+                   material="Sikaflex-252 (one-part polyurethane), Sika Aktivator-205 and Sika Primer-210 on both "
+                            "faces after an abrasive pad, SikaTack Panel Fixing Tape (bond spec section 8, D-137)",
+                   finish="", maker="Sika", sku="Sikaflex-252 system (bond spec V2-ENG-BND section 8)", torque="",
+                   mass=0.49, mstat="calculation", basis="bond spec: 0.49 kg per 8.7 m of 12 x 3 bead"),
     "848011": dict(name="SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY", vi="Băng gai dính định vị cassette",
                    kind="PI", material="hook-and-loop or reclosable fastener tape, 25 mm, PSA",
                    finish="", maker="VELCRO Brand, or 3M (one to pick at the RFQ)",
@@ -247,8 +248,11 @@ def hw_row(pn, qty, unit, note, bodies=None, source=REG):
         if bodies:
             mass = round(sum(b["mass_kg"] for b in bodies) / len(bodies), 5)
             # the modelled body must weigh what the part does: a STEP-imported body left at Fusion's default steel
-            # (the aluminium stop washer at 2.7 g, the L1 sample of 2026-11-01) is caught here
-            if h.get("calc") and abs(mass - h["calc"]) > 0.15 * h["calc"]:
+            # (the aluminium stop washer at 2.7 g, the L1 sample of 2026-11-01) is caught here. Only a body at that
+            # default: an older report's own model of the part (WALL's spigot before F-189) is listed as it was,
+            # until its panel is rebuilt with Joints' part
+            defaulted = any((b.get("material") or "Steel") == "Steel" for b in bodies)
+            if h.get("calc") and defaulted and abs(mass - h["calc"]) > 0.15 * h["calc"]:
                 raise SystemExit("%s: the CAD body weighs %.5f kg each, its calculation %.5f (%s): check the body's "
                                  "material (%s)" % (pn, mass, h["calc"], h["calc_basis"],
                                                     ", ".join(sorted({str(b.get("material")) for b in bodies}))))
@@ -570,8 +574,15 @@ def hardware_rows(frame, comps, back, lower, prm):
         r["mass_status"] = "calculation: the bond spec's 0.49 kg per 8.7 m of bead, on this frame's %.2f m" % bead
         rows.append(r)
     else:
-        rows.append(hw_row("108002", 1, "set", "one 12 x 3 joint on every member touching the skin; in-line tape "
-                           "HOLD-B2", source="%s; bond spec V2-ENG-BND (PR #23)" % REG))
+        # every member touching the skin, and the skin's back return, bonded too (D-137, the Lead's ruling of
+        # 2026-11-01: no zero fits): one joint up its height
+        bead = round((sum(member_length(b) for b in fb) + height) / 1000.0, 2)
+        r = hw_row("108002", 1, "set", "one 12 x 3 joint on every member touching the skin and one on the back return "
+                   "(D-137), %.2f m of bead; in-line tape HOLD-B2" % bead,
+                   source="%s; bond spec V2-ENG-BND (PR #23)" % REG)
+        r["mass_each_kg"] = r["mass_total_kg"] = round(0.49 / 8.7 * bead, 3)
+        r["mass_status"] = "calculation: the bond spec's 0.49 kg per 8.7 m of bead, on this frame's %.2f m" % bead
+        rows.append(r)
     roles = []
     if stopped:
         roles.append("%d stopped joints" % stopped)
