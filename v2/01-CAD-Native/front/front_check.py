@@ -35,7 +35,9 @@ GAPS = [
     ("fixed pane to DR's skin (through the slot)", "FIXED GLASS 4+4", "DR SKIN ACP 3"),
     ("glass channel to DR's skin", "GLAZING U-PROFILE", "DR SKIN ACP 3"),
     ("door leaf to the fixed pane", "DOOR LEAF GLASS 4+4", "FIXED GLASS 4+4"),
-    ("kick strip to the fixed glass channel", "KICK STRIP", "GLAZING U-PROFILE"),
+    # the strip's own body by its exact name: since D-150 the brush seals' bodies are named "KICK STRIP END ... BRUSH"
+    # and touch the channel by design, so a name prefix read them as the strip and gave 0.00
+    ("kick strip to the fixed glass channel", "=KICK STRIP", "GLAZING U-PROFILE"),
     ("door leaf to DR's skin", "DOOR LEAF GLASS 4+4", "DR SKIN ACP 3"),
     ("door leaf top to DT's skin (the catch gap, 6 by ruling)", "DOOR LEAF GLASS 4+4", "DT SKIN ACP 3"),
     ("catch to the strike (0 = the door stop touches)", "CATCH HT-MSG62",
@@ -55,6 +57,12 @@ GAPS = [
 SOFFIT_Y0, SOFFIT_Y1, SOFFIT_ZB = -645.0, -285.0, 2120.0
 VIEWERS = [("standing", 1650.0, 1000.0), ("standing", 1650.0, 2000.0), ("standing", 1650.0, 4000.0),
            ("seated", 1200.0, 1000.0), ("seated", 1200.0, 2000.0), ("seated", 1200.0, 4000.0)]
+
+
+def named(b, spec):
+    """A body's name starts with spec (a string or a tuple of them); '=NAME' asks for exactly that name."""
+    specs = spec if isinstance(spec, tuple) else (spec,)
+    return any(b.name == s[1:] if s.startswith("=") else b.name.startswith(s) for s in specs)
 
 
 def mm_box(b):
@@ -117,8 +125,8 @@ def run(_context):
         allb = [b for g in groups.values() for b in g]
         mm = app.measureManager
         for label, na, nb in GAPS:
-            ca = [b for b in allb if b.name.startswith(na)]
-            cb = [b for b in allb if b.name.startswith(nb)]
+            ca = [b for b in allb if named(b, na)]
+            cb = [b for b in allb if named(b, nb)]
             if not ca or not cb:
                 print("GAP|%s|not measured (bodies missing)" % label)
                 continue

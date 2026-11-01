@@ -2,6 +2,15 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-11-01 14:49 UTC in one lock hold, through the late-bound loader, for the PM's sourcing rulings of 2026-11-01: the strike named (Sugatsune HT-MSG62-U10) with our own shim 361004 (Control's number: 60 × 19 × 1.2 stainless 1.4301 inside the strike's pod-side leg, behind its liner, so the glass sits on rubber; 8.76 + 1.2 = 9.96 in the 10 mm slot), the brushes 368008 and 368009 named (Ultrafab ULTRA PLUG pile on 3M VHB LSE-110WF, 6.0 and 13.0 overall, fitted at 10 to 38 °C after an IPA wipe; their names drop "- HOLD"), and the hinge, the pull's open points and the door's seal half as questions in the owner's quote request.
+
+- bodies 14, timeline 47 items, unhealthy 0, loose sketches 0, parameters 160; clash pairs 5, all listed (new: the shim inside the strike's envelope, 1368 mm³, its whole volume)
+- unit box unchanged (X −1132.02 to 218.52, Y −773.40 to −624.59, Z −0.02 to 2115.52); STEP re-read in Fusion, box equal (0.000 mm)
+- the shim's DXF `361004_P01_FRONT-DOOR-STRIKE-SHIM-1-2-STAINLESS_DXF.dxf`: 60.00 × 19.00, its drawing (D-89 part 4)
+- parts list: 12 rows, the unit 48.76 kg (the shim 0.011, CAD)
+- edit test PASS, 46 anchors (`EDIT-TEST-RECORD.md`)
+- FRONT combined check (door, fixed glass, and #313's DR, DT and DL), after the fixed glass's run below: 0 overlaps between sub-assemblies; the gaps as ruled (door leaf to the fixed pane 4.00, leaf top to DT 6.00, catch to the strike 0, seals 0 on the leaf). The check now reads the kick strip by its own body's name, so the strip to the fixed glass channel shows its true 4.00 (since D-150 the brushes' bodies, named "KICK STRIP END ... BRUSH", had been read as the strip and gave 0.00)
+
 Rebuilt 2026-11-01 12:24 UTC in one lock hold with its sheet and the FRONT combined check, for D-154: the second brush seal 368009 on the kick strip's hinge end, X −972 to −961 (the 11 mm slot to BASE's FL2 end plate, flush with DL's door face), Y −709 to −689, from the room floor to Z 105, 13 mm on the slot (2 mm overlap), open over the drop seal's cavity end (Y −705 to −693, Z 10 to 75) so the release button reaches the plate, where BASE adds a strike pad (HOLD-sized, at most 8). Modelled as fitted; fitted on site like 368008 (PM rulings 2026-11-01).
 
 - bodies 13, timeline 44 items, unhealthy 0, loose sketches 0, parameters 157; clash pairs 4, all listed
@@ -95,6 +104,14 @@ The hinge set's rating stays at least 60 kg (PM ruling 2026-10-31: the unit plus
 | Fixed glass unit | The magnetic seal pair: 368006 on this leaf, 368003 on the pane | HOLD product |
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01 (DRAFT)
+
+Rebuilt 2026-11-01 15:32 UTC for the Mechanical Checker's seal line and the PM's ruling on the latch-side corner: the pane's half 368003 of the 180° magnetic seal now starts at Z 105 with the door's half 368006 (it started at the pane's visible bottom, Z 110), so the pair meets all the way down and the 2 × 5 mm opening closes. Below Z 110 it runs beside the bottom channel's end, which is cut flush with the free edge. 368003 is a question in the owner's quote request (no published pair fits the 8.76 laminate with a 4 mm edge gap).
+
+- bodies 4, timeline 18 items, unhealthy 0, loose sketches 0, parameters 120; clash pairs 0
+- unit box X −66.65 to 964.15, Y −706.52 to −691.48, Z 94.98 to 2135.02; STEP re-read in Fusion, box equal (0.000 mm)
+- parts list: 5 rows, the unit 29.54 kg (368003's length now from Z 105)
+- edit test PASS, 16 anchors (`EDIT-TEST-RECORD.md`)
+- The first run of this change, at 14:50 UTC, failed its edit test: the seal half's start, written without brackets inside a helper's `(fg_vis_zb - d)`, came out as Z −105, and the half ran below the floor (the combined check also found it in the brush, 249 mm³). That run had already saved a cloud version and written the exports; this run replaced both.
 
 Rebuilt 2026-10-31 21:18 UTC in the same lock hold: the magnetic seal half's CAD name is the joints register's, FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD (D-99). Same geometry and results as the run below: clash pairs 0; gap to the door 4.00 mm square to the edge; unit 29.54 kg; STEP re-read 0.000 mm; edit test PASS (16 anchors). Parts list in the process and finish columns, same values.
 

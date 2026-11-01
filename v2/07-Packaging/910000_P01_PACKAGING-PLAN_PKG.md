@@ -210,7 +210,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | Label | Part number | Piece | Vietnamese | Pos. | kg | Status | Size mm | Step |
 | --- | --- | --- | --- | --- | ---: | --- | --- | ---: |
 | **2-01** | 360002 | FRONT - FIXED GLASS UNIT | Cụm vách kính cố định | - | 28.74 | calculation (CAD); magnetic seal HOLD | 2034 × 1031 × 12 | 9 |
-| **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 48.75 | calculation (CAD); hinges and pull HOLD | 2106 × 1177 × 149 | 10 |
+| **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 48.76 | calculation (CAD); hinges and pull HOLD | 2106 × 1177 × 149 | 10 |
 | **2-03** | 350003 | FRONT - DECOR BLOCK ASSY - DR | Khối trang trí phải (cụm) | DR | 18.86 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 2290 × 1020 × 216 | 9 |
 | **2-04** | 110103 | BASE - BAND ASSY - BACK | Viền chân nhôm - cạnh sau (cụm) | - | 3.44 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 2420 × 118 × 50 | 2 |
 | **2-05** | 110101 | BASE - BAND ASSY - SIDE - LH | Viền chân nhôm - cạnh trái (cụm) | - | 2.58 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 1530 × 118 × 50 | 2 |
@@ -269,7 +269,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | FRONT | Decor block - left | 1 | 12.30 | calculation (CAD) | 2-08 |
 | FRONT | Decor block - right | 1 | 18.32 | calculation (CAD) | 2-03 |
 | FRONT | Decor block - top | 1 | 7.84 | calculation (CAD) | 2-11 |
-| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.75 | calculation (CAD); hinges and pull HOLD | 2-02 |
+| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.76 | calculation (CAD); hinges and pull HOLD | 2-02 |
 | FRONT | Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half | 1 | 29.54 | calculation (CAD); magnetic seal HOLD | 2-01 × 0.973022, 2-03 × 0.018405, 2-07 × 0.00609411, 2-11 × 0.00247854 |
 | AIR | Supply cartridge, in the air column | 1 | 10.55 | calculation (CAD) | 2-17 |
 | AIR | Exhaust cartridge, in the soffit | 1 | 10.55 | calculation (CAD) | 2-18 |

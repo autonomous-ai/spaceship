@@ -133,6 +133,21 @@
    "expression": "leaf_zt - st_h"
   },
   {
+   "component": "361004 FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS",
+   "index": 1,
+   "expression": "-glass_y + glass_t / 2 + shim_liner"
+  },
+  {
+   "component": "361004 FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS",
+   "index": 4,
+   "expression": "-glass_y + glass_t / 2 + shim_liner + shim_t"
+  },
+  {
+   "component": "361004 FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS",
+   "index": 5,
+   "expression": "leaf_zt - 1 mm"
+  },
+  {
    "component": "368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD",
    "index": 2,
    "expression": "door_zb"
@@ -158,62 +173,62 @@
    "expression": "pull_zc + pull_len / 2"
   },
   {
-   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD",
+   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH",
    "index": 0,
    "expression": "kick_x1"
   },
   {
-   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD",
+   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH",
    "index": 3,
    "expression": "kick_x1 + kbrush_gap"
   },
   {
-   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD",
+   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH",
    "index": 2,
    "expression": "0 mm"
   },
   {
-   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD",
+   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH",
    "index": 5,
    "expression": "door_zb"
   },
   {
-   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD",
+   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH",
    "index": 1,
    "expression": "-glass_y - kick_d / 2"
   },
   {
-   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD",
+   "component": "368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH",
    "index": 4,
    "expression": "-glass_y + kick_d / 2"
   },
   {
-   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH",
    "index": 0,
    "expression": "kick_x0 - kbrushh_gap"
   },
   {
-   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH",
    "index": 3,
    "expression": "kick_x0"
   },
   {
-   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH",
    "index": 2,
    "expression": "0 mm"
   },
   {
-   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH",
    "index": 5,
    "expression": "door_zb"
   },
   {
-   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH",
    "index": 1,
    "expression": "-glass_y - kick_d / 2"
   },
   {
-   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
+   "component": "368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH",
    "index": 4,
    "expression": "-glass_y + kick_d / 2"
   }

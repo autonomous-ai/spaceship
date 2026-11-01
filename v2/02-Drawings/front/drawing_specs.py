@@ -199,7 +199,7 @@ SPECS = {
         "notes": [
             "Door unit (D-56): leaf 361001, kick strip 361002 with the drop seal 368001 in its cavity and the U-seal "
             "368002 in its pocket; the strike 368102 (Sugatsune HT-MSG62-U10) of the magnetic catch in DT, packed to "
-            "the 8.76 laminate by the 1.2 stainless shim @SHIM@ behind its liner; the door's half 368006 of the 180 deg "
+            "the 8.76 laminate by the 1.2 stainless shim 361004 behind its liner; the door's half 368006 of the 180 deg "
             "magnetic seal, from Z 105; three hinges 368101 and the pull 368103 as reserved spaces (red), HOLD.",
             "No latch on the glass (PM ruling): the 35 N magnetic door-stop catch (Sugatsune HT-MSG62) in DT's underside "
             "holds the door at its top latch corner; the hinges hold it at its closed position; the 180 deg magnetic "

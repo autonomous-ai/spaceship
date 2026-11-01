@@ -61,9 +61,9 @@ DXF_LEAF_REL = "v2/03-Manufacturing/front/361001_%s_FRONT-DOOR-LEAF-4-4-LAMINATE
 DXF_KICK_REL = "v2/03-Manufacturing/front/361002_%s_FRONT-DOOR-KICK-STRIP_DXF.dxf" % REV
 # the strike's shim (PM ruling 2026-11-01, sourcing of 368102): our own made part, a flat laser-cut blank whose DXF
 # is its drawing (D-89 part 4); its number is Control's
-SHIM_PN = "@SHIM@"
+SHIM_PN = "361004"
 SHIM_NAME = "FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS"
-SHIM_VN = "Miếng chêm bát hít cửa - inox 1.2"
+SHIM_VN = "Miếng chêm inox đế hít cửa"
 DXF_SHIM_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DOOR-STRIKE-SHIM-1-2-STAINLESS_DXF.dxf" % (SHIM_PN, REV)
 
 XL = "-pod_w / 2"

@@ -194,7 +194,7 @@ def build(app):
     # visible line it runs beside the bottom channel's end, which is cut on the free edge's line.
     if want("S180"):
         c = comp("S180")
-        lb, lt = BL("fg_vis_zb - door_zb"), TL("0 mm")
+        lb, lt = BL("(fg_vis_zb - door_zb)"), TL("0 mm")
         half = lambda z: "((fg_lc + fg_gap / 2 - fg_lnz * (%s)) / fg_lnx)" % z
         pts = [lb, lt, (half(lt[1]), lt[1]), (half(lb[1]), lb[1])]
         f = slab(c, pts, GY + " - glass_t / 2 - 1.5 mm", GY + " + glass_t / 2 + 1.5 mm",
@@ -273,7 +273,7 @@ def export_all(app):
         [round(v, 1) for v in outer], [round(v, 1) for v in mouth]))
     seal_len = sum(edge_lengths(design, "gu_in_d"))
     free_len = L.ev(design, "sqrt((%s - %s) * (%s - %s) + (fg_vis_zt - door_zb) * (fg_vis_zt - door_zb))" % (
-        TL("0 mm")[0], BL("fg_vis_zb - door_zb")[0], TL("0 mm")[0], BL("fg_vis_zb - door_zb")[0]))
+        TL("0 mm")[0], BL("(fg_vis_zb - door_zb)")[0], TL("0 mm")[0], BL("(fg_vis_zb - door_zb)")[0]))
     rows = [
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-27, D-46; this build",
          "bottom channel factory-fitted on BASE's sill; on site: pane, DR, DT (PM ruling 2026-11-01)"),
