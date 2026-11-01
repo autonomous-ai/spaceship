@@ -55,11 +55,35 @@ def latch_x(z, v=V_DOOR):
     return -v["pod_w"] / 2 + v["door_xbr"] - (v["door_xbr"] - v["door_xtr"]) * (z - v["door_zb"]) / (v["door_zt"] - v["door_zb"])
 
 
+def proj_note(views):
+    """The projection note for the views a sheet has (Reviewer 8 on #339: no note about a view the sheet lacks)."""
+    parts = ["The front view looks toward +Y, at the door from outside the pod"]
+    axes = ["front X(2D)=X, Y(2D)=Z"]
+    if "top" in views:
+        parts.append("the view from above is below it")
+        axes.append("above X(2D)=X, Y(2D)=Y")
+    if "left" in views:
+        parts.append("the view from the left is to its right")
+        axes.append("left X(2D)=-Y, Y(2D)=Z")
+    if "iso" in views:
+        parts.append("the iso view is for reading only")
+    return ("Projection: first angle (ISO 5456-2). %s. 2D axes: %s (guideline 3.3). Coordinates are the pod's "
+            "(conventions 4)." % ("; ".join(parts), "; ".join(axes)))
+
+
+def bom_mass(pn):
+    """The unit mass on a FRONT parts list's own row, kg."""
+    import csv
+    import glob
+    path = glob.glob(os.path.join(REPO, "v2", "03-Manufacturing", "front", "%s_%s_*_BOM.csv" % (pn, REV)))[0]
+    with open(path, encoding="utf-8", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    return float([r for r in rows if r["part_number"] == pn][0]["unit_mass_kg"])
+
+
 COMMON_NOTES = [
     "UNITS: mm. Angles in degrees. Mass in kg.",
-    "Projection: first angle (ISO 5456-2). The front view looks toward +Y, at the door from outside the pod; the view "
-    "from above is below it; the view from the left is to its right. 2D axes: front X(2D)=X, Y(2D)=Z; above "
-    "X(2D)=X, Y(2D)=Y; left X(2D)=-Y, Y(2D)=Z (guideline 3.3). Coordinates are the pod's (conventions 4).",
+    None,       # the projection note: proj_note(), for the views each sheet has
     "No ISO 2768 class on glass, seals or sandwich parts (conventions 3). Tolerances given here are PROPOSED from "
     "function until the maker confirms what it holds.",
     "Status DRAFT P01: for the prototype and the factory's door sample only, not released (conventions 8).",
@@ -113,7 +137,8 @@ SPECS = {
             "catch positions on the unit drawing are reserved spaces only.",
             "Edges: ground and arrised before toughening. Tolerances (PROPOSED, the glass supplier confirms): sizes "
             "+/-1, diagonals +/-1, thickness to the supplier's standard.",
-            "Datums: A = the hinge edge (X %.0f), B = the bottom edge (Z %.0f). The top is %.0f mm below DT's "
+            "Sizes are measured from the hinge edge (X %.0f) and the bottom edge (Z %.0f), the DXF's origin. The top "
+            "is %.0f mm below DT's "
             "underside for the magnetic catch (PM ruling)." % (X0, ZLB, v["dt_zb"] - ZT),
         ],
         "title": title("361001", "FRONT - DOOR LEAF - 4+4 LAMINATED", "Tấm kính cửa 4+4",
@@ -126,6 +151,8 @@ SPECS = {
         "sheet": "A2", "scale": 0.2, "scales": {"left": 2.0}, "views": {"front": (170, 300), "top": (170, 250),
                                                                          "left": (345, 230), "iso": (170, 120)},
         "box": {"front": (X0, KZB, X1, ZB), "top": (X0, KY0, X1, KY1), "left": (-KY1, KZB, -KY0, ZB)},
+        # the profile (the view from the left, at 2:1) named under it (Reviewer 8 on #339)
+        "labels": [("PROFILE (VIEW FROM THE LEFT) 2:1", 345, 110)],      # under its 20 dimension (at Z 125)
         "dims": [
             ("front", (X0, KZB), (X1, KZB), "below", 10),
             ("left", (-KY1, KZB), (-KY0, KZB), "below", 10),
@@ -182,9 +209,12 @@ SPECS = {
             "Brush seal 368008 (HOLD, D-150) on the kick strip's end, from the floor to Z 105: it closes the slot to "
             "BASE's sill end plate (X 218.5). A self-adhesive strip, fitted on site once the glides are set and the door "
             "hangs, pressed down onto the real floor; it ships in the door's kit bag (PM ruling 2026-11-01).",
+            "Brush seal 368009 (HOLD, D-154) on the kick strip's hinge end, 13 mm on the 11 mm slot to BASE's FL2 end "
+            "plate (X -972), from the floor to Z 105, open over the drop seal's cavity end so its release button reaches "
+            "the plate; fitted on site as 368008.",
             "Pull pair (HOLD) centred %.1f above the floor, its bar %.1f to %.1f, inside the US band 865 to 1220 "
             "(PM ruling 2026-11-01)." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
-            "Mass of the unit as it hangs: about 48.7 kg (calculation; parts list).",
+            "Mass of the unit as it hangs: %.2f kg (calculation; parts list)." % bom_mass("360001"),
             "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the room floor (D-132)." % v["kick_zb"],
         ],
         "title": title("360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "see the parts list", "see the parts list",
@@ -201,4 +231,4 @@ ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof
 
 for _k, _sp in SPECS.items():
     _sp["images"] = image_places(_sp["sheet"])
-    _sp["notes"] = list(_sp["notes"]) + COMMON_NOTES
+    _sp["notes"] = list(_sp["notes"]) + [proj_note(_sp["views"]) if _n is None else _n for _n in COMMON_NOTES]

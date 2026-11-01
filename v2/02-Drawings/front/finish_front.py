@@ -108,7 +108,7 @@ def write_title(sh, sp):
     rows = sp["title"]
     H = lh * (len(rows) + 1) + 0.6
     sh.box(W, H, 0.4)
-    sh.text(2.0, 1.0, "TITLE DATA (the title block fields can't be set by script)", f)
+    sh.text(2.0, 1.0, "TITLE DATA", f)
     y = lh
     for label, value in rows:
         sh.line(0, y, W, y, 0.2)
@@ -152,6 +152,13 @@ def finish(key):
             raise RuntimeError("%s: the text box (%.1f mm) is taller than its picture's place (%.1f mm)" % (
                 name, h * k, b.height / MM))
         want += texts
+    # view labels: (text, x, y) in sheet mm from the lower left, centred on x, as the views' centres are given
+    w_mm, h_mm = S.SHEETS[sp["sheet"]]
+    lab = Sheet(page, fitz.Rect(0, 0, w_mm * MM, h_mm * MM), 1.0, ff)
+    for text, x, y in sp.get("labels", ()):
+        em = em_mm(3.5)
+        lab.text(x - lab.font.text_length(text, fontsize=em) / 2, h_mm - y, text, em)
+        want.append(text)
     doc.subset_fonts()
     doc.save(out + ".tmp", garbage=4, deflate=True)
     doc.close()

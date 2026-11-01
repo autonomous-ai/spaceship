@@ -55,7 +55,7 @@ SPECS["fixed_unit"] = {
         "diagonal) and inside DT behind a slot in its underside (top). Their fixings come with those designs.",
         "The pane carries no closing load on its free edge: the door is held by its hinges and the catch in DT, and "
         "the magnetic seal pulls in the glass plane (PM ruling). Edge movement under 16 N spread along it: 2 mm or less.",
-        "Mass about 29.6 kg (calculation; parts list).",
+        "Mass %.2f kg (calculation; parts list)." % bom_mass("360002"),
     ],
     "title": title("360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "see the parts list",
                    "see the parts list", "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
