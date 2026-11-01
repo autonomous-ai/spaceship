@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 309 part lines (118 made, 191 bought, 145 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 48 hardware items in the joints register (46 with a part number). Listed parts weigh 353.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 309 part lines (118 made, 191 bought, 145 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 49 hardware items in the joints register (46 with a part number). Listed parts weigh 353.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -211,6 +211,7 @@ Read from: this working tree.
 **Joints register**
 - H-49 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5: no part number
 - H-50 HARDWARE - BLIND RIVET - CLOSED END - CLIP MALE - HOLD: no part number
+- H-53 SEALS - DECOR SEAM TAPE - PRE-COMPRESSED EXPANDING FOAM - HOLD: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
