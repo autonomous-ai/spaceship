@@ -185,7 +185,11 @@ def el_back_checks(design, root_pn, before_p, after_p):
         tray, felt = round_holes(design, "TRAY"), round_holes(design, "FELT")
         out += [("G-B2-B4 %g hole in the bottom return follows the row seam (Z %.2f)" % (a["el_grm_d"], bot),
                  has_hole(tray, a["el_grm_d"], "z", (bot, bot + a["tray_t"]), x=a["el_lt_x"], y=a["el_y_bg"])),
-                ("no cable hole through the top lip", not [h for h in tray if h[1] == "y" and h[0] > 3.0]),
+                # the top lip's band, its 12 turned down from the cassette's top; ELECTRICAL's Ø6.4 tie holes go
+                # through the tray's back further down (the Lead's relay of 2026-11-01), so only this band counts
+                ("no cable hole through the top lip", not [
+                    h for h in tray if h[1] == "y" and h[0] > 3.0 and h[2][2] is not None
+                    and h[2][2] > a["pod_h"] - a["outer_t"] - a["lin_gap"] - a["lip_w"] - a["tray_t"] - 1e-6]),
                 ("FX-CEIL %g felt hole follows the pod width (X (pod_w - 2 stack_t) / 4 = %.2f), 2 under the lip" % (
                     a["el_grm_s"], a["el_ceil_x"]),
                  has_hole(felt, a["el_grm_s"], "y", x=a["el_ceil_x"], z=a["el_ceil_z"]) and
@@ -314,11 +318,16 @@ def record(design, rel):
     back_wall = root_pn[:4] in BACK_PREFIXES
     edits = EDITS_BACK if back_wall else EDITS
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
-             "cass_len", "cass_h", "pnl_h") + EL_BACK.get(root_pn, ()) if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
-                                         "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "cass_len", "cass_h",
+             "cass_len", "cass_h", "pnl_h", "pod_h", "outer_t", "lin_gap", "lip_w") + EL_BACK.get(root_pn, ()) \
+        if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
+                                         # R1 has 7 studs (INTERIOR's two, the Lead's ruling of 2026-11-01)
+                                         "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "stud_c6", "stud_c7",
+                                         "cass_len", "cass_h",
                                          "lin_front_dy",
                                          "top_h", "pod_h", "panel_z0",
                                          "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
+    # R1's two added studs only where the design has them, so the other records stay as they were
+    names = tuple(k for k in names if k not in ("stud_c6", "stud_c7") or design.userParameters.itemByName(k))
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
     if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):
