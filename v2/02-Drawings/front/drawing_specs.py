@@ -178,8 +178,10 @@ for _part in ("drawing_specs_glass.py", "drawing_specs_decor.py"):
     _path = os.path.join(HERE, _part)
     if os.path.exists(_path):
         exec(compile(open(_path, encoding="utf-8").read(), _path, "exec"), globals())
+# not drawn: DR's felt 351304 (D-128: its DXF matches its STEP); DL's stop 351103 is split into 351105 to 351107 and
+# cancelled (D-120, #232), its pieces' drawings decided with the frame drawings
 ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof", "dr", "dr_frame", "dr_skin",
-                       "dr_felt", "dt", "dt_frame", "dt_skin", "dt_stop", "dl", "dl_frame", "dl_skin", "dl_stop")
+                       "dt", "dt_frame", "dt_skin", "dt_stop", "dl", "dl_frame", "dl_skin")
          if _k in SPECS]
 
 for _k, _sp in SPECS.items():

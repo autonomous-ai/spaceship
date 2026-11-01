@@ -117,7 +117,10 @@ OWN = [
     ("dr_stud_z1", "1700 mm", "mm", "source", "PM ruling 2026-11-01 (CEILING): lower hook stud Z 1700"),
     ("dr_stud_z2", "1850 mm", "mm", "source", "PM ruling 2026-11-01 (CEILING): upper hook stud Z 1850"),
     ("felt_t", "9 mm", "mm", "source", "the factory's 9 mm PET felt (D-31; hardware selection A3)"),
-    ("dr_col_x0", "949 mm", "mm", "source", "D-60 air table: the air column's left face, X 949 (column X 949 to 1169)"),
+    ("dr_col_x0", "949 mm", "mm", "source", "air report 7f (AIR #91): the air column's left face, X 949 (column X 949 "
+     "to 1161)"),
+    ("dr_col_x1", "1161 mm", "mm", "source", "air report 7f (AIR #91; calc.py D60 col): the air column's right edge, "
+     "X 1161, AIR's named value (D-130)"),
     # intake (PM rulings 2026-10-31): room air enters through the mesh band piece under DR and goes up into the block
     # through its base, open over the whole band piece back to the closing plate, so the opening matches the mesh
     # (0.028 m2 free or more, the D-60 air table); BASE designs the block's support behind the mesh
@@ -151,8 +154,9 @@ OWN = [
     ("fb_h", "300 mm", "mm", "source", "D-60 air table"),
     ("fb_t", "2 mm", "mm", "source", "D-60 air table: 2 mm aluminium"),
     # opening from DR into the air column's top (D-60 air table)
-    ("op_x0", "961 mm", "mm", "source", "D-60 air table: opening X 961 to 1164"),
-    ("op_w", "203 mm", "mm", "source", "D-60 air table: 203 x 215"),
+    ("op_x0", "961 mm", "mm", "source", "air report 7f: the opening into the column from X 961"),
+    ("op_w", "dr_col_x1 - op_x0", "mm", "calculation",
+     "D-130: the opening runs to the column's edge, 200 wide (air report 7f: 200 x 215; the old table's 203 retired)"),
     ("op_z0", "1895 mm", "mm", "source", "D-60 air table: opening Z 1895 to 2110"),
     ("op_h", "215 mm", "mm", "source", "D-60 air table"),
     # ---- the tube frame (stage 2): v1's front and back frames of 16 mm steel box (sources/v1 decor frame drawing),
@@ -760,7 +764,7 @@ def export_all(app):
          "(critical: on the wall's bolt line), and the band behind the soffit; blind-riveted to the frame (HOLD: rivet)"),
         ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4), "
          "removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
-         "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-60 air table (opening 203 x 215); D-87; PM ruling 2026-11-01 "
+         "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-60 air table, D-130 (opening 200 x 215 to the column's edge); D-87; PM ruling 2026-11-01 "
          "(column hook studs, panel carries the 10 kg column)",
          "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 through holes 7.0 into rivnuts "
          "838003 in the frame, a 1 mm perimeter gasket over the rivnut heads (HOLD: gasket tape); 2 holes 9.53 "
@@ -772,8 +776,8 @@ def export_all(app):
          "DRAFT", "D-59, D-60",
          "DXF " + DXF_FLAT["INNER"] + "; lifts off for the fan box; held on the frame by 4 clips (HOLD: clip, "
          "assumed 0.04 kg each)"),
-        ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet; its outline is stepped and slanted, not a "
-         "rectangle, so it keeps a drawing: D-89), glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
+        ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet, no drawing: D-128, its DXF "
+         "matches its STEP), glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
         ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, RESERVED_TYPE, "-", None,
