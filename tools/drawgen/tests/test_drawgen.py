@@ -285,6 +285,22 @@ def test_clash_check_catches_a_line_through_text():
     assert not any("H09" in w for w in found), found
 
 
+def test_notes_name_no_maker():
+    """The Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as its maker; the
+    title block's CREATED BY Autonomous is the one place a maker is named. The read-back fails any other."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "maker")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.text(300, 280, "CREATED BY", 2.0)
+    sh.text(300, 276, "Autonomous", 2.5)
+    sh.text(30, 100, "Source: the STEP. Made by tools/drawgen (D-112) from that STEP.", 2.5)
+    sh.text(30, 90, "From that STEP: regenerate it, never edit the PDF.", 2.5)
+    sh.save(os.path.join(d, "m.pdf"))
+    found = readback.note_makers(fitz.open(os.path.join(d, "m.pdf")))
+    assert found == [(1, "Made by tools/drawgen")], found
+
+
 def test_long_tube_keeps_its_scale():
     """111103 is 2420 long: beside the default table column only 1:10 fits (the 40 mm tube 4 mm on paper); a
     narrower column keeps 1:5, the tables still end above the title block, and it reads back with B where the
@@ -355,13 +371,31 @@ def test_angled_face_gets_its_own_view():
     out = os.path.join(TMP, "aux")
     os.makedirs(out, exist_ok=True)
     p = os.path.join(out, "111212.pdf")
-    rep = compose.make("111212", "joints", {"pod_system": False, "corner": "-X-Y-Z", "tolerance": "test"}, p)
+    # the key's holes are tapped: the guard (item 5 not in yet) is lifted to test the view itself
+    rep = compose.make("111212", "joints", {"pod_system": False, "corner": "-X-Y-Z", "tolerance": "test",
+                                            "_test_allow_tapped": True}, p)
     fails, st = readback.check(p)
     assert not fails, fails
     assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
-    text = fitz.open(p)[0].get_text()
+    doc = fitz.open(p)
+    text = doc[0].get_text()
     assert "looking square to the angled face" in text and "VIEW D" in text, text[:400]
     assert text.count("THRU (34)") == 2 and text.count("18 deep, drill point 118°") == 2, text
+    # its own origin: X from the face's centre line, Y from its bottom (Joints' key sheet: 26 and 60 above it)
+    import re as _re
+    assert sorted(_re.findall(r"H0[34]\s+(-?[\d.]+)\s+(-?[\d.]+)", text)) == [("0.00", "26.00"), ("0.00", "60.00")], text
+    assert "Holes go THRU the part" in doc[1].get_text()
+
+
+def test_tapped_holes_wait_for_their_callouts():
+    """A part with tapped holes isn't drawn until thread callouts land (item 5; the PM's ruling on #296): the
+    front corner key 111212 (M6 tapped, Ø5.03 at a tap drill's size) is refused and says why."""
+    try:
+        compose.make("111212", "joints", {"pod_system": False, "tolerance": "test"}, os.path.join(TMP, "tap.pdf"))
+    except compose.NotDrawable as e:
+        assert "tapped holes" in str(e) and "item 5" in str(e), e
+    else:
+        raise AssertionError("drew a part with tapped holes")
 
 
 def test_long_words_break_at_separators():
