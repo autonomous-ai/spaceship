@@ -201,6 +201,15 @@ class Joints(unittest.TestCase):
                         edge = 5.0 if n.startswith("SOFFIT") else 9.0   # soffit hangers and locks on 20 mm faces (HOLD-04)
                         self.assertGreaterEqual(y - r - b[2], edge, (half, n, "rivnut edge distance"))
                         self.assertGreaterEqual(b[3] - (y + r), edge, (half, n))
+                    elif member == "FRONT":                   # DT's bolts (J-FRONT-03): the walls face Y
+                        self.assertTrue(abs(y - b[2]) < 1e-6 or abs(y - b[3]) < 1e-6, (half, n, y, b))
+                        self.assertGreaterEqual(z - r, b[4] + v["tube_t"], (half, n))
+                        self.assertLessEqual(z + r, b[5] - v["tube_t"], (half, n))
+                        self.assertTrue(b[0] < x < b[1], (half, n, x))
+                        for other in ("SIDE", "SEAM"):           # the members that meet the front tube (R-J14)
+                            ob = mem[other]
+                            g = max(ob[0] - x, x - ob[1])
+                            self.assertGreaterEqual(g, 30.0, "%s %s at X %.2f: %.1f from %s" % (half, n, x, g, other))
                     else:
                         self.assertTrue(abs(x - b[0]) < 1e-6 or abs(x - b[1]) < 1e-6, (half, n, x, b))
                         self.assertGreaterEqual(z - r, b[4] + v["tube_t"], (half, n))
@@ -225,6 +234,70 @@ class Joints(unittest.TestCase):
         self.assertAlmostEqual(sb[1] + ox, slot_x1)
         self.assertAlmostEqual(sb[2] + ev(M.YW), v["slot_y0"])
         self.assertGreaterEqual(v["slot_y0"] - (ev(M.YW) + v["tube_w"]), 5.0 - 1e-9, "slot clear of the front member")
+
+
+class DtBolts(unittest.TestCase):
+    """J-FRONT-03 (joints register 3.13): DT's 4 bolts through the ceiling's front tubes, and D-169's pin slot."""
+
+    def rows(self, half, name):
+        return [xyz for n, _d, xyz in M.hole_positions(VALS, half) if n == name]
+
+    def test_register_positions(self):
+        c1 = [round(p[0], 2) for p in self.rows("C1", "DT BOLT CLEARANCE")]
+        c2 = [round(p[0], 2) for p in self.rows("C2", "DT BOLT CLEARANCE")]
+        self.assertEqual(c1, [-981.74, -578.16, -174.58])
+        # the rule puts the 4th at 220 + 3 x 403.58 = 1430.74 from C1's frame end (X -1201.74): +229.00 (the register
+        # prints +228.99, the same point rounded down)
+        self.assertEqual(c2, [229.0])
+        for half in ("C1", "C2"):
+            for p in self.rows(half, "DT BOLT CLEARANCE"):
+                self.assertAlmostEqual(p[1], -645.0)              # the front wall, Ø7.0
+                self.assertAlmostEqual(p[2], 2374.0)              # DT's bolt line
+            for p in self.rows(half, "DT BOLT ACCESS"):
+                self.assertAlmostEqual(p[1], -625.0)              # the back wall, from the bay, Ø19
+        d = {n: dd for n, dd, _p in M.hole_positions(VALS, "C1")}
+        self.assertAlmostEqual(d["DT BOLT CLEARANCE"], 7.0)
+        self.assertAlmostEqual(d["DT BOLT ACCESS"], 19.0)
+
+    def test_pin_slot(self):
+        """D-169: one slot in C1's front wall at X -376.37, Z 2374, 8.5 wide by 12 long in Z, midway between DT's 2nd
+        and 3rd bolts, 14 from the wall's top and bottom; none in C2."""
+        self.assertEqual(self.rows("C2", "DT PIN SLOT"), [])
+        (x, y, z), = self.rows("C1", "DT PIN SLOT")
+        self.assertAlmostEqual(x, -376.37, places=2)
+        self.assertAlmostEqual(y, -645.0)
+        self.assertAlmostEqual(z, 2374.0)
+        bolts = sorted(p[0] for p in self.rows("C1", "DT BOLT CLEARANCE"))
+        self.assertAlmostEqual(x, (bolts[1] + bolts[2]) / 2)
+        _px, _py, _pz, w, l = (ev(e) for e in M.dt_pin_slot("C1"))
+        self.assertAlmostEqual(w, 8.5)
+        self.assertAlmostEqual(l, 12.0)
+        mem = dict(M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members("C1")]))
+        b = mem["FRONT"]
+        self.assertAlmostEqual(z - l / 2 - b[4], 14.0)
+        self.assertAlmostEqual(b[5] - (z + l / 2), 14.0)
+
+    def test_bolt_clear_of_the_soffit_hanger(self):
+        """DT's middle C1 bolt (X -578.16) and the soffit's front hanger rivnut (X -583, on the tube's underside) share
+        C1's front tube. Inside it, the bolt's ISO 7093 6.4 x 18 x 1.6 washer and ISO 4762 M6 head (Ø10 x 6) sit on the
+        front wall; the rivnut's body (Sherex CAL2-610-4.2: Ø9.91 max, 9.65 max installed length) stands up from the
+        bottom wall, its bulge about Ø14 for its first 5. Each pair of boxes must stay 2 mm or more apart."""
+        v = VALS
+        t = v["tube_t"]
+        yf, zb = ev(M.YW) + t, ev(M.ZF0) + t                       # the front wall's and the bottom wall's inner faces
+        def boxes_apart(a, b):
+            gaps = [max(b[2 * i] - a[2 * i + 1], a[2 * i] - b[2 * i + 1]) for i in range(3)]
+            return max(gaps)
+        for hx, _hy, _hz in [p for n, _d, p in M.hole_positions(v, "C1") if n == "SOFFIT HANGER FRONT"]:
+            hy = ev(M.YW) + v["tube_w"] / 2
+            body = (hx - 4.955, hx + 4.955, hy - 4.955, hy + 4.955, zb, zb + 9.65)
+            bulge = (hx - 7.0, hx + 7.0, hy - 7.0, hy + 7.0, zb, zb + 5.0)
+            for bx, _by, bz in self.rows("C1", "DT BOLT CLEARANCE"):
+                washer = (bx - 9.0, bx + 9.0, yf, yf + 1.6, bz - 9.0, bz + 9.0)
+                head = (bx - 5.0, bx + 5.0, yf + 1.6, yf + 7.6, bz - 5.0, bz + 5.0)
+                for a in (washer, head):
+                    for b in (body, bulge):
+                        self.assertGreaterEqual(boxes_apart(a, b), 2.0, (bx, hx, a, b))
 
 
 class Cassette(unittest.TestCase):

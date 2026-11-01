@@ -243,6 +243,40 @@ def circle_cut_x(comp, body, name, xf, cy, cz, dia, depth, into, ctx):
     return f
 
 
+def circle_cut_y(comp, body, name, yf, cx, cz, dia, depth, into, ctx):
+    """A round hole through a face normal to Y: sketch on the XZ plane offset to Y = yf (AIR's circle_cut_y, proven in
+    its saved builds), the centre dimensioned by expressions for model X and Z, cut by depth toward into (+1 or -1
+    along model Y), into one body only."""
+    plane = offset_plane(comp, comp.xZConstructionPlane, yf, "PLANE - %s" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "HOLE - " + name
+    cen = sk.modelToSketchSpace(adsk.core.Point3D.create(ctx.ev(cx) * MM, ctx.ev(yf) * MM, ctx.ev(cz) * MM))
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(cen.x, cen.y, 0), ctx.ev(dia) / 2 * MM)
+    g = c.centerSketchPoint.geometry
+    sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = dia
+    for model_axis, expr in (("x", cx), ("z", cz)):
+        sa, _sign = model_to_sketch_axis(sk, model_axis)
+        if abs(ctx.ev(expr)) < EPS:
+            (sk.geometricConstraints.addVerticalPoints if sa == "x" else sk.geometricConstraints.addHorizontalPoints)(
+                c.centerSketchPoint, sk.originPoint)
+        else:
+            tp = adsk.core.Point3D.create(g.x + 0.6, g.y + 0.6, 0)
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, c.centerSketchPoint, H if sa == "x" else V,
+                                                     tp).parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: HOLE - " + name)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    prof = min(sk.profiles, key=lambda p: p.areaProperties().area)
+    ei = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.y * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def circles_cut(comp, body, name, plane, coord, centres, dia, depth, into, ctx):
     """A row of round holes in one sketch and one cut: plane 'z' (an XY-type plane at Z =
     coord, centres as (x, y) expressions) or 'x' (a YZ-type plane at X = coord, centres as
@@ -693,7 +727,10 @@ def build_frame_members(fcomp, half, ctx):
         if key in M.TURNED:
             shared[key] = comp
         members[code] = (comp, body)
-    into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
+    # the side cut each face is cut from, into its tube: the side and seam walls face X, the front tube's (DT's bolts,
+    # J-FRONT-03) face Y: its front wall at Y -645 is cut toward +Y, its back wall from the bay toward -Y
+    into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s, ("FRONT", "out"): 1,
+            ("FRONT", "in"): -1}
     for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
         comp, body = members[member]
         if body is None:
@@ -709,11 +746,16 @@ def build_frame_members(fcomp, half, ctx):
             return e if a != axis else "(%s) + %d * (%s)" % (e, k, pitch)
         cs = []
         for k in range(count):
-            cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(y, "y"), at(z, "z")))
+            if face == "bottom" or member == "FRONT":
+                cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(x, "x"), at(z, "z")))
+            else:
+                cs.append((at(y, "y"), at(z, "z")))
         for k, (u, v) in enumerate(cs):
             lab = label if count == 1 else "%s %d" % (label, k + 1)
             if face == "bottom":
                 circle_cut(comp, body, lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
+            elif member == "FRONT":
+                circle_cut_y(comp, body, lab, y, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
             else:
                 circle_cut_x(comp, body, lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
     comp, body = members["BACK"]
@@ -726,6 +768,19 @@ def build_frame_members(fcomp, half, ctx):
     for end, sign in (("END 1", "-"), ("END 2", "+")):
         circle_cut(comp, body, "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
                    "%s + 2 * tube_t" % sz, ctx)
+    # DT's pin slot (D-169) in C1's front wall: 8.5 wide in X, dt_slot_l long in Z, cut like the spigot slot (the
+    # straight part as a box, each end as a round cut), through the front wall only
+    if M.dt_pin_slot(half):
+        comp, body = members["FRONT"]
+        px, py, pz, pw, pl = M.dt_pin_slot(half)
+        label = "%s DT PIN SLOT" % half
+        run = "(%s - %s) / 2" % (pl, pw)
+        box_body(comp, label, ("%s - %s / 2" % (px, pw), "%s + %s / 2" % (px, pw), py, "%s + 2 * tube_t" % py,
+                               "%s - %s" % (pz, run), "%s + %s" % (pz, run)), ctx,
+                 op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[body])
+        for end, sign in (("END 1", "-"), ("END 2", "+")):
+            circle_cut_y(comp, body, "%s %s" % (label, end), py, px, "%s %s %s" % (pz, sign, run), pw, "2 * tube_t",
+                         into[("FRONT", "out")], ctx)
     # the closing face's lead-in runs the seam member's full length now that its corners are mitred
     # (the back member no longer reaches the closing face)
     comp, body = members["SEAM"]

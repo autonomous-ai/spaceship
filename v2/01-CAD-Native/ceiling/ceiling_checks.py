@@ -176,6 +176,9 @@ def hole_check(design, tol=TOL):
             if name == "BACK SPIGOT SLOT":
                 run = (vals["spig_slot"] - vals["spig_hole"]) / 2
                 want += [(name + " END 1", d, (xyz[0] - run, xyz[1], xyz[2])), (name + " END 2", d, (xyz[0] + run, xyz[1], xyz[2]))]
+            elif name == "DT PIN SLOT":                 # D-169: its end arcs lie along Z
+                run = (vals["dt_slot_l"] - vals["spig_hole"]) / 2
+                want += [(name + " END 1", d, (xyz[0], xyz[1], xyz[2] - run)), (name + " END 2", d, (xyz[0], xyz[1], xyz[2] + run))]
             else:
                 want.append((name, d, xyz))
         left = list(cyl[half])

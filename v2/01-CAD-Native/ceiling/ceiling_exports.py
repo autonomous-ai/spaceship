@@ -200,6 +200,8 @@ def member_rows(v, half):
         extra = list(holes.get(code, []))
         if code == "BACK":
             extra.append("back spigot slot 8.5 x 14 x 1")
+        if code == "FRONT" and M.dt_pin_slot(half):
+            extra.append("dt pin slot 8.5 x %g along Z x 1 (D-169)" % M.ev(v, "dt_slot_l"))
         if code == "SEAM":
             extra.append("1 x 45 lead-in on the closing face's lower edge, full length")
         out.append((code, key, name, sec, L, MEMBER_ENDS[code], extra))
