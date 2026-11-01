@@ -280,8 +280,33 @@ class Sheet:
         self.boxes.append(self.text_box(x, y, s, size, anchor, rotate, bold, valign))
         return w
 
+    def _pieces(self, word, size, width, bold):
+        """A word wider than the line, broken after its '_', '-' or '/' (else between letters): never cut short,
+        never past the line (a long drawing number in its title-block cell, FRONT's 352211)."""
+        if self.text_width(word, size, bold) <= width:
+            return [word]
+        import re as _re
+        parts = [p_ for p_ in _re.split(r"(?<=[_\-/])", word) if p_]
+        out, cur = [], ""
+        for p_ in parts:
+            if cur and self.text_width(cur + p_, size, bold) > width:
+                out.append(cur)
+                cur = ""
+            cur += p_
+            while self.text_width(cur, size, bold) > width and len(cur) > 1:   # no break in it: between letters
+                k = len(cur)
+                while k > 1 and self.text_width(cur[:k], size, bold) > width:
+                    k -= 1
+                out.append(cur[:k])
+                cur = cur[k:]
+        if cur:
+            out.append(cur)
+        return out
+
     def wrap(self, s, size, width, bold=False):
-        words, lines, cur = s.split(" "), [], ""
+        words, lines, cur = [], [], ""
+        for wd in s.split(" "):
+            words.extend(self._pieces(wd, size, width, bold))
         for wd in words:
             t = (cur + " " + wd).strip()
             if cur and self.text_width(t, size, bold) > width:
