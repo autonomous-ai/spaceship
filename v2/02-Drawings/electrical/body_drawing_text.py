@@ -62,6 +62,7 @@ COLUMNS = (("TAG", 10.0), ("FACE", 21.0), ("FROM B", 16.0), ("FROM A", 16.0), ("
            ("NOTE", None))
 MARKS = "Smart Centers"         # Fusion's PDF layer of centre marks and centre lines (probe of 2026-11-01)
 D_LABEL = "D (turned 180°)"     # over view D: Fusion's Bottom, the view from below turned 180 degrees
+TAG_NEAR = 6.0                  # mm: the most a tag's box may stand off its circle (the real sheet: 5.1 on the lips)
 TAG_GAP = 0.8                   # mm: a tag's whole text box (the font's ascent and descent) keeps this clear of
                                 # every line, circle and other text
 
@@ -611,8 +612,12 @@ def read_back(path, views_json, box, holes, zs, rows):
         near = [t for t in texts if t[4] == tag and not _boxes_touch(t[:4], BLOCK)]
         if len(near) != 1:
             probs.append("%s: %d tags outside the block" % (tag, len(near)))
-        elif max(abs((near[0][0] + near[0][2]) / 2 - x), abs((near[0][1] + near[0][3]) / 2 - y)) > r + 8.0:
-            probs.append("%s: its tag is far from its circle in the %s view" % (tag, view))
+        else:                       # the gap from the circle to the tag's nearest point
+            bx = min(max(x, near[0][0]), near[0][2])
+            by = min(max(y, near[0][1]), near[0][3])
+            gap = ((bx - x) ** 2 + (by - y) ** 2) ** 0.5 - r
+            if gap > TAG_NEAR:
+                probs.append("%s: its tag is %.1f mm from its circle in the %s view" % (tag, gap, view))
     for v in PITCH:
         if words.count("(%s)" % v) != 1 or v in words:
             probs.append("the pitch %s isn't printed once as (%s)" % (v, v))
