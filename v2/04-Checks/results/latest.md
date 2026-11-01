@@ -1,8 +1,8 @@
-# Mechanical check run: 2774e80 on 2026-11-01
+# Mechanical check run: e796357 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `2774e80`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `e796357`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 191** (47 severe, 136 major, 8 minor). Register numbers in brackets.
+**Findings in this run: 195** (52 severe, 137 major, 6 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,8 +12,8 @@ Offline checks (`tools/checks/run_checks.py`) on revision `2774e80`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 116 |
-| C06 BOM completeness | yes | 39 |
+| C05 drawing completeness | yes | 119 |
+| C06 BOM completeness | yes | 40 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 8 |
@@ -27,6 +27,11 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
 | F-136 | severe | C01 | assembly shell left-base Y 847..850 Z 10..110 | The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes. | BASE |
+| F-045 | severe | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step. | Joints Engineer |
+| F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | Joints Engineer |
+| F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | Joints Engineer |
+| F-102 | severe | C05 | 111214 | 111214 BASE - CORNER KEY - KNEE - LH has no drawing PDF (111214_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step. | Joints Engineer |
+| F-341 | severe | C05 | 111215 | 111215 BASE - CORNER KEY - SQUARE - INLINE has no drawing PDF (111215_REV_NAME_DWG.pdf under v2/02-Drawings). | Joints Engineer |
 | F-020 | severe | C05 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-109 | severe | C05 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH has no drawing PDF (211102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step. | WALL |
 | F-110 | severe | C05 | 211103 | 211103 WALL - PANEL FRAME - SIDE UPPER - LH has no drawing PDF (211103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step. | WALL |
@@ -176,6 +181,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-279 | major | C06 | 838003 | 838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part. | BASE; ELECTRICAL; WALL |
 | F-252 | major | C06 | 611301 | 611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-253 | major | C06 | 611302 | 611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
+| F-340 | major | C06 | 111215 | 111215 BASE - CORNER KEY - SQUARE - INLINE is in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv but in no STEP file in v2/03-Manufacturing. | Joints Engineer |
 | F-227 | major | C08 | assembly SOFFIT RAIL DOOR holes Ø6.60 | 610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig. | CEILING |
 | F-273 | major | C09 | assembly 211101 SIDE LOWER - LH | 211101 SIDE LOWER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
 | F-274 | major | C09 | assembly 211102 SIDE LOWER - RH | 211102 SIDE LOWER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
@@ -211,8 +217,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-242 | major | C11 | 611402 | 611402 AIR - FAN BOX CASING - SUPPLY in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'. | CEILING |
 | F-212 | minor | C05 | 110401 | 110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: Hidden lines show in 1 view region(s) (93 dash pieces on Fusion's Hidden layer). | BASE |
 | F-213 | minor | C05 | 110401 | 110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: Dimension value(s) printed more than once: 1218.5. | BASE |
-| F-214 | minor | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Hidden lines show in 9 view region(s) (189 dash pieces on Fusion's Hidden layer). | Joints Engineer |
-| F-215 | minor | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Dimension value(s) printed more than once: 10.5, Ø5.04. | Joints Engineer |
 | F-217 | minor | C05 | 111401 | 111401 BASE - FLOOR PANEL - F1 drawing 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: Dimension value(s) printed more than once: 1218.5. | BASE |
 | F-226 | minor | C05 | 831001 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS drawing 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: Dimension value(s) printed more than once: 8. | Joints Engineer |
 | F-243 | minor | C06 | 618101 | 618101 AIR - SENSOR HUB ZONE - HOLD in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv is missing: mass. | CEILING |

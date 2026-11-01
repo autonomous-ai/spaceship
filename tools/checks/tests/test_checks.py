@@ -1645,3 +1645,10 @@ def test_a_bought_profile_we_mitre_and_drill_is_a_made_part_with_a_drawing(tmp_p
     fs = c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}, made_why=why)
     assert [(f.rule, f.severity) for f in fs] == [("no-drawing", "major")] and "D-143" in fs[0].message
     assert c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}) == []
+
+
+def test_the_base_keys_are_joints_parts_from_111211_to_111215():
+    # D-144: FR1's key became 111215, a Joints part like 111211 to 111214
+    from common import owner_for, JOINTS_KEYS
+    assert all(JOINTS_KEYS.match("11121%d" % i) for i in range(1, 6)) and not JOINTS_KEYS.match("111216")
+    assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "111215") == "Joints Engineer"
