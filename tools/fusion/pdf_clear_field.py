@@ -19,6 +19,8 @@ import sys
 
 import fitz  # PyMuPDF
 
+DATE = re.compile(r"\d{1,2}/\d{1,2}/\d{2,4}")
+
 
 def field_words(page, label):
     hits = page.search_for(label)
@@ -33,8 +35,10 @@ def field_words(page, label):
     # next row's labels
     top = min(w[1] for w in below)
     row = [w for w in below if abs(w[1] - top) < 2.0]
-    # stop at the date that shares the cell (dd/mm/yy), or 200 pt to the right
-    dates = [w for w in row if re.fullmatch(r"\d{2}/\d{2}/\d{2,4}", w[4])]
+    # stop at the date that shares the cell, or 200 pt to the right. Fusion writes it with one or two digits
+    # for the day and the month (1/11/26 and 31/10/26 alike): with two required, a one-digit day's date was
+    # taken as part of the name and removed, and the re-read then took the next row's labels as left over
+    dates = [w for w in row if DATE.fullmatch(w[4])]
     right = min([d[0] for d in dates] + [lab.x0 + 200])
     return lab, [w for w in row if w[2] <= right - 0.5]
 
