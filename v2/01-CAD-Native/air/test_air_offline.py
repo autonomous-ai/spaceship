@@ -90,7 +90,7 @@ class Fits(unittest.TestCase):
     def test_no_overlaps(self):
         """No two layout bodies overlap, except the cut-outs the build makes (hub zone in
         the front face and the fill, exhaust grille in the underside)."""
-        cut = {(t, "SENSOR HUB ZONE") for t in ("COLUMN FACE FRONT", "COLUMN FILL FRONT")} | {("SOFFIT UNDERSIDE LEFT", "EXHAUST GRILLE")}
+        cut = {("SOFFIT UNDERSIDE LEFT", "EXHAUST GRILLE")}          # (the hub zone is ELECTRICAL's hub now: no AIR body)
         # the stud and lock shanks pass through the rails' forks and holes (cut features)
         cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
         cut |= {("SOFFIT FACE FRONT", n) for n in LAY if (n.startswith("STUD") and n.endswith("ROOM HEAD"))
@@ -301,7 +301,7 @@ class D87(unittest.TestCase):
                 self.assertLess(y1 - V["slide"] + V["stud_d"] / 2, rail[2], "stud head clear of %s's edge" % bname)
 
     def test_hub_fits_between_the_angles(self):
-        hub, fl, fr = b6("SENSOR HUB ZONE"), b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
+        hub, fl, fr = tuple(A.ev(V, e) for e in A.hub_zone()), b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
         self.assertGreaterEqual(hub[0], fl[1] - 1e-9)
         self.assertLessEqual(hub[1], fr[0] + 1e-9)
         self.assertAlmostEqual(hub[1] - hub[0], 180.0)
@@ -460,7 +460,17 @@ class FrontScrews(unittest.TestCase):
         cuts = [(t, tuple(A.ev(V, e) for e in b)) for t, b in A.cutouts() if t in under]
         eg = b6("EXHAUST GRILLE")
         self.assertEqual([(t, b[:4]) for t, b in cuts], [("SOFFIT UNDERSIDE LEFT", eg[:4])])
-        self.assertFalse([n for n, _k, _a in A.features() if n in under])
+        self.assertFalse([n for n, _k, _a in A.features() if n in under[:2]])
+        # the fixed part's one hole (ELECTRICAL's exhaust fan leads, 2026-11-01) opens into the column under it, so it
+        # can't be seen: wholly inside the column's plan between its front angles' legs and its front face
+        col = b6("COLUMN FACE FRONT")
+        for n, k, a in A.features():
+            if n == "SOFFIT UNDERSIDE FIXED":
+                x, y, _z0, _z1, d = (A.ev(V, e) for e in a)
+                self.assertEqual(k, "zcircle")
+                self.assertGreaterEqual(x - d / 2, b6("COLUMN ANGLE FL")[1], "over the column, right of its left angle")
+                self.assertLessEqual(x + d / 2, b6("COLUMN ANGLE FR")[0], "left of its right angle")
+                self.assertLessEqual(y + d / 2, col[2] + 1e-9, "behind the column's front face")
         for sname, wb, _hb in A.front_screw_boxes():
             if sname.startswith("B08"):
                 top = max(b6(n)[5] for n in under)
@@ -570,6 +580,56 @@ class FrontInterface(unittest.TestCase):
             self.assertAlmostEqual(v["dr_acc_face_y"], -641.14, places=6)
 
 
+class HarnessRoute(unittest.TestCase):
+    """ELECTRICAL's hub and harness through the column and soffit, as agreed with ELECTRICAL on 2026-11-01."""
+
+    def feats(self, body, kind):
+        return [tuple(A.ev(V, e) for e in a) for n, k, a in A.features() if n == body and k == kind]
+
+    def test_no_hub_body(self):
+        self.assertNotIn("hub", A.PARTS)
+        self.assertNotIn("SENSOR HUB ZONE", LAY)
+        hub = tuple(A.ev(V, e) for e in A.hub_zone())
+        self.assertEqual([round(c, 2) for c in hub], [971.0, 1151.0, -314.0, -285.0, 1110.0, 1290.0])
+
+    def test_fr_angle_points(self):
+        """FR is FL turned 180 deg about Y (TURNED): FL's holes, mirrored about the angle's mid-height and moved to the
+        right side leg, must land on the agreed points: entry Ø12 at Y -307, Z 1150; ties Ø6.4 at Z 1960 and 2090."""
+        fl, fr = b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
+        got = []
+        for y, z, x0, x1, d in self.feats("COLUMN ANGLE FL", "xcircle"):
+            self.assertAlmostEqual(x0, fl[0])
+            self.assertAlmostEqual(x1 - x0, V["ang_t"])
+            got.append((round(y, 2), round(fr[4] + fr[5] - z, 2), d))         # where FR shows it
+        self.assertEqual(got, [(-307.0, 1150.0, 12.0), (-307.0, 1960.0, 6.4), (-307.0, 2090.0, 6.4)])
+        for y, _z, d in got:                                                  # the opening rule's 4 mm rims (2 x 2 mm)
+            self.assertGreaterEqual(min(y - d / 2 - fr[2], fr[3] - (y + d / 2)), 2 * V["ang_t"] - 1e-9)
+
+    def test_channels_and_holes(self):
+        cuts = {t: [] for t in ("COLUMN FILL FRONT", "SOFFIT FILL UNDER")}
+        for t, b in A.cutouts():
+            if t in cuts:
+                cuts[t].append(tuple(round(A.ev(V, e), 2) for e in b))
+        self.assertIn((1128.0, 1152.0, -321.0, -297.0, 1290.0, 1890.0), cuts["COLUMN FILL FRONT"])
+        (x, y, z0, z1, d), = self.feats("SOFFIT UNDERSIDE FIXED", "zcircle")
+        self.assertEqual((round(x, 2), round(y, 2), d), (1140.0, -316.0, 19.1))
+        self.assertGreaterEqual(b6("SOFFIT UNDERSIDE FIXED")[3] - (y + d / 2), 2 * 3.0)   # 6 rim on 3 mm ACP
+        (bx, by, bz0, bz1, bd), = self.feats("EXHAUST FAN BOX", "zcircle")
+        self.assertEqual((round(bx, 2), bd), (1140.0, 12.0))
+        lin = b6("FAN BOX LINING EXHAUST SIDE 2")
+        self.assertGreaterEqual(lin[2] - (by + bd / 2), 6.0, "the box's hole clear of its room-side lining")
+        ch = [c for c in cuts["SOFFIT FILL UNDER"] if c[0] == 1128.0]
+        self.assertEqual(len(ch), 1)
+        self.assertLessEqual(ch[0][2], by - bd / 2)                            # the channel reaches both holes
+        self.assertGreaterEqual(ch[0][3], y + d / 2)
+        ties = self.feats("COLUMN PLENUM PLATE HIGH", "xcircle")
+        self.assertEqual(len(ties), 3)
+        plate = b6("COLUMN PLENUM PLATE HIGH")
+        for ty, tz, _x0, _x1, td in ties:
+            self.assertGreaterEqual(tz - td / 2 - plate[4], 6.0, "tie above the plate's bottom edge")
+            self.assertTrue(plate[2] < ty - td / 2 and ty + td / 2 < plate[3])
+
+
 class EditTest(unittest.TestCase):
     """Every cut and hole feature lands in its body for each change the edit test makes: a cut
     that finds nothing turns a timeline item unhealthy in Fusion (a soffit latch's cut did, at
@@ -590,6 +650,9 @@ class EditTest(unittest.TestCase):
                 elif kind == "zcircle":
                     x, y, z0, z1, d = (A.ev(v, e) for e in a)
                     c = (x - d / 2, x + d / 2, y - d / 2, y + d / 2, z0, z1)
+                elif kind == "xcircle":
+                    y, z, x0, x1, d = (A.ev(v, e) for e in a)
+                    c = (x0, x1, y - d / 2, y + d / 2, z - d / 2, z + d / 2)
                 else:
                     x, z, y0, y1, d = (A.ev(v, e) for e in a)
                     c = (x - d / 2, x + d / 2, y0, y1, z - d / 2, z + d / 2)

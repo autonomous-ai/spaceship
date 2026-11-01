@@ -434,7 +434,7 @@ FOLDER = "Default Project/FocusPod v2"
 # parts keep drawings); each scope lists layout keys, or a special item in capitals
 SCOPE_KEYS = {
     "column": ["col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
-               "kick_l", "hub", "col_ang", "col_ang_b", "CART:SUPPLY"],
+               "kick_l", "col_ang", "col_ang_b", "CART:SUPPLY"],
     "soffit": ["sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door", "sof_end", "sof_fill",
                "sof_fill_f", "egrille", "stud", "hinge", "latch", "lock", "CART:EXHAUST", "BOX:EXHAUST"],
     "cart": ["CART:SUPPLY"], "sbox": ["BOX:SUPPLY", "trans", "riser", "rtrans"], "ebox": ["BOX:EXHAUST"],
@@ -562,6 +562,8 @@ def build_scope(root, design, ctx, scope):
             CB.circle_cut(root, made[bname], label, a[0], a[1], a[4], a[2], a[3], ctx)
         elif kind == "ycircle":
             circle_cut_y(root, made[bname], label, a[0], a[1], a[2], a[3], a[4], ctx)
+        elif kind == "xcircle":       # through a face normal to X, from x0 toward +X (the ceiling's circle_cut_x)
+            CB.circle_cut_x(root, made[bname], label, a[2], a[0], a[1], a[4], "(%s) - (%s)" % (a[3], a[2]), 1, ctx)
         else:
             CB.box_body(root, label, a, ctx, op=CUT, bodies=[made[bname]])
     return made
@@ -716,10 +718,10 @@ def run(_context):
 
         def units_of(key):
             return [n for k, n, _b in A.units() if k == key]
-        # ---- column: foot plate, faces, kick grille, plenum plates, fill, hub zone, angles, cartridge
+        # ---- column: foot plate, faces, kick grille, plenum plates, fill, angles, cartridge (the hub zone is ELECTRICAL's)
         _o, col = new_comp(root, "column")
         for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
-                    "kick_l", "hub"):
+                    "kick_l"):
             comp_with(col, key, names_of(key))
         # the two front angles: one part (611103), the left built in its own frame, the right its copy turned about Y
         x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE FL"][1]
@@ -727,6 +729,15 @@ def run(_context):
         pts = [(rel(px, x0), rel(py, y0)) for px, py in A.angle_pts("FL", x0, x1, y0, y1)]
         made["COLUMN ANGLE FL"] = (ang, poly_xy_extrude(ang, "COLUMN ANGLE FRONT", pts, "0 mm", rel(z1, z0), ctx))
         set_material(design, ang, "col_ang")
+        # ELECTRICAL's harness holes (agreed 2026-11-01), cut in FL's own frame (its side leg's outer face is its local
+        # X 0): the turned copy shows them at FR's points, FL hides them behind the column's left face
+        for k, (bname, kind, a) in enumerate(A.features()):
+            if bname != "COLUMN ANGLE FL":
+                continue
+            if kind != "xcircle" or abs(ctx.ev(rel(a[2], x0))) > 1e-6:
+                raise RuntimeError("FL's features are round holes through its side leg from its outer face")
+            CB.circle_cut_x(ang, made["COLUMN ANGLE FL"][1], "COLUMN ANGLE FL FEATURE %d" % (k + 1), "0 mm",
+                            rel(a[0], y0), rel(a[1], z0), a[4], "(%s) - (%s)" % (a[3], a[2]), 1, ctx)
         CB.place(col, occ_fl, (x0, y0, z0), "COLUMN ANGLE FL", ctx)
         fx0, fx1, fy0, fy1, fz0, fz1 = lay["COLUMN ANGLE FR"][1]
         if ARGS.get("no_turn") == "1":
@@ -841,12 +852,16 @@ def run(_context):
         comp_with(root, "rgrille", names_of("rgrille"))
         # ---- cut features: keyholes, BASE's spigot hole and slot, the rails' forks, lock holes
         for k, (bname, kind, a) in enumerate(A.features()):
+            if bname == "COLUMN ANGLE FL":
+                continue                  # cut in FL's own frame where it is built (the column, above)
             comp, body = made[bname]
             label = "%s FEATURE %d" % (bname, k + 1)
             if kind == "zcircle":
                 CB.circle_cut(comp, body, label, a[0], a[1], a[4], a[2], a[3], ctx)
             elif kind == "ycircle":
                 circle_cut_y(comp, body, label, a[0], a[1], a[2], a[3], a[4], ctx)
+            elif kind == "xcircle":   # through a face normal to X, from x0 toward +X (the ceiling's circle_cut_x)
+                CB.circle_cut_x(comp, body, label, a[2], a[0], a[1], a[4], "(%s) - (%s)" % (a[3], a[2]), 1, ctx)
             else:
                 CB.box_body(comp, label, a, ctx, op=CUT, bodies=[body])
         adsk.doEvents()

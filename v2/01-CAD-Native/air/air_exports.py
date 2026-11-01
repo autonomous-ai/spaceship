@@ -44,7 +44,6 @@ TREE = [
     ("col_side_hi", "column", 1, "PM ruling 2026-11-01 (5 mm off the lining)"),
     ("col_fill", "column", 1, "air report 7e: the front piece"), ("col_fill_l", "column", 1, "air report 7e: the left piece"),
     ("kick", "column", 1, "D-61: the front piece"), ("kick_l", "column", 1, "D-61: the left piece"),
-    ("hub", "column", 1, "D-61, D-70: 180 x 180 zone for the in-house sensor hub"),
     ("cart", "air", 2, "D-61: one cartridge for both paths, ships on its own, slides in on site"),
     ("casing", "cart", 1, "D-61: 2 mm aluminium casing"), ("layer", "cart", 3, "D-61: three 50 mm layers"),
     ("soffit", "air", 1, "D-60, D-61, D-87: ships with the exhaust fan box fitted"),
@@ -117,7 +116,7 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "lin_s": "knife cut; bonded to the casing (adhesive HOLD)",
            "lip": "laser cut, folded to an angle; 3 closed-end blind rivets to the casing's front wall (rivet HOLD, with "
                   "the casing's)"}
-HOLD_MASS = {"hub": (0.0, "assumption: space only (in-house module, its mass is ELECTRICAL's)"),
+HOLD_MASS = {
              "trans": (2.07, "calculation (the air report #283, dr_transition): walls of 2 mm aluminium, 0.327 m2 for the "
                        "full-depth passage (175.5 x 160 over 488 mm), and 0.3 kg of turning vanes (assumption); the "
                        "transition's own design (walls, vanes, outlet lip seal) is HOLD"),
@@ -184,7 +183,9 @@ def write_dxfs(v):
                 ents.append(("CIRCLE", "CUT", to2d(b, pl, a[0], a[1], 0), a[4] / 2))
             elif kind == "ycircle" and pl == "xz":     # a round relief through an XZ plate (B08's, the door plate)
                 ents.append(("CIRCLE", "CUT", to2d(b, pl, a[0], 0, a[1]), a[4] / 2))
-            elif kind in ("zcircle", "ycircle"):
+            elif kind == "xcircle" and pl == "yz":     # a round hole through a YZ plate (the harness's ties in 611108)
+                ents.append(("CIRCLE", "CUT", to2d(b, pl, 0, a[0], a[1]), a[4] / 2))
+            elif kind in ("zcircle", "ycircle", "xcircle"):
                 raise RuntimeError("%s: a %s hole in a plate in the %s plane isn't drawn yet" % (bodies[0], kind, pl))
             elif kind == "box":
                 x0, y0 = to2d(b, pl, a[0], a[2], a[4])

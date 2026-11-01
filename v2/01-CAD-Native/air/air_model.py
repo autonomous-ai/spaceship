@@ -49,6 +49,29 @@ AIR_PARAMS = [
     ("hub_w", "180 mm", "mm", "confirmed", "D-61, D-70: a 180 x 180 zone for the sensor hub and controls"),
     ("hub_t", "29 mm", "mm", "source", R7E + ": up to 29 deep, no fill behind it"),
     ("hub_z", "1200 mm", "mm", "source", R7E + ": zone centred at Z 1200; across, it is centred between the front corner angles (X 1063.5 on P04, the report's 1058 is the column's centre)"),
+    # ---- ELECTRICAL's hub and harness through the column and soffit (agreed by ELECTRICAL and CEILING 2026-11-01, the
+    #      Lead's ask; the grommets are ELECTRICAL's parts): the hub takes the zone above, the harness enters through the FR
+    #      angle, rises in a channel in the front fill and on the FR angle, and reaches the exhaust fans through the soffit
+    ("hn_entry_d", "12 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the harness's grommeted entry through "
+     "the FR angle's side leg (4 mm rims on the 20 mm leg of 2 mm: the opening rule's 2 x the sheet)"),
+    ("hn_entry_dz", "40 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the entry 40 above the hub zone's "
+     "bottom (Z 1150 at hub_z 1200), straight into the zone"),
+    ("hn_tie_d", "6.4 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: tie holes for the air-path leads "
+     "(flame-rated, tied about every 150 mm: the Lead's rule)"),
+    ("hn_tie_z1", "1960 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's first tie hole, between the fill's top and the soffit"),
+    ("hn_tie_z2", "2090 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's second tie hole"),
+    ("hn_ch_w", "24 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the 24 x 24 cable channels cut in the fills"),
+    ("hn_sof_d", "19.1 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the exhaust fan leads' membrane-grommeted "
+     "hole through the soffit's fixed underside over the column (it crosses from the supply plenum into the soffit)"),
+    ("hn_sof_dy", "19 mm", "mm", "calculation", "that hole's centre 19 behind the fixed underside's room edge (Y -316): "
+     "a 9.45 rim, over the opening rule's 6 on 3 mm ACP (2 x the sheet); over the front fill's channel"),
+    ("hn_box_d", "12 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the grommeted hole in the exhaust fan box's bottom"),
+    ("hn_box_dy", "12.5 mm", "mm", "calculation", "that hole 12.5 clear of the box's room-side lining, in the open "
+     "passage (Y -390): through the bottom, not the 50 mm lining"),
+    ("hn_ty0", "43.5 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the column's high plenum plate's first tie hole "
+     "43.5 from the door side (Y -600), the others 100 apart (-500, -400)"),
+    ("hn_tz", "15 mm", "mm", "calculation", "the plenum plate's tie holes 15 above its bottom edge (Z 1905): ELECTRICAL "
+     "asked Z 1880, which is inside the cartridge since the follow-up lifted it 6"),
     ("chase_w", "30 mm", "mm", "source", R7E + ": a 30 x 30 cable chase in the column's front-left corner"),
     ("foot_t", "2 mm", "mm", "assumption", "column foot plate, aluminium; it closes the base plenum and takes BASE's two spigots"),
     ("spg1_x", "989 mm", "mm", "confirmed", "PM ruling 2026-11-01: BASE's spigot S1 on F2 (X 989, Y -605), into a round hole"),
@@ -262,7 +285,6 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "latch": ("618106", "AIR - SOFFIT UNDERSIDE LATCH - HOLD", "Chốt bấm mặt dưới hộp gió (chờ)", "HOLD", "hold"),
     # the in-house sensor hub's space (the Sourcing Engineer's find, the Lead's ruling 2026-11-01): not bought, a reserved
     # space the checks keep (D-105's type); ELECTRICAL lists the hub itself
-    "hub": ("618101", "AIR - SENSOR HUB ZONE - HOLD", "Vùng bộ cảm biến (chờ)", "reserved air space", None),
     "trans": ("618102", "AIR - SUPPLY TRANSITION - HOLD", "Ống chuyển cấp (chờ)", "HOLD", "hold"),
     "rtrans": ("618103", "AIR - RISER TRANSITION - HOLD", "Ống chuyển hút (chờ)", "HOLD", "hold"),
     # how the supply fan box assembly rests in DR (PM rulings 2026-11-01; Control's numbers and names, #279)
@@ -428,6 +450,26 @@ def box(x0, x1, y0, y1, z0, z1):
     return (x0, x1, y0, y1, z0, z1)
 
 
+def hub_zone():
+    """ELECTRICAL's hub 710041 sits here (agreed 2026-11-01; AIR's placeholder 618101 is gone): 180 x 180, 29 deep
+    behind the column's front face, centred between the front angles' legs. AIR keeps only the cut through its front face
+    and fill."""
+    hx = "(col_x0 + face_t + ang_f + %s - ang_f) / 2" % XR
+    return box("%s - hub_w / 2" % hx, "%s + hub_w / 2" % hx, "%s - hub_t" % YFACE, YFACE, "hub_z - hub_w / 2",
+               "hub_z + hub_w / 2")
+
+
+def harness_points():
+    """ELECTRICAL's harness points (agreed 2026-11-01), as expressions: entry and ties in the FR angle (where the turned
+    copy shows them), the soffit hole, the fan box hole, the plenum plate ties."""
+    yleg = "%s - face_t - ang_w / 2" % YFACE                     # the FR angle's side leg's middle (Y -307)
+    xch = "%s - ang_f - hn_ch_w / 2" % XR                          # the channel's middle (X 1140)
+    return {"leg_y": yleg, "entry_z": "hub_z - hub_w / 2 + hn_entry_dz", "tie_z": ("hn_tie_z1", "hn_tie_z2"),
+            "ch_x": xch, "sof_y": "%s - face_t - hn_sof_dy" % YFACE,
+            "box_y": "%s + clr + cart_d - fbox_t - lin_t - hn_box_dy" % YD,
+            "plate_y": tuple("%s + hn_ty0 + %d mm" % (YD, 100 * k) for k in range(3))}
+
+
 def soffit_sections():
     """The soffit underside: two hinged sections and a fixed strip over the column (D-87)."""
     return [("sof_under", "SOFFIT UNDERSIDE LEFT", XL, "-us_gap / 2"),
@@ -518,9 +560,7 @@ def layout():
     b.append(("col_fill", "COLUMN FILL FRONT", box("col_x0 + face_t + ang_f", "%s - ang_f" % XR, cy1,
                                                      "%s - face_t" % YFACE, cz0, cz1)))
     b.append(("col_fill_l", "COLUMN FILL LEFT", box("col_x0 + face_t", cx0, "%s + ang_w" % YD, cy1, cz0, cz1)))
-    hx = "(col_x0 + face_t + ang_f + %s - ang_f) / 2" % XR     # centred between the front angles' legs
-    b.append(("hub", "SENSOR HUB ZONE", box("%s - hub_w / 2" % hx, "%s + hub_w / 2" % hx, "%s - hub_t" % YFACE,
-                                             YFACE, "hub_z - hub_w / 2", "hub_z + hub_w / 2")))
+    # the hub zone is ELECTRICAL's hub 710041 now (agreed 2026-11-01): no body here, only its cut (hub_zone())
     # soffit: underside sections (dark tone), front face, top rails, left end plate
     zf1 = ZRB                                      # front face up to the rail (riveted); pockets round the studs
     for key, name, x0, x1 in soffit_sections():
@@ -649,8 +689,8 @@ def sleeve_rivnuts():
 def features():
     """Cut features inside bodies (no change to their boxes): the column's keyholes in the
     back-left angle, BASE's spigot hole and slot in the foot plate, the rails' forks and the
-    lock screws' holes. [(body name, kind, args)]: kind 'zcircle' (x, y, z0, z1, d), 'ycircle'
-    (x, z, y0, y1, d) or 'box' (x0, x1, y0, y1, z0, z1)."""
+    lock screws' holes, ELECTRICAL's harness holes. [(body name, kind, args)]: kind 'zcircle' (x, y, z0, z1, d),
+    'ycircle' (x, z, y0, y1, d), 'xcircle' (y, z, x0, x1, d) or 'box' (x0, x1, y0, y1, z0, z1)."""
     out = []
     # keyholes: the column drops key_drop onto each stud, so the big hole is key_drop below it
     for k, zs in (("1", "hook_z1"), ("2", "hook_z2")):
@@ -690,6 +730,19 @@ def features():
                                                                     z0, z1, "fan_hole")))
     # the riser buffer's rivnut hole in the riser's front wall, over F07 (PM ruling 2026-11-01)
     out.append(("INTAKE RISER", "ycircle", (BUF_X, "dr_f07_zc", "rs_y0", "rs_y0 + rs_t", "hole_rvn")))
+    # ELECTRICAL's harness (agreed 2026-11-01). The FR angle is the FL angle turned 180 deg about Y (D-120, TURNED), so
+    # its holes are cut in FL's side leg where the turn takes them to FR's points (Z mirrored about the angle's middle):
+    # FL shows them hidden behind the column's left face and the left kick grille
+    hp, fl = harness_points(), layout_box("COLUMN ANGLE FL")
+    for z, d in [(hp["entry_z"], "hn_entry_d")] + [(t, "hn_tie_d") for t in hp["tie_z"]]:
+        out.append(("COLUMN ANGLE FL", "xcircle", (hp["leg_y"], "(%s) + (%s) - (%s)" % (fl[4], fl[5], z), fl[0],
+                                                   "%s + ang_t" % fl[0], d)))
+    for y in hp["plate_y"]:
+        out.append(("COLUMN PLENUM PLATE HIGH", "xcircle", (y, "%s + hn_tz" % layout_box("COLUMN PLENUM PLATE HIGH")[4],
+                                                            "%s - plate_t" % XR, XR, "hn_tie_d")))
+    out.append(("SOFFIT UNDERSIDE FIXED", "zcircle", (hp["ch_x"], hp["sof_y"], ZS0, "%s + face_t" % ZS0, "hn_sof_d")))
+    ez = "%s + face_t + sof_fill_t" % ZS0
+    out.append(("EXHAUST FAN BOX", "zcircle", (hp["ch_x"], hp["box_y"], ez, "%s + fbox_t" % ez, "hn_box_d")))
     # the grille's rivnuts in the sleeve's flange, and the grille's bolt holes over them (J-AIR-03, R-J6's 7.0)
     for _n, x, y in sleeve_rivnuts():
         out.append(("ROOF SLEEVE", "zcircle", (x, y, "pod_h", "pod_h + slv_t", "hole_rvn")))
@@ -703,7 +756,7 @@ def cutouts():
     pockets in the soffit's front face, the door-side stud heads' pockets in the door-side plate,
     and B08's head pockets in the fill under the exhaust cartridge."""
     lay = {name: bx for _k, name, bx in layout()}
-    hub = lay["SENSOR HUB ZONE"]
+    hub = hub_zone()
     eg = lay["EXHAUST GRILLE"]
     hub_cut = (hub[0], hub[1], "%s - face_t - 40 mm" % YFACE, hub[3], hub[4], hub[5])
     eg_cut = (eg[0], eg[1], eg[2], eg[3], ZS0, "%s + face_t" % ZS0)    # the grille's opening through the face
@@ -714,6 +767,15 @@ def cutouts():
                                           "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
     out += [("SOFFIT DOOR PLATE", bx) for _n, bx in door_stud_pockets()]
     out += [("SOFFIT FILL UNDER", bx) for _n, bx in b08_fill_pockets()]
+    # ELECTRICAL's harness (agreed 2026-11-01): a 24 x 24 channel in the column's front fill from the hub up to the
+    # fill's top, beside the FR angle; and one in the soffit's fill from the fixed underside's hole to the fan box's
+    hp, col = harness_points(), lay["COLUMN FILL FRONT"]
+    x0, x1 = "%s - ang_f - hn_ch_w" % XR, "%s - ang_f" % XR
+    out.append(("COLUMN FILL FRONT", (x0, x1, "%s - face_t - hn_ch_w" % YFACE, "%s - face_t" % YFACE,
+                                      "hub_z + hub_w / 2", col[5])))
+    sf = lay["SOFFIT FILL UNDER"]
+    out.append(("SOFFIT FILL UNDER", (x0, x1, "%s - hn_ch_w / 2" % hp["box_y"], "%s + hn_ch_w / 2" % hp["sof_y"],
+                                      sf[4], sf[5])))
     return out
 
 
