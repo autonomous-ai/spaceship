@@ -173,7 +173,7 @@ def test_p04_rollup_lines():
     loose = [r[1] for r in rows if "ships loose" in r[1]]   # AIR's riser and supply fan box; DR's inner face panel (D-130)
     assert len(loose) == 3 and sum(x.startswith("DR inner face panel") for x in loose) == 1, loose
     ap = rollup.applied()
-    assert len(ap) == 9 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's five
+    assert len(ap) == 8 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's four (its floor item went with D-132)
     off = rollup.lines(**rollup.OFF)
     assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 1e-6, "the table adds up exactly"
     assert set(rollup.OFF) == set(rollup.ADOPTED)
@@ -201,9 +201,7 @@ def test_cad_masses_from_main():
     door = next(r for k, r in rows.items() if k.startswith("Door unit 360001"))
     d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_DOOR_LIST) if r["pn"]}
     assert abs(door[3] - d["360001"]) < 1e-9 and rollup.basis(door) == "CAD, main", door
-    b = rollup.BASE_CAD
-    fl = next(r for k, r in rows.items() if k.startswith("Floor panels, 9 mm"))
-    assert abs(fl[3] - b["floor"]) < 1e-9 and rollup.basis(fl) == "CAD, main", fl
+    assert not [k for k in rows if k.startswith(("Floor panels", "Floor mat", "Door threshold"))]   # D-132: no floor
     key = rows["Corner key"]
     assert rollup.basis(key) == "CAD, main", key
     assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
@@ -257,9 +255,38 @@ def test_cad_masses_from_main():
             assert abs(lp[3] - lz) < 1e-9 and rollup.basis(lp) == "CAD, main", lp
     assert rollup.FRONT_DECOR["DR"]["reserved"] == ["350004", "351402", "351403", "351404", "351405"]
     assert 0.5 < rollup.dr_channels_kg() < 0.6                                   # the right and diagonal channels
-    ks = rows["Base seal and cable grommets"]                       # the door edge seals are FRONT's (PR #105)
-    assert abs(ks[3] - p("base_seal_kg") - p("grommet_kg")) < 1e-9, ks
-    assert len(rollup.cad_swaps()) == 26
+    bc = rollup.BASE_CAD          # D-132: BASE's soft lip by its length at the PM's kg/m; the door edge seals are FRONT's
+    lip, gr = rows["Base seal: BASE's soft lip along the band pieces' inner faces"], rows["Cable grommets: the sealed cable holes"]
+    assert abs(lip[2] - sum(bc["lip_m"].values())) < 1e-9 and lip[3] == p("lip_seal_kgm") == bc["lip_kgm"], lip
+    assert gr[2] * gr[3] == p("grommet_kg"), gr
+    assert len(rollup.cad_swaps()) == 27
+
+
+def test_base_batch1_counts_once():
+    """BASE's P02 batch 1 (S54): the list's own total is the sum of its rows, and every one of its parts is in exactly one
+    roll-up line: the band pieces' own lines, the glide, load block and lip lines, the corner key line (the joints' 6 keys)
+    or the fixings kit's line (the joints register's counts); nothing twice, nothing left out."""
+    import rollup
+    bc = rollup.BASE_CAD
+    assert abs(bc["total"] - bc["top"]) < 1e-3, (bc["total"], bc["top"])          # 10.748 kg at e1ba6ef (10.68 at 8ff8f08)
+    rows = {r[1]: r for r in rollup.lines()}
+    band = [r for k, r in rows.items() if k.startswith(("Base band piece 100x40 - back", "Base band piece 100x40 - side",
+                                                       "Base band piece FR1"))]
+    assert len(band) == 4, [r[1] for r in band]
+    glides = rows["Levelling glide (hex from above)"]
+    blocks = next(r for k, r in rows.items() if k.startswith("Glide load blocks"))
+    lip = rows["Base seal: BASE's soft lip along the band pieces' inner faces"]
+    own = sum(r[2] * r[3] for r in band + [glides, blocks, lip])
+    assert abs(own + bc["held_kg"] - bc["total"]) < 1e-9, (own, bc["held_kg"], bc["total"])
+    held = set(rollup.KEY_PNS) | set(rollup.FIXING_PNS) | {"831001", "831002"}
+    assert set(bc["held"]) <= held, bc["held"]
+    rc, (ns, _), (nw, _) = rollup.register_counts(), rollup.JOINTS["831001"], rollup.JOINTS["831002"]
+    count = {**{pn: rc[pn] for pn in rollup.FIXING_PNS}, "831001": ns, "831002": nw,
+             **{pn: rollup.JOINTS[pn][0] for pn in rollup.KEY_PNS}}
+    assert all(q <= count[pn] for pn, q in bc["held"].items()), (bc["held"], count)   # inside the other lines' counts
+    assert glides[2] == sum(bc["glides"].values()) == sum(bc["blocks"].values()) == 9, (glides, bc["blocks"])
+    assert blocks[2] == 1 and abs(blocks[3] - 9 * bc["doubler"]) < 1e-12, blocks   # one line, shared out by glide
+    assert all(not a["own"] or all(pn not in held for pn, *_ in a["own"]) for a in bc["asm"].values())
 
 
 def test_rollup_items_the_packing_plan_reads():
