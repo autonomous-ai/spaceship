@@ -196,10 +196,19 @@ def test_gap_rules_reproduce_f001_f002_on_skeleton_and_pass_when_fixed():
     bodies = c_geometry.bodies_of(ROOT, SKEL)
     keys = {f.key for f in c_geometry.check_gap_rules(ROOT, "skeleton", bodies, rules)}
     assert "C02|gap-SEAM-GAPS|skeleton SEAM-GAPS" in keys
-    assert "C02|gap-KICK-OVER-THRESHOLD|skeleton KICK-OVER-THRESHOLD" in keys
+    assert not any("KICK" in k for k in keys)    # D-151: the skeleton's thresh_h is no longer the kick strip's datum
     assert not any("LINING-FLOATS" in k for k in keys)          # the linings float in P03
-    fixed = [_B("KICK", (-961, -709, 27, 214, -689, 105)), _B("THRESHOLD", (-961, -729, 0, 214, -669, 20))]
-    assert c_geometry.check_gap_rules(ROOT, "skeleton", fixed, rules) == []
+
+
+def test_the_kick_strip_runs_on_the_bands_bottom_line_over_the_room_floor():
+    # D-151 (D-132: no threshold): the kick strip's bottom at glide_h, Z 10, over the room floor, the plane Z 0
+    rules = c_geometry.load_gap_rules(ROOT)
+    old = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))]          # threshold + 7 with no threshold
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", old, rules)
+    assert [(f.rule, f.severity) for f in fs] == [("gap-KICK-OVER-FLOOR", "severe")] and "7.0 mm" in fs[0].message
+    ok = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 10, 214, -689, 105)),
+          _B("AIR - KICK GRILLE", (900, -700, 2, 1100, -690, 100))]                 # not the door's strip
+    assert c_geometry.check_gap_rules(ROOT, "assembly", ok, rules) == []
 
 
 def test_alignment_flags_offset_mating_holes_only():
@@ -1652,3 +1661,52 @@ def test_the_base_keys_are_joints_parts_from_111211_to_111215():
     from common import owner_for, JOINTS_KEYS
     assert all(JOINTS_KEYS.match("11121%d" % i) for i in range(1, 6)) and not JOINTS_KEYS.match("111216")
     assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "111215") == "Joints Engineer"
+
+
+def test_a_pre_check_keeps_the_rule_rows_a_pr_adds(tmp_path):
+    # FRONT's #313 added D-145's edge exception to the checks' own list: a pre-check must read it, while the
+    # current rules still win for everything else
+    import subprocess
+    from common import export_ref
+    repo = tmp_path / "repo"
+    cfg = repo / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    run = lambda *a: subprocess.run(["git", "-C", str(repo)] + list(a), check=True, capture_output=True)
+    run("init", "-q")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n351305,7.0\n")
+    run("add", "-A")
+    run("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "pr")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n368004,3.4\n")   # ours now
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "a"), ref_rows=True)
+    rows = open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read().splitlines()
+    assert rows == ["part_number,hole_dia_mm", "111601,13.0", "368004,3.4", "351305,7.0"]
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "b"))
+    assert "351305,7.0" not in open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read()
+
+
+def test_walls_l1_names_a_wrapped_step_string_and_the_teams_own_finish():
+    # the Lead's ruling on WALL's L1 sample (2026-11-01): fix the checks, don't rename parts
+    from common import head_noun, is_soft
+    # (1) a fill piece is fill, wherever the size sits in the function field
+    n = "WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON"
+    assert head_noun(n) == "FILL" and is_soft(n)
+    assert head_noun("BASE - SEAL HOLDER - LH") == "HOLDER" and not is_soft("BASE - SEAL HOLDER - LH")
+    assert head_noun("WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH") == "BACK"
+    assert head_noun("LINING - FILL - CEILING - BAY A") == "FILL" and head_noun("FRONT - DROP SEAL - ATHMER") == "SEAL"
+    # (2) Fusion wraps a long STEP string across lines; the line break is no part of the name
+    assert sf._decode("'WALL - FILL - SIDE LOWER - COMMO\nN'") == "WALL - FILL - SIDE LOWER - COMMON"
+    assert sf._decode("'A\r\nB'") == "AB"
+    # (3) the team's own row gives the finish; the master BOM's empty row doesn't hide it
+    team = {"part_number": "831007", "name": "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL",
+            "material": "steel plate 2.0, galvanized", "grade": "", "finish": "galvanized Z100", "_raw": {}}
+    skin = {"part_number": "211301", "name": "WALL - SKIN - SIDE LOWER - LH", "material": "ACP aluminium", "grade": "",
+            "finish": "PVDF", "_raw": {}}
+    master = dict(team, material="", finish="", _raw={"row_type": "part"})
+    plists = [("/r/v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", [team, skin]),
+              ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
+    assert c_parts.materials_by_pn("/r", plists)["831007"] == "steel plate 2.0, galvanized galvanized Z100"
+    assert c_parts.check_mixed_metals("/r", plists, [("831007", "211301", "x.step")]) == []
+    bare = [("/r/v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", [dict(team, material="", finish=""), skin]),
+            ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
+    fs = c_parts.check_mixed_metals("/r", bare, [("831007", "211301", "x.step")])
+    assert [f.rule for f in fs] == ["bare-steel-on-aluminium"]         # with no material at all, the name still speaks
