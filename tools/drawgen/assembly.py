@@ -116,7 +116,11 @@ def read_assembly(path, pn):
     st.GetFreeShapes(tops)
     found = []
 
-    def solids_under(lab, loc):
+    counter = [0]
+
+    def solids_under(lab, loc, chain=()):
+        """[(solid, chain)]: each solid under lab with the numbered parts it sits in below lab, as (part number,
+        occurrence id) pairs, so a part the list puts higher up can be lifted out of the part that holds it."""
         if st.IsAssembly_s(lab):
             out = []
             comps = TDF_LabelSequence()
@@ -125,12 +129,15 @@ def read_assembly(path, pn):
                 c = comps.Value(i)
                 ref = TDF_Label()
                 st.GetReferredShape_s(c, ref)
-                out += solids_under(ref, loc.Multiplied(st.GetLocation_s(c)))
+                cpn = _pn(geom._name(ref) or geom._name(c))
+                counter[0] += 1
+                out += solids_under(ref, loc.Multiplied(st.GetLocation_s(c)),
+                                    chain + (((cpn, counter[0]),) if cpn else ()))
             return out
         shape = st.GetShape_s(lab)
         if not loc.IsIdentity():
             shape = shape.Moved(loc)
-        return geom._solids(shape)
+        return [(x, chain) for x in geom._solids(shape)]
 
     def children(lab, loc):
         out = []
@@ -146,7 +153,10 @@ def read_assembly(path, pn):
             if cpn is None and st.IsAssembly_s(ref):
                 out += children(ref, cloc)          # a grouping without a part number: look through it
                 continue
-            out.append(Occ(cpn, name, solids_under(ref, cloc)))
+            entries = solids_under(ref, cloc)
+            occ = Occ(cpn, name, [x for x, _ch in entries])
+            occ.entries = entries
+            out.append(occ)
         return out
 
     def walk(lab, loc, name):
@@ -323,6 +333,27 @@ class Assy:
         by_pn = {}
         for o in occs:
             by_pn.setdefault(o.pn, []).append(o)
+        listed = {(r.get("part_number") or "").strip() for r in kids}
+        for want in sorted(listed - set(by_pn)):
+            # the list puts it here, the STEP inside one of the assembly's parts (AIR's cartridges in the column and
+            # the soffit): it is drawn as its own item, and taken out of the part that holds it
+            for o in list(occs):
+                groups = {}
+                for x, ch in getattr(o, "entries", ()):
+                    hit = next((oid for p_, oid in ch if p_ == want), None)
+                    if hit is not None:
+                        groups.setdefault(hit, []).append(x)
+                for _oid, sols in sorted(groups.items()):
+                    gone = {id(x) for x in sols}
+                    o.solids = [x for x in o.solids if id(x) not in gone]
+                    o.entries = [(x, ch) for x, ch in o.entries if id(x) not in gone]
+                    lifted = Occ(want, want, sols)
+                    lifted.within = o.pn
+                    occs.append(lifted)
+                    by_pn.setdefault(want, []).append(lifted)
+        occs = [o for o in occs if o.solids]
+        by_pn = {k: [o for o in v if o.solids] for k, v in by_pn.items()}
+        by_pn = {k: v for k, v in by_pn.items() if v}
         self.items, seen = [], set()
         for r in kids:
             p = (r.get("part_number") or "").strip()
