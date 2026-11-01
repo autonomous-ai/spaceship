@@ -535,6 +535,28 @@ class FillDxfTest(unittest.TestCase):
         with self.assertRaises(ValueError):                         # a cut right across: two pieces
             mf.outline(100, 50, [(40, 60, 0, 50)])
 
+    def test_labels_follow_the_shape(self):
+        """A form keeps its label (and so its number) while its shape stays, and a new form takes the next free
+        label: in (panel, bay) order, R1's sixth stud put two new forms between L1's and L2's, and every later label
+        found another form's number at the same size."""
+        mf = self.mf()
+
+        def pc(panel, bay, w, pockets=()):
+            return {"panel": panel, "bay": bay, "w": w, "h": 1000.0, "pockets": sorted(pockets)}
+        a, b, c = pc("210101", 1, 240.0, [(0.0, 60.0, 0.0, 60.0)]), pc("210103", 1, 230.9), pc("210102", 6, 100.0)
+        groups = {mf.form_key(x): [x] for x in (a, b, c)}
+        prev = {"F01": (mf.form_key(a), "211515", tuple(a["pockets"])), "F02": (mf.form_key(b), "211516", ())}
+        got = [(f, m[0]["w"]) for f, _k, m in mf.label_forms(groups, prev, {"F02": [], "F03": []})]
+        # c sorts between a and b by panel, but takes F04: after the last list's labels and the live F03
+        self.assertEqual(got, [("F01", 240.0), ("F02", 230.9), ("F04", 100.0)])
+
+    def test_the_list_is_current(self):
+        """FILL-PIECES.csv reads back as exactly the forms the build scripts give now (rerun make_fill_pieces.py
+        after a layout change), so each form keeps its label on the next run."""
+        mf = self.mf()
+        prev = mf.previous_forms(os.path.join(REPO, "v2/03-Manufacturing/wall/FILL-PIECES.csv"))
+        self.assertEqual({v[0] for v in prev.values()}, {mf.form_key(p) for p in mf.side_pieces() + mf.back_pieces()})
+
     def test_fill_dxfs_match_the_cad(self):
         sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
         import contextlib
