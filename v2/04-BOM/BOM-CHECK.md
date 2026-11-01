@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 291 part lines (114 made, 177 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -111,7 +111,6 @@ Read from: this working tree.
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
-- 811205 INTERIOR - LIGHT SHELF - DIFFUSER RH: HOLD (HOLD)
 - 818102 INTERIOR - SCREEN RAIL - HOLD: HOLD (HOLD)
 
 **ELECTRICAL**
@@ -207,7 +206,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 146 numbers, 120 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 147 numbers, 121 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -357,6 +356,7 @@ From `v2/04-BOM/number-allocation.csv`: 146 numbers, 120 not in a team's list ye
 | 211634 | WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | ALLOCATED |
 | 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | ALLOCATED |
 | 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
+| 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
 
 ## Rules
 

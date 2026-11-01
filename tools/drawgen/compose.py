@@ -218,6 +218,21 @@ class Part:
         self.name = self.row.get("name", "").strip()
         self.name_vi = (self.row.get("name_vi") or "").strip()
         self.bodies, self.unit = geom.load_part(self.step, pn)
+        self.occurrences = self.unit.get("occurrences", 1)
+        self.qty_words = None
+        if self.occurrences > 1:
+            q = (self.row.get("qty") or self.row.get("qty_per_parent") or "").strip()
+            try:
+                qn = int(float(q))
+            except ValueError:
+                qn = None
+            if qn is not None and qn != self.occurrences:
+                raise NotDrawable("%s: %s holds it %d times, its parts list says %s" % (
+                    pn, os.path.basename(self.step), self.occurrences, q))
+            par = inputs.parse_name(self.list_file) if self.list_file else None
+            self.qty_words = "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+                q or self.occurrences, ("%s %s" % (par["pn"], par["name"])) if par else "assembly",
+                os.path.basename(self.step), self.occurrences)
         self.placement = None
         if pod_system:
             self._to_pod()
@@ -498,6 +513,28 @@ class Plan:
     pass
 
 
+def face_origin(part, pl, nm, v):
+    """An angled-face view's own origin (the PM's ruling on #296, Reviewer 5): on the face that holds its holes,
+    the face's centre line across the view at its bottom edge, so X reads from the face's middle and Y from its
+    bottom (as Joints' key sheet: 'on its centre line, 26 and 60 above the bottom')."""
+    feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
+    best = None
+    for b in {id(ft.body): ft.body for ft in feats}.values():
+        for n, off, area, face in geom.planes(b):
+            if vdot(n, v.n) < 0.9999:
+                continue
+            if all(abs(vdot(ft.f.entry, n) - off) < 0.05 for ft in feats if ft.body is b):
+                if best is None or area > best[0]:
+                    best = (area, face, off)
+    if best is None:
+        return None, ""
+    pts = [v.to2d(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(q)))) for q in _vertices(best[1])]
+    xm = (min(p_[0] for p_ in pts) + max(p_[0] for p_ in pts)) / 2
+    yb = min(p_[1] for p_ in pts)
+    o3 = vadd(vadd(vmul(v.x, xm), vmul(v.y, yb)), vmul(v.n, best[2]))
+    return o3, "on the face's centre line, at its bottom edge"
+
+
 def aux_view(pl, rel, normal):
     """The view square to an angled face (ISO 128-30: a view in the direction of an arrow, lettered), shared by the
     faces of one normal. It keeps the principal view's up (its Y laid into the face) where it can, else its X, so
@@ -537,6 +574,18 @@ def plan_views(part, spec):
         pl.principal.pod_name = spec["principal"]
     else:
         pl.principal = principal_view(part)
+    # a straight member lying off the pod's axes (FRONT's 352211, a cross tube on the diagonal): drawn along its own
+    # axis, looking square to a side, so its length runs across the sheet and its end cuts read from its axis
+    ma = geom.member_axis(part.bodies[0]) if len(part.bodies) == 1 and not spec.get("principal") else None
+    if ma is not None and axis_name(ma) is None:
+        P0 = pl.principal
+        n = P0.n
+        if abs(vdot(n, ma)) > 1e-6:
+            sides = [t[0] for t in geom.planes(part.bodies[0]) if abs(vdot(t[0], ma)) < 1e-6]
+            n = max(sides, key=lambda v: vdot(v, P0.n)) if sides else n
+        sgn = vdot(ma, P0.x) if abs(vdot(ma, P0.x)) > 1e-6 else vdot(ma, P0.y)
+        pl.principal = View("principal", n, ma if sgn >= 0 else vmul(ma, -1.0))
+        pl.principal.pod_name = "along the member"
     # a long part seen end up: turn the view so its length runs across the sheet (every view states its mapping)
     P0 = pl.principal
     ext_x = sum(abs(P0.x[i]) * part.size[i] for i in range(3))
@@ -839,6 +888,7 @@ def draw(part, spec, out_path, today=None):
         vd = VD(v, view_prims(part.shape, v, scale, bodies=shapes, hidden_from=hid), scale, "aux")
         vd.name = nm
         vd.letter = next(letters)
+        vd.origin3d, vd.origin_words = face_origin(part, pl, nm, v)
         auxs.append(vd)
 
     # ---- placement: principal, then the first-angle neighbours and the sections stacked beyond them
@@ -1107,7 +1157,7 @@ def draw(part, spec, out_path, today=None):
         sh.flush()
         # 2. the origins: arrows, then their names where they are clear
         for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
-            o2 = vd.S(vd.view.to2d(O))
+            o2 = vd.S(vd.view.to2d(getattr(vd, "origin3d", None) or O))
             if part.features:
                 bx = vd.box()
                 away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
@@ -1375,9 +1425,11 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     sh.dim_linear((a[0], a[1]), (a[0], b[1]), "left", 15.0, fmt(e[3] - e[1]), 3.0)
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
+    angle_texts = []
     for b in part.bodies:
         lk = max(range(3), key=lambda i: b.size[i])
-        lax = tuple(1.0 if i == lk else 0.0 for i in range(3))
+        lax = geom.member_axis(b) or tuple(1.0 if i == lk else 0.0 for i in range(3))
+        top_corners = {}        # view -> (view, extent, the mitre corners on its top edge)
         for n, off, area, face in geom.planes(b):
             c = abs(vdot(n, lax))
             if not (0.02 < c < 0.9998):
@@ -1431,9 +1483,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 for d_ in (1.5, 3.0, 5.0, 8.0, 12.0):
                     px, py = S(far)[0] + (R + d_) * math.cos(am), S(far)[1] + (R + d_) * math.sin(am)
                     cands += [(px, py, "left" if math.cos(am) >= 0 else "right"), (px, py, "center")]
-                pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
-                            cands[0])
-                sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
+                # placed after every length dimension of the mitre (below), so their extension lines are known
+                # (BASE's D-129 111101: the value sat on the 1502.07 dimension's extension line)
+                angle_texts.append((ang_t, cands))
                 # true lengths along the two long faces, from the other (square) end
                 ve = vd.extent
                 other = ve[0] if abs(far[ax_k] - ve[0]) > abs(far[ax_k] - ve[2]) else ve[2]
@@ -1456,13 +1508,25 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                             e2 = vd2.extent
                             if abs(q2[1] - e2[3]) > 1e-3:
                                 continue
-                            oth = e2[0] if abs(q2[0] - e2[0]) > abs(q2[0] - e2[2]) else e2[2]
-                            sh.dim_linear(vd2.S((oth, e2[3])), vd2.S((q2[0], e2[3])), "up", 11.0,
-                                          fmt(abs(q2[0] - oth)), 2.5)
-                            vd2.top_used = 16.0
+                            top_corners.setdefault(id(vd2), (vd2, e2, []))[2].append(q2[0])
                             break
                 vd.has_mitre = True
                 break
+        # the top face's true length: from the square end to its mitre corner, or, mitred at both ends, between
+        # its two corners, once (FRONT's 352201: two lengths from each end printed over each other)
+        for vd2, e2, xs in top_corners.values():
+            xs = sorted(set(round(x_, 4) for x_ in xs))
+            if len(xs) == 1:
+                oth = e2[0] if abs(xs[0] - e2[0]) > abs(xs[0] - e2[2]) else e2[2]
+                a_, b_ = oth, xs[0]
+            else:
+                a_, b_ = xs[0], xs[-1]
+            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5)
+            vd2.top_used = 16.0
+    for ang_t, cands in angle_texts:
+        pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
+                    cands[0])
+        sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
     # frame members: the stiles' centre lines from the frame's front end (ordinate, ISO 129-1), over the view
     stiles = [b for b in part.bodies if "STILE" in (b.name or "").upper()]
     if stiles:
@@ -1583,7 +1647,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         for xa, yy, t, sz, an, b in pick:
             sh.text(xa, yy, t, sz, an, bold=b)
     sname = scale_text(scale)
-    osfx = (lambda vd: "; origin %s" % vd.origin_name) if part.features else (lambda vd: "")
+    osfx = (lambda vd: "; origin %s%s" % (vd.origin_name, (" " + vd.origin_words) if getattr(vd, "origin_words", "")
+                                           else "")) if part.features else (lambda vd: "")
     for nm, vd in vds.items():
         head = "%s  %s" % (VIEW_WORDS.get(nm, "VIEW"), sname)
         if getattr(vd, "letter", None):
@@ -1866,7 +1931,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
         vd = vds.get(g.view) if g.view else g.vd
         oname = vd.origin_name
         v = vd.view
-        o2 = v.to2d(O)
+        o2 = v.to2d(getattr(vd, "origin3d", None) or O)
         rows = []
         for ft in g.feats:
             c = v.to2d(ft.f.entry)
@@ -1916,6 +1981,8 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     notes.append("UNITS: mm. Do not scale the drawing. ISO first-angle projection (ISO 5456-2), symbol in the "
                  "title block. Dimensions to ISO 129-1. Sheet 1: views, sections and hole tables; sheet 2: these "
                  "general notes%s." % (", the cut list" if cut_list(part) else "") + "")
+    if getattr(part, "qty_words", None):
+        notes.append("QUANTITY: %s." % part.qty_words)
     vw = "the room side" if part.pod_system and pl.principal.pod_name in ("right", "front", "top") else "its side"
     notes.append("Views: the principal view looks %s (%s); every view's title gives its own X and Y and how they "
                  "map to the %s axes (conventions section 4). On every view X runs right and Y up." % (
@@ -1947,7 +2014,9 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
         notes.append(t)
     two = [vd.letter for vd in removed if vd.r.feats]
     if part.features:
-        notes.append("Holes go THRU 1 WALL of the member unless the table says otherwise; deburr both sides. %s" % (
+        hollow = any("1 WALL" in wall_word(ft.f, ft.body) for ft in part.features if ft.kind == "hole")
+        notes.append("Holes go %s unless the table says otherwise; deburr both sides. %s" % (
+            "THRU 1 WALL of the member" if hollow else "THRU the part",
             "Coaxial holes in two walls of one member are shown in section%s %s." % (
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     if spec.get("tolerance"):
@@ -1961,7 +2030,8 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
         src += "; feature rationale %s" % ", ".join(regs)
     if spec.get("key_notes") and inputs.key_rows(part.pn):
         src += "; key positions %s" % inputs.rel(inputs.KEYS_CSV)
-    src += ". Made by tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF."
+    # the Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as the maker
+    src += ". From that STEP: regenerate it, never edit the PDF."
     notes.append(src)
     return notes
 
@@ -2040,6 +2110,19 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row)
+    # tapped holes need thread callouts (item 5): until then such a part isn't drawn (the PM's ruling on #296). A hole
+    # is taken as tapped when the part's row says so, or when its size is a metric tap drill's (M3 to M8), which no
+    # clearance hole in the project uses
+    if not spec.get("_test_allow_tapped"):
+        words = " ".join((part.row.get(k) or "") for k in ("process", "note", "name", "tolerance")).lower()
+        said = re.search(r"\btap(ped|ping)?\b|\bthread|\bm\d+\s*x\s*[\d.]+", words)
+        drills = (2.5, 3.3, 4.2, 6.8)
+        sized = [ft for ft in part.features if ft.kind == "hole" and (
+            4.9 <= ft.f.dia <= 5.16 or any(abs(ft.f.dia - d) < 0.06 for d in drills))]
+        if said or sized:
+            raise NotDrawable("%s has tapped holes (%s): their thread callouts come with item 5; until then the part "
+                              "isn't drawn here" % (pn, "its parts list says so" if said else "Ø%s, a tap drill's size" % (
+                                  fmt(sized[0].f.dia))))
     # an entry written for a material (D-131's welded steel frames) never draws over a list that still says another
     need = spec.get("material_has")
     if need and need.lower() not in (part.row.get("material") or "").lower():
@@ -2143,7 +2226,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
     for vd in [vds[n_] for n_ in ("principal", "below", "above", "from_left", "from_right", "rear") if n_ in vds] + \
             [vds[n_] for n_ in sorted(pl.aux) if n_ in vds] + secs:
         views.append({"origin": vd.origin_name, "name": vd.name, "n": vd.view.n, "x": vd.view.x, "y": vd.view.y,
-                      "scale": vd.scale, "off": vd.off})
+                      "scale": vd.scale, "off": vd.off, "origin3d": getattr(vd, "origin3d", None)})
     for vd in removed:
         views.append({"origin": None, "name": "section %s-%s" % (vd.letter, vd.letter), "n": vd.view.n,
                       "x": vd.view.x, "y": vd.view.y, "scale": vd.scale, "off": vd.off})
@@ -2158,7 +2241,7 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
     return {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
             "placement": ({"assembly": part.placement["assembly"], "m": part.placement["m"],
                            "t": part.placement["shift"]} if part.placement else None),
-            "sheet_h": sh.H, "sources": srcs, "origin": dat["O"],
+            "sheet_h": sh.H, "sources": srcs, "origin": dat["O"], "occurrences": part.occurrences,
             "datums": {"B": dat["B"].tag if dat.get("B") else None,
                        "C": ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
                        if dat.get("C_plane") else None},
