@@ -855,6 +855,8 @@ MEMBER_NOTES = {    # {n}: the inner face panel's rivnuts in that tube (D-130), 
     "B07": "20 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws, on its middle",
     "B08": "60 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws (Z 2140)",
     "F08": "20 x 20 x 1.5: carries the fan box's shelf",
+    "F09": "20 x 20 x 1.0: holds the front skin across the top bay over the fan box, 1.72 mm under 100 N (5.01 without "
+           "it; D-131 skin spans, PM ruling 2026-11-01); the fan box stands 5 behind it",
     "C03": "20 x 20 x 1.5: carries the fan box's shelf",
 }
 
