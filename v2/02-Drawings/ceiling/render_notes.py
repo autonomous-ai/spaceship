@@ -114,8 +114,30 @@ def render_label(text, path):
     return img.size
 
 
+def render_symbol(path):
+    """The ISO first-angle symbol (truncated cone: side view narrow end left, end view right), 24 x 10 mm with
+    S.SYMBOL_PX_MARGIN all round, 0.35 mm lines."""
+    m, lw = S.SYMBOL_PX_MARGIN, 0.35
+    W, H = int(round((24.0 + 2 * m) * PX_MM)), int(round((10.0 + 2 * m) * PX_MM))
+    img = Image.new("L", (W, H), 255)
+    d = ImageDraw.Draw(img)
+
+    def p(x, y):           # symbol mm (origin: the outline's narrow end's middle at x 0, y 0) -> pixels, y down
+        return ((x + m) * PX_MM, (H / PX_MM - (y + 5.0 + m)) * PX_MM)
+    w = max(1, int(round(lw * PX_MM)))
+    outline = [p(0, -2.5), p(10, -5), p(10, 5), p(0, 2.5), p(0, -2.5)]
+    d.line(outline, fill=0, width=w, joint="curve")
+    for r in (5.0, 2.5):
+        cx, cy = p(19.0, 0.0)
+        d.ellipse([cx - r * PX_MM, cy - r * PX_MM, cx + r * PX_MM, cy + r * PX_MM], outline=0, width=w)
+    img.save(path, dpi=(PX_MM * 25.4, PX_MM * 25.4))
+    return img.size
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    sy = render_symbol(os.path.join(OUT, "FIRST_ANGLE_SYMBOL.png"))
+    print("first-angle symbol picture %s px (%.0f x %.0f mm)" % (sy, sy[0] / PX_MM, sy[1] / PX_MM))
     for key in S.ORDER:
         sp = S.SPECS[key]
         n = render_notes(sp, os.path.join(OUT, sp["drawing"] + "_NOTES.png"))

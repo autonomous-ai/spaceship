@@ -106,6 +106,21 @@ def extent(view):
     return min(xs), min(ys), max(xs), max(ys)
 
 
+def extreme_point(view, axis, which, prefer):
+    """A view vertex lying on the view's outermost line along axis 0 (X) or 1 (Y), at its 'min' or 'max'; of those,
+    the one nearest `prefer` on the other axis. A bent part's rounded corner has no vertex at the extent's corner, and
+    the vertex nearest that corner can be a bend's tangent point a millimetre in (the tray's first drawing measured
+    1159.15 for 1160 and 1045 for 1048): a point on the outer face itself never is."""
+    lines, _ = view_curves(view)
+    pts = [p for ln in lines for p in (ln.startPoint, ln.endPoint)]
+    if not pts:
+        raise RuntimeError("the view has no line vertices")
+    vals = [xy(p)[axis] for p in pts]
+    target = min(vals) if which == "min" else max(vals)
+    on = [p for p in pts if abs(xy(p)[axis] - target) < 1e-4]
+    return min(on, key=lambda p: abs(xy(p)[1 - axis] - prefer))
+
+
 def nearest_end(view, target, tol=None):
     best, dist = None, None
     lines, _ = view_curves(view)
@@ -154,12 +169,13 @@ def overall_dims(sheet, view, key, done, below=True, left=True, gap=10.0):
     another view is left off (ISO 129-1: each size once; done collects them, S.new_size)."""
     e = extent(view)
     x0, y0, x1, y1 = e
-    a = nearest_end(view, (x0, y0))
-    b = nearest_end(view, (x1, y0))
-    c = nearest_end(view, (x0, y1))
+    a = extreme_point(view, 0, "min", y0)          # on the left face, as low as it goes
+    b = extreme_point(view, 0, "max", y0)          # on the right face
+    lo = extreme_point(view, 1, "min", x0)         # on the bottom face, as far left as it goes
+    c = extreme_point(view, 1, "max", x0)          # on the top face
     hx, vy = S.AXES[key]
     w = round(abs(xy(b)[0] - xy(a)[0]) / view.scaleValue, 2)
-    h = round(abs(xy(c)[1] - xy(a)[1]) / view.scaleValue, 2)
+    h = round(abs(xy(c)[1] - xy(lo)[1]) / view.scaleValue, 2)
     out = []
     if x1 - x0 > 1.0:
         if S.new_size(done, hx, w):
@@ -170,7 +186,7 @@ def overall_dims(sheet, view, key, done, below=True, left=True, gap=10.0):
     if y1 - y0 > 1.0:
         if S.new_size(done, vy, h):
             x = x0 - gap if left else x1 + gap
-            out.append(dim(sheet, a, c, (x, (y0 + y1) / 2)))
+            out.append(dim(sheet, lo, c, (x, (y0 + y1) / 2)))
         else:
             print("  %s view: %s %.2f is on another view already, left off" % (key, vy, h))
     return out
@@ -187,9 +203,10 @@ def hole_dims(sheet, view, gap=8.0):
     done = []
     for (cx, cy), c in sorted(unique.items()):
         sheet.drawingDimensions.addDiameterDimension(c, dpt(cx + 12, cy + 12))
-        left = nearest_end(view, (e[0], e[3]))
+        left = extreme_point(view, 0, "min", cy)    # the left face itself, at about the hole's height
+        top = extreme_point(view, 1, "max", cx)     # the top face itself, above the hole
         dim(sheet, left, c.centerPoint, ((e[0] + cx) / 2, e[3] + gap + 6))
-        dim(sheet, left, c.centerPoint, (e[0] - gap - 6, (e[3] + cy) / 2))
+        dim(sheet, top, c.centerPoint, (e[0] - gap - 6, (e[3] + cy) / 2))
         done.append((cx, cy))
     return done
 
@@ -303,9 +320,11 @@ def annotate(part):
     notes_dir = os.path.join(HERE, ".notes")
     # extras: a failure here must not lose the views and dimensions above (the drawing is
     # saved only when the run ends without an error), so each is tried on its own
-    # the symbol just left of the title block, clear of the frame (at 20, 20 its narrow end sat on the border)
+    # the symbol just left of the title block, 6 clear of it and of the frame, as a picture (S.symbol_place)
     sym = S.symbol_place(sp["sheet"])
-    extras = [("projection symbol", lambda: projection_symbol(sheet, sym[0], sym[1])),
+    sym_png = os.path.join(HERE, ".notes", "FIRST_ANGLE_SYMBOL.png")
+    m = S.SYMBOL_PX_MARGIN
+    extras = [("projection symbol", lambda: insert_image(sheet, sym_png, (sym[0] - m, sym[1] + 5.0 + m))),
               ("notes image", lambda: insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"),
                                                    sp["images"]["notes"])),
               ("title image", lambda: insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"),

@@ -5,10 +5,11 @@
 
 Checks, each against drawing_specs.py:
 - the sheet size;
-- the first-angle symbol, read from the layer Fusion names after its sketch: exactly the four
-  sides of the outline (the narrow end 5 high, away from the circles; the wide end 10 high; 10
-  long) where symbol_place puts it, and two circles (radius 5 and 2.5) centred to its right.
-  The first rib sample's outline came out a triangle when it shared a sketch with the circles;
+- the first-angle symbol: a picture of it (render_notes.render_symbol) at its size where symbol_place puts it;
+  or, on a drawing with the symbol drawn as a sketch, read from the layer Fusion names after the sketch: exactly the
+  four sides of the outline (the narrow end 5 high, away from the circles; the wide end 10 high; 10 long) and two
+  circles (radius 5 and 2.5) centred to its right. Sketch outlines came out triangles twice (sharing a sketch with
+  the circles, and on A1 in a sketch of its own), so the drawings now use the picture;
 - each image (notes, title data, the scale labels) at the size it was drawn at (10 px per mm,
   so its lettering is 2.5 mm), with its top left corner where the spec puts it (the labels'
   places need the annotate log's view extents);
@@ -186,9 +187,15 @@ def check(key, pdf=None, log_text=None, notes_dir=None):
     sw, sh = S.SHEETS[sp["sheet"]]
     if abs(w - sw) > 1 or abs(h - sh) > 1:
         bad.append("sheet %.1f x %.1f, the spec wants %s" % (w, h, sp["sheet"]))
-    bad += symbol_problems(page, h, S.symbol_place(sp["sheet"]))
     ext = extents_from_log(log_text) if log_text else {}
     wanted = []
+    x0, cy = S.symbol_place(sp["sheet"])
+    if any(d.get("layer") == SYMBOL for d in page.get_drawings()):
+        bad += symbol_problems(page, h, (x0, cy))         # a drawing with the symbol drawn as a sketch
+    else:                                                 # the symbol as a picture (render_notes.render_symbol)
+        m = S.SYMBOL_PX_MARGIN
+        wanted.append(("first-angle symbol", (x0 - m, cy + 5.0 + m),
+                       png_size_mm(os.path.join(notes_dir, "FIRST_ANGLE_SYMBOL.png"))))
     for what in ("notes", "title"):
         png = os.path.join(notes_dir, "%s_%s.png" % (sp["drawing"], what.upper()))
         wanted.append((what, sp["images"][what], png_size_mm(png)))

@@ -36,16 +36,25 @@ STYLES = {"tray": {"front": "hidden", "top": "hidden", "left": "hidden"}, "casse
 AXES = {"front": ("X", "Z"), "top": ("X", "Y"), "left": ("Y", "Z")}
 
 
-def image_places(sheet):
+HOLE_TABLE_ROOM = 55.0          # mm at the sheet's top right: Fusion puts a hole table there and the API can't move
+                                # it (the tray's first drawing, 2026-11-01: 30 mm tall with one row), so the notes start lower
+
+
+def image_places(sheet, holes=False):
     w, h = SHEETS[sheet]
-    return {"notes": (w - 20.0 - IMG_W, h - 15.0), "title": (w - 20.0 - IMG_W, 150.0)}
+    return {"notes": (w - 20.0 - IMG_W, h - 15.0 - (HOLE_TABLE_ROOM if holes else 0.0)), "title": (w - 20.0 - IMG_W, 150.0)}
+
+
+SYMBOL_PX_MARGIN = 1.0          # mm of white round the symbol in its picture
 
 
 def symbol_place(sheet):
-    """Where the first-angle symbol's outline starts (its narrow end's middle, sheet mm): left of
-    the title block (its left edge is about 190 in from the sheet's right edge), clear of the border."""
+    """Where the first-angle symbol's outline starts (its narrow end's middle, sheet mm): the shared helper's place
+    (tools/fusion/fusion_drawing.py default_symbol_place), just left of the 180 x 47 title block and 6 clear of it
+    and of the frame. The symbol goes on the sheet as a picture: Fusion's PDF export of a sketch chain lost a corner
+    on A1 even in a sketch of its own and clear of every border (the tray and cassette, 2026-11-01)."""
     w, _h = SHEETS[sheet]
-    return (w - 250.0, 25.0)
+    return (w - 10.0 - 180.0 - 6.0 - 24.0, 10.0 + 6.0 + 5.0)
 
 
 def scale_text(scale):
@@ -99,7 +108,7 @@ def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", 
         "key": key, "design": doc_name(key, "CAD"), "drawing": doc_name(key, "DWG"),
         "scale": scale, "scales": scales or {}, "views": v, "holes": holes, "sheet": sheet,
         "styles": STYLES.get(key, {}),
-        "images": image_places(sheet),
+        "images": image_places(sheet, bool(holes)),
         "title": [("PART NO.", pn), ("NAME", name), ("TÊN", vn), ("REV / STATUS", "%s / DRAFT" % M.REV),
                   ("MATERIAL", mname), ("FINISH", M.FINISH.get(key, "-")),
                   ("SCALE", scale_text(scale) + "".join(", %s view %s" % (k, scale_text(x))
