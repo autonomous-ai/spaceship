@@ -105,6 +105,27 @@ def _plate_with_hole(width=100.0, height=50.0, t=2.0, hole_x=10.0, hole_y=25.0, 
     return s
 
 
+def _half_cyl(x, r=3.25, t=1.5, side=1.0):
+    """A concave half-cylinder face (a slot's round end) on the X axis at x, t long, 180 degrees of arc."""
+    fr = sf.Frame((x, 830.0, 73.5), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (side, 0.0, 0.0))
+    a = (fr, r, (x, 830.0 + r, 73.5), (x, 830.0 - r, 73.5), True)
+    b = (sf.Frame((x + t, 830.0, 73.5), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (side, 0.0, 0.0)), r,
+         (x + t, 830.0 + r, 73.5), (x + t, 830.0 - r, 73.5), True)
+    pts = [a[2], a[3], b[2], b[3]]
+    return sf.Face(1, "cylinder", (x, 830.0, 73.5), (side, 0.0, 0.0), r, False, pts, [a, b], [])
+
+
+def test_a_hole_goes_all_the_way_round_in_its_own_place_on_the_axis():
+    # BASE's D-129 back band: a half-round slot end in each end plate, 2.4 m apart on one axis, isn't a hole
+    import types
+    solid = types.SimpleNamespace(id=7, faces=[_half_cyl(-1210.0), _half_cyl(1208.5)])
+    assert sf._holes(solid) == []
+    # two half faces in one place make one hole
+    solid = types.SimpleNamespace(id=7, faces=[_half_cyl(-1210.0), _half_cyl(-1210.0, side=-1.0)])
+    hs = sf._holes(solid)
+    assert len(hs) == 1 and abs(hs[0].diameter - 6.5) < 1e-9 and abs(hs[0].length - 1.5) < 1e-9
+
+
 def test_edge_distance_rule_fires_under_two_diameters_and_not_above():
     bad = _plate_with_hole(hole_x=10.0, d=6.0)       # 10 < 12
     assert bad.thickness == 2.0 and len(bad.holes) == 1
@@ -175,10 +196,19 @@ def test_gap_rules_reproduce_f001_f002_on_skeleton_and_pass_when_fixed():
     bodies = c_geometry.bodies_of(ROOT, SKEL)
     keys = {f.key for f in c_geometry.check_gap_rules(ROOT, "skeleton", bodies, rules)}
     assert "C02|gap-SEAM-GAPS|skeleton SEAM-GAPS" in keys
-    assert "C02|gap-KICK-OVER-THRESHOLD|skeleton KICK-OVER-THRESHOLD" in keys
+    assert not any("KICK" in k for k in keys)    # D-151: the skeleton's thresh_h is no longer the kick strip's datum
     assert not any("LINING-FLOATS" in k for k in keys)          # the linings float in P03
-    fixed = [_B("KICK", (-961, -709, 27, 214, -689, 105)), _B("THRESHOLD", (-961, -729, 0, 214, -669, 20))]
-    assert c_geometry.check_gap_rules(ROOT, "skeleton", fixed, rules) == []
+
+
+def test_the_kick_strip_runs_on_the_bands_bottom_line_over_the_room_floor():
+    # D-151 (D-132: no threshold): the kick strip's bottom at glide_h, Z 10, over the room floor, the plane Z 0
+    rules = c_geometry.load_gap_rules(ROOT)
+    old = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))]          # threshold + 7 with no threshold
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", old, rules)
+    assert [(f.rule, f.severity) for f in fs] == [("gap-KICK-OVER-FLOOR", "severe")] and "7.0 mm" in fs[0].message
+    ok = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 10, 214, -689, 105)),
+          _B("AIR - KICK GRILLE", (900, -700, 2, 1100, -690, 100))]                 # not the door's strip
+    assert c_geometry.check_gap_rules(ROOT, "assembly", ok, rules) == []
 
 
 def test_alignment_flags_offset_mating_holes_only():
@@ -1605,3 +1635,50 @@ def test_the_acp_skins_bays_are_275_clear_or_less():
     assert c_geometry.check_acp_bays(ROOT, "assembly", frame(295.0)) == []            # 275 clear: passes
     other = [_B("410000_P01_CEILING_CAD:1 / 411101 CEILING - PANEL FRAME - C1:1 / X", (0, 0, 0, 1200, 40, 1100))]
     assert c_geometry.acp_bays(other) == {}                          # the rule is for the wall panels' ACP
+
+
+def test_a_bought_profile_we_mitre_and_drill_is_a_made_part_with_a_drawing(tmp_path):
+    # D-143 (3): FRONT's 368004, Bohle's U-profile cut into 4 mitred pieces with holes, needs one table drawing
+    row = {"part_number": "368004", "name": "FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+           "_raw": {"kind": "bought by length, 4 pieces mitred", "note": "outer lengths 745 / 1446 mm"}}
+    seal = {"part_number": "368002", "name": "FRONT - GLAZING U-SEAL", "_raw": {"kind": "bought by length, 4 pieces"}}
+    bolt = {"part_number": "838001", "name": "HARDWARE - BOLT", "_raw": {"kind": "bought, drilled through"}}
+    holes = {"368004": ["a hole"], "368002": [], "838001": ["a hole"]}
+    why = c_drawings.processed_bought([("x.csv", [row, seal, bolt])], holes)
+    assert list(why) == ["368004"] and "D-143" in why["368004"]
+    assert c_drawings.processed_bought([("x.csv", [row])], {"368004": []}) == {}       # no holes: a cut length only
+    as_front = dict(row, _raw={"type": "bought by length, 4 pieces mitred"})            # FRONT's column name
+    assert list(c_drawings.processed_bought([("x.csv", [as_front])], holes)) == ["368004"]
+    m = tmp_path / "v2/03-Manufacturing/front"
+    m.mkdir(parents=True)
+    fs = c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}, made_why=why)
+    assert [(f.rule, f.severity) for f in fs] == [("no-drawing", "major")] and "D-143" in fs[0].message
+    assert c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}) == []
+
+
+def test_the_base_keys_are_joints_parts_from_111211_to_111215():
+    # D-144: FR1's key became 111215, a Joints part like 111211 to 111214
+    from common import owner_for, JOINTS_KEYS
+    assert all(JOINTS_KEYS.match("11121%d" % i) for i in range(1, 6)) and not JOINTS_KEYS.match("111216")
+    assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "111215") == "Joints Engineer"
+
+
+def test_a_pre_check_keeps_the_rule_rows_a_pr_adds(tmp_path):
+    # FRONT's #313 added D-145's edge exception to the checks' own list: a pre-check must read it, while the
+    # current rules still win for everything else
+    import subprocess
+    from common import export_ref
+    repo = tmp_path / "repo"
+    cfg = repo / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    run = lambda *a: subprocess.run(["git", "-C", str(repo)] + list(a), check=True, capture_output=True)
+    run("init", "-q")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n351305,7.0\n")
+    run("add", "-A")
+    run("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "pr")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n368004,3.4\n")   # ours now
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "a"), ref_rows=True)
+    rows = open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read().splitlines()
+    assert rows == ["part_number,hole_dia_mm", "111601,13.0", "368004,3.4", "351305,7.0"]
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "b"))
+    assert "351305,7.0" not in open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read()

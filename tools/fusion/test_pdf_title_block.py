@@ -154,6 +154,36 @@ class TitleBlock(unittest.TestCase):
         self.assertIn("1/11/26", text)
         self.assertEqual(self.cell_text("DWG No."), "211101")
 
+    def test_the_creator_sits_on_the_date_line_in_its_cell(self):
+        sheet(self.src)
+        ptb.fill(self.src, self.dst, ptb.values_for(self.src, self.dst, bom=self.bom))
+        page = fitz.open(self.dst)[0]
+        lab = page.search_for("Created by")[0]
+        auto = page.search_for("Autonomous")
+        self.assertEqual(len(auto), 1)
+        a, date = auto[0], page.search_for("1/11/26")[0]
+        self.assertAlmostEqual(a.x0, lab.x0, delta=1.0)                # left in the cell
+        self.assertAlmostEqual(a.y1, date.y1, delta=1.0)               # on the date's line
+        self.assertLess(a.x1, date.x0)                                  # and left of it
+        self.assertGreaterEqual(a.y1 - a.y0, 10.0 * 0.718)             # never under 2.5 mm capitals
+        self.assertNotIn("Testa", page.get_text())
+        self.assertEqual(fitz.open(self.dst).metadata["author"], "Autonomous")
+
+    def test_filling_twice_writes_every_value_once(self):
+        sheet(self.src)
+        values = ptb.values_for(self.src, self.dst, bom=self.bom)
+        ptb.fill(self.src, self.dst, values)
+        again = self.dst.replace(".pdf", "-again.pdf")
+        ptb.fill(self.dst, again, values)
+        text = fitz.open(again)[0].get_text()
+        for v in ("211101", "P01", "DRAFT", "Autonomous"):
+            self.assertEqual(text.count(v), 1, v)
+        self.assertEqual(self.cell_text_of(again, "DWG No."), "211101")
+
+    def cell_text_of(self, path, field):
+        page = fitz.open(path)[0]
+        return " ".join(page.get_text("text", clip=ptb.cells(page)[field]).split())
+
     def test_the_finish_step_can_leave_the_block(self):
         sheet(self.src)
         rc, out = quiet(pcf.main, [self.src, self.dst, "--no-title-block"])

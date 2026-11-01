@@ -5,7 +5,8 @@
     <venv>/bin/python tools/drawgen/tests/test_drawgen.py          # prints "N of N passed"
     <venv>/bin/python -m pytest -q tools/drawgen/tests              # the same with pytest, if installed
 
-1. The sample drawings (#202) regenerate from their STEPs on this tree and read back: every STEP hole (the repo's own
+1. The sample drawings (the band tubes; WALL's frames with their D-131 material guard lifted) regenerate from
+   their STEPs on this tree and read back: every STEP hole (the repo's own
    reader, no OCC) is in a hole table within 0.05 mm, drawn as a true circle at its place, the text carries what
    the mechanical check reads, and the PDF's Creator is drawgen.
 2. Making a drawing twice from the same sources gives the same bytes (so an unchanged model never shows a diff).
@@ -21,6 +22,11 @@
 8. Keys fitted in a part's ends: each key in Joints' corner-keys.csv gets its orientation note, and the read-back
    fails a missing note or one that names holes away from the key's screw positions.
 9. Only holes on one line through two walls count as a two-wall pair (which needs a section).
+10. Holes square to an angled face get a lettered view square to that face (ISO 128-30); blind holes with a drill
+    point read as blind.
+11. An entry written for one material (welded steel, D-131) refuses a parts list that gives another.
+12. BASE's D-129 back band features on a test band: open slots sized from the edge, the notches in a detail, the
+    bevels called out; the read-back checks each against the STEP. A flat feature it can't size is refused.
 """
 
 import os
@@ -125,6 +131,21 @@ def test_sample_regenerates_and_reads_back():
             assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
 
 
+def test_frames_draw_and_read_back():
+    """WALL's frames (#202's sample) draw and read back from their STEPs, with J-FRAME-01's weld notes; their entry
+    refuses the parts list until WALL's D-131 steel list lands, so the material guard is lifted here: the geometry
+    D-131 keeps (every hole, rivnut and joint position) is what this tests."""
+    out = os.path.join(TMP, "frames")
+    os.makedirs(out, exist_ok=True)
+    for pn in specs.FRAMES:
+        p = os.path.join(out, pn + ".pdf")
+        compose.make(pn, specs.SPECS[pn][0], dict(specs.SPECS[pn][2], material_has=None), p)
+        fails, st = readback.check(p)
+        assert not fails, "%s: %s" % (pn, fails)
+        assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
+        assert "J-FRAME-01" in " ".join(page.get_text() for page in fitz.open(p))
+
+
 def test_same_sources_same_bytes():
     a, b = os.path.join(TMP, "a"), os.path.join(TMP, "b")
     for d in (a, b):
@@ -143,7 +164,7 @@ def test_model_change_regenerates():
     step = os.path.join(d, os.path.basename(src))
     shutil.copy(src, step)
     p1 = os.path.join(d, "v1.pdf")
-    compose.make("211101", "wall", specs.SPECS["211101"][2], p1, step=step)
+    compose.make("211101", "wall", dict(specs.SPECS["211101"][2], material_has=None), p1, step=step)
     f1, _ = readback.check(p1, step)
     assert not f1, f1
     rows1 = readback.table_rows(fitz.open(p1)[0])
@@ -154,7 +175,7 @@ def test_model_change_regenerates():
     why = drawgen.stale(p1)
     assert any("changed" in w and w.endswith("STEP.step changed") for w in why), why     # the drawing knows
     p2 = os.path.join(d, "v2.pdf")
-    compose.make("211101", "wall", specs.SPECS["211101"][2], p2, step=step)
+    compose.make("211101", "wall", dict(specs.SPECS["211101"][2], material_has=None), p2, step=step)
     f2, _ = readback.check(p2, step)
     assert not f2, f2
     rows2 = readback.table_rows(fitz.open(p2)[0])
@@ -266,6 +287,22 @@ def test_clash_check_catches_a_line_through_text():
     assert not any("H09" in w for w in found), found
 
 
+def test_notes_name_no_maker():
+    """The Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as its maker; the
+    title block's CREATED BY Autonomous is the one place a maker is named. The read-back fails any other."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "maker")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.text(300, 280, "CREATED BY", 2.0)
+    sh.text(300, 276, "Autonomous", 2.5)
+    sh.text(30, 100, "Source: the STEP. Made by tools/drawgen (D-112) from that STEP.", 2.5)
+    sh.text(30, 90, "From that STEP: regenerate it, never edit the PDF.", 2.5)
+    sh.save(os.path.join(d, "m.pdf"))
+    found = readback.note_makers(fitz.open(os.path.join(d, "m.pdf")))
+    assert found == [(1, "Made by tools/drawgen")], found
+
+
 def test_long_tube_keeps_its_scale():
     """111103 is 2420 long: beside the default table column only 1:10 fits (the 40 mm tube 4 mm on paper); a
     narrower column keeps 1:5, the tables still end above the title block, and it reads back with B where the
@@ -314,6 +351,173 @@ def test_two_wall_pairs_are_on_one_line():
     assert readback.two_wall_pairs(through) == [("H01", "H03")]
     other = side[:1] + [{"tag": "H04", "kind": "hole", "body": "STILE", "axis": (0, 0, 1), "entry": (0.0, 0.0, 100.0)}]
     assert readback.two_wall_pairs(other) == []
+
+
+def test_an_entry_for_another_material_is_refused():
+    """An entry written for one material (D-131's welded steel frames) never draws over a parts list that gives
+    another: the list and the model change first."""
+    spec = dict(specs.SPECS["211101"][2], material_has="unobtainium", material_why="a test")
+    try:
+        compose.make("211101", "wall", spec, os.path.join(TMP, "material.pdf"))
+    except compose.NotDrawable as e:
+        assert "unobtainium" in str(e) and "a test" in str(e), e
+    else:
+        raise AssertionError("drew a frame whose entry is for another material")
+
+
+def test_angled_face_gets_its_own_view():
+    """Holes square to a face no principal view looks at straight (Joints' front corner key 111212: two tapped
+    holes square to its 24.14° stud face) get a lettered view square to that face, with its own origin and hole
+    table, and an arrow in the view that shows the face edge on; the key's blind tapped holes read as blind, with
+    their drill point, and the angled through holes as THRU (a solid, not a tube wall). It reads back."""
+    out = os.path.join(TMP, "aux")
+    os.makedirs(out, exist_ok=True)
+    p = os.path.join(out, "111212.pdf")
+    # the key's holes are tapped: the guard (item 5 not in yet) is lifted to test the view itself
+    rep = compose.make("111212", "joints", {"pod_system": False, "corner": "-X-Y-Z", "tolerance": "test",
+                                            "_test_allow_tapped": True}, p)
+    fails, st = readback.check(p)
+    assert not fails, fails
+    assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
+    doc = fitz.open(p)
+    text = doc[0].get_text()
+    assert "looking square to the angled face" in text and "VIEW D" in text, text[:400]
+    assert text.count("THRU (34)") == 2 and text.count("18 deep, drill point 118°") == 2, text
+    # its own origin: X from the face's centre line, Y from its bottom (Joints' key sheet: 26 and 60 above it)
+    import re as _re
+    assert sorted(_re.findall(r"H0[34]\s+(-?[\d.]+)\s+(-?[\d.]+)", text)) == [("0.00", "26.00"), ("0.00", "60.00")], text
+    assert "Holes go THRU the part" in doc[1].get_text()
+
+
+def test_tapped_holes_wait_for_their_callouts():
+    """A part with tapped holes isn't drawn until thread callouts land (item 5; the PM's ruling on #296): the
+    front corner key 111212 (M6 tapped, Ø5.03 at a tap drill's size) is refused and says why."""
+    try:
+        compose.make("111212", "joints", {"pod_system": False, "tolerance": "test"}, os.path.join(TMP, "tap.pdf"))
+    except compose.NotDrawable as e:
+        assert "tapped holes" in str(e) and "item 5" in str(e), e
+    else:
+        raise AssertionError("drew a part with tapped holes")
+
+
+def test_long_words_break_at_separators():
+    """A word wider than its cell (a long drawing number in the title block, FRONT's 352211) breaks after its '_'
+    or '-', each line inside the cell, and nothing is lost."""
+    from sheet import Sheet
+    sh = Sheet("A3")
+    word = "352211_P01_FRONT-DECOR-FRAME-DT-CHAMFER-CROSS-TUBE-3-OFF_DWG"
+    lines = sh.wrap(word, 2.5, 115.6, True)
+    assert len(lines) > 1 and "".join(lines) == word, lines
+    assert all(sh.text_width(l_, 2.5, True) <= 115.6 for l_ in lines), lines
+    sentence = "a normal sentence wraps at spaces"
+    ls = sh.wrap(sentence, 2.5, 40)
+    assert " ".join(ls) == sentence and all(sh.text_width(l_, 2.5) <= 40 for l_ in ls), ls
+
+
+def test_a_repeated_part_is_drawn_once():
+    """A part an assembly STEP holds several times (BASE's glide doubler 111601, 5 in the band assembly) loads
+    as one occurrence, with the count kept for the drawing's quantity note and its check against the list."""
+    import geom
+    bodies, unit = geom.load_part(os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base",
+                                               "110000_P01_BASE_STEP.step"), "111601")
+    assert len(bodies) == 1 and unit["occurrences"] == 5, (len(bodies), unit)
+
+
+def _notched_band(path, length=1000.0, notch_w=12.0, window=False):
+    """A test back band like BASE's D-129 111103: a 100 x 40 x 1.5 tube closed by 1.5 end plates, each plate with an
+    open slot (12 wide at the bottom edge, 6.5 from 6 up, its R3.25 end centred 63.5 up), a notch_w x 9 notch
+    through the bottom wall at each end and a 1 x 45° bevel on each end's bottom edge, either side of the notch.
+    window: a 20 x 10 cut-out through the top wall's middle too (a flat feature drawgen can't size)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt, gp_Vec
+
+    def box(x, y, z, dx, dy, dz):
+        return BRepPrimAPI_MakeBox(gp_Pnt(x, y, z), dx, dy, dz).Shape()
+
+    def prism(pts, v):
+        poly = BRepBuilderAPI_MakePolygon()
+        for q in pts:
+            poly.Add(gp_Pnt(*q))
+        poly.Close()
+        return BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(*v)).Shape()
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    L = length
+    sh = cut(box(0, 0, 0, L, 40, 100), box(1.5, 1.5, 1.5, L - 3, 37, 97))
+    for x0 in (-1.0, L - 2.5):
+        sh = cut(sh, prism([(x0, 14, 0), (x0, 26, 0), (x0, 23.25, 6), (x0, 16.75, 6)], (3.5, 0, 0)))
+        sh = cut(sh, box(x0, 16.75, 6, 3.5, 6.5, 57.5))
+        # the cylinder's seam down, inside the straight cut: the slot's end stays one half-round face, as Fusion
+        # writes it
+        sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x0, 20, 63.5), gp_Dir(1, 0, 0), gp_Dir(0, 0, -1)),
+                                              3.25, 3.5).Shape())
+    a = 20 - notch_w / 2
+    sh = cut(sh, box(-1, a, -1, 10, notch_w, 2.5))
+    sh = cut(sh, box(L - 9, a, -1, 10, notch_w, 2.5))
+    sh = cut(sh, prism([(0, -1, 0), (1, -1, 0), (0, -1, 1)], (0, 42, 0)))
+    sh = cut(sh, prism([(L, -1, 0), (L - 1, -1, 0), (L, -1, 1)], (0, 42, 0)))
+    if window:
+        sh = cut(sh, box(L / 2 - 10, 15, 97, 20, 10, 5))
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+BAND_ROW = dict(ROW, part_number="219997", name="TEST - BAND - NOTCHED", material="aluminium 6063-T6 tube with end plates")
+
+
+def test_open_slot_notch_and_bevel_are_sized():
+    """BASE's D-129 back band features, on a test band: each open slot sized from the edge in its end's own view
+    (mouth, taper, width, radius, the end's centre from the edge); the 12 x 9 notches in the bottom wall sized
+    once in a detail from below (width, place across, length from the end), the drawing saying the other end's is
+    the same; each end's 1 x 45° bevel called out (not read as a mitre). The read-back passes, and fails the same
+    drawing against a model whose notches are 10 wide."""
+    d = os.path.join(TMP, "notched")
+    os.makedirs(d, exist_ok=True)
+    step = _notched_band(os.path.join(d, "219997_P01_TEST-BAND-NOTCHED_STEP.step"))
+    p = os.path.join(d, "219997.pdf")
+    compose.make("219997", "none", SPEC, p, step=step, row=BAND_ROW)
+    fails, st = readback.check(p, step)
+    assert not fails, fails
+    doc = fitz.open(p)
+    text = doc[0].get_text()
+    flat = " ".join(text.split())
+    assert flat.count("1 x 45°") == 2 and "45° " not in flat.replace("1 x 45°", ""), flat[:600]
+    assert "DETAIL" in text and "the notch at the -X end is the same" in flat, flat[:600]
+    data = readback.read_data(doc)
+    assert len(data["notches"]) == 2 and len(data["chamfers"]) == 2 and len(data["plates"]) == 2, data["notches"]
+    shown = [n for n in data["notches"] if n["drawn"]]
+    assert len(shown) == 1 and shown[0]["texts"]["width"] == "12" and shown[0]["texts"]["length"] == "9" and \
+        shown[0]["texts"]["pos"] == "14", shown
+    slots = [f for f in data["features"] if f["kind"] == "open_slot"]
+    assert len(slots) == 2 and all(f["dims"] == {"width": "6.5", "mouth": "12", "edge": "63.5", "r": "R3.25",
+                                                  "taper": "6"} for f in slots), slots
+    narrow = _notched_band(os.path.join(d, "219997_P01_TEST-BAND-NARROW_STEP.step"), notch_w=10.0)
+    f2, _ = readback.check(p, narrow)
+    assert any("notch" in x for x in f2), f2
+
+
+def test_an_unsized_flat_feature_is_refused():
+    """A flat-faced feature drawgen can't size yet (here a cut-out in the middle of a tube's top wall) is refused
+    with the faces named, rather than drawn without sizes."""
+    d = os.path.join(TMP, "window")
+    os.makedirs(d, exist_ok=True)
+    step = _notched_band(os.path.join(d, "219996_P01_TEST-BAND-WINDOW_STEP.step"), window=True)
+    try:
+        compose.make("219996", "none", SPEC, os.path.join(d, "w.pdf"), step=step,
+                     row=dict(BAND_ROW, part_number="219996"))
+        raise AssertionError("drew a part with an unsized cut-out")
+    except compose.NotDrawable as e:
+        assert "flat faces this tool can't size yet" in str(e) and "Z 98.50..100.00" in str(e), str(e)
 
 
 def main():

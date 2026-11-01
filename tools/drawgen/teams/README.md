@@ -29,6 +29,7 @@ names, material, finish and revision come from the part's STEP, its parts-list r
 | `notes` | Notes for this part, each one sentence or two, with their source (a decision, a register line) | `["Both ends square (BASE tube cut list)."]` |
 | `tolerance` | The tolerance note: the project's own values with their source, never a blanket ISO 2768 (guideline 3.2) | see `base.py` |
 | `key_notes` | `True`: a note at each end that carries a key from Joints' `corner-keys.csv`, saying which way round it fits | `True` |
+| `material_has`, `material_why` | The entry is written for this material: drawgen refuses to draw while the parts list says another (so welded-steel notes never go over an aluminium list) | `"steel"`, `"D-131's welded, galvanized steel frame"` |
 | `principal`, `scale`, `sheet` | Only when the default choice is wrong: the principal view, the ISO scale, the sheet size | `"right"`, `0.2`, `"A1"` |
 
 ## Adding a part
@@ -38,6 +39,6 @@ names, material, finish and revision come from the part's STEP, its parts-list r
    within 0.05 mm of the STEP, true circles, no text touching text or an outline, no line through a text.
 3. Look at the PDF at print size. Then open a PR with the entry and the PDF, and ask for the visual pass.
 
-When drawgen refuses a part (bent or folded, a fillet, a countersink, holes square to a face no view looks at
-straight), the refusal says why. The part goes to Fusion for now, with that reason, and the gap goes to drawgen's
+When drawgen refuses a part (bent or folded, a fillet, a countersink, holes on an angled face the part hides, a
+flat-faced feature it can't size such as a step or a pocket), the refusal says why and names the faces. The part goes to Fusion for now, with that reason, and the gap goes to drawgen's
 owner.
