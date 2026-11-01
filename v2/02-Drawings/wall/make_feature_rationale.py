@@ -81,9 +81,10 @@ OTHER_BACK = [
      "a continuous bottom rail sits on its gasket in one line", "member joints: internal cleats per D-115 (corner and T "
      "cleats, crimped, structural adhesive; no welds; the cleats come from the Joints Engineer)", "", "",
      "DECIDED (D-115); cleats to come"),
-    ("F13", "{fill}", "Fill pockets 60 x 60 x 40 beside every bolt this panel drives (bottom rail, corner, and the "
-     "ceiling bolts on B3/B4, the pins on B2/B4)", "the key reaches the access holes from inside before the cassette "
-     "goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
+    ("F13", "{fill}", "Fill notches 60 x 60, right through the 40 mm batt, beside every bolt this panel drives "
+     "(bottom rail, corner, and the ceiling bolts on B3/B4, the pins on B2/B4); each piece cut from its DXF (D-128)",
+     "the key reaches the access holes from inside before the cassette goes on", "%s FR-10, 2.3" % REG, "", "",
+     "PROPOSED (assumption size)"),
     ("F31", "{frame}", "Frame width half_fw 1198.99, stopping close_gap / 2 (2.75) from X 0",
      "the closing seam takes the back wall's tolerance as a 5.5 gap (4.0 to 7.0), set by the spigots (R-J11, R-J16)",
      "skeleton P04 half_fw, close_gap", "follows half_fw (edit test)", "5.2 to 5.8 (ST-02)", "DECIDED"),
@@ -273,7 +274,8 @@ OTHER = [
      "a continuous bottom rail sits on the band and its gasket in one line", "member joints: internal cleats per D-115 "
      "(corner and T cleats, crimped, structural adhesive; no welds; the cleats come from the Joints Engineer)", "", "",
      "DECIDED (D-115); cleats to come"),
-    ("F13", "{fill}", "Fill pockets 60 x 60 x 40, beside every bolt this panel drives (4 above F01, 3 beside F07)",
+    ("F13", "{fill}", "Fill notches 60 x 60, right through the 40 mm batt, beside every bolt this panel drives (4 "
+     "above F01, 3 beside F07); each piece cut from its DXF (D-128)",
      "the 5 mm key reaches F02 and F08 from inside the pod before the cassette goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
     ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end",
      "the back corner shows ACP, not the frame end (D-55; register section 7 item 5)", "skin_ret = outer_t - skin_t (assumption)",
