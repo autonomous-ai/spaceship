@@ -131,3 +131,26 @@ def inside_margin(pt, poly, n, margin):
         if np.hypot(x - (x1 + s * ex), y - (y1 + s * ey)) < margin - 1e-9:
             return False
     return inside
+
+
+def clip_z(poly, zc, keep_below):
+    """A planar polygon clipped by the plane Z = zc, keeping the part below (or above) it (Sutherland-Hodgman)."""
+    def inside(p):
+        return p[2] <= zc + 1e-12 if keep_below else p[2] >= zc - 1e-12
+    out = []
+    n = len(poly)
+    for i in range(n):
+        a, b = np.asarray(poly[i], float), np.asarray(poly[(i + 1) % n], float)
+        ia, ib = inside(a), inside(b)
+        if ia:
+            out.append(a)
+        if ia != ib:
+            s = (zc - a[2]) / (b[2] - a[2])
+            out.append(a + s * (b - a))
+    clean = []
+    for p in out:
+        if not clean or np.linalg.norm(p - clean[-1]) > 1e-9:
+            clean.append(p)
+    if len(clean) > 1 and np.linalg.norm(clean[0] - clean[-1]) < 1e-9:
+        clean.pop()
+    return clean

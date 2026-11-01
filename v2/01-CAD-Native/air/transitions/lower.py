@@ -159,6 +159,20 @@ def wrapper(side):
     # each step fold is shared by two web segments: its reliefs are the larger of the two segments' needs
     first = [relieved(seg_pts[k], seg_h[k])[1] for k in range(m)]
     fixed = [dict() for _ in range(m)]
+    # a flange that leans toward a cheek kink must end far enough from it that its square end stays on its facet
+    SQ, MARGIN = 2.5, 0.6
+    for k in range(m):
+        ez = -normals[k][2]                      # the flange runs into the duct, along the web's inside normal
+        dz = dirs[k][2]
+        need = (SQ * abs(ez) + MARGIN) / max(dz, 1e-9) + 0.3
+        top_kink = abs(prof[k + 1][1] - zk1) < 1e-6 or abs(prof[k + 1][1] - zk2) < 1e-6
+        bot_kink = abs(prof[k][1] - zk1) < 1e-6 or abs(prof[k][1] - zk2) < 1e-6
+        if ez > 1e-6 and top_kink:
+            fixed[k][(1, "prev")] = max(need, first[k][(1, "prev")])
+            fixed[k][(2, "next")] = max(need, first[k][(2, "next")])
+        if ez < -1e-6 and bot_kink:
+            fixed[k][(0, "next")] = max(need, first[k][(0, "next")])
+            fixed[k][(3, "prev")] = max(need, first[k][(3, "prev")])
     for k in range(m - 1):
         ua, ub = first[k], first[k + 1]
         s_front = max(ua[(1, "next")], ub[(0, "prev")])
@@ -200,22 +214,28 @@ def wrapper(side):
             ends = []
             for end_pt, other, nb in ((s0, s1, k - 1), (s1, s0, k + 1)):
                 dd = G.unit(end_pt - other)                      # along the fold, outward at this end
-                sq = end_pt + e * 2.5                            # square to the fold past its zone
+                sq = end_pt + e * SQ                             # square to the fold past its zone
                 closes = False
                 if 0 <= nb < m:
                     lo_, hi_ = (k, nb) if nb > k else (nb, k)
                     closes = float(np.dot(dirs[hi_] - dirs[lo_], e)) > 0     # the bend turns toward the flange
                 if closes:
                     half = _angle(normals[k], normals[nb]) / 2
-                    ends.append((sq, sq + e * (w - 2.5) - dd * ((w - 2.5) * math.tan(half) + 0.5)))
+                    ends.append((sq, sq + e * (w - SQ) - dd * ((w - SQ) * math.tan(half) + 0.5)))
                 else:
                     ends.append((sq, end_pt + e * w))
             poly = [s0, s1, ends[1][0], ends[1][1], ends[0][1], ends[0][0]]
+            zlo = (L["zb0"], zk1, zk2)[seg_facet[k]]
+            zhi = (zk1, zk2, L["zt1"])[seg_facet[k]]
+            if seg_facet[k] > 0:
+                poly = G.clip_z(poly, zlo + 0.6, keep_below=False)      # stay on the cheek's facet under it
+            if seg_facet[k] < 2:
+                poly = G.clip_z(poly, zhi - 0.6, keep_below=True)
             fname = "%s FLANGE %s %d" % (side, which, k + 1)
             seglen = float(np.linalg.norm(s1 - s0))
             hs = G.holes_along(s0, s1, e, P.flange_hole_in, 9.0, P.rivet_pitch, P.rivet_hole) if seglen >= 18.0 else []
             # a rivet keeps 2 diameters to the flange's every edge, and its hole stays on the cheek's facet under it
-            fpoly = [s0, s1] + [q for q in (ends[1][0], ends[1][1], ends[0][1], ends[0][0])]
+            fpoly = poly
             hs = [(c, d) for c, d in hs if G.inside_margin(c, fpoly, n_f, 2 * P.rivet_hole - 1e-6)
                   and _facet(c[2], zk1, zk2) == seg_facet[k]
                   and min(abs(c[2] - zk1), abs(c[2] - zk2)) > P.rivet_hole]

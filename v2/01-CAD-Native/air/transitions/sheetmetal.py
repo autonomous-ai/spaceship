@@ -60,11 +60,12 @@ class Wall:
     """A planar wall: its outer skin polygon (3D points in order), its outward normal, and its holes (centre on
     the outer skin, diameter)."""
 
-    def __init__(self, name, pts, n_out, holes=()):
+    def __init__(self, name, pts, n_out, holes=(), cutouts=()):
         self.name = name
         self.pts = [np.asarray(p, float) for p in pts]
         self.n = unit(n_out)
         self.holes = [(np.asarray(c, float), float(d)) for c, d in holes]
+        self.cutouts = [[np.asarray(p, float) for p in poly] for poly in cutouts]   # straight-edged openings
         o = self.pts[0]
         for p in self.pts:
             if abs(np.dot(p - o, self.n)) > 1e-6:
@@ -72,6 +73,10 @@ class Wall:
         for c, _d in self.holes:
             if abs(np.dot(c - o, self.n)) > 1e-6:
                 raise ValueError("a hole of wall %s isn't on its outer skin" % name)
+        for poly in self.cutouts:
+            for p in poly:
+                if abs(np.dot(p - o, self.n)) > 1e-6:
+                    raise ValueError("a cut-out of wall %s isn't on its outer skin" % name)
         if self.signed_area() <= 0:
             self.pts = self.pts[::-1]          # counter-clockwise seen from the outside
 
@@ -88,10 +93,11 @@ class Wall:
 class Fold:
     """A fold between walls a and b along the segment p0-p1 of their outer skins' common line."""
 
-    def __init__(self, a, b, p0, p1, tag=None):
+    def __init__(self, a, b, p0, p1, tag=None, r=None):
         self.a, self.b = a, b
         self.p0, self.p1 = np.asarray(p0, float), np.asarray(p1, float)
         self.tag = tag
+        self.r = r                       # this fold's inside radius, when it isn't the part's (a vane's curve)
 
 
 class Part:
@@ -111,8 +117,10 @@ class Part:
 
     # ------------------------------------------------------------------ each fold's geometry
     def _analyse(self):
-        t, r, k = self.t, self.r, self.k
+        t, k = self.t, self.k
         for f in self.folds:
+            r = f.r if f.r is not None else self.r
+            f.rin = r
             A, B = self.walls[f.a], self.walls[f.b]
             L = f.p1 - f.p0
             f.length = float(np.linalg.norm(L))
@@ -125,10 +133,10 @@ class Part:
                     raise ValueError("fold %s-%s: its line isn't in wall %s's plane" % (f.a, f.b, W.name))
             f.e = {}
             for W in (A, B):
-                e = unit(np.cross(W.n, f.l))
-                if np.dot(W.centroid() - f.p0, e) < 0:
-                    e = -e
-                f.e[W.name] = e
+                # into the wall: the polygon runs counter-clockwise about its normal, so its inside is left of the
+                # edge that carries the fold (a centroid can sit outside an L-shaped wall)
+                d_edge = self._edge_dir(W, f)
+                f.e[W.name] = unit(np.cross(W.n, d_edge))
             eA, eB = f.e[A.name], f.e[B.name]
             f.theta_rad = math.acos(max(-1.0, min(1.0, -float(np.dot(eA, eB)))))
             if f.theta_rad < 1e-4:
@@ -154,6 +162,22 @@ class Part:
                 if abs(dpl - f.rho_out) > 1e-6:
                     raise ValueError("fold %s-%s: centre %.6f off wall %s's plane, not %.6f" % (
                         f.a, f.b, dpl, W.name, f.rho_out))
+
+    @staticmethod
+    def _edge_dir(W, f):
+        """The direction, in the wall's own (counter-clockwise) order, of the polygon edge holding the fold."""
+        n = len(W.pts)
+        for i in range(n):
+            a, b = W.pts[i], W.pts[(i + 1) % n]
+            d = b - a
+            L = float(np.linalg.norm(d))
+            if L < 1e-9:
+                continue
+            u = d / L
+            if all(np.linalg.norm(np.cross(p - a, u)) < 1e-6 and -1e-6 <= float(np.dot(p - a, u)) <= L + 1e-6
+                   for p in (f.p0, f.p1)):
+                return u
+        raise ValueError("fold %s-%s isn't on an edge of wall %s" % (f.a, f.b, W.name))
 
     # ------------------------------------------------------------------ the tree from the base wall
     def _tree(self):
@@ -260,6 +284,14 @@ class Part:
             out.append((f.tag or "F%d" % (i + 1), c0, c1, f.theta, "UP" if f.concave else "DOWN", f.ba, ea, eb))
         return out
 
+    def flat_cutouts(self):
+        """The walls' straight-edged openings in the flat: [[(x, y)]]."""
+        out = []
+        for w in self.order:
+            for poly in self.walls[w].cutouts:
+                out.append([apply(self.map[w], p)[:2] for p in poly])
+        return out
+
     def flat_holes(self):
         out = []
         for w in self.order:
@@ -277,7 +309,7 @@ class Part:
         from OCP.TopTools import TopTools_ListOfShape
         from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
 
-        def poly_face(pts, holes=(), normal=None):
+        def poly_face(pts, holes=(), normal=None, cutouts=()):
             mp = BRepBuilderAPI_MakePolygon()
             for p in pts:
                 mp.Add(gp_Pnt(*map(float, p)))
@@ -288,20 +320,33 @@ class Part:
                 w = BRepBuilderAPI_MakeWire(BRepBuilderAPI_MakeEdge(circ).Edge()).Wire()
                 w.Reverse()
                 mf.Add(w)
+            for poly in cutouts:
+                mp2 = BRepBuilderAPI_MakePolygon()
+                for p in poly:
+                    mp2.Add(gp_Pnt(*map(float, p)))
+                mp2.Close()
+                w = mp2.Wire()
+                # an inner wire runs clockwise seen from the face's normal
+                s2 = np.zeros(3)
+                for i in range(len(poly)):
+                    s2 += np.cross(poly[i], poly[(i + 1) % len(poly)])
+                if float(np.dot(s2, normal)) > 0:
+                    w.Reverse()
+                mf.Add(w)
             return mf.Face()
 
         pieces = []
         self.piece_volumes = []
         for w in self.order:
             W = self.walls[w]
-            face = poly_face(self.trimmed(w), W.holes, W.n)
+            face = poly_face(self.trimmed(w), W.holes, W.n, W.cutouts)
             prism = BRepPrimAPI_MakePrism(face, gp_Vec(*map(float, -W.n * self.t))).Shape()
             pieces.append(prism)
         for f in self.folds:
             c0 = f.centre
             # the start face: the radial strip from radius r to r + t at A's tangent, along the fold
-            a0 = c0 + f.rad_a * self.r
-            a1 = c0 + f.rad_a * (self.r + self.t)
+            a0 = c0 + f.rad_a * f.rin
+            a1 = c0 + f.rad_a * (f.rin + self.t)
             b0 = a0 + (f.p1 - f.p0)
             b1 = a1 + (f.p1 - f.p0)
             face = poly_face([a0, a1, b1, b0])
@@ -332,9 +377,14 @@ class Part:
                 s += np.cross(pts[i], pts[(i + 1) % len(pts)])
             area = 0.5 * abs(float(np.dot(s, self.walls[w].n)))
             area -= sum(math.pi * d * d / 4 for _c, d in self.walls[w].holes)
+            for poly in self.walls[w].cutouts:
+                s2 = np.zeros(3)
+                for i in range(len(poly)):
+                    s2 += np.cross(poly[i], poly[(i + 1) % len(poly)])
+                area -= 0.5 * abs(float(np.dot(s2, self.walls[w].n)))
             v += area * self.t
         for f in self.folds:
-            v += 0.5 * f.theta_rad * ((self.r + self.t) ** 2 - self.r ** 2) * f.length
+            v += 0.5 * f.theta_rad * ((f.rin + self.t) ** 2 - f.rin ** 2) * f.length
         return v
 
 
@@ -461,7 +511,7 @@ def flat_outline(regions):
     return loops
 
 
-def write_dxf(path, loops, holes, bends):
+def write_dxf(path, loops, holes, bends, cutouts=()):
     """An ASCII DXF (R12 entities, $INSUNITS 4 = mm): the outline and holes on CUT, each fold's centre line on
     BEND and its zone's two edges on MARK."""
     out = ["0", "SECTION", "2", "HEADER", "9", "$ACADVER", "1", "AC1009", "9", "$INSUNITS", "70", "4",
@@ -477,6 +527,9 @@ def write_dxf(path, loops, holes, bends):
     for lp in loops:
         for i in range(len(lp)):
             out += line("CUT", lp[i], lp[(i + 1) % len(lp)])
+    for poly in cutouts:
+        for i in range(len(poly)):
+            out += line("CUT", poly[i], poly[(i + 1) % len(poly)])
     for c, d in holes:
         out += ["0", "CIRCLE", "8", "CUT", "10", "%.6f" % c[0], "20", "%.6f" % c[1], "30", "0.0", "40", "%.6f" % (d / 2)]
     for _tag, c0, c1, _ang, _dir, _ba, ea, eb in bends:

@@ -258,27 +258,32 @@ def develop(faces, adj, skin, t, k):
 
 
 def face_loops_2d(face, M):
-    """The face's wires as 2D loops in the flat: lines as points, circles as ('C', centre, radius)."""
-    from OCP.BRepTools import BRepTools_WireExplorer
-    loops = []
+    """A skin plane's wires in the flat: (outer loop points, [inner straight-edged loops], [(circle centre, radius)])."""
+    from OCP.BRepTools import BRepTools, BRepTools_WireExplorer
+    outer_w = BRepTools.OuterWire_s(face.f)
+    outer, inner, circles = None, [], []
     e = TopExp_Explorer(face.f, TopAbs_WIRE)
     while e.More():
         w = TopoDS.Wire_s(e.Current())
-        pts, circles = [], []
+        pts, circ_here = [], []
         ex = BRepTools_WireExplorer(w, face.f)
         while ex.More():
             c = BRepAdaptor_Curve(ex.Current())
             if c.GetType() == GeomAbs_Circle and abs(c.LastParameter() - c.FirstParameter() - 2 * math.pi) < 1e-9:
                 circ = c.Circle()
-                circles.append((ap(M, v3(circ.Location()))[:2], circ.Radius()))
+                circ_here.append((ap(M, v3(circ.Location()))[:2], circ.Radius()))
             elif c.GetType() == GeomAbs_Line:
                 pts.append(ap(M, v3(BRep_Tool.Pnt_s(ex.CurrentVertex())))[:2])
             else:
                 raise SystemExit("a skin plane has an edge that is neither a line nor a full circle")
             ex.Next()
-        loops.append((pts, circles))
+        if w.IsSame(outer_w):
+            outer = pts
+        elif pts:
+            inner.append(pts)
+        circles += circ_here
         e.Next()
-    return loops
+    return outer, inner, circles
 
 
 def developed(step_path, k):
@@ -289,18 +294,15 @@ def developed(step_path, k):
     sa, sb = skins(faces, adj)
     t = thickness(faces, sa, sb)
     maps, folds = develop(faces, adj, sa, t, k)
-    regions, holes = [], []
+    regions, holes, cutouts = [], [], []
     for i, M in maps.items():
-        lps = face_loops_2d(faces[i], M)
-        outer = max(lps, key=lambda lp: len(lp[0]))
-        regions.append(outer[0])
-        for pts, circles in lps:
-            for c, rad in circles:
-                if len(pts) == 0:
-                    holes.append((c, rad * 2))
+        outer, inner, circles = face_loops_2d(faces[i], M)
+        regions.append(outer)
+        cutouts += inner
+        holes += [(c, rad * 2) for c, rad in circles]
     for fd in folds:
         regions.append([tuple(p) for p in fd["zone"]])
-    return dict(t=t, folds=folds, regions=regions, holes=holes, faces=faces, skin=sa)
+    return dict(t=t, folds=folds, regions=regions, holes=holes, cutouts=cutouts, faces=faces, skin=sa)
 
 
 def outline_of(regions):
@@ -422,6 +424,8 @@ def check(step_path, dxf_path, k=0.44, tol=TOL, verbose=True):
     segs_dev, nf = outline_of(dev["regions"])
     if nf != 1:
         faults.append("the developed flat isn't one piece (%d faces)" % nf)
+    for poly in dev["cutouts"]:               # straight-edged openings: their edges are cut lines too
+        segs_dev += [(np.array(poly[i]), np.array(poly[(i + 1) % len(poly)])) for i in range(len(poly))]
     cut = dx["lines"].get("CUT", [])
     best = None
     for R, off, mirror in candidates(segs_dev, cut):
