@@ -163,6 +163,18 @@ class Parts(unittest.TestCase):
             self.assertLessEqual(w, rated, sid)
             self.assertLessEqual(rated, 60.0, "a 12 V Class 2 source is at most 60 VA")
 
+    def test_kit_feeds_at_80_percent_and_the_kit_at_its_peak(self):
+        """PM ruling 2026-11-01: the kit's 60 W peak on two Class 2 supplies, each at 80 % or less, never joined."""
+        feeds = [(s, w) for (i, _n, s, _fu, q, w, _t, _st, _src, _no) in EP.LOADS if i in ("LD06", "LD09")]
+        self.assertEqual(sorted(s for s, _w in feeds), ["PS1", "PS4"])
+        for sid, _k, _o, rated, _a, _f, _w in EP.SUPPLIES:
+            if sid in ("PS1", "PS4"):
+                w = sum(q * wm for (_i, _n, s, _fu, q, wm, _t, _st, _src, _no) in EP.LOADS if s == sid)
+                self.assertLessEqual(w, 0.8 * rated + 1e-9, sid)
+        self.assertLessEqual(EP.KIT_PEAK_W, sum(w for _s, w in feeds))       # the two feeds can carry the whole peak
+        w30 = [h for h in EP.harnesses(M.values()) if h["id"].startswith("W30")]
+        self.assertTrue(all(h.get("parallel", 1) == 1 and "16 AWG" in h["cable"] for h in w30))
+
     def test_lights_inside_their_budget(self):
         typ = sum(q * t for (i, _n, _s, _fu, q, _wm, t, _st, _src, _no) in EP.LOADS if i in ("LD04", "LD05", "LD08"))
         self.assertLessEqual(typ, EP.LIGHT_BUDGET_W + 1e-6)   # PM ruling: about 22 W, the hub balancing the channels
@@ -188,12 +200,13 @@ class Parts(unittest.TestCase):
         self.assertEqual(EP.P["plug6"]["qty_per_parent"], ends.count("Mini-Fit Jr 6-way plug"))
         self.assertEqual(EP.P["rec10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way receptacle"))
         self.assertEqual(EP.P["plug10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way plug"))
-        f = (2 * EP.P["rec2"]["qty_per_parent"] + 4 * EP.P["rec4"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"]
-             + 10 * EP.P["rec10"]["qty_per_parent"])
-        m = (2 * EP.P["plug2"]["qty_per_parent"] + 4 * (EP.P["plug4"]["qty_per_parent"] - 1) + 6 * EP.P["plug6"]["qty_per_parent"]
-             + 10 * EP.P["plug10"]["qty_per_parent"])
+        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 10 * EP.P["rec10"]["qty_per_parent"]
+        m = 2 * EP.P["plug2"]["qty_per_parent"] + 6 * EP.P["plug6"]["qty_per_parent"] + 10 * EP.P["plug10"]["qty_per_parent"]
         self.assertEqual(EP.P["term_f"]["qty_per_parent"], f)
         self.assertEqual(EP.P["term_m"]["qty_per_parent"], m)
+        # the 4-way housings carry the kit's 16 AWG feeds: their own terminals (the cap housing has none)
+        self.assertEqual(EP.P["term_f16"]["qty_per_parent"], 4 * EP.P["rec4"]["qty_per_parent"])
+        self.assertEqual(EP.P["term_m16"]["qty_per_parent"], 4 * (EP.P["plug4"]["qty_per_parent"] - 1))
 
 
 class FlatParts(unittest.TestCase):

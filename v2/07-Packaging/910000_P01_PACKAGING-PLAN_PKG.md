@@ -11,8 +11,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 ## Result
 
-1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **223 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **322 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 545 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 409.1 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 413.1 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 409.6 kg of pod: the roll-up plus 0.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **224 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **322 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 546 kg gross in all.
+2. **Masses are the layout study's P04 roll-up**, 409.5 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 413.5 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 410.0 kg of pod: the roll-up plus 0.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: floor, back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 10; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
@@ -22,9 +22,9 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 197.5 | 223 (493) | 1,641 (64.6) | 71.8 | 6.9 |
-| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 212.1 | 322 (709) | 1,563 (61.5) | 164.1 | 4.3 |
-| **Both** |  | 42 | **409.6** | **545** (1,202) |  |  |  |
+| 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 197.9 | 224 (494) | 1,641 (64.6) | 71.8 | 6.9 |
+| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 212.2 | 322 (709) | 1,563 (61.5) | 164.1 | 4.3 |
+| **Both** |  | 42 | **410.0** | **546** (1,203) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -39,7 +39,7 @@ Every piece stands on edge with its along-size on the 48 in side; the stack runs
 | 1 | **1-01** | F1 | BASE - FLOOR PANEL ASSY - F1 | 8.2 | 1219 × 1455 | 12 | 3 |
 | 2 | **1-02** | F2 | BASE - FLOOR PANEL ASSY - F2 | 8.2 | 1219 × 1455 | 12 | 3 |
 | 3 | **1-03** | B1 | WALL - PANEL ASSY - BACK LOWER - B1 | 8.6 | 1200.61 × 1127 | 46 | 4 |
-| 4 | **1-04** | B2 | WALL - PANEL ASSY - BACK LOWER - B2 | 11.5 | 1200.61 × 1127 | 88 | 4 |
+| 4 | **1-04** | B2 | WALL - PANEL ASSY - BACK LOWER - B2 | 11.9 | 1200.61 × 1127 | 88 | 4 |
 | 5 | **1-05** | L1 | WALL - PANEL ASSY - SIDE LOWER - LH | 11.2 | 1151 × 1492.74 | 48.5 | 5 |
 | 6 | **1-06** | R1 | WALL - PANEL ASSY - SIDE LOWER - RH | 11.2 | 1151 × 1492.74 | 48.5 | 5 |
 | 7 | **1-07** | B3 | WALL - PANEL ASSY - BACK UPPER - B3 | 8.6 | 1200.61 × 1118.61 | 46 | 6 |
@@ -82,7 +82,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 2: DR face down, felt up, and the base band | 58 | **2-06** | BASE - BAND ASSY - SIDE - RH | 2.4 | 1527 × 58 × 128 | 2 |
 | Tier 3: DL on its side, DT, soffit, air column | 209 | **2-09** | FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2302 × 209 × 318 | 9 |
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-12** | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 1709 × 316 × 213 | 12 |
-| Tier 3: DL on its side, DT, soffit, air column | 316 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 600 × 250 × 200 | 13 |
+| Tier 3: DL on its side, DT, soffit, air column | 316 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.5 | 600 × 250 × 200 | 13 |
 | Tier 3: DL on its side, DT, soffit, air column | 369 | **2-10** | AIR - SOFFIT | 14.8 | 2332 × 369 × 243 | 17 |
 | Tier 3: DL on its side, DT, soffit, air column | 222 | **2-11** | AIR - AIR COLUMN | 8.1 | 2118 × 222 × 369 | 16 |
 | Tier 4: air parts, light shelf, threshold and cartons | 526 | **2-17** | AIR - SUPPLY FAN BOX | 13.4 | 2015 × 526 × 213 | 15 |
@@ -138,7 +138,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-01** | 110401 | F1 | BASE - FLOOR PANEL ASSY - F1 | 8.2 | 1 | 3 |
 | **1-02** | TBD (BASE) | F2 | BASE - FLOOR PANEL ASSY - F2 | 8.2 | 1 | 3 |
 | **1-03** | 210201 | B1 | WALL - PANEL ASSY - BACK LOWER - B1 | 8.6 | 1 | 4 |
-| **1-04** | 210202 | B2 | WALL - PANEL ASSY - BACK LOWER - B2 | 11.5 | 1 | 4 |
+| **1-04** | 210202 | B2 | WALL - PANEL ASSY - BACK LOWER - B2 | 11.9 | 1 | 4 |
 | **1-05** | 210101 | L1 | WALL - PANEL ASSY - SIDE LOWER - LH | 11.2 | 1 | 5 |
 | **1-06** | 210102 | R1 | WALL - PANEL ASSY - SIDE LOWER - RH | 11.2 | 1 | 5 |
 | **1-07** | TBD (WALL) | B3 | WALL - PANEL ASSY - BACK UPPER - B3 | 8.6 | 1 | 6 |
@@ -167,7 +167,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | 610201 | - | AIR - SOFFIT | 14.8 | 2 | 17 |
 | **2-11** | 610101 | - | AIR - AIR COLUMN | 8.1 | 2 | 16 |
 | **2-12** | 350002 | DT | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 2 | 12 |
-| **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 1 | 13 |
+| **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.5 | 1 | 13 |
 | **2-14** | 810201 | - | INTERIOR - LIGHT SHELF ASSY | 1.6 | 2 | 20 |
 | **2-15** | TBD (BASE) | - | BASE - SMALL PARTS CARTON | 1.1 | 1 | 2 |
 | **2-16** | 810101 | - | INTERIOR - WORK WALL LEDGE ASSY | 1.9 | 1 | 23 |
@@ -187,7 +187,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-01** | 110401 | BASE - FLOOR PANEL ASSY - F1 | Tấm sàn F1 (cụm dán) | F1 | 8.18 | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) | 1455 × 1219 × 12 | 3 |
 | **1-02** | TBD (BASE) | BASE - FLOOR PANEL ASSY - F2 | Tấm sàn F2 (cụm dán) | F2 | 8.18 | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) | 1455 × 1219 × 12 | 3 |
 | **1-03** | 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | Vách hậu - cụm tấm dưới trái | B1 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1127 × 46 | 4 |
-| **1-04** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 11.48 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 4 |
+| **1-04** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 11.89 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 4 |
 | **1-05** | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | L1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 5 |
 | **1-06** | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | R1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 5 |
 | **1-07** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - B3 | Vách hậu - cụm tấm trên trái | B3 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1118.61 × 46 | 6 |
@@ -210,7 +210,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | - | Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes |  | - | 1.28 | assumption | inside the pieces | - |
 | - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
 | - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: edge boards, corner guards, foam interleaf, PE sheets, cap board, straps, film |  | - | 6.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **223.5** |  |  |  |
+|  |  | **Gross** |  |  | **223.9** |  |  |  |
 
 ### Pallet 2: 96 × 48 in
 
@@ -228,7 +228,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.77 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 17 |
 | **2-11** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 16 |
 | **2-12** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.91 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 12 |
-| **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.41 | calculation (CAD) | 600 × 250 × 200 | 13 |
+| **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.46 | calculation (CAD) | 600 × 250 × 200 | 13 |
 | **2-14** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.58 | calculation (CAD) | 2332 × 80 × 60 | 20 |
 | **2-15** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.14 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-16** | 810101 | INTERIOR - WORK WALL LEDGE ASSY | Bàn tựa vách làm việc (cụm) | - | 1.90 | calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 23 |
@@ -245,7 +245,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR (BATTENS ON POSTS) |  | - | 16.00 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **321.6** |  |  |  |
+|  |  | **Gross** |  |  | **321.7** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -290,7 +290,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Roof slot grille 611602 and roof sleeve 611601, with C2 | 1 | 0.88 | calculation (CAD) | 1-12 |
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-10 × 0.5, 2-17 × 0.5 |
 | BASE | Base seal and cable grommets | 1 | 0.60 | source | A-4 |
-| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.25 | calculation (CAD) | 1-04 × 0.540816, 2-13 × 0.459184 |
+| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.71 | calculation (CAD) | 1-04 × 0.569611, 2-13 × 0.430389 |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | calculation (CAD) | 2-14 |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-16 |
 | WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.14 | calculation (part CAD); cleats assumption | A-3 |
@@ -304,7 +304,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 
 | Check | What | Result | Pass |
 | --- | --- | --- | --- |
-| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 413.1 kg; 0 lines miscounted, 0 unknown | yes |
+| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 413.5 kg; 0 lines miscounted, 0 unknown | yes |
 | K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-03 FRONT - DECOR BLOCK ASSY - DR 18.9 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 42 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 960 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
@@ -392,7 +392,7 @@ Numbers in the 91 band follow conventions §6 (PACKAGING; 1000–7999 made, 8000
 
 The controlling numbers are metric (guideline §3.1; conventions §2). For US LTL quotes:
 
-- Pallet 1: 48 × 40 in, 1,641 mm loaded, 223 kg gross (section 1 gives inches, pounds, cubic feet and lb/ft³).
+- Pallet 1: 48 × 40 in, 1,641 mm loaded, 224 kg gross (section 1 gives inches, pounds, cubic feet and lb/ft³).
 - Pallet 2: 96 × 48 in, 1,563 mm loaded, 322 kg gross.
 - No piece over 96 in; no piece over 20 kg except the glass; nothing stackable on top of either pallet.
 

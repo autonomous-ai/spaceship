@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1180" height="820" viewBox="0 0 1180 820">
 <rect width="1180" height="820" fill="#ffffff"/>
 <text x="20.0" y="30.0" font-family="Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#222">910001 P01  PALLET LOAD 1 - 48 x 40 in (1219 x 1016 mm) - upright stack, side view across the 40 in side</text>
-<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 223 kg, loaded height 1641 mm, stack 960 of 1016 mm. Open face on the LEFT: take pieces in label order. Units mm. DRAFT.</text>
+<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 224 kg, loaded height 1641 mm, stack 960 of 1016 mm. Open face on the LEFT: take pieces in label order. Units mm. DRAFT.</text>
 <rect x="70" y="720" width="365.8" height="43.6" fill="#d2b48c" stroke="#7a5c2e"/>
 <text x="252.9" y="750.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#222">48 x 40 pallet, 121</text>
 <rect x="70" y="180.0" width="3.6" height="540.0" fill="#999"/>
@@ -12,7 +12,7 @@
 <rect x="85.1" y="314.3" width="16.6" height="405.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
 <g transform="translate(96.4,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-03 B1 8.6 kg (step 4)</text></g>
 <rect x="103.1" y="314.3" width="31.7" height="405.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(122.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-04 B2 11.5 kg (step 4)</text></g>
+<g transform="translate(122.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-04 B2 11.9 kg (step 4)</text></g>
 <rect x="136.2" y="182.6" width="17.5" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
 <g transform="translate(148.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-05 L1 11.2 kg (step 5)</text></g>
 <rect x="155.1" y="182.6" width="17.5" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>

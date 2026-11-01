@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 288 part lines (114 made, 174 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 36 hardware items in the joints register (36 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 291 part lines (114 made, 177 bought, 140 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 36 hardware items in the joints register (36 with a part number). Listed parts weigh 356.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -162,6 +162,7 @@ Read from: this working tree.
 - 718072 ELECTRICAL - MAINS PLUG - NEMA 5-15P: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718023 ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718024 ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718055 ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718029 ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718025 ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718028 ELECTRICAL - CABLE - CAT6 U/UTP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -178,6 +179,8 @@ Read from: this working tree.
 - 718038 ELECTRICAL - RJ45 PLUG - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718039 ELECTRICAL - RJ45 INLINE COUPLER - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718040 ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718056 ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718057 ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718041 ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
