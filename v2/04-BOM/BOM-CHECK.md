@@ -182,7 +182,7 @@ Read from: this working tree.
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 115 numbers, 105 not in a team's list yet, 4 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 124 numbers, 114 not in a team's list yet, 4 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -301,6 +301,15 @@ From `v2/04-BOM/number-allocation.csv`: 115 numbers, 105 not in a team's list ye
 | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | ALLOCATED |
 | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | ALLOCATED |
 | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | ALLOCATED |
+| 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | 610402 | 1 | ALLOCATED |
+| 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | 610401 | 1 | ALLOCATED |
+| 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | ALLOCATED |
+| 611406 | AIR - FAN BOX LINING - EXHAUST FAR END | 610402 | 1 | ALLOCATED |
+| 611407 | AIR - FAN BOX LINING - SUPPLY END | 610401 | 2 | ALLOCATED |
+| 611109 | AIR - COLUMN CORNER ANGLE - BACK | 610101 | 1 | ALLOCATED |
+| 611110 | AIR - COLUMN FILL - LEFT | 610101 | 1 | ALLOCATED |
+| 611111 | AIR - KICK GRILLE - LEFT | 610101 | 1 | ALLOCATED |
+| 611211 | AIR - SOFFIT FILL - FRONT | 610201 | 1 | ALLOCATED |
 
 ## Rules
 
