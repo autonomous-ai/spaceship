@@ -327,6 +327,8 @@ def step_faces(step_path, pn, pm=None):
                 d["n"] = rot(f.normal)
             if f.kind == "cylinder" and f.origin is not None:
                 d.update({"o": mv(f.origin), "d": rot(f.normal), "r": f.radius, "concave": sfm._concave(f)})
+            if f.kind == "conical_surface":     # its edge circles (a countersink's: the hole's and the outer one)
+                d["circles"] = [(mv(a[0].o), a[1]) for a in f.arcs]
             out.append(d)
     return out
 
@@ -530,6 +532,57 @@ def flat_fails(data, texts, page_text, tol=TOL):
     return fails
 
 
+def csk_fails(data, faces, holes, page, tol=TOL):
+    """Countersinks (D-143) against the STEP (the repo's reader): each cone of the STEP with two circles on a hole's
+    axis, the smaller the hole's, is a countersink: its outer diameter and included angle (from the circles' radii and
+    the distance between them) must be printed in that hole's row ('CSK Ød x a°'), and every printed countersink must
+    be one of the STEP's."""
+    fails = []
+    found = []
+    for f in faces:
+        cs = f.get("circles") or []
+        if f["kind"] != "conical_surface" or len(cs) < 2:
+            continue
+        rs = sorted({round(r, 4) for _c, r in cs})
+        if len(rs) != 2:
+            continue
+        small = next(c for c, r in cs if abs(r - rs[0]) < 1e-3)
+        big = next(c for c, r in cs if abs(r - rs[1]) < 1e-3)
+        h = next((h for h in holes if abs(h["dia"] / 2 - rs[0]) < 0.005 and
+                  math.dist(sub(small, h["c"]), tuple(dot(sub(small, h["c"]), h["axis"]) * a for a in h["axis"])) < 0.02),
+                 None)
+        if h is None:
+            continue
+        depth = math.dist(small, big)
+        ang = 2 * math.degrees(math.atan2(rs[1] - rs[0], depth)) if depth > 1e-9 else 180.0
+        found.append({"hole": h, "dia": 2 * rs[1], "angle": ang, "centre": big})
+    rows = {f_["tag"]: f_ for f_ in data["features"] if f_["kind"] == "hole"}
+    printed = {}
+    for tag in rows:
+        txt = row_size_text(page, tag) or ""
+        m = re.search(r"CSK\s+Ø([\d.]+)\s*x\s*([\d.]+)°", txt)
+        if m:
+            printed[tag] = (float(m.group(1)), float(m.group(2)))
+    used = set()
+    for c in found:
+        # the row of this hole: the one whose table position is the STEP hole's (the hole table check ties them)
+        tag = next((t for t, f_ in rows.items() if abs(f_["dia"] - c["hole"]["dia"]) < 0.011 and
+                    math.dist(f_["entry"], c["centre"]) < tol), None)
+        if tag is None or tag not in printed:
+            fails.append("a countersink Ø%s x %s° of the STEP (its hole Ø%s) is called out nowhere" % (
+                _fmtv(c["dia"]), _fmtv(c["angle"]), _fmtv(c["hole"]["dia"])))
+            continue
+        used.add(tag)
+        d_, a_ = printed[tag]
+        if abs(d_ - c["dia"]) > 0.011 or abs(a_ - c["angle"]) > 0.051:
+            fails.append("%s: its row says CSK Ø%s x %s°; the STEP's is Ø%s x %s°" % (
+                tag, _fmtv(d_), _fmtv(a_), _fmtv(c["dia"]), _fmtv(c["angle"])))
+    for tag in printed:
+        if tag not in used:
+            fails.append("%s: its row calls out a countersink the STEP hasn't" % tag)
+    return fails
+
+
 def vgroove_radius_fails(data, faces):
     """A V-grooved panel's folds against the STEP's own faces (the repo's reader): each fold's outside radius, as the
     sheet records it, must be a convex cylinder of the STEP along that run's bend lines (Reviewer 6 on #341: the
@@ -646,9 +699,240 @@ def flat_hole_fails(data, holes, faces, tol=TOL):
         if i not in used:
             fails.append("the flat's DXF has a Ø%s hole at (%s, %s) that is on no STEP hole" % (
                 _fmtv(2 * rr), _fmtv(cc[0]), _fmtv(cc[1])))
-    if d.cut_loops() != 1:
-        fails.append("the flat's DXF cuts %d shapes besides its round holes; one outline expected" % d.cut_loops())
     return fails
+
+
+def _cutout_loops(mp, faces):
+    """The cut-outs of a bent part that aren't round holes, from the STEP's own faces (the repo's reader): in each
+    flange the sheet records, the faces through the sheet (planes square to it, cylinders along its normal) that join
+    into closed shapes whose outward normals point into the shape (a void in the flange), round holes aside. Each:
+    its edge on one skin as points (3D), its centre (3D) and its points."""
+    out = []
+    for c in mp["chains"]:
+        for f in c["flanges"]:
+            N, D, t = f["N"], f["D"], c["t"]
+
+            def inside(p):
+                q = dot(p, D) - f["m0"]
+                return abs(dot(p, N) - f["o0"]) <= t + 0.01 and f["lo"] - 0.01 <= q <= f["hi"] + 0.01
+            side = []
+            for fc in faces:
+                if not fc["pts"] or not all(inside(p) for p in fc["pts"]):
+                    continue
+                if fc["kind"] == "plane" and "n" in fc and abs(dot(fc["n"], N)) < 1e-6:
+                    side.append(fc)
+                elif fc["kind"] == "cylinder" and "d" in fc and abs(abs(dot(fc["d"], N)) - 1) < 1e-6:
+                    side.append(fc)
+            # join faces that share a point into shapes
+            key = lambda p: tuple(round(v, 3) for v in p)
+            parent = list(range(len(side)))
+
+            def root(i):
+                while parent[i] != i:
+                    parent[i] = parent[parent[i]]
+                    i = parent[i]
+                return i
+            owner = {}
+            for i, fc in enumerate(side):
+                for p in fc["pts"]:
+                    k = key(p)
+                    if k in owner:
+                        parent[root(i)] = root(owner[k])
+                    else:
+                        owner[k] = i
+            comps = {}
+            for i in range(len(side)):
+                comps.setdefault(root(i), []).append(side[i])
+            for fcs in comps.values():
+                if all(fc["kind"] == "cylinder" for fc in fcs):
+                    continue                # a round hole: the holes' check
+                pts = [p for fc in fcs for p in fc["pts"]]
+                ctr = tuple(sum(p[k] for p in pts) / len(pts) for k in range(3))
+                planes = [fc for fc in fcs if fc["kind"] == "plane"]
+                if not all(dot(sub(ctr, tuple(sum(p[k] for p in fc["pts"]) / len(fc["pts"]) for k in range(3))),
+                               fc["n"]) > 0 for fc in planes):
+                    continue                # an edge of the flange's outline, not a void in it
+                # the edge on one skin: each face's points on the skin nearest N's low side, as segments and arcs
+                lo_ = min(dot(p, N) for p in pts)
+                skin = lambda fc: [p for p in fc["pts"] if abs(dot(p, N) - lo_) < 0.01]
+                edge = []
+                for fc in fcs:
+                    ps = skin(fc)
+                    uniq = []
+                    for p in ps:
+                        if not any(math.dist(p, u) < 1e-4 for u in uniq):
+                            uniq.append(p)
+                    if fc["kind"] == "plane" and len(uniq) == 2:
+                        a, b = uniq
+                        n_ = max(1, int(math.ceil(math.dist(a, b) / 1.0)))
+                        edge.append([tuple(a[k] + (b[k] - a[k]) * i / n_ for k in range(3)) for i in range(n_ + 1)])
+                    elif fc["kind"] == "cylinder" and len(uniq) == 2:
+                        o = fc["o"]
+                        o = tuple(o[k] + N[k] * (lo_ - dot(o, N)) for k in range(3))      # its axis on that skin
+                        u = sub(uniq[0], o)
+                        r = math.sqrt(dot(u, u))
+                        u = tuple(x / r for x in u)
+                        v = (N[1] * u[2] - N[2] * u[1], N[2] * u[0] - N[0] * u[2], N[0] * u[1] - N[1] * u[0])
+                        w = sub(uniq[1], o)
+                        ang = math.atan2(dot(w, v), dot(w, u))
+                        # the arc that bulges away from the shape's middle (the void's edge)
+                        arcs = [ang, ang - 2 * math.pi] if ang > 0 else [ang, ang + 2 * math.pi]
+                        mids = [tuple(o[k] + r * (math.cos(a_ / 2) * u[k] + math.sin(a_ / 2) * v[k]) for k in range(3))
+                                for a_ in arcs]
+                        a_ = max(zip(arcs, mids), key=lambda am: math.dist(am[1], ctr))[0]
+                        n_ = max(4, int(math.ceil(abs(a_) * r / 0.5)))
+                        edge.append([tuple(o[k] + r * (math.cos(a_ * i / n_) * u[k] + math.sin(a_ * i / n_) * v[k])
+                                           for k in range(3)) for i in range(n_ + 1)])
+                    else:
+                        edge.append(None)
+                # a void closes on itself: on the skin every end of its edge meets exactly one other (a notch in the
+                # outline, such as a corner relief, is open where it leaves the flange's edge)
+                ends = {}
+                for e in edge:
+                    if e is None:
+                        continue
+                    for p in (e[0], e[-1]):
+                        k = tuple(round(v, 2) for v in p)
+                        ends[k] = ends.get(k, 0) + 1
+                if not ends or any(n_ != 2 for n_ in ends.values()):
+                    continue
+                # its centre and extent from the whole edge (round ends and corners included)
+                ep = [p for e in edge if e for p in e]
+                ctr = tuple((min(p[k] for p in ep) + max(p[k] for p in ep)) / 2 for k in range(3))
+                if any(math.dist(ctr, o_["centre"]) < 0.01 for o_ in out):
+                    continue                # the flange both runs share: met from each
+                out.append({"centre": ctr, "pts": ep, "edge": edge})
+    return out
+
+
+def flat_cutout_fails(data, faces, tol=TOL):
+    """A bent part's cut-outs that aren't round holes (#335's follow-up, the Lead: 511202 and other trays), counted
+    both ways: each cut-out the STEP has (found from its own faces, _cutout_loops) unfolds, by the sheet's record of
+    its flanges, onto one of the DXF's cut shapes inside the outline, point for point within tol both ways; each of
+    the DXF's on one of the STEP's; and each one's table row gives its centre and its size as the STEP has them."""
+    fl = data.get("flat")
+    if not fl or not fl.get("map"):
+        return []
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    mp = fl["map"]
+    loops = d.cut_components()[1:]
+    cuts = _cutout_loops(mp, faces)
+    fails = []
+    if len(cuts) != len(loops):
+        fails.append("the flat's DXF cuts %d shapes inside its outline besides round holes, the STEP has %d cut-outs" % (
+            len(loops), len(cuts)))
+    used = set()
+    for c in cuts:
+        if any(e is None for e in c["edge"]):
+            fails.append("a cut-out of the STEP round (%s) has an edge this check can't follow" % ", ".join(
+                _fmtv(x) for x in c["centre"]))
+            continue
+        flat = [[_flat_where(mp, p) for p in e] for e in c["edge"]]
+        if any(q is None for e in flat for q in e):
+            fails.append("the STEP's cut-out round (%s) isn't on one flange's straight part" % ", ".join(
+                _fmtv(x) for x in c["centre"]))
+            continue
+        segs = [("L", e[i], e[i + 1]) for e in flat for i in range(len(e) - 1)]
+        mine = dxfmod._Grid(segs, tol)
+        hit = None
+        for i, lp in enumerate(loops):
+            if i in used:
+                continue
+            g = dxfmod._Grid(lp["prims"], tol)
+            if all(g.dist(q) <= tol for e in flat for q in e) and \
+                    all(mine.dist(q) <= tol for pr in lp["prims"] for q in dxfmod._samples(pr, 1.0)):
+                hit = i
+                break
+        if hit is None:
+            q = _flat_where(mp, c["centre"])
+            fails.append("the STEP's cut-out unfolds round (%s) in the flat; the DXF has no cut-out of its shape there" % (
+                ", ".join(_fmtv(x) for x in q) if q else "?"))
+        else:
+            used.add(hit)
+    for i, lp in enumerate(loops):
+        if i not in used:
+            b = lp["box"]
+            fails.append("the flat's DXF has a %s x %s cut-out at (%s, %s) that is on no cut-out of the STEP" % (
+                _fmtv(b[2] - b[0]), _fmtv(b[3] - b[1]), _fmtv((b[0] + b[2]) / 2), _fmtv((b[1] + b[3]) / 2)))
+    return fails, cuts
+
+
+def row_size_text(page, tag):
+    """A table row's SIZE cell in full, its wrapped lines too: the words after the row's X and Y, before its DEPTH
+    (THRU..., or a depth), on the row's line and the lines under it until the next row."""
+    words = sorted(page.get_text("words"), key=lambda w: ((w[1] + w[3]) / 2, w[0]))
+    for i, w in enumerate(words):
+        if w[4] != tag:
+            continue
+        y = (w[1] + w[3]) / 2
+        line = sorted([v for v in words if abs((v[1] + v[3]) / 2 - y) <= 0.6 and v[0] > w[0]], key=lambda v: v[0])
+        if len(line) < 3:
+            continue
+        try:
+            float(line[0][4]), float(line[1][4])
+        except ValueError:
+            continue
+        x0 = line[1][2]
+        depth = next((v for v in line[2:] if v[4].startswith("THRU") or v[4].endswith("deep")), None)
+        x1 = depth[0] if depth else 1e9
+        cell = [v for v in line[2:] if v[0] >= x0 and v[2] <= x1]
+        nxt = min([(v[1] + v[3]) / 2 for v in words if (v[1] + v[3]) / 2 > y + 0.6 and re.fullmatch(r"H\d{2}", v[4])
+                   and abs(v[0] - w[0]) < 2.0] or [y + 30.0])
+        below = sorted([v for v in words if y + 0.6 < (v[1] + v[3]) / 2 < nxt - 0.6 and v[0] >= x0 and v[2] <= x1],
+                       key=lambda v: ((v[1] + v[3]) / 2, v[0]))
+        under, last = [], y
+        for v in below:            # the cell's wrapped lines: each one line under the last (a gap ends the cell)
+            vy = (v[1] + v[3]) / 2
+            if vy - last > 14.0 and not (under and abs(vy - (under[-1][1] + under[-1][3]) / 2) <= 0.6):
+                break
+            if not under or abs(vy - (under[-1][1] + under[-1][3]) / 2) > 0.6:
+                last = vy
+            under.append(v)
+        return " ".join(v[4] for v in cell + under)
+    return None
+
+
+def cutout_row_fails(data, rows, cuts, page, tol=TOL):
+    """Each cut-out's table row against the STEP's cut-outs (_cutout_loops): its X and Y the centre of one, from its
+    view's origin, and its size and direction that one's extent along the view's X and Y."""
+    fails = []
+    views = {v["origin"]: v for v in data["views"] if v["origin"]}
+    O = data["origin"]
+    for f in data["features"]:
+        if f["kind"] != "cutout":
+            continue
+        if f["tag"] not in rows:
+            fails.append("%s: no row in the tables" % f["tag"])
+            continue
+        x, y, _w = rows[f["tag"]]
+        size = row_size_text(page, f["tag"])
+        m = re.search(r"(?:CUT-OUT|SLOT)\s+([\d.]+)\s*x\s*([\d.]+).*?along\s+([XY])", size or "")
+        if not m:
+            fails.append("%s: its size '%s' doesn't read as 'L x W along X or Y'" % (f["tag"], size))
+            continue
+        a_, b_, ax = float(m.group(1)), float(m.group(2)), m.group(3)
+        L, W = (b_, a_) if size.strip().startswith("SLOT") else (a_, b_)      # a slot reads width x length
+        v = views[f["table_origin"]]
+        Ov = v.get("origin3d") or O
+        best = None
+        for c in cuts:
+            cx, cy = dot(sub(c["centre"], Ov), v["x"]), dot(sub(c["centre"], Ov), v["y"])
+            ex = max(dot(p, v["x"]) for p in c["pts"]) - min(dot(p, v["x"]) for p in c["pts"])
+            ey = max(dot(p, v["y"]) for p in c["pts"]) - min(dot(p, v["y"]) for p in c["pts"])
+            dd = math.hypot(cx - float(x), cy - float(y))
+            if best is None or dd < best[0]:
+                best = (dd, ex, ey)
+        if best is None or best[0] > tol:
+            fails.append("%s: table X %s Y %s is the centre of no cut-out of the STEP within %s mm" % (f["tag"], x, y, tol))
+            continue
+        want = (L, W) if ax == "X" else (W, L)
+        if abs(best[1] - want[0]) > tol or abs(best[2] - want[1]) > tol:
+            fails.append("%s: the STEP's cut-out there is %s along X and %s along Y; its row says %s" % (
+                f["tag"], _fmtv(best[1]), _fmtv(best[2]), size))
+    return fails
+
+
 
 
 def _fmtv(v):
@@ -937,7 +1221,13 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
+    fails += csk_fails(data, faces, holes, page)
     fails += vgroove_radius_fails(data, faces)
+    if data.get("flat"):
+        cf = flat_cutout_fails(data, faces)
+        if cf:
+            fails += cf[0]
+            fails += cutout_row_fails(data, rows, cf[1], page)
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")

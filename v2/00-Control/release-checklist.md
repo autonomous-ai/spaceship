@@ -6,9 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (e75b16e), PR #320 (889fc54), PR #319 (2ffa0be), PR #337 (a41cab4), PR #313 (b56d2d7), PR #339 (3d1e088), PR #310 (382d8ae), PR #356 (c3430ec), PR #343 (4efa807), PR #350 (6546c90), PR #324 (6a37ee2), PR #348 (3d7c6ae), PR #346 (c84898a). The Mac's screen at run time: **unlocked**. 583 files in the CAD, drawing and manufacturing folders; the FAI plan's 91 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (369cb600), PR #350 (6546c904), PR #348 (3d7c6ae6), PR #339 (93ede056), PR #366 (09b48f53), PR #356 (073a0ba7), PR #313 (780aa830), PR #377 (d70ef55e), PR #310 (b10bfb2d), PR #364 (db237676), PR #320 (2a4b6263), PR #319 (7d90ef4d), PR #343 (074c4b82), PR #378 (55566033), PR #337 (51832426), PR #382 (35640feb), PR #392 (81026d09), PR #394 (ed095996). The Mac's screen at run time: **unlocked**. 571 files in the CAD, drawing and manufacturing folders; the FAI plan's 96 characteristics, 11 functional checks and 22 bought-part test lines.
 
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/01-CAD-Native/electrical/electrical_parts.py`: PR #337 changed it, but main changed it later; `v2/01-CAD-Native/electrical/electrical_parts.py`: PR #319 changed it, but main changed it later; `v2/01-CAD-Native/electrical/test_electrical_offline.py`: PR #337 changed it, but main changed it later; `v2/01-CAD-Native/electrical/test_electrical_offline.py`: PR #319 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #337 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #319 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #313 changed it, but main changed it later; `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-INSTALL-SHEET_INS.md`: PR #320 changed it, but main changed it later; `v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf`: PR #337 changed it, but main changed it later; `v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf`: PR #319 changed it, but main changed it later; `v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv`: PR #337 changed it, but main changed it later; `v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv`: PR #319 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #310 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #313 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #320 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #339 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #356 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #337 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #319 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #343 changed it, but main changed it later.
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/05-Engineering/joints/joints-register.md`: PR #382 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-lining changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -16,19 +16,19 @@ Read from main although an open PR changed them, because main changed them later
 
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| BASE | 3 | 8 | 0 | 0 | 3 | 1 | 5 |
-| CEILING | 8 | 15 | 0 | 0 | 5 | 0 | 5 |
-| CEILING (builds AIR, D-80) | 11 | 13 | 0 | 7 | 4 | 0 | 7 |
+| BASE | 4 | 7 | 0 | 0 | 3 | 1 | 5 |
+| CEILING | 17 | 6 | 0 | 0 | 5 | 0 | 5 |
+| CEILING (builds AIR, D-80) | 15 | 17 | 0 | 9 | 4 | 0 | 9 |
 | CEILING (builds INTERIOR, D-80) | 0 | 3 | 0 | 4 | 0 | 0 | 2 |
-| ELECTRICAL | 8 | 1 | 0 | 3 | 3 | 0 | 69 |
-| FRONT | 51 | 18 | 0 | 3 | 5 | 0 | 8 |
+| ELECTRICAL | 8 | 1 | 0 | 3 | 70 | 1 | 12 |
+| FRONT | 55 | 14 | 0 | 3 | 5 | 0 | 8 |
 | JOINTS | 3 | 8 | 0 | 0 | 0 | 0 | 0 |
-| WALL | 19 | 42 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 103 | 108 | 0 | 17 | 11 | 2 | 97 |
+| WALL | 20 | 41 | 0 | 0 | 5 | 1 | 5 |
+| **All, each number once** | 122 | 97 | 0 | 19 | 78 | 3 | 42 |
 
-89 of the 228 made numbers have no drawing yet; for 60 of them the drawing is the only gap, so their drawings can start now (D-84).
+90 of the 238 made numbers have no drawing yet; for 57 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD 17, STEP 11, FAI 8.
+What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD 17, STEP 11, FAI 8.
 
 ## Made parts with no FAI line
 
@@ -39,11 +39,11 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 | BASE | 111301 | BASE - SILL - FIXED GLASS | main |
 | JOINTS | 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343, PR #348 |
 | JOINTS | 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343, PR #348 |
-| FRONT | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #313 |
-| FRONT | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #313 |
-| FRONT | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #313 |
+| FRONT | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #378 |
+| FRONT | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #378 |
+| FRONT | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #378 |
 | JOINTS | 831009 | HARDWARE MITRE PLATE 40X40 45DEG | main |
-| JOINTS | 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | PR #346 |
+| JOINTS | 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | main |
 
 ## Made parts and assemblies
 
@@ -60,7 +60,7 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 | 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
 | 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
 | 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | main | yes | yes | yes | no | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: DXF or cut list |
+| 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
 | 111301 | BASE - SILL - FIXED GLASS | main | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
 
 ### CEILING
@@ -72,18 +72,18 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 | 410102 | CEILING - PANEL ASSY - C2 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
 | 411101 | CEILING - PANEL FRAME - C1 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
 | 411102 | CEILING - PANEL FRAME - C2 | PR #348 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
-| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412102 | CEILING - FRAME SEAM MEMBER - C1 | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412103 | CEILING - FRAME FRONT MEMBER - C1 | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412202 | CEILING - FRAME SEAM MEMBER - C2 | PR #348 | yes | yes | yes | no | its frame's cut list row, 411102 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412203 | CEILING - FRAME FRONT MEMBER - C2 | PR #348 | yes | yes | yes | no | its frame's cut list row, 411102 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | PR #348 | yes | yes | yes | no | its frame's cut list row, 411102 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
-| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | PR #348 | yes | yes | yes | no | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | open: DXF or cut list |
+| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | done |
+| 412102 | CEILING - FRAME SEAM MEMBER - C1 | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | done |
+| 412103 | CEILING - FRAME FRONT MEMBER - C1 | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | done |
+| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | done |
+| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | done |
+| 412202 | CEILING - FRAME SEAM MEMBER - C2 | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411102 (D-162) | yes | yes | K-J18 | done |
+| 412203 | CEILING - FRAME FRONT MEMBER - C2 | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411102 (D-162) | yes | yes | K-J18 | done |
+| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411102 (D-162) | yes | yes | K-J18 | done |
+| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | PR #348 | yes | yes | yes | yes | its frame's cut list row, 411101 (D-162) | yes | yes | K-J18 | done |
 | 411301 | CEILING - SKIN - C1 | PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-P03, K-P04 | done |
 | 411302 | CEILING - SKIN - C2 | PR #348 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P06 | done |
-| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #348 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05, K-L10 | done |
+| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #348 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05, K-L10, K-L11 | done |
 | 513101 | LINING - TRAY - CEILING | PR #348 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
 | 513102 | LINING - RIB - CEILING | PR #348 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L07 | open: drawing |
 | 513201 | LINING - FELT - CEILING | PR #348 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04, K-L08 | done |
@@ -95,37 +95,47 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 610000 | AIR | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 610101 | AIR - AIR COLUMN | main | yes | yes | yes | n/a | yes | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611106 | AIR - COLUMN FOOT PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611101 | AIR - COLUMN FACE - FRONT | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611102 | AIR - COLUMN FACE - LEFT | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611103 | AIR - COLUMN CORNER ANGLE | main | yes | yes | yes | n/a | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
-| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611104 | AIR - COLUMN FILL | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611105 | AIR - KICK GRILLE | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 610301 | AIR - SPLITTER CARTRIDGE - COMMON | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611301 | AIR - CARTRIDGE CASING | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 611302 | AIR - CARTRIDGE LAYER 50 | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 610201 | AIR - SOFFIT | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611201 | AIR - SOFFIT UNDERSIDE - LEFT HINGED | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611207 | AIR - SOFFIT UNDERSIDE - RIGHT HINGED | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611208 | AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611202 | AIR - SOFFIT FACE - FRONT | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611206 | AIR - SOFFIT END PLATE - LEFT | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611210 | AIR - SOFFIT DOOR-SIDE PLATE | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
-| 611203 | AIR - SOFFIT FILL | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611204 | AIR - EXHAUST GRILLE | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
-| 610402 | AIR - EXHAUST FAN BOX | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611401 | AIR - FAN BOX CASING - EXHAUST | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 610401 | AIR - SUPPLY FAN BOX | main | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03, K-A05 | open: drawing |
-| 611402 | AIR - FAN BOX CASING - SUPPLY | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 611501 | AIR - INTAKE RISER | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03, K-A04 | open: DXF or cut list, drawing |
-| 611601 | AIR - ROOF SLEEVE | main | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
-| 611602 | AIR - ROOF GRILLE | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 610000 | AIR | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610101 | AIR - AIR COLUMN | PR #378 | yes | yes | yes | n/a | yes | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611106 | AIR - COLUMN FOOT PLATE | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611101 | AIR - COLUMN FACE - FRONT | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611102 | AIR - COLUMN FACE - LEFT | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611103 | AIR - COLUMN CORNER ANGLE - FRONT | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611109 | AIR - COLUMN CORNER ANGLE - BACK | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611104 | AIR - COLUMN FILL - FRONT | PR #378 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611110 | AIR - COLUMN FILL - LEFT | PR #378 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611105 | AIR - KICK GRILLE - FRONT | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611111 | AIR - KICK GRILLE - LEFT | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 610301 | AIR - SPLITTER CARTRIDGE - COMMON | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611301 | AIR - CARTRIDGE CASING | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611302 | AIR - CARTRIDGE LAYER 50 | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610201 | AIR - SOFFIT | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611201 | AIR - SOFFIT UNDERSIDE - LEFT HINGED | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611207 | AIR - SOFFIT UNDERSIDE - RIGHT HINGED | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611208 | AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611202 | AIR - SOFFIT FACE - FRONT | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611206 | AIR - SOFFIT END PLATE - LEFT | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611210 | AIR - SOFFIT DOOR-SIDE PLATE | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611203 | AIR - SOFFIT FILL | PR #378 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611211 | AIR - SOFFIT FILL - FRONT | PR #378 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611204 | AIR - EXHAUST GRILLE | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 610402 | AIR - EXHAUST FAN BOX | PR #378 | yes | yes | yes | n/a | yes | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611401 | AIR - FAN BOX CASING - EXHAUST | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611406 | AIR - FAN BOX LINING - EXHAUST FAR END | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610401 | AIR - SUPPLY FAN BOX | PR #378 | yes | yes | yes | n/a | yes | yes | n/a | K-A01, K-A02, K-A03, K-A05 | done |
+| 611402 | AIR - FAN BOX CASING - SUPPLY | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611407 | AIR - FAN BOX LINING - SUPPLY END | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611501 | AIR - INTAKE RISER | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03, K-A04 | open: DXF or cut list, drawing |
+| 611408 | AIR - FAN BOX LIP ANGLE - SUPPLY | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611601 | AIR - ROOF SLEEVE | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611602 | AIR - ROOF GRILLE | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -143,90 +153,90 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 710000 | ELECTRICAL | main | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
-| 710001 | ELECTRICAL - POWER UNIT - B2 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | main | yes | yes | yes | yes | yes | yes | yes | K-E01, K-E02 | HOLD |
-| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
-| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
-| 719001 | ELECTRICAL - CORD SET - 120 V US - 3 M (KIT) | main | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
+| 710000 | ELECTRICAL | PR #337 | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
+| 710001 | ELECTRICAL - POWER UNIT - B2 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #337 | yes | yes | yes | yes | yes | yes | yes | K-E01, K-E02 | HOLD |
+| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #337 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
+| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #337 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #337 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
+| 719001 | ELECTRICAL - CORD SET - 120 V US - 3 M (KIT) | PR #337 | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
 
 ### FRONT
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 350001 | FRONT - DECOR BLOCK ASSY - DL | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D18 | open: drawing |
-| 351101 | FRONT - DECOR SKIN - DL | PR #313 | yes | yes | yes | yes | no | yes | n/a | K-D19 | open: drawing |
-| 351104 | FRONT - DECOR FRAME - DL | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D20 | open: drawing |
-| 351102 | FRONT - DECOR BACK PLATE - DL | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D21 | done |
-| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #313 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #313 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #313 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
-| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
-| 351201 | FRONT - DECOR SKIN - DT | PR #313 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
-| 351204 | FRONT - DECOR FRAME - DT | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D15 | open: drawing |
-| 351202 | FRONT - DECOR BACK PLATE - DT | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
-| 351203 | FRONT - DOOR TOP STOP - DT | PR #313 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
-| 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
-| 351301 | FRONT - DECOR SKIN - DR | PR #313 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
-| 351306 | FRONT - DECOR FRAME - DR | PR #313 | yes | yes | yes | n/a | no | yes | n/a | K-D04, K-D05 | open: drawing |
-| 351302 | FRONT - DECOR BACK PLATE - DR | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
-| 351305 | FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE | PR #313 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
-| 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #313 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-D09 | HOLD |
-| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | PR #313 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
-| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | PR #313 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
-| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | PR #313 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
-| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | PR #313 | yes | yes | yes | yes | no: its cut list row (D-162) doesn't give both end angles | yes | yes | K-J18 | open: drawing |
-| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | PR #313 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
-| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | PR #313 | yes | yes | yes | no | yes | yes | yes | K-J18 | open: DXF or cut list |
-| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | PR #313 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
-| 360001 | FRONT - DOOR UNIT | PR #339 | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
+| 350001 | FRONT - DECOR BLOCK ASSY - DL | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-D18 | open: drawing |
+| 351101 | FRONT - DECOR SKIN - DL | PR #378 | yes | yes | yes | yes | no | yes | n/a | K-D19 | open: drawing |
+| 351104 | FRONT - DECOR FRAME - DL | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-D20 | open: drawing |
+| 351102 | FRONT - DECOR BACK PLATE - DL | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D21 | done |
+| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #378 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #378 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #378 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
+| 351201 | FRONT - DECOR SKIN - DT | PR #378 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
+| 351204 | FRONT - DECOR FRAME - DT | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-D15 | open: drawing |
+| 351202 | FRONT - DECOR BACK PLATE - DT | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
+| 351203 | FRONT - DOOR TOP STOP - DT | PR #378 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
+| 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
+| 351301 | FRONT - DECOR SKIN - DR | PR #378 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
+| 351306 | FRONT - DECOR FRAME - DR | PR #378 | yes | yes | yes | n/a | no | yes | n/a | K-D04, K-D05 | open: drawing |
+| 351302 | FRONT - DECOR BACK PLATE - DR | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
+| 351305 | FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE | PR #378 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
+| 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #378 | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-D09 | HOLD |
+| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351104 (D-162) | yes | yes | K-J18 | done |
+| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | PR #378 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351204 (D-162) | yes | yes | K-J18 | done |
+| 352301 | FRONT - DECOR FRAME DR - FRONT RING BOTTOM | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352302 | FRONT - DECOR FRAME DR - FRONT RING FACET SIDE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352303 | FRONT - DECOR FRAME DR - FRONT RING TOP | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352304 | FRONT - DECOR FRAME DR - FRONT RING DT JOINT | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352305 | FRONT - DECOR FRAME DR - FRONT RING DIAGONAL | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352306 | FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352307 | FRONT - DECOR FRAME DR - BACK RING BOTTOM | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352308 | FRONT - DECOR FRAME DR - BACK RING BOLT LINE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352309 | FRONT - DECOR FRAME DR - BACK RING TOP | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352310 | FRONT - DECOR FRAME DR - BACK RING DT JOINT | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352311 | FRONT - DECOR FRAME DR - BACK RING DT LEDGE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352312 | FRONT - DECOR FRAME DR - BACK RING DIAGONAL | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352313 | FRONT - DECOR FRAME DR - BACK RING GLASS EDGE | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352314 | FRONT - DECOR FRAME DR - FRONT RING CROSS 724 | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352315 | FRONT - DECOR FRAME DR - FRONT RING FAN BOX SHELF | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352316 | FRONT - DECOR FRAME DR - BACK RING BAND | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 352317 | FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF | PR #378 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | PR #378 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | PR #378 | yes | yes | yes | yes | yes | yes | yes | K-J18 | done |
+| 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | PR #378 | yes | yes | yes | yes | its frame's cut list row, 351306 (D-162) | yes | yes | K-J18 | done |
+| 360001 | FRONT - DOOR UNIT | PR #339 | yes | yes | yes | n/a | yes | yes | n/a | K-F07, K-F08 | done |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | PR #339 | yes | yes | yes | yes | yes | yes | n/a | K-F01, K-F02 | HOLD |
 | 361002 | FRONT - DOOR KICK STRIP | PR #339 | yes | yes | yes | yes | yes | yes | yes | K-F05, K-F06 | done |
 | 360002 | FRONT - FIXED GLASS UNIT | main | yes | yes | yes | n/a | yes | yes | n/a | K-F03, K-F04 | done |
@@ -242,12 +252,12 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 | 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #343, PR #348, main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
 | 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343, PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
 | 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343, PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
-| 111212 | BASE CORNER KEY FRONT LH | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
-| 111213 | BASE CORNER KEY FRONT RH | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
-| 111214 | BASE CORNER KEY KNEE LH | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
-| 111215 | BASE CORNER KEY SQUARE INLINE | PR #324 | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111213 | BASE CORNER KEY FRONT RH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111214 | BASE CORNER KEY KNEE LH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111215 | BASE CORNER KEY SQUARE INLINE | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 831009 | HARDWARE MITRE PLATE 40X40 45DEG | main | no | no | yes | yes | no | no | — | no | open: BOM row, CAD, drawing, FAI |
-| 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | PR #346 | no | no | yes | — | on 831001, tabulated (D-89) | no | — | no | open: BOM row, CAD, FAI |
+| 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | main | no | no | yes | — | on 831001, tabulated (D-89) | no | — | no | open: BOM row, CAD, FAI |
 
 ### WALL
 
@@ -266,7 +276,7 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 | 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 | 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 | 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511101 | LINING - TRAY - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511101 | LINING - TRAY - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02 | done |
 | 511301 | LINING - FELT - SIDE LOWER - LH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
@@ -350,17 +360,19 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 618101 | AIR - SENSOR HUB ZONE - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618104 | AIR - SOFFIT HANGER STUD - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618102 | AIR - SUPPLY TRANSITION - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618103 | AIR - RISER TRANSITION - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 618101 | AIR - SENSOR HUB ZONE - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618104 | AIR - SOFFIT HANGER STUD - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618102 | AIR - SUPPLY TRANSITION - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618103 | AIR - RISER TRANSITION - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618501 | AIR - RISER BUFFER - RUBBER - M6 - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #378 | H-01P | yes | J-T1 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #378 | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #378 | H-09 | yes | T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #378 | H-03 | yes | J-T1, T06 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -373,86 +385,97 @@ What the open made numbers miss: drawing 89, DXF or cut list 27, BOM row 18, CAD
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 718001 | ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718002 | ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718003 | ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718004 | ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718005 | ELECTRICAL - INLET SEALING CAP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718006 | ELECTRICAL - LAN FEED-THROUGH - ETHERCON | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718007 | ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718010 | ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718011 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718012 | ELECTRICAL - FUSE - ATO 5 A 32 V | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718013 | ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718019 | ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718049 | ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718054 | ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718047 | ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718014 | ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718015 | ELECTRICAL - BONDING WASHER - SERRATED M6 A2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718016 | ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
-| 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718073 | ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718026 | ELECTRICAL - CABLE - 4 X 20 AWG | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718027 | ELECTRICAL - CABLE - 4 X 24 AWG SCREENED | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718051 | ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718052 | ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718044 | ELECTRICAL - DRAW CORD - NYLON 3 MM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718048 | ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718060 | ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE) | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718061 | ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718062 | ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718063 | ELECTRICAL - LIGHT KNOB - POTENTIOMETER WITH KNOB | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718069 | ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718064 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718065 | ELECTRICAL - INLET TEMPERATURE SENSOR | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718066 | ELECTRICAL - FUSE - ATO 2 A 32 V | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718067 | ELECTRICAL - FUSE - ATO 1 A 32 V | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718068 | ELECTRICAL - FAN Y-CABLE - 4-PIN PWM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718070 | ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718071 | ELECTRICAL - CORD - SJT 14/3 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718072 | ELECTRICAL - MAINS PLUG - NEMA 5-15P | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718023 | ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718024 | ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718029 | ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718025 | ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718028 | ELECTRICAL - CABLE - CAT6 U/UTP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718030 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718031 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718045 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718046 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718032 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718033 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718034 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718035 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718036 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718037 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718038 | ELECTRICAL - RJ45 PLUG - CAT6 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718039 | ELECTRICAL - RJ45 INLINE COUPLER - CAT6 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718040 | ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718041 | ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718050 | ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718053 | ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718103 | ELECTRICAL - LED PROFILE END CAP | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718001 | ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2 - MEAN WELL LPV-60-12 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718081 | ELECTRICAL - 24 V SUPPLY - 60 W CLASS 2 - MEAN WELL LPV-60-24 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718082 | ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT - MEAN WELL CLG-100-24 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718002 | ELECTRICAL - LED CONTROLLER - 5 CHANNEL 12-24 V PWM - DMX512 - LTECH LT-995 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718003 | ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489 - EATON FAZ-C15/1-NA-L | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718004 | ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP - NEUTRIK NAC3MPX-TOP | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718005 | ELECTRICAL - INLET SEALING CAP - NEUTRIK SCNAC-01 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718006 | ELECTRICAL - LAN JACK - ETHERCON CAT6 - IDC - NEUTRIK NE8FDY-C6-B | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718007 | ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R - P&S 1597TRW | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718010 | ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM - PHOENIX CONTACT NS 35/7,5 PERF 2000MM | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718011 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - LITTELFUSE FHAC0001ZXJ | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718012 | ELECTRICAL - FUSE - ATO 5 A 32 V - LITTELFUSE 0287005.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718013 | ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS - LITTELFUSE 0287005.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718019 | ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD - FABORY 51340.040.008 DIN 7985-H | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718049 | ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718054 | ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718047 | ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM - PEM CLA-M4-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718014 | ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING - PEM FHA-M5-12 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718079 | ELECTRICAL - NUT - M5 - SERRATED FLANGE - A2 - FABORY 51119.050.001 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718080 | ELECTRICAL - LEVER CONNECTOR - 5 CONDUCTOR - UL 486C - WAGO 221-415 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718015 | ELECTRICAL - BONDING WASHER - SERRATED M6 A2 - FABORY 51460.060.001 DIN 6798 A | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718016 | ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG - PANDUIT PV14-10R-C/PV14-14R-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN - ELECTRI-FLEX LIQUATITE NM-11 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #337 | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #337 | H-09 | yes | T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #337 | H-03 | yes | J-T1, T06 | done |
+| 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) - ALPHA WIRE 461419 BK005/WH005/GR005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) - ALPHA WIRE 461419 BK005/WH005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN - ALPHA WIRE 461419 GR005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718073 | ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718074 | ELECTRICAL - FEMALE DISCONNECT - 0.250 IN - 16-14 AWG - INSULATED - PANDUIT DNF14-250FIB-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718075 | ELECTRICAL - CONDUIT CONNECTOR - LFNC 1/2 IN - STRAIGHT - ELECTRI-FLEX NMLT-11 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718026 | ELECTRICAL - CABLE - 4 X 20 AWG SCREENED - PLENUM - BELDEN 6402FE | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718051 | ELECTRICAL - LED STRIP - 24 V 3.0 W/M - 3000 K - 8 MM - HÄFELE 833.76.216 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718052 | ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M - HÄFELE 833.72.861 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718076 | ELECTRICAL - CALL LIGHT PROFILE END CAP (PAIR) - HÄFELE 833.72.853 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718044 | ELECTRICAL - DRAW CORD - NYLON 3 MM - ERIN ROPE SBN041000 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718048 | ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718060 | ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE) | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718061 | ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST - E-SWITCH PV16F2B0SS | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718062 | ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL - E-SWITCH PV16F2B0SS | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718063 | ELECTRICAL - LIGHT KNOB - POTENTIOMETER WITH KNOB | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718069 | ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST - E-SWITCH PV16F2B0SS | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718064 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN - LITTELFUSE FHAC0001ZXJ | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718065 | ELECTRICAL - INLET TEMPERATURE SENSOR | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718066 | ELECTRICAL - FUSE - ATO 2 A 32 V - LITTELFUSE 0287002.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718067 | ELECTRICAL - FUSE - ATO 1 A 32 V - LITTELFUSE 0287001.PXCN | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718068 | ELECTRICAL - FAN Y-CABLE - 4-PIN PWM | PR #337 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718070 | ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP - NEUTRIK NAC3F-TRUE1-S | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718071 | ELECTRICAL - CORD - SJOOW 14/3 - CAROL 01360 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718072 | ELECTRICAL - MAINS PLUG - NEMA 5-15P - LEVITON 5266-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718023 | ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2 - SOUTHWIRE R40018-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718024 | ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2 - SOUTHWIRE R40049-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718055 | ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2 - SOUTHWIRE 94664 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718029 | ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2 - SOUTHWIRE R40015-1 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718025 | ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2 - BELDEN 9536 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718028 | ELECTRICAL - CABLE - CAT6 U/UTP - BELDEN 3612 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718030 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0 - MOLEX 39-01-2025 (5557-02R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718031 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0 - MOLEX 39-01-3029 (5559-02P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718045 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0 - MOLEX 39-01-2065 (5557-06R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718046 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0 - MOLEX 39-01-3069 (5559-06P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718032 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0 - MOLEX 39-01-2045 (5557-04R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718033 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0 - MOLEX 39-01-3049 (5559-04P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718034 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0 - MOLEX 39-01-2105 (5557-10R) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718035 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0 - MOLEX 39-01-3109 (5559-10P1) | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718036 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN - MOLEX 39-00-0039 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718037 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN - MOLEX 39-00-0041 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718038 | ELECTRICAL - RJ45 PLUG - CAT6 - PANDUIT SP688E-C | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718039 | ELECTRICAL - RJ45 INLINE COUPLER - CAT6 - PANDUIT CC688IW | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718040 | ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP - PANDUIT NK688MWH | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718056 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN - MOLEX 39-00-0078 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718057 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN - MOLEX 39-00-0082 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718077 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 22-28 AWG TIN - MOLEX 39-00-0047 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718078 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 22-28 AWG TIN - MOLEX 39-00-0049 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718041 | ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON - HEYCO 2836N | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET - HEYCO 12431 DS-125 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY - HEYCO 3904 PMT 150 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718050 | ELECTRICAL - LED STRIP - 24 V 6.0 W/M - 3000 K - 8 MM - HÄFELE 833.76.226 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
+| 718053 | ELECTRICAL - LED STRIP FEED LEAD - 24 V - 8 MM - HÄFELE 833.75.763 | PR #337 | n/a (team-numbered) | no | F-06 | open: maker and SKU |
+| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718103 | ELECTRICAL - LED PROFILE END CAP | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | PR #337 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
 
 ### FRONT
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 368005 | FRONT - FRAME-STOP SEAL | PR #313 | H-20 | yes | F-03 | done |
-| 368007 | FRONT - DOOR CATCH - IN DT | PR #313 | H-23 | yes | F-02 | done |
-| 848013 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | PR #313 | H-34 | HOLD | T06 | HOLD |
+| 368005 | FRONT - FRAME-STOP SEAL | PR #378 | H-20 | yes | F-03 | done |
+| 368007 | FRONT - DOOR CATCH - IN DT | PR #378 | H-23 | yes | F-02 | done |
+| 848013 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | PR #378 | H-34 | HOLD | T06 | HOLD |
 | 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | PR #339 | H-15 | yes | T13 | done |
 | 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #339, main | H-16 | yes | F-03 | done |
 | 368101 | FRONT - DOOR HINGE - HOLD | PR #339 | H-21 | HOLD | T13 | HOLD |
