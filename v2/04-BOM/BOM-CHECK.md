@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -95,7 +95,6 @@ Read from: this working tree.
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -109,7 +108,6 @@ Read from: this working tree.
 - 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
 - 618102 AIR - SUPPLY TRANSITION - HOLD: HOLD (HOLD)
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
@@ -208,7 +206,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 145 numbers, 119 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 146 numbers, 120 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -297,6 +295,7 @@ From `v2/04-BOM/number-allocation.csv`: 145 numbers, 119 not in a team's list ye
 | 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | 351306 | 2 | ALLOCATED |
 | 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | ALLOCATED |
 | 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | ALLOCATED |
+| 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | ALLOCATED |
 | 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | ALLOCATED |
 | 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | ALLOCATED |
 | 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | ALLOCATED |

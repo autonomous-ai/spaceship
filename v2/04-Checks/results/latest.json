@@ -1,5 +1,5 @@
 {
- "rev": "9e0dcd1",
+ "rev": "a8cd10a",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -106,13 +106,15 @@
   "C02:stacks",
   "C04",
   "C05",
+  "C05:pdf-people",
   "C06",
   "C07",
   "C08",
   "C08:assembly",
   "C09",
   "C10",
-  "C11"
+  "C11",
+  "C11:frames"
  ],
  "findings": [
   {
@@ -237,6 +239,168 @@
     "count": 2
    },
    "key": "C08|hole-size-M6-CLEARANCE-7|assembly SOFFIT RAIL DOOR holes Ø6.60"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211101",
+   "severity": "major",
+   "message": "211101 WALL - PANEL FRAME - SIDE LOWER - LH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - BACK (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L1"
+   },
+   "key": "C11|frame-steel|211101"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211102",
+   "severity": "major",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - BACK (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L1"
+   },
+   "key": "C11|frame-steel|211102"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211103",
+   "severity": "major",
+   "message": "211103 WALL - PANEL FRAME - SIDE UPPER - LH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - BACK (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L2"
+   },
+   "key": "C11|frame-steel|211103"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211104",
+   "severity": "major",
+   "message": "211104 WALL - PANEL FRAME - SIDE UPPER - RH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - BACK (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L2"
+   },
+   "key": "C11|frame-steel|211104"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211201",
+   "severity": "major",
+   "message": "211201 WALL - PANEL FRAME - BACK LOWER - B1: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 x 1.2, studs 20 x 40 x 1 (D-85) mill f'); its finish (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - CENTRE (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1'), STILE - OUTER (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "B1"
+   },
+   "key": "C11|frame-steel|211201"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211202",
+   "severity": "major",
+   "message": "211202 WALL - PANEL FRAME - BACK LOWER - B2: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 x 1.2, studs 20 x 40 x 1 (D-85) mill f'); its finish (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - CENTRE (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1'), STILE - OUTER (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "B1"
+   },
+   "key": "C11|frame-steel|211202"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "411101",
+   "severity": "major",
+   "message": "411101 CEILING - PANEL FRAME - C1: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (410000_P01_CEILING-PARTS-LIST_BOM.csv line 5) lacks galvanized steel (it reads 'Aluminium 6063-T6, mill finish (D-79) mill finish with the bond prep (D-79)'); its finish (410000_P01_CEILING-PARTS-LIST_BOM.csv line 5) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 7 member rows not in J-FRAME-01's steel: SIDE MEMBER SIDE (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 2): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), SEAM MEMBER SEAM (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 3): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), FRONT MEMBER FRONT (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 4): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), BACK MEMBER 40X40 BACK (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 5): galvanized steel (it reads 'aluminium 40 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 1 X1 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 6): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 2 X2 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 7): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "frames",
+    "key": "C1"
+   },
+   "key": "C11|frame-steel|411101"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "411102",
+   "severity": "major",
+   "message": "411102 CEILING - PANEL FRAME - C2: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (410000_P01_CEILING-PARTS-LIST_BOM.csv line 6) lacks galvanized steel (it reads 'Aluminium 6063-T6, mill finish (D-79) mill finish with the bond prep (D-79)'); its finish (410000_P01_CEILING-PARTS-LIST_BOM.csv line 6) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 7 member rows not in J-FRAME-01's steel: SIDE MEMBER SIDE (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 9): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), SEAM MEMBER SEAM (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 10): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), FRONT MEMBER FRONT (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 11): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), BACK MEMBER 40X40 BACK (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 12): galvanized steel (it reads 'aluminium 40 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 1 X1 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 13): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 2 X2 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 14): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "frames",
+    "key": "C1"
+   },
+   "key": "C11|frame-steel|411102"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351104",
+   "severity": "major",
+   "message": "351104 FRONT - DECOR FRAME - DL: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DL; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5 mill finish (hidden'); 26 member rows not galvanized steel: BACK RING BOTTOM B01 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 2), BACK RING DOOR SIDE B02 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 3), BACK RING SLOPE UNDER DT B03 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 4), BACK RING BOLT LINE B04 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 5), RING BOTTOM - DOOR SIDE R1D (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 6), RING BOTTOM - BACK R1K (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351104"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351204",
+   "severity": "major",
+   "message": "351204 FRONT - DECOR FRAME - DT: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DT; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 (the back ring's to'); 13 member rows not galvanized steel: BACK RING BOTTOM B01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 2), BACK RING DR JOINT B02 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 3), BACK RING TOP B03 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 4), BACK RING SLOPE OVER DL B04 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 5), BACK RING POST B05 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 6), FRONT FACET TUBE F01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351204"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351306",
+   "severity": "major",
+   "message": "351306 FRONT - DECOR FRAME - DR: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DR; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.'); 24 member rows not galvanized steel: FRONT RING BOTTOM F01 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 2), FRONT RING FACET SIDE F02 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 3), FRONT RING TOP F03 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 4), FRONT RING DT JOINT F04 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 5), FRONT RING DIAGONAL F05 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 6), FRONT RING GLASS EDGE F06 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351306"
   },
   {
    "check": "C11",
@@ -999,16 +1163,14 @@
    "rule": "name-mismatch",
    "subject": "838003",
    "severity": "major",
-   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv, v2/04-BOM/100000_P01_POD-MASTER_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
-   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 11 parts lists).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "BASE; CEILING; Control; ELECTRICAL; WALL",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 8 parts lists).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE; ELECTRICAL; WALL",
    "evidence": {
     "files": [
-     "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
      "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
@@ -1021,12 +1183,28 @@
      "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
      "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
      "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
-     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
-     "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step"
     ],
     "register": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
    },
    "key": "C06|name-mismatch|838003"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "118001",
+   "severity": "minor",
+   "message": "118001 is named 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv"
+    ],
+    "register": "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD"
+   },
+   "key": "C06|name-mismatch|118001"
   },
   {
    "check": "C06",
@@ -2299,6 +2477,174 @@
    "owner": "Joints Engineer",
    "evidence": {},
    "key": "C05|dimension-twice|831001"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG",
+   "severity": "major",
+   "message": "110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "111401_P01_BASE-FLOOR-PANEL-F1_DWG",
+   "severity": "major",
+   "message": "111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
+   "severity": "major",
+   "message": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
+   "severity": "major",
+   "message": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
+   "severity": "major",
+   "message": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
+   "severity": "major",
+   "message": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
+   "severity": "major",
+   "message": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
+   "severity": "major",
+   "message": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
+   "severity": "major",
+   "message": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
+   "severity": "major",
+   "message": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG",
+   "severity": "major",
+   "message": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|111211_P01_BASE-CORNER-KEY-TABULATED_DWG"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG",
+   "severity": "major",
+   "message": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|831001_P01_HARDWARE-LOCATING-SPIGOT_DWG"
   }
  ],
  "stacks": [
@@ -2967,17 +3313,17 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
-   "grade": "aluminium 5056",
-   "finish": "none (plain aluminium, as supplied)",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
    "torque_nm": "HOLD-01 (D-48)",
    "qty_parts_list": "4",
    "qty_cad": 65,
    "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
    "maker": "Sherex (PEM)",
-   "sku": "CAH3-610-4.2",
+   "sku": "CAH2-610-4.2",
    "status": "DRAFT",
    "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
@@ -3205,34 +3551,34 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
-   "grade": "aluminium 5056",
-   "finish": "none (plain aluminium, as supplied)",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "8",
    "qty_cad": 65,
    "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
    "maker": "Sherex (PEM)",
-   "sku": "CAH3-610-4.2",
+   "sku": "CAH2-610-4.2",
    "status": "DRAFT",
    "parts_list": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
-   "grade": "aluminium 5056",
-   "finish": "none (plain aluminium, as supplied)",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "10",
    "qty_cad": 65,
    "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
    "maker": "Sherex (PEM)",
-   "sku": "CAH3-610-4.2",
+   "sku": "CAH2-610-4.2",
    "status": "DRAFT",
    "parts_list": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
@@ -4531,11 +4877,11 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
-   "grade": "aluminium 5056",
-   "finish": "none (plain aluminium, as supplied)",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
    "torque_nm": "",
    "qty_parts_list": "4",
    "qty_cad": 65,
@@ -4548,7 +4894,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056 (maker)",
@@ -4565,7 +4911,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056 (maker)",
@@ -4582,11 +4928,11 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
-   "grade": "aluminium 5056",
-   "finish": "none (plain aluminium, as supplied)",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
    "torque_nm": "",
    "qty_parts_list": "8",
    "qty_cad": 65,
@@ -4599,11 +4945,11 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
-   "grade": "aluminium 5056",
-   "finish": "none (plain aluminium, as supplied)",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
    "torque_nm": "",
    "qty_parts_list": "10",
    "qty_cad": 65,
@@ -4616,7 +4962,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium",
@@ -4633,7 +4979,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056",
@@ -4650,7 +4996,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056",
@@ -4667,7 +5013,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056",
@@ -4684,7 +5030,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056",
@@ -4701,7 +5047,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056",
@@ -4718,7 +5064,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "aluminium 5056",
