@@ -17,6 +17,11 @@ One run at a time: the Fusion lock
   lock is removed at the end, also on an error, Ctrl-C or SIGTERM. A lock
   whose run has died (its process is gone) or that is past its expiry is
   cleared by the next run that waits for it.
+  When a call times out (--timeout), Fusion may still be running it, so the
+  run keeps the lock and tries a read-only check every --busy-poll seconds
+  (30) for up to --busy-wait more seconds (1200), and gives the lock back as
+  soon as Fusion answers; if it never does, it gives it back with a loud
+  warning (PM ruling 2026-11-01: the next run must not start on a busy Fusion).
   For steps that must stay together across several runs (for example a
   script, then a click in Fusion, then another script), hold the lock:
       export FUSION_MCP_LOCK_TOKEN=$(python3 tools/fusion/run_script.py --lock-hold 900)
@@ -56,7 +61,8 @@ Script arguments
 
 Exit code 0 when the script ran without an exception, 1 when it (or a
 document step) raised one (the traceback is printed), 2 when Fusion's MCP
-could not be reached, 3 when the Fusion lock could not be taken in time.
+could not be reached or didn't answer in time, 3 when the Fusion lock could
+not be taken in time.
 Standard library only.
 """
 
@@ -139,6 +145,8 @@ def describe_owner(owner, now=None):
         who, what, owner.get("pid") or "none, held", owner.get("since_utc", "?"), mins)
     if owner.get("front"):
         text += "; went first in the queue: %s" % owner["front"]
+    if owner.get("busy"):
+        text += "; %s" % owner["busy"]
     joined = owner.get("joined")
     if isinstance(joined, dict) and pid_alive(joined.get("pid")):
         text += "; now running %s (pid %s)" % (joined.get("script", "?"), joined.get("pid", "?"))
@@ -421,7 +429,31 @@ class FusionLock:
             if owner and owner.get("token") == self.token and isinstance(joined, dict) \
                     and joined.get("pid") == os.getpid():
                 del owner["joined"]
+                owner.pop("busy", None)
                 self._write_owner(owner)
+        finally:
+            self._drop_guard()
+
+    def extend(self, seconds, note=None):
+        """Keep the lock (ours, or the hold this run joined) for at least `seconds`
+        more, under the guard, so no waiter clears it as expired while Fusion is
+        still busy with this run's call. `note` is shown to everyone waiting."""
+        if not (self.owned or self.joined) or not self.token:
+            return False
+        if not self._take_guard():
+            return False
+        try:
+            owner = self.read_owner()
+            if not owner or owner.get("token") != self.token:
+                return False
+            now = time.time()
+            if not isinstance(owner.get("expires"), (int, float)) or owner["expires"] < now + seconds:
+                owner["expires"] = now + seconds
+                owner["expires_utc"] = _utc(owner["expires"])
+            if note:
+                owner["busy"] = note
+            self._write_owner(owner)
+            return True
         finally:
             self._drop_guard()
 
@@ -484,6 +516,10 @@ class McpError(Exception):
     pass
 
 
+class McpTimeout(McpError):
+    """Fusion didn't answer a call in time: it may still be running it."""
+
+
 class FusionMcp:
     """Minimal MCP client for Fusion's local Streamable HTTP server."""
 
@@ -492,6 +528,7 @@ class FusionMcp:
         self.timeout = timeout
         self.session_id = None
         self.next_id = 1
+        self.timed_out = False      # a call ran out of time: Fusion may still be busy with it
 
     def _post(self, payload, expect_reply=True):
         headers = {
@@ -515,6 +552,10 @@ class FusionMcp:
             raise McpError("HTTP %s from %s: %s" % (
                 e.code, self.url, e.read().decode("utf-8", "replace")[:500]))
         except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            if isinstance(e, TimeoutError) or isinstance(getattr(e, "reason", None), TimeoutError):
+                self.timed_out = True
+                raise McpTimeout("Fusion MCP at %s didn't answer within %g s; Fusion may still "
+                                 "be running the call" % (self.url, self.timeout))
             raise McpError("cannot reach Fusion MCP at %s (%s). Is Fusion "
                            "running with the MCP Server Adapter on?" % (self.url, e))
         if not expect_reply:
@@ -565,6 +606,52 @@ class FusionMcp:
 
     def call_tool(self, name, arguments):
         return self.request("tools/call", {"name": name, "arguments": arguments})
+
+
+BUSY_WAIT_S = 1200.0    # after a call times out: wait up to 20 more minutes for Fusion
+BUSY_POLL_S = 30.0      # trying a read-only check every 30 s (PM ruling 2026-11-01)
+IDLE_CHECK = "def run(_context):\n    pass\n"
+
+
+def wait_for_fusion(url, lock, wait_s=BUSY_WAIT_S, poll_s=BUSY_POLL_S, log=None,
+                    now=time.monotonic, sleep=time.sleep, mcp_factory=None):
+    """After a call timed out, Fusion may still be running it: keep the lock and
+    try a read-only no-op script every poll_s seconds until Fusion answers (True),
+    or wait_s has gone by (False, with a loud warning; the caller then gives the
+    lock back anyway). Live 2026-11-01 00:15: a build ran past its time limit,
+    the runner gave the lock back at once, and the next team's run started on a
+    Fusion still busy with it."""
+    log = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+    factory = mcp_factory or FusionMcp
+    check_s = max(0.2, 0.8 * poll_s)          # one check waits at most this long
+    t0, tries = now(), 0
+    log("run_script: Fusion didn't answer in time and may still be running the call: "
+        "keeping the Fusion lock and checking Fusion every %g s for up to %g min"
+        % (poll_s, wait_s / 60.0))
+    while True:
+        tries += 1
+        lock.extend(poll_s + check_s + 120.0,
+                    note="Fusion didn't answer this run in time; waiting for it to finish")
+        try:
+            m = factory(url, check_s)
+            m.initialize()
+            m.call_tool("fusion_mcp_execute", {"featureType": "script",
+                                               "object": {"script": IDLE_CHECK, "readOnly": True}})
+            log("run_script: Fusion answers again (check %d, %d s after the timeout); "
+                "giving the lock back" % (tries, now() - t0))
+            return True
+        except McpError:
+            pass
+        left = wait_s - (now() - t0)
+        if left <= 0:
+            log("run_script: " + "!" * 60)
+            log("run_script: WARNING: Fusion still hasn't answered %d min after this run's call "
+                "timed out (%d checks). Giving the Fusion lock back anyway: the next run may start "
+                "on a busy or hung Fusion. Tell the Product Manager; it may need the safe restart."
+                % (round(wait_s / 60.0), tries))
+            log("run_script: " + "!" * 60)
+            return False
+        sleep(min(left, max(0.0, t0 + tries * poll_s - now())))
 
 
 def tool_payload(result):
@@ -680,23 +767,39 @@ def run(_context):
             app.data.activeProject = proj
             # a version saved a moment ago may not open yet (live 2026-10-31, 4 s after
             # a save and close: "Missing key for PIMOpenWorkflowTracker"): try again
-            # every 10 s for up to a minute, then give the error
+            # every 10 s for up to a minute, then give the error. Each new try looks the
+            # file up afresh and opens its latest version: the same reference kept
+            # failing for a full minute (live 2026-10-31, the #140 batch test)
+            target = files[0]
             for attempt in range(7):
                 try:
-                    doc = app.documents.open(files[0], True)
+                    doc = app.documents.open(target, True)
                     break
                 except Exception as e:
                     if attempt == 6:
                         raise
-                    print("run_script: opening %%r failed (%%s); trying again in 10 s" %% (
+                    print("run_script: opening %%r failed (%%s); looking it up again in 10 s" %% (
                         name, str(e).strip().splitlines()[-1][:120] if str(e).strip() else type(e).__name__))
                     adsk.doEvents()
                     time.sleep(10)
+                    try:
+                        again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
+                        fresh = again.get(name) or files
+                        try:
+                            target = fresh[0].latestVersion or fresh[0]
+                        except Exception:
+                            target = fresh[0]
+                    except Exception as e2:
+                        # PM, on #167: a look-up that fails keeps the reference from
+                        # before, so the tries go on instead of ending early
+                        print("run_script: looking %%r up again failed (%%s); the next try uses the "
+                              "reference from before" %% (name, str(e2).strip().splitlines()[-1][:120]
+                                                          if str(e2).strip() else type(e2).__name__))
             if doc is None:
                 raise RuntimeError("could not open %%r from %%s" %% (name, ARGS["folder"]))
             doc.activate()
             print("run_script: opened %%r (version %%s) from %%s" %% (
-                name, files[0].versionNumber, ARGS["folder"]))
+                name, target.versionNumber, ARGS["folder"]))
             return
         if not ARGS.get("create"):
             raise RuntimeError("%%r is not open and not in %%s%%s (add --doc-new to make it)"
@@ -751,6 +854,16 @@ WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types
 # files fresh and a team's own edits show at once. Never __main__; Fusion's and
 # Python's own modules are never touched; one odd module can't fail the run.
 _TEAM = [_os.path.realpath(p) for p in %(team)r]
+# never dropped, even under a team folder: Fusion's add-ins and install, and Python's own
+_KEEP = [_os.path.realpath(p) for p in %(keep)r]
+for _p in (getattr(_sys, "prefix", ""), getattr(_sys, "base_prefix", ""), _os.path.dirname(_os.__file__)):
+    if _p:
+        _KEEP.append(_os.path.realpath(_p))
+try:
+    import adsk as _adsk
+    _KEEP.append(_os.path.realpath(_os.path.dirname(_os.path.dirname(_adsk.__file__))))
+except Exception:
+    pass
 
 def _under(f, roots):
     return any(f == r or f.startswith(r.rstrip("/") + "/") for r in roots)
@@ -761,7 +874,8 @@ for _n in list(_sys.modules):
         continue
     try:
         _f = getattr(_sys.modules.get(_n), "__file__", None)
-        if isinstance(_f, str) and _under(_os.path.realpath(_f), _TEAM):
+        if isinstance(_f, str) and _under(_os.path.realpath(_f), _TEAM) \
+                and not _under(_os.path.realpath(_f), _KEEP):
             _sys.modules.pop(_n, None)
             _dropped.append(_n)
     except Exception:
@@ -775,6 +889,47 @@ _FF = _types.ModuleType("fusion_folder")
 _FF.__file__ = %(ffpath)r
 exec(compile(_b64.b64decode(%(ffsrc)r).decode("utf-8"), %(ffpath)r, "exec"), _FF.__dict__)
 _sys.modules["fusion_folder"] = _FF
+# Every document open is logged to a file next to the Fusion lock, start and end,
+# with the file's name, version and whether it was hidden, written at once, so a
+# run stuck in an open shows what it was opening (PM 2026-11-01, after a drawing
+# open started at 00:23 and never ended). Installed once per Fusion session (the
+# class keeps it between runs); each run sets its own name for the lines.
+_OPENLOG = %(openlog)r
+def _log_open(_line):
+    try:
+        with open(_OPENLOG, "a", encoding="utf-8") as _fh:
+            _fh.write(_line + "\\n")
+    except Exception:
+        pass
+try:
+    import adsk.core as _ac
+    _ac._spaceship_run = %(runlabel)r
+    if not getattr(_ac.Documents.open, "_spaceship_logged", False):
+        _orig_open = _ac.Documents.open
+
+        def _logged_open(self, dataFile, visible=True, *a, **k):
+            import time as _t
+            try:
+                _what = "%%s v%%s" %% (dataFile.name, dataFile.versionNumber)
+            except Exception:
+                _what = "(name unreadable)"
+            _t0 = _t.time()
+            _when = lambda: _t.strftime("%%Y-%%m-%%d %%H:%%M:%%S UTC", _t.gmtime())
+            _log_open("%%s start open %%s %%s; run: %%s" %% (
+                _when(), _what, "visible" if visible else "HIDDEN", getattr(_ac, "_spaceship_run", "?")))
+            try:
+                _doc = _orig_open(self, dataFile, visible, *a, **k)
+            except Exception as _e:
+                _log_open("%%s end open %%s after %%.1f s: error %%s" %% (_when(), _what, _t.time() - _t0,
+                                                                       str(_e).strip().splitlines()[-1][:120] if str(_e).strip() else type(_e).__name__))
+                raise
+            _log_open("%%s end open %%s after %%.1f s: ok" %% (_when(), _what, _t.time() - _t0))
+            return _doc
+
+        _logged_open._spaceship_logged = True
+        _ac.Documents.open = _logged_open
+except Exception:
+    pass
 _SRC = _b64.b64decode(%(src)r).decode("utf-8")
 _NS = {"__name__": "__fusion_script__", "__file__": %(path)r,
        "SCRIPT_ARGS": %(args)r}
@@ -808,16 +963,35 @@ def team_roots(repo_root=None):
     /tmp (where agents' scratch worktrees live)."""
     trees = git_worktrees(repo_root)
     parents = sorted({os.path.dirname(os.path.abspath(t)) for t in trees[1:]})
-    return trees + parents + ["/tmp", "/private/tmp"]
+    home = os.path.realpath(os.path.expanduser("~"))
+
+    def holds_home(root):            # never sweep the home folder or a folder above it
+        r = os.path.realpath(root)
+        return r == home or home.startswith(r.rstrip("/") + "/")
+
+    return [r for r in trees + parents if not holds_home(r)] + ["/tmp", "/private/tmp"]
 
 
-def wrap_script(source, path, args):
+def keep_roots():
+    """Folders whose modules are never dropped, even inside a team folder: Fusion's
+    add-ins and install (Application Support/Autodesk). The wrapper adds Python's own
+    and the adsk package's folders inside Fusion."""
+    return [os.path.join(os.path.expanduser("~"), "Library", "Application Support", "Autodesk")]
+
+
+def open_log_path(lock_path=None):
+    """The open log, next to the Fusion lock: /tmp/fusion-mcp-27182.lock.opens.log."""
+    return (lock_path or default_lock_path(DEFAULT_URL)) + ".opens.log"
+
+
+def wrap_script(source, path, args, open_log=None, run_label=""):
     """Wrap the file so it compiles under its real path (true line numbers)."""
     compile(source, path, "exec")  # fail fast on syntax errors, locally
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
                       "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
-                      "team": team_roots()}
+                      "team": team_roots(), "keep": keep_roots(),
+                      "openlog": open_log or open_log_path(), "runlabel": run_label or os.path.basename(path)}
 
 
 def run_in_fusion(mcp, source, read_only=False):
@@ -873,6 +1047,12 @@ def build_parser():
     ap.add_argument("--url", default=DEFAULT_URL)
     ap.add_argument("--timeout", type=float, default=900.0,
                     help="seconds to wait for Fusion on each call (default 900)")
+    ap.add_argument("--busy-wait", type=float, default=BUSY_WAIT_S, metavar="S",
+                    help="after a call times out, keep the lock while Fusion may still be "
+                         "running it, for up to S more seconds (default %(default)g)")
+    ap.add_argument("--busy-poll", type=float, default=BUSY_POLL_S, metavar="S",
+                    help="...trying a read-only check every S seconds (default %(default)g); "
+                         "the lock is given back as soon as Fusion answers")
     ap.add_argument("--raw", action="store_true", help="print the raw tool reply")
     doc = ap.add_argument_group("your document")
     doc.add_argument("--doc", metavar="NAME",
@@ -981,7 +1161,8 @@ def main(argv=None):
             ap.error("--arg needs KEY=VALUE, got %r" % kv)
         k, v = kv.split("=", 1)
         script_args[k.strip()] = v
-    source = wrap_script(source, script_path, script_args)
+    source = wrap_script(source, script_path, script_args, open_log=open_log_path(lock_path),
+                         run_label="%s: %s" % (label, os.path.basename(script_path)))
 
     # Expiry is only a backstop for a recycled pid: a live run keeps its lock
     # however long it takes, and a dead one is cleared at once.
@@ -1000,18 +1181,26 @@ def main(argv=None):
     except KeyboardInterrupt:
         print("run_script: stopped while waiting for the Fusion lock", file=sys.stderr)
         return 3
+    mcp = FusionMcp(opts.url, opts.timeout)
     try:
-        return _run_locked(opts, source)
+        return _run_locked(opts, source, mcp)
     except KeyboardInterrupt:
         print("run_script: stopped; Fusion lock given back. Fusion may still be "
               "running the script.", file=sys.stderr)
         return 1
     finally:
+        if mcp.timed_out:
+            # never hand Fusion to the next run while it is still busy with this one
+            try:
+                wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll)
+            except KeyboardInterrupt:
+                print("run_script: stopped while waiting for Fusion to answer; Fusion lock "
+                      "given back", file=sys.stderr)
         lock.release()
 
 
-def _run_locked(opts, source):
-    mcp = FusionMcp(opts.url, opts.timeout)
+def _run_locked(opts, source, mcp=None):
+    mcp = mcp or FusionMcp(opts.url, opts.timeout)
     try:
         mcp.initialize()
         if opts.doc:

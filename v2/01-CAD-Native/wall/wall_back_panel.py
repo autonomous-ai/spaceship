@@ -36,9 +36,11 @@ with open(_LIB, "r", encoding="utf-8") as _fh:
     exec(compile(_fh.read(), _LIB, "exec"), globals())       # helpers; tables and builders replaced below
 # the library's names, bound here as well so tools/fusion/check_api.py (which can't follow the exec) sees them
 (HW_PARTS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, build_hardware, ev, hole, hw_site, new_comp,
- pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi) = [globals()[_n] for _n in (
-    "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "build_hardware", "ev", "hole",
-    "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of", "span", "vi")]
+ pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi, el_params, el_inside, EL_KIND) = [
+    globals()[_n] for _n in (
+        "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "build_hardware", "ev",
+        "hole", "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of",
+        "span", "vi", "el_params", "el_inside", "EL_KIND")]
 
 import adsk.core      # noqa: E402  (already imported by the library; named here for readers)
 import adsk.fusion    # noqa: E402
@@ -108,6 +110,9 @@ WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
     ("cass_h", "pnl_h" if ROW == 1 else "pod_h - outer_t - lin_gap - (panel_z0 + back_ph + seam_gap)", "mm",
      "calculation", "lower: the row height; upper: up to lin_gap under the ceiling frame, floating (D-57; P04)"),
 ]
+# ELECTRICAL's interface features (the library's EL_PARAMS): B2's power unit cut-out, slots and holes in
+# B2-CASS, the light feed holes in B4-CASS, the inlet holes and fill cut-outs in panel B2
+WALL_PARAMS = WALL_PARAMS + el_params(POSITION, EL_KIND)
 
 # ---------------------------------------------------------------- geometry expressions (back wall)
 
@@ -214,6 +219,7 @@ def build_panel(design, root):
         plate.name = "SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM"
         out[plate.name] = plate
         print("step 4: skin", size(bbox(plate)))
+        out[plate.name] = el_skin_holes(design, skin, plate)
     if fill:
         bay = box(design, fill, "FILL BAY 1", ("(%s) + tube_w" % X_LOW, "(%s) + stile_pitch" % X_LOW), yf,
                   zs).bodies.item(0)
@@ -222,6 +228,7 @@ def build_panel(design, root):
         pattern_x(fill, [bay], "stile_n_mid + 1", "stile_pitch", "FILL BAYS")
         out.update(name_by_x(fill, list(out.values()), bay, "FILL - BAY"))
         back_pockets(design, fill, yf, zs)
+        el_fill_cutouts(design, fill, yf)
         print("step 5: fill, %d bays" % sum(1 for k in out if k.startswith("FILL")))
     if frame:
         back_joint_features(design, frame, out)
@@ -403,6 +410,152 @@ def rect_on_y(design, comp, y_expr, xr, zr, label):
     return sk
 
 
+def round_cut(design, comp, body, axis, plane_expr, into, pos, dia, depth, label):
+    """A round cut of diameter `dia` (an extrude cut, not a hole feature, so it sits in sheet metal too): a circle
+    on the plane normal to `axis` at `plane_expr`, its centre dimensioned from the sketch origin by the `pos`
+    expressions and its diameter by `dia` (fully constrained), cut `depth` along `into` (+1 or -1 along the
+    axis), cutting `body` only."""
+    pl = plane_at(design, comp, axis, plane_expr, label)
+    sk = comp.sketches.add(pl)
+    sk.name = "SKETCH - %s" % label
+    c = {axis: ev(design, plane_expr)}
+    for a, e in pos.items():
+        c[a] = ev(design, e)
+    ctr = sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM))
+    circ = sk.sketchCurves.sketchCircles.addByCenterRadius(ctr, ev(design, dia) / 2.0 * MM)
+    pt = circ.centerSketchPoint
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    for a, e in pos.items():
+        sa = sketch_axis_of(sk, a)
+        if abs(ev(design, e)) < 1e-6:
+            (sk.geometricConstraints.addVerticalPoints if sa == "x" else
+             sk.geometricConstraints.addHorizontalPoints)(pt, sk.originPoint)
+        else:
+            g = pt.geometry
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, pt, H if sa == "x" else V,
+                                                     adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0)
+                                                     ).parameter.expression = "abs(%s)" % e
+    g = pt.geometry
+    sk.sketchDimensions.addDiameterDimension(circ, adsk.core.Point3D.create(g.x + 1.0, g.y + 1.0, 0)
+                                             ).parameter.expression = dia
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    n = pl.geometry.normal
+    dist = depth if into * {"x": n.x, "y": n.y, "z": n.z}[axis] > 0 else "-(%s)" % depth
+    ext_in = comp.features.extrudeFeatures.createInput(sk.profiles.item(0),
+                                                       adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ext_in.setDistanceExtent(False, vi(dist))
+    ext_in.participantBodies = [body]
+    ext = comp.features.extrudeFeatures.add(ext_in)
+    ext.name = "CUT - %s" % label
+    return ext
+
+
+def el_tray_features(design, tray):
+    """ELECTRICAL's features in the back trays (EL_PARAMS). B2-CASS: the power unit cut-out, plain (folded
+    returns round a rectangular hole can't come from a flat blank: their tabs overlap at the corners; PROPOSED by
+    WALL 2026-10-31 21:08 UTC), so the unit's leads go straight into the cable gap; the light feed's bushing hole
+    in the tray's top return (the B2/B4 joint); the corner slot in the end return. B4-CASS: the light feed's
+    bushing hole in its bottom return (the same joint). No cable hole goes through a lip (PM rule 2026-10-31
+    21:01 UTC: felt only, or a full steel face with its bushing, never a notch): the ceiling route crosses the
+    felt only (el_felt_cuts_back)."""
+    if POSITION not in ("B2", "B4"):
+        return
+    body = tray.bRepBodies.item(0)
+    outline = (span(design, XC_LOW, XC_HIGH), span(design, Z0, Z_CASS1))
+    grm = ("el_lt_x", "el_y_bg")
+    if POSITION == "B2":
+        el_inside(design, "the power unit cut-out", [("el_cut_x0", "el_cut_x1") + outline[0],
+                                                     ("el_cut_z0", "el_cut_z1") + outline[1]], 30.0)
+        box(design, tray, "POWER UNIT CUT-OUT", ("el_cut_x0", "el_cut_x1"),
+            ("(%s) - tray_t - 1 mm" % Y_TRAY_BACK, "(%s) + 1 mm" % Y_TRAY_BACK), ("el_cut_z0", "el_cut_z1"), "cut", body)
+        body = tray.bRepBodies.item(0)
+        round_cut(design, tray, body, "z", "(%s) - tray_t - 1 mm" % Z_CASS1, +1, {"x": grm[0], "y": grm[1]},
+                  "el_grm_d", "tray_t + 2 mm", "HOLE G-B2-B4 IN THE TOP RETURN")
+        body = tray.bRepBodies.item(0)
+        el_inside(design, "S-CNR", [("el_trunk_z - el_cs_dz", "el_trunk_z + el_cs_dz") + outline[1]], 30.0)
+        box(design, tray, "SLOT S-CNR IN THE END RETURN", ("(%s) - tray_t - 1 mm" % XC_HIGH, "(%s) + 1 mm" % XC_HIGH),
+            ("el_y_xc - el_cs_h", "el_y_xc + el_cs_h"), ("el_trunk_z - el_cs_dz", "el_trunk_z + el_cs_dz"), "cut", body)
+        names = "plain cut-out, G-B2-B4, S-CNR"
+    else:
+        round_cut(design, tray, body, "z", "(%s) - 1 mm" % Z0, +1, {"x": grm[0], "y": grm[1]}, "el_grm_d",
+                  "tray_t + 2 mm", "HOLE G-B2-B4 IN THE BOTTOM RETURN")
+        names = "G-B2-B4"
+    if tray.bRepBodies.count != 1:
+        raise RuntimeError("the tray split into %d bodies at ELECTRICAL's features" % tray.bRepBodies.count)
+    print("step 2b: ELECTRICAL features in %s's tray: %s" % (POSITION, names))
+
+
+def el_felt_cuts_back(design, felt, fb, xr, zr):
+    """ELECTRICAL's openings in the back felts. B2: the power unit cut-out, flush with the tray's, 4 clear of the
+    unit (the felt edge there has no lip: the unit's face plate covers it, ELECTRICAL). B4: the light shelf's feed
+    hole (FX-SHELF) and the ceiling route's crossing (FX-CEIL, 2 under the top lip), felt only."""
+    if POSITION not in ("B2", "B4"):
+        return fb
+    fx = ("(%s) + tray_t + felt_c" % xr[0], "(%s) - tray_t - felt_c" % xr[1])
+    fz = ("(%s) + tray_t + felt_c" % zr[0], "(%s) - tray_t - felt_c" % zr[1])
+    if POSITION == "B2":
+        cx, cz = ("el_cut_x0", "el_cut_x1"), ("el_cut_z0", "el_cut_z1")
+        el_inside(design, "the felt's cut-out", [cx + fx, cz + fz], 1.0)
+        box(design, felt, "FELT CUT-OUT POWER UNIT", cx, ("(%s) - 1 mm" % Y_IN,
+                                                                           "(%s) + 1 mm" % Y_FELT_BACK), cz, "cut", fb)
+        names = "cut-out"
+    else:
+        for label, x, z, d in (("FX-SHELF LIGHT SHELF FEED", "el_lt_x", "el_shelf_z", "el_shelf_d"),
+                               ("FX-CEIL CEILING ROUTE", "el_ceil_x", "el_ceil_z", "el_grm_s")):
+            el_inside(design, label.split()[0], [("(%s) - (%s) / 2" % (x, d), "(%s) + (%s) / 2" % (x, d)) + fx,
+                                                 ("(%s) - (%s) / 2" % (z, d), "(%s) + (%s) / 2" % (z, d)) + fz], 1.0)
+            hole(design, felt, felt.bRepBodies.item(0), "y", Y_FELT_FACE, +1, {"x": x, "z": z}, d, "felt_t + 1 mm",
+                 "FELT " + label)
+        names = "FX-SHELF, FX-CEIL"
+    if felt.bRepBodies.count != 1:
+        raise RuntimeError("the felt split into %d bodies at ELECTRICAL's openings" % felt.bRepBodies.count)
+    print("step 3b: ELECTRICAL openings in %s's felt: %s" % (POSITION, names))
+    return felt.bRepBodies.item(0)
+
+
+def el_skin_holes(design, skin, plate):
+    """Panel B2: the mains inlet's and the LAN feed-through's Ø24 holes in the ACP (ELECTRICAL, v1's back-wall
+    positions moved clear of the closing seam)."""
+    if POSITION != "B2":
+        return plate
+    sx_, sz_ = span(design, XS_LOW, XS_HIGH), ("(%s) + skin_setback" % Z0, "(%s) - skin_setback" % Z1)
+    for label, z in (("MAINS INLET", "el_inlet_z"), ("LAN FEED-THROUGH", "el_lan_z")):
+        el_inside(design, label, [("el_inlet_x - el_inlet_d / 2", "el_inlet_x + el_inlet_d / 2") + sx_,
+                                  ("(%s) - el_inlet_d / 2" % z, "(%s) + el_inlet_d / 2" % z) + sz_], 20.0)
+        hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1, {"x": "el_inlet_x", "z": z}, "el_inlet_d",
+             "skin_t + 1 mm", "SKIN %s" % label)
+    print("step 4b: B2 skin: the inlet and LAN holes")
+    return skin.bRepBodies.item(0)
+
+
+def el_fill_cutouts(design, fill, yf):
+    """Panel B2: the fill left out where ELECTRICAL's parts sit in the first bay: the power unit (its cut-out
+    size, run on to the first stud so no sliver of fill is left beside it), the mains and LAN sleeve, and the
+    inlet and LAN connectors behind the skin (one cut-out to the sleeve, so no thin strip stays between them).
+    Through the fill's depth: a knife cut."""
+    if POSITION != "B2":
+        return
+    ys = ("(%s) - 1 mm" % yf[1], "(%s) + 1 mm" % yf[0])
+    cuts = [("FILL CUT-OUT POWER UNIT", ("el_cut_x0", "(%s) + stile_pitch + tube_w / 2" % X_LOW), ("el_cut_z0", "el_cut_z1")),
+            ("FILL CUT-OUT SLEEVE", ("el_sl_x - el_sl_w / 2", "el_sl_x + el_sl_w / 2"),
+             ("el_inlet_z - el_inlet_d / 2", "el_cut_z0")),
+            ("FILL CUT-OUT INLET AND LAN", ("el_inlet_x - el_inlet_d / 2", "el_sl_x + el_sl_w / 2"),
+             ("el_inlet_z - el_inlet_d / 2", "el_lan_z + el_inlet_d / 2"))]
+    for label, xr, zr in cuts:
+        want = [ev(design, e) for e in xr + zr]
+        bodies = [b for b in fill.bRepBodies
+                  if bbox(b)[0] < max(want[:2]) and bbox(b)[3] > min(want[:2]) and
+                  bbox(b)[2] < max(want[2:]) and bbox(b)[5] > min(want[2:])]
+        if len(bodies) != 1:
+            raise RuntimeError("%s: expected it in one fill bay, found %d" % (label, len(bodies)))
+        box(design, fill, label, xr, ys, zr, "cut", bodies)
+    if fill.bRepBodies.count != int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1:
+        raise RuntimeError("a fill bay split at ELECTRICAL's cut-outs")
+    print("step 5b: B2 fill: cut-outs for the power unit, the sleeve, the inlet and LAN")
+
+
 def build_tray_y(design, root, tray, xr, zr):
     """The side tray's recipe with the base on a plane normal to Y (Y_TRAY_BACK) and the returns toward -Y."""
     rule = design.designSheetMetalRules.itemByName("GALV STEEL 0.5 - LINING TRAY")
@@ -492,6 +645,7 @@ def build_tray_y(design, root, tray, xr, zr):
         if lip is None:
             raise RuntimeError("tray: no lip direction keeps the lips inside the outline at the room face")
         lip.name = "FLANGE - TRAY LIPS HOLDING THE FELT"
+        el_tray_features(design, tray)
         body = tray.bRepBodies.item(0)
         big = max((fc for fc in body.faces if fc.geometry.objectType == adsk.core.Plane.classType()
                    and abs(adsk.core.Plane.cast(fc.geometry).normal.y) > 0.99), key=lambda fc: fc.area)
@@ -526,6 +680,7 @@ def build_cassette(design, root):
         out[fb.name] = fb
         print("step 3: felt", size(bbox(fb)))
         set_material(design, [fb], "felt", "PET FELT 9 MM DARK GRAY")
+        out[fb.name] = el_felt_cuts_back(design, felt, fb, xr, zr)
     if not clip:
         return out
     # clip zones (H03): in the 4 mm gap between the frame's room face and the tray back, on the panel frame's

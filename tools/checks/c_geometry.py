@@ -457,11 +457,29 @@ def check_unmatched(root, mdl, bodies, capture=4.0, search=60.0, plane=15.0):
     pattern that doesn't match (the nearest candidate is reported). Holes
     with no candidates at all within `search` mm are left alone: the other
     side may not be modelled yet. Only holes in different files are paired,
-    so a panel's own factory joints don't count."""
+    so a panel's own factory joints don't count; and a clearance hole and a
+    rivnut in two parts of one file, on one axis, are matched there and are
+    left out (FRONT's DR access panel into DR's own back-ring rivnuts, #105)."""
     fs = []
     hs = [(b, h) for b, h in world_holes(bodies) if any(lo <= h.diameter <= hi for lo, hi in JOINT_HOLE_SIZES)]
     seen = set()
+
+    def kind(x):                      # a nut side (rivnut hole or its thread) or a clearance hole
+        return "clear" if 6.3 <= x.diameter <= 7.3 else "nut"
+
+    def own_joint(b, h):
+        """A bolt into a nut in its own file (DR's access panel into DR's own rivnuts): a clearance hole and a nut
+        side of another body of the same file on one axis. It is matched there, not across files."""
+        for ob, x in hs:
+            if ob is b or ob.file != b.file or kind(x) == kind(h) or abs(sf.dot(x.axis, h.axis)) < 0.9999:
+                continue
+            if abs(sf.dot(tuple(x.center[k] - h.center[k] for k in range(3)), h.axis)) <= plane and \
+                    sf.line_distance(x.center, h.center, h.axis) <= capture:
+                return True
+        return False
     for b, h in hs:
+        if own_joint(b, h):
+            continue
         best = None
         for ob, x in hs:
             if ob.file == b.file or abs(sf.dot(x.axis, h.axis)) < 0.9999:
