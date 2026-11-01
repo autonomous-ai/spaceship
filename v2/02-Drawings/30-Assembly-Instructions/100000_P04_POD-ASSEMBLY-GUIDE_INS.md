@@ -191,25 +191,25 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
 - **Check before the next step:** Every seam connector latched before any cassette closes its bay.
 
-### Step 14. Wall linings: 8 cassettes
-
-![Step 14](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png)
-
-- **Time:** about 8 min for 2 people.
-- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-17** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-18** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-19** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
-- **Fasteners:** none.
-- **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.
-- **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
-- **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.
-
-### Step 15. Air parts in DR: the intake riser with its supply fan box
+### Step 14. Air parts in DR: the intake riser with its supply fan box
 
 - **Time:** about 4 min for 2 people.
 - **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.4 kg).
 - **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
-- **Person A:** Lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
+- **Person A:** Before the wall linings (DR's inner face can't come off past R1's and R2's cassettes), lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
 - **Person B:** Mates the fan box's plug-in connector; refits the inner face.
 - **Check before the next step:** Riser foot sits over the opening; fan box connector latched; inner face back on all round.
+
+### Step 15. Wall linings: 8 cassettes
+
+![Step 15](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-15_IMG.png)
+
+- **Time:** about 8 min for 2 people.
+- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-17** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-18** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-19** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
+- **Fasteners:** none.
+- **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
+- **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
+- **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.
 
 ### Step 16. Air column and supply cartridge
 
@@ -316,7 +316,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 9 | DL on the base band | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | DL stands on its spigots; its bolts are J-FRONT-01's, into the side walls |
 | 10 | DR on its support behind the mesh band piece | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | D-62: the block's own support carries it; the mesh carries no load |
 | 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
-| 15 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
+| 14 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
 | 16 | Air column on DR and the floor | AIR | 0 | none on site: 2 hook studs set in the factory, 2 spigots | registered: J-AIR-02 (0 on site) | D-87: the column hangs on its hook studs |
 | 20 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
 | 23 | Ledge and screen rail | INTERIOR | 0 | brackets and rail on HOLD; screws not listed yet | HOLD (D-70, IF-16) | time is in the step |
@@ -338,8 +338,8 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 11 | Door (before DT) | 1 | 0 | 0 | 7.3 | 1.0 | **9.0** |
 | 12 | Top decor block DT, from above | 1 | 4 | 0 | 2.3 | 1.2 | **3.4** |
 | 13 | Electrics, first fix (power off) | 1 | 0 | 0 | 0.0 | 2.3 | **1.3** |
-| 14 | Wall linings: 8 cassettes | 8 | 0 | 0 | 0.0 | 14.0 | **8.0** |
-| 15 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
+| 14 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
+| 15 | Wall linings: 8 cassettes | 8 | 0 | 0 | 0.0 | 14.0 | **8.0** |
 | 16 | Air column and supply cartridge | 2 | 0 | 0 | 4.7 | 2.3 | **6.7** |
 | 17 | Soffit and exhaust cartridge | 2 | 2 | 0 | 4.7 | 1.9 | **6.5** |
 | 18 | Roof sleeve and grille | 0 | 4 | 0 | 0.0 | 5.7 | **3.3** |
@@ -422,7 +422,7 @@ Unit times used:
 
 ## 8. Taking it down
 
-Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); DR's inner face, supply fan box, intake riser; wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; floor; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
+Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; floor; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
 
 ## 9. Open items that touch this guide
 

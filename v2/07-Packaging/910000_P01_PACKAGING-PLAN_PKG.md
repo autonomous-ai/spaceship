@@ -48,14 +48,14 @@ Every piece stands on edge with its along-size on the 48 in side; the stack runs
 | 10 | **1-10** | R2 | WALL - PANEL ASSY - SIDE UPPER - RH | 11.3 | 1142.74 × 1492.74 | 48.5 | 7 |
 | 11 | **1-11** | C1 | CEILING - PANEL ASSY - C1 | 10.0 | 1200.61 × 1495 | 46 | 8 |
 | 12 | **1-12** | C2 | CEILING - PANEL ASSY - C2 | 10.9 | 1200.61 × 1495 | 70 | 8 |
-| 13 | **1-13** | R1 | LINING - CASSETTE - SIDE LOWER - RH | 10.3 | 1142.74 × 1445 | 38 | 14 |
-| 14 | **1-14** | R2 | LINING - CASSETTE - SIDE UPPER - RH | 9.9 | 1092.74 × 1445 | 38 | 14 |
-| 15 | **1-15** | L1 | LINING - CASSETTE - SIDE LOWER - LH | 10.3 | 1142.74 × 1445 | 38 | 14 |
-| 16 | **1-16** | L2 | LINING - CASSETTE - SIDE UPPER - LH | 9.9 | 1092.74 × 1445 | 38 | 14 |
-| 17 | **1-17** | B1 | LINING - CASSETTE - BACK LOWER - B1 | 8.0 | 1166 × 1118.61 | 38 | 14 |
-| 18 | **1-18** | B2 | LINING - CASSETTE - BACK LOWER - B2 | 8.0 | 1166 × 1118.61 | 38 | 14 |
-| 19 | **1-19** | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1166 × 1116.87 | 38 | 14 |
-| 20 | **1-20** | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1166 × 1116.87 | 38 | 14 |
+| 13 | **1-13** | R1 | LINING - CASSETTE - SIDE LOWER - RH | 10.3 | 1142.74 × 1445 | 38 | 15 |
+| 14 | **1-14** | R2 | LINING - CASSETTE - SIDE UPPER - RH | 9.9 | 1092.74 × 1445 | 38 | 15 |
+| 15 | **1-15** | L1 | LINING - CASSETTE - SIDE LOWER - LH | 10.3 | 1142.74 × 1445 | 38 | 15 |
+| 16 | **1-16** | L2 | LINING - CASSETTE - SIDE UPPER - LH | 9.9 | 1092.74 × 1445 | 38 | 15 |
+| 17 | **1-17** | B1 | LINING - CASSETTE - BACK LOWER - B1 | 8.0 | 1166 × 1118.61 | 38 | 15 |
+| 18 | **1-18** | B2 | LINING - CASSETTE - BACK LOWER - B2 | 8.0 | 1166 × 1118.61 | 38 | 15 |
+| 19 | **1-19** | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1166 × 1116.87 | 38 | 15 |
+| 20 | **1-20** | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1166 × 1116.87 | 38 | 15 |
 
 How to load it (factory):
 
@@ -85,7 +85,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 600 × 250 × 200 | 13 |
 | Tier 3: DL on its side, DT, soffit, air column | 369 | **2-10** | AIR - SOFFIT | 14.8 | 2332 × 369 × 243 | 17 |
 | Tier 3: DL on its side, DT, soffit, air column | 222 | **2-11** | AIR - AIR COLUMN | 8.1 | 2118 × 222 × 369 | 16 |
-| Tier 4: air parts, light shelf, threshold and cartons | 526 | **2-17** | AIR - SUPPLY FAN BOX | 13.4 | 2015 × 526 × 213 | 15 |
+| Tier 4: air parts, light shelf, threshold and cartons | 526 | **2-17** | AIR - SUPPLY FAN BOX | 13.4 | 2015 × 526 × 213 | 14 |
 | Tier 4: air parts, light shelf, threshold and cartons | 183 | **2-18** | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 1760 × 183 × 324 | 16 |
 | Tier 4: air parts, light shelf, threshold and cartons | 183 | **2-19** | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 1760 × 183 × 324 | 17 |
 | Tier 4: air parts, light shelf, threshold and cartons | 150 | **2-15** | BASE - SMALL PARTS CARTON | 1.1 | 600 × 150 × 400 | 2 |
@@ -148,14 +148,14 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-10** | 210104 | R2 | WALL - PANEL ASSY - SIDE UPPER - RH | 11.3 | 1 | 7 |
 | **1-11** | 410101 | C1 | CEILING - PANEL ASSY - C1 | 10.0 | 1 | 8 |
 | **1-12** | 410102 | C2 | CEILING - PANEL ASSY - C2 | 10.9 | 1 | 8 |
-| **1-13** | 510102 | R1 | LINING - CASSETTE - SIDE LOWER - RH | 10.3 | 1 | 14 |
-| **1-14** | 510104 | R2 | LINING - CASSETTE - SIDE UPPER - RH | 9.9 | 1 | 14 |
-| **1-15** | 510101 | L1 | LINING - CASSETTE - SIDE LOWER - LH | 10.3 | 1 | 14 |
-| **1-16** | 510103 | L2 | LINING - CASSETTE - SIDE UPPER - LH | 9.9 | 1 | 14 |
-| **1-17** | 510201 | B1 | LINING - CASSETTE - BACK LOWER - B1 | 8.0 | 1 | 14 |
-| **1-18** | 510202 | B2 | LINING - CASSETTE - BACK LOWER - B2 | 8.0 | 1 | 14 |
-| **1-19** | TBD (WALL) | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1 | 14 |
-| **1-20** | TBD (WALL) | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1 | 14 |
+| **1-13** | 510102 | R1 | LINING - CASSETTE - SIDE LOWER - RH | 10.3 | 1 | 15 |
+| **1-14** | 510104 | R2 | LINING - CASSETTE - SIDE UPPER - RH | 9.9 | 1 | 15 |
+| **1-15** | 510101 | L1 | LINING - CASSETTE - SIDE LOWER - LH | 10.3 | 1 | 15 |
+| **1-16** | 510103 | L2 | LINING - CASSETTE - SIDE UPPER - LH | 9.9 | 1 | 15 |
+| **1-17** | 510201 | B1 | LINING - CASSETTE - BACK LOWER - B1 | 8.0 | 1 | 15 |
+| **1-18** | 510202 | B2 | LINING - CASSETTE - BACK LOWER - B2 | 8.0 | 1 | 15 |
+| **1-19** | TBD (WALL) | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1 | 15 |
+| **1-20** | TBD (WALL) | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1 | 15 |
 | **2-01** | 360002 | - | FRONT - FIXED GLASS UNIT | 28.7 | 2 | 10 |
 | **2-02** | 360001 | - | FRONT - DOOR UNIT | 48.6 | 2 | 11 |
 | **2-03** | 350003 | DR | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2 | 10 |
@@ -172,7 +172,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-14** | 810201 | - | INTERIOR - LIGHT SHELF ASSY | 1.6 | 2 | 20 |
 | **2-15** | TBD (BASE) | - | BASE - SMALL PARTS CARTON | 1.1 | 1 | 2 |
 | **2-16** | 810101 | - | INTERIOR - WORK WALL LEDGE ASSY | 1.9 | 1 | 23 |
-| **2-17** | 610401 | - | AIR - SUPPLY FAN BOX | 13.4 | 2 | 15 |
+| **2-17** | 610401 | - | AIR - SUPPLY FAN BOX | 13.4 | 2 | 14 |
 | **2-18** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 2 | 16 |
 | **2-19** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 2 | 17 |
 | **2-20** | 510301 | C1 | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1 | 19 |
@@ -197,14 +197,14 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-10** | 210104 | WALL - PANEL ASSY - SIDE UPPER - RH | Vách phải - cụm tấm trên | R2 | 11.29 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 48.5 | 7 |
 | **1-11** | 410101 | CEILING - PANEL ASSY - C1 | Trần - tấm trái (cụm) | C1 | 10.05 | calculation (CAD) | 1495 × 1200.61 × 46 | 8 |
 | **1-12** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 10.92 | calculation (CAD) | 1495 × 1200.61 × 70 | 8 |
-| **1-13** | 510102 | LINING - CASSETTE - SIDE LOWER - RH | Cassette lót vách phải dưới (khay thép + tấm tiêu âm) | R1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 38 | 14 |
-| **1-14** | 510104 | LINING - CASSETTE - SIDE UPPER - RH | Cassette lót vách phải trên (khay thép + tấm tiêu âm) | R2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 38 | 14 |
-| **1-15** | 510101 | LINING - CASSETTE - SIDE LOWER - LH | Cassette lót vách trái dưới (khay thép + tấm tiêu âm) | L1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 38 | 14 |
-| **1-16** | 510103 | LINING - CASSETTE - SIDE UPPER - LH | Cassette lót vách trái trên (khay thép + tấm tiêu âm) | L2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 38 | 14 |
-| **1-17** | 510201 | LINING - CASSETTE - BACK LOWER - B1 | Cassette lót vách hậu dưới trái (khay thép + tấm tiêu âm) | B1 | 8.01 | calculation (CAD) | 1166 × 1118.61 × 38 | 14 |
-| **1-18** | 510202 | LINING - CASSETTE - BACK LOWER - B2 | Cassette lót vách hậu dưới phải (khay thép + tấm tiêu âm) | B2 | 8.01 | calculation (CAD) | 1166 × 1118.61 × 38 | 14 |
-| **1-19** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - B3 | Cassette tiêu âm - vách hậu trên trái | B3 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
-| **1-20** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - B4 | Cassette tiêu âm - vách hậu trên phải | B4 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
+| **1-13** | 510102 | LINING - CASSETTE - SIDE LOWER - RH | Cassette lót vách phải dưới (khay thép + tấm tiêu âm) | R1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 38 | 15 |
+| **1-14** | 510104 | LINING - CASSETTE - SIDE UPPER - RH | Cassette lót vách phải trên (khay thép + tấm tiêu âm) | R2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 38 | 15 |
+| **1-15** | 510101 | LINING - CASSETTE - SIDE LOWER - LH | Cassette lót vách trái dưới (khay thép + tấm tiêu âm) | L1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 38 | 15 |
+| **1-16** | 510103 | LINING - CASSETTE - SIDE UPPER - LH | Cassette lót vách trái trên (khay thép + tấm tiêu âm) | L2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 38 | 15 |
+| **1-17** | 510201 | LINING - CASSETTE - BACK LOWER - B1 | Cassette lót vách hậu dưới trái (khay thép + tấm tiêu âm) | B1 | 8.01 | calculation (CAD) | 1166 × 1118.61 × 38 | 15 |
+| **1-18** | 510202 | LINING - CASSETTE - BACK LOWER - B2 | Cassette lót vách hậu dưới phải (khay thép + tấm tiêu âm) | B2 | 8.01 | calculation (CAD) | 1166 × 1118.61 × 38 | 15 |
+| **1-19** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - B3 | Cassette tiêu âm - vách hậu trên trái | B3 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 15 |
+| **1-20** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - B4 | Cassette tiêu âm - vách hậu trên phải | B4 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 15 |
 | - | - | 40 × 40 corner edge tubes in L2, R2, C1, C2 (D-63) |  | - | 0.01 | calculation | inside the pieces | - |
 | - | - | Bond beyond L1 and R1 (D-71) |  | - | 0.05 | calculation | inside the pieces | - |
 | - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 3.19 | calculation (part CAD); cleats assumption | inside the pieces | - |
@@ -233,7 +233,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-14** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.58 | calculation (CAD) | 2332 × 80 × 60 | 20 |
 | **2-15** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.14 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-16** | 810101 | INTERIOR - WORK WALL LEDGE ASSY | Bàn tựa vách làm việc (cụm) | - | 1.90 | calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 23 |
-| **2-17** | 610401 | AIR - SUPPLY FAN BOX | Hộp quạt cấp (cụm) | - | 13.45 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption | 2005 × 516 × 203 | 15 |
+| **2-17** | 610401 | AIR - SUPPLY FAN BOX | Hộp quạt cấp (cụm) | - | 13.45 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption | 2005 × 516 × 203 | 14 |
 | **2-18** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 16 |
 | **2-19** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 17 |
 | **2-20** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C1 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 19 |
@@ -313,7 +313,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
 | K7 | The guide's bolts match the joints register, joint by joint | guide 92 (80 × M6 × 16, 12 × M6 × 25); register 92; differences none | yes |
 | K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 22) | 135 min for 2 people (4.5 person-hours); target about 60 min; limit 240 min | yes |
-| K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
+| K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 15, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 42 labelled pieces; without a place: none; unknown tags: none | yes |
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
 | K12 | Every skeleton body maps to exactly one label, for the step pictures | 36 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
@@ -406,7 +406,7 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | PK-02 | The hinge halves that sit in DL ship fitted in DL (PM ruling), so the door travels 1177 mm wide: its 1175 glass and the magnetic seal half 2 mm past it (FRONT's CAD, without the hinges). FRONT confirms the named hinges lift off and that their door halves stay within the glass. | FRONT | DECIDED (PM); hinges HOLD (ISS-002) |
 | PK-03 | The glass crate's sizes and 30 kg are this plan's assumptions; the 15 mm side rails leave 5 mm of edge foam each side of the 1177 mm door, with 2 mm to spare. The glass supplier's packer sets the real crate. | Packing | assumption |
 | PK-04 | Every piece with CAD is packed at its CAD size (K14). Without CAD yet, and packed at planned sizes: 1-07 (panel assy - back upper - b3), 1-08 (panel assy - back upper - b4), 1-19 (cassette - back upper - b3), 1-20 (cassette - back upper - b4), 2-07 (band assy - front - rh - under the fixed glass), 2-08 (door threshold - 13 mm), 2-13 (kit - harness, cord set, hub zone, lights), 2-15 (small parts carton), 2-22 (installation kit (open first)). The lanes and tiers follow from the sizes with 5 mm of wrap a side, so a part that grows shows in K5 too. | WALL, BASE, AIR, Packing | calculation (CAD); the rest assumption |
-| PK-05 | AIR's CAD (PR #91) sets the air parts' sizes. The supply fan box joined with the intake riser (D-87) ships with both transitions and its fans: 2005 × 516 × 203. The Air Engineer's next pass makes it 189 deep (the fan box 5 mm off DR's skin, the riser 150 deep), with D-130's intake boot under it: this plan takes those sizes when they land (K14 checks). The roof sleeve and grille ship loose with C2 (#263): the sleeve seated in C2's roof slot and taped, the grille over it; both go on after the soffit hangs (guide step 18); the grille's 4 bolts and washers (J-AIR-03) travel in a bag taped to the grille. | AIR | calculation (CAD) |
+| PK-05 | AIR's CAD (PR #91) sets the air parts' sizes. The supply fan box joined with the intake riser (D-87) ships with both transitions and its fans: 2005 × 516 × 203. The Air Engineer's next pass makes it 169 deep, plus D-130's intake boot under it: this plan takes those sizes when they land (K14 checks). The roof sleeve and grille ship loose with C2 (#263): the sleeve seated in C2's roof slot and taped, the grille over it; both go on after the soffit hangs (guide step 18); the grille's 4 bolts and washers (J-AIR-03) travel in a bag taped to the grille. | AIR | calculation (CAD) |
 | PK-06 | The light shelf 810201 and the ledge 810101 are INTERIOR's CAD; the ledge's 2 brackets 818101 and the screen rail 818102 are on HOLD (0.1 kg each and 0.5 kg, assumed, inside the roll-up's ledge line), and so are their screws. The light shelf bundle and the ledge carton sizes are this plan's assumptions. | INTERIOR | calculation; HOLD parts assumption |
 | PK-07 | A piece marked TBD takes its number from the master BOM (`v2/04-BOM/100000_P01_POD-MASTER_BOM.csv`) as soon as the owner's parts list carries its exact name; check K13 holds every number on a label to the BOM's name. Still TBD: 10 of 42 pieces: BASE 5, ELECTRICAL 1, WALL 4. | BASE, ELECTRICAL, WALL | open |
 | PK-08 | Re-run `pack.py` when a team's CAD mass replaces a roll-up line, or when the master BOM changes (each regeneration carries it through). | Packing | process |
