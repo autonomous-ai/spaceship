@@ -492,7 +492,8 @@ ANCHORS = [
 
 # what each tube's row says about its holes and fixings (the cuts in build(); none on the copies)
 MEMBER_NOTES = {
-    "B01": "J-FRONT-03: spigot hole 8.5 at X 270 and slot 8.5 x 14 at X 410 in its bottom wall, over DR's ledge",
+    "B01": "J-FRONT-03: spigot hole 8.5 at X 270 and slot 8.5 x 14 at X 410 in its bottom wall, over DR's ledge, for "
+           "DR's spigots 831010 (11 proud: they reach 5 into this tube, its bottom 3 mm higher with the bond line)",
     "B03": "40 x 20 (fr_wtop); J-FRONT-03: 4 holes 14 in its back wall at Z 2374 for the back plate's rivnut tails",
     "F02": "carries the catch 368007 and the top stop 351203 (their screw holes drilled to the parts at assembly, "
            "not modelled yet)",
