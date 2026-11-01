@@ -372,7 +372,8 @@ def check(pdf_path, step_path=None, verbose=False):
         for i, h in enumerate(holes):
             if abs(abs(dot(h["axis"], v["n"])) - 1) > 1e-6 or abs(h["dia"] - f["dia"]) > 0.011:
                 continue
-            ex, ey = dot(sub(h["c"], O), v["x"]), dot(sub(h["c"], O), v["y"])
+            Ov = v.get("origin3d") or O        # a view with its own origin (an angled face's)
+            ex, ey = dot(sub(h["c"], Ov), v["x"]), dot(sub(h["c"], Ov), v["y"])
             d = math.hypot(ex - x, ey - y)
             if best is None or d < best[0]:
                 best = (d, i, ex, ey)
@@ -385,7 +386,7 @@ def check(pdf_path, step_path=None, verbose=False):
         # the same axis can carry runs in two walls of different sizes; mark every run on this axis of this size
         used.update(j for j, h in enumerate(holes) if abs(h["dia"] - f["dia"]) < 0.011 and
                     abs(abs(dot(h["axis"], v["n"])) - 1) < 1e-6 and
-                    math.hypot(dot(sub(h["c"], O), v["x"]) - best[2], dot(sub(h["c"], O), v["y"]) - best[3]) < TOL)
+                    math.hypot(dot(sub(h["c"], Ov), v["x"]) - best[2], dot(sub(h["c"], Ov), v["y"]) - best[3]) < TOL)
     if data.get("occurrences", 1) > 1 and used:
         drawn_occ = {holes[j].get("occ") for j in used}
         skip = {j for j, h in enumerate(holes) if h.get("occ") not in drawn_occ}
@@ -418,7 +419,8 @@ def check(pdf_path, step_path=None, verbose=False):
             fails.append("%s: drawn circle centre is %.3f mm from the STEP hole (limit %s)" % (tag, d, TOL))
     for name, v in (views.items() if data["features"] else []):
         s = v["scale"]
-        o = (v["off"][0] + s * dot(O, v["x"]), v["off"][1] + s * dot(O, v["y"]))
+        Ov = v.get("origin3d") or O
+        o = (v["off"][0] + s * dot(Ov, v["x"]), v["off"][1] + s * dot(Ov, v["y"]))
         if not any(abs(c[2] - 1.2) < 1e-3 and math.hypot(c[0] - o[0], c[1] - o[1]) < 1e-3 for c in circles):
             fails.append("origin mark %s is not on the origin" % name)
     # 3. what the mechanical check reads
