@@ -1864,8 +1864,10 @@ def table_text(page, data):
 
 
 def _solids_by_pn(step_path, envelopes=None, groups=None):
-    """{part number: its solids in the file's top coordinates}, a sub-assembly's being every solid under it; groups,
-    when given, gets each placement's solids apart ({part number: [[solids], ...]})."""
+    """{part number: its solids in the file's top coordinates}. A sub-assembly's number owns every solid under it
+    (a D-120 welded frame's members, a cassette's parts), as drawing takes a sub-assembly as one item; a part's
+    bodies without names of their own belong to it, and a held shape an entry's envelope names counts as its part.
+    groups, when given, gets each placement's solids apart ({part number: [[solids], ...]})."""
     _doc, st = _xcaf(step_path)
     tops = TDF_LabelSequence()
     st.GetFreeShapes(tops)
@@ -1885,13 +1887,16 @@ def _solids_by_pn(step_path, envelopes=None, groups=None):
         if not loc.IsIdentity():
             shape = shape.Moved(loc)
         sol = _solids_of(shape)
-        for nm in set(names):
+        pns = set()
+        for nm in names:
             pn = geom.part_number_of(nm) or next((v for k, v in (envelopes or {}).items() if (nm or "").startswith(k)),
                                                  None)
             if pn:
-                out.setdefault(pn, []).extend(sol)
-                if groups is not None:
-                    groups.setdefault(pn, []).append(sol)
+                pns.add(pn)
+        for pn in pns:
+            out.setdefault(pn, []).extend(sol)
+            if groups is not None:
+                groups.setdefault(pn, []).append(sol)
 
     for i in range(1, tops.Length() + 1):
         lab = tops.Value(i)

@@ -20,6 +20,7 @@
 8. The cassettes (CEILING's 510301, WALL's six) read back with the positions their teams gave, named datums A, B and
    C (C a median plane on a size), and a build-up from A that reads the same on a left- and a right-hand cassette;
    the read-back fails a datum off its face or size, a wrong build-up value or face, and a centre line off its part.
+9. A sub-assembly's number owns every solid under it in the STEP (the read-back's rule, as drawing's).
 """
 
 import json
@@ -278,6 +279,14 @@ def test_readback_fails_a_wrong_build_up_value_or_centre_line():
             c["p"], c["q"] = [c["p"][0] + 5.0, c["p"][1]], [c["q"][0] + 5.0, c["q"][1]]
     fails, _st = assembly.check(_with_data(final, os.path.join(TMP, "t_cline.pdf"), line))
     assert any("centre line of 513102" in f for f in fails), fails
+def test_a_sub_assemblys_number_owns_its_parts_solids():
+    """The read-back finds a sub-assembly item's balloon on any part under it (CEILING's D-120 welded frame 411101,
+    whose bodies sit in its member parts): its number owns every solid below it in the STEP, as drawing takes it as
+    one item. Here CEILING's cassette 510301 owns its tray's, ribs' and felt's solids."""
+    sols = assembly._solids_by_pn(assembly.team_step("ceiling"))
+    own = {id(x) for x in sols.get("510301", [])}
+    for pn in ("513101", "513102", "513201"):
+        assert sols.get(pn) and {id(x) for x in sols[pn]} <= own, pn
 
 
 def test_never_goes_over_a_fusion_drawing():
