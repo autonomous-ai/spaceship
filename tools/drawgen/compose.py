@@ -879,10 +879,17 @@ def draw(part, spec, out_path, today=None):
             ry = ry - h - 58
     elif place:
         rx, ry = 20 + GAP_PL + 14, main_bottom - 34
+        right_limit = W - 10 - spec.get("table_w", TABLE_W) - 4 - 10
         for vd in place:
             w, h = vd.size()
+            if vd.kind == "detail" and (rx + w + 40 > right_limit or ry - h - 40 < 20):
+                vd.dropped = True       # no room: the parent view keeps its tags
+                continue
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             rx += w + 80
+    for dv in [d_ for d_ in details if getattr(d_, "dropped", False)]:
+        details.remove(dv)
+        del dv.parent.detail
     pl.mid = (main_right + GAP, 0)
     report = {"pn": part.pn, "rev": part.rev, "scale": scale, "sheet": size, "views": [], "holes": []}
 
@@ -988,7 +995,11 @@ def draw(part, spec, out_path, today=None):
             c = vd.S(((x0 + x1) / 2, (y0 + y1) / 2))
             r = max((x1 - x0), (y1 - y0)) / 2 * vd.scale * 1.08 + 2.0
             sh.circle(c, r, W_THIN)
-            sh.text(c[0] + r * 0.75 + 1.5, c[1] + r * 0.75 + 1.0, dv.letter, 3.5, "left", bold=True)
+            # the letter on the circle's outer side (away from the view's middle), clear of the origin's arrows
+            vb = vd.box()
+            sx = 1.0 if c[0] >= (vb[0] + vb[2]) / 2 else -1.0
+            sh.text(c[0] + sx * (r * 0.75 + 1.5), c[1] + r * 0.75 + 1.0, dv.letter, 3.5,
+                    "left" if sx > 0 else "right", bold=True)
         # the far-wall holes behind (hidden circles) get their centre marks too, untagged
         keys = {(id(ft.body), ft.f.line_key) for ft in feats if ft.kind == "hole"}
         others = [ft for ft in part.features if ft not in feats and _end_on(ft, vd.view) and ft.kind == "hole"
@@ -1036,7 +1047,9 @@ def crowded_window(vd, feats, part, near=7.0, reach=25.0):
     paper, with every tagged feature within `reach` mm of them, the part's end when it is that close too, and the
     view's full height. None when nothing crowds."""
     s = vd.scale
-    pts = [vd.view.to2d(ft.f.entry) for ft in feats if _end_on(ft, vd.view)]
+    # one item per place: a far-wall twin shares its hole's tag (H05/H10), it doesn't crowd it
+    pts = list({(round(p[0], 2), round(p[1], 2)): p for p in
+                (vd.view.to2d(ft.f.entry) for ft in feats if _end_on(ft, vd.view))}.values())
     pair = None
     for i, a in enumerate(pts):
         for b in pts[i + 1:]:
@@ -1054,7 +1067,10 @@ def crowded_window(vd, feats, part, near=7.0, reach=25.0):
         x0 = e[0] - 2.0
     if (e[2] - x1) * s < 15.0:
         x1 = e[2] + 2.0
-    return (max(x0, e[0] - 2.0), min(x1, e[2] + 2.0), e[1] - 2.0, e[3] + 2.0)
+    x0, x1 = max(x0, e[0] - 2.0), min(x1, e[2] + 2.0)
+    if (x1 - x0) * s > 60.0 or (e[3] - e[1]) * s > 60.0:
+        return None         # not a small region: a detail would only repeat the view
+    return (x0, x1, e[1] - 2.0, e[3] + 2.0)
 
 
 def _vertices(face):
