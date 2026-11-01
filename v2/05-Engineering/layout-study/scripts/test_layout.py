@@ -263,7 +263,7 @@ def test_base_batch1_counts_once():
     or the fixings kit's line (the joints register's counts); nothing twice, nothing left out."""
     import rollup
     bc = rollup.BASE_CAD
-    assert abs(bc["total"] - bc["top"]) < 1e-3, (bc["total"], bc["top"])          # 10.68 kg (the Lead's relay)
+    assert abs(bc["total"] - bc["top"]) < 1e-3, (bc["total"], bc["top"])          # 10.748 kg at e1ba6ef (10.68 at 8ff8f08)
     rows = {r[1]: r for r in rollup.lines()}
     band = [r for k, r in rows.items() if k.startswith(("Base band piece 100x40 - back", "Base band piece 100x40 - side",
                                                        "Base band piece FR1"))]

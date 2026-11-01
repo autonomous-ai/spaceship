@@ -7,6 +7,8 @@ Two drawings, as the PM approved (2026-10-31): the corner key family on one TABU
 | `831001_P01_HARDWARE-LOCATING-SPIGOT_DWG` | 831001 | A3 | front (elevation, hidden lines) and from above, 5:1 | 6 |
 | `111211_P01_BASE-CORNER-KEY-TABULATED_DWG` | **TABULATED** 111211, 111212, 111213, 111214, drawn as the square 111211 | A3 | front (hidden lines), from the right (the stud face) and from above (hidden lines), 2:1 | 11 |
 
+**The key sheet is out of the repo (D-147 (3), 2026-11-01): a superseded drawing is removed until it is regenerated.** Its last version (in git at 084217c) showed 111211's first fixing holes (10.5 from the back face, 7.0 either side) and didn't list 111215, so after D-144 it was wrong for 111211. Until the redraw on the key design's newest version lands, 111211 to 111215 show as having no drawing, which is true. The redraw is Fusion's (a five-part tabulated sheet with tapped holes, D-139 and D-143) and comes in the key model's PR.
+
 ## How they are made
 
 1. `tools/fusion/start_drawing.py DESIGN DWG --folder "Default Project/FocusPod v2/joints" --sheet A3`: the empty drawing, saved and closed.

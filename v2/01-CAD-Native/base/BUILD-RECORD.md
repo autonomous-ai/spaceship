@@ -76,6 +76,36 @@ python3 v2/03-Manufacturing/base/make_outputs.py --dxf
 
 The sill 111301's own design and STEP are made again in a separate run (its kerb now ends on the band's bottom line, D-132), so its STEP matches its copy in the assembly.
 
+## Run D, 2026-11-01 10:54 to 11:01 UTC: Reviewer 8's Hold on #303 (D-150: the sill's closed door end and its lip); the edit test in the same run
+
+A short run at the front of the queue (the PM's approval, once): the assembly, its STEP and data, the sill's own design and the edit test. The band tubes' own designs aren't rebuilt (`with_assembly=0`): this change leaves their holes as run C made them, so their designs and STEPs stay current.
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/base/late_base.py --timeout 3600 --lock-front "PM approved: ..." \
+  --arg targets=v2/01-CAD-Native/base/base_build.py,v2/01-CAD-Native/base/base_edit_test.py \
+  --arg save=1 --arg replace=1 --arg export=1 --arg scope=p02 --arg also_parts=sill --arg with_assembly=0
+python3 v2/03-Manufacturing/base/make_outputs.py --dxf
+```
+
+| What | Result |
+|---|---|
+| Change | The sill 111301's door end closed by a welded 2 mm plate (D-150), one body with the sill; the lip 118001 along the plate's bottom edge (its envelope one L section: the leg on the pod side, the fin under the plate, flush with its outer face); FR1's lip from the plate's pod side; the back band's lip run = its envelope (2.400 m) |
+| Timeline | 267 items, all healthy |
+| Sketches | 56, all fully constrained |
+| Part boxes | as run C; sill X 218.46…965, Y −810…−689.5, Z 10…110 (the plate is inside that box) |
+| Back corners (D-129) | stud bolt holes, key position and the back band's slot end MATCH `corner-keys.csv`; the fixing holes are the layout before D-144 (MATCH with the file before #300), as Joints' 111211 STEP still has it: D-144 comes on the next branch |
+| Base seal (D-132, D-150) | 5 runs: LH 1462.07, back 2400.00, RH 1464.17, the sill's door end 108.50 (Y −800 to −691.5), FR1 694.54 (from X 220.46) mm |
+| Own clashes | 8 over 1 mm³, all expected (as run C); the plate, the two lips and the sill only touch |
+| Skeleton clashes | 8, all expected (the spigots enter L1, R1, B1, B2) |
+| Cloud save | `110000_P01_BASE_CAD` saved; the previous copy renamed `..._SUPERSEDED-2026-11-01-2` (never deleted) |
+| STEP | `110000_P01_BASE_STEP.step` (cm, D-13), read back in Fusion: 93 occurrences (one more lip envelope), box X −1250.01…1250.02, Y −850.02…850.03, Z −0.03…118.03, largest difference 0.000 mm: MATCH |
+| Part design | 111301: timeline 13 items, healthy; 4 sketches; 1.0945 kg; saved (the old copy renamed `_SUPERSEDED-2026-11-01-2`), exported, STEP box MATCH. Offline (OCC): one solid, 405 382 mm³ = the profile 513 mm² × 746.54 + the plate 11 282 mm² × 2 − 4 rivnut holes Ø5 × 2 |
+| Edit test | every part we make follows all three edit sets, and every one comes back exactly on the revert (EDIT-TEST-RECORD.md). The run then stopped on the test's last line: it switched back to the build's document, which the build had already closed after saving. Fixed in `base_edit_test.py`; the checks themselves had all passed |
+| Outputs | parts list 46 rows, P02 scope 10.75 kg; the sill's DXF: the flat pattern 746.54 × 250.09 and the door-end plate's blank 118.5 × 98.0, its 3 corners at inside bends relieved C3; the cut list unchanged |
+| Names in exports | none: the two .f3d files (zstd entries decompressed), both STEPs (author and organization empty), the DXF, CSV and data file |
+
+The first try (10:40 UTC, queued at 10:05) stopped in step 6: the lip's fin, extruded as a second body and joined to the leg, stayed a second body. Nothing was saved, and the run closed its own document. The envelope is now one L-section extrude.
+
 ## Earlier runs (no files kept)
 
 - 18:02 to 18:43: stopped at the first keyhole sketch (two circles in one sketch over-constrained in Fusion). The keyholes are now two hole features and one slot cut.
