@@ -198,3 +198,39 @@ def test_a_screw_in_a_base_keys_tapped_hole_is_its_thread_not_a_clash():
     assert rf._allowed(dict(c, mm3=900.0), rows) is None       # far more than a thread's overlap
     wall = dict(c, a=base + "111101 BASE - BAND TUBE - SIDE - LH:1 / Body1")
     assert rf._allowed(wall, rows) is None                     # a screw into the band tube isn't a tapped key
+
+
+def test_fusion_bolts_are_found_by_the_joints_registers_names():
+    # D-99: hardware names come from the joints register, with the type first (HARDWARE - SOCKET HEAD BOLT - M6 X 16);
+    # the Fusion script's pattern missed them, so no bolt was measured for thread engagement (C07)
+    import ast
+    import re
+    import common
+    src = open(os.path.join(rf.REPO_ROOT, "tools/checks/fusion/whole_pod_check.py"), encoding="utf-8").read()
+    pats = {}
+    for node in ast.parse(src).body:
+        if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") in ("FASTENER_RE", "NUT_RE"):
+            pats[node.targets[0].id] = re.compile(node.value.args[0].value, re.I)
+    names = common.register_names(rf.REPO_ROOT)
+    bolts = {pn: n for pn, n in names.items() if re.search(r"\b(BOLT|SCREW)\b", n) and not re.search(r"\bNUT\b", n)}
+    assert bolts, "the joints register lists bolts and screws"
+    for pn, n in bolts.items():
+        label = "110000_P01_BASE_CAD:1 / %s %s:1 / Body1" % (pn, n)
+        assert pats["FASTENER_RE"].search(label) and not pats["NUT_RE"].search(label), n
+    for n in ("838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20",
+              "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS"):
+        assert not pats["FASTENER_RE"].search(n) or pats["NUT_RE"].search(n), n
+
+
+def test_route_bodies_have_no_gap_rule_and_a_clash_names_both_teams():
+    # D-92: ELECTRICAL's route bodies are reserved spaces for the gap rules; a clash still counts, owned by both teams
+    tray = "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1"
+    wire = "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5"
+    res = {"steps": ["v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step",
+                     "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step"],
+           "clashes": [{"a": tray, "b": wire, "mm3": 69.74, "allowed": None}],
+           "gaps": [{"id": "LINING-FLOATS", "group": "", "gap_mm": 0.0, "a": tray, "b": wire.replace("Body5", "Body7"),
+                     "min_mm": 4.0, "max_mm": None, "severity": "major", "method": "box", "owner": "WALL; CEILING"}]}
+    fs = rf.findings_from(res, "assembly")
+    assert [(f.check, f.severity, f.owner) for f in fs] == [("C01", "severe", "CEILING; ELECTRICAL")]
+
