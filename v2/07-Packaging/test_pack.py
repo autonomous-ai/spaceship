@@ -261,6 +261,27 @@ def test_d132_no_floor():
     assert [o for o in final["ops"] if o["src"] == "t_floor_film_off_s"], final["ops"]
     assert final["n"] <= pack.CLOCK_LAST_STEP
 
+
+def test_time_rulings_2026_11_01():
+    # the PM's rulings on the time sinks: the installers' driver for every bolt but the roof grille's 4 (the kit's key,
+    # no room above the roof), a rest for each overhead lift (no one holds a part overhead to fix it), the final check
+    # split between the two people; v2's target about 104 minutes
+    m = pack.Model()
+    ops = [(st["n"], o) for st in m.steps for o in st["ops"]]
+    roof = next(s["n"] for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
+    assert {n for n, o in ops if o["src"] == "t_bolt_captive_s"} == {roof}, [(n, o["text"]) for n, o in ops if o["src"] == "t_bolt_captive_s"]
+    second = sum(o["n"] for n, o in ops if o["text"].startswith("tighten the 6 upper corner bolts"))   # step 6's, tightened in 7
+    assert sum(o["n"] for n, o in ops if o["src"] == "t_bolt_driver_s") == sum(m.bolts_by_joint().values()) - 4 + second
+    assert not [o for n, o in ops if o["src"] == "t_place_overhead_s"]
+    assert sum(o["n"] for n, o in ops if o["src"] == "t_overhead_rest_s") == 6
+    final = next(s["n"] for s in pack.STEPS if s["title"].startswith("Final check"))
+    assert all(o["who"] == 1 for n, o in ops if n == final), [o for n, o in ops if n == final]
+    assert pack.MINE["time_target_min"].value == 104
+    clock = m.time_total(pack.CLOCK_LAST_STEP) / 60
+    assert 104 <= clock < 115, clock
+    guide = pack.outputs(m)[pack.OUT_GUIDE]
+    assert "no power drivers" not in guide and "cordless driver" in guide and "no one holds a part overhead" in guide
+
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
     outs = pack.outputs(pack.Model())

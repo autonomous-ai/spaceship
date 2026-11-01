@@ -142,7 +142,7 @@ MINE = {
     "pal_std_l_exact": N(1219.2, "mm", "calculation", "requirements C1", "48 in exactly; the controlling number for 'fits the pallet'"),
     "pal_std_w_exact": N(1016.0, "mm", "calculation", "requirements C1", "40 in exactly"),
     "pal_long_l_exact": N(2438.4, "mm", "calculation", "requirements C1", "96 in exactly"),
-    "time_target_min": N(60, "min", "confirmed", "REQ-ASM-01", "about 1 hour for 2 people"),
+    "time_target_min": N(104, "min", "confirmed", "the PM's ruling 2026-11-01 (time sinks,: v2's target, against REQ-ASM-01's about 1 hour", "about 104 minutes for 2 people"),
     "time_limit_min": N(240, "min", "confirmed", "REQ-ASM-01", "never more than 4 hours"),
     "part_limit_kg": N(20, "kg", "confirmed", "D-03, REQ-LGT-02", "every part except the glass"),
     "door_a": N(810, "mm", "confirmed", "REQ-ASM-06 (rule PROPOSED, ISS-048)", "smallest size of a part must be 810 or less"),
@@ -170,6 +170,10 @@ TIME = {
     "t_stay_on_s": N(60, "s", "assumption", "this plan (design review)", "clamp one glass stay on the fixed glass and set its prop"),
     "t_stay_off_s": N(30, "s", "assumption", "this plan (design review)", "take one glass stay off"),
     "t_packer_s": N(30, "s", "assumption", "this plan (design review)", "slide the setting packers out from under the door"),
+    "t_bolt_driver_s": N(8, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 1)", "drive one captive bolt with the installers' cordless driver: a 5 mm hex bit long enough to reach through the 19 mm access hole, its clutch set to the joints register's value"),
+    "t_overhead_rest_s": N(60, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 2)", "lift a part overhead onto its rest and let go: nobody holds a part overhead to fix it"),
+    "t_check_door_light_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "one person: the door, then the light test walking round the lit pod with the room dark"),
+    "t_clean_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "the other person at the same time: cleaning inside and out"),
     "t_packer_stack_s": N(60, "s", "assumption", "this plan (D-132)", "stack the setting packers at both of the door's bottom corners to the band's bottom edge beside each, checked with a rule"),
     "t_sleeve_s": N(90, "s", "assumption", "this plan (#263)", "from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box"),
     "t_grille_set_s": N(60, "s", "assumption", "this plan (#263, J-AIR-03)", "lay the roof grille on the sleeve's flange, holes on the rivnuts, and start its 4 bolts by hand; driving them is the register bolts' time"),
@@ -583,7 +587,8 @@ def carry(tag):
               "t_carry_staged_s" if staged else "t_carry_s")
 
 
-BOLT = lay("t_bolt_captive_s")
+BOLT = TIME["t_bolt_driver_s"].value      # the installers' cordless driver (PM ruling 2026-11-01)
+KEY_BOLT = lay("t_bolt_captive_s")        # the kit's 5 mm key, where the driver doesn't fit (the roof grille's 4 bolts)
 
 # joints: {joint ID: [count, size]} for the bolts of the joints register; other: [(text, count)] for the rest
 STEPS = [
@@ -633,12 +638,12 @@ STEPS = [
               op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
          joints={"J-WALL-01": 8, "J-WALL-02": 6}),
     dict(n=7, title="Ceiling: C1, C2", tags=["1-09", "1-10"],
-         A="With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.",
+         A="With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2, and both let go: it rests on the wall tops before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.",
          B="Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6.",
          check="Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.",
          ops=[carry("1-09"), carry("1-10"),
-              op("lift and set each ceiling half from inside", 2, lay("t_place_overhead_s"), 2, "t_place_overhead_s"),
-              op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_captive_s")],
+              op("lift each ceiling half onto its rest, then let go", 2, TIME["t_overhead_rest_s"].value, 2, "t_overhead_rest_s"),
+              op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_driver_s")],
          joints={"J-CEIL-02": 4, "J-CEIL-01": 16}),
     dict(n=8, title="Left decor block DL", tags=["2-08"],
          A="With B, carries DL (2.3 m) from its place to the front-left and stands it on its spigots on the band, against L1 and L2's front edges, hinge halves toward the door opening.",
@@ -667,10 +672,10 @@ STEPS = [
               op("slide the setting packers out", 1, TIME["t_packer_s"].value, 1, "t_packer_s")],
          joints={}),
     dict(n=11, title="Top decor block DT, from above", tags=["2-11"],
-         A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.",
+         A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge, and both let go: DT rests on DL and DR before its bolts.",
          B="Drives DT's 4 bolts to the ceiling (J-FRONT-03).",
          check="The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door's strike 368102 closes onto the 35 N magnetic catch 368007 in DT's underside (D-83).",
-         ops=[carry("2-11"), op("lower DT from above", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s")],
+         ops=[carry("2-11"), op("lower DT onto its rest on DL and DR, then let go", 2, TIME["t_overhead_rest_s"].value, 1, "t_overhead_rest_s")],
          joints={"J-FRONT-03": 4}),
     dict(n=12, title="Electrics, first fix (power off)", tags=["2-12"],
          A="Plugs the factory-tested harness together at each panel seam and runs the plug-in feeds for the light shelf and the hub to their ends (D-87).",
@@ -704,14 +709,14 @@ STEPS = [
          joints={}),
     dict(n=16, title="Soffit and exhaust cartridge", tags=["2-09", "2-18"],
          A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof slot.",
-         B="Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
+         B="Drives the soffit's 2 captive lock screws (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside onto its rest in the soffit and lets go (AIR names the rest); plugs the fan box; closes the hinged underside.",
          check="Soffit underside at Z 2120, level; the fan box's top gasket square under the roof slot; the door still clears.",
          ops=[carry("2-09"), op("hang the soffit on its hanger studs", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
-              carry("2-18"), op("lift the cartridge in", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
+              carry("2-18"), op("lift the cartridge onto its rest in the soffit, then let go", 2, TIME["t_overhead_rest_s"].value, 1, "t_overhead_rest_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s"),
               op("close the hinged underside", 1, TIME["t_face_s"].value, 1, "t_face_s")],
          joints={"J-AIR-01": 2}),
-    dict(n=17, title="Roof sleeve and grille", tags=[],
+    dict(n=17, title="Roof sleeve and grille", tags=[], tool="key",
          parts="the roof sleeve 611601 and the roof grille 611602 with its 4 bolts and washers in their bag, which came off C2 (1-10) at unpacking",
          A="From a step stool outside the front right corner, drops the roof sleeve down through C2's roof slot onto the soft gasket on the exhaust fan box's top, its flange on the roof (#263); then lays the roof grille on over it and drives its 4 bolts, each with its washer, into the rivnuts in the sleeve's flange with the 5 mm key, snug (J-AIR-03).",
          B="Inside, opens the soffit's hinged underside and checks from below that the sleeve sits square on its gasket all round; closes the underside.",
@@ -721,10 +726,10 @@ STEPS = [
               op("soffit underside open and closed, to check the sleeve", 1, TIME["t_face_s"].value, 2, "t_face_s")],
          joints={"J-AIR-03": 4}),
     dict(n=18, title="Ceiling linings: 2 cassettes", tags=["2-19", "2-20"],
-         A="With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.",
-         B="Hooks the 2 safety catches of each cassette before A lets go.",
+         A="With B, lifts each ceiling cassette from below, fill side up, while B hooks its 2 safety catches; both let go and it hangs on its catches. Then both press it up onto its clips behind the soffit.",
+         B="Hooks the 2 safety catches of each cassette first, so it hangs on them and no one holds it overhead.",
          check="Both catches on each cassette; front edges 3 mm behind the soffit.",
-         ops=[carry("2-19"), carry("2-20"), op("lift each cassette onto its clips", 2, lay("t_place_overhead_s"), 2, "t_place_overhead_s"),
+         ops=[carry("2-19"), carry("2-20"), op("press each cassette, hanging on its catches, onto its clips", 2, TIME["t_overhead_rest_s"].value, 2, "t_overhead_rest_s"),
               op("hook a safety catch", 1, TIME["t_catch_s"].value, 4, "t_catch_s")],
          joints={}),
     dict(n=19, title="Light shelf", tags=["2-13"],
@@ -740,10 +745,11 @@ STEPS = [
          ops=[op("power on and self-test", 2, TIME["t_selftest_s"].value, 1, "t_selftest_s")],
          joints={}),
     dict(n=21, title="Final check and film", tags=[],
-         A="Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the room floor when closed (D-132).",
-         B="Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); lifts the floor sheet; cleans.",
+         A="Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the room floor when closed (D-132). Then, with the pod lit and the room dark, walks round it: no light at any seam. Ticks the final check list.",
+         B="At the same time (the PM's ruling, 2026-11-01): pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); lifts the floor sheet; cleans inside and out.",
          check="Every check in the final check list is ticked.",
-         ops=[op("check door, seals and fans; clean", 2, lay("t_final_min") * 60, 1, "t_final_min"),
+         ops=[op("A: check the door, then the light test", 1, TIME["t_check_door_light_s"].value, 1, "t_check_door_light_s"),
+              op("B: clean inside and out", 1, TIME["t_clean_s"].value, 1, "t_clean_s"),
               op("pull one film panel by its tab", 1, TIME["t_peel_tab_s"].value, int(MINE["film_faces"].value), "t_peel_tab_s"),
               op("lift the floor sheet", 1, TIME["t_floor_film_off_s"].value, 1, "t_floor_film_off_s")],
          joints={}),
@@ -994,7 +1000,10 @@ def step_ops(st, other_fixings):
     other = sum(f["count"] for f in other_fixings if f["step"] == st["n"])
     ops = list(st["ops"])
     if bolts + other:   # every register bolt and counted fixing is one captive-bolt drive by one person
-        ops.append(op("drive the step's bolts and fixings", 1, BOLT, bolts + other, "t_bolt_captive_s"))
+        if st.get("tool") == "key":
+            ops.append(op("drive the step's bolts with the kit's key", 1, KEY_BOLT, bolts + other, "t_bolt_captive_s"))
+        else:
+            ops.append(op("drive the step's bolts and fixings with the driver", 1, BOLT, bolts + other, "t_bolt_driver_s"))
     return ops, bolts, other
 
 
@@ -1399,6 +1408,7 @@ def gen_tables(m):
                        ("STEP_POWER", "Power on"), ("STEP_FINAL", "Final check"), ("STEP_LEDGE", "Work-wall ledge")):
         T[key] = str(next(s["n"] for s in STEPS if s["title"].startswith(start)))   # the texts quote these; no typed numbers
     T["WRAP"] = f"{MINE['wrap'].value:g}"
+    T["TARGET_MIN"] = f"{MINE['time_target_min'].value:g}"
     T["DOOR_GAP"] = f"{MINE['door_gap'].value:g}"
     T["DR_BED"] = f"{MINE['dr_bed'].value:g}"
     none = [p for p in m.shipped() if m.cad.get(p.tag, (None,))[0] is None]
@@ -1539,7 +1549,8 @@ def guide_tables(m, T):
         for fx in OTHER_FIXINGS:
             if fx["step"] == st["n"]:
                 bolts.append(ux(fx["text"]))
-        tool = " Tool: the 5 mm hex key." if (st["joints"] or any(f["step"] == st["n"] and f["count"] for f in OTHER_FIXINGS)) else ""
+        tool = (" Tool: the kit's 5 mm key (no room above the roof for the driver)." if st.get("tool") == "key" else
+                " Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.") if (st["joints"] or any(f["step"] == st["n"] and f["count"] for f in OTHER_FIXINGS)) else ""
         clock = "" if st["n"] <= CLOCK_LAST_STEP else ", after the clock"
         img = step_image(st["n"])
         pic = (f"![Step {st['n']}](img/{img.name})\n\n" if img.exists() else "")
@@ -1559,6 +1570,15 @@ def guide_tables(m, T):
                           if any(PIECE[t].group == "AIR" for t in st["tags"]) or st["title"].startswith("Roof sleeve")) / 60)
     G["LEVEL_MIN"] = f0(lay("t_level_min"))
     G["COLUMN_FITTED_KG"] = f1(PIECE["2-10"].kg + PIECE["2-17"].kg)
+    # the PM's rulings of 2026-11-01 (time sinks), priced on the model against the unit times they replace
+    inef = 1 + lay("inefficiency")
+    clock_ops = [o for st in m.steps if st["n"] <= CLOCK_LAST_STEP for o in st["ops"]]
+    save = {"t_bolt_driver_s": sum((KEY_BOLT - o["secs"]) * o["n"] / 2 for o in clock_ops if o["src"] == "t_bolt_driver_s"),
+            "t_overhead_rest_s": sum((lay("t_place_overhead_s") - o["secs"]) * o["n"] for o in clock_ops if o["src"] == "t_overhead_rest_s"),
+            "split": lay("t_final_min") * 60 - (TIME["t_check_door_light_s"].value + TIME["t_clean_s"].value) / 2}
+    save = {k: v * inef / 60 for k, v in save.items()}
+    G["SAVE_DRIVER"], G["SAVE_REST"], G["SAVE_SPLIT"] = (f"{save[k]:.1f}" for k in ("t_bolt_driver_s", "t_overhead_rest_s", "split"))
+    G["CLOCK_BEFORE"] = f"{m.time_total(CLOCK_LAST_STEP) / 60 + sum(save.values()):.0f}"
     G["COLUMN_OVER_KG"] = f1(PIECE["2-10"].kg + PIECE["2-17"].kg - MINE["part_limit_kg"].value)
     clock = m.time_total(CLOCK_LAST_STEP)
     srow.append(["", f"**Clock, steps 1 to {CLOCK_LAST_STEP}**", "", sum(r["bolts"] for r in m.steps),
@@ -1593,7 +1613,7 @@ def guide_tables(m, T):
     ut = []
     for k in ["t_unpack_std_ordered_min", "t_unpack_long_ordered_min", "t_carry_s", "t_place_s", "t_place_hung_s", "t_place_overhead_s",
               "t_bolt_captive_s", "t_level_min", "t_fixed_preglazed_min", "t_door_prehung_min", "t_connector_s", "t_leaf_s",
-              "t_elec_min", "t_final_min", "inefficiency"]:
+              "t_elec_min", "inefficiency"]:
         v = LAYP[k]
         ut.append([f"`{k}`", f"{v.value:g} {v.unit}", v.status, "layout study `scripts/inputs.py`", v.note])
     for k, v in TIME.items():

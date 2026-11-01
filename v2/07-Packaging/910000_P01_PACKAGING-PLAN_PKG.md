@@ -303,7 +303,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1563 mm; widest tier 1219 mm; longest lane 2430 mm; failing tiers none | yes |
 | K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
 | K7 | The guide's bolts match the joints register, joint by joint | guide 92 (80 × M6 × 16, 12 × M6 × 25); register 92; differences none | yes |
-| K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 21) | 133 min for 2 people (4.4 person-hours); target about 60 min; limit 240 min | yes |
+| K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 21) | 112 min for 2 people (3.7 person-hours); target about 104 min; limit 240 min | yes |
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 9) over 2-02 (step 10) | yes |
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 39 labelled pieces; without a place: none; unknown tags: none | yes |
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
@@ -456,7 +456,7 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | `pal_std_l_exact` | 1219.2 mm | calculation | requirements C1 | 48 in exactly; the controlling number for 'fits the pallet' |
 | `pal_std_w_exact` | 1016 mm | calculation | requirements C1 | 40 in exactly |
 | `pal_long_l_exact` | 2438.4 mm | calculation | requirements C1 | 96 in exactly |
-| `time_target_min` | 60 min | confirmed | REQ-ASM-01 | about 1 hour for 2 people |
+| `time_target_min` | 104 min | confirmed | the PM's ruling 2026-11-01 (time sinks,: v2's target, against REQ-ASM-01's about 1 hour | about 104 minutes for 2 people |
 | `time_limit_min` | 240 min | confirmed | REQ-ASM-01 | never more than 4 hours |
 | `part_limit_kg` | 20 kg | confirmed | D-03, REQ-LGT-02 | every part except the glass |
 | `door_a` | 810 mm | confirmed | REQ-ASM-06 (rule PROPOSED, ISS-048) | smallest size of a part must be 810 or less |
