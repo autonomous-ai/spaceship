@@ -700,8 +700,18 @@ def run(_context):
         set_material(design, ang, "col_ang")
         CB.place(col, occ_fl, (x0, y0, z0), "COLUMN ANGLE FL", ctx)
         fx0, fx1, fy0, fy1, fz0, fz1 = lay["COLUMN ANGLE FR"][1]
-        occ_fr = col.occurrences.addExistingComponent(ang, adsk.core.Matrix3D.create())
-        place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx)
+        if ARGS.get("no_turn") == "1":
+            # a dry run's stand-in while the turned-copy method is being proven (turn probes 2 to 5, 2026-11-01): the
+            # right angle built in place as its own body under the same number; never saved
+            if ARGS.get("save") == "1":
+                raise RuntimeError("no_turn=1 is for unsaved dry runs only")
+            _ofr, angr = new_comp(col, "col_ang")
+            made["COLUMN ANGLE FR"] = (angr, poly_xy_extrude(angr, "COLUMN ANGLE FRONT", A.angle_pts("FR", fx0, fx1, fy0, fy1),
+                                                             fz0, fz1, ctx))
+            set_material(design, angr, "col_ang")
+        else:
+            occ_fr = col.occurrences.addExistingComponent(ang, adsk.core.Matrix3D.create())
+            place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx)
         # the back-left angle (611109), in place, with its keyholes (features below)
         x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE BL"][1]
         _ob, angb = new_comp(col, "col_ang_b")
