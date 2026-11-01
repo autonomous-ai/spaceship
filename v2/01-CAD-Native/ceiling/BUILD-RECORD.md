@@ -66,6 +66,7 @@ Fusion's flat pattern of the tray: **1248.53 × 1133.52 mm**. The K-factor calcu
 
 ## Not in this build yet
 
+- Frame member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds): the cleats are the Joints Engineer's register entries and models, placed by reference when they land (until then the frames' notes say so).
 - Drawings (D-91: they follow this PR): made from part-only designs built by the same script (`parts=`), because a Fusion drawing always shows its whole design; specs in `../../02-Drawings/ceiling/drawing_specs.py`. The skins and the plain felt get no drawing (D-89 part 4: their DXF and parts-list row are enough); the three fill strips share one tabulated drawing (D-89).
-- HOLD, drawn as space only: the clip (H03), the safety catch (H04), the felt fixing to the lips and ribs (H09), the fill fixing (H10), the frame member joints (H11), the cable grommet.
+- HOLD, drawn as space only: the clip (H03), the safety catch (H04), the felt fixing to the lips and ribs (H09), the fill fixing (H10), the cable grommet.
 - The soffit, the air column and their parts are AIR's (`../air/`, PR #91); the light shelf, ledge and screen rail are INTERIOR's (`../interior/`, PR #92).
