@@ -586,6 +586,8 @@ def joint_to_point(parent, occ, pt, name, flip=False, angle=None):
     """Rigid joint: the occurrence's origin onto pt. flip and angle (an expression such as '180 deg') go on the
     joint's input: Fusion refuses to edit them on a made joint without rolling the timeline back (the turned-copy
     probe, 2026-11-01)."""
+    if occ.isGroundToParent:        # Fusion grounds a component's first-made occurrence and copies of it, and a joint
+        occ.isGroundToParent = False  # then conflicts ("conflicts with assembly relationships", turned-copy probes 8, 9)
     g_occ = adsk.fusion.JointGeometry.createByPoint(
         occ.component.originConstructionPoint.createForAssemblyContext(occ))
     g_par = adsk.fusion.JointGeometry.createByPoint(pt)
@@ -647,10 +649,10 @@ def cross_member(parent, ctx):
 
 def place_turned(parent, occ, key, name, ctx):
     """C2's copy of a common member (M.TURNED): its origin to M.turned_origin, turned 180 deg about the pod's Y axis
-    (the side member, upside down) or Z axis (cross member 1, end for end), by place_rotated (TURN_METHOD), read back."""
+    (the side member, upside down) or Z axis (cross member 1, end for end), by place_rotated, read back."""
     want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[M.TURNED[key]]
-    return place_rotated(parent, occ, M.turned_origin(key), want, name, ctx,
-                         [(False, "180 deg"), (True, "0 deg"), (True, "180 deg")])
+    first = {"y": [(True, "180 deg")], "z": [(False, "180 deg")]}[M.TURNED[key]]     # turned-copy probe 9
+    return place_rotated(parent, occ, M.turned_origin(key), want, name, ctx, first)
 
 
 def build_frame_members(fcomp, half, ctx):
@@ -732,7 +734,6 @@ def build_frame_members(fcomp, half, ctx):
 # how a copy is turned into place (D-120's copies; the turned-copy probes of 2026-11-01): "joint", a rigid joint to a
 # sketch point with the angle (and flip) on the joint's input, read back and checked; or "asbuilt", the copy set turned
 # in place and held by a rigid as-built joint to a locator placed by a plain joint at the point
-TURN_METHOD = "joint"
 
 
 def rotation(angle_deg, over):
@@ -746,44 +747,52 @@ def rotation(angle_deg, over):
     return tuple(tuple(sum(rz[r][k] * rx[k][c2] for k in range(3)) for c2 in range(3)) for r in range(3))
 
 
-def rot_of(occ):
-    m = occ.transform2
-    return tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
+def world_of(root, occ):
+    """The occurrence's transform in the design: its own at the root, a nested one's through its proxy in root (an
+    occurrence's own transform inside a sub-component misled turned-copy probes 6 and 7)."""
+    if occ.assemblyContext is None:
+        tok = occ.entityToken
+        for o in root.allOccurrences:
+            nat = o.nativeObject
+            if nat is not None and nat.entityToken == tok:
+                return o.transform2
+    return occ.transform2
+
+
+def rot_of(occ, parent=None):
+    """occ's turn (3 x 3) in the design, relative to its parent component's one occurrence when `parent` is given
+    (identity for the root)."""
+    root = occ.component.parentDesign.rootComponent
+    m = world_of(root, occ)
+    ro = tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
+    if parent is None or parent == root:
+        return ro
+    ps = root.allOccurrencesByComponent(parent)
+    if ps.count != 1:
+        raise RuntimeError("%s has %d occurrences; its children's turns can't be read against one" % (parent.name, ps.count))
+    pm = ps.item(0).transform2
+    rp = tuple(tuple(pm.getCell(r, c) for c in range(3)) for r in range(3))
+    return tuple(tuple(sum(rp[k][r] * ro[k][c] for k in range(3)) for c in range(3)) for r in range(3))
 
 
 def place_rotated(parent, occ, xyz, want, name, ctx, settings):
-    """Place a copy at xyz (expressions, the parent's frame) turned by the rotation `want` (3 x 3), by TURN_METHOD; the
-    result is read back after a full compute, and a copy that doesn't land turned stops the build. settings: the
-    joint's (flip, angle) to try, in order."""
-    def ok():
+    """Place a copy at xyz (expressions, the parent's frame) turned by the rotation `want` (3 x 3) by a rigid joint
+    whose input carries the flip and angle (Fusion won't edit them on a made joint); the turn is read in the design
+    after a full compute, relative to the parent, and a copy that doesn't land turned stops the build. settings: the
+    joint's (flip, angle) to try, in order (turned-copy probe 9: angle 180 turns about Z, flip + angle 180 about Y,
+    flip + angle 0 about X; probe 11 the other angles about Z)."""
+    pt = place_point(parent, xyz, name, ctx)
+    tried = []
+    for flip, angle in settings:
+        j = joint_to_point(parent, occ, pt, name, flip, angle)
         ctx.design.computeAll()
-        got = rot_of(occ)
-        return all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3))
-    if TURN_METHOD == "joint":
-        pt = place_point(parent, xyz, name, ctx)
-        tried = []
-        for flip, angle in settings:
-            j = joint_to_point(parent, occ, pt, name, flip, angle)
-            if ok() and j.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState:
-                return j
-            tried.append((flip, angle, rot_of(occ), j.healthState))
-            j.deleteMe()
-        raise RuntimeError("no joint setting turns %s as wanted: %s" % (name, tried))
-    loc = parent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-    loc.component.name = "LOCATOR - %s" % name
-    joint_to_point(parent, loc, place_point(parent, xyz, "LOCATOR - " + name, ctx), "LOCATOR - " + name)
-    m = adsk.core.Matrix3D.create()
-    for r in range(3):
-        for c in range(3):
-            m.setCell(r, c, want[r][c])
-        m.setCell(r, 3, ctx.ev(xyz[r]) * MM)
-    occ.transform2 = m
-    ab = parent.asBuiltJoints.createInput(occ, loc, None)
-    ab.setAsRigidJointMotion()
-    j = parent.asBuiltJoints.add(ab)
-    if not ok():
-        raise RuntimeError("%s: the as-built joint didn't hold the copy turned" % name)
-    return j
+        got = rot_of(occ, parent)
+        healthy = j.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+        if healthy and all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
+            return j
+        tried.append((flip, angle, healthy, tuple(tuple(round(v, 4) for v in row) for row in got)))
+        j.deleteMe()
+    raise RuntimeError("no joint setting turns %s as wanted: %s" % (name, tried))
 
 
 def plate_part(fcomp, pkey, ctx):
