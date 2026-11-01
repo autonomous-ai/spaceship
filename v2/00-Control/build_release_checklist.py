@@ -556,31 +556,14 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
 
 
 ALTERNATIVES = re.compile(r"\bor\b|\bone to pick\b|\beither\b|\balternatives?\b", re.I)
-# D-162's cut list row, read word for word as C05 reads it (tools/checks/c_drawings.py, member_row_lacks, the
-# Checker's #357): keep the two in step. An angle counts written '45°', '45 deg' or '45 degrees' (Reviewer 6); one
-# angle given for both ends states both ('both ends mitred 45 deg', 'bottom and top ends both mitred 45.00°'), and
-# square ends need no angle (the Lead's rulings, 2026-11-01; CEILING's rows in #348, WALL's in #343)
-END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
-SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends|\bsquare ends\b", re.I)
-# one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
-_ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
-BOTH_ENDS_ANGLE = re.compile(r"\b(?:both ends|ends both)\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE),
-                             re.I)
-
-
 def member_row_lacks(row):
     """What a member's cut-list row doesn't give of D-162's: its section, cut length, both end angles ('angles on
-    the frame drawing' doesn't state them) and quantity. C05's own function (#357), copied word for word until it is
-    on main; a test holds the two to the same answer on every row it reads."""
-    cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str)
-             and isinstance(v, str)}
-    ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
-    return [what for what, ok in (
-        ("its section", bool(cells.get("section"))),
-        ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
-        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))
-         or bool(BOTH_ENDS_ANGLE.search(ends))),
-        ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
+    the frame drawing' doesn't state them) and quantity. The mechanical check's own function
+    (tools/checks/c_drawings.py, member_row_lacks, the Checker's #357), so the checklist and C05 can't read a row apart:
+    an angle written '45°', '45 deg' or '45 degrees', one angle for both ends ('both ends mitred 45 deg', 'bottom and
+    top ends both mitred 45.00°') and square ends all count (the Lead's rulings, 2026-11-01)."""
+    _geometry, c_drawings = load_checks()
+    return c_drawings.member_row_lacks(row)
 
 
 def d162_rows(cut_texts):
