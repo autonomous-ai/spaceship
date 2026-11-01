@@ -215,6 +215,32 @@ def is_strip(sides):
     return bool(sides) and sides[0] <= 25.0 and sides[0] <= 0.5 * sides[1]
 
 
+def strip_sides(step_paths, load=None):
+    """D-125's per-part strip list: part number -> the three sides (smallest first) of its one shape, for each part
+    whose bodies, across all the given STEP files, have a single shape (body_shape: copies and the same part in a
+    second file count once) and that shape is a plain rectangular block thin enough to be a strip or sheet
+    (cuboid_sides, is_strip). A part with two or more shapes, a thick block or a bar, or any other shape is left
+    out. load: path -> a parsed STEP (stepfile.StepFile when not given). The release checklist calls this rather
+    than copying it: keep its name and arguments."""
+    if load is None:
+        import stepfile
+        load = stepfile.StepFile
+    shapes = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            shapes.setdefault(inst["part_number"], {}).setdefault(body_shape(so), so)
+    out = {}
+    for pn, by_shape in shapes.items():
+        if len(by_shape) != 1:
+            continue
+        sides = cuboid_sides(next(iter(by_shape.values())))
+        if is_strip(sides):
+            out[pn] = sides
+    return out
+
+
 PLUS_MINUS = re.compile(r"±|\+\s*/\s*-|\+\s*\d+(?:\.\d+)?\s*/\s*-?\s*\d")    # ±0.5, +/-1, +0/-0.5, +0.10/0
 
 
