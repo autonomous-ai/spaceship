@@ -46,6 +46,19 @@ The joint hardware (rivnut 838003, stop washer 831002, spigot 831001) is the joi
 | FB-15 | Head notches in the bottom wall | The stud heads (Ø10 × 6, 1.8 off the side band's face) end up inside the band's tube, so on the way down they come up through these | 12 wide × 9 deep from each end, on Y 830 | The head's far face is 1.8 + 6 = 7.8 from the side band's face; 1 clear each side of the Ø10 head (joints register FR-15) | source |
 | FB-16 | End plate bevel 1 × 45° | Lets the 1.5 plate slip into the 1.8 gap under the heads | Along each plate's bottom edge, on its side-band side | Joints register FR-15 (D-129) | source |
 
+### Recheck at the steel pod's mass (D-131, D-132; the Lead's ask on the D-132 PR)
+
+D-86's band and glide check, rerun at about 450 kg as shipped (D-131's welded steel frames add about 45 kg; with no floor, D-132, everything stands on the band) plus two people (2 × 100 kg, assumption). Calculation; the sample tests BT-04 and BT-05 confirm.
+
+| Item | Load | Result | Against | Verdict |
+|---|---|---|---|---|
+| Side band span, 1295 between its glides (FB-08) | at most 0.55 kN/m: the walls, their linings, the ceiling, AIR, ELECTRICAL and INTERIOR (about 300 kg) over the side and back bands' 5.42 m | 11 MPa, sag 0.6 mm (simply supported, I 519 000 mm⁴, Z 10 400 mm³) | about 160 MPa yield (6063-T6) | fine |
+| The same, both people's full weight on one side band | + 1.96 kN over 1.3 m: 2.06 kN/m | 42 MPa, sag 2.1 mm | 160 MPa | fine |
+| Back band, 2 spans of 1060 on 3 glides | 0.55 kN/m | 7.4 MPa; middle glide 1.25 wL = 0.73 kN | | fine |
+| Worst glide | 0.75 kN (the back band's middle glide; a side band's front glide with its hooked front piece about 0.66 kN) | about 1.7 kN if both people lean their whole weight on one wall | the glide's static rating: 3.5 kN or more (product HOLD) | spec |
+| Load block 111601 (FD-01), 3 mm EN AW-5754 H22 | 0.75 kN | about 118 MPa: a plate spanning the 36 between the tube's side walls with its edges free to turn, the load spread over about 38 of its 54 length, σ ≈ 1.42 P / t² (the earlier 31 MPa assumed fixed edges) | about 130 MPa yield | **needs more** |
+| Load block, proposed 5 mm EN AW-6082 T6 | 0.75 kN / 1.7 kN | about 43 / 97 MPa | about 250 MPa yield | proposed to the PM; the glide's M10 rivnut then grips 1.5 + 5 = 6.5 |
+
 ## Glide doubler (111601)
 
 | ID | Feature | Function | Size | Constraint behind it | Status |
