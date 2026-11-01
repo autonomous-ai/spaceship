@@ -125,8 +125,17 @@ def test_p04_rollup_lines():
     assert [r[1] for r in csv_rows if kit.search(r[1] + " " + r[5])] == [later[0][1]], "only the kit is outside the cap"
     csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
-    air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
-    assert abs(air32 - (rollup.AA.d60_air_kg() + rollup.AA.fans_kg())) < 0.05, air32
+    # AIR from its CAD (PR #91): the lines add up to the parts list's 610000 plus the ruled changes its follow-up builds
+    # (D-116 layers at 32, D-124 casings at 3 mm) and what the CAD doesn't model yet (D-121, the riser's foot, D-130's boot), nothing
+    # twice; the fill moves only the column's and the soffit's fill, from the CAD's 32 kg/m3 (D-81)
+    air = lambda f: sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=f) if g == "AIR")
+    k, A = rollup.AIR["kg"], rollup.AIR
+    layers = 2 * A["n_layers"] * k["611302"] * (rollup.AA.CART_LAYER_KG_M3 / A["layer_rho"] - 1)
+    casings = (k["611401"] + k["611402"]) * (rollup.AA.CASINGS[rollup.AA.FANBOX_CASING][2] / rollup.AIR_FBOX_T_CAD - 1)
+    want = (k["610000"] + layers + casings + sum(rollup.air_unmodelled().values()) + rollup.AIR_RISER_FOOT_KG
+            + rollup.AA.BOOT_KG)
+    assert abs(air(32.0) - want) < 0.01, (air(32.0), want)
+    assert abs(air(32.0) - air(rollup.FILL_LIGHT) - (k["611104"] + k["611203"]) * (1 - rollup.FILL_LIGHT / 32.0)) < 1e-9
     for name in ("Named clips",):                                  # the light shelf and ledge are INTERIOR's CAD now
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
