@@ -281,8 +281,11 @@ OTHER = [
     ("F13", "{fill}", "Fill notches 60 x 60, right through the 40 mm batt, beside every bolt this panel drives (4 "
      "above F01, 3 beside F07); each piece cut from its DXF (D-128)",
      "the 5 mm key reaches F02 and F08 from inside the pod before the cassette goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
-    ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end",
-     "the back corner shows ACP, not the frame end (D-55; register section 7 item 5)", "skin_ret = outer_t - skin_t (assumption)",
+    ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end, bonded to it through a "
+     "3 mm line (the frame stops bond_t short of the return)",
+     "the back corner shows ACP, not the frame end (D-55; register section 7 item 5); every skin face that meets a frame "
+     "is bonded at bond_t, no zero fits (the Lead's ruling, 2026-11-01)", "skin_ret = outer_t - skin_t (assumption); "
+     "frm_len = pnl_len - skin_t - bond_t",
      "V-groove and fold per the ACP maker (HOLD H16)", "", "assumption"),
     ("F15", "{skin}", "Skin flush with the frame's top and bottom (setback 0)", "the outside reveal equals the 2.26 seam gap, "
      "crisp and aligned (D-23)", "skin_setback 0 (assumption); seam_gap 2.26 (P04, confirmed)", "", "", "assumption"),

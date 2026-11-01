@@ -265,7 +265,8 @@ def skin_blocks(pn, src=None):
                 b[2], b[1], "right" if pos["right"] else "left"),
             "3. Blank %.2f × %.2f (DXF %s_P01_..._DXF.dxf): main face %.2f plus the %.2f back return, outer-face "
             "lengths. The return is V-grooved on the back face along the BEND line and folded 90° to cover the frame's "
-            "back end at the corner (D-55). Fold allowance 0 and the groove rest thickness: HOLD H16." % (
+            "back end at the corner (D-55), 3 mm off it: bonded there like the main face (note 4). Fold allowance 0 "
+            "and the groove rest thickness: HOLD H16." % (
                 ret + length, height, pn, length, ret),
         ]
     table = ["**TABULATED DRAWING (D-89): ONE SHAPE, THESE PART NUMBERS (part · position · hand · size)"] + \
@@ -274,8 +275,12 @@ def skin_blocks(pn, src=None):
                                                           "on the panel drawing 210202 and in its DXF." if pos["back"]
                                                           else "RH is the mirror of LH; L1 = L2 and R1 = R2.")]
     notes = ["**GENERAL NOTES", "1. " + views_note(pos)] + body + [
-        "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
-        "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2).",
+        ("4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
+         "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2); on a side skin also "
+         "one joint, 3 mm thick and as wide as the return allows up to 12, between the return and the frame's back "
+         "end: every skin face that meets a frame is bonded, none touches it (D-137)." if not pos["back"] else
+         "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
+         "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2)."),
         "5. Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
         "6. Protect the coloured face; film stays on until the panel is installed.",
     ]
