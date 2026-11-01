@@ -235,6 +235,28 @@ def size_tol(v, key):
     return size, "ISO 2768-m; see the drawing"
 
 
+# the hardware rows of AIR's parts list, all joints register parts (D-63): key in air_model.HARDWARE -> (parent key,
+# material, finish, maker, sku, torque, source)
+HARDWARE_ROWS = {
+    "lock": ("soffit", "steel, property class 8.8 (ISO 898-1)", "zinc plated",
+             "HOLD: any maker to ISO 4762, picked at the RFQ", "ISO 4762 M6 x 25 - 8.8 - zinc plated",
+             "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
+             "PM ruling 2026-11-01: two captive lock screws, the 5 mm key; captive retainer HOLD (joints register, D-63)"),
+    "grille_bolt": ("air", "steel, property class 8.8 (ISO 898-1)", "zinc plated",
+                    "HOLD: any maker to ISO 4762, picked at the RFQ", "ISO 4762 M6 x 16 - 8.8 - zinc plated",
+                    "snug only, into the sleeve's rivnuts (HOLD-01 for the rivnut)",
+                    "the Air Engineer 2026-11-01 (#265's open item): the roof grille over the sleeve's flange, from the "
+                    "roof after the soffit hangs, the 5 mm key (R-J2); joints register H-01"),
+    "grille_washer": ("air", "stainless steel A2", "none (plain stainless)",
+                      "HOLD: any maker to ISO 7093-1, picked at the RFQ", "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", "",
+                      "one under each roof grille bolt's head (R-J10); joints register H-09"),
+    "grille_rivnut": ("air", "steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2",
+                      "HOLD-01 (D-48)",
+                      "set at the factory in the roof sleeve's top flange, one near each corner, for the grille's bolts; "
+                      "joints register H-03"),
+}
+
+
 def parts_list(v, mass):
     per = {}
 
@@ -278,21 +300,20 @@ def parts_list(v, mass):
              "source": src}
         rows.append(r)
         by_key[key] = r
-    hp = A.HARDWARE["lock"]
-    rows.append({"part_number": hp[0], "name": hp[1], "name_vi": hp[2], "kind": "PI", "parent": A.PARTS["soffit"][0],
-                 "qty_per_parent": hp[3], "qty_per_pod": hp[3], "material": "steel, property class 8.8 (ISO 898-1)",
-                 "finish": "zinc plated", "process": "", "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
-                 "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated", "torque": "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
-                 "size_mm": "", "tolerance": "", "mass_each_kg": "%.4f" % hp[4], "mass_status": "calculation (joints register sizes)",
-                 "revision": REV, "status": "DRAFT",
-                 "source": "PM ruling 2026-11-01: two captive lock screws, the 5 mm key; captive retainer HOLD (joints register, D-63)"})
-    by_key["lock"] = rows[-1]
     kids = {}
     for t in TREE:
         key, parent, q = t[:3]
         if parent:
             kids.setdefault(parent, []).append((key, q))
-    kids.setdefault("soffit", []).append(("lock", hp[3]))
+    for key, (parent, material, finish, maker, sku, torque, src) in HARDWARE_ROWS.items():
+        hp = A.HARDWARE[key]
+        rows.append({"part_number": hp[0], "name": hp[1], "name_vi": hp[2], "kind": "PI", "parent": A.PARTS[parent][0],
+                     "qty_per_parent": hp[3], "qty_per_pod": hp[3], "material": material, "finish": finish, "process": "",
+                     "maker": maker, "sku": sku, "torque": torque, "size_mm": "", "tolerance": "",
+                     "mass_each_kg": "%.4f" % hp[4], "mass_status": "calculation (joints register sizes)", "revision": REV,
+                     "status": "DRAFT", "source": src})
+        by_key[key] = rows[-1]
+        kids.setdefault(parent, []).append((key, hp[3]))
 
     def total(key):
         r = by_key[key]

@@ -232,6 +232,15 @@ def test_metal_classes():
     assert c_parts.metal_class("A2-70") == "stainless"
 
 
+def test_fasteners_are_family_83_but_not_the_frames_welded_mitre_plates():
+    from common import is_fastener
+    assert is_fastener("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS")
+    assert is_fastener("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2")
+    assert is_fastener("", "HARDWARE - BOLT - M6 X 16")
+    assert not is_fastener("831007", "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL")
+    assert not is_fastener("831008", "HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL")
+
+
 def test_shipping_rules(tmp_path):
     d = tmp_path / "v2/05-Engineering/layout-study/out"
     d.mkdir(parents=True)
@@ -339,11 +348,44 @@ def test_part_numbers_and_file_names():
 
 
 def test_pod_mass_against_the_cap(tmp_path):
-    rows = [{"kg_total": "400.0"}, {"kg_total": "26.7"}]
+    # D-131: the cap is 460 kg (provisional until the wall sample's recount), from config/policy.csv
+    rows = [{"kg_total": "440.0"}, {"kg_total": "26.7"}]
     fs, info = c_parts.check_pod_mass(str(tmp_path), rows, "list.csv")
-    assert info["total_kg"] == pytest.approx(426.7) and [f.rule for f in fs] == ["pod-mass-over-cap"]
-    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "419"}], "list.csv")
-    assert fs == []
+    assert info["total_kg"] == pytest.approx(466.7) and info["cap_kg"] == 460.0
+    assert [f.rule for f in fs] == ["pod-mass-over-cap"] and "460 kg cap (D-131" in fs[0].message
+    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "426.7"}], "list.csv")
+    assert fs == []                                                       # over the old 420, under D-131's 460
+    assert c_parts.check_pod_mass(ROOT, [{"kg_total": "1"}], "list.csv")[1]["cap_kg"] == 460.0   # the repo's policy
+
+
+def test_what_decisions_cancelled_is_gone_and_what_they_added_is_there(tmp_path):
+    # D-131 cancels the cleats, D-132 the floor parts and the threshold and adds the base seal lip
+    import shutil
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    for n in ("cancelled-items.csv", "required-items.csv"):
+        shutil.copy(os.path.join(ROOT, "v2/04-Checks/config", n), cfg / n)
+    d = tmp_path / "v2/03-Manufacturing/base"
+    d.mkdir(parents=True)
+    row = {"part_number": "111401", "name": "BASE - FLOOR PANEL - F1", "name_vi": "x", "material": "plywood 9",
+           "finish": "HPL", "qty": "1", "mass_kg": "9", "status": "DRAFT", "source": "CAD"}
+    rows = [row, dict(row, part_number="111501", name="BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM"),
+            dict(row, part_number="111101", name="BASE - BAND TUBE - SIDE - LH")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows)
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"118003": {"files": {"v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step"}, "count": 1,
+                        "name": "118003 FRONT - THRESHOLD - 13 MM"},
+             "212999": {"files": {"v2/03-Manufacturing/skeleton/x.step"}, "count": 1, "name": "212999 CORNER CLEAT"}}
+    got = {(f.rule, f.subject): f for f in c_parts.check_decided_items(str(tmp_path), plists, prods)}
+    assert {k for k in got if k[0] == "cancelled-by-decision"} == {
+        ("cancelled-by-decision", "111401"), ("cancelled-by-decision", "111501"), ("cancelled-by-decision", "118003")}
+    assert got[("cancelled-by-decision", "111401")].owner == "BASE" and "D-132" in got[("cancelled-by-decision", "111401")].message
+    assert got[("cancelled-by-decision", "118003")].owner == "FRONT"                 # the skeleton's cleat isn't a part
+    req = [f for f in got.values() if f.rule == "required-by-decision"]
+    assert len(req) == 1 and req[0].owner == "BASE" and "seal lip" in req[0].message
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT")])
+    got = c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
+    assert got == []                                                       # floor parts gone, the lip there
 
 
 def test_repo_pod_mass_from_the_newest_list_without_double_counting():
@@ -1173,6 +1215,43 @@ def test_d93_to_d99(tmp_path, monkeypatch):
     assert len(fs) == 1 and "'FRONT - DOOR STRIKE'" in fs[0].message and "the CAD" in fs[0].fix
 
 
+def test_a_renamed_register_part_lists_every_file_and_team_and_a_new_maker_code_is_major(tmp_path):
+    # D-131: the register re-specified 838003 from the aluminium CAH3 to the steel CAH2; every team still names the old
+    j = tmp_path / "v2/05-Engineering/joints"
+    j.mkdir(parents=True)
+    (j / "joints-register.md").write_text(
+        "| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 · Tán rút | bought |\n"
+        "| H-22 | **368102** | FRONT - DOOR STRIKE · Đế hít cửa | bought | 1 |\n")
+    old = "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2"
+    for team, pn in (("wall", "210101"), ("base", "110000")):
+        (tmp_path / "v2/03-Manufacturing" / team).mkdir(parents=True)
+        _write_csv(tmp_path / "v2/03-Manufacturing" / team / ("%s_P01_X_BOM.csv" % pn),
+                   [{"part_number": "838003", "name": old, "qty": "4"}])
+    _write_csv(tmp_path / "v2/03-Manufacturing/wall/210102_P01_Y_BOM.csv",
+               [{"part_number": "838003", "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
+                 "qty": "4"}])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"838003": {"files": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step",
+                                  "v2/03-Manufacturing/base/110000_P01_X_STEP.step"}, "count": 4,
+                        "name": "838003 " + old,
+                        "names": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step": "838003 " + old + " (1)",
+                                  "v2/03-Manufacturing/base/110000_P01_X_STEP.step": "838003 " + old}}}
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
+    assert len(fs) == 1
+    f = fs[0]
+    assert f.severity == "major" and f.owner == "BASE; WALL"
+    assert "CAH3-610-4.2 (gone)" in f.message and "CAH2-610-4.2 (new)" in f.message and "STEEL (new)" in f.message
+    assert "110000_P01_X_STEP.step" in f.message and "v2/03-Manufacturing/base/110000_P01_X_BOM.csv" in f.message
+    assert "210102_P01_Y_BOM.csv" not in f.message and "material and finish" in f.fix and "(2 CAD, 2 parts lists)" in f.fix
+    assert f.evidence["files"] == sorted(f.evidence["files"]) and len(f.evidence["files"]) == 4
+    # wording only stays minor
+    assert c_parts.part_words("FRONT - DOOR STRIKE") == c_parts.part_words("FRONT - DOOR CATCH STRIKE") == set()
+    prods = {"368102": {"files": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step"}, "count": 1,
+                        "name": "368102 FRONT - DOOR CATCH STRIKE"}}
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
+    assert len(fs) == 1 and fs[0].severity == "minor" and fs[0].owner == "WALL"
+
+
 def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_path):
     from common import name_words
     assert name_words("BASE - LEVELLING GLIDE - M10 (HOLD)") == name_words("BASE - LEVELLING GLIDE - M10 - HOLD")
@@ -1492,3 +1571,25 @@ def test_the_drawing_traps_are_read_back_into_c05(tmp_path):
     got = {(f.subject, f.rule, f.severity) for f in c_drawings.check_drawings(str(tmp_path), {"831998", "831999"}, {})}
     assert ("831998", "letter-height", "major") in got and ("831998", "hidden-lines", "minor") in got
     assert not [g for g in got if g[0] == "831999"]                     # 2.5 mm text; its 2 hidden views allowed
+
+
+def test_the_acp_skins_bays_are_275_clear_or_less():
+    # D-135: 2 mm or less under 100 N at a bay's centre; WALL's span table: 274.8 mm clear gives 1.99 mm
+    lab = "210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_CAD:1 / 211201 WALL - PANEL FRAME - BACK LOWER - B1:1 / %s"
+    def frame(centres):
+        bs = [_B(lab % "RAIL - BOTTOM", (0.0, 810.0, 0.0, 1200.0, 850.0, 20.0)),
+              _B(lab % "RAIL - TOP", (0.0, 810.0, 1080.0, 1200.0, 850.0, 1100.0))]
+        x = 0.0
+        while x <= 1180.0 + 1e-6:
+            bs.append(_B(lab % "STILE", (x, 810.0, 20.0, x + 20.0, 850.0, 1080.0)))
+            x += centres
+        for b in bs:
+            b.file = "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step"
+        return bs
+    wide = frame(393.33)                                           # D-85's centres: 373 clear
+    assert [x[0] for x in c_geometry.acp_bays(wide)["211201 BACK LOWER - B1"]] == [373.3, 373.3, 373.3]
+    fs = c_geometry.check_acp_bays(ROOT, "assembly", wide)
+    assert len(fs) == 1 and fs[0].owner == "WALL" and fs[0].severity == "major" and "373.3 mm" in fs[0].message
+    assert c_geometry.check_acp_bays(ROOT, "assembly", frame(295.0)) == []            # 275 clear: passes
+    other = [_B("410000_P01_CEILING_CAD:1 / 411101 CEILING - PANEL FRAME - C1:1 / X", (0, 0, 0, 1200, 40, 1100))]
+    assert c_geometry.acp_bays(other) == {}                          # the rule is for the wall panels' ACP
