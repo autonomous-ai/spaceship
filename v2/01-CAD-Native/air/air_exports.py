@@ -308,7 +308,8 @@ def parts_list(v, mass):
             mass_txt, mstat = "", "calculation (sum of its parts)"
         elif kind == "reserved air space":
             # D-105's type: no mass, no drawing, no BOM line; the checks keep the space (the Lead's ruling 2026-11-01)
-            mass_txt, mstat = "-", "not counted: a reserved space; the in-house sensor hub that fills it is ELECTRICAL's"
+            # 0.000, not a dash: the roll-up and the master BOM read every row's mass as a number
+            mass_txt, mstat = "0.000", "none: a reserved space; the in-house sensor hub that fills it is ELECTRICAL's"
         elif kind == "HOLD" or (kind == "PI" and key in HOLD_MASS):   # a bought part whose product is on HOLD
             hm, hs = HOLD_MASS.get(key, (0.0, "assumption: space only"))
             mass_txt, mstat = "%.3f" % hm, hs
