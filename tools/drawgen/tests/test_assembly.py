@@ -184,9 +184,10 @@ def test_units_join_and_printed_widths():
 
 def test_shafts_cut_along_their_axis_are_drawn_whole():
     """ISO 128-50: the entry's spigots and glide stems are drawn whole where a section cuts them, not hatched; a
-    spigot the plane doesn't cut (in front of section C) is not drawn in it at all."""
+    spigot the plane doesn't cut (in front of section C) is not drawn in it at all. The entry may name more such
+    parts (BASE's corner key studs on #303)."""
     team, entry = assembly.assemblies()["110101"]
-    assert set(entry["unhatched"]) == {"831001", "118002"}
+    assert set(entry["unhatched"]) >= {"831001", "118002"}
     assy = assembly.Assy("110101", team, entry)
     views = assembly.plan_views(assy)
     secs = {v.letter: v for v in views.values() if v.kind == "section"}
