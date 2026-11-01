@@ -9,9 +9,11 @@ Scope of revision P01 (the sample, built first because the factory's wall
 sample stands on it): the back-left corner of the base. The left side band
 (also the factory's base band rig R1, sample hold H17), the back band with
 its J-BASE-01 hardware, the levelling glides and their doublers under those
-two bands, and floor panel F1 bonded to its foam mat (D-87). The back corners
-join on the Joints Engineer's hook-in corner key (D-87, HOLD). The front band
-pieces, the right side, F2 and the threshold follow in the next revision.
+two bands. The back corners join on the Joints Engineer's hook-in corner
+keys (D-87, D-129). The pod has no floor (D-132): people stand on the room
+floor, and the base seal is a soft lip on the bands' inner faces that presses
+on it (a bought item by the metre, listed with each band, not modelled). The
+rest of BASE comes from base_p02.py (--arg scope=p02).
 
 Every size comes from parameters. The pod's own sizes are not copied here:
 the script reads the skeleton P03 parameter list (PARAMS in
@@ -25,7 +27,7 @@ back wall, +Z up; left and right as seen from outside facing the door. Each
 part is its own component, built in place in pod coordinates.
 
 Steps (--arg stop_after=N stops after step N):
-  1 document, parameters, components     6 floor panel F1 and its seal mat
+  1 document, parameters, components     6 the P02 parts (with scope=p02)
   2 left side band                       7 hardware: rivet nuts, pins, glides
   3 back band                            8 materials and masses
   4 band holes (joints, spigots, glides)  9 checks: sketches, timeline, boxes,
@@ -154,13 +156,16 @@ BASE_PARAMS = [
      "head notch 9 deep from the band's end: the head's far face is 1.8 + 6 = 7.8 from the side band's face (D-129, FR-15)"),
     ("cap_bevel", "1 mm", "mm", "source",
      "1 x 45 deg bevel on each back band end cap's bottom edge, side-band side, so it slips under the heads (D-129, FR-15)"),
-    # thin floor
-    ("fl_t", "floor_t", "mm", "confirmed",
-     "skeleton floor_t 9 (D-72): 9 mm floor panels, as v1 (FLR-01 9 mm), floor top 12, threshold 13 (US accessibility)"),
-    ("fl_gap", "4 mm", "mm", "assumption", "gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)"),
-    ("fl_seam", "1 mm", "mm", "assumption", "gap at the F1 / F2 seam on X = 0"),
-    ("lap_w", "13 mm", "mm", "confirmed",
-     "half-lap at the F1 / F2 seam: F1's lower half runs 13 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls). 13 keeps F1 at 1218.5 including its lap, inside the 1219 of the 48 in pallet (PM ruling 2026-10-31, packing plan)"),
+    # D-132 (PM ruling, the owner's question): no floor. The base seal 118001 is a soft lip on the bands' inner
+    # faces that presses on the room floor across the glides' range; v1's shadow line under the band stays open
+    ("gl_max", "18.5 mm", "mm", "assumption",
+     "the band's bottom at the glides' highest setting: 10 mm of travel above the lowest, gl_min (HOLD with the glide product)"),
+    ("seal_press", "3 mm", "mm", "assumption", "the lip's least press on the room floor, at the glides' highest setting"),
+    ("seal_reach", "gl_max + seal_press", "mm", "calculation",
+     "the lip reaches this far below the band's bottom (21.5), so it touches the room floor across the glides' range (D-132)"),
+    ("seal_leg", "15 mm", "mm", "assumption", "the lip's leg, bonded to the band's inner face from its bottom edge up (adhesive HOLD)"),
+    ("seal_t", "10 mm", "mm", "assumption",
+     "the lip's room into the pod from the band's inner face, modelled as an envelope from the room floor to seal_leg above the band's bottom"),
 ]
 
 ASSEMBLY = ("110000", "BASE", "Đế / sàn")
@@ -172,10 +177,6 @@ PARTS = {
     "band_b_tube": ("111103", "BASE - BAND TUBE - BACK", "Viền chân nhôm 100x40 - cạnh sau", "MP", "band_b"),
     "pin": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8", "MP", None),
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
-    "floor_assy": ("110401", "BASE - FLOOR PANEL ASSY - F1", "Tấm sàn F1 (cụm dán)", "BS", None),
-    "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", "floor_assy"),
-    "mat_f1": ("111501", "BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM", "Tấm lót sàn F1 - xốp kín 3 mm", "MP",
-               "floor_assy"),
     "glide": ("118002", "BASE - LEVELLING GLIDE - M10 - HOLD", "Chân chỉnh cao", "PI", None),
     "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
     "key": ("111211", "BASE - CORNER KEY - SQUARE - COMMON", "Ke góc đế - cắt vuông", "MP", None),
@@ -184,6 +185,9 @@ PARTS = {
                "PI", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
     "cap": ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD", "Nút bịt đầu ống 100x40", "PI", None),
+    # the base seal's envelopes (D-132), one per band piece; the parts list counts the seal in metres (its runs)
+    "seal_l": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_l"),
+    "seal_b": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_b"),
 }
 CLASS_NAME = {"HS": "hardware-fitted subassembly", "BS": "bonded subassembly", "MP": "part we make", "PI": "bought item"}
 
@@ -534,7 +538,7 @@ def build_tree(doc, design):
     print("step 1: document, %d skeleton parameters (read from %s) + %d BASE parameters" % (
         n_skel, os.path.relpath(SKELETON, REPO), len(BASE_PARAMS)))
     for k in ("pod_w", "pod_d", "glide_h", "band_h", "band_t", "wall_z0", "wall_depth", "outer_t",
-              "floor_t", "dl_x2", "dl_y1", "dl_y2"):
+              "dl_x2", "dl_y1", "dl_y2"):
         print("  %-12s = %9.3f mm   [%s]" % (k, ev(design, k), up.itemByName(k).expression))
     print("  components: " + ", ".join(c.name for c in design.allComponents))
     return doc, design
@@ -864,51 +868,41 @@ def step5_corner_key(design):
     print("step 5: back corner joint: hook-in key 111211 in the side bands' back ends (J-BASE-02, D-129), placed in step 7")
 
 
-# ---------------------------------------------------------------- floor
+# ---------------------------------------------------------------- base seal (D-132)
 
-def step6_floor(design):
-    floor_panel_f1(design)
-    seal_mat_f1(design)
-
-
-def floor_panel_f1(design):
+def seal_runs(design):
+    """The base seal 118001's runs (D-132): a soft lip along each band piece's inner face at its bottom edge, pressing
+    on the room floor, fitted to the band assembly at the factory. Each run: (envelope key, host key, line, from, to,
+    length mm, plan rectangle of its envelope as 4 (x expr, y expr) points, seal_t into the pod). At a back corner the
+    side band's inner face is covered by the back band's end plate from Y = pod_d/2 - band_t on, so the side band's
+    run stops there; the back band's envelope starts seal_t in, past the side band's. P02 adds its pieces' runs."""
     v = lambda e: ev(design, e)  # noqa: E731
-    x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2"
-    xl = "-fl_seam / 2 + lap_w"                        # end of F1's lower lap, under F2
-    y0, y1 = YW, "%s - band_t - fl_gap" % YB
-    comp = find_comp(design, "floor_f1")
-    plane = offset_plane(comp, "xy", "mat_t", v("mat_t"), "PLANE - FLOOR UNDERSIDE Z = mat_t")
-    sk = comp.sketches.add(plane)
-    sk.name = "PLAN - FLOOR PANEL F1 (WITH THE SEAM LAP)"
-    polygon(design, sk, [P(design, x0, y0), P(design, xl, y0), P(design, xl, y1), P(design, x0, y1)], X, Y)
-    check_sketch(sk)
-    f = extrude(comp, one_profile(sk), "fl_t", "EXTRUDE - FLOOR PANEL F1 - PLYWOOD fl_t")
-    f.bodies.item(0).name = "%s - PANEL" % PARTS["floor_f1"][1]
-    # the half-lap: cut the upper half along the seam edge; F2's upper half lies on it
-    sk2 = comp.sketches.add(plane)
-    sk2.name = "PLAN - F1 SEAM LAP ZONE"
-    polygon(design, sk2, [P(design, x1, y0), P(design, xl, y0), P(design, xl, y1), P(design, x1, y1)], X, Y)
-    check_sketch(sk2)
-    body = single_body(comp)
-    extrude(comp, one_profile(sk2), "fl_t / 2", "CUT - F1 SEAM HALF-LAP - UPPER HALF",
-            op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="fl_t / 2", body=body)
-    body = single_body(comp, "%s - PANEL" % PARTS["floor_f1"][1])
-    print("step 6: floor panel F1  %s" % fmt_box(bbox_mm(body)))
+    xi, yb = "%s + band_t" % XL, "%s - band_t" % YB
+    runs = [("seal_l", "band_l", "X = %.2f (side band LH, inner face)" % v(xi), Y_MITRE_IN, yb,
+             [(xi, Y_MITRE_IN), ("%s + seal_t" % xi, Y_MITRE_IN), ("%s + seal_t" % xi, yb), (xi, yb)]),
+            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), xi, "%s - band_t" % XR,
+             [("%s + seal_t" % xi, "%s - seal_t" % yb), ("%s - band_t - seal_t" % XR, "%s - seal_t" % yb),
+              ("%s - band_t - seal_t" % XR, yb), ("%s + seal_t" % xi, yb)])]
+    if P02_ON:
+        runs += globals()["p02_seal_runs"](design)
+    return [(k, h, line, v(a), v(b), round(abs(v(b) - v(a)), 2), pts) for k, h, line, a, b, pts in runs]
 
 
-def seal_mat_f1(design):
-    # the mat runs under F1's lower lap too (to the lap's end), so the lap is carried
-    # by the room floor and F2's upper lap can rest on it
-    x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2 + lap_w"
-    y0, y1 = YW, "%s - band_t - fl_gap" % YB
-    comp = find_comp(design, "mat_f1")
-    sk = comp.sketches.add(comp.xYConstructionPlane)
-    sk.name = "PLAN - SEAL MAT F1"
-    polygon(design, sk, [P(design, x0, y0), P(design, x1, y0), P(design, x1, y1), P(design, x0, y1)], X, Y)
-    check_sketch(sk)
-    extrude(comp, one_profile(sk), "mat_t", "EXTRUDE - SEAL MAT F1")
-    mat = single_body(comp, "%s - SHEET" % PARTS["mat_f1"][1])
-    print("  seal mat F1           %s" % fmt_box(bbox_mm(mat)))
+def build_seal_envelopes(design):
+    """The base seal's envelopes (D-132): per run, its plan rectangle on the room floor (Z 0), seal_t deep into the pod,
+    extruded up to seal_leg above the band's bottom: the room its leg and its fin, bent on the room floor, take. The
+    real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
+    n = 0
+    for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
+        comp = find_comp(design, key)
+        sk = comp.sketches.add(comp.xYConstructionPlane)
+        sk.name = "PLAN - BASE SEAL LIP - ENVELOPE ON THE ROOM FLOOR"
+        polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
+        check_sketch(sk)
+        extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+        single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
+        n += 1
+    print("step 6: base seal envelopes: %d runs (D-132)" % n)
 
 
 # ---------------------------------------------------------------- hardware
@@ -1214,14 +1208,15 @@ MATERIALS = {
     "pin": ("Steel", None, None),
     "washer": ("Aluminum", None, None),
     "rivnut": ("Aluminum", None, None),
-    "floor_f1": ("Aluminum", "Poplar-core plywood 450 kg/m3 (ASSUMPTION)", 450.0),
     "doubler": ("Aluminum", None, None),
     "key": ("Aluminum", None, None),
     "bolt": ("Steel", None, None),
     "bscrew": ("Steel", None, None),
-    "mat_f1": ("Aluminum", "Closed-cell foam 200 kg/m3 (ASSUMPTION)", 200.0),
     "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
     "cap": ("Aluminum", "Flat PE end cap 950 kg/m3 (ASSUMPTION)", 950.0),
+    # the envelope (10 x 25 per metre) at 320 kg/m3 weighs the lip's 0.08 kg/m (assumption)
+    "seal_l": ("Aluminum", "Lip seal envelope 320 kg/m3 (ASSUMPTION)", 320.0),
+    "seal_b": ("Aluminum", "Lip seal envelope 320 kg/m3 (ASSUMPTION)", 320.0),
 }
 
 
@@ -1364,8 +1359,6 @@ def step9_checks(design):
                         v("%s + band_t" % XL), v(YB), v("wall_z0")),
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"),
                         v("%s - band_t" % XR), v(YB), v("wall_z0")),
-        "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"),
-                     v("-fl_seam / 2 + lap_w"), v("%s - band_t - fl_gap" % YB), v("mat_t + fl_t")),
     }
     box_bad = []
     for key, want in expect.items():
@@ -1649,10 +1642,10 @@ def export_data(design):
             "front_end": "square at its left end, closed by a welded 1.5 end plate (100 x 40) with its open slot (D-129)",
             "back_end": "the same at its right end; %.1f over both plates" % v("pod_w - 2 * band_t")},
     }
-    floor = {"x0": v("%s + band_t + fl_gap" % XL), "x_seam": v("-fl_seam / 2"), "x_lap": v("-fl_seam / 2 + lap_w"),
-             "y0": v(YW), "y1": v("%s - band_t - fl_gap" % YB), "t": v("fl_t"), "lap_depth": v("fl_t / 2")}
+    seal = [{"host": PARTS[h][0], "line": line, "from": a, "to": b, "length_mm": ln}
+            for _k, h, line, a, b, ln, _pts in seal_runs(design)]
     out = {"doc": DOC_NAME, "rev": REV, "params": params, "parts": parts, "copies": copies, "holes": holes,
-           "tubes": tubes, "floor_f1": floor, "band_finish": up.itemByName("band_finish").textValue}
+           "tubes": tubes, "seal": seal, "band_finish": up.itemByName("band_finish").textValue}
     if P02_ON:
         globals()["p02_export"](design, out)
     path = os.path.join(REPO, DATA_REL)
@@ -1696,8 +1689,6 @@ PART_BUILDS = {
     "band_l_tube": ("step2_band_side_lh", "holes_side_lh"),
     "band_b_tube": ("step3_band_back", "holes_back"),
     "doubler": ("build_doubler",),
-    "floor_f1": ("floor_panel_f1",),
-    "mat_f1": ("seal_mat_f1",),
     "pin": ("build_pin",),
     "washer": ("build_washer",),
     "key": ("build_back_key",),
@@ -1823,7 +1814,7 @@ def build_part(app, key):
 
 
 # Subassemblies that get their own design, for their assembly drawings (D-89: every assembly keeps one)
-SUB_DESIGNS = ("band_l", "band_b", "floor_assy")
+SUB_DESIGNS = ("band_l", "band_b")
 # hosts whose hardware copies are the first ones (the others are pasted from them), so a trim hides them
 HOLDS_SHARED_COPIES = ("110101",)
 
@@ -1836,7 +1827,7 @@ def build_subassembly(app, key):
     pn, name, vn, cls, _parent = PARTS[key]
     doc_name = file_name(pn, name, "CAD")
     doc, design = step1_document(app)
-    for fn in (step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key, step6_floor_and_more,
+    for fn in (step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key, step6_p02,
                step7_hardware, step8_materials):
         fn(design)
     root = design.rootComponent
@@ -1917,11 +1908,15 @@ def load_p02():
         len(globals()["P02_BATCH_KEYS"]), len(globals()["P02_STEPS"]), path))
 
 
-def step6_floor_and_more(design):
-    step6_floor(design)
+def step6_p02(design):
+    """The rest of BASE (base_p02.py), when the run has --arg scope=p02, then the base seal's envelopes on every band
+    piece built so far. The pod has no floor (D-132)."""
     if P02_ON:
         for fn in globals()["P02_STEPS"]:
             fn(design)
+    else:
+        print("step 6: no P02 parts in this run")
+    build_seal_envelopes(design)
 
 
 # ---------------------------------------------------------------- main
@@ -1936,7 +1931,7 @@ def run(_context):
         return
     doc, design = step1_document(app)
     steps = [None, None, step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key,
-             step6_floor_and_more, step7_hardware, step8_materials, step9_checks]
+             step6_p02, step7_hardware, step8_materials, step9_checks]
     last = min(STOP_AFTER, len(steps) - 1)
     for n in range(2, last + 1):
         steps[n](design)

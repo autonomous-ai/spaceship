@@ -8,18 +8,15 @@ typeset -A DESIGN SHEET
 DESIGN=(110000 110000_P01_BASE_CAD
         110101 110101_P01_BASE-BAND-ASSY-SIDE-LH_CAD
         110103 110103_P01_BASE-BAND-ASSY-BACK_CAD
-        110401 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_CAD
         111101 111101_P01_BASE-BAND-TUBE-SIDE-LH_CAD
         111103 111103_P01_BASE-BAND-TUBE-BACK_CAD
-        111401 111401_P01_BASE-FLOOR-PANEL-F1_CAD
         111106 111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_CAD
-        111301 111301_P01_BASE-SILL-FIXED-GLASS_CAD
-        111402 111402_P01_BASE-FLOOR-PANEL-F2_CAD)
-SHEET=(110000 A2 110101 A2 110103 A1 110401 A3 111101 A2 111103 A1 111401 A3 111106 A3 111301 A3 111402 A3)
-# No drawing (D-89): 111601 the glide doubler (part 4: DXF and parts-list row), 111501 the foam mat (part 3).
+        111301 111301_P01_BASE-SILL-FIXED-GLASS_CAD)
+SHEET=(110000 A2 110101 A2 110103 A1 111101 A2 111103 A1 111106 A3 111301 A3)
+# No drawing (D-89): 111601 the glide doubler (part 4: DXF and parts-list row). No floor (D-132).
 # Not BASE's: the corner keys 111211 to 111214 (the Joints Engineer's tabulated drawing; PM ruling 2026-11-01).
 pns=("$@")
-(( ${#pns} )) || pns=(111101 111103 111401 110101 110103 110401 110000)
+(( ${#pns} )) || pns=(110101 110103 110000 111106 111301)
 for pn in $pns; do
   # a part number listed in the skip file is skipped when its turn comes, e.g. while
   # its hole positions are about to change (read at run time, so a queued session can be trimmed)

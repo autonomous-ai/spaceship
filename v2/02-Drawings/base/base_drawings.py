@@ -37,8 +37,8 @@ VO = adsk.drawing.ViewOrientationTypes
 # pn: drawing name, kind, views [(name, orientation, scale, (x, y) sheet mm)], and for an
 # assembly the views that get its overall sizes [(view, below, which)]: which = "both", "h" (the
 # view's width only) or "v" (its height only), so each size is shown once (ISO 129-1).
-# No drawing (D-89): the glide doubler 111601 (part 4: its DXF and parts-list row) and the
-# foam mats 111501 (part 3: DXF and cut-list row). Every assembly keeps one. The corner keys
+# No drawing (D-89): the glide doubler 111601 (part 4: its DXF and parts-list row). Every
+# assembly keeps one. The floor panels went with D-132 (no floor). The corner keys
 # 111211 to 111214 are the Joints Engineer's (their tabulated drawing; PM ruling 2026-11-01).
 SPEC = {
     "111101": ("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG", "tube", [
@@ -52,10 +52,6 @@ SPEC = {
         ("top", VO.TopViewOrientationType, 0.2, (300.0, 370.0)),
         ("bottom", VO.BottomViewOrientationType, 0.2, (300.0, 490.0)),
         ("left", VO.LeftViewOrientationType, 0.5, (640.0, 430.0)),
-    ]),
-    "111401": ("111401_P01_BASE-FLOOR-PANEL-F1_DWG", "plate", [
-        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
-        ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
     ]),
     "110000": ("110000_P01_BASE_DWG", "assembly", [
         ("front", VO.FrontViewOrientationType, 0.1, (200.0, 330.0)),
@@ -74,10 +70,6 @@ SPEC = {
         ("top", VO.TopViewOrientationType, 0.2, (130.0, 170.0)),
         ("left", VO.LeftViewOrientationType, 1.0, (320.0, 160.0)),           # the section, full size, below the table
     ]),
-    "111402": ("111402_P01_BASE-FLOOR-PANEL-F2_DWG", "plate", [                # A3
-        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 255.0)),
-        ("top", VO.TopViewOrientationType, 0.1, (170.0, 160.0)),
-    ]),
     # subassemblies, in pod coordinates as built (their own designs, saved by base_build.py)
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "assembly", [      # A2; runs along Y
         ("left", VO.LeftViewOrientationType, 0.2, (260.0, 300.0)),
@@ -89,11 +81,6 @@ SPEC = {
         ("top", VO.TopViewOrientationType, 0.2, (420.0, 370.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.1, (420.0, 200.0)),
     ], [("front", True, "both"), ("top", False, "v")]),
-    "110401": ("110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG", "assembly", [    # A3
-        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
-        ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
-        ("iso", VO.IsoTopRightViewOrientationType, 0.05, (340.0, 230.0)),
-    ], [("top", True, "both"), ("front", False, "v")]),
 }
 
 

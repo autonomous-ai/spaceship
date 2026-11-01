@@ -1,7 +1,7 @@
 """BASE manufacturing outputs from the CAD's own facts.
 
     python3 v2/03-Manufacturing/base/make_outputs.py          # parts list + cut list
-    PYTHONPATH=<dir with ezdxf> python3 ... --dxf               # also F1's DXF (needs ezdxf)
+    PYTHONPATH=<dir with ezdxf> python3 ... --dxf               # also the DXFs (needs ezdxf)
 
 Reads 110000_P01_BASE_DATA.json, which v2/01-CAD-Native/base/base_build.py
 writes from the Fusion design (quantities = copies in the CAD, masses = the
@@ -9,13 +9,12 @@ CAD's physical properties, sizes = the bodies), and writes:
 
   110000_P01_BASE_BOM.csv                    parts list for the master BOM (v2/04-BOM)
   110000_P01_BASE-TUBE-CUT-LIST_SPEC.csv     cut lengths and end cuts of the tubes and angle
-  111401_P01_BASE-FLOOR-PANEL-F1_DXF.dxf     F1's CNC outline, 1:1, mm (with --dxf)
-  111501_P01_..._DXF.dxf                     the F1 foam mat's outline (D-89 part 3; with --dxf)
   111601_P01_..._DXF.dxf                     the glide doubler's outline and hole (D-89 part 4; with --dxf)
 
 The fixed facts per part (material, finish, process, status, source) are in
-PART_INFO below. Items the CAD doesn't model (bolts, M10 glide nuts, the end
-cap, the edge seal) are in EXTRA with the rule that gives their quantity.
+PART_INFO below. Items the CAD doesn't model (the M10 glide nuts, the sill's M3
+screws and rivnuts, the lip seal) are in EXTRA with the rule that gives their
+quantity; the lip seal's metres come from the CAD's seal runs (D-132: no floor).
 Hardware numbers are the joints register's (D-63; PR #23 hardware table).
 """
 
@@ -30,12 +29,11 @@ REV = "P01"
 DATA = os.path.join(HERE, "110000_%s_BASE_DATA.json" % REV)
 BOM = os.path.join(HERE, "110000_%s_BASE_BOM.csv" % REV)
 CUT = os.path.join(HERE, "110000_%s_BASE-TUBE-CUT-LIST_SPEC.csv" % REV)
-DXF = os.path.join(HERE, "111401_%s_BASE-FLOOR-PANEL-F1_DXF.dxf" % REV)
-MAT_DXF = os.path.join(HERE, "111501_%s_BASE-FLOOR-FOAM-F1-CLOSED-CELL-3-MM_DXF.dxf" % REV)
 DBL_DXF = os.path.join(HERE, "111601_%s_BASE-GLIDE-DOUBLER-COMMON_DXF.dxf" % REV)
 
 AA20 = "black anodised, matte, 20 um (class AA20, EN ISO 7599)"
-SCOPE = "P01 sample scope: the back-left corner and F1; the rest of BASE follows in P02"
+SCOPE = ("P02 so far: the side bands, the back band, FR1 with its sill (no floor and no threshold, D-132); "
+         "the front-left pieces and the intake follow")
 
 # part number: (material, finish, process, mass_status, status, source, note)
 PART_INFO = {
@@ -53,15 +51,6 @@ PART_INFO = {
                "saw cut square, weld the end plates, CNC drill, cut the slots, notches and bevels, deburr, anodise",
                "calculation", "DRAFT", "CAD; finish D-67; section layout study B-BAND; D-129 and joints register J-BASE-02 "
                "(FR-15) for the end plates", "2420 over its end plates (D-129: ships at 2420 on pallet 2's 2438 deck)"),
-    "110401": ("bonded subassembly: F1 plywood with its foam mat bonded underneath at the factory (D-87); adhesive spec HOLD",
-               "", "bond (spec HOLD)", "calculation", "DRAFT", "CAD; D-87", "ships as one piece"),
-    "111401": ("poplar-core plywood 9 mm with a hard face veneer, low-emission (E1 / CARB P2 class, HOLD), about 450 kg/m3 (assumption, D-85)",
-               "hard face veneer with a factory clear lacquer, top face (assumption; product HOLD)",
-               "CNC router: outline and the seam half-lap", "calculation", "DRAFT",
-               "CAD; D-72 (9 mm floor), packing plan (1219 max with the lap)", "1218.5 wide including the 13 mm lap"),
-    "111501": ("closed-cell foam, cross-linked PE or EPDM, 3 mm thick, about 200 kg/m3 (assumption; product HOLD, ISS-085)",
-               "", "cut to the panel outline, bonded under F1 at the factory (D-87)", "calculation", "HOLD", "CAD; D-76, D-87",
-               "under F1"),
     "831001": ("stainless steel A2 round bar, turned, M6 stud (assumption)", "passivated stainless, bright (assumption)",
                "lathe, thread, chamfer",
                "calculation", "DRAFT", "CAD; joints register H-05 (PROPOSED sizes)",
@@ -90,7 +79,7 @@ PART_INFO = {
                "calculation", "DRAFT",
                "CAD; PM rulings 2026-10-31 (band 1.5 with a doubler at each glide; 52 long, hole centred)",
                "54 x 36 x 3 with one Ø13 hole centred; inside the band on its bottom face, clamped by the glide's M10 rivnut"),
-    # P02 batch 1 (the right band, FR1 with its sill, F2, the threshold)
+    # P02 batch 1 (the right band, FR1 with its sill; F2 and the threshold went, D-132)
     "110102": ("assembly: band tube with its rivnuts, stop washers, spigots and glides fitted at the factory", "", "",
                "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD", "hardware-fitted subassembly; mirror of 110101"),
     "111102": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
@@ -106,22 +95,8 @@ PART_INFO = {
     "111301": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
                "laser cut, press brake (4 bends), insert 4 M3 flush rivnuts, anodise", "calculation", "DRAFT",
                "CAD; FRONT's answer and the PM ruling of 2026-11-01",
-               "ledge flush with the band top, seat under the U-channel, kerb onto F2; flange riveted to FR1 (rivets HOLD)"),
-    "110402": ("bonded subassembly: F2 plywood with its foam bonded underneath and the 2 locator spigots fitted at the factory",
-               "", "bond (spec HOLD)", "calculation", "DRAFT", "CAD; D-87", "ships as one piece"),
-    "111402": ("poplar-core plywood 9 mm with a hard face veneer, low-emission (E1 / CARB P2 class, HOLD), about 450 kg/m3 (assumption, D-85)",
-               "hard face veneer with a factory clear lacquer, top face (assumption; product HOLD)",
-               "CNC router: outline with the tab, the seam rebate, 2 spigot holes", "calculation", "DRAFT",
-               "CAD; D-72; CEILING's locator positions (PM 2026-10-31)", "the tab runs under the sill's kerb"),
-    "111502": ("closed-cell foam, cross-linked PE or EPDM, 3 mm thick, about 200 kg/m3 (assumption; product HOLD, ISS-085)",
-               "", "knife cut to its DXF, bonded under F2 at the factory (D-87)", "calculation", "HOLD", "CAD; D-76, D-87",
-               "under F2, with 2 cut-outs for the spigot heads"),
-    "111801": ("stainless steel A2 round bar, turned (assumption)", "passivated stainless, bright (assumption)",
-               "lathe, chamfer; fitted from below through F2 at the factory", "calculation", "DRAFT",
-               "CEILING's air column locator (PM 2026-10-31, factory-fitted head-from-below approved)",
-               "Ø8, 8 proud of the floor top; head inside the foam's cut-out"),
-    "111701": ("aluminium extrusion EN AW-6063 T6 (assumption)", AA20, "saw cut to length, deburr, anodise",
-               "calculation", "DRAFT", "CAD; D-72 (13 mm, 6 upright then 1:2)", "fixing HOLD"),
+               "ledge flush with the band top, seat under the U-channel, kerb down to the band's bottom line; the glass's "
+               "load goes into FR1 (D-132; seat detail with FRONT); flange riveted to FR1 (rivets HOLD)"),
     "118003": ("flat end cap for the 100 x 40 x 1.5 tube's bore, black, no deeper than 2 (D-129; PE assumed, product HOLD)",
                "black", "bonded into the side band's back end at the factory, flush with the back face (adhesive HOLD)",
                "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the end)",
@@ -146,14 +121,12 @@ BOUGHT = {
     "838006": ("HOLD (glide nut not named yet)", "HOLD", "HOLD: with the glide nut's set test"),
     "118002": ("HOLD (glide not named yet)", "HOLD", ""),
     "118003": ("HOLD (end cap not named yet)", "HOLD", ""),
-    "118001": ("HOLD-06 (candidate Pemko)", "HOLD-06 (candidate S88BL)", ""),
+    "118001": ("HOLD (lip seal not named yet)", "HOLD", ""),
 }
 # tolerance per part: the drawing's, or for a part with no drawing the row's (D-89 parts 3 and 4)
 TOLERANCE = {
     "111101": "see its drawing", "111103": "see its drawing",
     "111211": "the Joints Engineer's tabulated drawing 111211 to 111214",
-    "111401": "see its drawing",
-    "111501": "outline +-1 (knife cut), thickness +-0.3 (assumption); DXF 111501",
     "111601": "ISO 2768-m; critical hole: Ø13 +0.10/0 for the glide's M10 rivnut (HOLD with the nut), centred +-0.2; DXF 111601",
     "831002": "joints register H-08: thickness +-0.05",
 }
@@ -174,12 +147,12 @@ EXTRA = [
     ("838008", "HARDWARE - RIVET NUT - M3 - COUNTERSUNK - HOLD", "Tán rút M3 đầu chìm", "PI", "110106",
      "channel", "pcs", "aluminium or steel (HOLD)", "zinc plated steel or plain aluminium, with the product (HOLD)", 0.0005,
      "assumption", "HOLD", "joints register J-FRONT-04 (838008, HOLD-16)", "flush in the sill's seat, at X 269.4, 484.3, 699.2, 905"),
-    ("118001", "BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP", "Gioăng mép sàn", "PI", "110000",
-     "edgeseal", "m", "silicone bulb, self-adhesive; candidate Pemko S88BL 12.7 x 6.4 (hardware selection D pick 1; "
-     "gap range unverified; product HOLD-06)", "",
-     0.05, "assumption", "HOLD",
-     "joints register H-06 (118001); BASE proposes the seal at the floor's edge against the band's inner face, not under the band",
-     "along the floor panels' edges at the band; keeps v1's open shadow line under the band"),
+    ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "seal",
+     "lip", "m", "soft lip (sweep) seal, EPDM or TPE, black: a leg bonded to the band's inner face and a fin reaching "
+     "seal_reach (21.5) below the band's bottom, so it presses on the room floor across the glides' range (product HOLD)",
+     "black", 0.08, "assumption", "HOLD",
+     "D-132 (PM ruling 2026-11-01: no floor); joints register 118001, renamed for D-132",
+     "bonded along each band piece's inner face at the factory; v1's open shadow line under the band stays"),
 ]
 
 
@@ -200,16 +173,6 @@ def extra_qty(d, rule, parent_counts):
         return parent_counts.get("118002", 0)
     if rule == "channel":
         return 4 if "111301" in d["parts"] else 0
-    if rule == "edgeseal":
-        f = d["floor_f1"]
-        # F1's left edge (along Y) and back edge (along X) meet the band
-        mm_ = (f["y1"] - f["y0"]) + (f["x_seam"] - f["x0"])
-        f2 = d.get("floor_f2")
-        if f2:      # F2's right edge and back edge meet the band too (its tab stands under the sill, not at the band)
-            xs = [p[0] for p in f2["outline"]]
-            ys = [p[1] for p in f2["outline"]]
-            mm_ += (max(ys) - min(ys)) + (max(xs) - min(xs))
-        return round(mm_ / 1000.0, 3)
     raise ValueError(rule)
 
 
@@ -221,8 +184,13 @@ def size_text(rec):
     return " x ".join("%g" % x for x in dims)
 
 
+# modelled only as space envelopes; listed from EXTRA (the lip seal: in metres, from the CAD's runs, D-132)
+BY_LENGTH = ("118001",)
+
+
 def make_bom(d):
-    parts, copies = d["parts"], d["copies"]
+    parts = d["parts"]
+    copies = {k: n for k, n in d["copies"].items() if k.split(">")[1] not in BY_LENGTH}
     per_pod = {}
     for k, n in copies.items():
         parent, child = k.split(">")
@@ -245,7 +213,18 @@ def make_bom(d):
     counts_total = dict(per_pod)
     extra_rows = []
     for (pn, name, vn, typ, parent, rule, unit, mat, fin, m, ms, st, src, note) in EXTRA:
-        if parent == "band":
+        if parent == "seal":
+            # the lip seal: one row per band assembly, its metres from the CAD's seal runs (D-132)
+            per = {}
+            for run in d.get("seal", []):
+                per[run["host"]] = per.get(run["host"], 0.0) + run["length_mm"] / 1000.0
+            for asm in sorted(per):
+                if asm not in mass_of:
+                    continue
+                q = round(per[asm], 3)
+                extra_rows.append((pn, name, vn, typ, asm, q, unit, mat, fin, m, ms, st, src, note))
+                mass_of[asm] = round(mass_of[asm] + q * m, 4)
+        elif parent == "band":
             # one per glide, in the band assembly that holds the glide
             for asm in BAND_ASSEMBLIES:
                 q = copies.get("%s>118002" % asm, 0)
@@ -327,53 +306,11 @@ def make_cut_list(d):
             w.writerow([pn, names[pn], t["section"], PART_INFO[pn][0], q, "%.2f" % t["outer_face_length"],
                         "%.2f" % t["inner_face_length"], "length +0/-0.5, end angle +-0.25 deg (assumption)",
                         t["front_end"], t["back_end"], PART_INFO[pn][1], "calculation (CAD)", "110000_P01_BASE_CAD"])
-        # D-89: a plain knife-cut sheet needs no drawing when the cut list gives its size,
-        # material, tolerance and part number
-        for pn in ("111501",):
-            rec = d["parts"].get(pn)
-            if not rec:
-                continue
-            b = rec["box_mm"]
-            q = sum(n for k, n in copies.items() if k.endswith(">%s" % pn))
-            w.writerow([pn, rec["name"], "sheet %.0f thick" % (b[5] - b[2]), PART_INFO[pn][0], q, "%.1f" % (b[3] - b[0]),
-                        "%.1f" % (b[4] - b[1]), "+-1 on each side (assumption)", "knife-cut rectangle, X x Y as listed",
-                        "bonded under its floor panel, flush with its outline (D-87)", "", "calculation (CAD)",
-                        "110000_P01_BASE_CAD"])
     print("wrote %s" % os.path.relpath(CUT, HERE))
 
 
 def make_dxf(d):
     import ezdxf
-    f = d["floor_f1"]
-    doc = ezdxf.new("R2010", setup=True)
-    doc.units = ezdxf.units.MM
-    doc.header["$INSUNITS"] = 4
-    doc.header["$MEASUREMENT"] = 1
-    for name, color in (("CUT", 7), ("POCKET-HALF-DEPTH", 3), ("MARK", 1)):
-        doc.layers.add(name, color=color)
-    msp = doc.modelspace()
-    # F1 in its own 2D system CS-111401: X(2D) = pod X, Y(2D) = pod Y, origin = pod origin projected
-    pts = [(f["x0"], f["y0"]), (f["x_lap"], f["y0"]), (f["x_lap"], f["y1"]), (f["x0"], f["y1"])]
-    msp.add_lwpolyline(pts, close=True, dxfattribs={"layer": "CUT"})
-    lap = [(f["x_seam"], f["y0"]), (f["x_lap"], f["y0"]), (f["x_lap"], f["y1"]), (f["x_seam"], f["y1"])]
-    msp.add_lwpolyline(lap, close=True, dxfattribs={"layer": "POCKET-HALF-DEPTH"})
-    msp.add_text("F1 111401 P01 - top face up - POCKET depth %.1f from the top - mm" % f["lap_depth"],
-                 dxfattribs={"layer": "MARK", "height": 20}).set_placement((f["x0"] + 50, f["y0"] + 50))
-    doc.saveas(DXF)
-    # the floor mat under F1 (soft goods, D-89): its knife-cut outline, same system as F1
-    m = d["parts"]["111501"]["box_mm"]
-    mdoc = ezdxf.new("R2010", setup=True)
-    mdoc.units = ezdxf.units.MM
-    mdoc.header["$INSUNITS"] = 4
-    mdoc.header["$MEASUREMENT"] = 1
-    for name, color in (("CUT", 7), ("MARK", 1)):
-        mdoc.layers.add(name, color=color)
-    mm_ = mdoc.modelspace()
-    mm_.add_lwpolyline([(m[0], m[1]), (m[3], m[1]), (m[3], m[4]), (m[0], m[4])], close=True, dxfattribs={"layer": "CUT"})
-    mm_.add_text("111501 P01 FLOOR FOAM F1 - closed-cell foam 3 mm - knife cut +-1 - mm",
-                 dxfattribs={"layer": "MARK", "height": 20}).set_placement((m[0] + 50, m[1] + 50))
-    mdoc.saveas(MAT_DXF)
-    print("wrote %s: %.1f x %.1f" % (os.path.relpath(MAT_DXF, HERE), m[3] - m[0], m[4] - m[1]))
     # the glide doubler (D-89 part 4: a flat part cut from sheet goes on its DXF and its parts-list row):
     # its own 2D system, X across the band (gd_w), Y along it (gd_l), origin at the plate centre
     gw, gl, gh, gdx = (param(d, k) for k in ("gd_w", "gd_l", "gl_nut_hole", "gl_dx"))
@@ -394,12 +331,6 @@ def make_dxf(d):
     ddoc.saveas(DBL_DXF)
     print("wrote %s: %.1f x %.1f, hole Ø%g at x %.1f" % (os.path.relpath(DBL_DXF, HERE), gw, gl, gh, gdx))
     make_dxf_p02(d, ezdxf)
-    w = f["x_lap"] - f["x0"]
-    h = f["y1"] - f["y0"]
-    print("wrote %s: outline %.1f x %.1f (with the lap), pocket %.1f wide, %.1f deep" % (
-        os.path.relpath(DXF, HERE), w, h, f["x_lap"] - f["x_seam"], f["lap_depth"]))
-    if w > 1219.0:
-        raise SystemExit("F1 is %.1f wide with its lap: over the 1219 of the 48 in pallet" % w)
 
 
 def _dxf(ezdxf, layers):
@@ -413,35 +344,8 @@ def _dxf(ezdxf, layers):
 
 
 def make_dxf_p02(d, ezdxf):
-    """P02 batch 1 cut files: F2 (outline with the tab, the seam rebate as a pocket, 2 spigot holes), its foam
-    (D-89 part 3: outline and 2 cut-outs) and the sill's flat pattern (bend lines on BEND, inside radius = t,
-    K 0.4: an assumption until the bender confirms)."""
-    f2 = d.get("floor_f2")
-    if f2:
-        doc = _dxf(ezdxf, (("CUT", 7), ("POCKET-HALF-DEPTH", 3), ("MARK", 1)))
-        msp = doc.modelspace()
-        msp.add_lwpolyline([tuple(p) for p in f2["outline"]], close=True, dxfattribs={"layer": "CUT"})
-        y0 = min(p[1] for p in f2["outline"])
-        y1 = max(p[1] for p in f2["outline"])
-        r0, r1 = f2["rebate"]
-        ys = sorted({p[1] for p in f2["outline"] if abs(p[0] - r0) < 0.01})
-        msp.add_lwpolyline([(r0, ys[0]), (r1, ys[0]), (r1, ys[-1]), (r0, ys[-1])], close=True,
-                           dxfattribs={"layer": "POCKET-HALF-DEPTH"})
-        for x, y in f2["spigots"]:
-            msp.add_circle((x, y), f2["spigot_hole"] / 2, dxfattribs={"layer": "CUT"})
-        msp.add_text("F2 111402 P01 - top face up - POCKET from BELOW, depth %.1f - mm" % f2["rebate_depth"],
-                     dxfattribs={"layer": "MARK", "height": 20}).set_placement((r1 + 50, y1 - 80))
-        doc.saveas(os.path.join(HERE, "111402_%s_BASE-FLOOR-PANEL-F2_DXF.dxf" % REV))
-        fo = _dxf(ezdxf, (("CUT", 7), ("MARK", 1)))
-        fm = fo.modelspace()
-        pts = [(max(p[0], f2["foam_x0"]), p[1]) for p in f2["outline"]]
-        fm.add_lwpolyline(pts, close=True, dxfattribs={"layer": "CUT"})
-        for x, y in f2["spigots"]:
-            fm.add_circle((x, y), f2["foam_cut"] / 2, dxfattribs={"layer": "CUT"})
-        fm.add_text("111502 P01 FLOOR FOAM F2 - closed-cell foam 3 mm - knife cut +-1 - mm",
-                    dxfattribs={"layer": "MARK", "height": 20}).set_placement((f2["foam_x0"] + 50, y0 + 50))
-        fo.saveas(os.path.join(HERE, "111502_%s_BASE-FLOOR-FOAM-F2-CLOSED-CELL-3-MM_DXF.dxf" % REV))
-        print("wrote F2 and its foam DXFs (%d outline points, 2 spigots)" % len(f2["outline"]))
+    """P02 batch 1 cut files: the sill's flat pattern (bend lines on BEND, inside radius = t, K 0.4: an
+    assumption until the bender confirms)."""
     sl = d.get("sill")
     if sl:
         t = sl["t"]

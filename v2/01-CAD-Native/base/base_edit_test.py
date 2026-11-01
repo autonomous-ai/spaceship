@@ -30,7 +30,6 @@ EDITS = [
     ("band section and glide height (skeleton + BASE)", {"band_h": "120 mm", "glide_h": "15 mm", "band_wall": "2.5 mm"}),
     ("DL facet, joint and pin spacing (skeleton + BASE)", {"dl_x2": "110 mm", "dl_y1": "650 mm", "jb_e": "260 mm",
                                                            "sp_e": "120 mm", "jb_n": "5"}),
-    ("floor (BASE)", {"fl_gap": "6 mm", "fl_t": "12 mm", "lap_w": "10 mm"}),
 ]
 
 
@@ -43,16 +42,12 @@ def load_build():
 
 def expected_boxes(b, design):
     v = lambda e: b["ev"](design, e)  # noqa: E731
-    XL, XR, YB, YW = b["XL"], b["XR"], b["YB"], b["YW"]
+    XL, XR, YB = b["XL"], b["XR"], b["YB"]
     ym = min(v("-dl_y1"), v(b["Y_MITRE_IN"]))
     return {
         "band_l_tube": (v(XL), ym, v("glide_h"), v("%s + band_t" % XL), v(YB), v("wall_z0")),
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"), v("%s - band_t" % XR), v(YB),
                         v("wall_z0")),
-        "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"), v("-fl_seam / 2 + lap_w"),
-                     v("%s - band_t - fl_gap" % YB), v("mat_t + fl_t")),
-        "mat_f1": (v("%s + band_t + fl_gap" % XL), v(YW), 0.0, v("-fl_seam / 2 + lap_w"),
-                   v("%s - band_t - fl_gap" % YB), v("mat_t")),
     }
 
 
@@ -92,7 +87,7 @@ def found(got, want):
 
 def measure(b, design):
     boxes = {}
-    for key in ("band_l_tube", "band_b_tube", "floor_f1", "mat_f1"):
+    for key in ("band_l_tube", "band_b_tube"):
         comp = b["find_comp"](design, key)
         boxes[key] = b["bbox_mm"](comp.bRepBodies.item(0))
     body = b["find_comp"](design, "band_l_tube").bRepBodies.item(0)

@@ -1,6 +1,6 @@
 """Finish BASE drawing PDFs: name strip, title data and notes as text, PNG.
 
-    python3 v2/02-Drawings/base/finish_pdfs.py 111401 [110401 ...]
+    python3 v2/02-Drawings/base/finish_pdfs.py 111106 [111301 ...]
 
 For each part number: takes the raw export from .raw/ (base_drawings.py),
 removes the account holder's name under "Created by" with
@@ -41,16 +41,13 @@ spec.loader.exec_module(mo)
 GENERATOR = {"111101", "111102", "111103"}
 
 DWG = {
-    "111401": ("111401_P01_BASE-FLOOR-PANEL-F1_DWG", "1:10", "A3"),
     "110000": ("110000_P01_BASE_DWG", "1:10", "A2"),
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "1:5 (iso 1:10)", "A2"),
     "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "1:5 (iso 1:10)", "A1"),
-    "110401": ("110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG", "1:10 (iso 1:20)", "A3"),
     "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "1:5 (end view 1:2)", "A3"),
     "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
-    "111402": ("111402_P01_BASE-FLOOR-PANEL-F2_DWG", "1:10", "A3"),
 }
-# No drawing (D-89): 111601 (part 4: DXF and parts-list row), 111501 (part 3: DXF and cut list).
+# No drawing (D-89): 111601 (part 4: DXF and parts-list row). No floor (D-132).
 
 TOL = {
     "tube": "General tolerances, PROPOSED until the shop confirms them: cut length +0/-0.5; hole positions "
@@ -62,9 +59,9 @@ TOL = {
     "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
              "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
              "Ø5.0 +0.1/0 (HOLD with the rivnut).",
-    "assembly": "Assembly: parts to their own drawings (the doubler 111601 to its DXF and parts-list row, the foam "
-                "mat 111501 to its DXF, D-89); positions from skeleton P04 (110000_P01_BASE_CAD), hardware as the "
-                "joints register (J-BASE-01, J-BASE-02).",
+    "assembly": "Assembly: parts to their own drawings (the doubler 111601 to its DXF and parts-list row, D-89); "
+                "positions from skeleton P04 (110000_P01_BASE_CAD), hardware as the joints register (J-BASE-01, "
+                "J-BASE-02). The lip seal 118001 is bonded along each band's inner face at the factory (D-132).",
 }
 
 DATUMS = {
@@ -73,8 +70,6 @@ DATUMS = {
     "111211": "Part system: X into the band from the end face (X 0), Y across the band (centred), Z up from the "
               "key's bottom. Datums: A = bottom face (sits on the band's bottom wall, pod Z 11.5), B = end face "
               "(flush with the band's end), C = the Y faces' centre plane. Block 25 x 35 x 75.",
-    "111401": "Pod coordinates: X to the right wall, Y to the back. Outline from the band's inner faces less "
-              "the 4 mm seal gap; seam half-lap 13 wide, 4.5 deep, on the +X edge. Top face up.",
     "110000": "Pod coordinates (conventions §4): origin on the room floor at the pod centre, +X right, +Y back, +Z up.",
     "111106": "Pod coordinates: X along the band from the door opening (X 218.5) to the joint x_fr_joint (X 915), Y from "
               "the front face (-850) inward, Z up. Datums: A = top face, B = front (outer) face, C = the left end face "
@@ -83,9 +78,6 @@ DATUMS = {
               "1:1): flange down FR1's inner face, ledge flush with the band top (Z 110), drop, seat under the U-channel "
               "(Z 93 to 95), kerb down to F2 (Z 12). Datums: A = the ledge's top face, B = the flange's outer face "
               "(Y -810), C = the left end. Bends 90 deg, inside radius 2 (assumption, the bender confirms).",
-    "111402": "Pod coordinates: X to the right wall, Y to the back. Outline from the band's inner faces less the 4 mm "
-              "seal gap, with the tab under the sill's kerb (X 218.5 to 947, to Y -691.5); the seam rebate (lower half, "
-              "4.5 deep, from below) along X 0.5 to 13.5. Top face up.",
     "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 850, "
               "on its glides. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide doublers, "
               "glides preset (D-87); in its back end the corner key 111211 against the inner wall, with its 2 fixing "
@@ -99,9 +91,6 @@ DATUMS = {
               "wall's notches (J-BASE-02, D-129); nobody lifts it or stands on it until B1 and B2 are bolted on. "
               "GLIDES: level up from the highest floor spot; never below 8.5 mm under the band (the glide's base is "
               "the stop).",
-    "110401": "Pod coordinates (conventions §4), as built: floor panel F1 with its 3 mm foam mat bonded underneath "
-              "at the factory (D-87), the mat under the lap too; ply Z 3 to 12, floor top Z 12 (skeleton floor_top). "
-              "Adhesive HOLD.",
 }
 
 HOLES = {
@@ -110,23 +99,19 @@ HOLES = {
               "10 from the back face and 7.5 either side of the centre line. End face: 2 x M6 tapped through, for "
               "the hook studs, 26 and 60 above the bottom (pod Z 37.5 and 71.5) on the centre line (joints register "
               "J-BASE-02; PM ruling on F-017).",
-    "111401": "No holes.",
     "110000": "Holes on the part drawings.",
     "111106": "Bottom wall: 2 glide nut holes Ø13 (X 293.5 and 840), no holes on its top (in view in front of the glass). "
               "End plate at X 915: 2 keyholes, Ø12 entry 10 below each seat and a 6.5 slot up to it, seats at Z 37.5 "
               "and 71.5 on the band's centre line (joints register J-BASE-02, the intake's inline key 111211).",
     "111301": "Seat: 4 holes Ø5 for the flush M3 rivnuts (838008, HOLD) at X 269.4, 484.3, 699.2 and 905 on the glass line "
               "(Y -699). Flange: blind rivet holes to FR1, HOLD.",
-    "111402": "2 holes Ø8 for the air column's locator spigots 111801 at (989, -605) and (1126, -337) (CEILING's "
-              "positions, PM 2026-10-31).",
     "110101": "Holes on the part drawings (111101; the key 111211 on the Joints Engineer's sheet).",
     "110103": "Holes, slots and notches on the part drawing (111103).",
-    "110401": "No holes.",
 }
 
 
 # sheets whose views reach the bottom left: their notes go on the right, above the title block
-NOTES_RIGHT = {"111401", "110401", "111402", "110000"}
+NOTES_RIGHT = {"110000"}
 
 
 def kind_of(pn):
@@ -138,7 +123,7 @@ def kind_of(pn):
 def text_block(pn):
     d = json.load(open(DATA, encoding="utf-8"))
     rec = d["parts"].get(pn, {})
-    name = rec.get("name", "BASE") if pn != "110000" else "BASE (sample P01: back-left corner and F1)"
+    name = rec.get("name", "BASE") if pn != "110000" else "BASE (P02: the band ring so far; no floor, D-132)"
     is_asm = kind_of(pn) == "assembly"
     vn = rec.get("name_vi", "Đế / sàn")
     mat, fin, proc, ms, st, src, note = mo.PART_INFO.get(pn, ("", "", "", "", "DRAFT", "", ""))

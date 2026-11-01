@@ -3,32 +3,18 @@
 Executed inside base_build.py's namespace (it uses its helpers and adds to its
 PARTS, BASE_PARAMS, MATERIALS, steps and hardware). Adds:
 
-  right side band 110102 / 111102 (mirror of the left, keyholes at BR)
-  floor panel F2 110402 / 111402 / 111502 with the upper half-lap and the air
-      column's two locator spigots 111801 (CEILING's outline, PM 2026-10-31)
-  door threshold 111701, 13 mm (D-72)
+  right side band 110102 / 111102 (mirror of the left; the back key at BR, D-129)
   front band pieces: FL1 111104, FL2 111105 (DL's two facets), FL2's door-side
       end cap 111110, FR1 111106 (under the fixed glass)
   the DR intake (D-62): mesh 111107, support rail 111108, closing plate 111109
 
-The front keys 111212 to 111214 are the Joints Engineer's (J-BASE-02, HOLD-14);
-they are added when drawn. Fixings of the threshold and the closing plate HOLD.
+The front keys 111212 to 111214 are the Joints Engineer's (J-BASE-02), placed
+by reference. The pod has no floor and no threshold (D-132): people stand on
+the room floor, and each band piece's inner face carries the lip seal 118001
+(p02_seal_runs). Fixings of the closing plate HOLD.
 """
 
 P02_PARAMS = [
-    ("lap_clear", "1 mm", "mm", "assumption", "clearance past F1's lap end in F2's rebate"),
-    ("loc_s1_x", "989 mm", "mm", "source", "air column locator spigot S1, round hole (CEILING, PM 2026-10-31)"),
-    ("loc_s1_y", "-605 mm", "mm", "source", "S1 Y (CEILING)"),
-    ("loc_s2_x", "1126 mm", "mm", "source", "air column locator spigot S2, slot (CEILING)"),
-    ("loc_s2_y", "-337 mm", "mm", "source", "S2 Y (CEILING)"),
-    ("loc_d", "8 mm", "mm", "source", "locator spigot Ø8, 8 proud (CEILING; PM approved the factory-fitted head-from-below)"),
-    ("loc_proud", "8 mm", "mm", "source", "spigot height above the floor top (CEILING)"),
-    ("loc_head_d", "16 mm", "mm", "assumption", "spigot head under the ply, in a cut-out in the bonded mat"),
-    ("loc_head_t", "2 mm", "mm", "assumption", "spigot head thickness, inside the 3 mm mat"),
-    ("loc_mat_cut", "17 mm", "mm", "assumption", "cut-out in F2's mat around each spigot head"),
-    ("th_up", "6 mm", "mm", "confirmed", "threshold's upright at the toe (D-72: up to 6 mm upright, then 1:2)"),
-    ("th_land", "30 mm", "mm", "assumption", "flat land under the door's drop seal, centred on the glass line"),
-    ("th_wall", "2 mm", "mm", "assumption", "threshold extrusion's wall"),
     ("mesh_front", "105 mm", "mm", "confirmed", "DR intake mesh: 105 on the front and 266 on the facet (D-62)"),
     ("mesh_t", "2 mm", "mm", "assumption", "intake mesh thickness (expanded aluminium, 80 % free, black; product HOLD)"),
     ("rail_w", "20 mm", "mm", "assumption", "DR support rail flange under DR's bottom edge"),
@@ -59,13 +45,8 @@ P02_PARAMS = [
 P02_PARTS = {
     "band_r": ("110102", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "HS", None),
     "band_r_tube": ("111102", "BASE - BAND TUBE - SIDE - RH", "Viền chân nhôm 100x40 - cạnh phải", "MP", "band_r"),
-    "floor_assy2": ("110402", "BASE - FLOOR PANEL ASSY - F2", "Tấm sàn F2 (cụm dán)", "BS", None),
-    "floor_f2": ("111402", "BASE - FLOOR PANEL - F2", "Tấm sàn mỏng - F2", "MP", "floor_assy2"),
-    "mat_f2": ("111502", "BASE - FLOOR FOAM - F2 - CLOSED-CELL 3 MM", "Tấm lót sàn F2 - xốp kín 3 mm", "MP",
-               "floor_assy2"),
-    # hardware-like: its holding copy sits at the root (deleted in step 7); the real copies go in F2's assembly
-    "loc_spigot": ("111801", "BASE - LOCATOR SPIGOT - AIR COLUMN - D8", "Chốt định vị cột gió", "MP", None),
-    "threshold": ("111701", "BASE - DOOR THRESHOLD - 13 MM", "Ngưỡng cửa 13 mm", "MP", None),
+    "seal_r": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_r"),
+    "seal_fr1": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_r"),
     "front_l": ("110104", "BASE - BAND ASSY - FRONT - LH", "Viền chân trước - trái (cụm)", "HS", None),
     "fl1": ("111104", "BASE - BAND TUBE - FRONT - FACET 1 - LH", "Viền chân trước - mặt vát 1", "MP", "front_l"),
     "fl2": ("111105", "BASE - BAND TUBE - FRONT - FACET 2 - LH", "Viền chân trước - mặt vát 2", "MP", "front_l"),
@@ -103,8 +84,7 @@ X_FR0 = "(%s + fix_xbl)" % XL_                       # FR1's left end at the doo
 X_FR_JOINT = "x_fr_joint"
 
 
-BATCH1 = ("band_r", "band_r_tube", "floor_assy2", "floor_f2", "mat_f2", "loc_spigot", "threshold",
-          "front_r", "fr1", "sill")
+BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "seal_r", "seal_fr1")   # F2, its foam and spigots, the threshold went (D-132)
 
 
 # batch 2: the front-left pieces under DL (with --arg batch2=1; its method sample first: --arg part=fl1)
@@ -115,24 +95,20 @@ P02_BATCH_KEYS = BATCH1 + (BATCH2 if ARGS.get("batch2") == "1" else ())
 
 def p02_setup(keys=P02_BATCH_KEYS):
     """Adds the P02 parameters and the parts of this batch (keys) to base_build's tables."""
-    global SUB_DESIGNS, HOLDING_KEYS, WITH_ASSEMBLY
+    global SUB_DESIGNS, WITH_ASSEMBLY
     BASE_PARAMS.extend(P02_PARAMS)
     if "fl1" in keys or "fl2" in keys:
         BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02)
-    if "loc_spigot" in keys:
-        HOLDING_KEYS = tuple(HOLDING_KEYS) + ("loc_spigot",)
     PARTS.update({k: P02_PARTS[k] for k in keys})
-    mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "cap_l", "fr1", "rail",
-                                                   "cplate", "threshold", "sill")}
-    mats.update({"floor_f2": MATERIALS["floor_f1"], "mat_f2": MATERIALS["mat_f1"], "loc_spigot": ("Steel", None, None),
-                 "mesh": ("Aluminum", "Expanded mesh 80% free, 540 kg/m3 (ASSUMPTION)", 540.0)})
+    mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "cap_l", "fr1", "rail", "cplate", "sill")}
+    mats.update({"mesh": ("Aluminum", "Expanded mesh 80% free, 540 kg/m3 (ASSUMPTION)", 540.0),
+                 "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"]})
     MATERIALS.update({k: m for k, m in mats.items() if k in keys})
-    SUB_DESIGNS = tuple(SUB_DESIGNS) + tuple(k for k in ("band_r", "front_r", "floor_assy2") if k in keys)
+    SUB_DESIGNS = tuple(SUB_DESIGNS) + tuple(k for k in ("band_r", "front_r") if k in keys)
     if "band_r_tube" in keys:     # its back end carries a corner key (D-129): its part design follows each assembly save, as 111101's
         WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("band_r_tube",)
     PART_BUILDS.update({k: fns for k, fns in (
         ("band_r_tube", ("step_p02_band_r",)), ("fr1", ("step_p02_fr1",)), ("sill", ("step_p02_sill",)),
-        ("floor_f2", ("floor_panel_f2",)), ("loc_spigot", ("loc_spigot_part",)), ("threshold", ("step_p02_threshold",)),
         ("fl1", ("step_p02_fl1",)))
         if k in keys})
 
@@ -314,125 +290,10 @@ def plan_solid(design, key, label, outline, z0="glide_h", h="band_h"):
     return b
 
 
-def f2_outline_exprs():
-    x0, x1 = "fl_seam / 2", "%s - band_t - fl_gap" % XR_
-    y0, y1 = YW, "%s - band_t - fl_gap" % YB
-    xr = "-fl_seam / 2 + lap_w + lap_clear"         # F2's rebate end, past F1's lap
-    xt0, xt1, yt = X_FR0, X_MESH0, "-glass_y + ch_w / 2"
-    return x0, x1, y0, y1, xr, xt0, xt1, yt
-
-
-def step_p02_floor_f2(design):
-    floor_panel_f2(design)
-    foam_f2(design)
-    loc_spigot_part(design)
-    print("P02: F2 with its rebate and locator holes, its foam, the locator spigot")
-
-
-def floor_panel_f2(design):
-    v = lambda e: ev(design, e)  # noqa: E731
-    x0, x1, y0, y1, xr, xt0, xt1, yt = f2_outline_exprs()
-    comp = find_comp(design, "floor_f2")
-    plane = offset_plane(comp, "xy", "mat_t", v("mat_t"), "PLANE - FLOOR UNDERSIDE Z = mat_t")
-    sk = comp.sketches.add(plane)
-    sk.name = "PLAN - FLOOR PANEL F2 (WITH THE TAB UNDER THE SILL'S KERB)"
-    # the tab: F2 runs forward under the fixed glass, from the door opening to the mesh, to carry
-    # the sill's kerb (the glass's load) and floor the strip between the glass line and Y -645
-    outline = [P(design, x0, y0), P(design, xt0, y0), P(design, xt0, yt), P(design, xt1, yt), P(design, xt1, y0),
-               P(design, x1, y0), P(design, x1, y1), P(design, x0, y1)]
-    polygon(design, sk, outline, X, Y)
-    check_sketch(sk)
-    extrude(comp, one_profile(sk), "fl_t", "EXTRUDE - FLOOR PANEL F2 - PLYWOOD fl_t")
-    sk2 = comp.sketches.add(plane)
-    sk2.name = "PLAN - F2 SEAM REBATE (LOWER HALF)"
-    polygon(design, sk2, [P(design, x0, y0), P(design, xr, y0), P(design, xr, y1), P(design, x0, y1)], X, Y)
-    check_sketch(sk2)
-    extrude(comp, one_profile(sk2), "fl_t / 2", "CUT - F2 SEAM REBATE - LOWER HALF",
-            op=adsk.fusion.FeatureOperations.CutFeatureOperation, body=single_body(comp))
-    up = Z.copy()
-    for tag, xs, ys in (("S1", "loc_s1_x", "loc_s1_y"), ("S2", "loc_s2_x", "loc_s2_y")):
-        hole(design, "floor_f2", plane, "AIR COLUMN LOCATOR SPIGOT %s" % tag, (v(xs), v(ys), v("mat_t")),
-             [(X, xs), (Y, ys)], "loc_d", "fl_t", up)
-    single_body(comp, "%s - PANEL" % PARTS["floor_f2"][1])
-
-
-def foam_f2(design):
-    v = lambda e: ev(design, e)  # noqa: E731
-    x0, x1, y0, y1, xr, xt0, xt1, yt = f2_outline_exprs()
-    up = Z.copy()
-    comp = find_comp(design, "mat_f2")
-    sk = comp.sketches.add(comp.xYConstructionPlane)
-    sk.name = "PLAN - FLOOR MAT F2 (WITH THE TAB)"
-    polygon(design, sk, [P(design, xr, y0), P(design, xt0, y0), P(design, xt0, yt), P(design, xt1, yt), P(design, xt1, y0),
-                         P(design, x1, y0), P(design, x1, y1), P(design, xr, y1)], X, Y)
-    check_sketch(sk)
-    extrude(comp, one_profile(sk), "mat_t", "EXTRUDE - FLOOR FOAM F2")
-    for tag, xs, ys in (("S1", "loc_s1_x", "loc_s1_y"), ("S2", "loc_s2_x", "loc_s2_y")):
-        hole(design, "mat_f2", comp.xYConstructionPlane, "CUT-OUT FOR THE SPIGOT HEAD %s" % tag, (v(xs), v(ys), 0.0),
-             [(X, xs), (Y, ys)], "loc_mat_cut", "mat_t", up)
-    single_body(comp, "%s - SHEET" % PARTS["mat_f2"][1])
-
-
-def loc_spigot_part(design):
-    comp = find_comp(design, "loc_spigot")
-    revolve_section(design, comp, "AIR COLUMN LOCATOR SPIGOT", [
-        PZ(design, "0 mm", "0 mm"), PZ(design, "loc_head_d / 2", "0 mm"), PZ(design, "loc_head_d / 2", "loc_head_t"),
-        PZ(design, "loc_d / 2", "loc_head_t"), PZ(design, "loc_d / 2", "loc_head_t + fl_t + loc_proud - 1 mm"),
-        PZ(design, "loc_d / 2 - 1 mm", "loc_head_t + fl_t + loc_proud"), PZ(design, "0 mm", "loc_head_t + fl_t + loc_proud")])
-
-
-def step_p02_threshold(design):
-    """13 mm door threshold (D-72): a 6 mm upright at the toe, a 1:2 bevel up to
-    thresh_h, a flat land centred on the glass line, then down to the floor top
-    at the floor's front edge (level inside). Extruded along X between DL's door
-    face and the fixed glass's left edge; two pockets from below keep it light."""
-    v = lambda e: ev(design, e)  # noqa: E731
-    comp = find_comp(design, "threshold")
-    x0 = "%s + dl_w" % XL_
-    pl = offset_plane(comp, "yz", x0, v(x0), "PLANE - THRESHOLD LEFT END")
-    ytoe = "-glass_y - th_land / 2 - 2 * (thresh_h - th_up)"
-    ybev = "-glass_y - th_land / 2"
-    yland = "-glass_y + th_land / 2"
-    xv = v(x0)
-    def pt(ey, ez):
-        return (ey, ez, (xv, v(ey), v(ez)))
-    sk = comp.sketches.add(pl)
-    sk.name = "SECTION - THRESHOLD 13 MM"
-    polygon(design, sk, [pt(ytoe, "0 mm"), pt(ytoe, "th_up"), pt(ybev, "thresh_h"), pt(yland, "thresh_h"),
-                         pt(YW, "floor_top"), pt(YW, "0 mm")], Y, Z)
-    check_sketch(sk)
-    ei = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-    n = pl.geometry.normal
-    direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x > 0 else \
-        adsk.fusion.ExtentDirections.NegativeExtentDirection
-    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("fix_xbl - dl_w")), direc)
-    f = comp.features.extrudeFeatures.add(ei)
-    f.name = "EXTRUDE - THRESHOLD - LENGTH fix_xbl - dl_w"
-    body = single_body(comp, PARTS["threshold"][1])
-    yb1 = "%s + th_wall" % ytoe
-    yb2 = "%s - th_wall / 2" % ybev
-    yb3 = "%s + th_wall / 2" % ybev
-    yb4 = "%s - th_wall" % YW
-    # two pockets from below, each from its own one-rectangle sketch
-    for tag, pts in (("TOE", [pt(yb1, "0 mm"), pt(yb2, "0 mm"), pt(yb2, "th_up - th_wall"), pt(yb1, "th_up - th_wall")]),
-                     ("LAND", [pt(yb3, "0 mm"), pt(yb4, "0 mm"), pt(yb4, "floor_top - th_wall"),
-                               pt(yb3, "floor_top - th_wall")])):
-        skp = comp.sketches.add(pl)
-        skp.name = "SECTION - THRESHOLD POCKET - %s" % tag
-        polygon(design, skp, pts, Y, Z)
-        check_sketch(skp)
-        ci = comp.features.extrudeFeatures.createInput(one_profile(skp), adsk.fusion.FeatureOperations.CutFeatureOperation)
-        ci.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("fix_xbl - dl_w")), direc)
-        ci.participantBodies = [body]
-        comp.features.extrudeFeatures.add(ci).name = "CUT - THRESHOLD POCKET FROM BELOW - %s" % tag
-    print("P02: threshold %s" % fmt_box(bbox_mm(single_body(comp))))
-
-
 def step_p02_intake(design):
     """DR intake (D-62): the mesh in the band's outline (front 105 + facet), the
     support rail rail_set behind it under DR's bottom edge, and the closing plate
     at the walls' front edge between the intake space and the pod."""
-    v = lambda e: ev(design, e)  # noqa: E731
     fx, fy = "%s - dr_xc" % XR_, "-pod_d / 2"                  # the mesh's front corner
     mesh = [P(design, X_MESH0, fy), P(design, fx, fy), P(design, XR_, "-dr_yc"),
             P(design, "%s - mesh_t" % XR_, "-dr_yc + mesh_t * %s" % F_SIDE),
@@ -447,7 +308,8 @@ def step_p02_intake(design):
     plan_solid(design, "rail", "INTAKE SUPPORT RAIL - DR (FLANGE)", rail_out, z0="wall_z0 - rail_t", h="rail_t")
     cp = [P(design, X_MESH0, "%s - cp_t" % YW), P(design, "%s - band_t" % XR_, "%s - cp_t" % YW),
           P(design, "%s - band_t" % XR_, YW), P(design, X_MESH0, YW)]
-    plan_solid(design, "cplate", "INTAKE CLOSING PLATE - DR", cp, z0="mat_t", h="wall_z0 - mat_t")
+    # down to the band's bottom line: the lip seal under it reaches the room floor (D-132)
+    plan_solid(design, "cplate", "INTAKE CLOSING PLATE - DR", cp, z0="glide_h", h="band_h")
     print("P02: DR intake: mesh, support rail flange, closing plate")
 
 
@@ -456,8 +318,9 @@ def step_p02_sill(design):
     profile, black AA20, from the door opening's right edge to sl_x1. A flange down FR1's inner
     face (riveted, HOLD), a ledge flush with the band top over to the channel, a drop wall, the
     seat under FRONT's U-channel (Z 93 to 95, 4 flush M3 rivnuts take the channel's screws), and
-    a kerb down to F2's front tab, which carries the glass's load (about 280 N) to the floor. The
-    channel is screwed on at the factory and ships on the sill with FR1 (PM ruling)."""
+    a kerb down to the band's bottom line (D-132: no floor under it now, so the glass's load, about
+    280 N, goes into FR1; the seat detail is being settled with FRONT). The channel is screwed on at
+    the factory and ships on the sill with FR1 (PM ruling)."""
     v = lambda e: ev(design, e)  # noqa: E731
     comp = find_comp(design, "sill")
     x0 = X_FR0
@@ -467,7 +330,7 @@ def step_p02_sill(design):
     y_c1, y_kb = "-glass_y + ch_w / 2", "-glass_y + ch_w / 2 + sl_t"
     z_top, z_lb = "wall_z0", "wall_z0 - sl_t"
     z_st, z_sb = "wall_z0 - ch_h", "wall_z0 - ch_h - sl_t"
-    z_fl, z_kb = "wall_z0 - sl_flange", "floor_top"
+    z_fl, z_kb = "wall_z0 - sl_flange", "glide_h"
     xv = v(x0)
 
     def pt(ey, ez):
@@ -498,7 +361,7 @@ def step_p02_sill(design):
     print("P02: sill %s" % fmt_box(bbox_mm(single_body(comp))))
 
 
-P02_STEPS = [step_p02_band_r, step_p02_fr1, step_p02_sill, step_p02_floor_f2, step_p02_threshold]   # batch 1
+P02_STEPS = [step_p02_band_r, step_p02_fr1, step_p02_sill]   # batch 1 (F2 and the threshold went, D-132)
 
 # the right side panel's skeleton envelopes join the clash check, as the left ones do (P01)
 _skeleton_boxes_p01 = skeleton_boxes
@@ -540,18 +403,34 @@ def p02_hardware(design):
     for i in range(ng):
         out.append(("band_r", "glide", (xg, yg0 + i * gext / (ng - 1), 0.0), None))
         out.append(("band_r", "doubler", (xd, yg0 + i * gext / (ng - 1), zd), "z180"))
-    for xs, ys in (("loc_s1_x", "loc_s1_y"), ("loc_s2_x", "loc_s2_y")):
-        out.append(("floor_assy2", "loc_spigot", (v(xs), v(ys), v("mat_t - loc_head_t")), None))
     # FR1's 2 glides with their doublers, gl_e_f in from each end (clear of the keyed end's last 30 mm)
     yf = v("-pod_d / 2 + band_t / 2")
     for xg in (v("%s + gl_e_f" % X_FR0), v("%s - gl_e_f" % X_FR_JOINT)):
         out.append(("front_r", "glide", (xg, yf, 0.0), None))
         out.append(("front_r", "doubler", (xg, yf, zd), "z-90"))
+    # FR1's open end at the door opening is in view now (no threshold, D-132): the same flat cap as the side bands'
+    out.append(("front_r", "cap", (v("%s + cap_t / 2" % X_FR0), yf, v("glide_h")), "z-90"))
     return out
 
+
+def p02_seal_runs(design):
+    """The lip seal's runs on this batch's band pieces (D-132), as seal_runs: the right side band's inner face up to
+    the back band's inner face, and FR1's inner face from the door opening to its keyed end (the intake piece's run
+    comes with the intake)."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    runs = []
+    xi, yb = "%s - band_t" % XR_, "%s - band_t" % YB
+    if "band_r_tube" in PARTS:
+        runs.append(("seal_r", "band_r", "X = %.2f (side band RH, inner face)" % v(xi), Y_MITRE_IN_R, yb,
+                     [("%s - seal_t" % xi, Y_MITRE_IN_R), (xi, Y_MITRE_IN_R), (xi, yb), ("%s - seal_t" % xi, yb)]))
+    if "fr1" in PARTS:
+        yf = "-pod_d / 2 + band_t"
+        runs.append(("seal_fr1", "front_r", "Y = %.2f (FR1, inner face)" % v(yf), X_FR0, X_FR_JOINT,
+                     [(X_FR0, yf), (X_FR_JOINT, yf), (X_FR_JOINT, "%s + seal_t" % yf), (X_FR0, "%s + seal_t" % yf)]))
+    return runs
+
 def p02_export(design, out):
-    """The batch's facts for make_outputs.py: tube cuts, F2's outline and holes, the sill's section
-    (for its flat pattern) and length, the threshold's length."""
+    """The batch's facts for make_outputs.py: tube cuts, the sill's section (for its flat pattern) and length."""
     v = lambda e: ev(design, e)  # noqa: E731
     keys = PARTS
     if "band_r_tube" in keys:
@@ -566,25 +445,17 @@ def p02_export(design, out):
         ln = v("%s - %s" % (X_FR_JOINT, X_FR0))
         out["tubes"][PARTS["fr1"][0]] = {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
-            "outer_face_length": round(ln, 2), "inner_face_length": round(ln, 2),
-            "front_end": "square at the door opening, for the end cap",
-            "back_end": "square at X %.1f, closed by a welded 1.5 end plate with 2 keyholes" % v(X_FR_JOINT)}
-    if "floor_f2" in keys:
-        x0, x1, y0, y1, xr, xt0, xt1, yt = f2_outline_exprs()
-        out["floor_f2"] = {"outline": [[v(x0), v(y0)], [v(xt0), v(y0)], [v(xt0), v(yt)], [v(xt1), v(yt)], [v(xt1), v(y0)],
-                                       [v(x1), v(y0)], [v(x1), v(y1)], [v(x0), v(y1)]],
-                           "rebate": [v(x0), v(xr)], "rebate_depth": v("fl_t / 2"), "foam_x0": v(xr),
-                           "spigots": [[v("loc_s1_x"), v("loc_s1_y")], [v("loc_s2_x"), v("loc_s2_y")]],
-                           "spigot_hole": v("loc_d"), "foam_cut": v("loc_mat_cut")}
+            "outer_face_length": round(ln - v("band_wall"), 2), "inner_face_length": round(ln - v("band_wall"), 2),
+            "front_end": "square at the door opening, closed by the flat end cap 118003 (in view, D-132)",
+            "back_end": "square, closed by a welded 1.5 end plate (100 x 40) with 2 keyholes at X %.1f; %.1f over the plate"
+                        % (v(X_FR_JOINT), ln)}
     if "sill" in keys:
         out["sill"] = {"t": v("sl_t"), "length": round(v("sl_x1 - %s" % X_FR0), 2), "x0": v(X_FR0),
                        "legs_outside": {"flange": v("sl_flange"), "ledge": round(v("(-glass_y - ch_w / 2) - (-pod_d / 2 + band_t)"), 2),
                                         "drop": v("ch_h + sl_t"), "seat": v("ch_w + 2 * sl_t"),
-                                        "kerb": round(v("wall_z0 - ch_h - floor_top"), 2)},
+                                        "kerb": round(v("wall_z0 - ch_h - glide_h"), 2)},
                        "screws_x": [v("ch_screw_x1 + %d * ch_screw_p" % i) for i in range(3)] + [v("ch_screw_x4")],
                        "rivnut_hole": v("ch_rn_hole")}
-    if "threshold" in keys:
-        out["threshold"] = {"length": round(v("fix_xbl - dl_w"), 2), "x0": v("%s + dl_w" % XL_)}
 
 
 # ---------------------------------------------------------------- batch 2: the front-left pieces under DL

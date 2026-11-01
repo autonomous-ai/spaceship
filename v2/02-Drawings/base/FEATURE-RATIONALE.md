@@ -1,4 +1,4 @@
-# Feature rationale: BASE, sample P01 (back-left corner and F1)
+# Feature rationale: BASE (P01 and P02)
 
 | Doc code | Revision | Status | Date | Owner |
 |---|---|---|---|---|
@@ -17,16 +17,11 @@ Statuses: **confirmed** (PM decision), **source** (named document), **calculatio
 | 111601 | BASE - GLIDE DOUBLER - COMMON | 3 mm plate inside the band at each glide; no drawing: its DXF and its parts-list row (D-89 part 4) |
 | 111211 | BASE - CORNER KEY - SQUARE - COMMON | the hook-in key in each side band's back end (J-BASE-02, D-87, D-129); the Joints Engineer's part (model, STEP, tabulated drawing), placed here by reference |
 | 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | flat 2 mm cap inside each side band's back end, flush with the back face (D-129); bought, product HOLD |
-| 111401 | BASE - FLOOR PANEL - F1 | 9 mm poplar-core plywood, X −1206…+12.5, Y −645…+806 |
-| 111501 | BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM | 3 mm closed-cell foam bonded under F1 (D-87); no drawing: its DXF and cut-list row (D-89 part 3) |
 | 111102 | BASE - BAND TUBE - SIDE - RH | mirror of 111101 under the right wall, X 1210…1250, front end mitred to the intake's facet piece |
 | 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | FR1: 100 × 40 × 1.5 tube under the fixed glass, X 218.5…915, closed at the joint by a welded 1.5 mm end plate with 2 keyholes |
 | 111301 | BASE - SILL - FIXED GLASS | bent 2 mm black profile on FR1 that carries FRONT's bottom U-channel, X 218.5…965 |
-| 111402 | BASE - FLOOR PANEL - F2 | 9 mm poplar-core plywood, X 0.5…1206, Y −645…+806, with a tab under the sill |
-| 111502 | BASE - FLOOR FOAM - F2 - CLOSED-CELL 3 MM | 3 mm closed-cell foam bonded under F2, with 2 cut-outs; no drawing: its DXF (D-89 part 3) |
-| 111801 | BASE - LOCATOR SPIGOT - AIR COLUMN - D8 | Ø8 spigot fitted from below through F2 for the air column's foot |
-| 111701 | BASE - DOOR THRESHOLD - 13 MM | 13 mm aluminium threshold across the door opening, X −972…218.5 |
-| 110101, 110103, 110401 | the band assemblies and F1's bonded assembly | each has its assembly drawing (D-89: every assembly keeps one), made from its own design that the build saves |
+| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | soft lip on the bands' inner faces, pressing on the room floor (D-132); bought by the metre, product HOLD |
+| 110101, 110102, 110103, 110106 | the band assemblies | each has its assembly drawing (D-89: every assembly keeps one), made from its own design that the build saves |
 
 The joint hardware (rivnut 838003, stop washer 831002, spigot 831001) is the joints register's (J-BASE-01, section 3.4); this file covers where BASE puts it.
 
@@ -69,15 +64,6 @@ The key is the Joints Engineer's part (PM ruling 2026-11-01: model, STEP and the
 | FK-02 | Hook stud holes, M6 tapped through the stud face | Take the stud bolts 838001 through the side band's inner wall (FB-10), set at the factory with their heads 1.8 off the wall's outside face (the 1.5 end plate + 0.3), threadlocked | 2 on the back band's centre line, 26 and 60 above the key's bottom (pod Z 37.5 and 71.5) | Tapped through; the bolt engages 16 − 1.5 − 1.8 = 12.7, over 2 diameters (joints register J-BASE-02, D-129) | confirmed (thread), source (positions) |
 | FK-03 | Fixing holes, M6 with 15 of full thread, in the bottom | The 2 factory screws from below (FB-11) | 10.5 from the back face and from each side face (7.0 either side of the centre line); tap drill Ø5.0 × 18 | The M6 × 12 button head engages 10.5 (12 − 1.5 wall) in the 15 of thread (PM ruling on F-017; joints register PR #99) | confirmed (thread); positions PROPOSED |
 
-## Floor panel F1 (111401) and its mat (111501)
-
-| ID | Feature | Function | Size, position | Constraint behind it | Status |
-|---|---|---|---|---|---|
-| FF-01 | Outline | The floor inside the band ring, out to the band (Lead ruling 2), so no trench is left | X −1206 (band inner face + 4 gap) to the seam; Y −645 (walls' front edge) to +806 (back band − 4) | The 4 mm gap takes the floor-edge seal 118001 (PM ruling: seal at the floor's edge, so v1's shadow line under the band stays open) | confirmed (rulings), gap assumption |
-| FF-02 | 9 mm thickness on a 3 mm mat | Floor top Z 12, so the door threshold is 13 mm (US accessibility) | Z 3…12 | D-72; poplar-core with a hard face veneer, about 450 kg/m³ (D-85); edge deflection about 0.6 mm under 1000 N on the firm foam (calculation, test PLANNED) | confirmed (thickness), assumption (density) |
-| FF-03 | Half-lap at the F1/F2 seam | Keeps the seam flush with no glue; F1's lower half runs under F2's upper half | 13 wide, 4.5 deep (`lap_w`, `fl_t / 2`); F1 is 1218.5 wide with it | ≤ 1219 so F1 stands on the 48 × 40 in pallet (packing plan, PM ruling); a tongue in 9 mm ply would leave 2 mm groove walls | confirmed (width), assumption (lap) |
-| FF-04 | Foam mat 3 mm, bonded at the factory | Seals the floor to the room floor and carries F1's lap edge; one piece to carry and lay (D-87) | F1's full outline, the lap zone included, so the lap stands on foam, not on air | Firm closed-cell PE or EPDM, about 200 kg/m³ (D-76), thickness the skeleton's `mat_t` (v4); a solid rubber mat would add about 13.6 kg. No drawing: DXF and cut-list row (D-89 part 3) | confirmed (type), product HOLD (ISS-085) |
-
 ## Right band (111102), FR1 (111106) and its sill (111301): P02 batch 1
 
 | ID | Feature | Function | Size, position | Constraint behind it | Status |
@@ -86,19 +72,23 @@ The key is the Joints Engineer's part (PM ruling 2026-11-01: model, STEP and the
 | FB-22 | FR1's length X 218.5…915 | The band under the fixed glass, from the door opening to the intake | `x_fr_joint` = pod_w/2 − dr_xc − mesh_front − fr_stub, 915 | The joint left of the mesh so the intake's key sits behind no mesh (PM rulings 2026-11-01: X 920, then X 915 for the 30 mm key) | confirmed |
 | FB-23 | FR1's end plate with 2 keyholes | FR1 is the keyhole piece of the inline joint: it goes on last, down onto the intake's key studs | The tube closed at X 915 by its 1.5 wall (welded plate in the shop); Ø12 entries 10 below the seats, 6.5 slots up to them, seats at Z 37.5 and 71.5 on Y −830 | Joints register J-BASE-02 (keyhole fix, #127) | source |
 | FB-24 | FR1's glides, no key holes on its top | 2 glides with doublers, 75 in from each end | Nut holes Ø13 at X 293.5 and 840 | FR1's top is in view in front of the glass, so its glides turn by their base (spanner flats on the glide, HOLD) | assumption |
-| FS-01 | The sill's section: flange, ledge, drop, seat, kerb | Carries FRONT's bottom U-channel at the glass line: the ledge lies flush with the band top (Z 110), the seat sits under the channel (Z 93…95), the kerb stands on F2's tab and takes the glass's load (about 280 N) to the floor | 2 mm, 4 bends 90°; ledge Y −810…−706.5, seat Y −708.5…−689.5, kerb to Z 12 | FRONT's answer (channel 15 × 15 × 1.5, Y −706.5…−691.5, Z 95…110); PM ruling: the channel ships fitted on the sill | source; bend radius assumption |
+| FS-01 | The sill's section: flange, ledge, drop, seat, kerb | Carries FRONT's bottom U-channel at the glass line: the ledge lies flush with the band top (Z 110), the seat sits under the channel (Z 93…95), the kerb comes down to the band's bottom line; with no floor under it (D-132) the glass's load, about 280 N, goes into FR1 (the seat detail is being settled with FRONT: the same profile in 4 mm, or a closed section riveted back to FR1) | 2 mm, 4 bends 90°; ledge Y −810…−706.5, seat Y −708.5…−689.5, kerb to Z 10 | FRONT's answer (channel 15 × 15 × 1.5, Y −706.5…−691.5, Z 95…110); PM ruling: the channel ships fitted on the sill | source; bend radius assumption |
 | FS-02 | 4 holes Ø5 for flush M3 rivnuts in the seat | The channel's 4 countersunk screws (838007 into 838008) fitted in the factory | X 269.4, 484.3, 699.2 and 905 on the glass line | FRONT's channel holes; the last at 905, 2 hole diameters from FR1's end (joints register J-FRONT-04, Lead 2026-11-01) | source |
 
-## F2 (111402), its foam (111502), the locator spigot (111801) and the threshold (111701): P02 batch 1
+## Base seal 118001 and the door opening (D-132: no floor)
+
+The pod has no floor (PM ruling D-132, the owner's question): people stand on the room floor, and there is no step at the door. The floor panels F1 and F2, their foam, F2's air column locators and the 13 mm threshold are gone; the skeleton's `mat_t`, `floor_t` and `thresh_h` are 0, so its `floor_top` is the room floor, Z 0.
 
 | ID | Feature | Function | Size, position | Constraint behind it | Status |
 |---|---|---|---|---|---|
-| FF-11 | F2's outline with its tab | The floor inside the band ring to the right of the seam, and forward under the fixed glass to carry the sill's kerb | X 0.5…1206, Y −645…806; tab X 218.5…947 to Y −691.5 | 4 mm seal gap at the band (as F1); the tab floors the strip between the glass line and Y −645 | calculation |
-| FF-12 | F2's seam rebate, lower half, from below | Takes F1's lap so the seam stays flush | X 0.5…13.5, 4.5 deep | F1's lap 13 plus 1 clearance (`lap_clear`) | assumption |
-| FF-13 | 2 holes Ø8 and the locator spigots 111801 | Locate the air column's foot (CEILING) | (989, −605) and (1126, −337); the spigot's Ø16 head sits in the foam's Ø17 cut-out, 8 proud of the floor top | CEILING's positions; factory-fitted from below (PM 2026-10-31) | source |
-| FT-01 | Threshold section 13 mm | Meets the US accessibility limit: a 6 mm upright, then a 1:2 bevel, a flat land under the door's drop seal, then level with the floor inside | X −972…218.5 (door opening), Y −728…−645, two pockets from below | D-72; the kick strip clears it by 7 (FRONT) | confirmed; fixing HOLD |
+| FE-01 | Lip seal on the bands' inner faces | Closes the gap under the band between the pod's inside and the room (sound, draughts, dust), out of sight, so v1's open shadow line under the band stays (D-132) | A leg `seal_leg` 15 bonded to the inner face from its bottom edge up, and a soft fin reaching `seal_reach` 21.5 below the band's bottom, bent into the pod; EPDM or TPE, black | D-132 (PM ruling); bought by the metre, fitted to each band piece at the factory | decided (principle); sizes assumption; product HOLD |
+| FE-02 | The fin's reach across the glides' range | Keeps touching the room floor wherever the glides are set | The band's bottom sits between `gl_min` 8.5 (the glide's hard stop, F-018) and `gl_max` 18.5 (10 of travel, assumption until the glide is named): the fin presses at least `seal_press` 3 at the highest setting and bends 13 into the pod at the lowest | LS-13: the room floor's flatness must stay within the glides' range; the seal test BT-06 checks contact at 8.5, 13.5 and 18.5 | assumption (travel and press) |
+| FE-03 | Where it runs | One run per band piece, on its inner face: the side bands from their front mitre to the back band's inner face (Y 810, where the back band's end plate covers the rest); the back band's full length; FR1 from the door opening to its keyed end; FL1, FL2 and the intake piece with their batches | P02 so far: 1.462 m (110101), 2.420 m (110103), 1.464 m (110102), 0.697 m (110106) | No run across the door opening: the door's drop seal closes on the room floor (FRONT, D-132). At the intake under DR the run follows the closing plate, so the intake stays open to the room and sealed from the pod (with the Air Engineer, P02 batch 3). Runs butt at the band joints (assumption; BT-06) | calculation (lengths) |
+| FE-04 | The door opening: no tie across it | The two band ends at the door (FL2's capped end, FR1's capped end) need no tie now that the threshold is gone | 1190.5 between them at the floor | Nothing loads the opening at floor level: DL's weight and the door's hinge loads go through DL's J-FRONT-01 bolts into the left wall, the fixed glass's weight into FR1 (FS-01), and the walls and ceiling hold the front square. Before the walls, each half of the ring can swing at its back corner by the 0.3 play under the stud heads (about 0.0075 rad, so up to about 11 at the front, calculation); the walls take that out (spigots and J-BASE-01 bolts). So the assembly guide checks the opening (1190.5 ±2 at the floor) and the ring's diagonals before the walls go on (Packing and Assembly Engineer) | calculation; no part |
+| FE-05 | FR1's door end, in view | Closes FR1's open end at the door, now in view with no threshold | The flat cap 118003, the same as the side bands' back ends | D-132; the look as designed (D-01) | source; product HOLD |
 
 ## What is not here yet
 
 - The front corner and inline keys (111212 to 111214, HOLD-14) and the back key's final fixing (F-018): the Joints Engineer's register PR.
-- The front-left pieces under DL (with DL's spigots, register #150 and its correction), the DR intake (mesh, stub with the inline key, the closing angle carrying DR's spigots, D-62): P02 batches 2 and 3.
+- The front-left pieces under DL (with DL's spigots at FRONT's named points), the DR intake (mesh, stub with the inline key, the closing angle carrying DR's spigots, D-62; D-130's boot joint with CEILING; the lip seal's run along the closing plate with the Air Engineer): P02 batches 2 and 3.
+- The sill's seat detail with FRONT (FS-01) and the air column's new locator, fixed to the pod's frame (CEILING and Joints, D-132).
