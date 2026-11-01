@@ -34,7 +34,8 @@ EDITS = [
 
 
 def load_build():
-    ns = {"__name__": "base_build", "__file__": BUILD, "SCRIPT_ARGS": {}}
+    # the run's own settings (scope, batch2), so P02's batches load as the build loaded them
+    ns = {"__name__": "base_build", "__file__": BUILD, "SCRIPT_ARGS": dict(globals().get("SCRIPT_ARGS", {}))}
     with open(BUILD, "r", encoding="utf-8") as fh:
         exec(compile(fh.read(), BUILD, "exec"), ns)
     return ns
@@ -61,6 +62,10 @@ def expected_boxes(b, design):
         out["fr1"] = (v(X_FR0), v("-pod_d / 2"), v("glide_h"), v("x_fr_joint"), v("-pod_d / 2 + band_t"), v("wall_z0"))
         out["sill"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("sl_x1"), v("-glass_y + ch_w / 2 + sl_t"),
                        v("wall_z0"))
+    if "fl1" in b["PARTS"]:     # batch 2: DL's two facets (FL2 with its welded door-end block)
+        XL_, IL2X, IL2Y = b["XL_"], b["IL2_X"], b["IL2_Y"]
+        out["fl1"] = (v(XL_), v("-dl_y2"), v("glide_h"), v(IL2X), v(b["Y_MITRE_IN"]), v("wall_z0"))
+        out["fl2"] = (v("%s + dl_x2" % XL_), v("-dl_y3"), v("glide_h"), v("%s + dl_w" % XL_), v(IL2Y), v("wall_z0"))
     return out
 
 
@@ -101,7 +106,8 @@ def found(got, want):
 
 def measure(b, design):
     boxes = {}
-    for key in ("band_l_tube", "band_b_tube") + (P02_KEYS if "X_FR0" in b else ()):
+    for key in ("band_l_tube", "band_b_tube") + (P02_KEYS if "X_FR0" in b else ()) + \
+            (("fl1", "fl2") if "fl1" in b["PARTS"] else ()):
         comp = b["find_comp"](design, key)
         boxes[key] = b["bbox_mm"](comp.bRepBodies.item(0))
     body = b["find_comp"](design, "band_l_tube").bRepBodies.item(0)

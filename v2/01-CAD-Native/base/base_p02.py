@@ -561,6 +561,27 @@ def p02_export(design, out):
             "front_end": "square at the door opening, closed by the flat end cap 118003 (in view, D-132)",
             "back_end": "square, closed by a welded 1.5 end plate (100 x 40) with 2 keyholes at X %.1f; %.1f over the plate"
                         % (v(X_FR_JOINT), ln)}
+    if "fl1" in keys:
+        d1, d2 = (v(D1X), v(D1Y)), (v(D2X), v(D2Y))
+        n_c = unit_xy(d1[0], d1[1] - 1.0)
+        n_k = unit_xy(d1[0] + d2[0], d1[1] + d2[1])
+        ang = lambda a, b: math.degrees(math.acos(min(1.0, abs(a[0] * b[0] + a[1] * b[1]))))  # noqa: E731
+        dist = lambda a, b: round(math.hypot(v(a[0]) - v(b[0]), v(a[1]) - v(b[1])), 2)     # noqa: E731
+        oc, ok_, ik, ic = (XL_, "-dl_y1"), ("%s + dl_x2" % XL_, "-dl_y2"), (IL2_X, IL2_Y), ("%s + band_t" % XL_, Y_MITRE_IN)
+        od, idd = ("%s + dl_x3" % XL_, "-dl_y3"), ("%s + dl_x3" % XL_, Y_FL2_IN_END)
+        out["tubes"][PARTS["fl1"][0]] = {
+            "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "DL facet 1",
+            "outer_face_length": dist(oc, ok_), "inner_face_length": dist(ic, ik),
+            "front_end": "mitre to the left side band, %.2f deg from square, closed by a welded 1.5 end plate with 2 "
+                         "keyholes for the front corner key 111212's studs" % ang(d1, n_c),
+            "back_end": "mitre to FL2, %.2f deg from square, open: the knee key 111214 inside" % ang(d1, n_k)}
+        out["tubes"][PARTS["fl2"][0]] = {
+            "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "DL facet 2",
+            "outer_face_length": dist(ok_, od), "inner_face_length": dist(ik, idd),
+            "front_end": "mitre to FL1, %.2f deg from square, closed by a welded 1.5 end plate with 2 keyholes for the "
+                         "knee key 111214's studs" % ang(d2, n_k),
+            "back_end": "cut square to X (%.2f deg from square), the door-end block welded on, %.1f to DL's door face"
+                        % (ang(d2, (1.0, 0.0)), v("dl_w - dl_x3"))}
     if "sill" in keys:
         out["sill"] = {"t": v("sl_t"), "length": round(v("sl_x1 - %s" % X_FR0), 2), "x0": v(X_FR0),
                        "legs_outside": {"flange": v("sl_flange"), "ledge": round(v("(-glass_y - ch_w / 2) - (-pod_d / 2 + band_t)"), 2),

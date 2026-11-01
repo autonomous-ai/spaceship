@@ -89,6 +89,29 @@ PART_INFO = {
     "111102": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
                "saw cut (front mitre, back square), CNC drill, deburr, anodise", "calculation", "DRAFT",
                "CAD; finish D-67", "mirror of 111101; front end mitred to the intake's facet piece; tabulated with 111101"),
+    "110104": ("assembly: FL1 and FL2 (with its welded door-end block), the knee key 111214 in FL1's knee end with its 2 "
+               "fixing screws and 2 hook studs, DL's 2 spigots in rivnuts and FL2's glide, fitted at the factory", "", "",
+               "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD; joints register J-BASE-02, J-FRONT-02",
+               "goes on along the left side band's front key studs, then down 10 (J-BASE-02); DL stands on its 2 spigots"),
+    "111104": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm end plate (alloy: assumption)", AA20,
+               "saw cut (both ends mitred), weld the corner end plate, CNC drill and cut the keyholes, deburr, anodise",
+               "calculation", "DRAFT", "CAD; joints register J-BASE-02 (keyhole piece of the front left corner, carrier of "
+               "the knee key 111214), J-FRONT-02 (DL's round spigot)",
+               "DL's first facet; no glide (112 long between two keyed ends)"),
+    "111105": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm knee end plate and a welded 7 mm "
+               "door-end block (alloy: assumption)", AA20,
+               "saw cut (knee mitre, door end square to X), weld the knee end plate and the door-end block, grind flush, "
+               "CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
+               "CAD; joints register J-BASE-02 (keyhole piece of the knee), J-FRONT-02 (DL's slot spigot)",
+               "DL's second facet, its block out to DL's door face (in view at the door opening, D-132); one glide"),
+    "111212": ("aluminium EN AW-6061 T6 block (joints register J-BASE-02)", "mill finish (hidden)",
+               "the Joints Engineer's part", "calculation", "DRAFT",
+               "joints register J-BASE-02; the Joints Engineer's part (model, STEP and tabulated drawing 111211 to 111214), "
+               "placed here by reference", "fixed in the left side band's front end at the factory; FL1 drops onto its 2 hook studs"),
+    "111214": ("aluminium EN AW-6061 T6 block (joints register J-BASE-02)", "mill finish (hidden)",
+               "the Joints Engineer's part", "calculation", "DRAFT",
+               "joints register J-BASE-02; the Joints Engineer's part (model, STEP and tabulated drawing 111211 to 111214), "
+               "placed here by reference", "fixed in FL1's knee end at the factory; FL2 goes on onto its 2 hook studs"),
     "110106": ("assembly: FR1 with its sill, FRONT's bottom U-channel screwed on, and the glides, fitted at the factory",
                "", "", "calculation", "DRAFT", "CAD; PM ruling 2026-11-01 (the channel ships fitted on the sill)",
                "ships as one piece; on site the fixed glass drops into the fitted channel"),
@@ -139,12 +162,15 @@ BOUGHT = {
 TOLERANCE = {
     "111101": "see its drawing", "111103": "see its drawing",
     "111211": "the Joints Engineer's tabulated drawing 111211 to 111214",
+    "111212": "the Joints Engineer's tabulated drawing 111211 to 111214",
+    "111214": "the Joints Engineer's tabulated drawing 111211 to 111214",
+    "111104": "see its drawing", "111105": "see its drawing",
     "111601": "ISO 2768-m; critical hole: Ø13 +0.10/0 for the glide's M10 rivnut (HOLD with the nut), centred +-0.2; DXF 111601",
     "831002": "joints register H-08: thickness +-0.05",
 }
 
 # band assemblies that carry glides (one M10 glide nut each) or bought end caps
-BAND_ASSEMBLIES = ("110101", "110102", "110103", "110106")
+BAND_ASSEMBLIES = ("110101", "110102", "110103", "110104", "110106")
 
 # items not modelled in the CAD: (part number, name, name_vi, type, parent, qty rule, unit,
 # material, finish, mass each kg, mass_status, status, source, note)
