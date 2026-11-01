@@ -141,8 +141,9 @@ class D87(unittest.TestCase):
             self.assertLessEqual(bx[1], xir - 5.0 + 1e-9, name)
             self.assertGreaterEqual(bx[0], -xir + 5.0 - 1e-9, name)
 
-    def test_foot_on_the_mat(self):
-        self.assertAlmostEqual(b6("COLUMN FOOT PLATE")[4], 12.0)
+    def test_foot_on_the_floor_top(self):
+        # the column's foot stands on the skeleton's floor top: Z 0 since D-132 took the floor out (was Z 12 on the mat)
+        self.assertAlmostEqual(b6("COLUMN FOOT PLATE")[4], V["floor_top"])
 
     def test_studs_and_locks_on_the_ceiling_rivnuts(self):
         cv = CM.evaluate(CM.all_params())
