@@ -778,6 +778,28 @@ def overlap(a, b, tol=1e-6):
 
 # ---------------------------------------------------------------- flat pattern of the tray
 
+def rib_section():
+    """The rib's hat section in its own frame, as the build draws it: centre line X 0, the flanges' top at Z 0
+    (against the tray base's underside), the crown's underside at Z -gap_h; [(x, z) expressions], the corners in
+    order: 0 and 11 the left flange's free edge, 5 and 6 the right one's."""
+    c, f, t, h = "rib_crown / 2", "rib_fl", "tray_t", "gap_h"
+    return [("-(%s + %s)" % (c, f), "0 mm"), ("-(%s - %s)" % (c, t), "0 mm"), ("-(%s - %s)" % (c, t), "-(%s - %s)" % (h, t)),
+            ("(%s - %s)" % (c, t), "-(%s - %s)" % (h, t)), ("(%s - %s)" % (c, t), "0 mm"), ("(%s + %s)" % (c, f), "0 mm"),
+            ("(%s + %s)" % (c, f), "-%s" % t), ("(%s)" % c, "-%s" % t), ("(%s)" % c, "-(%s)" % h),
+            ("-(%s)" % c, "-(%s)" % h), ("-(%s)" % c, "-%s" % t), ("-(%s + %s)" % (c, f), "-%s" % t)]
+
+
+# the rib's four folds (real folds: the Lead's ruling 2026-11-01 on #335, the model, its STEP and its DXF agree): the
+# outside corners 1, 4, 8 and 9 of rib_section take bend_r + tray_t, the inside corners 10, 2, 3 and 7 bend_r; each
+# outside corner pairs with the inside one a sheet away on both axes (1-10, 9-2, 8-3, 4-7)
+RIB_FOLDS = [(1, "outside"), (4, "outside"), (8, "outside"), (9, "outside"),
+             (10, "inside"), (2, "inside"), (3, "inside"), (7, "inside")]
+
+
+def rib_fold_radius(side):
+    return "bend_r + tray_t" if side == "outside" else "bend_r"
+
+
 def tray_flat(vals, k=0.44):
     """Flat blank of the tray (mm) by the K-factor rule, for checking Fusion's flat
     pattern: outside sizes w x d, returns tray_h deep overall (two bends each), lips

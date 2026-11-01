@@ -659,6 +659,31 @@ class RibBlank(unittest.TestCase):
         self.assertAlmostEqual(got["bends"][0] + got["bends"][3], got["width"], places=6)   # symmetric
 
 
+class RibFolds(unittest.TestCase):
+    def test_folds_at_the_hat_corners(self):
+        """The rib's four folds (the Lead's ruling on #335): outside corners at bend_r + t, inside at bend_r = t, each
+        outside corner a sheet from its inside partner on both axes; the outside corners are convex, the inside ones
+        concave."""
+        pts = [(ev(x), ev(z)) for x, z in M.rib_section()]
+        t, r = VALS["tray_t"], VALS["bend_r"]
+        self.assertAlmostEqual(r, t)
+        sides = dict(M.RIB_FOLDS)
+        self.assertEqual(sorted(sides), [1, 2, 3, 4, 7, 8, 9, 10])
+        for o, i in ((1, 10), (9, 2), (8, 3), (4, 7)):
+            self.assertEqual((sides[o], sides[i]), ("outside", "inside"))
+            self.assertAlmostEqual(abs(pts[o][0] - pts[i][0]), t, msg=(o, i))
+            self.assertAlmostEqual(abs(pts[o][1] - pts[i][1]), t, msg=(o, i))
+        self.assertAlmostEqual(ev(M.rib_fold_radius("outside")), r + t)
+        self.assertAlmostEqual(ev(M.rib_fold_radius("inside")), r)
+        # convex (left turn, the outline runs counter-clockwise in x-z) or concave by the cross product at each corner
+        area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(pts, pts[1:] + pts[:1])) / 2
+        for k, side in M.RIB_FOLDS:
+            a, b, c = pts[k - 1], pts[k], pts[(k + 1) % len(pts)]
+            cross = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0])
+            convex = (cross > 0) == (area > 0)
+            self.assertEqual(convex, side == "outside", (k, side))
+
+
 class EditFollows(unittest.TestCase):
     def test_pod_width_change(self):
         """Change a skeleton parameter: the layout follows (cassette, frame, fill)."""

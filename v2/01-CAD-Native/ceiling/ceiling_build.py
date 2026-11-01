@@ -975,18 +975,45 @@ def build_tray(cass_occ_root, cass_comp, ctx):
     return occ, comp
 
 
+def fold_fillets(comp, body, name, sec, folds, ctx):
+    """Real folds on a sheet section extruded along Y (the Lead's ruling 2026-11-01 on #335: the inside radius is the
+    sheet, so the model, its STEP and its DXF agree): fillet the straight edge along Y through each fold's corner of
+    the section, the outside corners by bend_r + the sheet and the inside ones by bend_r (M.rib_fold_radius). The
+    section's sketch stays as it is, fully constrained; each corner must give exactly one edge."""
+    groups = {}
+    for idx, side in folds:
+        x, z = (ctx.ev(e) for e in sec[idx])
+        groups.setdefault(side, []).append((idx, x, z))
+    for side in ("outside", "inside"):
+        coll = adsk.core.ObjectCollection.create()
+        for idx, x, z in groups.get(side, []):
+            hits = []
+            for e in body.edges:
+                if e.geometry.objectType != adsk.core.Line3D.classType():
+                    continue
+                a, b = e.startVertex.geometry, e.endVertex.geometry
+                if abs(a.y - b.y) / MM < 1.0:
+                    continue                         # not along the extrusion
+                if all(abs(p.x / MM - x) < 1e-3 and abs(p.z / MM - z) < 1e-3 for p in (a, b)):
+                    hits.append(e)
+            if len(hits) != 1:
+                raise RuntimeError("%s: %d edges at fold corner %d (%.3f, %.3f), want 1" % (name, len(hits), idx, x, z))
+            coll.add(hits[0])
+        fi = comp.features.filletFeatures.createInput()
+        fi.edgeSetInputs.addConstantRadiusEdgeSet(coll, vi(M.rib_fold_radius(side)), False)
+        f = comp.features.filletFeatures.add(fi)
+        f.name = "BEND %s R - %s" % (side.upper(), name)
+
+
 def build_rib(cass_comp, ctx):
     """Hat-section rib in its own frame: centre line X = 0, from Y = 0 to rib_len,
     top flanges at Z = 0 (against the tray base underside), crown at Z = -gap_h."""
     occ, comp = new_comp(cass_comp, "rib", ctx)
-    c, f, t, h = "rib_crown / 2", "rib_fl", "tray_t", "gap_h"
-    pts = [("-(%s + %s)" % (c, f), "0 mm"), ("-(%s - %s)" % (c, t), "0 mm"), ("-(%s - %s)" % (c, t), "-(%s - %s)" % (h, t)),
-           ("(%s - %s)" % (c, t), "-(%s - %s)" % (h, t)), ("(%s - %s)" % (c, t), "0 mm"), ("(%s + %s)" % (c, f), "0 mm"),
-           ("(%s + %s)" % (c, f), "-%s" % t), ("(%s)" % c, "-%s" % t), ("(%s)" % c, "-(%s)" % h),
-           ("-(%s)" % c, "-(%s)" % h), ("-(%s)" % c, "-%s" % t), ("-(%s + %s)" % (c, f), "-%s" % t)]
+    pts = M.rib_section()
     sk = poly_xz(comp, "SECTION - RIB HAT", pts, ctx)
     fe = extrude_y(comp, sk, "0 mm", "cs_d - 2 * tray_t - 2 * rib_end", "RIB")
     fe.bodies.item(0).name = "RIB"
+    fold_fillets(comp, fe.bodies.item(0), "RIB", pts, M.RIB_FOLDS, ctx)
     set_material(comp, ctx, "steel")
     return occ, comp
 
