@@ -1,5 +1,5 @@
 {
- "rev": "e8ae80b",
+ "rev": "75b3f86",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -558,18 +558,6 @@
   },
   {
    "check": "C05",
-   "rule": "letter-height",
-   "subject": "110401",
-   "severity": "major",
-   "message": "110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: 2 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.52 mm: '110401_P01_BASE-FLOOR-PANEL-AS' 1.78 mm; '110401  BASE - FLOOR PANEL ASS' 1.52 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|letter-height|110401"
-  },
-  {
-   "check": "C05",
    "rule": "hidden-lines",
    "subject": "110401",
    "severity": "minor",
@@ -615,18 +603,6 @@
    "owner": "Joints Engineer",
    "evidence": {},
    "key": "C05|dimension-twice|111211"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "111401",
-   "severity": "major",
-   "message": "111401 BASE - FLOOR PANEL - F1 drawing 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: 1 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.52 mm: '111401  BASE - FLOOR PANEL - F' 1.52 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|letter-height|111401"
   },
   {
    "check": "C05",
@@ -1749,7 +1725,7 @@
    "kg": 8.641,
    "dims": [
     1200.61,
-    1118.61,
+    1127.0,
     46.0
    ],
    "ships_as": "upright",
@@ -1761,8 +1737,8 @@
    "kg": 11.529,
    "dims": [
     1200.61,
-    1118.61,
-    84.0
+    1127.0,
+    88.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); calculation (part CAD); fill provisional"
@@ -1773,8 +1749,8 @@
    "kg": 11.163,
    "dims": [
     1492.74,
-    1142.74,
-    46.0
+    1151.0,
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1785,8 +1761,8 @@
    "kg": 11.163,
    "dims": [
     1492.74,
-    1142.74,
-    46.0
+    1151.0,
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1822,7 +1798,7 @@
    "dims": [
     1492.74,
     1142.74,
-    46.0
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1834,7 +1810,7 @@
    "dims": [
     1492.74,
     1142.74,
-    46.0
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1870,7 +1846,7 @@
    "dims": [
     1445.0,
     1142.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1882,7 +1858,7 @@
    "dims": [
     1445.0,
     1092.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1894,7 +1870,7 @@
    "dims": [
     1445.0,
     1142.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1906,7 +1882,7 @@
    "dims": [
     1445.0,
     1092.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1918,7 +1894,7 @@
    "dims": [
     1166.0,
     1118.61,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1930,7 +1906,7 @@
    "dims": [
     1166.0,
     1118.61,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1942,7 +1918,7 @@
    "dims": [
     1166.0,
     1116.87,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation; lips confirmed"
@@ -1954,7 +1930,7 @@
    "dims": [
     1166.0,
     1116.87,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation; lips confirmed"
@@ -1964,7 +1940,7 @@
    "name": "FRONT - FIXED GLASS UNIT",
    "kg": 28.743,
    "dims": [
-    2033.0,
+    2034.0,
     1031.0,
     12.0
    ],
@@ -1976,8 +1952,8 @@
    "name": "FRONT - DOOR UNIT",
    "kg": 48.59,
    "dims": [
-    2089.0,
-    1175.0,
+    2096.0,
+    1177.0,
     149.0
    ],
    "ships_as": "glass",
@@ -1989,8 +1965,8 @@
    "kg": 18.864,
    "dims": [
     2290.0,
-    1016.0,
-    205.0
+    1020.0,
+    216.0
    ],
    "ships_as": "long",
    "status": "calculation (CAD); calculation (CAD); magnetic seal HOLD"
@@ -2001,7 +1977,7 @@
    "kg": 3.173,
    "dims": [
     2420.0,
-    110.0,
+    118.0,
     40.0
    ],
    "ships_as": "long",
@@ -2010,11 +1986,11 @@
   {
    "id": "2-05",
    "name": "BASE - BAND ASSY - SIDE - LH",
-   "kg": 1.999,
+   "kg": 2.413,
    "dims": [
     1517.0,
-    110.0,
-    40.0
+    118.0,
+    48.0
    ],
    "ships_as": "long",
    "status": "assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm)"
@@ -2022,11 +1998,11 @@
   {
    "id": "2-06",
    "name": "BASE - BAND ASSY - SIDE - RH",
-   "kg": 1.999,
+   "kg": 2.413,
    "dims": [
     1517.0,
-    110.0,
-    40.0
+    118.0,
+    48.0
    ],
    "ships_as": "long",
    "status": "assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm)"
@@ -2037,7 +2013,7 @@
    "kg": 1.117,
    "dims": [
     729.0,
-    110.0,
+    118.0,
     40.0
    ],
    "ships_as": "long",
@@ -2060,9 +2036,9 @@
    "name": "FRONT - DECOR BLOCK ASSY - DL",
    "kg": 12.3,
    "dims": [
-    2290.0,
-    278.0,
-    205.0
+    2292.0,
+    308.0,
+    199.0
    ],
    "ships_as": "long",
    "status": "calculation (CAD)"
@@ -2096,9 +2072,9 @@
    "name": "FRONT - DECOR BLOCK ASSY - DT",
    "kg": 7.913,
    "dims": [
-    1697.0,
-    280.0,
-    205.0
+    1699.0,
+    306.0,
+    203.0
    ],
    "ships_as": "long",
    "status": "calculation (CAD); calculation (CAD); magnetic seal HOLD"
@@ -2130,7 +2106,7 @@
   {
    "id": "2-15",
    "name": "BASE - SMALL PARTS CARTON",
-   "kg": 1.968,
+   "kg": 1.14,
    "dims": [
     600.0,
     400.0,
@@ -2158,7 +2134,7 @@
    "dims": [
     1845.0,
     460.0,
-    155.0
+    199.0
    ],
    "ships_as": "long",
    "status": "assumption; calculation"
