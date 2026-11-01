@@ -13,7 +13,9 @@ the next one runs; the script never raises, and the document that was active is 
 
 With --arg post=1 --arg out_dir=ABS (a folder outside the repo), each built design also gets its CAD report
 (report_wall_doc.py) and a STEP written there, so the parts list and the offline STEP checks can run on them; a
-build whose only failure is its end checks (a clash, say) still gets them, marked so. Nothing goes to the repo.
+build whose only failure is its end checks (a clash, say) still gets them, marked so. Panel specs (or the parts
+named in --arg edit=panel,frame) also get the edit test (edit_test_wall.py) on an .f3d copy there. Nothing goes to
+the repo.
 
 probe:import:PN (PN one of the Joints Engineer's STEPs in v2/03-Manufacturing/joints, say 831008) instead imports
 that STEP into a blank unsaved design the way the builders do (into a sub-component, then renamed, given a
@@ -137,6 +139,23 @@ def dry_post(app, design, spec, note=""):
     ok = em.execute(em.createSTEPExportOptions(step, root))
     print("DRY|post %s%s: report %s.json, STEP %s (%s, %d bytes)" % (
         spec, note, pn, os.path.basename(step), ok, os.path.getsize(step) if os.path.isfile(step) else 0))
+    if spec.split(":")[1] not in ARGS.get("edit", "panel").split(","):
+        return
+    # the edit test on a copy, as post_wall_doc.py runs it: the .f3d of this unsaved design (link=parse, so it holds
+    # no outside reference), opened as its own unsaved document by edit_test_wall.py and closed without saving
+    f3d = os.path.join(out_dir, "%s_P01_DRY.f3d" % pn)
+    if not em.execute(em.createFusionArchiveExportOptions(f3d, root)):
+        raise RuntimeError("the .f3d export for the edit test failed")
+    path = os.path.join(ARGS["repo_root"], "v2/01-CAD-Native/wall/edit_test_wall.py")
+    rel = lambda q: os.path.relpath(q, ARGS["repo_root"])          # noqa: E731  (the test joins repo_root + "/" + f3d)
+    ns = {"__name__": "__fusion_edit__", "__file__": path,
+          "SCRIPT_ARGS": {"repo_root": ARGS["repo_root"], "f3d": rel(f3d),
+                          "out": rel(os.path.join(out_dir, "edit-%s.md" % pn))}}
+    with open(path, "r", encoding="utf-8") as fh:
+        exec(compile(fh.read(), path, "exec"), ns)
+    ns["run"](None)
+    design.parentDocument.activate()
+    print("DRY|post %s: edit test written to edit-%s.md" % (spec, pn))
 
 
 def run(_context):

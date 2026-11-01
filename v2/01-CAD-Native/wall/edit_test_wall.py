@@ -58,9 +58,22 @@ def snapshot(design):
 
 
 def health(design):
+    """(timeline items, the ones not healthy with Fusion's messages, loose sketches). A timeline group is only a
+    container (a STEP import's group reports "unknown": the dry run's probe, 2026-11-01), so it is judged by its own
+    items, as the builders judge it (wall_side_panel.py run)."""
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
     tl = design.timeline
-    bad = ["%s (%s)" % (tl.item(i).name, tl.item(i).errorOrWarningMessage) for i in range(tl.count)
-           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    bad = []
+    for i in range(tl.count):
+        it = tl.item(i)
+        if it.healthState == healthy:
+            continue
+        if it.isGroup:
+            g = adsk.fusion.TimelineGroup.cast(it)
+            bad += ["%s / %s (%s)" % (it.name, g.item(j).name, g.item(j).errorOrWarningMessage)
+                    for j in range(g.count) if g.item(j).healthState != healthy]
+            continue
+        bad.append("%s (%s)" % (it.name, it.errorOrWarningMessage))
     loose = [sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
     return tl.count, bad, loose
 
