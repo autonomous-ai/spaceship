@@ -38,11 +38,12 @@ TREE = [
     ("column", "air", 1, "D-60, D-61; PM rulings 2026-11-01 (5 mm off the lining, foot on the mat, hooks on DR)"),
     ("col_foot", "column", 1, "PM ruling 2026-11-01 (BASE's two spigots)"),
     ("col_front", "column", 1, "D-61; air report 7e"), ("col_left", "column", 1, "D-61; air report 7e"),
-    ("col_ang", "column", 1, "air report 7e: a set of 3 corner angles, two front 9 x 20 x 2 and the back-left 20 x 20 x 2 with the two keyholes"),
+    ("col_ang", "column", 2, "air report 7e: the two front corner angles 9 x 20 x 2, one part (the right one is the left one turned)"),
+    ("col_ang_b", "column", 1, "air report 7e: the back-left corner angle 20 x 20 x 2 with the two keyholes onto DR's studs"),
     ("col_side_lo", "column", 1, "PM ruling 2026-11-01 (5 mm off the lining)"),
     ("col_side_hi", "column", 1, "PM ruling 2026-11-01 (5 mm off the lining)"),
-    ("col_fill", "column", 1, "air report 7e (2 pieces, see the flat cut list)"),
-    ("kick", "column", 1, "D-61 (2 pieces: front and left)"),
+    ("col_fill", "column", 1, "air report 7e: the front piece"), ("col_fill_l", "column", 1, "air report 7e: the left piece"),
+    ("kick", "column", 1, "D-61: the front piece"), ("kick_l", "column", 1, "D-61: the left piece"),
     ("hub", "column", 1, "D-61, D-70: 180 x 180 zone for the in-house sensor hub"),
     ("cart", "air", 2, "D-61: one cartridge for both paths, ships on its own, slides in on site"),
     ("casing", "cart", 1, "D-61: 2 mm aluminium casing"), ("layer", "cart", 3, "D-61: three 50 mm layers"),
@@ -52,14 +53,20 @@ TREE = [
     ("sof_front", "soffit", 1, "D-61"), ("sof_rail_d", "soffit", 1, "D-87 hooks, PM ruling 2026-11-01"),
     ("sof_rail_r", "soffit", 1, "D-87 hooks, PM ruling 2026-11-01"), ("sof_end", "soffit", 1, "D-87"),
     ("sof_door", "soffit", 1, "PM ruling 2026-11-01 (HOLD-18): carries the door-side rail on the studs' heads"),
-    ("sof_fill", "soffit", 1, "air report 7e (2 pieces, see the flat cut list)"),
+    ("sof_fill", "soffit", 1, "air report 7e: the piece under the cartridge"),
+    ("sof_fill_f", "soffit", 1, "air report 7e: the front piece"),
     ("egrille", "soffit", 1, "air report 7e: exhaust grille 265 x 336"),
     ("stud", "soffit", 4, "PM ruling 2026-11-01: 4 hanger studs into the ceiling's rivnuts (number from the joints register, D-63)"),
     ("hinge", "soffit", 4, "D-87: hinged underside, 2 per section"), ("latch", "soffit", 4, "D-87: 2 push latches per section"),
     ("ebox", "soffit", 1, "D-87: fitted in the soffit at the factory"),
     ("box", "ebox", 1, "air report 7e: 294 x 314 x 173; 3 mm (D-124)"), ("fan", "ebox", 2, "PM ruling 2026-11-01: 618401 for all four fans"),
+    ("blk_e", "ebox", 1, "D-121: the exhaust fans hang under it at the box's top, sealed to the casing"),
+    ("lin_es", "ebox", 2, "D-121: the two long walls, full height under the fans"),
+    ("lin_ee", "ebox", 1, "D-121: the far end, up to 50 under the fans"),
     ("sbox", "air", 1, "D-62, D-87: joined with the intake riser"),
     ("box_s", "sbox", 1, "air report 7e: 300 x 155 x 300; 3 mm (D-124)"),
+    ("blk_s", "sbox", 1, "D-121: the supply fans stand on it, sealed to the casing"),
+    ("lin_s", "sbox", 2, "D-121: the two end walls, from 70 above the fans to the box's open top"),
     ("fan_sup", "sbox", 2, "PM ruling 2026-11-01: the two supply fans belong to AIR's supply box only (FRONT drops them from DR)", "fan"),
     ("riser", "sbox", 1, "D-61: 1 mm steel"),
     ("trans", "sbox", 1, "air report 7e (opening into the column top)"), ("rtrans", "sbox", 1, "air report 7e"),
@@ -75,7 +82,11 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "sof_rail_r": "mill finish (hidden, D-79)", "sof_end": "mill finish (hidden, D-79)",
           "sof_door": "mill finish (hidden, D-79)",
           "casing": "mill finish (hidden, D-79)", "box": "mill finish (hidden, D-79)", "box_s": "mill finish (hidden, D-79)",
-          "riser": "galvanised", "sleeve": "galvanised", "layer": "as supplied (the maker's facing)"}
+          "riser": "galvanised", "sleeve": "galvanised", "layer": "as supplied (the maker's facing)",
+          "col_ang_b": "mill finish (hidden, D-79)", "kick_l": "powder coat to match the felt (HOLD)",
+          "blk_e": "mill finish (hidden, D-79)", "blk_s": "mill finish (hidden, D-79)",
+          "lin_es": "as supplied (the maker's facing)", "lin_ee": "as supplied (the maker's facing)",
+          "lin_s": "as supplied (the maker's facing)"}
 PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
            "sof_rail_d": "laser cut flat bar, forks and holes", "sof_rail_r": "laser cut flat bar, forks", "sof_end": "laser cut",
            "col_front": "CNC routed ACP, felt laminated", "col_left": "CNC routed ACP, felt laminated",
@@ -85,7 +96,13 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "casing": "sheet metal: cut, folded into a tube (blank HOLD: the factory's bend table)",
            "box": "sheet metal: cut, folded, riveted (blank HOLD)", "box_s": "sheet metal: cut, folded, riveted (blank HOLD)",
            "riser": "sheet metal: cut, folded into a tube (blank HOLD)", "sleeve": "sheet metal: cut, folded into a tube (blank HOLD)",
-           "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut"}
+           "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut",
+           "col_ang_b": "extruded angle, cut, keyholes milled", "kick_l": "perforated sheet, cut",
+           "col_fill_l": "knife cut", "sof_fill_f": "knife cut",
+           "blk_e": "laser cut, two fan bores; sealed to the casing (sealant HOLD)",
+           "blk_s": "laser cut, two fan bores; sealed to the casing (sealant HOLD)",
+           "lin_es": "knife cut; bonded to the casing (adhesive HOLD)", "lin_ee": "knife cut; bonded to the casing (adhesive HOLD)",
+           "lin_s": "knife cut; bonded to the casing (adhesive HOLD)"}
 HOLD_MASS = {"hub": (0.0, "assumption: space only (in-house module, its mass is ELECTRICAL's)"),
              "trans": (1.89, "calculation: 0.35 m2 of 2 mm aluminium, the air report's sizing (D-60, 7f), until the AIR "
                        "follow-up designs it into FRONT's reserved space"),
@@ -167,16 +184,20 @@ def write_dxfs(v):
 def flat_cut_list(v):
     L = boxes(v)
     rows = []
-    for key, names in (("col_fill", ["COLUMN FILL FRONT", "COLUMN FILL LEFT"]),
-                       ("sof_fill", ["SOFFIT FILL UNDER", "SOFFIT FILL FRONT"])):
+    for key, names in (("col_fill", ["COLUMN FILL FRONT"]), ("col_fill_l", ["COLUMN FILL LEFT"]),
+                       ("sof_fill", ["SOFFIT FILL UNDER"]), ("sof_fill_f", ["SOFFIT FILL FRONT"]),
+                       ("lin_es", ["FAN BOX LINING EXHAUST SIDE 1"]), ("lin_ee", ["FAN BOX LINING EXHAUST FAR END"]),
+                       ("lin_s", ["FAN BOX LINING SUPPLY END 1"])):
         pn, name, vn, _k, mat = A.PARTS[key]
         for n in names:
             b = L[n]
             d = sorted((b[1] - b[0], b[3] - b[2], b[5] - b[4]), reverse=True)
+            lining = key.startswith("lin_")
             rows.append({"part_number": pn, "piece": n, "name": name, "name_vi": vn, "material": A.MATERIALS[mat][0],
-                         "size_mm": "%.1f x %.1f x %.1f" % tuple(d), "qty_per_pod": 1,
+                         "size_mm": "%.1f x %.1f x %.1f" % tuple(d), "qty_per_pod": 2 if key in ("lin_es", "lin_s") else 1,
                          "tolerance": "knife cut +/-2 (assumption)", "drawing": "none (D-89: plain rectangle)",
-                         "note": "openings cut on site to the hub zone / latches: see the AIR drawing" if key else ""})
+                         "note": ("D-121: bonded to the fan box casing's wall (adhesive HOLD)" if lining else
+                                  "openings cut on site to the hub zone / latches: see the AIR drawing")})
     pn, name, vn, _k, mat = A.PARTS["layer"]
     rows.append({"part_number": pn, "piece": "LAYER 50", "name": name, "name_vi": vn, "material": A.MATERIALS[mat][0],
                  "size_mm": "%.1f x %.1f x %.1f" % (v["cart_l"], v["cart_w"] - 2 * v["cart_t"], v["lay_t"]),
@@ -185,9 +206,9 @@ def flat_cut_list(v):
     return rows
 
 
-FLAT = {"col_foot", "col_side_lo", "col_side_hi", "sof_rail_d", "sof_rail_r", "sof_end", "sof_door", "kick", "egrille",
-        "rgrille"}
-SOFT = {"col_fill", "sof_fill", "layer"}
+FLAT = {"col_foot", "col_side_lo", "col_side_hi", "sof_rail_d", "sof_rail_r", "sof_end", "sof_door", "kick", "kick_l",
+        "egrille", "rgrille", "blk_e", "blk_s"}
+SOFT = {"col_fill", "col_fill_l", "sof_fill", "sof_fill_f", "layer", "lin_es", "lin_ee", "lin_s"}
 MAKER = {"fan": ("Noctua", "NF-A14 industrialPPC-3000 PWM")}
 
 

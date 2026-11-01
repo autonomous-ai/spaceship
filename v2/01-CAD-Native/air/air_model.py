@@ -138,9 +138,12 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "ebox": ("610402", "AIR - EXHAUST FAN BOX", "Hộp quạt thải (cụm)", "HS", None),
     "col_front": ("611101", "AIR - COLUMN FACE - FRONT", "Cột gió - mặt trước (ACP + nỉ)", "MP", "face"),
     "col_left": ("611102", "AIR - COLUMN FACE - LEFT", "Cột gió - mặt trái (ACP + nỉ)", "MP", "face"),
-    "col_ang": ("611103", "AIR - COLUMN CORNER ANGLE", "Cột gió - thanh góc nhôm", "MP", "alx"),
-    "col_fill": ("611104", "AIR - COLUMN FILL", "Cột gió - bông", "MP", "pfill"),
-    "kick": ("611105", "AIR - KICK GRILLE", "Lưới gió chân cột", "MP", "perf60"),
+    "col_ang": ("611103", "AIR - COLUMN CORNER ANGLE - FRONT", "Cột gió - thanh góc nhôm phía trước", "MP", "alx"),
+    "col_ang_b": ("611109", "AIR - COLUMN CORNER ANGLE - BACK", "Cột gió - thanh góc nhôm phía sau", "MP", "alx"),
+    "col_fill": ("611104", "AIR - COLUMN FILL - FRONT", "Cột gió - bông - tấm trước", "MP", "pfill"),
+    "col_fill_l": ("611110", "AIR - COLUMN FILL - LEFT", "Cột gió - bông - tấm trái", "MP", "pfill"),
+    "kick": ("611105", "AIR - KICK GRILLE - FRONT", "Lưới gió chân cột - tấm trước", "MP", "perf60"),
+    "kick_l": ("611111", "AIR - KICK GRILLE - LEFT", "Lưới gió chân cột - tấm trái", "MP", "perf60"),
     "col_foot": ("611106", "AIR - COLUMN FOOT PLATE", "Cột gió - tấm chân", "MP", "al"),
     "col_side_lo": ("611107", "AIR - COLUMN PLENUM SIDE PLATE - LOW", "Cột gió - tấm hông buồng dưới", "MP", "al"),
     "col_side_hi": ("611108", "AIR - COLUMN PLENUM SIDE PLATE - HIGH", "Cột gió - tấm hông buồng trên", "MP", "al"),
@@ -153,11 +156,17 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "sof_door": ("611210", "AIR - SOFFIT DOOR-SIDE PLATE", "Hộp gió - tấm phía cửa", "MP", "al"),
     "sof_front": ("611202", "AIR - SOFFIT FACE - FRONT", "Hộp gió - mặt trước", "MP", "face"),
     "sof_fill": ("611203", "AIR - SOFFIT FILL", "Hộp gió - bông", "MP", "pfill"),
+    "sof_fill_f": ("611211", "AIR - SOFFIT FILL - FRONT", "Hộp gió - bông - tấm trước", "MP", "pfill"),
     "egrille": ("611204", "AIR - EXHAUST GRILLE", "Lưới gió thải", "MP", "perf40"),
     "casing": ("611301", "AIR - CARTRIDGE CASING", "Vỏ ống tiêu âm nhôm 2 mm", "MP", "al"),
     "layer": ("611302", "AIR - CARTRIDGE LAYER 50", "Lớp tiêu âm 50 mm", "MP", "pyro"),
     "box": ("611401", "AIR - FAN BOX CASING - EXHAUST", "Vỏ hộp quạt thải nhôm 3 mm", "MP", "al"),
     "box_s": ("611402", "AIR - FAN BOX CASING - SUPPLY", "Vỏ hộp quạt cấp nhôm 3 mm", "MP", "al"),
+    "blk_e": ("611403", "AIR - FAN BOX BULKHEAD - EXHAUST", "Hộp quạt thải - vách ngăn nhôm 2 mm", "MP", "al"),
+    "blk_s": ("611404", "AIR - FAN BOX BULKHEAD - SUPPLY", "Hộp quạt cấp - vách ngăn", "MP", "al"),
+    "lin_es": ("611405", "AIR - FAN BOX LINING - EXHAUST SIDE", "Hộp quạt thải - lớp lót bên", "MP", "pyro"),
+    "lin_ee": ("611406", "AIR - FAN BOX LINING - EXHAUST FAR END", "Hộp quạt thải - lớp lót đầu xa", "MP", "pyro"),
+    "lin_s": ("611407", "AIR - FAN BOX LINING - SUPPLY END", "Hộp quạt cấp - lớp lót đầu", "MP", "pyro"),
     "riser": ("611501", "AIR - INTAKE RISER", "Ống hút gió đứng", "MP", "steel"),
     "sleeve": ("611601", "AIR - ROOF SLEEVE", "Ống thải qua mái", "MP", "steel"),
     "rgrille": ("611602", "AIR - ROOF GRILLE", "Lưới thải mái", "MP", "perf50"),
@@ -292,13 +301,14 @@ def layout():
     b.append(("col_left", "COLUMN FACE LEFT", box("col_x0", "col_x0 + face_t", YD, "%s - face_t" % YFACE, zg1, ZS0)))
     zg0 = "%s + grille_z" % ZCB
     b.append(("kick", "KICK GRILLE FRONT", box("col_x0", XR, "%s - grille_t" % YFACE, YFACE, zg0, zg1)))
-    b.append(("kick", "KICK GRILLE LEFT", box("col_x0", "col_x0 + grille_t", "%s - grille_t - grille_l" % YFACE,
+    b.append(("kick_l", "KICK GRILLE LEFT", box("col_x0", "col_x0 + grille_t", "%s - grille_t - grille_l" % YFACE,
                                                   "%s - grille_t" % YFACE, zg0, zg1)))
     # corner angles, full height inside the faces (the back-right corner: the plenum plates)
     for name, x0, xw, y0 in (("FL", "col_x0 + face_t", "ang_f", "%s - face_t - ang_w" % YFACE),
                              ("FR", "%s - ang_f" % XR, "ang_f", "%s - face_t - ang_w" % YFACE),
                              ("BL", "col_x0 + face_t", "ang_w", YD)):
-        b.append(("col_ang", "COLUMN ANGLE %s" % name, box(x0, "%s + %s" % (x0, xw), y0, "%s + ang_w" % y0, ZCB, ZS0)))
+        b.append(("col_ang_b" if name == "BL" else "col_ang", "COLUMN ANGLE %s" % name,
+                  box(x0, "%s + %s" % (x0, xw), y0, "%s + ang_w" % y0, ZCB, ZS0)))
     # supply cartridge: its right side on the column's limit, 5 off the floating lining; the plenum
     # plates sit only above and below it (air report #110: 27 of fill at the left face, D-61)
     cx1 = XR
@@ -313,7 +323,7 @@ def layout():
     b.append(("col_side_hi", "COLUMN PLENUM PLATE HIGH", box("%s - plate_t" % XR, XR, YD, py1, cz1, ZS0)))
     b.append(("col_fill", "COLUMN FILL FRONT", box("col_x0 + face_t + ang_f", "%s - ang_f" % XR, cy1,
                                                      "%s - face_t" % YFACE, cz0, cz1)))
-    b.append(("col_fill", "COLUMN FILL LEFT", box("col_x0 + face_t", cx0, "%s + ang_w" % YD, cy1, cz0, cz1)))
+    b.append(("col_fill_l", "COLUMN FILL LEFT", box("col_x0 + face_t", cx0, "%s + ang_w" % YD, cy1, cz0, cz1)))
     hx = "(col_x0 + face_t + ang_f + %s - ang_f) / 2" % XR     # centred between the front angles' legs
     b.append(("hub", "SENSOR HUB ZONE", box("%s - hub_w / 2" % hx, "%s + hub_w / 2" % hx, "%s - hub_t" % YFACE,
                                              YFACE, "hub_z - hub_w / 2", "hub_z + hub_w / 2")))
@@ -336,7 +346,7 @@ def layout():
     # sections' quarter points fall (a latch cut that missed the fill failed at pod_w 2600)
     b.append(("sof_fill", "SOFFIT FILL UNDER", box("%s - cart_l" % ex1, XR, cy0, "%s - face_t - hl_h" % YFACE,
                                                     "%s + face_t" % ZS0, ez0)))
-    b.append(("sof_fill", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE, ez0, ZBT)))
+    b.append(("sof_fill_f", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE, ez0, ZBT)))
     b.append(("egrille", "EXHAUST GRILLE", box("%s + eg_x0" % XIL, "%s + eg_x0 + eg_l" % XIL, "%s + face_t" % YW,
                                                 "%s + face_t + eg_w" % YW, ZS0, "%s + grille_t" % ZS0)))
     # hanging: 4 studs (head under the rail, shank up through the fork to the ceiling frame),
@@ -364,6 +374,7 @@ def layout():
     # supply fan box joined with the intake riser (D-87), the transitions, the roof sleeve and grille
     sy0 = "%s + sb_yf" % YF
     b.append(("box_s", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
+    b += fan_box_inner()
     b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", "op_x0 + (%s - op_x0)" % XR, "%s + sb_d" % sy0, YD,
                                                  "op_z0", "op_z0 + op_h")))
     b.append(("riser", "INTAKE RISER", box("rs_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z0", "rs_z1")))
@@ -403,6 +414,11 @@ def features():
         out.append((rail, "zcircle", (x, y, zr0, zr1, "key_w")))
     for x in ("-lock_x", "-lock_x + lock_dx"):
         out.append(("SOFFIT RAIL DOOR", "zcircle", (x, "%s + tube_w / 2" % YW, zr0, zr1, "6.6 mm")))
+    # D-121: a fan bore in each bulkhead over each fan (the exhaust fans hang under theirs, the supply fans stand on theirs)
+    for name, x, y, z in fan_points():
+        tag = "EXHAUST" if name.startswith("EXHAUST") else "SUPPLY"
+        z0, z1 = ("%s + fan_t" % z, "%s + fan_t + blk_t" % z) if tag == "EXHAUST" else ("%s - blk_t" % z, z)
+        out.append(("FAN BOX BULKHEAD %s" % tag, "zcircle", (x, y, z0, z1, "fan_bore")))
     return out
 
 
@@ -421,6 +437,34 @@ def cutouts():
             out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
                                               "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
     return out
+
+
+def fan_box_inner():
+    """D-121 (the Air Engineer's layout, PM ruling): each fan box's 2 mm bulkhead and its 50 mm linings, inside the
+    3 mm casing. Exhaust: the bulkhead closes the box's open top and the fans hang under it, blowing straight into
+    the roof sleeve; the two long walls (Y) are lined full height under the fans, in line with the cartridge's outer
+    layers, so the passages stay open and the fans keep about 35 mm clear; the far end (X) is lined up to e_lin_gap
+    under the fans. Supply: the fans stand on the bulkhead, and only the two end walls (X) are lined, from s_lin_gap
+    above the fans to the box's open top. [(key, name, box)]"""
+    ex0, ex1 = "%s - fb_w" % XR, "%s - fbox_t" % XR
+    ey0, ey1 = "%s + clr + fbox_t" % YD, "%s + clr + cart_d - fbox_t" % YD
+    ez0 = "%s + face_t + sof_fill_t + fbox_t" % ZS0
+    etop = "%s + face_t + sof_fill_t + cart_w" % ZS0
+    efan = "%s - blk_t - fan_t" % etop
+    sx0, sx1 = "sb_x0 + fbox_t", "sb_x0 + sb_w - fbox_t"
+    sy0, sy1 = "%s + sb_yf + fbox_t" % YF, "%s + sb_yf + sb_d - fbox_t" % YF
+    sfan = "sb_z0 + lin_t"
+    stop = "sb_z0 + sb_h"
+    return [
+        ("blk_e", "FAN BOX BULKHEAD EXHAUST", box(ex0, ex1, ey0, ey1, "%s - blk_t" % etop, etop)),
+        ("lin_es", "FAN BOX LINING EXHAUST SIDE 1", box(ex0, ex1, ey0, "%s + lin_t" % ey0, ez0, efan)),
+        ("lin_es", "FAN BOX LINING EXHAUST SIDE 2", box(ex0, ex1, "%s - lin_t" % ey1, ey1, ez0, efan)),
+        ("lin_ee", "FAN BOX LINING EXHAUST FAR END", box("%s - lin_t" % ex1, ex1, "%s + lin_t" % ey0, "%s - lin_t" % ey1,
+                                                        ez0, "%s - e_lin_gap" % efan)),
+        ("blk_s", "FAN BOX BULKHEAD SUPPLY", box(sx0, sx1, sy0, sy1, "%s - blk_t" % sfan, sfan)),
+        ("lin_s", "FAN BOX LINING SUPPLY END 1", box(sx0, "%s + lin_t" % sx0, sy0, sy1, "%s + fan_t + s_lin_gap" % sfan, stop)),
+        ("lin_s", "FAN BOX LINING SUPPLY END 2", box("%s - lin_t" % sx1, sx1, sy0, sy1, "%s + fan_t + s_lin_gap" % sfan, stop)),
+    ]
 
 
 def fan_points():

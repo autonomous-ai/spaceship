@@ -74,6 +74,8 @@ class Fits(unittest.TestCase):
         # the stud and lock shanks pass through the rails' forks and holes (cut features)
         cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
         cut |= {("SOFFIT FACE FRONT", n) for n in LAY if n.startswith("STUD") and n.endswith("ROOM HEAD")}   # head pockets
+        # the casings are hollow: their bulkheads and linings sit inside (D-121; FanBoxInside checks them)
+        cut |= {("%s FAN BOX" % t, n) for t in ("EXHAUST", "SUPPLY") for _k, n, _b in A.fan_box_inner() if t in n}
         names = list(LAY)
         for i in range(len(names)):
             for j in range(i + 1, len(names)):
@@ -132,6 +134,64 @@ class Fits(unittest.TestCase):
                 self.assertAlmostEqual(cz + V["fan_t"], bx[5] - V["blk_t"], msg=name)
             else:
                 self.assertLessEqual(cz + V["fan_t"], bx[5] - V["fbox_t"] + 1e-9, name)
+
+
+class FanBoxInside(unittest.TestCase):
+    """D-121 (the Air Engineer's layout, PM ruling 2026-11-01) inside the 3 mm casings: the bulkheads and the linings
+    stay inside each casing's walls, clear of the fans and of each other; the exhaust fans keep about 35 mm to the
+    side linings; the lined areas are the Air Engineer's (0.103 and 0.046 m2)."""
+
+    def inner(self, tag):
+        return [(n, b6(n)) for _k, n, _b in A.fan_box_inner() if tag in n]
+
+    def test_inside_the_walls(self):
+        for tag, casing in (("EXHAUST", "EXHAUST FAN BOX"), ("SUPPLY", "SUPPLY FAN BOX")):
+            c, t = b6(casing), V["fbox_t"]
+            opens = dict(A.FAN_BOX_OPEN[casing])
+            for name, b in self.inner(tag):
+                for axis, lo, hi in (("x", 0, 1), ("y", 2, 3), ("z", 4, 5)):
+                    wall_lo = 0.0 if opens.get(axis) == -1 else t       # an open face has no wall to stay inside
+                    wall_hi = 0.0 if opens.get(axis) == 1 else t
+                    self.assertGreaterEqual(b[lo], c[lo] + wall_lo - 1e-9, "%s %s" % (name, axis))
+                    self.assertLessEqual(b[hi], c[hi] - wall_hi + 1e-9, "%s %s" % (name, axis))
+
+    def test_clear_of_the_fans_and_each_other(self):
+        fans = []
+        for name, x, y, z in A.fan_points():
+            cx, cy, cz = A.ev(V, x), A.ev(V, y), A.ev(V, z)
+            h = V["fan_s"] / 2
+            fans.append((name, (cx - h, cx + h, cy - h, cy + h, cz, cz + V["fan_t"])))
+        parts = self.inner("EXHAUST") + self.inner("SUPPLY")
+        for i, (a, ba) in enumerate(parts):
+            for name, bf in fans:
+                self.assertGreaterEqual(gap(ba, bf), -1e-9, "%s overlaps %s" % (a, name))
+            for b, bb in parts[i + 1:]:
+                self.assertGreaterEqual(gap(ba, bb), -1e-9, "%s overlaps %s" % (a, b))
+        side = [b for n, b in parts if "EXHAUST SIDE" in n]
+        for name, bf in fans:
+            if name.startswith("EXHAUST"):
+                clear = min(bf[2] - side[0][3], side[1][2] - bf[3])
+                self.assertAlmostEqual(clear, 34.0, delta=1.5, msg=name)
+
+    def test_lined_areas(self):
+        def wall_area(b, normal):
+            d = (b[1] - b[0], b[3] - b[2], b[5] - b[4])
+            return {"x": d[1] * d[2], "y": d[0] * d[2]}[normal] * 1e-6
+        e = sum(wall_area(b, "y" if "SIDE" in n else "x") for n, b in self.inner("EXHAUST") if "LINING" in n)
+        s_ = sum(wall_area(b, "x") for n, b in self.inner("SUPPLY") if "LINING" in n)
+        self.assertAlmostEqual(e, 0.103, delta=0.003)
+        self.assertAlmostEqual(s_, 0.046, delta=0.002)
+
+    def test_bores_on_the_fans(self):
+        bores = [(n, a) for n, kind, a in A.features() if n.startswith("FAN BOX BULKHEAD")]
+        self.assertEqual(len(bores), 4)
+        for (bn, a), (fn, x, y, _z) in zip(bores, A.fan_points()):
+            self.assertIn(fn.split()[0], bn)
+            self.assertAlmostEqual(A.ev(V, a[0]), A.ev(V, x))
+            self.assertAlmostEqual(A.ev(V, a[1]), A.ev(V, y))
+            b = b6(bn)
+            self.assertAlmostEqual(A.ev(V, a[2]), b[4])                 # the bore runs through the bulkhead
+            self.assertAlmostEqual(A.ev(V, a[3]), b[5])
 
 
 class D87(unittest.TestCase):
@@ -220,7 +280,7 @@ class FrontInterface(unittest.TestCase):
         for name in self.DOOR_SIDE:
             self.assertAlmostEqual(b6(name)[2], yd, msg=name)
         for name, (_k, bx) in LAY.items():
-            if _k not in ("box_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock"):
+            if _k not in ("box_s", "blk_s", "lin_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock"):
                 self.assertGreaterEqual(bx[2], yd - 1e-9, "%s reaches into DR's access panel" % name)
 
     def test_door_rail_clear_of_the_sleeve(self):
