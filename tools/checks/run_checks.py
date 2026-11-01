@@ -59,7 +59,8 @@ def contacts_from(bodies, tol=0.2):
 
 def own_file_first(pn, files):
     """Which STEP file speaks for a part's holes: its own (the file named after its number) when there is one, else
-    the first file holding it. An older copy of the part in an assembly can then never add holes it doesn't have."""
+    the first file holding it. A copy in an assembly, older or modelled in another frame, then never adds holes the
+    part doesn't have (BASE's copy of corner key 111211 is the key turned 180 degrees: other key coordinates)."""
     own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
     return own[0] if own else sorted(files)[0]
 
@@ -152,7 +153,9 @@ def run(root, rev):
         pick = files[own_file_first(pn, files)]
         holes_by_pn[pn], two_wall_by_pn[pn], bends_by_pn[pn] = pick["holes"], pick["two_wall"], pick["bends"]
     findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
+    findings += c_parts.check_copies(root, per_part, c_geometry.load_step)         # copies match their part
     if plists:
+        findings += c_parts.check_decided_items(root, plists, step_products)   # D-131, D-132: cancelled and added
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
     # shipping

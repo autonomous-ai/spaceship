@@ -26,12 +26,13 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
    - The range also widened at the bottom: the low case now carries the 125–250 Hz risks (no finite-panel gain, and a 4 dB dip at each double wall's resonance).
 5. **30 dB isn't reached anywhere in this search, up to 520 kg (best about 23 dB).** Beyond 420 kg each extra dB costs about 20–30 kg. Low voices (125–250 Hz) limit a light pod, and only mass, cavity depth and low-frequency absorption help there. A thicker felt on the ceiling (24 mm Autex Cube) would add about 1.2 dB; its weight isn't sourced yet.
 6. **Air (D-60, DECIDED):**
-   - On AIR's build (#91) with BASE's intake and the fan boxes as D-121 and D-124 set them (section 7j), all calculation: 53 l/s normal at 25.1 dB(A), against the 26 dB(A) target (D-52).
-   - The boost: 65 l/s gives 29.6 dB(A), under the 30 dB(A) target, and the boost held at 30 dB(A) or less reaches 66.3 l/s; 70 l/s would give 31.2 dB(A). The margin is thin, so the fan sample measures it (ISS-090).
-   - The fan boxes: 50 mm linings only where they fit, 3 mm aluminium casings, and the exhaust fans at the top on a sealed bulkhead (D-121, D-124). With 2 mm casings the boost would sit at the limit: 30.1 dB(A) at 65 l/s.
+   - On AIR's build (#91) with BASE's intake, FRONT's DR (PR #105), the fan boxes as D-121 and D-124 set them and D-130's intake boot and gaskets (section 7j), all calculation: 53 l/s normal at 25.2 dB(A), against the 26 dB(A) target (D-52).
+   - The boost: 65 l/s gives 29.6 dB(A), under the 30 dB(A) target, and the boost held at 30 dB(A) or less reaches 66.2 l/s; 70 l/s would give 31.2 dB(A). The margin is thin (0.4 dB), so the fan sample measures it (ISS-090).
+   - The fan boxes: 50 mm linings only where they fit, 3 mm aluminium casings, and the exhaust fans at the top on a sealed bulkhead (D-121, D-124). With 2 mm casings the boost would go over: 30.4 dB(A) at 65 l/s.
+   - DR's cavity (D-130): a sealed boot takes the intake air from the mesh, through DR's base, to the riser's foot, so the supply fans' unsilenced inlet noise stays out of DR's bare cavity; DR's inner and access panels and each cartridge's inlet end get gaskets. Without the boot, DR as built would give about 37.8 dB(A) at 65 l/s.
    - One person at 33 l/s hears about 15 dB(A).
    - Two people in a 600 ppm office: 796 ppm at 53 l/s with perfect mixing, 845 ppm at the PM's mixing effectiveness of 0.8. Holding 800 ppm at 0.8 takes about 65 l/s, which is the boost. The supply leaves low at the front-right and the exhaust high at the far end of the soffit, 2.9 m apart, which should mix better than 0.8.
-   - Heat: with ELECTRICAL's loads (PR #64: the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans), two people put 249 W into the air, 3.9 K over the room at the 53 l/s normal flow; 4 K needs 51 l/s, and one person 29 l/s, more than the 26 l/s floor (D-44). With the voice kit fitted at its 40 W average budget plus 8.2 W of supply loss (D-88), 4 K needs 62 l/s (28.5 dB(A)), inside the 65 l/s that the 30 dB(A) boost reaches: 3.8 K at the boost. Its 60 W peak stays on the hook.
+   - Heat: with ELECTRICAL's loads (PR #64: the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans), two people put 249 W into the air, 3.9 K over the room at the 53 l/s normal flow; 4 K needs 51 l/s, and one person 29 l/s, more than the 26 l/s floor (D-44). With the voice kit fitted at its 40 W average budget plus 8.2 W of supply loss (D-88), 4 K needs 62 l/s (28.6 dB(A)), inside the 65 l/s that the 30 dB(A) boost reaches: 3.8 K at the boost. Its 60 W peak stays on the hook.
 7. **Corrections in this fix pass:**
    - The 5c1003b fans were 6 kg S&P TD-500s loose in the decor cavity. Their own casings radiate 44 dB(A), which the old model left out. With it, that design gives 35.8 dB(A) at 53 l/s. They also don't fit: the decor is 205 mm deep (measured from v1), not 230–235.
    - Four 12 V fans at about 0.3 kg each replace them. That saves about 11 kg, which pays for the bigger cartridges and the exhaust riser.
@@ -39,7 +40,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 8. **D-60 recheck (this version):**
    - PR #11 sized the air path to the layout study's 2290 × 1016 × 235 box for the right decor block. Skeletons P03 and P04 show the block following the fixed glass: 145–343 mm wide below Z 1521, with a flat top only 27 mm deep. Two 405 mm cartridges and the riser need 960 mm.
    - Every layout kept inside the decor blocks gave 39–46 dB(A) at 53 l/s, or couldn't reach 53 l/s at all (section 7c).
-   - D-60 puts one cartridge in an air column in the front-right inside corner and one in a soffit above the door head. With 50 mm layers, a kick grille at the column's foot, one cartridge size for both, and the intake through a black mesh band piece under the right block (skeleton P04), it gave 25.3 dB(A) at 53 l/s and 29.7 at 65 l/s as sized here, and 25.1 and 29.6 on AIR's build with BASE's intake and D-124's fan boxes (calculation, section 7j).
+   - D-60 puts one cartridge in an air column in the front-right inside corner and one in a soffit above the door head. With 50 mm layers, a kick grille at the column's foot, one cartridge size for both, and the intake through a black mesh band piece under the right block (skeleton P04), it gave 25.3 dB(A) at 53 l/s and 29.7 at 65 l/s as sized here, and 25.2 and 29.6 on AIR's build with BASE's intake, D-124's fan boxes and D-130's boot (calculation, section 7j).
    - The outside doesn't change. Inside, the column takes about 0.08 m² of floor, and the soffit leaves 2120 mm headroom, as at the door.
 
 ## 1. The DECIDED stack, for the Layout and Fusion Engineers
@@ -236,7 +237,7 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 | 2 | Door drop seal | 11.8 | 15.3 | 18.2 | +0.3 | 1.0 |
 | 3 | Fixed glass in sealed U-profiles | 11.8 | 15.4 | 18.2 | +0.0 | 0.0 |
 | 4 | Gaskets on every panel joint | 12.0 | 15.5 | 18.4 | +0.2 | 1.0 |
-| 5 | Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 50.5 |
+| 5 | Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 50.9 |
 | 6 | Thin floor with base seal (DECIDED, D-05) | 12.9 | 16.2 | 18.7 | -0.1 | 0.5 |
 | 7 | Sealed cable holes | 13.0 | 16.3 | 18.7 | +0.0 | 0.1 |
 
@@ -261,15 +262,15 @@ Glass front (8 mm tempered or 4+4 laminated):
 | 300 | nothing fits |  |  |
 | 320 | nothing fits |  |  |
 | 340 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 330 | 8.7 / 11.4 / 13.6 |
-| 360 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 351 | 9.4 / 12.2 / 14.4 |
+| 360 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 352 | 9.4 / 12.2 / 14.4 |
 | 380 | PLAN-NOPLY / DL-ST-40-FLG-12 / Laminated acoustic 4+4 (8.76 mm) | 364 | 9.5 / 12.3 / 14.5 |
-| 400 | PLAN / SW-FOAM20-DL / Tempered 8 mm | 400 | 12.7 / 16.4 / 18.8 |
+| 400 | PLAN / PLAN / Tempered 8 mm | 400 | 13.0 / 16.3 / 18.7 |
 | 420 | DL-ST-40-FLG-12 / DL-PLY4 / Tempered 8 mm | 419 | 14.0 / 18.7 / 21.1 |
 | 440 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Tempered 8 mm | 435 | 14.8 / 19.7 / 22.1 |
 | 460 | DL-2HDF-60-FL / DL-ST4-40-FLG-12 / Tempered 8 mm | 459 | 15.1 / 20.5 / 22.9 |
 | 480 | DL-2HDF-60-FL / DL-P6-HDF-60-FL / Tempered 8 mm | 477 | 15.7 / 21.5 / 23.9 |
-| 500 | DL-P6-P9-DEC / DL-2HDF-60-FL / Tempered 8 mm | 500 | 16.7 / 22.4 / 25.0 |
-| 520 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 516 | 17.4 / 23.1 / 25.6 |
+| 500 | DL-P6-HDF-60-FL / DL-P6-P9-60-FL / Tempered 8 mm | 498 | 16.3 / 22.1 / 24.6 |
+| 520 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 517 | 17.4 / 23.1 / 25.6 |
 
 Smoked acrylic 10 mm front:
 
@@ -279,22 +280,22 @@ Smoked acrylic 10 mm front:
 | 300 | nothing fits |  |  |
 | 320 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 309 | 8.7 / 11.4 / 13.5 |
 | 340 | SW-FOAM20 / DL-ST-60-FL / Smoked acrylic 10 mm | 334 | 9.4 / 12.2 / 14.4 |
-| 360 | PLAN / SW-FOAM20 / Smoked acrylic 10 mm | 360 | 11.3 / 14.3 / 16.7 |
-| 380 | DL-PLY4 / DL-HDF / Smoked acrylic 10 mm | 380 | 12.5 / 17.1 / 19.4 |
-| 400 | DL-ST-40-FLG-12 / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 400 | 14.5 / 19.0 / 21.4 |
+| 360 | PLAN-NOPLY / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 352 | 9.5 / 12.3 / 14.5 |
+| 380 | DL-PLY4 / SW-FOAM20-DL / Smoked acrylic 10 mm | 379 | 12.3 / 17.0 / 19.3 |
+| 400 | DL-ST-40-FLG-12 / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 397 | 14.3 / 18.8 / 21.1 |
 | 420 | DL-ST-40-FLG-12 / DL-P6-P9-DEC / Smoked acrylic 10 mm | 419 | 14.8 / 19.5 / 21.9 |
-| 440 | DL-2HDF-60-FL / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 438 | 15.2 / 20.4 / 22.8 |
-| 460 | DL-2HDF-60-FL / DL-P6-P9-DEC / Smoked acrylic 10 mm | 457 | 15.7 / 21.1 / 23.6 |
-| 480 | DL-P6-P9-DEC / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 479 | 16.5 / 21.9 / 24.4 |
-| 500 | DL-P6-P9-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 497 | 17.2 / 22.4 / 24.9 |
+| 440 | DL-2HDF-60-FL / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 439 | 15.2 / 20.4 / 22.8 |
+| 460 | DL-2HDF-60-FL / DL-P6-P9-DEC / Smoked acrylic 10 mm | 458 | 15.7 / 21.1 / 23.6 |
+| 480 | DL-P6-P9-DEC / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 480 | 16.5 / 21.9 / 24.4 |
+| 500 | DL-P6-P9-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 498 | 17.2 / 22.4 / 24.9 |
 | 520 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 507 | 17.9 / 22.9 / 25.4 |
 
 Best builds inside the DECIDED rules:
 
 | Case | Walls | Ceiling | Front | Silencer casing | Total kg | D_S,A low / central / high |
 |---|---|---|---|---|---:|---|
-| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 427 | 14.7 / 19.3 / 21.7 |
-| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 434 | 14.7 / 19.3 / 21.7 |
+| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 428 | 14.7 / 19.3 / 21.7 |
+| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 435 | 14.7 / 19.3 / 21.7 |
 | Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 414 | 13.9 / 18.3 / 20.7 |
 | Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 428 | 14.7 / 19.3 / 21.7 |
 | Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 400 | 14.5 / 19.0 / 21.4 |
@@ -317,7 +318,7 @@ Inside volume 8.35 m3; CO2 from 2 people 10.4 ml/s. The last column uses a mixin
 | 53 | 23 | 2.6 | 196 | 596 | 796 | 8 | 3.9 | 4.6 | 845 |
 | 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 3.0 | 3.6 | 786 |
 
-Heat into the air at 53 l/s: two people 248 W, with the voice kit at its 40 W average (D-88) 297 W (people and laptops, the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans; ELECTRICAL, PR #64).
+Heat into the air at 53 l/s: two people 249 W, with the voice kit at its 40 W average (D-88) 297 W (people and laptops, the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans; ELECTRICAL, PR #64).
 Flow that keeps the inside 4 K or less over the room: one person 29 l/s, two people 51 l/s, two with the voice kit 62 l/s. One person at the 26 l/s floor (D-44), room 600, mixing 0.8: 850 ppm.
 CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, room 600: 1000 ppm.
 
@@ -356,7 +357,7 @@ Same fans, same methods and the same conservative felt data as PR #11. Sizes for
 | (b) right and left blocks | supply in the right block; exhaust up the left block and across the top block | out of reach | out of reach | 34.6 | 22 | 27 | out of reach |
 | (c) right and top blocks | supply in the right block; exhaust along the top block | out of reach | out of reach | 32.9 | 24 | 29 | out of reach |
 | (c) improved, exhaust out a roof slot: the best inside the decor | as (c), with the column as a plain duct and bigger openings | 39.0 | out of reach | 28.7 | 29 | 35 | 82% / 84% |
-| (e) D-60 as sized here | an air column in the front-right inside corner and a soffit above the door head | 25.1 | 29.6 | 14.8 | 55 | 66 | 73% / 65% |
+| (e) D-60 as sized here | an air column in the front-right inside corner and a soffit above the door head | 25.2 | 29.6 | 14.9 | 55 | 66 | 73% / 65% |
 
 - **Every layout kept inside the decor fails.** The passages are narrow, so the pressure rises two to three times and the fans run at 80–100%, and the lined legs on the pod side of the fans are short. The best, (c) with a roof slot, gives 39.0 dB(A) at 53 l/s.
 - **D-60 (DECIDED by the PM, 2026-10-31):** the silencers move inside the pod, into an air column in the front-right inside corner and a soffit above the door head. The outside look doesn't change.
@@ -368,32 +369,33 @@ Targets (D-52): 26 dB(A) or less at 53 l/s and 30 or less at the 65 l/s boost, a
 
 | Flow l/s | Supply fans: speed, pressure | Supply duct / breakout / total dB(A) | Exhaust fans: speed, pressure | Exhaust duct / breakout / total dB(A) | Inside, both paths dB(A) |
 |---:|---|---|---|---|---:|
-| 26 | 36%, 4 Pa | 4.9 / 4.9 / 7.9 | 32%, 3 Pa | 2.4 / 1.4 / 4.9 | 9.7 |
-| 33 | 45%, 7 Pa | 10.0 / 10.0 / 13.0 | 40%, 5 Pa | 7.6 / 6.5 / 10.1 | 14.8 |
-| 53 | 73%, 17 Pa | 20.3 / 20.3 / 23.3 | 65%, 12 Pa | 17.9 / 16.8 / 20.4 | 25.1 |
-| 65 | 89%, 26 Pa | 24.8 / 24.8 / 27.8 | 79%, 18 Pa | 22.3 / 21.3 / 24.8 | 29.6 |
-| 70 | 96%, 30 Pa | 26.4 / 26.4 / 29.4 | 85%, 21 Pa | 23.9 / 22.9 / 26.5 | 31.2 |
+| 26 | 36%, 4 Pa | 5.1 / 4.8 / 7.9 | 32%, 3 Pa | 2.4 / 1.4 / 4.9 | 9.7 |
+| 33 | 46%, 7 Pa | 10.2 / 9.9 / 13.1 | 40%, 5 Pa | 7.6 / 6.5 / 10.1 | 14.9 |
+| 53 | 73%, 18 Pa | 20.5 / 20.2 / 23.4 | 65%, 12 Pa | 17.9 / 16.8 / 20.4 | 25.2 |
+| 65 | 90%, 27 Pa | 25.0 / 24.7 / 27.8 | 79%, 18 Pa | 22.3 / 21.3 / 24.8 | 29.6 |
+| 70 | 97%, 31 Pa | 26.6 / 26.3 / 29.4 | 85%, 21 Pa | 23.9 / 22.9 / 26.5 | 31.2 |
 
-Two fan signals keep both paths at the same flow: at 53 l/s the supply pair runs at 73% and the exhaust pair at 65%. One shared signal would run both at about 69% and leave the pod 2.6 Pa below the room at 53 l/s (4.0 Pa at 65 l/s).
-Flow at 26 dB(A): 55 l/s; at 30 dB(A): 66.3 l/s (targets, D-52: 26 dB(A) or less at 53 l/s, 30 or less at the 65 l/s boost). With a 5 dB fan tone at 250 Hz (risk): 28.6 dB(A) at 53 l/s and 57 l/s at 30 dB(A).
+Two fan signals keep both paths at the same flow: at 53 l/s the supply pair runs at 73% and the exhaust pair at 65%. One shared signal would run both at about 69% and leave the pod 2.9 Pa below the room at 53 l/s (4.3 Pa at 65 l/s).
+Flow at 26 dB(A): 55 l/s; at 30 dB(A): 66.2 l/s (targets, D-52: 26 dB(A) or less at 53 l/s, 30 or less at the 65 l/s boost). With a 5 dB fan tone at 250 Hz (risk): 28.5 dB(A) at 53 l/s and 57 l/s at 30 dB(A).
 
 The cartridge, the same part on both paths:
 
 | Cartridge casing | Air parts kg | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + 30 mm fill + felt-covered face R 125 | 250 | 500 | 1k | 2k | 4k dB | At 53 l/s dB(A) | Flow at 30 dB(A) l/s |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| aluminium 2.0 mm (pick) | 58.5 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.1 | 66 |
-| aluminium 0.8 mm | 47.2 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 29.9 | 53 |
+| aluminium 2.0 mm (pick) | 58.9 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.2 | 66 |
+| aluminium 0.8 mm | 47.6 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 30.0 | 53 |
 
-Pressure per path, supply / exhaust: 26 l/s 4 / 3 Pa; 53 l/s 17 / 12 Pa; 65 l/s 26 / 18 Pa. At full speed the supply pair reaches 73 l/s and the exhaust pair 82 l/s.
+Pressure per path, supply / exhaust: 26 l/s 4 / 3 Pa; 53 l/s 18 / 12 Pa; 65 l/s 27 / 18 Pa. At full speed the supply pair reaches 72 l/s and the exhaust pair 82 l/s.
 
-- **Supply.** Room air comes in through the front base band piece under the right block, which becomes a flush black mesh with the band's outline (PM, on skeleton P04), into the space under the block; a plate at Y −645 closes that space from the pod. It rises up a 1 mm steel riser behind the air column to two NF-A14 fans in a lined box high in the block, behind its removable inner face. The fans blow through an opening in the block's inner face into the top of the air column, down its cartridge and out of a 100 mm kick grille at the column's foot, so the cool room air spreads across the floor.
+- **Supply.** Room air comes in through the front base band piece under the right block, which becomes a flush black mesh with the band's outline (PM, on skeleton P04), into a sealed boot that carries it through DR's base to the riser's foot (D-130), so neither the space under the block nor DR's cavity carries the fans' inlet noise. It rises up a 1 mm steel riser behind the air column to two NF-A14 fans in a lined box high in the block, behind its removable inner face. The fans blow through an opening in the block's inner face into the top of the air column, down its cartridge and out of a 100 mm kick grille at the column's foot, so the cool room air spreads across the floor.
 - **Exhaust.** Air leaves the pod through a grille in the soffit's underside at its far end, above the door's hinge side. It runs the length of the soffit's cartridge to two NF-A14 fans lying flat in the soffit's right end, which blow straight up through a roof slot 2.3 m above the intake.
 - **One cartridge for both paths:** 173 × 314 × 1750 mm, a 2 mm aluminium casing, and two 80 mm passages between three 50 mm Pyrotek Sorberpoly 2D layers (published ISO 354 data, so nothing is interpolated). At 125–250 Hz, where the fan noise left after a splitter sits, 50 mm layers absorb about twice what 25 mm layers do.
-- **Why 2 mm casings.** The cartridges now sit inside the pod, behind 30 mm of fill and a felt-covered face, so the casing is their main barrier. 0.8 mm casings would save about 11 kg but give 29.9 dB(A) at 53 l/s. D-121 keeps them at 2.0 mm (D-116's 1.8 mm withdrawn).
-- **Fan boxes (D-121, D-124).** Each box counts as the room its fans face: the supply box's plenum above its fans, and the exhaust box's plenum under its fans, which sit at the top on a sealed bulkhead and blow straight into the roof sleeve. Sound leaves each room through its open face into the cartridge, and only what the far grille reflects comes back. The 50 mm linings go only where they fit: the supply box's two short end walls above the fans (0.046 m²), and the exhaust box's two long walls and far end under the fans (0.103 m²). The 3 mm casings and the linings are each worth about 0.5 dB: with 2 mm casings the boost gives 30.1 dB(A) at 65 l/s and reaches 64.8 l/s, and so it does with 3 mm casings and no linings. If the open faces let all their sound out, every figure is about 0.2 dB lower.
-- **Where the noise comes from at 53 l/s:** about two thirds from the supply path (23.3 dB(A)), half through the kick grille and half as breakout from the column, riser and fan box. The exhaust gives the other third (20.4 dB(A)).
+- **Why 2 mm casings.** The cartridges now sit inside the pod, behind 30 mm of fill and a felt-covered face, so the casing is their main barrier. 0.8 mm casings would save about 11 kg but give 30.0 dB(A) at 53 l/s. D-121 keeps them at 2.0 mm (D-116's 1.8 mm withdrawn).
+- **Fan boxes (D-121, D-124).** Each box counts as the room its fans face: the supply box's plenum above its fans, and the exhaust box's plenum under its fans, which sit at the top on a sealed bulkhead and blow straight into the roof sleeve. Sound leaves each room through its open face into the cartridge, and only what the far grille reflects comes back. The 50 mm linings go only where they fit: the supply box's two short end walls above the fans (0.046 m²), and the exhaust box's two long walls and far end under the fans (0.103 m²). The supply box's casing radiates into DR's cavity on every side (D-130), so the 3 mm casings are worth about 0.8 dB and the linings about 0.5: with 2 mm casings the boost gives 30.4 dB(A) at 65 l/s and reaches 63.8 l/s; with no linings, 30.1 and 64.6. If the open faces let all their sound out, every figure is about 0.2 dB lower.
+- **DR's cavity (D-130).** The supply riser, its two transitions and the fan box stand in DR's interior, which FRONT builds bare: no fill, no lining, its base open to the intake, and a removable 3 mm ACP inner panel with 9 mm felt toward the pod. With D-130's sealed boot the fans' inlet noise stays in the riser; DR's cavity takes only what the riser's, the transitions' and the fan box's walls radiate, and passes it to the pod through the inner panel, its edges gasketed. Without the boot the riser's foot opens into DR, and the boost gives about 37.8 dB(A) at 65 l/s (section 7j).
+- **Where the noise comes from at 53 l/s:** about two thirds from the supply path (23.4 dB(A)), half through the kick grille and half as breakout from the column and, through DR's inner panel, from the riser and fan box. The exhaust gives the other third (20.4 dB(A)).
 - **One person** at 33 l/s hears about 15 dB(A), and the 26 l/s floor about 10.
-- **Risks (HOLD):** the fans have no octave data (a 5 dB tone at 250 Hz would give 28.6 dB(A) at 53 l/s), the fan curve is a straight line, and the splitter derating (0.8) and the bend and grille losses are assumptions. The fan-sample test measures a fan pair in its box, lined as D-121 sets it, on a cartridge: flow against pressure, and octave sound power at 53 and 65 l/s.
+- **Risks (HOLD):** the fans have no octave data (a 5 dB tone at 250 Hz would give 28.5 dB(A) at 53 l/s), the fan curve is a straight line, and the splitter derating (0.8) and the bend and grille losses are assumptions. The fan-sample test measures a fan pair in its box, lined as D-121 sets it, on a cartridge: flow against pressure, and octave sound power at 53 and 65 l/s.
 
 ### 7e. Sizes for the CEILING and FRONT Engineers
 
@@ -404,28 +406,30 @@ The CEILING Engineer models the air column, the soffit, the cartridges in them a
 | Intake route | Free area m2 | Speed at 53 l/s m/s | At 53 l/s dB(A) | At 65 l/s dB(A) | Flow at 30 dB(A) l/s |
 |---|---:|---:|---:|---:|---:|
 | The 10 mm glide gap under the band only (skeleton P04 as it is) | 0.0037 | 14.3 | out of reach | out of reach | 24 |
-| The band piece under the block becomes a flush black mesh with the same outline (DECIDED) | 0.0282 | 1.9 | 25.2 | 29.7 | 66 |
-| The band stops short under the block, with a mesh set back | 0.0301 | 1.8 | 25.1 | 29.5 | 66 |
+| The band piece under the block becomes a flush black mesh with the same outline (DECIDED) | 0.0282 | 1.9 | 25.3 | 29.7 | 66 |
+| The band stops short under the block, with a mesh set back | 0.0301 | 1.8 | 25.1 | 29.6 | 66 |
 | A louvred band piece | 0.0193 | 2.7 | 26.5 | 31.0 | 62 |
-| BASE's mesh band piece from X 920, fully open (BASE's design, via the PM 2026-11-01) | 0.0297 | 1.8 | 25.1 | 29.6 | 66 |
+| BASE's mesh band piece from X 920, fully open (BASE's design, via the PM 2026-11-01) | 0.0297 | 1.8 | 25.2 | 29.6 | 66 |
 
 The band piece under the block is 371 mm long (skeleton P04). Open heights and free ratios are assumptions until the mesh is picked.
 
 | Item | Size mm | Where (pod coordinates, mm) | Notes |
 |---|---|---|---|
 | Air column, outer | 212 x 360 x 2108 | X 949 to 1161, Y -645 to -285, Z 12 to 2120 | front and left faces felt-covered (12 mm: 3 mm ACP + 9 mm felt); the front face lifts off full height for service; back on the right block's inner face, right side on the side lining |
-| Supply cartridge | 173 x 314 x 1750, 10.8 kg | X 983 to 1156, Y -640 to -326, Z 134 to 1884 | 2 mm aluminium casing; two 80 mm passages running up and down between three 50 mm Pyrotek Sorberpoly 2D layers parallel to the front face; 27 mm polyester fill to the front and left faces; 5 mm clear on the other sides to slide it out |
+| Supply cartridge | 173 x 314 x 1750, 10.8 kg | X 988 to 1161, Y -640 to -326, Z 134 to 1884 | 2 mm aluminium casing; two 80 mm passages running up and down between three 50 mm Pyrotek Sorberpoly 2D layers parallel to the front face; 27 mm polyester fill to the front and left faces; 5 mm clear on the other sides to slide it out, with a gasket round its inlet end so those gaps don't bypass the passages (D-130) |
 | Kick grille, supply out | 100 tall x 524 along the front and left faces | Z 24 to 124 | 0.031 m2 free or more (60%); base plenum Z 12 to 134 under the cartridge |
-| Opening from the right block into the column top | 200 x 215 | in the block's inner face at X 961 to 1161, Z 1895 to 2110 | supply air from the fan box; column top plenum Z 1884 to 2120 |
+| Opening from the right block into the column top | 200 x 215 | in the block's inner face at X 961 to 1161, Z 1895 to 2110 | supply air from the fan box; column top plenum Z 1884 to 2120; its right edge is the column's (X 1161); FRONT's op_x0, op_w, op_z0, op_h |
 | Sensor hub and controls | 180 x 180 zone, up to 29 deep | on the column's front face, centred X 1055, Z 1200 | no fill behind it; a 30 x 30 mm cable chase in the column's front-left corner runs up to the top plenum and on to the fans; the supply fan inlet sensor (D-50) sits in the fan box inlet |
-| Supply fans and box | 300 x 155 x 300 | X 645 to 945, Y -847 to -692, Z 1650 to 1950, inside the right block | two Noctua NF-A14 industrialPPC-3000 PWM on a level bulkhead 50 mm above the open bottom, blowing up; 3 mm aluminium (D-124); 50 mm linings on the two short end walls only, from 70 mm above the fans to the top (D-121): on the long walls they would choke the air; 44 mm fill to the block's inner face, which lifts off here (D-59); a transition carries the air right to the opening |
-| Intake riser | 139 to 250 wide x 155 deep x 1740 | X 955 to 1094, Y -803 to -648, Z 105 to 1445, behind the column; then it widens and turns into the fan box inlet below Z 1650 | 1 mm galvanised steel, 0.021 m2 free or more |
-| Intake (FRONT and BASE) | band piece 371 long x 100 tall | the front base band under the right block: its front face from X 947 to 1052 and along the corner facet, Z 10 to 110 | a flush black mesh with the band's outline, 80% free over 95 mm, 0.030 m2 free (PM, 2026-10-31); the block gets its own support behind it (BASE); a closing plate at Y -645 from Z 15 to 110 separates the space under the block from the pod; the riser opens down into that space |
+| Supply fans and box | 300 x 155 x 300 | X 662 to 962, Y -842 to -687, Z 1650 to 1950, inside the right block | two Noctua NF-A14 industrialPPC-3000 PWM on a level bulkhead 50 mm above the open bottom, blowing up; 3 mm aluminium (D-124); 50 mm linings on the two short end walls only, from 70 mm above the fans to the top (D-121): on the long walls they would choke the air; 5 mm off DR's front skin; an air gap of 40 mm, no fill, to DR's removable inner panel (D-59); a transition carries the air right to the opening; the joined assembly with the riser is 189 mm deep; FRONT's names in its DR model: fb_x0, fb_y0, fb_w, fb_d, fb_z0, fb_h (D-130) |
+| Intake riser | 139 to 250 wide x 150 deep x 1740 | X 956 to 1095, Y -803 to -653, up to Z 1445, behind the column, in FRONT's reserved space; then it widens and turns into the fan box inlet below Z 1650 | 1 mm galvanised steel, 0.020 m2 free; 4.8 mm off DR's corner facet at its front-right corner, 6.5 mm off DR's panels; it stands in DR's bare cavity; FRONT's ri_x0, ri_w, ri_y0, ri_d |
+| Intake boot (D-130) | 139 x 136 at its narrowest | from the mesh band piece, up through DR's base (Z 110 to 253), to the riser's foot | sealed all round (AIR, with the riser), so the supply fans' inlet noise never enters DR's cavity or the space under the block; its narrowest section is the riser's own outline, so it adds 0.06 of a velocity head; FRONT's frame must clear it there; BASE's mesh frame at its mouth |
+| Intake (FRONT and BASE) | band piece 371 long x 100 tall | the front base band under the right block: its front face from X 947 to 1052 and along the corner facet, Z 10 to 110 | a flush black mesh with the band's outline, 80% free over 95 mm, 0.030 m2 free (PM, 2026-10-31); the block gets its own support behind it (BASE); a closing plate at Y -645 from Z 15 to 110 separates the space under the block from the pod; the intake boot (D-130) takes the air from behind the mesh to the riser |
+| Gaskets (D-130) |  | DR's removable inner panel and access panel, all round their edges (FRONT); each cartridge's inlet end, all round its casing (AIR) | the panels' edges would leak DR's cavity into the pod; the cartridges' 5 mm slide-out gaps would let the air and its noise bypass the passages (about 5 dB at 65 l/s, section 7j) |
 | Soffit, outer | 2322 x 360 x 220 | X -1161 to 1161, Y -645 to -285, Z 2120 to 2340 | underside and front face felt-covered, front face flush with the column's; the underside lifts off in sections; the ceiling lining cassettes start at Y -285 (1051 long); headroom 2120, as the door head |
 | Exhaust grille | 265 x 336 | soffit underside, X -1150 to -885, Y -633 to -297 | 0.036 m2 free or more (40%) |
 | Exhaust cartridge | same part, lying along X | X -883 to 867, Y -640 to -326, Z 2159 to 2332 | passages along X; fill and clearances as the column |
 | Exhaust fans and box | 294 x 314 x 173 | X 867 to 1161, Y -640 to -326, Z 2159 to 2332, the soffit's right end | two NF-A14 lying flat at the top on a sealed level bulkhead, blowing straight up into the roof sleeve, so all the air passes them (D-121, ISS-089); 3 mm aluminium (D-124); 50 mm linings on the two long walls, full height under the fans, which continue the cartridge's outer layers, and on the far end up to 50 mm under the fans (D-121) |
-| Roof slot (CEILING) | 285 x 294 | through the roof panel above the exhaust box, X 872 to 1157, Y -620 to -326 | sleeve through the 14 mm gap and the 46 mm roof panel; grille 50% free or more, 0.042 m2 free; 2.3 m above the intake |
+| Roof slot (CEILING) | 139 x 150 | through the roof panel above the exhaust box, X 956 to 1095, Y -803 to -653 | sleeve through the 14 mm gap and the 46 mm roof panel; grille 50% free or more, 0.042 m2 free; 2.3 m above the intake |
 | Clearances |  |  | 5 mm round each cartridge and fan box; door top Z 2116 to the soffit 4 mm, so check the door's swing; the soffit top, Z 2340, is 14 mm under the roof panel |
 
 **What shows from outside.** Only the soffit's underside shows, never its front face, which faces into the pod. The underside runs at Z 2120, flush with the top block's underside behind the glass. In the top band's dark tone it reads as the top band running deeper (PM, D-60). How much of the glass shows it:
@@ -449,13 +453,13 @@ The band piece under the block is 371 mm long (skeleton P04). Open heights and f
 | Soffit: felt-covered faces, fill, frame, exhaust grille | 2322 x 360 x 220 | 10.0 | underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption) |
 | Supply fan box and transition, in the right block | 300 x 155 x 300 + transition | 4.3 | 3 mm aluminium casing (D-124), a 2 mm bulkhead; 50 mm linings at 32 kg/m3 where they fit, 0.046 m2 (D-121); transition 0.35 m2 of 2 mm aluminium (calculation) |
 | Exhaust fan box and roof sleeve, in the soffit | 294 x 314 x 173 | 3.0 | 3 mm aluminium casing (D-124), a 2 mm bulkhead; 50 mm linings at 32 kg/m3 where they fit, 0.103 m2 (D-121); sleeve 0.093 m2 of 2 mm aluminium |
-| Intake riser with a mesh allowance, in the right block | 139-250 x 155 x 1740 | 9.2 | 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption) |
+| Intake riser with a mesh allowance, in the right block | 139-250 x 150 x 1740 | 9.6 | 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces, and 0.5 kg for D-130's sealed intake boot and the cartridges' gaskets (assumptions) |
 | Roof slot grille and sleeve | 285 x 294 | 0.5 | assumption |
 | Four 12 V fans | 140 x 140 x 25 | 1.2 | 0.3 kg each (assumption) |
-| **Air parts in all** |  | **59.7** | heaviest part under the 20 kg rule: 10.8 kg |
+| **Air parts in all** |  | **60.1** | heaviest part under the 20 kg rule: 10.8 kg |
 | Less the ceiling lining the soffit replaces | 2322 x 360 | -5.0 | 0.5 mm tray, returns and felt |
 | Less PR #11's cartridges, fill, riser and fans |  | -45.0 | the model's earlier air parts |
-| **Change to the pod** |  | **+9.7** | the DECIDED stack in this model goes to 427 kg |
+| **Change to the pod** |  | **+10.1** | the DECIDED stack in this model goes to 428 kg |
 
 The layout study carries PR #11's air parts at 45.0 kg (its `hw_air_kg`). With D-60 its 426.7 kg becomes about 438.5 kg, still open against the 420 kg cap (D-54, ISS-080). Every D-60 part stays under the 20 kg rule.
 
@@ -478,9 +482,9 @@ How it's checked:
 ### 7h. Servicing, pressure and controls
 
 - **Servicing (D-59), all from inside.** The column's front face and the soffit's underside lift off. Each cartridge (10.8 kg, its layers at 32 kg/m³, D-116) slides out into the pod. The supply fans come out through the right block's inner face beside the column top, and the exhaust fans drop out of the soffit. Nothing on the walls or the outside comes off.
-- **Pressure balance and the door.** The hub drives the two fan pairs with two signals, so both paths move the same flow and the pod stays near room pressure (section 7d). One shared signal would leave the pod about 2.7 Pa below the room at 53 l/s, about 3 N at the door handle; a 5 Pa difference adds about 6 N.
+- **Pressure balance and the door.** The hub drives the two fan pairs with two signals, so both paths move the same flow and the pod stays near room pressure (section 7d). One shared signal would leave the pod about 2.9 Pa below the room at 53 l/s, about 3 N at the door handle; a 5 Pa difference adds about 6 N.
 - **Controls.** The in-house Desk Pro AI sensor hub (D-09) sits on the air column's front face at seated eye height (Z 1200), with the boost button below it. It reads the room air 1.1 m above the kick grille, shows CO2 inside, and drives both fan pairs through the column's cable chase.
-  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 66.3 l/s inside 30 dB(A) on AIR's build with D-124's fan boxes (calculation).
+  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 66.2 l/s inside 30 dB(A) on AIR's build with D-124's fan boxes and D-130's boot (calculation).
   - The supply fan inlet sensor (D-50) sits in the fan box inlet, so it reads the intake air from the floor.
   - Run-on of 15–30 min after the last presence.
   - The hub's fan output has to suit PWM fans; the exact interface belongs to the electrical scope (HOLD).
@@ -512,15 +516,20 @@ Every air-path size this report uses, against AIR's current build (PR #91 at 3b8
 | Soffit | X ±1166, top Z 2340, two frame angles | X ±1161, 5 mm off the linings; front face up to the hanger rails at Z 2346; a 2 mm door-side plate, two 3 × 24 top rails and a left end plate; the underside in three sections, hinges and latches HOLD | mass: about +2.7 kg net (3.9 kg of plates and rails against 1.2 kg of angles); no sound change |
 | Exhaust cartridge and fan box | Z 2162 to 2335 | Z 2159 to 2332, on the 27 mm fill over the underside | none |
 | Exhaust grille | 265 × 336, 0.036 m2 | 265 × 336 at 40 %, 0.0356 m2 | under 0.01 dB(A) |
-| Supply fan box | 300 × 155 × 300, X 645 to 945, Z 1650 to 1950 | the same | none |
+| Supply fan box | 300 × 155 × 300, X 645 to 945, Y −847 to −692 | FRONT's reserved space X 662 to 962, 12 clear of the glass channel (AIR's box at X 645 cuts into it); now also 5 mm off DR's front skin, Y −842 to −687, so the fans can't shake it | none; FRONT changes fb_y0, CEILING's AIR follow-up moves the box |
 | Fan box linings and casings | 50 mm on every wall of both boxes (0.32 and 0.30 m2), 2 mm aluminium | the fans fill each box's plan, so a lining fits only away from them: the supply box's two short end walls above its fans (0.046 m2), the exhaust box's two long walls and far end under its fans (0.103 m2), with the exhaust fans moved to the top on a sealed bulkhead (D-121, ISS-089); 3 mm aluminium casings (D-124) | see below |
-| Intake riser | 139 × 155 × 1340, then 250 × 155 × 400 up into the fan box | 139 × 155 × 1340; the turn into the fan box is a HOLD envelope, 449 × 155 × 205 | none until AIR draws it; this report keeps its 250 × 400 upper riser |
-| Supply transition into the column | an opening 200 × 215 | a HOLD envelope 516 × 47 × 215 through the same opening | none |
+| Intake riser | 139 × 155 × 1340 from Z 105, X 955 to 1094, Y −803 to −648 | FRONT's reserved space X 956 to 1095 with its foot 140 mm up inside DR; now 150 deep, Y −803 to −653, 4.8 mm off DR's corner facet and 6.5 off its panels; the turn into the fan box keeps its 250 × 400 stand-in inside FRONT's lower transition space, which widens from 0.021 to 0.046 m2 | +0.1 dB(A) at 65 l/s; FRONT changes ri_d, CEILING's AIR follow-up builds to it |
+| Joined riser and fan box | 199 mm deep: the box at DR's front, the riser at its back | DR's whole clear depth: the box touched DR's skin and the riser stood 1.5 mm off its panels | now 189 mm deep, 5 mm clearances; Packing plans it at 189 plus the boot |
+| Supply transition into the column | an opening 200 × 215 | AIR: a HOLD envelope 516 × 47 × 215 through the same opening; FRONT's DR: 203 wide, to X 1164, from an older table | none; FRONT takes the column's edge, X 1161 (op_w 200) |
+| DR's cavity | not modelled: the riser's and the fan box's breakout went straight to the pod through fill and a felt-covered face | FRONT's DR: bare inside, no fill, its base open to the intake with the riser's foot inside, a removable 3 mm ACP inner panel with 9 mm felt toward the pod | about 37.8 dB(A) at 65 l/s as merged; 29.6 with D-130 (below) |
+| Cartridge slide-out gaps | 5 mm on the sides with no fill, open at both ends | the same in AIR's model | about +5 dB(A) at 65 l/s while open; a gasket round each cartridge's inlet end closes them (D-130) |
 | Roof slot and grille | Y -630 to -336, 0.040 m2 | Y -620 to -326 (D-61), grille 50 % free over the 285 × 294 slot, 0.0419 m2; sleeve 68 mm | -0.03 dB(A); this report now uses D-61's Y |
 | Column frame | four 25 × 25 angles | three angles (two 9 × 20, one 20 × 20, 2 mm), a 2 mm foot plate and two 1 mm plenum plates | mass: about -0.4 kg |
 
 - **Net (calculation):** 25.3 → 25.2 dB(A) at 53 l/s and 29.7 → 29.6 dB(A) at 65 l/s; the boost at 30 dB(A) or less reaches 66.2 l/s (it was 65.8). BASE's larger intake is the gain. Flow and heat don't move: two people stay at 3.9 K over the room at 53 l/s, and with the voice kit at its 40 W average 4 K holds at 62 l/s, 28.5 dB(A).
 - **Fan boxes (D-121, D-124), calculation:** the old figures lined every wall of both boxes, but only about a third of that lining fits. Taking each box as the room its fans face, with sound leaving through its open face, the linings that fit give 25.7 dB(A) at 53 l/s and 30.1 at 65 l/s with 2 mm casings, the boost reaching 64.8 l/s: at the limit (ISS-090). D-121's 29.8 to 30.0 took each box as one room, with both its open faces letting sound out. With D-124's 3 mm casings: 25.1 and 29.6 dB(A), the boost reaching 66.3 l/s. Flow and heat don't move. The two fan box lines weigh 7.3 kg, against 8.1 before: the old count also had each box's two open faces and the linings that don't fit.
+- **DR's cavity and D-130, calculation:** FRONT's DR lets the supply fans' inlet noise, which has no silencer, out of the riser's raised foot into DR's bare cavity, and only the inner panel stands between it and the pod: about 33.3 dB(A) at 53 l/s and 37.8 at 65, the boost reaching only 45 l/s at 30 dB(A) (an estimate with the panel's edges open; 36.2 with them gasketed). D-130 adds a sealed intake boot from the mesh, through DR's base, to the riser's foot, gaskets on DR's inner and access panels, and a gasket round each cartridge's inlet end. The boot's throat is FRONT's measured 0.0186 m² inside the riser's outline at DR's base (3.6 m/s at 66 l/s, about 0.5 Pa). DR's cavity then takes only what the riser's, the transitions' and the fan box's walls radiate: 25.2 dB(A) at 53 l/s, 29.6 at 65, the boost reaching 66.2 l/s (margin 0.4, ISS-090 open). The options D-130 passed over either missed 30 dB(A) or put DR over 19 kg: a 50 mm lining on DR's walls 31.1 (+3.2 kg), a 2 mm heavier inner panel 31.0 (+2.2 kg), fill in DR's free space 29.6 (+3.4 kg).
+- **Who changes what (D-130, one source):** FRONT owns DR, so FRONT sets its reserved spaces to these sizes (fan box Y −842 to −687, riser 150 deep at Y −803 to −653, opening 200 wide to X 1161) and adds the panel gaskets; this report's verify fails if FRONT's named values drift from them (three are pending FRONT's change). CEILING's AIR follow-up reads FRONT's names and builds the boot, the parts and the cartridge gaskets to them. BASE's mesh frame meets the boot's mouth. Packing plans the joined assembly at 189 mm deep plus the boot.
 - **AIR's answer:** at ced7f12 the supply cartridge sat 6 mm further left (X 982 to 1155), leaving 21 mm of fill at the column's left face and costing 0.3 dB(A) (30.05 dB(A) at 65 l/s). AIR moved it to X 988 to 1161 at 3b891cf, inside the column's X 1161 limit and 5 mm from the side lining, since the plenum plates sit only above and below it.
 - **For the weight roll-up:** the soffit's plates and rails (about +2.7 kg) and the column's frame (about -0.4 kg) arrive with AIR's parts list when #91 merges; the roll-up reads AIR's own masses then.
 
@@ -556,6 +565,7 @@ Details and links are in selection.md, section G.
 | D-60 path losses | each part at its own speed: splitter entry 0.5, exit 1.0 and 2.0 per 1.8 m of 40 mm passages, scaled by length over passage width; 0.8 per 90° bend; duct friction 0.02; each grille 2.0 | PR #11's values, split by part; standard values | fan-sample test with a cartridge and its grilles |
 | D-60 grilles and openings | kick grille 60% free, exhaust grille 40%, roof slot 50%, intake mesh band 80% over 95 mm of its height | typical for perforated and bar grilles and coarse mesh | the grilles' data when they're picked |
 | D-60 felt-covered faces | 3 mm ACP and 9 mm felt, with 30 mm polyester fill behind | the same build as the decor's inner face | the CEILING model and the fan sample |
+| DR's cavity (D-130) | a diffuse room, its bare walls absorbing 5%, fed by the riser's, the transitions' and the fan box's wall breakout; out to the pod through DR's 3 mm ACP inner panel (Sharp's single leaf) and its gasketed edges (10 mm strips at 32 dB) | DR's interior is irregular and full of air parts | the prototype: sound inside and outside DR at the boost |
 | D-60 fan boxes | each box a diffuse room on the side of its fans that faces the pod; bare walls, the bulkhead and the fans absorb 5%; sound leaving its open face goes down the cartridge, and only what the far grille reflects comes back through the passages; the supply's top loses another 19% where the column's top plenum meets the passages | a 0.3 m box is small for a diffuse field at 125–250 Hz, where its sound sits | the fan-sample test, a fan pair in a lined box (T04) |
 | CO2 per person | 5.2 ml/s | matches the brief's 26 l/s for 800 ppm | CO2 logger on the prototype |
 | Heat per person | 75 W sensible + 30 W laptop | seated office work | temperature logger on the prototype |
@@ -574,7 +584,7 @@ Details and links are in selection.md, section G.
 - **Leaks:** open area with τ = 1. Seals and gaskets are 10 mm strips with their own R.
 - **Air:** well-mixed CO2 and heat balance. Fan noise reaches a seated head two ways:
   - Duct path: the fan's octave LwA, minus the splitter loss (Sabine 1.05 α^1.4 P/S per metre, derated) and the duct end reflection (ASHRAE).
-  - Breakout path: ASHRAE's rectangular-duct breakout through the casing (Cummings), on the mean duct power along the lined length, toward the pod only; the filled double wall (casing, fill, inner face; Sharp) adds loss only above f0. The fan box is a reverberant box behind the same double wall; for D-60 it is the room its fans face, with its lining, bare walls and open face (D-121, D-124). The 5c1003b row keeps its old cavity model, with the casing sound added.
+  - Breakout path: ASHRAE's rectangular-duct breakout through the casing (Cummings), on the mean duct power along the lined length, toward the pod only; the filled double wall (casing, fill, inner face; Sharp) adds loss only above f0. The fan box is a reverberant box behind the same double wall; for D-60 it is the room its fans face, with its lining, bare walls and open face (D-121, D-124). The supply riser, transitions and fan box stand in DR's cavity, so their walls feed that cavity, a diffuse room, which reaches the pod through DR's inner panel (D-130). The 5c1003b row keeps its old cavity model, with the casing sound added.
   - Both paths then get direct and reverberant room terms. 12 V fans: operating point on a straight-line fan curve, sound by 50 lg of speed.
   - D-60 recheck: each path is a chain of parts with their own sizes (splitter, lined duct, plain duct), a fan box and its two openings. Pressure is summed part by part at each one's own speed. The duct path runs through the parts on the pod side of the fans; every part facing the pod adds breakout, with the sound power it carries at that point. This reproduces PR #11's design at 25.8 dB(A) against its 25.6; the difference is the riser's friction (0.8 Pa).
 - **Weights:** the rest of the pod comes from the layout study (branch super-tab/7667a51, commit cb7009f, work in progress). Wall build-ups, glass and fixes come from this report. D-60's air parts are summed from their sheet, lining and face areas (section 7f).

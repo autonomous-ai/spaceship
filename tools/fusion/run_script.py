@@ -771,15 +771,38 @@ def run(_context):
         if len(files) > 1:
             # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the
             # cloud lists it twice. Read the folder again for up to 30 s while it does;
-            # still twice after that: refused, as before
+            # still twice after that: refused, as before. Reviewer 5 on #238: a re-read
+            # counts only when it shows one copy and no unreadable entry could be another
+            # (could_be, the rule safe_to_create uses), or when every copy is one file
+            # (the same id), so two different files never get through
+            def _ext(fs):
+                try:
+                    return (fs[0].fileExtension or "f3d").lower()
+                except Exception:
+                    return "f3d"
+
+            def _same_file(fs):
+                try:
+                    return len(set(f.id for f in fs)) == 1
+                except Exception:
+                    return False
+
+            ext = _ext(files)
+            if _same_file(files):
+                print("run_script: %%r is listed %%d times, all the same file; opening it" %% (name, len(files)))
+                files = files[:1]
             t_end = time.time() + DUP_WAIT_S
             while len(files) > 1 and time.time() < t_end:
                 print("run_script: %%r is listed %%d times; reading the folder again in %%g s"
                       %% (name, len(files), DUP_PAUSE_S))
                 adsk.doEvents()
                 time.sleep(DUP_PAUSE_S)
-                again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
-                files = again.get(name, files)
+                again, u2, o2 = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: False)
+                seen = again.get(name, [])
+                if len(seen) == 1 and not could_be(u2, o2, ext):
+                    files = seen
+                elif len(seen) > 1 and _same_file(seen):
+                    files = seen[:1]
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
