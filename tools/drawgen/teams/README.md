@@ -40,6 +40,6 @@ names, material, finish and revision come from the part's STEP, its parts-list r
    within 0.05 mm of the STEP, true circles, no text touching text or an outline, no line through a text.
 3. Look at the PDF at print size. Then open a PR with the entry and the PDF, and ask for the visual pass.
 
-When drawgen refuses a part (bent or folded, a fillet, a countersink, holes square to a face no view looks at
-straight), the refusal says why. The part goes to Fusion for now, with that reason, and the gap goes to drawgen's
+When drawgen refuses a part (bent or folded, a fillet, a countersink, holes on an angled face the part hides, a
+flat-faced feature it can't size such as a step or a pocket), the refusal says why and names the faces. The part goes to Fusion for now, with that reason, and the gap goes to drawgen's
 owner.

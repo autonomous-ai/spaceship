@@ -299,6 +299,11 @@ def load_gap_rules(root):
     return read_csv(p) if os.path.exists(p) else []
 
 
+# the room's floor, which the pod stands on (D-132: the pod has no floor of its own): the plane Z 0, for gap rules that
+# name it ('ROOM FLOOR'), such as D-151's kick strip over the floor
+ROOM_FLOOR = Body("ROOM FLOOR (Z 0)", None, None, (-1e6, -1e6, -100.0, 1e6, 1e6, 0.0), "", "", None)
+
+
 def check_gap_rules(root, mdl, bodies, rules):
     """One finding per rule group (the `group` column, else the rule id),
     listing every rule in it that fails."""
@@ -315,6 +320,8 @@ def check_gap_rules(root, mdl, bodies, rules):
         rb = re.compile(r["b"], re.I)
         A = [b for b in bodies if ra.search(b.label)]
         B = [b for b in bodies if rb.search(b.label)]
+        if rb.search(ROOM_FLOOR.label):
+            B.append(ROOM_FLOOR)            # D-132, D-151: no floor in the pod; the room floor is the plane Z 0
         if not A or not B:
             continue
         lo, hi = num(r.get("min_gap_mm")), num(r.get("max_gap_mm"))

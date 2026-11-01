@@ -1115,8 +1115,33 @@ def check_drawing_people(root, names=None):
     return fs, True
 
 
+# D-143 (3), PM ruling 2026-11-01: a bought profile we cut into mitred lengths with holes is a made part, with one
+# table drawing (D-89), not a cut list alone (FRONT's 368004 is held until the generator reads profiles)
+PROCESSED = re.compile(r"\bmitred?\b|\bmiter(?:ed)?\b|\bdrill(?:ed|ing)?\b|\bpunched\b", re.I)
+PROCESSED_WHY = ("D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing "
+                 "(D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles")
+
+
+def processed_bought(plists, holes_by_pn):
+    """{pn: why} for bought numbers (not hardware, family 83) that a parts list says we mitre, drill or punch and
+    whose CAD shows holes: D-143 (3) makes them made parts that need a drawing."""
+    from common import pn_class
+    out = {}
+    for _p, rows in plists:
+        for row in rows:
+            pn = row["part_number"]
+            if pn_class(pn) != "bought" or pn[:2] == "83" or not holes_by_pn.get(pn):
+                continue
+            raw = row.get("_raw", {})
+            text = " ".join(str(raw.get(k, "")) for k in ("kind", "type", "process", "name", "description", "note",
+                                                         "notes", "material"))     # FRONT's lists call it 'type'
+            if PROCESSED.search(text):
+                out[pn] = PROCESSED_WHY
+    return out
+
+
 def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
-                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None):
+                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None, made_why=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -1140,8 +1165,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     reserved = reserved_spaces(root)
     for pn in sorted(part_numbers):
         cls = pn_class(pn)
-        if cls not in ("part", "assembly"):
-            continue
+        if cls not in ("part", "assembly") and pn not in (made_why or {}):
+            continue                    # bought parts, unless a decision makes them made (D-143's cut profiles)
         files = idx.get(pn, {})
         dwgs = files.get("DWG", [])
         pdfs = [(rv, p) for rv, p in dwgs if p.lower().endswith(".pdf")]
@@ -1240,9 +1265,10 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                               r_where, owner))
             continue
         if not pdfs:
+            why = " %s." % (made_why or {})[pn] if pn in (made_why or {}) else ""
             fs.append(Finding("C05", "no-drawing", pn, missing_for(pn) if cls == "part" else "major",
-                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s" % (
-                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125),
+                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s%s" % (
+                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125, why),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
                               r_where, owner))
             continue
