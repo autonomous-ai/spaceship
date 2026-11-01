@@ -751,8 +751,8 @@ class DrawgenParts(unittest.TestCase):
     """D-113 (1): a part tools/drawgen draws is never blocked by a locked screen, because drawgen doesn't run in Fusion;
     the list is drawgen's own registry (tools/drawgen/specs.py), with the numbers its tabulated sheets cover."""
 
-    def line(self, pn, drawgen):
-        rh = row(pn, "make", "WALL - PANEL FRAME - " + pn, "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish")
+    def line(self, pn, drawgen, mass=1.0):
+        rh = row(pn, "make", "WALL - PANEL FRAME - " + pn, "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish", mass=mass)
         rh["cut_rows"] = True
         file_map = files(f"{pn}_P01_WALL-FRAME_CAD.f3d", f"{pn}_P01_WALL-FRAME_STEP.step")
         fai = rc.fai_plan(PLAN, BOM)
@@ -764,6 +764,11 @@ class DrawgenParts(unittest.TestCase):
         self.assertEqual(self.line("211102", None)["state"], rc.BLOCKED)              # Fusion's: waits for the screen
         self.assertEqual(self.line("211102", set())["state"], rc.BLOCKED)
         self.assertEqual(self.line("211102", {"211102"})["state"], "open: drawing")   # drawgen's: it can draw it now
+
+    def test_a_drawgen_part_with_a_second_gap_shows_both(self):
+        # drawgen lifts only the locked screen's hold on the drawing; every other gap still shows (Reviewer 6, #227)
+        line = self.line("211102", {"211102"}, mass=None)
+        self.assertEqual((line["gaps"], line["state"]), (["drawing", "mass"], "open: drawing, mass"))
 
     def test_the_list_is_drawgens_own_registry(self):
         got = rc.drawgen_parts()
