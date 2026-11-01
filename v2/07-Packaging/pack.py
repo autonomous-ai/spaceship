@@ -438,7 +438,7 @@ PIECES = [
           "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
     Piece("2-14", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
           [("BAND_FL", 1), ("BAND_FR", 1), ("KEY", 2)], S(600, 400, 150),
-          "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111211",
+          "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111215 (D-144)",
           2, 2, "BASE", carton=True, note="the intake part: the rest of the study's front-r line after FR1, which is BASE's CAD now (S54), until BASE's batch 3; the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
     Piece("2-15", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
           "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "

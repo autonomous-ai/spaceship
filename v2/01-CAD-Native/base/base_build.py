@@ -912,7 +912,7 @@ def seal_runs(design):
     xi, yb = "%s + band_t" % XL, "%s - band_t" % YB
     runs = [("seal_l", "band_l", "X = %.2f (side band LH, inner face)" % v(xi), Y_MITRE_IN, yb,
              [(xi, Y_MITRE_IN), ("%s + seal_t" % xi, Y_MITRE_IN), ("%s + seal_t" % xi, yb), (xi, yb)]),
-            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), xi, "%s - band_t" % XR,
+            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), "%s + seal_t" % xi, "%s - band_t - seal_t" % XR,
              [("%s + seal_t" % xi, "%s - seal_t" % yb), ("%s - band_t - seal_t" % XR, "%s - seal_t" % yb),
               ("%s - band_t - seal_t" % XR, yb), ("%s + seal_t" % xi, yb)])]
     if P02_ON:
@@ -925,14 +925,37 @@ def build_seal_envelopes(design):
     extruded up to seal_leg above the band's bottom: the room its leg and its fin, bent on the room floor, take. The
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
+    sections = globals()["p02_seal_sections"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
-        sk = comp.sketches.add(comp.xYConstructionPlane)
-        sk.name = "PLAN - BASE SEAL LIP - ENVELOPE ON THE ROOM FLOOR"
-        polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
-        check_sketch(sk)
-        extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
-        single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
+        if key in sections:
+            # a section across the run (p02_seal_sections), one extrude along +Y from its start to its end
+            y0, y1, sec = sections[key]
+            yv = ev(design, y0)
+            pl = offset_plane(comp, "xz", y0, yv, "PLANE - BASE SEAL LIP - SECTION AT THE RUN'S START")
+            sk = comp.sketches.add(pl)
+            sk.name = "SECTION - BASE SEAL LIP - LEG AND FIN"
+            polygon(design, sk, [(ex, ez, (ev(design, ex), yv, ev(design, ez))) for ex, ez in sec], X, Z)
+            check_sketch(sk)
+            ei = comp.features.extrudeFeatures.createInput(one_profile(sk),
+                                                           adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+            direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if pl.geometry.normal.y > 0 else \
+                adsk.fusion.ExtentDirections.NegativeExtentDirection
+            ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("%s - %s" % (y1, y0))), direc)
+            comp.features.extrudeFeatures.add(ei).name = "EXTRUDE - BASE SEAL LIP - SECTION ALONG THE RUN"
+        else:
+            sk = comp.sketches.add(comp.xYConstructionPlane)
+            sk.name = "PLAN - BASE SEAL LIP - ENVELOPE ON THE ROOM FLOOR"
+            polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
+            check_sketch(sk)
+            extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+        body = single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
+        if key in sections:
+            got = bbox_mm(body)
+            want_y = (ev(design, sections[key][0]), ev(design, sections[key][1]))
+            if abs(got[1] - want_y[0]) > 0.01 or abs(got[4] - want_y[1]) > 0.01:
+                raise RuntimeError("%s: section envelope runs Y %.2f..%.2f, not %.2f..%.2f" % (
+                    key, got[1], got[4], want_y[0], want_y[1]))
         n += 1
     print("step 6: base seal envelopes: %d runs (D-132)" % n)
 
@@ -1475,10 +1498,18 @@ def step9_checks(design):
         raise RuntimeError("step 9 checks failed")
 
 
+# D-144 (#300) moved the back corners' fixing holes in corner-keys.csv (6.0 either side, at 10.5 and 17.8 from the
+# key's back face). This branch keeps the layout before it, as Joints' 111211 STEP still has it; the follow-up rebuild
+# takes D-144 with the new key STEP. Until then the check names the difference and fails only if the side band's
+# fixing holes match neither layout. Source: corner-keys.csv before #300 (main, parent of e796357).
+PRE_D144_FIX = {"back left corner": ((-1231.0, 837.0), (-1231.0, 823.0)),
+                "back right corner": ((1231.0, 823.0), (1231.0, 837.0))}
+
+
 def back_corner_check(design):
     """D-129: the back corners as built against the Joints Engineer's corner-keys.csv (one source, D-95):
     each key's back face centre and bottom, the side band's fixing and stud bolt holes, and the back band's
-    slot ends. Returns the names of what is off by 0.05 mm or more."""
+    slot ends. Returns the names of what is off by 0.05 mm or more (the D-144 fixing holes: PRE_D144_FIX)."""
     path = os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv")
     with open(path, encoding="utf-8") as fh:
         rows = [r for r in csv.DictReader(fh) if r["joint"] in ("back left corner", "back right corner")]
@@ -1500,8 +1531,11 @@ def back_corner_check(design):
         want_key = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]), float(r["key_bottom_z"]))
         got_keys = [tuple(mm(c) for c in (o.transform2.translation.x, o.transform2.translation.y,
                                           o.transform2.translation.z)) for o in keys]
+        fix_ok, fix_name = all(near(fix, w) for w in want_fix), "fixing holes"
+        if not fix_ok and all(near(fix, w) for w in PRE_D144_FIX.get(r["joint"], ())):
+            fix_ok, fix_name = True, "fixing holes OFF against D-144, as before it (the next branch takes D-144):"
         checks = [
-            ("fixing holes", all(near(fix, w) for w in want_fix)),
+            (fix_name, fix_ok),
             ("stud bolt holes", all(near(studs, w) for w in want_studs)),
             ("key position", any(max(abs(a - b) for a, b in zip(g, want_key)) < 0.05 for g in got_keys)),
             ("back band slot end", near(slot_ends, (float(r["face_centre_y"]), float(r["slot_end_z"])))),
@@ -2076,7 +2110,13 @@ def build_run(app):
                         d.close(False)
     parts = [k.strip() for k in ARGS.get("also_parts", "").split(",") if k.strip()]
     if ARGS.get("save") == "1" and last == len(steps) - 1:
-        parts += [k for k in WITH_ASSEMBLY if k not in parts]
+        if ARGS.get("with_assembly", "1") == "0":
+            # --arg with_assembly=0: a short run whose change leaves the band tubes' holes as they are; their part
+            # designs and STEPs from the last saved run stay current
+            print("part designs %s: not rebuilt in this run (with_assembly=0)" % ", ".join(
+                PARTS[k][0] for k in WITH_ASSEMBLY if k in PARTS))
+        else:
+            parts += [k for k in WITH_ASSEMBLY if k not in parts]
     if parts:
         # one run for the assembly and every part design keeps the shared queue short
         for key in parts:

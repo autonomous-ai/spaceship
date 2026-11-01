@@ -453,7 +453,7 @@ def air_parts(fill):
          "and C2 and drops in through the slot after the soffit hangs, onto a gasket on the fan box's top (the Air "
          "Engineer, 2026-11-01)"),
     ]
-KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
+KEY_PNS = ("111211", "111212", "111213", "111214", "111215")  # the corner key family: square (back), front LH and RH, knee LH, square (inline, D-144)
 BASE_CAD = base_cad(elsewhere=KEY_PNS + FIXING_PNS + ("831001", "831002"))   # S54: what the other lines hold stays there
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
@@ -694,9 +694,10 @@ def lines(**adopt):
     assert n_keys == key.qty, (n_keys, key.qty)
     listed = sum(a["keys"] for a in bc["asm"].values())
     L.append(("BASE", "Corner key", key.qty, sum(q * kg for q, kg in keys) / n_keys, "calculation (CAD)",
-              "S45, CAD on main: the joints' made hardware list, the corner key family 111211 to 111214, 30 mm thick (3 square, "
-              f"front LH and RH, knee LH); BASE's batch 1 lists {listed:g} of them, the back-corner keys in the side bands "
-              "(D-129, S54), so this line keeps all 6 and the band lines none"))
+              "S45, CAD on main: the joints' made hardware list, the corner key family 111211 to 111215, 30 mm thick (2 square "
+              "at the back corners, 1 square inline, front LH and RH, knee LH; D-144); BASE's batch 1 lists "
+              f"{listed:g} of them, the back-corner keys in the side bands (D-129, S54), so this line keeps all 6 and the band "
+              "lines none"))
     glide = base["B-GLIDE"]
     ng = sum(bc["glides"].values())
     split = ", ".join(f"{n:g} on {BASE_SHORT[k]}" for k, n in bc["glides"].items())

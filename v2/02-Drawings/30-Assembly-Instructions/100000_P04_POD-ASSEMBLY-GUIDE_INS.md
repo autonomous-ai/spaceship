@@ -64,7 +64,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 2](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-02_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.4 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.6 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.6 kg), **2-07** BASE - BAND ASSY - FRONT - FIXED GLASS (2.4 kg), **2-14** BASE - SMALL PARTS CARTON (1.1 kg).
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.4 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.6 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.6 kg), **2-07** BASE - BAND ASSY - FRONT - FIXED GLASS (2.5 kg), **2-14** BASE - SMALL PARTS CARTON (1.1 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
 - **Person A:** Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: FL1, then FL2 at the knee (under DL), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03). Then, with A, lays a PE sheet from the packing over the room floor inside the band, clear of the soft lip, for the rest of the work: the room floor is the pod's floor now (D-132).
@@ -174,7 +174,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 12. Electrics, first fix (power off)
 
 - **Time:** about 1 min for 2 people.
-- **Parts:** **2-12** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.3 kg).
+- **Parts:** **2-12** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.4 kg).
 - **Fasteners:** none.
 - **Person A:** Plugs the factory-tested harness together at each panel seam and runs the plug-in feeds for the light shelf and the hub to their ends (D-87).
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
