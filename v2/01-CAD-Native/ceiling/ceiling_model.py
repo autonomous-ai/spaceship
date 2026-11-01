@@ -286,7 +286,7 @@ HARDWARE = {
     "bolt25": ("838002", "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 25 (chốt mối nối khép)",
                "PI", "pc", "0", "cj_pin_n", 0.0079,
                "calculation: head 10 x 6 less the socket, shank 6 x 25 at 85% for the thread, steel 7850 kg/m3"),
-    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm",
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm",
                "PI", "pc", "n_ceil_back_bolt + 4", "n_ceil_back_bolt + cj_pin_n + 2", 0.0067,
                "calculation: body 9.5 x 14.86 with an M6 bore and a 12.96 x 0.76 head (SHX2 sizes), steel 7850 kg/m3"),
     "washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox",

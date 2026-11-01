@@ -41,7 +41,7 @@ HW_SPEC = {
                "ISO 4762 M6 x 16 - 8.8 - zinc plated", TQ_RIVNUT),
     "838002": ("steel, property class 8.8 (ISO 898-1)", "zinc plated", "HOLD: any maker to ISO 4762, picked at the RFQ",
                "ISO 4762 M6 x 25 - 8.8 - zinc plated", "snug only: a pin, not a clamp (joints register 2.10)"),
-    "838003": ("steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2", TQ_RIVNUT),
+    "838003": ("steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAL2-610-4.2", TQ_RIVNUT),
     "838004": ("stainless steel A2", "none (plain stainless)", "HOLD: any maker to ISO 7093-1, picked at the RFQ",
                "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", ""),
     "838005": ("elastomer (HOLD-02)", "as supplied (elastomer)", "HOLD-02", "HOLD-02", ""),
@@ -317,19 +317,19 @@ def parts_list(v, mass):
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,
         })
-    # the ACP bond set, shared with WALL (joints register H-12, number 108002): one bonded
-    # skin per ceiling outer panel, mass from the bond spec's 0.28 kg/m2
+    # the ACP bond set, shared with WALL (joints register H-12, number 108002): one bonded skin per ceiling outer
+    # panel, mass from the bond spec's 0.28 kg/m2 (section 8 keeps the 12 x 3 joint for D-131's steel frames)
     bond_each = v["half_pw"] * v["wall_depth"] * 1e-6 * 0.28
     rows.append({
         "part_number": "108002",
-        "name": "POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
+        "name": "POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE",
         "name_vi": "Bộ keo dán ACP", "kind": "PI", "parent": "assy_c1|assy_c2", "qty_per_parent": 1,
-        "qty_per_pod": 2, "material": "SikaTack Panel-50 system (bond spec)", "finish": "", "process": "",
-        "maker": "Sika", "sku": "SikaTack Panel-50 system (bond spec V2-ENG-BND): SikaTack Panel-50 (ETA 19/0511), Sika Aktivator-205, Sika Panel Primer, SikaTack Panel Fixing Tape",
+        "qty_per_pod": 2, "material": "Sikaflex-252 system (bond spec section 8, D-131)", "finish": "", "process": "",
+        "maker": "Sika", "sku": "Sikaflex-252 system (bond spec V2-ENG-BND section 8): Sikaflex-252, Sika Aktivator-205 and Sika Primer-210 on both faces, SikaTack Panel Fixing Tape 3 x 12",
         "torque": "", "size_mm": "", "tolerance": "",
         "mass_each_kg": "%.3f" % bond_each,
         "mass_status": "calculation", "revision": REV, "status": "DRAFT",
-        "source": "joints register H-12 (108002); bond spec: 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
+        "source": "joints register H-12 (108002); bond spec section 8 (D-131): 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
             v["half_pw"] * v["wall_depth"] * 1e-6),
     })
     q["bond"] = (1, "assy_c1|assy_c2")
