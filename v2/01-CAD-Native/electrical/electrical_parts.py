@@ -342,7 +342,7 @@ AL = "aluminium 5052-H32"
 
 # ---- power unit 710001: made parts
 part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
-     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.465, "CAD (Fusion volume 173,340 mm3 x 2.68 g/cm3, 711001 P01 design)",
+     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.465, "CAD (Fusion volume 173,405 mm3 x 2.68 g/cm3, 711001 P01 design version 5)",
      size="296 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
      status="DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data)",
      source="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD (electrical_parts_cad.py)",
@@ -545,9 +545,61 @@ part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Đ
 part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Điện - nẹp bảo vệ mép tôn", "PI", "710000", 0.2,
      "PVC or nylon", "", 0.02, "assumption (kg per m)", sku="maker HOLD (H-ELE-01)", status=HOLD_BUY, source="",
      note="the slot S-CNR (182 mm edge); qty in m (B2-CASS's cut-out is plain, WALL, so its slot is gone)")
-part("clip", "718043", "ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY", "Điện - kẹp giữ cáp", "PI", "710000", 24,
-     "", "", 0.002, "assumption", sku="maker HOLD (H-ELE-10)", status=HOLD_BUY, source="",
-     note="one per 300 mm of route and two per pocket (calculation from the route model); clips to the tray only (D-26)")
+# ---- cable ties: where they go in the lining trays (WALL's; a Ø6.4 hole each), from the route model (D-26: the
+# cables clip to the tray only). The rule: a tie 20 mm inside each end of a connector pocket; along each cable, ties
+# evenly spaced so neighbours are 300 mm apart at most; none within 150 mm of the power unit's cut-out (the leads
+# cross the 4 mm floating gap there with slack); none on the draw cords (they must pull free); a tie 20 mm short of
+# the felt hole or slot a cable leaves by. The holes are posted to WALL tray by tray (2026-11-01).
+TIE_END, TIE_SPAN, TIE_KEEP, TIE_HOLE = 20.0, 300.0, 150.0, 6.4
+TIE_TRAYS = {"B2-CASS": "511202 (LINING - TRAY - BACK LOWER - B2)",
+             "B4-CASS": "the upper back lining's tray behind B4 (no number yet)",
+             "R1-CASS": "511102 (LINING - TRAY - SIDE LOWER - RH)",
+             "R2-CASS": "511104 (LINING - TRAY - SIDE UPPER - RH)"}
+
+
+def _fill(points, span=TIE_SPAN):
+    """Ties between fixed points along one axis, so no gap is over `span`."""
+    import math
+    out = [points[0]]
+    for a, b in zip(points, points[1:]):
+        n = max(1, math.ceil((b - a) / span - 1e-9))
+        out += [a + (b - a) * i / n for i in range(1, n + 1)]
+    return out
+
+
+def tie_points(v):
+    """[(cassette, cable, (x, y, z) pod mm)] of every tie's hole, from the route model's bodies: along the route's
+    centre line, through the tray's back sheet (the cassette envelope's back face in the skeleton)."""
+    box = {b["code"]: M.body_box(b, v) for b in M.BODIES}
+    cas = M.skeleton_boxes(v)
+    back_y, right_x = cas["B2-CASS"][4], cas["R1-CASS"][3]          # the back wall's and the right wall's tray sheets
+    assert cas["B4-CASS"][4] == back_y and cas["R2-CASS"][3] == right_x
+    cut_x1 = v["pu_x1"] + v["pu_clr"]
+    cut_z1 = v["pu_z1"] + v["pu_clr"]
+    out = []
+    # B2-CASS: the trunk along X at trunk_z, from the cut-out's keep-out to the corner slot S-CNR
+    for x in _fill([max(cut_x1 + TIE_KEEP, box["P1"][3] - TIE_END), box["S-CNR"][0] - TIE_END]):
+        out.append(("B2-CASS", "trunk W20b, W30b, W31b", (x, back_y, v["trunk_z"])))
+    # (the light feed's short run up B2-CASS to the B2/B4 joint lies inside the keep-out: no tie)
+    # B4-CASS: P4 above the joint, L1-B4 up, P6 the shelf feed
+    zs = [z for z in (box["P4"][2] + TIE_END, box["P4"][5] - TIE_END) if z - cut_z1 >= TIE_KEEP]
+    for z in _fill(zs + [box["P6"][2] + TIE_END, box["P6"][5] - TIE_END]):
+        out.append(("B4-CASS", "light feed W10b, W10c", (v["lt_x"], back_y, z)))
+    # R1-CASS: P2 at the corner, T1-R1A, P3-KIT, T1-R1B to the column's felt hole FX-COL
+    ys = sorted([box["P2"][1] + TIE_END, box["P2"][4] - TIE_END, box["P3-KIT"][1] + TIE_END,
+                 box["P3-KIT"][4] - TIE_END, box["FX-COL"][4] + TIE_END])
+    for y in sorted(_fill(ys), reverse=True):
+        out.append(("R1-CASS", "trunk W20c, W30c, W31c", (right_x, y, v["trunk_z"])))
+    # R2-CASS: the call light drop from its felt hole FX-CALL2 up to P7
+    for z in _fill([box["FX-CALL2"][5] + TIE_END, box["P7"][2] + TIE_END, box["P7"][5] - TIE_END]):
+        out.append(("R2-CASS", "call light W12", (right_x, v["call_y"], z)))
+    return out
+
+
+part("clip", "718043", "ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY", "Điện - kẹp giữ cáp", "PI", "710000",
+     len(tie_points(M.values())), "", "", 0.002, "assumption", sku="maker HOLD (H-ELE-10)", status=HOLD_BUY, source="",
+     note="one at each tie point in the lining trays (tie_points: pockets, every 300 mm, none near the cut-out; "
+          "710000_P01_ELECTRICAL-TRAY-TIE-HOLES_CALC.csv); clips to the tray only (D-26)")
 part("drawcord", "718044", "ELECTRICAL - DRAW CORD - NYLON 3 MM", "Điện - dây mồi", "PI", "710031",
      round(_m(["W32", "W33"]), 2), "nylon", "", 0.006, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY,
      source="", note="W32 and W33; qty in m")

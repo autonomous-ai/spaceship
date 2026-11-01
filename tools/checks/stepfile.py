@@ -239,12 +239,19 @@ class Bend:
 
 
 class Face:
-    __slots__ = ("id", "kind", "origin", "normal", "radius", "same_sense", "points", "arcs", "lines")
+    """One face. points: every edge's two ends; arcs and lines: its CIRCLE and LINE edges as written. edges: every
+    edge with its 3D curve, a curve on a surface (SURFACE_CURVE, SEAM_CURVE) read through to the curve it carries:
+    ("line", v1, v2, None), ("circle", v1, v2, (placement, radius, same sense)) or ("chord", v1, v2, curve kind) for
+    any other curve, which only its ends stand for (the seal-line slices, c_seal). cone: (origin, axis, radius at the
+    origin, half angle in radians) for a conical face."""
+    __slots__ = ("id", "kind", "origin", "normal", "radius", "same_sense", "points", "arcs", "lines", "edges", "cone")
 
-    def __init__(self, fid, kind, origin, normal, radius, same_sense, points, arcs, lines=()):
+    def __init__(self, fid, kind, origin, normal, radius, same_sense, points, arcs, lines=(), edges=(), cone=None):
         self.id, self.kind, self.origin, self.normal = fid, kind, origin, normal
         self.radius, self.same_sense, self.points, self.arcs = radius, same_sense, points, arcs
         self.lines = list(lines)
+        self.edges = list(edges)
+        self.cone = cone
 
 
 class Solid:
@@ -526,7 +533,7 @@ class StepFile:
                 return None
         bounds, surf, same = a[1], a[2], (a[3] == "T")
         sn, sa = self.first(surf)
-        points, arcs, lines = [], [], []
+        points, arcs, lines, edges = [], [], [], []
         for b in bounds or []:
             _bn, ba = self.first(b)
             if not ba:
@@ -556,13 +563,25 @@ class StepFile:
                     arcs.append((c, r, v1, v2, ea[4] != "F"))
                 elif cn == "LINE":
                     lines.append((v1, v2))
+                gn, ga = (self.first(ca[1]) if cn in ("SURFACE_CURVE", "SEAM_CURVE") and ca else (cn, ca))
+                if gn == "CIRCLE":
+                    edges.append(("circle", v1, v2, (self.placement(ga[1]), ga[2] * self.scale, ea[4] != "F")))
+                elif gn == "LINE":
+                    edges.append(("line", v1, v2, None))
+                else:
+                    edges.append(("chord", v1, v2, gn))
         if sn == "PLANE":
             f = self.placement(sa[1])
-            return Face(fref, "plane", f.o, f.z if same else _mul(f.z, -1.0), None, same, points, arcs, lines)
+            return Face(fref, "plane", f.o, f.z if same else _mul(f.z, -1.0), None, same, points, arcs, lines, edges)
         if sn == "CYLINDRICAL_SURFACE":
             f = self.placement(sa[1])
-            return Face(fref, "cylinder", f.o, f.z, sa[2] * self.scale, same, points, arcs, lines)
-        return Face(fref, (sn or "other").lower(), None, None, None, same, points, arcs, lines)
+            return Face(fref, "cylinder", f.o, f.z, sa[2] * self.scale, same, points, arcs, lines, edges)
+        cone = None
+        if sn == "CONICAL_SURFACE" and sa and len(sa) > 3:
+            f = self.placement(sa[1])
+            half = float(sa[3])
+            cone = (f.o, f.z, sa[2] * self.scale, math.radians(half) if half > math.pi / 2 else half)
+        return Face(fref, (sn or "other").lower(), None, None, None, same, points, arcs, lines, edges, cone)
 
     def _vertex(self, ref):
         _n, a = self.first(ref, "VERTEX_POINT")

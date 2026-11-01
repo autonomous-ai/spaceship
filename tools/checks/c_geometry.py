@@ -531,7 +531,14 @@ def check_alignment(root, mdl, bodies, capture=4.0, axial_gap=40.0):
     return fs
 
 
-JOINT_HOLE_SIZES = ((5.9, 6.1), (6.3, 7.3), (9.4, 9.8))    # rivnut thread bore, M6 clearance, rivnut hole
+# an M6 rivnut's hole: Ø9.53 (838003 as CAH2, the parts not rebuilt yet) and D-163's Ø10.00 +0.10 (838003 as
+# CAL2-610-4.2 in a round drilled hole, every rebuilt part); each band takes the CAD's rounding either side
+RIVNUT_HOLE_SIZES = ((9.4, 9.8), (9.95, 10.15))
+JOINT_HOLE_SIZES = ((5.9, 6.1), (6.3, 7.3)) + RIVNUT_HOLE_SIZES    # rivnut thread bore, M6 clearance, rivnut holes
+
+
+def is_rivnut_hole(d):
+    return any(lo <= d <= hi for lo, hi in RIVNUT_HOLE_SIZES)
 
 
 def _box_hits_segment(box, p0, p1, pad=0.5):
@@ -551,7 +558,7 @@ def check_hole_sizes(root, mdl, bodies, hole_rules=None, capture=4.0, plane=15.0
     hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
     fs = []
     hs = world_holes(bodies)
-    rivnut_axes = [(b, h) for b, h in hs if (9.4 <= h.diameter <= 9.8) or
+    rivnut_axes = [(b, h) for b, h in hs if is_rivnut_hole(h.diameter) or
                    (RIVNUT_LABEL.search(b.label) and 5.9 <= h.diameter <= 6.1)]
     done = set()
     for hr in hole_rules:
