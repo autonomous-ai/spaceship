@@ -12,7 +12,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 ## Result
 
 1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **216 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **325 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 541 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 402.2 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 406.2 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 405.8 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+2. **Masses are the layout study's P04 roll-up**, 402.2 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 406.2 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 405.7 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **39 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 9; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
@@ -24,7 +24,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 18 | 190.3 | 216 (477) | 1,641 (64.6) | 71.8 | 6.6 |
 | 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 21 | 215.4 | 325 (716) | 1,563 (61.5) | 164.1 | 4.4 |
-| **Both** |  | 39 | **405.8** | **541** (1,193) |  |  |  |
+| **Both** |  | 39 | **405.7** | **541** (1,193) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -149,8 +149,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-14** | 510103 | L2 | LINING - CASSETTE - SIDE UPPER - LH | 9.9 | 1 | 14 |
 | **1-15** | 510201 | B1 | LINING - CASSETTE - BACK LOWER - B1 | 8.0 | 1 | 14 |
 | **1-16** | 510202 | B2 | LINING - CASSETTE - BACK LOWER - B2 | 8.0 | 1 | 14 |
-| **1-17** | TBD (WALL) | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1 | 14 |
-| **1-18** | TBD (WALL) | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1 | 14 |
+| **1-17** | 510203 | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1 | 14 |
+| **1-18** | 510204 | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1 | 14 |
 | **2-01** | 360002 | - | FRONT - FIXED GLASS UNIT | 28.7 | 2 | 9 |
 | **2-02** | 360001 | - | FRONT - DOOR UNIT | 48.6 | 2 | 10 |
 | **2-03** | 350003 | DR | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2 | 9 |
@@ -195,11 +195,11 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-14** | 510103 | LINING - CASSETTE - SIDE UPPER - LH | Cassette lót vách trái trên (khay thép + tấm tiêu âm) | L2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 38 | 14 |
 | **1-15** | 510201 | LINING - CASSETTE - BACK LOWER - B1 | Cassette lót vách hậu dưới trái (khay thép + tấm tiêu âm) | B1 | 8.01 | calculation (CAD) | 1166 × 1118.61 × 38 | 14 |
 | **1-16** | 510202 | LINING - CASSETTE - BACK LOWER - B2 | Cassette lót vách hậu dưới phải (khay thép + tấm tiêu âm) | B2 | 8.01 | calculation (CAD) | 1166 × 1118.61 × 38 | 14 |
-| **1-17** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - B3 | Cassette tiêu âm - vách hậu trên trái | B3 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
-| **1-18** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - B4 | Cassette tiêu âm - vách hậu trên phải | B4 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
+| **1-17** | 510203 | LINING - CASSETTE - BACK UPPER - B3 | Cassette lót vách hậu trên trái (khay thép + tấm tiêu âm) | B3 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
+| **1-18** | 510204 | LINING - CASSETTE - BACK UPPER - B4 | Cassette lót vách hậu trên phải (khay thép + tấm tiêu âm) | B4 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
 | - | - | 40 × 40 corner edge tubes in L2, R2, C1, C2 (D-63) |  | - | 0.01 | calculation | inside the pieces | - |
 | - | - | Bond beyond L1 and R1 (D-71) |  | - | 0.05 | calculation | inside the pieces | - |
-| - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 3.19 | calculation (part CAD); cleats assumption | inside the pieces | - |
+| - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 3.17 | calculation (part CAD); cleats assumption | inside the pieces | - |
 | - | - | Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes |  | - | 1.28 | assumption | inside the pieces | - |
 | - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
 | - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film |  | - | 6.00 | assumption | - | - |
@@ -220,7 +220,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-09** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.76 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 16 |
 | **2-10** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 15 |
 | **2-11** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.91 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 11 |
-| **2-12** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.41 | calculation (CAD) | 600 × 250 × 200 | 12 |
+| **2-12** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.40 | calculation (CAD) | 600 × 250 × 200 | 12 |
 | **2-13** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.58 | calculation (CAD) | 2332 × 80 × 60 | 19 |
 | **2-14** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.14 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-15** | 810101 | INTERIOR - WORK WALL LEDGE ASSY | Bàn tựa vách làm việc (cụm) | - | 1.90 | calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 22 |
@@ -282,10 +282,10 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-09 × 0.5, 2-16 × 0.5 |
 | BASE | Base seal: BASE's soft lip along the band pieces' inner faces | 6.129 | 0.49 | calculation (CAD); kg/m source | 2-04 × 2.4, 2-05 × 1.462, 2-06 × 1.464, 2-07 × 0.803 |
 | BASE | Cable grommets: the sealed cable holes | 1 | 0.10 | source | A-4 |
-| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.28 | calculation (CAD) | 1-02 × 0.543858, 2-12 × 0.456142 |
+| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.28 | calculation (CAD) | 1-02 × 0.544682, 2-12 × 0.455318 |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | calculation (CAD) | 2-13 |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-15 |
-| WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.19 | calculation (part CAD); cleats assumption | A-3 |
+| WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.17 | calculation (part CAD); cleats assumption | A-3 |
 | LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | assumption | L-1 |
 
 A share like "x 0.5" means the piece carries that part of the roll-up line: BASE's lip ships on the band pieces, each carrying its own metres from BASE's list, and each band piece its own glides and load blocks; the four fans ride two in each fan box; the named clips are split by count, 32 wall clips on pallet 1 and 12 ceiling clips with the 4 catch lanyards on pallet 2 (calculation at the roll-up's 40 g a clip and 100 g a lanyard).
@@ -308,7 +308,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 39 labelled pieces; without a place: none; unknown tags: none | yes |
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
 | K12 | Every skeleton body maps to exactly one label, for the step pictures | 31 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
-| K13 | Every part number on a label is the master BOM's number for that name | 33 of 39 pieces numbered, 0 of them from the BOM by name (none); still TBD: BASE 1, ELECTRICAL 1, WALL 4; named otherwise in the BOM: none; not in the BOM: none; two numbers for one name: none; neither a number nor TBD: none | yes |
+| K13 | Every part number on a label is the master BOM's number for that name | 35 of 39 pieces numbered, 2 of them from the BOM by name (1-17, 1-18); still TBD: BASE 1, ELECTRICAL 1, WALL 2; named otherwise in the BOM: none; not in the BOM: none; two numbers for one name: none; neither a number nor TBD: none | yes |
 | K14 | Every piece's planned size holds its own CAD, as it ships | 32 pieces checked against 22 STEP files; no CAD yet: 7 (1-05, 1-06, 1-17, 1-18, 2-12, 2-14, 2-21); over: none; unreadable: none | yes |
 | K15 | Every piece goes into the install sheet's elevator, leaned in through its door (the glass out of its crate) | car 2032 × 1295 × 2286 mm inside, door 1070 × 2134: not in: none; a typical car with a 914 mm door: not in: ['2-03']; the crate itself: opened at the entrance | yes |
 
@@ -395,7 +395,7 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | PK-04 | Every piece with CAD is packed at its CAD size (K14). Without CAD yet, and packed at planned sizes: 1-05 (panel assy - back upper - b3), 1-06 (panel assy - back upper - b4), 1-17 (cassette - back upper - b3), 1-18 (cassette - back upper - b4), 2-12 (kit - harness, cord set, hub zone, lights), 2-14 (small parts carton), 2-21 (installation kit (open first)). The lanes and tiers follow from the sizes with 5 mm of wrap a side, so a part that grows shows in K5 too. | WALL, BASE, AIR, Packing | calculation (CAD); the rest assumption |
 | PK-05 | AIR's CAD (PR #91) sets the air parts' sizes. The supply fan box joined with the intake riser (D-87) ships with both transitions and its fans: 2005 × 516 × 203. The Air Engineer's next pass makes it 169 deep, plus D-130's intake boot under it: this plan takes those sizes when they land (K14 checks). The roof sleeve and grille ship loose with C2 (#263): the sleeve seated in C2's roof slot and taped, the grille over it; both go on after the soffit hangs (guide step 17); the grille's 4 bolts and washers (J-AIR-03) travel in a bag taped to the grille. | AIR | calculation (CAD) |
 | PK-06 | The light shelf 810201 and the ledge 810101 are INTERIOR's CAD; the ledge's 2 brackets 818101 and the screen rail 818102 are on HOLD (0.1 kg each and 0.5 kg, assumed, inside the roll-up's ledge line), and so are their screws. The light shelf bundle and the ledge carton sizes are this plan's assumptions. | INTERIOR | calculation; HOLD parts assumption |
-| PK-07 | A piece marked TBD takes its number from the master BOM (`v2/04-BOM/100000_P01_POD-MASTER_BOM.csv`) as soon as the owner's parts list carries its exact name; check K13 holds every number on a label to the BOM's name. Still TBD: 6 of 39 pieces: BASE 1, ELECTRICAL 1, WALL 4. | BASE, ELECTRICAL, WALL | open |
+| PK-07 | A piece marked TBD takes its number from the master BOM (`v2/04-BOM/100000_P01_POD-MASTER_BOM.csv`) as soon as the owner's parts list carries its exact name; check K13 holds every number on a label to the BOM's name. Still TBD: 4 of 39 pieces: BASE 1, ELECTRICAL 1, WALL 2. | BASE, ELECTRICAL, WALL | open |
 | PK-08 | Re-run `pack.py` when a team's CAD mass replaces a roll-up line, or when the master BOM changes (each regeneration carries it through). | Packing | process |
 | PK-09 | D-129: the side bands carry the two back-corner keys and the back band has their keyholes, so the back band ships 2420 mm long (2430 wrapped) on the 2438 mm deck. BASE's CAD still has those keys on the back band; K14 leaves them out of the back band, and the side bands are planned 8 mm thicker for the back keys' hook studs out of their inner walls (J-BASE-02 as #241 set it) until BASE's CAD carries their keys. | BASE, Joints | DECIDED (D-129); CAD to follow |
 

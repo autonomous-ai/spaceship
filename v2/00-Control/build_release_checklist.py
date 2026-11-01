@@ -73,7 +73,6 @@ FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEI
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
 ACP = re.compile(r"\bACP\b|aluminium composite", re.I)  # a flat ACP part counts under D-89 part (4) (D-100)
 JOINTS_KEYS = re.compile(r"^11121[1-4]$")  # the base corner and inline keys: made by the Joints Engineer (D-95)
-SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
 SHEET_CUT = re.compile(r"laser|water\s*-?\s*jet|router|routed", re.I)
@@ -225,19 +224,29 @@ def files_by_pn(paths):
     return by
 
 
+def checks_common():
+    """The mechanical check's shared name readers (tools/checks/common.py), loaded as C05's modules load them."""
+    path = str(ROOT / "tools" / "checks")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    import common
+    return common
+
+
 def head_noun(name):
-    """The last word of a part name's function field, as the mechanical check reads it (tools/checks/common.py):
-    'BASE - SEAL HOLDER - LH' gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL."""
-    fields = [f.strip() for f in (name or "").upper().split(" - ")]
-    func = fields[1] if len(fields) > 1 else fields[0]
-    words = re.findall(r"[A-Z][A-Z-]*", func)
-    return words[-1] if words else ""
+    """The last word of a part name's function field, read by the mechanical check's own head_noun
+    (tools/checks/common.py), so the checklist and C05 can't read a name apart: 'BASE - SEAL HOLDER - LH' gives
+    HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, and a piece of a soft good is that good, its sizes and codes
+    left out: 'WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON' gives FILL, not X (the Lead's ruling
+    on WALL's L1 sample, 2026-11-01)."""
+    return checks_common().head_noun(name)
 
 
 def soft_kind(name):
-    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89)."""
+    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89), with the mechanical
+    check's own list of soft heads."""
     h = head_noun(name)
-    if not SOFT_HEADS.fullmatch(h):
+    if not checks_common().SOFT_HEADS.fullmatch(h):
         return ""
     return "felt or fill" if h.rstrip("S").endswith(("FELT", "FILL")) else "soft"
 
@@ -442,6 +451,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     by_cut_row = cut_rows(cut_texts)
     reg = {i["part_number"]: i for i in register if i["part_number"]}
     cut_lists = [p for p in paths if is_cut_list(p)]
+    member_frame = d120_members(parts, cut_texts)
+    member_rows = d162_rows(cut_texts)
+    frame_kinds = holders_kinds(parts, by_pn)
     made, bought, last_unit, seen = [], [], {}, {}
     for r in parts:
         pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
@@ -459,6 +471,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             text = " ".join([r["material"], r["process"], r["name"]])
             cad = any(by_pn.get(h, {}).get("CAD") for h in holders)
             step = any(by_pn.get(h, {}).get("STEP") for h in holders)
+            frames = member_frame.get(pn, set())
+            cad = cad or any("CAD" in frame_kinds.get(f, set()) for f in frames)  # a D-120 member: its frame's files
+            step = step or any("STEP" in frame_kinds.get(f, set()) for f in frames)
             soft = soft_kind(r["name"]) if r["make_buy"] != "assembly" else ""
             by_cut = bool(soft) and cut_list_lacks(by_cut_row.get(pn, []), thickness=soft == "soft") == []
             strip = ((d125 or {}).get(pn) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part" else None)
@@ -471,12 +486,12 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 flat = "yes"
             elif strip_ok:
                 flat = "row (D-125)"
-            elif SHEET.search(text):
-                flat = "no"
-            elif TUBE.search(text):
+            elif TUBE.search(text):     # tube words first: D-131's tubes are galvanized steel, which alone reads as sheet
                 team_dir = src.rsplit("/", 1)[0] + "/"
                 listed = any(c.startswith(team_dir) and pn in cut_texts.get(c, "") for c in cut_lists)
                 flat = "yes" if listed or r.get("cut_rows") else "no"
+            elif SHEET.search(text):
+                flat = "no"
             else:
                 flat = "n/a"
             if any("WIRING-DIAGRAM" in d.rsplit("/", 1)[-1] for d in by_pn.get(pn, {}).get("DWG", [])):
@@ -485,6 +500,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "yes"
             elif pn in tab_cover:
                 dwg = f"on {tab_cover[pn]}, tabulated (D-89)"
+            elif pn in member_rows and not member_rows[pn][1]:
+                dwg = f"its frame's cut list row, {member_rows[pn][0]} (D-162)"
+            elif pn in member_rows:
+                dwg = "no: its cut list row (D-162) doesn't give %s" % ", ".join(member_rows[pn][1])
             elif by_cut:
                 dwg = "cut list (D-89)"
             elif soft == "soft" and by_pn.get(pn, {}).get("DXF"):
@@ -527,8 +546,11 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             in_reg = (pn in reg) if hw else None
             given = reg_status.get(pn, "defer")  # the register wins where it states the product (D-63)
             hold = given == "hold" or (given == "defer" and bool(r["hold"]))
-            words = " ".join([r["name"], r["material"]])
-            sku = "HOLD" if hold else ("yes" if given == "named" or SKU.search(words) else "no")
+            maker, sku_cell = r.get("maker", ""), r.get("sku", "")
+            picked = not (ALTERNATIVES.search(maker) or ALTERNATIVES.search(sku_cell))  # two candidates aren't a product
+            words = " ".join([r["name"], r["material"], sku_cell if picked else ""])
+            digits_sku = picked and bool(maker.strip()) and bool(re.search(r"\b\d{4,}\b", sku_cell))
+            sku = "HOLD" if hold else ("yes" if given == "named" or SKU.search(words) or digits_sku else "no")
             rid = reg.get(pn, {}).get("id", "")
             found = {t for pats, ids in accept if any(p.fullmatch(pn) for p in pats) for t in ids}
             found |= {tid for tid, t in tests if pn and (re.search(rf"\b{pn}\b", t) or (rid and re.search(rf"\b{rid}\b", t)))}
@@ -540,6 +562,117 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             bought.append(line)
             seen[key] = line
     return made, bought
+
+
+ALTERNATIVES = re.compile(r"\bor\b|\bone to pick\b|\beither\b|\balternatives?\b", re.I)
+# D-162's cut list row, read word for word as C05 reads it (tools/checks/c_drawings.py, member_row_lacks, the
+# Checker's #357): keep the two in step. An angle counts written '45°', '45 deg' or '45 degrees' (Reviewer 6); one
+# angle given for both ends states both ('both ends mitred 45 deg', 'bottom and top ends both mitred 45.00°'), and
+# square ends need no angle (the Lead's rulings, 2026-11-01; CEILING's rows in #348, WALL's in #343)
+END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
+SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends|\bsquare ends\b", re.I)
+# one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
+_ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
+BOTH_ENDS_ANGLE = re.compile(r"\b(?:both ends|ends both)\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE),
+                             re.I)
+
+
+def member_row_lacks(row):
+    """What a member's cut-list row doesn't give of D-162's: its section, cut length, both end angles ('angles on
+    the frame drawing' doesn't state them) and quantity. C05's own function (#357), copied word for word until it is
+    on main; a test holds the two to the same answer on every row it reads."""
+    cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str)
+             and isinstance(v, str)}
+    ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
+    return [what for what, ok in (
+        ("its section", bool(cells.get("section"))),
+        ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
+        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))
+         or bool(BOTH_ENDS_ANGLE.search(ends))),
+        ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
+
+
+def d162_rows(cut_texts):
+    """{member number: (its frame, what its cut list row lacks)} for every cut list row that names a member_part:
+    D-162 makes that row the member's drawing, so it must give the section, the cut length, both end angles and the
+    quantity (member_row_lacks). 'Angles on the frame drawing' doesn't state them."""
+    out = {}
+    for text in (cut_texts or {}).values():
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                member = cells.get("member_part", "")
+                if not re.fullmatch(r"\d{6}", member):
+                    continue
+                lacks = member_row_lacks(row)
+                old = out.get(member)
+                if old is None or len(lacks) < len(old[1]):
+                    out[member] = (cells.get("frame", ""), lacks)
+        except csv.Error:
+            continue
+    return out
+
+
+def with_maker_cells(parts, sources):
+    """Each parts-list row with its list's own maker and sku cells, which the master BOM's reader doesn't carry: a
+    maker part number made only of digits (Belden 9534, a Molex or Southwire number) counts as named when the row
+    names its maker."""
+    cells = {}
+    for path, (text, _where) in sources.items():
+        if not path.endswith("_BOM.csv"):
+            continue
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                low = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                pn = low.get("part_number", "")
+                if pn and (low.get("maker") or low.get("sku")):
+                    cells.setdefault((path, pn), (low.get("maker", ""), low.get("sku", "")))
+        except csv.Error:
+            continue
+    out = []
+    for r in parts:
+        maker, sku = cells.get((r["source_file"].split(" @ ")[0], r["part_number"]), ("", ""))
+        out.append({**r, "maker": maker, "sku": sku} if (maker or sku) else r)
+    return out
+
+
+def holders_kinds(parts, by_pn):
+    """{number: the file kinds (CAD, STEP, ...) its own files or its holders' carry}: a row's holders are its own
+    number, the last assembly above it in its list and its list's own number, over every list that carries it."""
+    out, last_unit = {}, {}
+    for r in parts:
+        pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
+        if r["make_buy"] == "assembly":
+            last_unit[src] = pn
+        if not pn:
+            continue
+        for h in (pn, last_unit.get(src, ""), src.rsplit("/", 1)[-1][:6]):
+            out.setdefault(pn, set()).update(k for k, v in by_pn.get(h, {}).items() if v)
+    return out
+
+
+def d120_members(parts, cut_texts):
+    """{member number: {its frame's number}} for D-120 weldment members: the other rows in a frame's own parts list
+    (a list whose own number is a part named as a FRAME or made as a weldment), and the member_part of a cut list's
+    row, under that row's frame. A member's model is its frame's, so it takes the frame's CAD and STEP."""
+    frames = {r["part_number"] for r in parts if r["part_number"]
+              and re.search(r"\bFRAME\b|weldment", " ".join([r["name"], r["material"], r.get("kind", "")]), re.I)}
+    out = {}
+    for r in parts:
+        pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
+        unit = src.rsplit("/", 1)[-1][:6]
+        if pn and unit in frames and pn != unit and not is_cut_list(src):
+            out.setdefault(pn, set()).add(unit)
+    for text in (cut_texts or {}).values():
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                member, frame = cells.get("member_part", ""), cells.get("frame", "")
+                if re.fullmatch(r"\d{6}", member) and re.fullmatch(r"\d{6}", frame):
+                    out.setdefault(member, set()).add(frame)
+        except csv.Error:
+            continue
+    return out
 
 
 def made_hold(r, rows):
@@ -773,6 +906,7 @@ def main(argv=None):
         ref_note = "this working tree"
     sources = bom.load_sources(refs)
     parts, skipped, register, reg_where = bom.build(sources)
+    parts = with_maker_cells(parts, sources)
     for path, (text, _) in sources.items():  # a frame whose list carries its cut rows has its cut list
         if path.endswith("_BOM.csv") and re.search(r"^\d*,?,[^\n]*,cut,", text, re.M | re.I):
             for r in parts:
