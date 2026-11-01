@@ -12,7 +12,7 @@ One design per part number that needs one, each built by script into its own clo
 
 | Position | Panel assembly | Frame | Skin | Fill | Cassette | Tray | Felt |
 |---|---|---|---|---|---|---|---|
-| L1 side lower left | 210101 | 211101 | 211301 | 211501 | 510101 | 511101 | 511301 |
+| L1 side lower left | 210101 | 211101 | 211301 | pieces 211515 to 211518 (211501 cancelled, D-123) | 510101 | 511101 | 511301 |
 | R1 side lower right | 210102 | 211102 | 211302 | 211502 | 510102 | 511102 | 511302 |
 | L2 side upper left | 210103 | 211103 | 211303 | 211503 | 510103 | 511103 | 511303 |
 | R2 side upper right | 210104 | 211104 | 211304 | 211504 | 510104 | 511104 | 511304 |
