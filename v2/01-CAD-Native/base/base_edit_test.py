@@ -40,15 +40,28 @@ def load_build():
     return ns
 
 
+# P02 batch 1's parts we make (base_p02.py): measured too, so a skeleton edit is shown to move them (not only to
+# leave the timeline healthy)
+P02_KEYS = ("band_r_tube", "fr1", "sill")
+
+
 def expected_boxes(b, design):
     v = lambda e: b["ev"](design, e)  # noqa: E731
     XL, XR, YB = b["XL"], b["XR"], b["YB"]
     ym = min(v("-dl_y1"), v(b["Y_MITRE_IN"]))
-    return {
+    out = {
         "band_l_tube": (v(XL), ym, v("glide_h"), v("%s + band_t" % XL), v(YB), v("wall_z0")),
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"), v("%s - band_t" % XR), v(YB),
                         v("wall_z0")),
     }
+    if "X_FR0" in b:            # the same expressions as base_p02.py's steps
+        XR_, X_FR0 = b["XR_"], b["X_FR0"]
+        out["band_r_tube"] = (v("%s - band_t" % XR_), min(v("-dr_yc"), v(b["Y_MITRE_IN_R"])), v("glide_h"), v(XR_),
+                              v(YB), v("wall_z0"))
+        out["fr1"] = (v(X_FR0), v("-pod_d / 2"), v("glide_h"), v("x_fr_joint"), v("-pod_d / 2 + band_t"), v("wall_z0"))
+        out["sill"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("sl_x1"), v("-glass_y + ch_w / 2 + sl_t"),
+                       v("wall_z0"))
+    return out
 
 
 def expected_side_holes(b, design):
@@ -87,7 +100,7 @@ def found(got, want):
 
 def measure(b, design):
     boxes = {}
-    for key in ("band_l_tube", "band_b_tube"):
+    for key in ("band_l_tube", "band_b_tube") + (P02_KEYS if "X_FR0" in b else ()):
         comp = b["find_comp"](design, key)
         boxes[key] = b["bbox_mm"](comp.bRepBodies.item(0))
     body = b["find_comp"](design, "band_l_tube").bRepBodies.item(0)
@@ -109,6 +122,7 @@ BUILD_NS = {}
 
 def run(_context):
     b = load_build()
+    b["load_p02"]()             # P02's names and parts (batch 1), as the build's --arg scope=p02
     BUILD_NS.update(b)
     app = adsk.core.Application.get()
     src = app.activeDocument
