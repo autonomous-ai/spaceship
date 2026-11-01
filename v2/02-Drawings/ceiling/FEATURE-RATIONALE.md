@@ -26,9 +26,11 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-4111-17 | Member joints | welded in a jig: each corner with a 2.0 mitre plate (831007 at the front, 831008 at the back: square-ended blanks, 26.5 from 1.75 and 41.5 from 3.15 along the mitre, so both ends sit 0.5 inside the frame's faces, #308), the T joints direct; beads ground on the skin and closing faces; burnt zones wire-brushed and coated with 2-component zinc-rich epoxy; no vent or drain holes; joint holes made after welding | One stiff frame without glued cleats; the plate carries the corner (the register's corner check) | D-131 (the cleats of D-115 and D-117 cancelled); joints register J-FRAME-01 | confirmed (method); the weld notes follow WALL's L1 sample review |
 | F-4111-18 | Plate cut-backs and gauges | each mitred end cut back square to its mitre by half the plate: 1.41 along the member at 45°, 2.24 off the side and seam members and 1.12 off the back member at the back corners; walls 1.0 (side, seam, front, back, X1) and 0.8 (X2, X3); S280GD+Z or SGC400, Z100 | The plates fit and the outside sizes stay; the gauges carry the site joints (1.0 under every rivnut, bolt, spigot and hanger stud) and the lining's clips (0.8) | J-FRAME-01 (D-131): the joints register's gauge and steel rows | confirmed |
 
-Each member's holes, under the member that carries them (D-120: each member its own part, drawn on its own sheet from
-the STEP; the drawing generator reads these rows into its hole tables). Every joint hole is made after welding
-(J-FRAME-01), located from the frame's joint faces and its spigot hole.
+Each member's holes, under the member that carries them (D-120: each member its own part). Under D-162 a member has
+no sheet of its own: its drawing is its row in the frame's cut list on the frame's weldment sheet, and these holes go on
+that sheet, since every joint hole is made after welding (J-FRAME-01), located from the frame's joint faces and its
+spigot hole. So is the seam's lead-in (F-4111-12), ground with the closing face's beads. No member has a before-weld
+feature: its length and end cuts, the plates' cut-backs too, are its cut list row.
 
 ### Side member 412101 (both frames; C2's is C1's turned upside down)
 
