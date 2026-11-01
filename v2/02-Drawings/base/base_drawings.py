@@ -35,16 +35,17 @@ HERE = os.path.dirname(os.path.abspath(globals().get("__file__", ARGS.get("scrip
 VO = adsk.drawing.ViewOrientationTypes
 
 # pn: drawing name, kind, views [(name, orientation, scale, (x, y) sheet mm)], and for an
-# assembly the views that get its overall sizes [(view, below)].
-# No drawing (D-89): the glide doubler 111601 (part 4: its DXF and parts-list row) and the
-# foam mats 111501 (part 3: DXF and cut-list row). Every assembly keeps one. The corner keys
+# assembly the views that get its overall sizes [(view, below, which)]: which = "both", "h" (the
+# view's width only) or "v" (its height only), so each size is shown once (ISO 129-1).
+# No drawing (D-89): the glide doubler 111601 (part 4: its DXF and parts-list row). Every
+# assembly keeps one. The floor panels went with D-132 (no floor). The corner keys
 # 111211 to 111214 are the Joints Engineer's (their tabulated drawing; PM ruling 2026-11-01).
 SPEC = {
     "111101": ("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG", "tube", [
         ("front", VO.FrontViewOrientationType, 0.2, (215.0, 300.0)),
         ("top", VO.TopViewOrientationType, 0.2, (215.0, 250.0)),
         ("bottom", VO.BottomViewOrientationType, 0.2, (215.0, 350.0)),
-        ("left", VO.LeftViewOrientationType, 0.5, (450.0, 300.0)),
+        ("left", VO.LeftViewOrientationType, 0.5, (450.0, 150.0)),          # below the hole table
     ]),
     "111103": ("111103_P01_BASE-BAND-TUBE-BACK_DWG", "tube", [
         ("front", VO.FrontViewOrientationType, 0.2, (300.0, 430.0)),
@@ -52,31 +53,35 @@ SPEC = {
         ("bottom", VO.BottomViewOrientationType, 0.2, (300.0, 490.0)),
         ("left", VO.LeftViewOrientationType, 0.5, (640.0, 430.0)),
     ]),
-    "111401": ("111401_P01_BASE-FLOOR-PANEL-F1_DWG", "plate", [
-        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
-        ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
-    ]),
     "110000": ("110000_P01_BASE_DWG", "assembly", [
         ("front", VO.FrontViewOrientationType, 0.1, (200.0, 330.0)),
         ("top", VO.TopViewOrientationType, 0.1, (200.0, 200.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.05, (480.0, 330.0)),
-    ], [("top", True), ("front", False)]),
+    ], [("top", True, "both"), ("front", False, "v")]),
+    # P02 batch 1 parts, in pod coordinates as built
+    "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "tube", [      # A3; runs along X
+        ("front", VO.FrontViewOrientationType, 0.2, (240.0, 200.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (240.0, 160.0)),
+        ("bottom", VO.BottomViewOrientationType, 0.2, (240.0, 236.0)),
+        # the keyed end plate, seen from the right: first angle puts that view on the LEFT of the front view
+        ("right", VO.RightViewOrientationType, 0.5, (85.0, 200.0)),
+    ]),
+    "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "plate", [              # A3; bent profile along X
+        ("front", VO.FrontViewOrientationType, 0.2, (130.0, 240.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (130.0, 170.0)),
+        ("left", VO.LeftViewOrientationType, 1.0, (320.0, 160.0)),           # the section, full size, below the table
+    ]),
     # subassemblies, in pod coordinates as built (their own designs, saved by base_build.py)
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "assembly", [      # A2; runs along Y
         ("left", VO.LeftViewOrientationType, 0.2, (260.0, 300.0)),
         ("top", VO.TopViewOrientationType, 0.2, (520.0, 215.0)),
-        ("iso", VO.IsoTopRightViewOrientationType, 0.1, (260.0, 150.0)),
-    ], [("left", True), ("top", False)]),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.1, (260.0, 180.0)),
+    ], [("left", True, "both"), ("top", False, "h")]),
     "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "assembly", [         # A1; runs along X
         ("front", VO.FrontViewOrientationType, 0.2, (420.0, 430.0)),
         ("top", VO.TopViewOrientationType, 0.2, (420.0, 370.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.1, (420.0, 200.0)),
-    ], [("front", True), ("top", False)]),
-    "110401": ("110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG", "assembly", [    # A3
-        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
-        ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
-        ("iso", VO.IsoTopRightViewOrientationType, 0.05, (340.0, 230.0)),
-    ], [("top", True), ("front", False)]),
+    ], [("front", True, "both"), ("top", False, "v")]),
 }
 
 
@@ -149,6 +154,20 @@ def holes(view):
     return sorted(seen.values(), key=lambda c: (xy(c.centerPoint)[0], xy(c.centerPoint)[1]))
 
 
+def round_centres(view):
+    """One arc or circle per centre. A keyhole's Ø12 entry and its slot's round end show as arcs (the
+    slot cuts each circle open), so they aren't holes() and only their centres place them."""
+    vc = view.viewCurves
+    kinds = (adsk.drawing.ViewCurveTypes.ArcViewCurveType, adsk.drawing.ViewCurveTypes.CircleViewCurveType)
+    seen = {}
+    for i in range(vc.count):
+        c = vc.item(i)
+        if c.type in kinds:
+            x, y = xy(c.centerPoint)
+            seen.setdefault((round(x, 3), round(y, 3)), c)
+    return sorted(seen.values(), key=lambda c: (xy(c.centerPoint)[0], xy(c.centerPoint)[1]))
+
+
 def dim(sheet, a, b, place):
     d = sheet.drawingDimensions.addLinearDimension(a, b, dpt(*place), False)
     if d is None:
@@ -156,12 +175,17 @@ def dim(sheet, a, b, place):
     return d
 
 
-def add_view(sheet, orientation, scale, center):
+def add_view(sheet, orientation, scale, center, hidden=False):
+    """A base view. Visible edges only, unless hidden=True (a tube's view from above, so the hole table
+    also finds the bottom wall's holes). Fusion ignores the style given at creation, so it is set again
+    on the view (CEILING's first sample)."""
+    style = (adsk.drawing.DrawingViewStyleTypes.VisibleAndHiddenEdgesDrawingViewStyleType if hidden
+             else adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType)
     inp = sheet.views.createBaseViewInput()
     vp = inp.viewParameters
     vp.orientation = orientation
     vp.scaleValue = scale
-    vp.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
+    vp.style = style
     vp.centerMarkOptions.isAppliedToHoles = True
     vp.centerLineOptions.isAppliedToHoles = True
     inp.placementPoint = dpt(*center)
@@ -170,37 +194,104 @@ def add_view(sheet, orientation, scale, center):
         raise RuntimeError("Views.add returned None")
     if abs(v.scaleValue - scale) > 1e-6:
         v.scaleValue = scale     # the input's scale can be ignored (tools/fusion/README.md)
+    try:
+        v.style = style          # set again: the style given at creation is ignored
+    except Exception as e:      # an older API without a settable style: say so in the log
+        print("  note: could not set the view style again (%s)" % e)
     return v
 
 
-def overall(sheet, view, below=True, left=True, gap=8.0):
+def overall(sheet, view, below=True, left=True, gap=8.0, which="both"):
+    """The view's overall sizes from its bottom-left corner: "h" its width, "v" its height, or
+    "both". A second view of the same part takes only the size the first one doesn't show, so no
+    size is dimensioned twice (ISO 129-1). Returns the corner (the hole dimensions' origin)."""
     e = extent(view)
     o = nearest_end(view, (e[0], e[1]))
     n = 0
-    if e[2] - e[0] > 2.0:
+    if which in ("both", "h") and e[2] - e[0] > 2.0:
         dim(sheet, o, nearest_end(view, (e[2], e[1])), ((e[0] + e[2]) / 2, e[1] - gap if below else e[3] + gap))
         n += 1
-    if e[3] - e[1] > 2.0:
+    if which in ("both", "v") and e[3] - e[1] > 2.0:
         dim(sheet, o, nearest_end(view, (e[0], e[3])), (e[0] - gap if left else e[2] + gap, (e[1] + e[3]) / 2))
         n += 1
     return o, n
 
 
-def hole_dims(sheet, view, origin, side="below", step=6.0, gap=8.0):
+def hole_dims(sheet, view, origin, side="below", step=6.0, gap=8.0, hs=None):
     """Every hole centre from the datum corner: baseline dimensions along the
-    view's x, stacked on one side, plus the hole line's offset along y."""
+    view's x, stacked on one side, plus the hole line's offset along y.
+    hs: the curves whose centres to place (default: the view's holes)."""
     e = extent(view)
-    hs = holes(view)
-    for i, c in enumerate(hs):
+    hs = holes(view) if hs is None else hs
+    done_x = set()
+    i = 0
+    for c in hs:
         x, y = xy(c.centerPoint)
+        if round(x, 2) in done_x:
+            continue            # the same dimension again (two holes on one X): once is enough
+        done_x.add(round(x, 2))
         ty = e[1] - gap - step * i if side == "below" else e[3] + gap + step * i
         dim(sheet, origin, c.centerPoint, (x, ty))
+        i += 1
     if hs:
         y_lines = sorted({round(xy(c.centerPoint)[1], 2) for c in hs})
         for j, yl in enumerate(y_lines):
             c = [h for h in hs if abs(xy(h.centerPoint)[1] - yl) < 0.01][0]
             dim(sheet, origin, c.centerPoint, (e[0] - gap - step * j, (e[1] + yl) / 2))
     return len(hs)
+
+
+def profile_dims(sheet, view, step=6.0, gap=8.0):
+    """A bent part's section (the sill 111301 in the view from the left, where +Y runs to the left):
+    its overall height on the left, lowest face to highest (a section's corners need not sit at its
+    extent's corners); every vertical face's distance from the flange's outer face (datum B, the
+    view's right edge) below the view; and every horizontal face's depth under the ledge's top
+    (datum A, its top edge) on its right. Baseline dimensions from that corner, so nothing stacks
+    up. The far faces are overall sizes (the depth is on the view from above), so they are left out.
+    A dimension that can't be placed is reported in the log, and the rest go on."""
+    e = extent(view)
+    corner = nearest_end(view, (e[2], e[3]))
+    cx, cy = xy(corner)
+    lines, _ = curves(view)
+    ends = [p for ln in lines for p in (ln.startPoint, ln.endPoint)]
+    lo_y, hi_y = min(xy(p)[1] for p in ends), max(xy(p)[1] for p in ends)
+    # the leftmost point at each height, so the extension lines to the dimension on the left are short
+    low = min((p for p in ends if abs(xy(p)[1] - lo_y) < 1e-3), key=lambda p: xy(p)[0])
+    high = min((p for p in ends if abs(xy(p)[1] - hi_y) < 1e-3), key=lambda p: xy(p)[0])
+    n = 0
+    try:
+        dim(sheet, low, high, (e[0] - gap, (e[1] + e[3]) / 2))
+        n += 1
+    except RuntimeError as exc:
+        print("  section height not dimensioned (%s)" % exc)
+    xs, ys = {}, {}       # each face's end nearest its dimension line: a vertical face's lower end, a horizontal one's right end
+    for ln in lines:
+        a, b = ln.startPoint, ln.endPoint
+        (x1, y1), (x2, y2) = xy(a), xy(b)
+        if abs(x2 - x1) < 1e-3 and abs(y2 - y1) > 0.2:          # a vertical face
+            p, k = (a if y1 < y2 else b), round(x1, 2)
+            if k not in xs or xy(p)[1] < xy(xs[k])[1]:
+                xs[k] = p
+        elif abs(y2 - y1) < 1e-3 and abs(x2 - x1) > 0.2:        # a horizontal face
+            p, k = (a if x1 > x2 else b), round(y1, 2)
+            if k not in ys or xy(p)[0] > xy(ys[k])[0]:
+                ys[k] = p
+    far_x = [x for x in sorted(xs, reverse=True) if abs(x - cx) > 0.05 and abs(x - e[0]) > 0.05]
+    far_y = [y for y in sorted(ys, reverse=True) if abs(y - cy) > 0.05 and abs(y - e[1]) > 0.05]
+    for i, x in enumerate(far_x):
+        try:
+            dim(sheet, corner, xs[x], (x, e[1] - gap - step * i))
+            n += 1
+        except RuntimeError as exc:
+            print("  section face at x %.2f not dimensioned (%s)" % (x, exc))
+    for j, y in enumerate(far_y):     # right of the view, 5 apart so the last stays clear of the frame
+        try:
+            dim(sheet, corner, ys[y], (e[2] + 6.0 + 5.0 * j, (cy + y) / 2))
+            n += 1
+        except RuntimeError as exc:
+            print("  section face at y %.2f not dimensioned (%s)" % (y, exc))
+    print("  section: %d dimensions (height and faces from the corner at %.1f, %.1f)" % (n, cx, cy))
+    return n
 
 
 def diameters(sheet, view):
@@ -259,12 +350,13 @@ def hole_table(sheet, view, origin, title):
 
 
 def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
+    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - OUTLINE")
     sk.lines.add([p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
                   p2(x0, y0 + d / 2), p2(x0, y0 - d / 2)])
+    sk2 = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - CIRCLES")
     cx = x0 + length + gap + big / 2
-    sk.circles.addByCenterRadius(p2(cx, y0), big / 2)
-    sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
+    sk2.circles.addByCenterRadius(p2(cx, y0), big / 2)
+    sk2.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
 def run(_context):
@@ -274,7 +366,7 @@ def run(_context):
         raise RuntimeError("the active document is not a drawing (run with --doc <drawing name>)")
     pn = ARGS["pn"]
     name, kind, views = SPEC[pn][:3]
-    dims = SPEC[pn][3] if len(SPEC[pn]) > 3 else [("top", True), ("front", False)]
+    dims = SPEC[pn][3] if len(SPEC[pn]) > 3 else [("top", True, "both"), ("front", False, "v")]
     if app.activeDocument.name != name:
         raise RuntimeError("the active drawing is %r, not %r" % (app.activeDocument.name, name))
     sheet = dwg.activeSheet
@@ -283,41 +375,49 @@ def run(_context):
         raise RuntimeError("the sheet already has views; start a fresh drawing")
     made = {}
     for vname, orient, scale, center in views:
-        made[vname] = add_view(sheet, orient, scale, center)
+        made[vname] = add_view(sheet, orient, scale, center, hidden=(kind == "tube" and vname == "top"))
         e = extent(made[vname])
         print("  view %-6s scale %g at %s, extent %s" % (vname, scale, center,
                                                         tuple(round(a, 1) for a in e) if e else None))
     n_dims, n_holes, tables = 0, 0, 0
     if kind == "tube":
-        o, n = overall(sheet, made["front"])
+        o, n = overall(sheet, made["front"], which="h")      # the length; the section's sizes on the end view
         n_dims += n
         top = made["top"]
         e = extent(top)
         o_top = nearest_end(top, (e[0], e[1]))
         n_holes += hole_dims(sheet, top, o_top, side="below")
         n_dims += mitre_angle(sheet, top)      # diameters: in the hole table (callouts cluttered the views)
-        tables += hole_table(sheet, top, o_top, "HOLES IN THE TOP WALL (VIEW FROM ABOVE), ORIGIN O = DATUMS C, B")
+        tables += hole_table(sheet, top, o_top, "HOLES SEEN FROM ABOVE (THE BOTTOM WALL'S AS HIDDEN LINES), ORIGIN O = DATUMS C, B")
         # the view from below shows the bottom wall's holes; their positions are in the hole table
         # (its dimensions ran into the front view, and a mitred end has no corner at its extent)
-        o_l, n = overall(sheet, made["left"], below=True, left=False, gap=6.0)
+        end = made["left"] if "left" in made else made["right"]
+        o_l, n = overall(sheet, end, below=True, left=False, gap=6.0)
         n_dims += n
+        keys = round_centres(end)   # an end plate's keyhole entries and seats, from the end view's corner
+        if keys:
+            n_holes += hole_dims(sheet, end, o_l, side="above", hs=keys)
     elif kind == "plate":
         o, n = overall(sheet, made["top"])
         n_dims += n
-        o2, n = overall(sheet, made["front"], below=False)
-        n_dims += n
+        if "left" not in made:   # a flat plate: its thickness (its width is on the view from above)
+            _o2, n = overall(sheet, made["front"], below=False, which="v")
+            n_dims += n
         if holes(made["top"]):
             n_holes += hole_dims(sheet, made["top"], o, side="above")
-            n_dims += diameters(sheet, made["top"])
-            tables += hole_table(sheet, made["top"], o, "HOLES (VIEW FROM ABOVE), ORIGIN O")
-        if "left" in made:
-            o3, n = overall(sheet, made["left"], below=True, left=False, gap=5.0)
-            n_dims += n
-            if holes(made["left"]):
-                n_holes += hole_dims(sheet, made["left"], o3, side="above")
+            made_table = hole_table(sheet, made["top"], o, "HOLES (VIEW FROM ABOVE), ORIGIN O")
+            tables += made_table
+            if not made_table:   # the diameters are in the hole table; callouts only when it couldn't be made
+                n_dims += diameters(sheet, made["top"])
+        if "left" in made:       # a bent part's section: its height, and every face from its datum corner
+            sec = made["left"]
+            n_dims += profile_dims(sheet, sec)
+            if holes(sec):
+                e3 = extent(sec)
+                n_holes += hole_dims(sheet, sec, nearest_end(sec, (e3[0], e3[1])), side="above")
     else:
-        for vname, below in dims:
-            _o, n = overall(sheet, made[vname], below=below)
+        for vname, below, which in dims:
+            _o, n = overall(sheet, made[vname], below=below, which=which)
             n_dims += n
     projection_symbol(sheet, sheet.width - 60.0, 70.0)
     print("  %d overall dimensions, %d hole-centre dimensions, %d hole table(s), projection symbol" % (

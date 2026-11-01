@@ -21,7 +21,11 @@ changes go in here instead (Reviewer 5, P3-1 on PR #24):
 
 A check that fails raises, and Fusion rolls every change of this run back.
 Changes to the shape (a new body, a new rule in ENVELOPES) need a rebuild and
-a new revision; this script refuses them by failing the envelope check.
+a new revision; this script refuses them by failing the envelope check. The one
+shape change it makes is a removal: an envelope listed in pod_skeleton.py's
+DROPPED is deleted (its component) before the values are set (D-132: the floor
+and the threshold), so no part loses a link it uses (parts derive parameters,
+and those stay).
 Linked parts pick the new values up with Document.updateAllReferences().
 """
 
@@ -99,6 +103,31 @@ def sync_envelopes(design, sk):
     return done
 
 
+def drop_envelopes(design, sk):
+    """Delete the components of the envelopes listed in DROPPED (each body '<code> ENVELOPE' in its own
+    component under an assembly), before any value is set: a dropped envelope's height can go to 0."""
+    codes = {code for code, _why in sk.get("DROPPED", [])}
+    # find them all first, then delete: a deleted component must not be walked afterwards
+    targets, seen = [], set()
+    for parent in [design.rootComponent] + [o.component for o in design.rootComponent.allOccurrences]:
+        if parent.name in seen:
+            continue
+        seen.add(parent.name)
+        for i in range(parent.occurrences.count):
+            occ = parent.occurrences.item(i)
+            names = [b.name for b in occ.component.bRepBodies]
+            hit = [n[:-len(" ENVELOPE")] for n in names if n.endswith(" ENVELOPE") and n[:-len(" ENVELOPE")] in codes]
+            if hit and len(names) == 1:
+                targets.append((hit[0], occ))
+    gone = []
+    for code, occ in targets:
+        occ.deleteMe()
+        gone.append(code)
+    left = sorted(codes - set(gone))
+    print("envelopes dropped: %s%s" % (sorted(gone) or "none", "; not found (already gone?): %s" % left if left else ""))
+    return gone
+
+
 def run(_context):
     app = adsk.core.Application.get()
     sk = load("v2/01-CAD-Native/skeleton/pod_skeleton.py")
@@ -111,6 +140,7 @@ def run(_context):
     up = design.userParameters
     vi = adsk.core.ValueInput.createByString
 
+    dropped = drop_envelopes(design, sk)
     # 2. parameters: add the missing ones first (table order keeps dependencies), then sync
     added, changed, comments = [], [], 0
     for name, expr, unit, status, src in sk["PARAMS"]:
@@ -161,10 +191,10 @@ def run(_context):
     print("pod box", sk["box"](design.rootComponent))
     if unhealthy or loose or res["bad"] or bad:
         raise RuntimeError("checks failed: nothing saved, every change rolled back")
-    if not (added or changed or comments or shaped or doc.isModified):
+    if not (added or changed or comments or shaped or dropped or doc.isModified):
         print("nothing to change")
         return
-    if not (added or changed or comments or shaped):
+    if not (added or changed or comments or shaped or dropped):
         # A closed document that another open design links to stays loaded with its
         # changes (seen after a dry run, 2026-10-31); the checks above ran on them.
         print("no new changes, but the open skeleton has unsaved ones; checked above")

@@ -45,6 +45,12 @@ def _font_file(kind):
     return None
 
 
+# The owner's rule (2026-11-01): every drawing names "Autonomous" as its creator, never a person: in the title
+# block's "created by" field and as the PDF's author. The PDF's Creator stays "drawgen", the program that made it
+# (the mechanical check and the overwrite guard read it).
+AUTHOR = "Autonomous"
+
+
 class _SegGrid:
     """Segments bucketed in square cells, so 'does any line cross this box' asks only the lines nearby."""
 
@@ -76,7 +82,7 @@ class Sheet:
         self.W, self.H = SIZES[size]
         self.doc = fitz.open()
         self.meta = {"creator": creator, "producer": "drawgen (tools/drawgen, PyMuPDF %s)" % fitz.VersionBind,
-                     "title": title, "subject": subject, "keywords": keywords, "author": ""}
+                     "title": title, "subject": subject, "keywords": keywords, "author": AUTHOR}
         self.pages = []
         self.fonts = {}
         for k in ("reg", "bold"):
@@ -93,6 +99,7 @@ class Sheet:
         self.boxes = []         # ink boxes of the text written on this page (x0, y0, x1, y1)
         self.obstacles = []     # part outlines on this page, as segments, for placing labels clear of them
         self.grid = _SegGrid()  # every line drawn on this page (outlines included), for the same
+        self.reserved = []      # areas kept for what is drawn later (the table column): no label goes there
         return self.page
 
     # ------------------------------------------------------------ keeping labels clear (the read-back checks it)
@@ -143,7 +150,7 @@ class Sheet:
     def is_free(self, box):
         if box[0] < 22 or box[2] > self.W - 12 or box[1] < 12 or box[3] > self.H - 12:
             return False
-        if any(self._boxes_touch(box, b) for b in self.boxes):
+        if any(self._boxes_touch(box, b) for b in self.boxes + self.reserved):
             return False
         return not any(self._seg_box(p, q, box) for p, q in self.grid.near(box, 0.4))
 

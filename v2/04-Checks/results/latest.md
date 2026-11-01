@@ -1,8 +1,8 @@
-# Mechanical check run: c22880b on 2026-11-01
+# Mechanical check run: 12d5825 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `c22880b`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `12d5825`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 180** (49 severe, 123 major, 8 minor). Register numbers in brackets.
+**Findings in this run: 194** (49 severe, 137 major, 8 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `c22880b`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 104 |
+| C05 drawing completeness | yes | 118 |
 | C06 BOM completeness | yes | 40 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -127,6 +127,20 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-225 | major | C05 | 710041 | 710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm. | ELECTRICAL |
 | F-151 | major | C05 | 810101 | 810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-152 | major | C05 | 810201 | 810201 INTERIOR - LIGHT SHELF ASSY has no drawing PDF (810201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
+| F-324 | major | C05 | 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG | 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | BASE |
+| F-325 | major | C05 | 111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG | 111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf: its MADE BY field reads 'tools/drawgen (D-112)' (sheet 1, 2); its MADE BY field reads 'tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF.' (sheet 2); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | Drawing Generator |
+| F-326 | major | C05 | 111103_P01_BASE-BAND-TUBE-BACK_DWG | 111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf: its MADE BY field reads 'tools/drawgen (D-112)' (sheet 1, 2); its MADE BY field reads 'tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF.' (sheet 2); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | Drawing Generator |
+| F-327 | major | C05 | 111401_P01_BASE-FLOOR-PANEL-F1_DWG | 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its MADE BY field reads 'the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, .' (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | BASE |
+| F-328 | major | C05 | 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG | 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-329 | major | C05 | 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG | 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-330 | major | C05 | 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG | 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-331 | major | C05 | 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG | 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-332 | major | C05 | 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG | 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-333 | major | C05 | 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG | 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-334 | major | C05 | 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG | 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-335 | major | C05 | 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG | 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); its PDF author reads 'ELECTRICAL Engineer'; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | ELECTRICAL |
+| F-336 | major | C05 | 111211_P01_BASE-CORNER-KEY-TABULATED_DWG | 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | Joints Engineer |
+| F-337 | major | C05 | 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG | 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'. | Joints Engineer |
 | F-098 | major | C06 | 111211 | Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95). | BASE |
 | F-159 | major | C06 | 810000 | 810000_P01_INTERIOR_STEP.step's top component carries part number '2026-11-01-02-34-22-890', not 810000 from its file name (conventions section 6); until it does, the assembled checks leave this file out. | CEILING |
 | F-160 | major | C06 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |

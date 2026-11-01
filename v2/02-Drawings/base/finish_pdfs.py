@@ -1,6 +1,6 @@
 """Finish BASE drawing PDFs: name strip, title data and notes as text, PNG.
 
-    python3 v2/02-Drawings/base/finish_pdfs.py 111401 [110401 ...]
+    python3 v2/02-Drawings/base/finish_pdfs.py 111106 [111301 ...]
 
 For each part number: takes the raw export from .raw/ (base_drawings.py),
 removes the account holder's name under "Created by" with
@@ -41,13 +41,13 @@ spec.loader.exec_module(mo)
 GENERATOR = {"111101", "111102", "111103"}
 
 DWG = {
-    "111401":("111401_P01_BASE-FLOOR-PANEL-F1_DWG", "1:10", "A3"),
     "110000": ("110000_P01_BASE_DWG", "1:10", "A2"),
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "1:5 (iso 1:10)", "A2"),
     "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "1:5 (iso 1:10)", "A1"),
-    "110401": ("110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG", "1:10 (iso 1:20)", "A3"),
+    "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "1:5 (end view 1:2)", "A3"),
+    "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
 }
-# No drawing (D-89): 111601 (part 4: DXF and parts-list row), 111501 (part 3: DXF and cut list).
+# No drawing (D-89): 111601 (part 4: DXF and parts-list row). No floor (D-132).
 
 TOL = {
     "tube": "General tolerances, PROPOSED until the shop confirms them: cut length +0/-0.5; hole positions "
@@ -56,63 +56,74 @@ TOL = {
             "(maker). Not ISO 2768 on the anodised faces.",
     "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (plywood ±0.3, "
              "foam ±0.3); not ISO 2768 on wood or foam (guideline §3.2).",
-    "assembly": "Assembly: parts to their own drawings (the doubler 111601 to its DXF and parts-list row, the foam "
-                "mat 111501 to its DXF, D-89); positions from skeleton P04 (110000_P01_BASE_CAD), hardware as the "
-                "joints register (J-BASE-01, J-BASE-02).",
+    "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
+             "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
+             "Ø5.0 +0.1/0 (HOLD with the rivnut).",
+    "assembly": "Assembly: parts to their own drawings (the doubler 111601 to its DXF and parts-list row, D-89); "
+                "positions from skeleton P04 (110000_P01_BASE_CAD), hardware as the joints register (J-BASE-01, "
+                "J-BASE-02). The lip seal 118001 is bonded along each band's inner face at the factory (D-132).",
 }
 
 DATUMS = {
-    "111601":"Part system: X across the band, Y along it, origin at the plate centre. Hole Ø13 3 mm off centre "
+    "111601": "Part system: X across the band, Y along it, origin at the plate centre. Hole Ø13 3 mm off centre "
               "toward the pod side (gl_dx).",
     "111211": "Part system: X into the band from the end face (X 0), Y across the band (centred), Z up from the "
               "key's bottom. Datums: A = bottom face (sits on the band's bottom wall, pod Z 11.5), B = end face "
               "(flush with the band's end), C = the Y faces' centre plane. Block 25 x 35 x 75.",
-    "111401": "Pod coordinates: X to the right wall, Y to the back. Outline from the band's inner faces less "
-              "the 4 mm seal gap; seam half-lap 13 wide, 4.5 deep, on the +X edge. Top face up.",
     "110000": "Pod coordinates (conventions §4): origin on the room floor at the pod centre, +X right, +Y back, +Z up.",
-    "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 847, "
+    "111106": "Pod coordinates: X along the band from the door opening (X 218.5) to the joint x_fr_joint (X 915), Y from "
+              "the front face (-850) inward, Z up. Datums: A = top face, B = front (outer) face, C = the left end face "
+              "(door opening). The right end is closed by a welded 1.5 mm end plate with 2 keyholes.",
+    "111301": "Pod coordinates: X along the sill from the door opening (X 218.5) to X 965. Section (view from the left, "
+              "1:1): flange down FR1's inner face, ledge flush with the band top (Z 110), drop, seat under the U-channel "
+              "(Z 93 to 95), kerb down to F2 (Z 12). Datums: A = the ledge's top face, B = the flange's outer face "
+              "(Y -810), C = the left end. Bends 90 deg, inside radius 2 (assumption, the bender confirms).",
+    "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 850, "
               "on its glides. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide doublers, "
-              "glides preset (D-87), end cap. The keyholes take the back key's studs (J-BASE-02); the front end "
-              "carries the front corner key 111212 (P02). GLIDES: level up from the highest floor spot; never below "
-              "8.5 mm under the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
-    "110103": "Pod coordinates (conventions §4), as built: the back band, X -1210 to 1210, Y 810 to 850, on its "
-              "glides. Factory-fitted: rivnuts, stop washers and spigots for B1 and B2 (J-BASE-01), glide doublers, "
-              "glides preset (D-87), and a back corner key 111211 in each end with its 2 button head fixing screws "
-              "and 2 hook studs (J-BASE-02). GLIDES: level up from the highest floor spot; never below 8.5 mm under "
-              "the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
-    "110401": "Pod coordinates (conventions §4), as built: floor panel F1 with its 3 mm foam mat bonded underneath "
-              "at the factory (D-87), the mat under the lap too; ply Z 3 to 12, floor top Z 12 (skeleton floor_top). "
-              "Adhesive HOLD.",
+              "glides preset (D-87); in its back end the corner key 111211 against the inner wall, with its 2 fixing "
+              "screws and its 2 stud bolts set 1.8 off the inner wall, and the flat end cap 118003 (J-BASE-02, D-129); "
+              "the front end carries the front corner key 111212 (P02). GLIDES: level up from the highest floor spot; "
+              "never below 8.5 mm under the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
+    "110103": "Pod coordinates (conventions §4), as built: the back band, X -1210 to 1210 over its welded end "
+              "plates, Y 810 to 850, on its glides. Factory-fitted: rivnuts, stop washers and spigots for B1 and B2 "
+              "(J-BASE-01), glide doublers, glides preset (D-87). It is lowered straight down between the side bands: "
+              "each end plate's open slot takes a side band's 2 key studs, their heads coming up through the bottom "
+              "wall's notches (J-BASE-02, D-129); nobody lifts it or stands on it until B1 and B2 are bolted on. "
+              "GLIDES: level up from the highest floor spot; never below 8.5 mm under the band (the glide's base is "
+              "the stop).",
 }
 
 HOLES = {
-    "111601":"One hole Ø13 for the glide's M10 rivnut.",
+    "111601": "One hole Ø13 for the glide's M10 rivnut.",
     "111211": "Bottom: 2 x M6, 15 of full thread (tap drill Ø5.0 x 18), for the M6 x 12 button head fixing screws, "
               "10 from the back face and 7.5 either side of the centre line. End face: 2 x M6 tapped through, for "
               "the hook studs, 26 and 60 above the bottom (pod Z 37.5 and 71.5) on the centre line (joints register "
               "J-BASE-02; PM ruling on F-017).",
-    "111401": "No holes.",
     "110000": "Holes on the part drawings.",
-    "110101": "Holes on the part drawings (111101).",
-    "110103": "Holes on the part drawings (111103, 111211).",
-    "110401": "No holes.",
+    "111106": "Bottom wall: 2 glide nut holes Ø13 (X 293.5 and 840), no holes on its top (in view in front of the glass). "
+              "End plate at X 915: 2 keyholes, Ø12 entry 10 below each seat and a 6.5 slot up to it, seats at Z 37.5 "
+              "and 71.5 on the band's centre line (joints register J-BASE-02, the intake's inline key 111211).",
+    "111301": "Seat: 4 holes Ø5 for the flush M3 rivnuts (838008, HOLD) at X 269.4, 484.3, 699.2 and 905 on the glass line "
+              "(Y -699). Flange: blind rivet holes to FR1, HOLD.",
+    "110101": "Holes on the part drawings (111101; the key 111211 on the Joints Engineer's sheet).",
+    "110103": "Holes, slots and notches on the part drawing (111103).",
 }
 
 
 # sheets whose views reach the bottom left: their notes go on the right, above the title block
-NOTES_RIGHT = {"111401", "110401"}
+NOTES_RIGHT = {"110000"}
 
 
 def kind_of(pn):
     if pn[2:4] == "00" or pn[2] == "0":             # xx0000 to xx0999: assemblies (conventions section 5)
         return "assembly"
-    return {"111101": "tube", "111103": "tube"}.get(pn, "plate")
+    return {"111101": "tube", "111102": "tube", "111103": "tube", "111106": "tube", "111301": "sheet"}.get(pn, "plate")
 
 
 def text_block(pn):
     d = json.load(open(DATA, encoding="utf-8"))
     rec = d["parts"].get(pn, {})
-    name = rec.get("name", "BASE") if pn != "110000" else "BASE (sample P01: back-left corner and F1)"
+    name = rec.get("name", "BASE") if pn != "110000" else "BASE (P02: the band ring so far; no floor, D-132)"
     is_asm = kind_of(pn) == "assembly"
     vn = rec.get("name_vi", "Đế / sàn")
     mat, fin, proc, ms, st, src, note = mo.PART_INFO.get(pn, ("", "", "", "", "DRAFT", "", ""))
@@ -146,6 +157,26 @@ def text_block(pn):
     return lines
 
 
+# the owner's rule (Mechanical Checker's C05, 2026-11-01): a drawing's Created by field and its PDF author read this
+AUTHOR = "Autonomous"
+
+
+def fill_created_by(page):
+    """Write AUTHOR in the title block's Created by cell, where pdf_clear_field took the account holder's name out:
+    on the line under the label, at its left edge, as large as the date left on that line."""
+    labs = page.search_for("Created by")
+    if not labs:
+        raise SystemExit("no Created by field on the sheet")
+    lab = labs[0]
+    lh = lab.y1 - lab.y0
+    row = [w for w in page.get_text("words")
+           if lab.y1 - 0.5 < w[1] < lab.y1 + 3 * lh and lab.x0 - 1 <= w[0] < lab.x0 + 200]
+    ref = min(row, key=lambda w: w[1]) if row else None
+    hgt = (ref[3] - ref[1]) if ref else 2 * lh
+    base = (ref[3] if ref else lab.y1 + hgt) - 0.22 * hgt
+    page.insert_text((lab.x0, base), AUTHOR, fontsize=max(hgt / 1.15, 3.5 * 72.0 / 25.4), fontname="helv")
+
+
 def finish(pn):
     if pn in GENERATOR:
         raise SystemExit("%s is drawn by the drawing generator (D-112); not finished here" % pn)
@@ -156,6 +187,7 @@ def finish(pn):
     subprocess.run([sys.executable, CLEAR, raw, tmp], check=True)
     doc = fitz.open(tmp)
     page = doc[0]
+    fill_created_by(page)
     w, h = page.rect.width, page.rect.height
     lines = text_block(pn)
     mm = 72.0 / 25.4
@@ -178,6 +210,9 @@ def finish(pn):
         rc = page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
     if rc < 0:                # PyMuPDF writes nothing when the text doesn't fit
         raise SystemExit("%s: the notes need %.1f mm more height than the box" % (pn, -rc / mm))
+    meta = {k: v for k, v in (doc.metadata or {}).items() if k not in ("format", "encryption")}
+    meta["author"] = AUTHOR
+    doc.set_metadata(meta)
     doc.subset_fonts()        # embed only the letters used: the whole Arial Unicode made each sheet 15 MB
     doc.save(out, garbage=3, deflate=True)
     doc.close()
@@ -187,7 +222,7 @@ def finish(pn):
     d2[0].get_pixmap(dpi=110).save(png)
     text = d2[0].get_text()
     d2.close()
-    missing = [k for k in ("mm", "first angle", "Material", "Finish", "Tolerances") if k not in text]
+    missing = [k for k in ("mm", "first angle", "Material", "Finish", "Tolerances", AUTHOR) if k not in text]
     print("%s: %s, %s%s" % (pn, os.path.relpath(out, REPO), os.path.relpath(png, REPO),
                             ("; MISSING TEXT %s" % missing) if missing else "; text check OK"))
 
