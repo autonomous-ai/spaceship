@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 373 part lines (174 made, 199 bought, 151 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 357.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 373 part lines (174 made, 199 bought, 151 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 357.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -108,7 +108,8 @@ Read from: this working tree.
 
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
-- 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
+- 518002: the list still names it 'LINING - CEILING SAFETY CATCH'; the joints register's H-11 now names it 'LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 518002 LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3: HOLD (HOLD)
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
@@ -215,6 +216,9 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+**Joints register**
+- H-50 HARDWARE - BLIND RIVET - CLOSED END - CLIP MALE - HOLD: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
