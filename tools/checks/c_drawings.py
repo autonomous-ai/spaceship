@@ -1149,10 +1149,11 @@ BEFORE_WELD = re.compile(r"\bbefore\s+(?:the\s+)?weld", re.I)
 # D-162: the row gives the member's section, cut length, both end angles and quantity; the release checklist tests
 # the same (build_release_checklist.py, d162_rows), with these patterns: keep them in step
 END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
-SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends", re.I)
+SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends|\bsquare ends\b", re.I)
 # one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
 _ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
-BOTH_ENDS_ANGLE = re.compile(r"\bboth ends\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE), re.I)
+BOTH_ENDS_ANGLE = re.compile(r"\b(?:both ends|ends both)\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE),
+                             re.I)
 
 
 def member_row_lacks(row):

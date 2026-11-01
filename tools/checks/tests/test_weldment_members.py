@@ -64,7 +64,10 @@ def test_a_member_on_its_frames_drawing_needs_no_sheet_of_its_own(tmp_path):
     for ends in ("front end mitred 45 deg, back end mitred 63.43 deg off square", "45 degrees and 30 Degrees",
                  # one angle for both ends states both (the Lead's ruling; CEILING's rows 412103, 412104 in #348)
                  "both ends mitred 45 deg; welded into the frame (D-131, J-FRAME-01)",
-                 "both ends mitred 26.57 deg off square; welded into the frame", "mitred 30° at both ends"):
+                 "both ends mitred 26.57 deg off square; welded into the frame", "mitred 30° at both ends",
+                 # WALL's rows in #343 (212103 to 212105)
+                 "bottom and top ends both mitred 45.00° off square, in the frame's plane",
+                 "square ends (fits between the rails, welded T joints, D-131)"):
         assert c_drawings.member_row_lacks({"section": "20 x 40 x 1.0", "length_mm": "1491.35", "ends": ends,
                                             "qty": "1"}) == [], ends
     # but one angle for one end isn't both, and 'both ends' with no angle isn't either
