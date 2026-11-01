@@ -4,18 +4,20 @@
   "110000>110101": 1,
   "110000>110102": 1,
   "110000>110103": 1,
+  "110000>110104": 1,
   "110000>110106": 1,
   "110101>111101": 1,
   "110101>111211": 1,
+  "110101>111212": 1,
   "110101>111601": 2,
   "110101>118001": 1,
   "110101>118002": 2,
   "110101>118003": 1,
   "110101>831001": 2,
   "110101>831002": 4,
-  "110101>838001": 2,
+  "110101>838001": 4,
   "110101>838003": 6,
-  "110101>838010": 2,
+  "110101>838010": 4,
   "110102>111102": 1,
   "110102>111211": 1,
   "110102>111601": 2,
@@ -34,12 +36,24 @@
   "110103>831001": 4,
   "110103>831002": 8,
   "110103>838003": 12,
+  "110104>111104": 1,
+  "110104>111105": 1,
+  "110104>111214": 1,
+  "110104>111601": 1,
+  "110104>118001": 3,
+  "110104>118002": 1,
+  "110104>831001": 2,
+  "110104>838001": 2,
+  "110104>838003": 2,
+  "110104>838010": 2,
   "110106>111106": 1,
   "110106>111301": 1,
   "110106>111601": 2,
   "110106>118001": 2,
   "110106>118002": 2,
-  "110106>118003": 1
+  "110106>118003": 1,
+  "111301>111302": 1,
+  "111301>111303": 1
  },
  "doc": "110000_P01_BASE_CAD",
  "holes": {
@@ -60,20 +74,7 @@
    {
     "at": [
      -1231.0,
-     823.0,
-     null
-    ],
-    "axis": [
-     0.0,
-     0.0,
-     1.0
-    ],
-    "dia": 7.0
-   },
-   {
-    "at": [
-     -1231.0,
-     837.0,
+     836.0,
      null
     ],
     "axis": [
@@ -212,6 +213,19 @@
      1.0
     ],
     "dia": 9.53
+   },
+   {
+    "at": [
+     -1223.7,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
    },
    {
     "at": [
@@ -1387,6 +1401,20 @@
    "value": 10.5
   },
   {
+   "comment": "BASE SOURCE: back key 111211's fixing holes 6.0 either side of its centre line, so each 7.0 hole stays 14.0 from the side band's cut end at Y 850 with the key turned either way (D-144: no edge exception; the Joints Engineer's layout, corner-keys.csv)",
+   "expression": "6 mm",
+   "name": "ck_fy",
+   "unit": "mm",
+   "value": 6.0
+  },
+  {
+   "comment": "BASE SOURCE: back key 111211's second fixing hole 17.8 from its back face (stepped 7.3 from the first), so the two 838010 flanges (up to Ø13.6) stand 14.05 apart (D-144, corner-keys.csv)",
+   "expression": "17.8 mm",
+   "name": "ck_e2",
+   "unit": "mm",
+   "value": 17.8
+  },
+  {
    "comment": "BASE SOURCE: the keys' fixing screw holes in the carrier's bottom wall, Ø7.0 (J-BASE-02); the side bands carry the back keys since D-129",
    "expression": "7 mm",
    "name": "ck_fix_hole",
@@ -1541,6 +1569,90 @@
    "value": 10.0
   },
   {
+   "comment": "BASE CALCULATION: FRONT's fg_vis_zb in v2/01-CAD-Native/front/front_lib.py: visible bottom of the fixed pane = the base band top (DL and DR stop there too, PM ruling 2026-10-31)",
+   "expression": "wall_z0",
+   "name": "fgl_fg_vis_zb",
+   "unit": "mm",
+   "value": 110.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's gu_prof_w in v2/01-CAD-Native/front/front_lib.py: Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5 (hardware selection C5)",
+   "expression": "15 mm",
+   "name": "fgl_gu_prof_w",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's gu_prof_d in v2/01-CAD-Native/front/front_lib.py: as gu_prof_w",
+   "expression": "15 mm",
+   "name": "fgl_gu_prof_d",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_gap in v2/01-CAD-Native/front/front_lib.py: = the skeleton's glass_gap: the pane's free edge runs parallel to the door's latch edge, 4 mm off (PM ruling 2026-10-31; the skeleton's fix_xbl and fix_xtl follow the same rule since its update #58)",
+   "expression": "glass_gap",
+   "name": "fgl_fg_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_l_len in v2/01-CAD-Native/front/front_lib.py: length of the door's latch edge",
+   "expression": "sqrt(( door_xbr - door_xtr ) * ( door_xbr - door_xtr ) + ( door_zt - door_zb ) * ( door_zt - door_zb ))",
+   "name": "fgl_fg_l_len",
+   "unit": "mm",
+   "value": 2030.676
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_lnx in v2/01-CAD-Native/front/front_lib.py: door latch edge normal toward the pane, X",
+   "expression": "( door_zt - door_zb ) / fgl_fg_l_len",
+   "name": "fgl_fg_lnx",
+   "unit": "",
+   "value": 0.9903
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_lnz in v2/01-CAD-Native/front/front_lib.py: door latch edge normal toward the pane, Z",
+   "expression": "( door_xbr - door_xtr ) / fgl_fg_l_len",
+   "name": "fgl_fg_lnz",
+   "unit": "",
+   "value": 0.1389
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_lc in v2/01-CAD-Native/front/front_lib.py: door latch edge line constant",
+   "expression": "fgl_fg_lnx * ( -pod_w / 2 + door_xbr ) + fgl_fg_lnz * door_zb",
+   "name": "fgl_fg_lc",
+   "unit": "mm",
+   "value": 226.5078
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_r_len in v2/01-CAD-Native/front/front_lib.py: length of the skeleton's right edge (bottom-right corner to the knee)",
+   "expression": "sqrt(( fix_xbr - fix_xk ) * ( fix_xbr - fix_xk ) + ( fix_zk - fix_zb ) * ( fix_zk - fix_zb ))",
+   "name": "fgl_fg_r_len",
+   "unit": "mm",
+   "value": 1432.8859
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_rnx in v2/01-CAD-Native/front/front_lib.py: right edge outward normal, X",
+   "expression": "( fix_zk - fix_zb ) / fgl_fg_r_len",
+   "name": "fgl_fg_rnx",
+   "unit": "",
+   "value": 0.9903
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_rnz in v2/01-CAD-Native/front/front_lib.py: right edge outward normal, Z",
+   "expression": "( fix_xk - fix_xbr ) / fgl_fg_r_len",
+   "name": "fgl_fg_rnz",
+   "unit": "",
+   "value": 0.1389
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fg_rc in v2/01-CAD-Native/front/front_lib.py: right edge line constant",
+   "expression": "fgl_fg_rnx * ( pod_w / 2 - fix_xbr ) + fgl_fg_rnz * fix_zb",
+   "name": "fgl_fg_rc",
+   "unit": "mm",
+   "value": 952.9789
+  },
+  {
    "comment": "BASE CONFIRMED: DR intake mesh: 105 on the front and 266 on the facet (D-62)",
    "expression": "105 mm",
    "name": "mesh_front",
@@ -1604,15 +1716,15 @@
    "value": 915.0
   },
   {
-   "comment": "BASE SOURCE: FRONT: the glass's bottom U-channel, Bohle 15 x 15 x 1.5, Y -706.5 to -691.5 (centred on glass_y)",
-   "expression": "15 mm",
+   "comment": "BASE SOURCE: FRONT's U-channel width (gu_prof_w, Bohle 15 x 15 x 1.5), linked: Y -706.5 to -691.5, centred on glass_y",
+   "expression": "fgl_gu_prof_w",
    "name": "ch_w",
    "unit": "mm",
    "value": 15.0
   },
   {
-   "comment": "BASE SOURCE: FRONT: channel underside Z 95, top Z 110 (the band top, the glass's visible bottom line)",
-   "expression": "15 mm",
+   "comment": "BASE SOURCE: FRONT's U-channel depth (gu_prof_d), linked: its underside Z 95, its top Z 110 (the band top, the glass's visible bottom line)",
+   "expression": "fgl_gu_prof_d",
    "name": "ch_h",
    "unit": "mm",
    "value": 15.0
@@ -1632,32 +1744,95 @@
    "value": 40.0
   },
   {
-   "comment": "BASE SOURCE: FRONT: the channel's underside runs to X 964.1, so the sill reaches X 965",
-   "expression": "965 mm",
+   "comment": "BASE CALCULATION: the channel's underside, Z 95 (FRONT's _Z95)",
+   "expression": "fgl_fg_vis_zb - fgl_gu_prof_d",
+   "name": "ch_z95",
+   "unit": "mm",
+   "value": 95.0
+  },
+  {
+   "comment": "BASE CALCULATION: the channel's left end: the pane's free edge at its underside (FRONT's front_lib.free_x(Z 95), X 219.4)",
+   "expression": "( fgl_fg_lc + fgl_fg_gap - fgl_fg_lnz * ch_z95 ) / fgl_fg_lnx",
+   "name": "ch_free_x",
+   "unit": "mm",
+   "value": 219.4414
+  },
+  {
+   "comment": "BASE CALCULATION: the channel's right end at its underside (FRONT's front_lib.right_x(Z 95, gu_prof_d), X 964.1)",
+   "expression": "( fgl_fg_rc + fgl_gu_prof_d - fgl_fg_rnz * ch_z95 ) / fgl_fg_rnx",
+   "name": "ch_right_x",
+   "unit": "mm",
+   "value": 964.1285
+  },
+  {
+   "comment": "BASE SOURCE: channel screws 50 from each end (PM ruling 2026-11-01; FRONT's gs_end)",
+   "expression": "50 mm",
+   "name": "ch_end",
+   "unit": "mm",
+   "value": 50.0
+  },
+  {
+   "comment": "BASE CALCULATION: the sill's right end, X 965, tied to FR1's joint: past the channel's right end (ch_right_x, 964.1); the intake's closing plate closes it (D-150, batch 3)",
+   "expression": "x_fr_joint + 50 mm",
    "name": "sl_x1",
    "unit": "mm",
    "value": 965.0
   },
   {
-   "comment": "BASE SOURCE: FRONT's channel holes (F-368004-02): the first at X 269.4",
-   "expression": "269.4 mm",
+   "comment": "BASE CALCULATION: the first channel hole, X 269.4 (FRONT's gs_xl + gs_end)",
+   "expression": "ch_free_x + ch_end",
    "name": "ch_screw_x1",
    "unit": "mm",
-   "value": 269.4
+   "value": 269.4414
   },
   {
-   "comment": "BASE SOURCE: FRONT's pitch for the first 3 channel holes: X 269.4, 484.3, 699.2",
-   "expression": "214.9 mm",
+   "comment": "BASE CALCULATION: the pitch of the first 3 channel holes, 214.9: X 269.4, 484.3, 699.2 (FRONT's gs_p)",
+   "expression": "( ch_right_x - ch_free_x - 2 * ch_end ) / 3",
    "name": "ch_screw_p",
    "unit": "mm",
-   "value": 214.9
+   "value": 214.8957
   },
   {
-   "comment": "BASE CONFIRMED: the last channel screw at X 905: on FR1's sill seat, 2 hole diameters from FR1's end at x_fr_joint (joints register J-FRONT-04, the Lead 2026-11-01: X 905 or less; FRONT's 914.1 moves)",
-   "expression": "905 mm",
+   "comment": "BASE CONFIRMED: the last channel screw at X 905, tied to FR1's joint: 2 hole diameters from FR1's end (joints register J-FRONT-04, the Lead 2026-11-01; FRONT's gs_x4 = FR1's joint - 10)",
+   "expression": "x_fr_joint - 10 mm",
    "name": "ch_screw_x4",
    "unit": "mm",
    "value": 905.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: FL2's door-end plate: 2 mm aluminium, welded into FL2's door end flush with DL's door face, from FL2's inner face to the kick strip's back line (the PM's ruling of 2026-11-01 on the door's hinge side, as D-150)",
+   "expression": "2 mm",
+   "name": "fep_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: the strike pad on FL2's door-end plate for the drop seal's release button (HOLD): 11 - the button's standout + its stroke from athmer's button drawing; at most 8, so 3 stays clear of the kick strip's end (FRONT, 2026-11-01)",
+   "expression": "8 mm",
+   "name": "fep_pad_t",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE SOURCE: the button's window across the glass line, Y -705 to -693 (FRONT, 2026-11-01)",
+   "expression": "12 mm",
+   "name": "fep_pad_w",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE SOURCE: the button's window from the kick strip's bottom line (glide_h, Z 10) up to Z 75 (FRONT, 2026-11-01)",
+   "expression": "65 mm",
+   "name": "fep_pad_h",
+   "unit": "mm",
+   "value": 65.0
+  },
+  {
+   "comment": "BASE CALCULATION: FL2's glide along its centre line from the knee face's centre: the support under DL and the door's hinges (about 650 N, DL 12.3 kg and the 48.6 kg door, FRONT's lists), 60 from DL's slot spigot rivnut (40 needed) and its load block 7 clear of the door-end block; FL1, 112 long between two keyed ends, has none",
+   "expression": "145 mm",
+   "name": "gl_fl2",
+   "unit": "mm",
+   "value": 145.0
   },
   {
    "comment": "BASE ASSUMPTION: hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)",
@@ -1665,6 +1840,160 @@
    "name": "ch_rn_hole",
    "unit": "mm",
    "value": 5.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's dl_l1 in v2/01-CAD-Native/front/dl_block.py: outer facet length in plan",
+   "expression": "sqrt(dl_x2 * dl_x2 + ( dl_y2 - dl_y1 ) * ( dl_y2 - dl_y1 ))",
+   "name": "dlf_dl_l1",
+   "unit": "mm",
+   "value": 123.2396
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_d1x in v2/01-CAD-Native/front/dl_block.py: outer facet direction, X",
+   "expression": "dl_x2 / dlf_dl_l1",
+   "name": "dlf_sp_d1x",
+   "unit": "",
+   "value": 0.7465
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's dl_skin_t in v2/01-CAD-Native/front/dl_block.py: ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)",
+   "expression": "3 mm",
+   "name": "dlf_dl_skin_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's fr_w in v2/01-CAD-Native/front/dl_block.py: frame tube 20 x 20 x 1.5, 6063-T6 (D-79), as DR and DT",
+   "expression": "20 mm",
+   "name": "dlf_fr_w",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_c in v2/01-CAD-Native/front/dl_block.py: the bottom ring tube's centre line, in from the outer faces",
+   "expression": "dlf_dl_skin_t + dlf_fr_w / 2",
+   "name": "dlf_sp_c",
+   "unit": "mm",
+   "value": 13.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_n1x in v2/01-CAD-Native/front/dl_block.py: outer facet normal into DL, X",
+   "expression": "( dl_y2 - dl_y1 ) / dlf_dl_l1",
+   "name": "dlf_sp_n1x",
+   "unit": "",
+   "value": 0.6654
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_tk in v2/01-CAD-Native/front/dl_block.py: the knee on the ring's centre line, along the outer facet",
+   "expression": "dlf_sp_c * ( 1 - dlf_sp_n1x ) / dlf_sp_d1x",
+   "name": "dlf_sp_tk",
+   "unit": "mm",
+   "value": 5.8273
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's sp_e in v2/01-CAD-Native/front/dl_block.py: R-J13: spigots 100 in from the ends of the edge a part is set down on",
+   "expression": "100 mm",
+   "name": "dlf_sp_e",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_d1y in v2/01-CAD-Native/front/dl_block.py: outer facet direction, Y",
+   "expression": "-( dl_y2 - dl_y1 ) / dlf_dl_l1",
+   "name": "dlf_sp_d1y",
+   "unit": "",
+   "value": -0.6654
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_n1y in v2/01-CAD-Native/front/dl_block.py: outer facet normal into DL, Y",
+   "expression": "dl_x2 / dlf_dl_l1",
+   "name": "dlf_sp_n1y",
+   "unit": "",
+   "value": 0.7465
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_side in v2/01-CAD-Native/front/dl_block.py: the bottom edge's run along the side, from the back to the knee",
+   "expression": "( -pod_d / 2 + decor_d ) - ( -dl_y1 + dlf_sp_d1y * dlf_sp_tk + dlf_sp_c * dlf_sp_n1y )",
+   "name": "dlf_sp_side",
+   "unit": "mm",
+   "value": 19.1727
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_ta in v2/01-CAD-Native/front/dl_block.py: the round hole, along the outer facet from its corner",
+   "expression": "dlf_sp_tk + dlf_sp_e - dlf_sp_side",
+   "name": "dlf_sp_ta",
+   "unit": "mm",
+   "value": 86.6547
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_ax in v2/01-CAD-Native/front/dl_block.py: the round hole, X (-1176.7)",
+   "expression": "-pod_w / 2 + dlf_sp_d1x * dlf_sp_ta + dlf_sp_c * dlf_sp_n1x",
+   "name": "dlf_sp_ax",
+   "unit": "mm",
+   "value": -1176.6613
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_ay in v2/01-CAD-Native/front/dl_block.py: the round hole, Y (-718.0)",
+   "expression": "-dl_y1 + dlf_sp_d1y * dlf_sp_ta + dlf_sp_c * dlf_sp_n1y",
+   "name": "dlf_sp_ay",
+   "unit": "mm",
+   "value": -717.9528
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's dl_l2 in v2/01-CAD-Native/front/dl_block.py: front facet length in plan",
+   "expression": "sqrt(( dl_x3 - dl_x2 ) * ( dl_x3 - dl_x2 ) + ( dl_y3 - dl_y2 ) * ( dl_y3 - dl_y2 ))",
+   "name": "dlf_dl_l2",
+   "unit": "mm",
+   "value": 201.2585
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_d2x in v2/01-CAD-Native/front/dl_block.py: front facet direction, X",
+   "expression": "( dl_x3 - dl_x2 ) / dlf_dl_l2",
+   "name": "dlf_sp_d2x",
+   "unit": "",
+   "value": 0.8894
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_n2x in v2/01-CAD-Native/front/dl_block.py: front facet normal into DL, X",
+   "expression": "( dl_y3 - dl_y2 ) / dlf_dl_l2",
+   "name": "dlf_sp_n2x",
+   "unit": "",
+   "value": 0.4571
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_te in v2/01-CAD-Native/front/dl_block.py: the front facet's end at the door side, on the ring's centre line",
+   "expression": "( dl_w - dlf_sp_c - dl_x2 - dlf_sp_c * dlf_sp_n2x ) / dlf_sp_d2x",
+   "name": "dlf_sp_te",
+   "unit": "mm",
+   "value": 187.8309
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_bx in v2/01-CAD-Native/front/dl_block.py: the slot's centre, X (-1073.9)",
+   "expression": "-pod_w / 2 + dl_x2 + dlf_sp_d2x * ( dlf_sp_te - dlf_sp_e ) + dlf_sp_c * dlf_sp_n2x",
+   "name": "dlf_sp_bx",
+   "unit": "mm",
+   "value": -1073.9403
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_d2y in v2/01-CAD-Native/front/dl_block.py: front facet direction, Y",
+   "expression": "-( dl_y3 - dl_y2 ) / dlf_dl_l2",
+   "name": "dlf_sp_d2y",
+   "unit": "",
+   "value": -0.4571
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_n2y in v2/01-CAD-Native/front/dl_block.py: front facet normal into DL, Y",
+   "expression": "( dl_x3 - dl_x2 ) / dlf_dl_l2",
+   "name": "dlf_sp_n2y",
+   "unit": "",
+   "value": 0.8894
+  },
+  {
+   "comment": "BASE CALCULATION: FRONT's sp_by in v2/01-CAD-Native/front/dl_block.py: the slot's centre, Y (-780.6)",
+   "expression": "-dl_y2 + dlf_sp_d2y * ( dlf_sp_te - dlf_sp_e ) + dlf_sp_c * dlf_sp_n2y",
+   "name": "dlf_sp_by",
+   "unit": "mm",
+   "value": -780.5873
   }
  ],
  "parts": {
@@ -1691,6 +2020,14 @@
    "name_vi": "Viền chân nhôm - cạnh sau (cụm)",
    "parent": "110000",
    "pn": "110103"
+  },
+  "110104": {
+   "class": "HS",
+   "key": "front_l",
+   "name": "BASE - BAND ASSY - FRONT - LH",
+   "name_vi": "Viền chân trước - trái (cụm)",
+   "parent": "110000",
+   "pn": "110104"
   },
   "110106": {
    "class": "HS",
@@ -1757,6 +2094,44 @@
    "pn": "111103",
    "volume_mm3": 1001640.9
   },
+  "111104": {
+   "box_mm": [
+    -1250.0,
+    -752.0,
+    10.0,
+    -1135.186,
+    -652.07,
+    110.0
+   ],
+   "class": "MP",
+   "key": "fl1",
+   "mass_kg": 0.138,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - FRONT - FACET 1 - LH",
+   "name_vi": "Viền chân trước - mặt vát 1",
+   "parent": "110104",
+   "pn": "111104",
+   "volume_mm3": 51124.5
+  },
+  "111105": {
+   "box_mm": [
+    -1158.0,
+    -844.0,
+    10.0,
+    -964.0,
+    -689.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "fl2",
+   "mass_kg": 0.3809,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - FRONT - FACET 2 - LH",
+   "name_vi": "Viền chân trước - mặt vát 2",
+   "parent": "110104",
+   "pn": "111105",
+   "volume_mm3": 141060.1
+  },
   "111106": {
    "box_mm": [
     218.46,
@@ -1795,7 +2170,53 @@
    "pn": "111211",
    "volume_mm3": 76818.5
   },
+  "111212": {
+   "box_mm": [
+    0.0,
+    -17.5,
+    0.0,
+    37.844,
+    17.5,
+    75.0
+   ],
+   "class": "MP",
+   "key": "key_f",
+   "mass_kg": 0.2071,
+   "material": "Aluminum",
+   "name": "BASE - CORNER KEY - FRONT - LH",
+   "name_vi": "Ke góc đế trước - trái",
+   "parent": "110000",
+   "pn": "111212",
+   "volume_mm3": 76704.0
+  },
+  "111214": {
+   "box_mm": [
+    0.0,
+    -17.5,
+    0.0,
+    32.228,
+    17.5,
+    75.0
+   ],
+   "class": "MP",
+   "key": "key_k",
+   "mass_kg": 0.2074,
+   "material": "Aluminum",
+   "name": "BASE - CORNER KEY - KNEE - LH",
+   "name_vi": "Ke góc đế - gối trái",
+   "parent": "110000",
+   "pn": "111214",
+   "volume_mm3": 76808.8
+  },
   "111301": {
+   "class": "HS",
+   "key": "sill",
+   "name": "BASE - SILL - FIXED GLASS",
+   "name_vi": "Bậu đỡ kính cố định",
+   "parent": "110106",
+   "pn": "111301"
+  },
+  "111302": {
    "box_mm": [
     218.46,
     -810.0,
@@ -1805,14 +2226,33 @@
     110.0
    ],
    "class": "MP",
-   "key": "sill",
-   "mass_kg": 1.0945,
+   "key": "sill_bent",
+   "mass_kg": 1.0336,
    "material": "Aluminum",
-   "name": "BASE - SILL - FIXED GLASS",
-   "name_vi": "Bậu đỡ kính cố định",
-   "parent": "110106",
-   "pn": "111301",
-   "volume_mm3": 405382.0
+   "name": "BASE - SILL - FIXED GLASS - BENT PROFILE",
+   "name_vi": "Bậu đỡ kính cố định - thanh gấp",
+   "parent": "111301",
+   "pn": "111302",
+   "volume_mm3": 382818.0
+  },
+  "111303": {
+   "box_mm": [
+    218.46,
+    -810.0,
+    10.0,
+    220.46,
+    -691.5,
+    108.0
+   ],
+   "class": "MP",
+   "key": "sill_plate",
+   "mass_kg": 0.0609,
+   "material": "Aluminum",
+   "name": "BASE - SILL - FIXED GLASS - DOOR-END PLATE",
+   "name_vi": "Bậu đỡ kính cố định - tấm bịt đầu phía cửa",
+   "parent": "111301",
+   "pn": "111303",
+   "volume_mm3": 22564.0
   },
   "111601": {
    "box_mm": [
@@ -1835,22 +2275,22 @@
   },
   "118001": {
    "box_mm": [
-    218.46,
-    -800.0,
+    -984.0,
+    -801.596,
     0.0,
-    230.46,
-    -691.5,
+    -972.0,
+    -689.0,
     25.0
    ],
    "class": "PI",
-   "key": "seal_se",
-   "mass_kg": 0.0094,
+   "key": "seal_fe",
+   "mass_kg": 0.0084,
    "material": "Lip seal envelope 320 kg/m3 (ASSUMPTION)",
    "name": "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD",
    "name_vi": "Gioăng môi sát sàn",
-   "parent": "110106",
+   "parent": "110104",
    "pn": "118001",
-   "volume_mm3": 29295.0
+   "volume_mm3": 26305.1
   },
   "118002": {
    "box_mm": [
@@ -2010,6 +2450,27 @@
    "to": 810.0
   },
   {
+   "from": 0.0,
+   "host": "110104",
+   "length_mm": 100.22,
+   "line": "FL1, inner face",
+   "to": 100.21746628643945
+  },
+  {
+   "from": 0.0,
+   "host": "110104",
+   "length_mm": 181.23,
+   "line": "FL2, inner face, to its door-end plate",
+   "to": 181.22975278786387
+  },
+  {
+   "from": -801.5958569404546,
+   "host": "110104",
+   "length_mm": 112.6,
+   "line": "X = -972.00 (FL2's door-end plate, its bottom edge)",
+   "to": -689.0
+  },
+  {
    "from": -800.0,
    "host": "110106",
    "length_mm": 108.5,
@@ -2074,11 +2535,14 @@
    "seat": 19.0
   },
   "length": 746.54,
+  "pn": "111301",
+  "pn_bent": "111302",
+  "pn_plate": "111303",
   "rivnut_hole": 5.0,
   "screws_x": [
-   269.4,
-   484.3,
-   699.2,
+   269.44142415876706,
+   484.3371036527884,
+   699.2327831468099,
    905.0
   ],
   "t": 2.0,
@@ -2107,6 +2571,22 @@
    "front_end": "square at its left end, closed by a welded 1.5 end plate (100 x 40) with its open slot (D-129)",
    "inner_face_length": 2417.0,
    "outer_face_length": 2417.0,
+   "section": "100 x 40 x 1.5"
+  },
+  "111104": {
+   "axis": "DL facet 1",
+   "back_end": "mitre to FL2, 7.25 deg from square, open: the knee key 111214 inside",
+   "front_end": "mitre to the left side band, 24.14 deg from square, closed by a welded 1.5 end plate with 2 keyholes for the front corner key 111212's studs",
+   "inner_face_length": 100.22,
+   "outer_face_length": 123.24,
+   "section": "100 x 40 x 1.5"
+  },
+  "111105": {
+   "axis": "DL facet 2",
+   "back_end": "cut square to X (27.20 deg from square), the door-end block welded on, 7.0 to DL's door face, and the 2 mm door-end plate welded into it, flush with that face, 112.6 wide to the kick strip's back line",
+   "front_end": "mitre to FL1, 7.25 deg from square, closed by a welded 1.5 end plate with 2 keyholes for the knee key 111214's studs",
+   "inner_face_length": 175.61,
+   "outer_face_length": 201.26,
    "section": "100 x 40 x 1.5"
   },
   "111106": {
