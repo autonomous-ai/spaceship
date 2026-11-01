@@ -37,6 +37,8 @@ OUT_BOM = "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.c
 OUT_HARNESS = "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv"
 OUT_LOAD = "v2/05-Engineering/electrical/710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv"
 OUT_CALC = "v2/05-Engineering/electrical/calc-results.md"
+OUT_TIES = "v2/05-Engineering/electrical/710000_P01_ELECTRICAL-TRAY-TIE-HOLES_CALC.csv"
+TIE_HEADER = ["tie", "cassette", "tray", "cable", "hole_mm", "x_mm", "y_mm", "z_mm", "in_tray_plane", "status"]
 OUT_PDF = "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf"
 OUT_PNG = "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM-SHEET%d_IMG.png"
 
@@ -331,8 +333,20 @@ def outputs():
         OUT_HARNESS: csv_text(HARNESS_HEADER, harness),
         OUT_LOAD: csv_text(LOAD_HEADER, load_rows()),
         OUT_CALC: calc_md(v, mass_of, harness),
+        OUT_TIES: csv_text(TIE_HEADER, tie_rows(v)),
     }
     return files, v, rows, harness
+
+
+def tie_rows(v):
+    """The cable ties' holes in the lining trays (WALL's), pod mm; the tray plane's two coordinates named."""
+    out = []
+    for i, (cas, cable, (x, y, z)) in enumerate(EP.tie_points(v), start=1):
+        plane = "X, Z (back wall)" if cas.startswith("B") else "Y, Z (right wall)"
+        out.append(dict(tie="T%02d" % i, cassette=cas, tray=EP.TIE_TRAYS[cas], cable=cable, hole_mm=fmt(EP.TIE_HOLE, 1),
+                        x_mm=fmt(x, 1), y_mm=fmt(y, 1), z_mm=fmt(z, 1), in_tray_plane=plane,
+                        status="calculation (route model; rule in electrical_parts.py)"))
+    return out
 
 
 def main():
