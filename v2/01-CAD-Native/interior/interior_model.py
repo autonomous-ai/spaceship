@@ -31,10 +31,13 @@ INTERIOR_PARAMS = [
     ("sh_hl", "20 mm", "mm", "assumption", "front lip height: hides the up-light strip from a seated eye"),
     ("sh_t", "1 mm", "mm", "assumption", "D-85 budget 0.4 kg/m: 1.0 mm aluminium, 118 mm2 section (0.32 kg/m) plus the strip"),
     ("sh_z0", "2230 mm", "mm", "assumption", "shelf underside; ELECTRICAL's feed and call-light drop are at Z 2250, in the back flange, and the felt ceiling (Z 2316) is 46 above the flange"),
-    ("dc_x0", "15 mm", "mm", "assumption", "down channel (right wall only) from 15 out from the lining"),
-    ("dc_w", "30 mm", "mm", "assumption", ELEC + ": a down channel with a diffuser for two 8 mm strips over the ledge"),
-    ("dc_h", "12 mm", "mm", "assumption", "down channel depth under the shelf"),
-    ("df_t", "1.5 mm", "mm", "assumption", "opal diffuser strip in the down channel"),
+    # the down-light (D-126): a bought surface LED aluminium profile under the right run, with a clip-on
+    # cover (D-127: satin, at least 86 % of the light, the same clip-in style), end caps and mounting
+    # clips (Tech-Light P13-2 type, public catalogue; product HOLD)
+    ("lp_x0", "15 mm", "mm", "assumption", "D-126: the LED profile under the right run, 15 out from the lining (where the folded channel was)"),
+    ("lp_w", "23 mm", "mm", "source", "D-126: surface LED profile of the Tech-Light P13-2 type (public catalogue): 23 wide outside"),
+    ("lp_h", "12.5 mm", "mm", "assumption", "D-126: the same profile, 12.5 deep with its clip-in cover; D-127 makes the cover satin in the same clip-in style, so the depth is taken as the same until the product is named"),
+    ("lp_in", "20 mm", "mm", "source", "D-126: 20 inside at the strip base, two 8 mm strips side by side (the catalogue says so; ELECTRICAL needs 20 or more)"),
     ("cab_d", "10 mm", "mm", "assumption", "cable hole in the back flange for the feed and the call-light drop"),
     ("feed_x", "355 mm", "mm", "confirmed", ELEC + ": the feed point at X 355 on the back wall, Z 2250"),
     ("call_y", "-209.5 mm", "mm", "confirmed", ELEC + ": the call-light drop at Y -209.5 on the right wall, Z 2250"),
@@ -46,7 +49,10 @@ INTERIOR_PARAMS = [
     ("lg_t", "1.5 mm", "mm", "confirmed", "D-85: 1.5 mm folded aluminium"),
     ("lg_lip", "25 mm", "mm", "assumption", "front lip folded down"),
     ("lg_up", "25 mm", "mm", "assumption", "back flange folded down, at the wall"),
-    ("lg_gap", "2 mm", "mm", "assumption", "the ledge stands 2 off the felt so it never bridges the floating lining (D-17)"),
+    ("lg_gap", "5 mm", "mm", "calculation", "the ledge, its brackets and the screen rail stand 5 off the lining's face, so "
+     "nothing fixed to the frame touches the floating lining: D-17 (the cassette never touches the frame) and D-57's 4 mm "
+     "(the wall stack's gap), plus 1 for the felt's thickness tolerance; the mechanical check's LINING-FLOATS rule found "
+     "2.0 to the lower side cassette's tray at the old 2"),
     ("br_w", "200 mm", "mm", "assumption", "ledge bracket arm under the ledge, HOLD (a rated concealed shelf bracket)"),
     ("br_h", "150 mm", "mm", "assumption", "ledge bracket height at the wall, HOLD"),
     ("br_t", "30 mm", "mm", "assumption", "ledge bracket width along the wall, HOLD"),
@@ -67,19 +73,31 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "shelf_back": ("811201", "INTERIOR - LIGHT SHELF - BACK", "Kệ đèn - vách sau", "MP", "al"),
     "shelf_lh": ("811202", "INTERIOR - LIGHT SHELF - SIDE LH", "Kệ đèn - vách trái", "MP", "al"),
     "shelf_rh": ("811203", "INTERIOR - LIGHT SHELF - SIDE RH", "Kệ đèn - vách phải", "MP", "al"),
-    "dchan": ("811204", "INTERIOR - LIGHT SHELF - DOWN CHANNEL RH", "Máng đèn rọi xuống - vách phải", "MP", "al"),
-    "diffuser": ("811205", "INTERIOR - LIGHT SHELF - DIFFUSER RH", "Tấm khuếch tán - vách phải", "MP", "pc"),
+    # D-126: 811204 (folded down channel) and 811205 (cut diffuser) are cancelled; the bought profile set
+    # takes ELECTRICAL's numbers (Control's allocation): 718101 profile, 718102 cover, 718103 end cap,
+    # 718104 mounting clip. ELECTRICAL lists them; INTERIOR models the profile (one HOLD envelope with
+    # its cover, end caps and clips) under 718101, in the light shelf assembly
+    # the name as ELECTRICAL's parts list gives it (one name everywhere, guideline 4.2); its product is on HOLD there
+    "lprofile": ("718101", "ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5", "Điện - thanh nhôm LED nổi 23 x 12.5 - kệ đèn",
+                 "HOLD", "hold"),
     "bracket": ("818101", "INTERIOR - LEDGE BRACKET - HOLD", "Ke đỡ bàn tựa (chờ)", "HOLD", "hold"),
     "rail": ("818102", "INTERIOR - SCREEN RAIL - HOLD", "Thanh treo màn hình (chờ)", "HOLD", "hold"),
 }
 
 MATERIALS = {   # name, density kg/m3, status, source
     "al": ("Aluminium 5052-H32 sheet (alloy HOLD)", 2700.0, "source", "aluminium 2.70 g/cm3"),
-    "pc": ("Opal polycarbonate", 1200.0, "source", "polycarbonate 1.20 g/cm3"),
+    "pc": ("Satin polycarbonate", 1200.0, "source", "polycarbonate 1.20 g/cm3"),
     "hold": ("HOLD envelope - no mass", 1.0, "assumption", "space only"),
 }
 HOLD_MASS = {"bracket": (0.10, "assumption: an aluminium concealed shelf bracket with its stand-offs, about 0.1 kg (D-85 budget: the ledge with 2 brackets 1.4 kg)"),
-             "rail": (0.50, "assumption: a 900 aluminium VESA rail, about 0.5 kg")}
+             "rail": (0.50, "assumption: a 900 aluminium VESA rail, about 0.5 kg"),
+             "lprofile": (0.178, "assumption: about 0.18 kg/m x 0.991 m (the catalogue gives no mass; a 23 x 12.5 aluminium profile, 0.15 to 0.21 kg/m)"),
+             "lcover": (0.035, "assumption: about 0.035 kg/m x 0.991 m (satin cover, about 20 x 1.5)"),
+             "lcap": (0.003, "assumption: a plastic end cap, about 3 g"),
+             "lclip": (0.004, "assumption: a steel mounting clip, about 4 g")}
+# D-126's profile set, in ELECTRICAL's family (Control's allocation): listed by ELECTRICAL; the masses here
+# are only for INTERIOR's D-85 budget check (assumptions: the catalogue gives none)
+PROFILE_PN = {"lprofile": "718101", "lcover": "718102", "lcap": "718103", "lclip": "718104"}
 STRIP_KG_M = (0.02, "assumption: an 8 mm LED strip, about 20 g/m (ELECTRICAL's part, counted here only for the 0.4 kg/m budget)")
 
 XIR = "(pod_w / 2 - stack_t)"            # right lining face
@@ -119,17 +137,6 @@ def shelf_section(u0_expr, sign, plane):
             (u("0 mm"), "%s + sh_hb" % z0)]
 
 
-def down_channel_section():
-    """The right wall's down channel: an open-bottomed U under the shelf (x, z) in the XZ plane."""
-    def x(d):
-        return "(%s - (%s))" % (XIR, d)
-    z0 = "sh_z0"
-    a, b = "dc_x0", "dc_x0 + dc_w"
-    return [(x(a), z0), (x(b), z0), (x(b), "%s - dc_h" % z0), (x("%s - sh_t" % b), "%s - dc_h" % z0),
-            (x("%s - sh_t" % b), "%s - sh_t" % z0), (x("%s + sh_t" % a), "%s - sh_t" % z0),
-            (x("%s + sh_t" % a), "%s - dc_h" % z0), (x(a), "%s - dc_h" % z0)]
-
-
 def ledge_section():
     """The ledge's folded inverted U (x, z) in the XZ plane: top, front lip down, back flange
     down at the wall (2 mm off the felt)."""
@@ -155,9 +162,12 @@ def layout():
     out.append(("shelf_back", "LIGHT SHELF BACK", "yz", (shelf_section(YBL, -1, "yz"), XIL, XIR)))
     out.append(("shelf_lh", "LIGHT SHELF LH", "xz", (shelf_section(XIL, 1, "xz"), sy0, sy1)))
     out.append(("shelf_rh", "LIGHT SHELF RH", "xz", (shelf_section(XIR, -1, "xz"), sy0, sy1)))
-    out.append(("dchan", "DOWN CHANNEL RH", "xz", (down_channel_section(), sy0, sy1)))
-    out.append(("diffuser", "DIFFUSER RH", "box", ("%s - dc_x0 - dc_w + sh_t" % XIR, "%s - dc_x0 - sh_t" % XIR, sy0, sy1,
-                                                     "sh_z0 - dc_h", "sh_z0 - dc_h + df_t")))
+    # D-126: the LED profile under the right run (with its cover, end caps and clips: one HOLD envelope),
+    # the side run's own length (991, from the soffit's face to the corner joint with the back run), so
+    # every clip fixes to the side run and no end shows past it (Reviewer 6's check; the 1036 version
+    # ran 45 under the back run's corner, open to view from below)
+    out.append(("lprofile", "LED PROFILE RH", "box", ("%s - lp_x0 - lp_w" % XIR, "%s - lp_x0" % XIR, sy0, sy1,
+                                                      "sh_z0 - lp_h", "sh_z0")))
     y0, y1 = ledge_y()
     out.append(("ledge", "LEDGE TOP", "xz", (ledge_section(), y0, y1)))
     for k, yb in (("1", "br_y1"), ("2", "br_y2")):
@@ -207,5 +217,4 @@ if __name__ == "__main__":
     v = evaluate()
     for name, (key, b) in boxes(v).items():
         print("%-10s %-18s %s" % (key, name, [round(x, 2) for x in b]))
-    print("shelf section %.1f mm2, down channel %.1f mm2, ledge %.1f mm2" % (
-        section_area(v, shelf_section(XIR, -1, "xz")), section_area(v, down_channel_section()), section_area(v, ledge_section())))
+    print("shelf section %.1f mm2, ledge %.1f mm2" % (section_area(v, shelf_section(XIR, -1, "xz")), section_area(v, ledge_section())))
