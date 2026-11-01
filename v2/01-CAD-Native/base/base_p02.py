@@ -612,7 +612,9 @@ def keyholes_on_face(design, key, centre_xy, normal_xy, width_expr, label):
         feats.append(hf)
     face = end_face(body, centre_xy, normal_xy)
     bottom, side = face_edges(face, v("glide_h"))
-    sk = c.sketches.add(face)
+    # without the face's own edges: a face sketch projects the plate's outline and the holes just cut, and the
+    # slot across them made 6 profiles (FL1 sample, 2026-11-01); only the two edges it's tied to are projected
+    sk = c.sketches.addWithoutEdges(face)
     sk.name = "KEYHOLE SLOT - %s - FROM THE ENTRY UP TO THE SEAT, ON THE MITRED END PLATE" % label
     pb, ps = sk.project(bottom).item(0), sk.project(side).item(0)
     ux, uy = -normal_xy[1], normal_xy[0]                     # along the face, level
