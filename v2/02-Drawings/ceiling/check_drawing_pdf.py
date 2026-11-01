@@ -193,7 +193,7 @@ def hole_table_box(spans, width):
 
 
 def table_problems(spans, sp, width):
-    if not sp.get("holes"):
+    if not sp.get("holes") or not sp.get("hole_table", True):
         return []
     box, rows = hole_table_box(spans, width)
     if box is None:

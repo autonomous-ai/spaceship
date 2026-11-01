@@ -365,6 +365,15 @@ def annotate(part):
     want = S.SHEETS[sp["sheet"]]
     if abs(sheet.width - want[0]) > 1 or abs(sheet.height - want[1]) > 1:
         raise RuntimeError("sheet is %s x %s, the spec wants %s" % (sheet.width, sheet.height, sp["sheet"]))
+    # ISO 129-1 writes a size under 1 with its leading zero (0.5): this build's ISO drawing printed ".5" (the rib's
+    # first redraw, 2026-11-01); the setting is a preview API, so it is read back and reported
+    try:
+        us = dwg.documentSettings.unitSettings.unitSetting
+        if not us.displayLeadingZeros:
+            us.displayLeadingZeros = True
+        print("leading zeros on dimensions: %s" % us.displayLeadingZeros)
+    except Exception as e:          # noqa: BLE001 (report and go on: the PDF check catches a size printed without it)
+        print("WARNING: leading zeros not set: %s" % e)
     sc = sp["scale"]
     st = sp.get("styles", {})
     views = {}
@@ -414,7 +423,7 @@ def annotate(part):
         extras.append(("%s view scale label" % key,
                        lambda png=png, key=key: insert_image(sheet, png, label_place(
                            extent(views[key]), png, key, detail=key in sp.get("details", {})))))
-    if sp["holes"]:
+    if sp["holes"] and sp.get("hole_table", True):
         extras.insert(0, ("hole table", lambda: hole_table(sheet, views[sp["holes"]], "HOLES - %s VIEW" % sp["holes"].upper())))
     for what, fn in extras:
         try:

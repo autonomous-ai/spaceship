@@ -224,7 +224,8 @@ class SizesOnce(unittest.TestCase):
         self.assertEqual(S.SPECS["rib"]["sizes"], ["44", "1034", "20", "24", "12", "0.5"])
         self.assertEqual(S.SPECS["rib"]["details"]["detail"]["dims"], ["height", "crown", "flange", "thickness"])
         self.assertIsNone(S.SPECS["cassette"]["holes"])
-        self.assertIsNone(S.SPECS["tray"]["holes"])      # its two holes are dimensioned (Fusion's table printed empty)
+        self.assertEqual(S.SPECS["tray"]["holes"], "front")      # its two holes dimensioned on the front view,
+        self.assertFalse(S.SPECS["tray"]["hole_table"])           # with no hole table (Fusion's printed empty twice)
 
 
 class NotesAsText(unittest.TestCase):

@@ -100,13 +100,14 @@ def doc_name(key, doctype):
 
 
 def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None, faces=None, sizes=None,
-         details=None):
+         details=None, hole_table=True):
     """A1 layout: the front view top left, the view from above below it, the view from the
     left to its right (first angle), the isometric view below that; notes top right, title
     data above the title block. faces: {view: ["bottom"]} adds the width of that face of the view where it is a
     size of its own (the rib's crown; the overall width is measured face to face, so a crown narrower than the
     flanges needs its own). sizes: every dimension value the drawing must print, once each (check_drawing_pdf.py
-    reads them back), taken from the model's values and the notes. details: {name: {"of": a view's orientation,
+    reads them back), taken from the model's values and the notes. holes: the view whose holes get their size and centre
+    dimensions; hole_table=False leaves out Fusion's hole table (it printed empty on the tray's front view twice). details: {name: {"of": a view's orientation,
     "at": its centre, "scale", "label": [lines], "dims": [what make_drawing_ceiling.detail_dims puts on it]}}: a base
     view of its own, outside the first-angle set, at a larger scale (the API makes no section or detail views)."""
     pn, name, vn, kind, mat = M.PARTS[key]
@@ -118,8 +119,9 @@ def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", 
         "key": key, "design": doc_name(key, "CAD"), "drawing": doc_name(key, "DWG"),
         "scale": scale, "scales": scales or {}, "views": v, "holes": holes, "sheet": sheet,
         "faces": faces or {}, "sizes": list(sizes or []), "details": details or {},
+        "hole_table": bool(holes) and hole_table,
         "styles": STYLES.get(key, {}),
-        "images": image_places(sheet, bool(holes)),
+        "images": image_places(sheet, bool(holes) and hole_table),
         "title": [("PART NO.", pn), ("NAME", name), ("TÊN", vn), ("REV / STATUS", "%s / DRAFT" % M.REV),
                   ("MATERIAL", mname), ("FINISH", M.FINISH.get(key, "-")),
                   ("SCALE", scale_text(scale) + "".join(", %s view %s" % (k, scale_text(x))
@@ -145,7 +147,7 @@ SPECS = {
         "No hole table: Fusion's table printed empty on this view twice (2026-11-01).",
         "Clip and catch fixing zones on the base: no holes until a clip and a catch are named (HOLD-08).",
         "Symmetric about datum C: one part for both ceiling halves.",
-    ], holes=None, sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
+    ], holes="front", hole_table=False, sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
     "rib": spec("rib", 0.2, [
         "Tolerances (assumption): cut length +/-1; bent sizes +/-0.5.",
         "Galvanised steel DX51D+Z, one strip bent into the hat section of detail A (sizes outside). Blank and bend "
