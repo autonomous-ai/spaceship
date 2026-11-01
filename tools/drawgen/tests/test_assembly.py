@@ -171,6 +171,10 @@ def test_unmodelled_rows_and_reference_parts():
 def test_units_join_and_printed_widths():
     assert assembly.unit_of({"part_number": "848001"}) == "m"
     assert assembly.unit_of({"part_number": "838003", "unit": "pcs"}) == ""
+    # a count in any case (Reviewer 9 on #408); any other unit is printed as the list writes it
+    assert assembly.unit_of({"part_number": "838003", "unit": "EA"}) == ""
+    assert assembly.unit_of({"part_number": "838003", "unit": "PCS"}) == ""
+    assert assembly.unit_of({"part_number": "518003", "unit": "SET"}) == "SET"
     assert assembly.qty_text("4") == "4" and assembly.qty_text("1.199") == "1.199"
     assert assembly._join(["BASE - TUBE END CAP - BLACK -", "HOLD"]) == "BASE - TUBE END CAP - BLACK - HOLD"
     assert assembly._join(["SHEREX CAH3-", "610-4.2"]) == "SHEREX CAH3-610-4.2"
@@ -235,6 +239,52 @@ def test_a_count_in_sets_is_counted_as_pieces():
             assert "the list has 3 of 518001 under it, the STEP 4" in str(e), e
     finally:
         inputs.team_lists = real
+
+
+def test_overall_sizes_are_the_assemblys_own_parts():
+    """The Lead's ruling (2026-11-01) on INTERIOR's light shelf 810201 (#356, on main): an assembly's overall sizes
+    cover only its own parts, so ELECTRICAL's LED profile 718101 under the shelf, drawn as a reference outline, stays
+    out: the front view's height is 40 (Z 2230 to 2270), not 52.5. Where the combined size matters for fitting, the
+    entry's combined_sizes adds it in brackets outside, as a reference dimension: (52.5). The read-back measures
+    every overall size again from the STEP (the list's parts only, everything for a bracketed one), so a sheet drawn
+    as before, 52.5 over the profile, fails it."""
+    final, _rep = assembly.generate("810201", "interior", {}, os.path.join(TMP, "shelf"))
+    data = readback.read_data(fitz.open(final))
+    height = [d for d in data["dims"] if d["view"] == "above" and d["axis"] == "y"]
+    assert [(d["value"], d["text"]) for d in height] == [(40.0, "40")], data["dims"]
+    fails, st = assembly.check(final)
+    assert not fails and st["overall"] == 3, (fails, st)
+    # the combined size where the entry asks for it, in brackets outside the overall size
+    both, _rep = assembly.generate("810201", "interior", {"combined_sizes": ["Z"]}, os.path.join(TMP, "shelf2"))
+    data2 = readback.read_data(fitz.open(both))
+    height = [(d["value"], d["text"], d.get("reference", False)) for d in data2["dims"] if d["view"] == "above"]
+    assert height == [(40.0, "40", False), (52.5, "(52.5)", True)], height
+    fails, st = assembly.check(both)
+    assert not fails and st["overall"] == 4, (fails, st)
+    assert "(52.5)" in fitz.open(both)[0].get_text()
+
+    # drawn as main's code drew it, the shelf's height over the profile: the read-back fails it
+    def as_before(d):
+        for x in d["dims"]:
+            if x["view"] == "above" and x["axis"] == "y":
+                x["value"], x["text"] = 52.5, "52.5"
+    fails, _st = assembly.check(_with_data(final, os.path.join(TMP, "shelf_before.pdf"), as_before))
+    assert any("overall size 52.5 on the above view: the STEP's own parts give 40.00" in f for f in fails), fails
+
+
+def test_a_named_parts_envelope_says_it_waits_for_its_model():
+    """WALL's 518003 (D-170: Fastmount MC-F10 + MC-SM5) is named in its list row, and only its model is missing, so
+    the note says the STEP holds only its envelope until the part is modelled (the WALL Drawings Engineer); a held
+    part with no product named (main's 518001, HOLD-08) keeps 'isn't named yet'."""
+    team, entry = assembly.assemblies()["510101"]
+    assy = assembly.Assy("510101", team, entry)
+    clip = next(it for it in assy.table_items if it.pn == "518001")
+    held = " ".join(assembly.notes_for(assy, {}))
+    assert "the part isn't named yet (HOLD)" in held, held
+    clip.row = dict(clip.row, kind="PI", maker="Fastmount (joints register H-49)", status="DRAFT")
+    named = " ".join(assembly.notes_for(assy, {}))
+    assert "the part is named, but the STEP holds only its envelope until the part is modelled" in named, named
+    assert "isn't named yet" not in named
 
 
 def test_shafts_cut_along_their_axis_are_drawn_whole():
