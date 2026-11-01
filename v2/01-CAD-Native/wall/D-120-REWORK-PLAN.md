@@ -43,3 +43,11 @@ The outside look, the frame envelope, every hole position and the joints stay as
 - D-117's text (mitre at the 4 perimeter corners; studs T-cleated, as assumed above).
 - The part numbers above.
 - The Joints Engineer's cleat components (D-115).
+
+## Log (2026-11-01, UTC)
+
+- 03:01 L1 sample (frame, then panel): both stopped at the first mitre sketch, nothing saved: `VCS_SKETCH_OVER_CONSTRAINTS`. Fusion gives a straight side its own vertical or horizontal constraint, so dimensioning both its corners repeated it. Fixed by one polygon helper for both walls (`poly_plan`, tested offline; `poly_on`).
+- F-189 (the Checker's copy check): WALL's spigot copy had an assumed 10 mm thread against Joints' 8 mm. WALL now places Joints' own STEPs of the spigot 831001 and the stop washer 831002 (one source, as D-95 for the keys).
+- B3 and B4 (Lead, option a): one new number for the upper top rail, one part for both turned end for end; B1's and B2's numbers for the other members, with B3's and B4's frames added as their parents by Control. Confirmed with `check_member_identity.py` once built.
+- B4's bay 3 takes F13 turned over: a copy of bay 1's part, turned half round by a rigid joint to the bottom rail's vertex at the bay's corner (`place_turned_copy`).
+- Next Fusion run: L1 frame and panel with the B2 frame and panel (the back sample), one queue place.
