@@ -351,6 +351,135 @@ def hollow(comp, body, axis, name):
     return f
 
 
+def poly_xy_body(comp, name, pts, z0, z1, ctx):
+    """A prism (D-117's mitred members): a closed polygon on the XY plane offset to z0, extruded to
+    z1 as a new body named `name`. Fully constrained: a line along X or Y is held horizontal or
+    vertical, and each corner's x and y are dimensioned from the origin by their expressions unless
+    such a line already ties it to a corner that is (pts = [(x_expr, y_expr)])."""
+    plane = offset_plane(comp, comp.xYConstructionPlane, z0, "PLANE - %s Z0" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "OUTLINE - " + name
+    vals = [(ctx.ev(x), ctx.ev(y)) for x, y in pts]
+    n = len(vals)
+    lines = sk.sketchCurves.sketchLines
+    verts, edges = [], []
+    for i in range(n):
+        a = verts[-1] if verts else adsk.core.Point3D.create(vals[0][0] * MM, vals[0][1] * MM, 0)
+        b = adsk.core.Point3D.create(vals[i + 1][0] * MM, vals[i + 1][1] * MM, 0) if i < n - 1 else verts[0]
+        ln = lines.addByTwoPoints(a, b)
+        edges.append(ln)
+        if i == 0:
+            verts.append(ln.startSketchPoint)
+        if i < n - 1:
+            verts.append(ln.endSketchPoint)
+    gc, dims = sk.geometricConstraints, sk.sketchDimensions
+    for k, axis in ((0, "x"), (1, "y")):
+        group = list(range(n))
+
+        def root(i):
+            while group[i] != i:
+                i = group[i]
+            return i
+        for i, ln in enumerate(edges):          # edge i runs from corner i to corner i + 1
+            if abs(vals[i][k] - vals[(i + 1) % n][k]) < 1e-7:
+                (gc.addVertical if axis == "x" else gc.addHorizontal)(ln)
+                group[root((i + 1) % n)] = root(i)
+        for i in range(n):
+            if root(i) != i:
+                continue
+            expr, vp = pts[i][k], verts[i]
+            if abs(ctx.ev(expr)) < EPS:
+                (gc.addVerticalPoints if axis == "x" else gc.addHorizontalPoints)(vp, sk.originPoint)
+            else:
+                g = vp.geometry
+                d = dims.addDistanceDimension(sk.originPoint, vp, H if axis == "x" else V,
+                                              adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0))
+                d.parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ei.setDistanceExtent(False, vi("(%s) - (%s)" % (z1, z0)))
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - " + name
+    f.bodies.item(0).name = name
+    return f.bodies.item(0)
+
+
+def hollow_ends(comp, body, axis, name):
+    """Shell a member into a tube, open at both ends, square or mitred (D-117): the two planar faces
+    whose normal has a part along the member's long axis; wall tube_t inside."""
+    k = {"x": 0, "y": 1}[axis]
+    ends = []
+    for f in body.faces:
+        if f.geometry.objectType != adsk.core.Plane.classType():
+            continue
+        n = adsk.core.Plane.cast(f.geometry).normal
+        if abs((n.x, n.y, n.z)[k]) > 0.1:
+            ends.append(f)
+    if len(ends) != 2:
+        raise RuntimeError("%s: expected 2 end faces, found %d" % (name, len(ends)))
+    coll = adsk.core.ObjectCollection.create()
+    for f in ends:
+        coll.add(f)
+    si = comp.features.shellFeatures.createInput(coll, False)
+    si.insideThickness = vi("tube_t")
+    f = comp.features.shellFeatures.add(si)
+    f.name = "SHELL - %s TUBE" % name
+    return f
+
+
+def slot_cut_x(comp, body, name, xf, cy, cz, wy, hz, depth, into, ctx):
+    """A rectangular slot through a face normal to X (D-117's cleat slots): wy along model Y by hz
+    along model Z, centred on (cy, cz), sketched on the YZ plane offset to X = xf, cut by depth
+    toward into (+1 or -1 along model X), into one body only."""
+    plane = offset_plane(comp, comp.yZConstructionPlane, xf, "PLANE - %s" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "SLOT - " + name
+    xv, yc, zc, w, h = ctx.ev(xf), ctx.ev(cy), ctx.ev(cz), ctx.ev(wy), ctx.ev(hz)
+    q0 = sk.modelToSketchSpace(adsk.core.Point3D.create(xv * MM, (yc - w / 2) * MM, (zc - h / 2) * MM))
+    q1 = sk.modelToSketchSpace(adsk.core.Point3D.create(xv * MM, (yc + w / 2) * MM, (zc + h / 2) * MM))
+    rect = sk.sketchCurves.sketchLines.addTwoPointRectangle(adsk.core.Point3D.create(q0.x, q0.y, 0),
+                                                            adsk.core.Point3D.create(q1.x, q1.y, 0))
+    gc = sk.geometricConstraints
+    for ln in rect:
+        if not any(c.objectType in (adsk.fusion.HorizontalConstraint.classType(),
+                                    adsk.fusion.VerticalConstraint.classType()) for c in ln.geometricConstraints):
+            a, b = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+            (gc.addHorizontal if abs(a.y - b.y) < 1e-9 else gc.addVertical)(ln)
+    corners = []
+    for ln in rect:
+        for p in (ln.startSketchPoint, ln.endSketchPoint):
+            if all(p != q for q in corners):
+                corners.append(p)
+    c0 = min(corners, key=lambda p: (p.geometry.x, p.geometry.y))
+    cx = [p for p in corners if p != c0 and abs(p.geometry.y - c0.geometry.y) < 1e-9][0]
+    cyp = [p for p in corners if p != c0 and abs(p.geometry.x - c0.geometry.x) < 1e-9][0]
+    sa_y, _sign = model_to_sketch_axis(sk, "y")
+    dims = sk.sketchDimensions
+    tp = adsk.core.Point3D.create((q0.x + q1.x) / 2, (q0.y + q1.y) / 2, 0)
+    dims.addDistanceDimension(c0, cx, H, tp).parameter.expression = wy if sa_y == "x" else hz
+    dims.addDistanceDimension(c0, cyp, V, tp).parameter.expression = hz if sa_y == "x" else wy
+    m0 = sk.sketchToModelSpace(c0.geometry)
+    ey = "(%s) - (%s) / 2" % (cy, wy) if abs(m0.y * 10 - (yc - w / 2)) < 1e-6 else "(%s) + (%s) / 2" % (cy, wy)
+    ez = "(%s) - (%s) / 2" % (cz, hz) if abs(m0.z * 10 - (zc - h / 2)) < 1e-6 else "(%s) + (%s) / 2" % (cz, hz)
+    g = c0.geometry
+    for model_axis, expr in (("y", ey), ("z", ez)):
+        sa, _s = model_to_sketch_axis(sk, model_axis)
+        d = dims.addDistanceDimension(sk.originPoint, c0, H if sa == "x" else V, adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0))
+        d.parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: SLOT - " + name)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def model_to_sketch_axis(sk, model_axis):
     o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
     v = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}[model_axis]
@@ -479,55 +608,95 @@ def set_material(comp, ctx, key):
 
 # ---------------------------------------------------------------- the parts
 
-def build_frame_bodies(comp, half, ctx):
-    """The members (tubes), then the site-joint holes as patterned cuts (J-CEIL-01, J-CEIL-02,
-    joints register 2.9), the spigot hole and slot, and the 1 x 45 lead-in on the closing face."""
+def cross_member(parent, ctx):
+    """The plain cross member 412001 (X2 and X3 in both halves, D-120's one common part): built once,
+    in its own frame (its low corner at the origin, along +X), and placed as copies by joints."""
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
+    if "m_cross" in shared:
+        occ = parent.occurrences.addExistingComponent(shared["m_cross"], adsk.core.Matrix3D.create())
+        return occ, shared["m_cross"]
+    occ, comp = new_comp(parent, "m_cross", ctx)
+    length = "half_fw - 2 * tube_w"
+    body = poly_xy_body(comp, "CROSS MEMBER PLAIN", [("0 mm", "0 mm"), (length, "0 mm"), (length, "tube_w"),
+                                                    ("0 mm", "tube_w")], "0 mm", "frame_t", ctx)
+    hollow_ends(comp, body, "x", "CROSS MEMBER PLAIN")
+    set_material(comp, ctx, "al")
+    shared["m_cross"] = comp
+    return occ, comp
+
+
+def build_frame_members(fcomp, half, ctx):
+    """The members of one frame as their own components under fcomp (D-120), each its outline in plan
+    with the mitred corners (D-117) extruded and shelled into a tube; then the site-joint holes
+    (J-CEIL-01, J-CEIL-02, joints register 2.9), the spigot hole and slot, the cross members'
+    cleat slots (D-117) and the 1 x 45 lead-in on the closing face, each cut in its own member.
+    The cleats themselves (831003 to 831006) are placed by reference when the Joints Engineer's
+    models land. Returns {code: (component, body)}."""
     s = M.side_sign(half)
-    bodies = {}
-    for code, name, axis, b in M.frame_members(half):
-        body = box_body(comp, "%s %s" % (half, name), b, ctx)
-        hollow(comp, body, axis, "%s %s" % (half, name))
-        bodies[code] = body
+    members = {}
+    for code, key, bname, axis, pts, z0, z1 in M.member_shapes(half):
+        label = "%s %s" % (half, bname)
+        if key == "m_cross":
+            occ, comp = cross_member(fcomp, ctx)
+            k = int(code[1:])
+            place(fcomp, occ, (M.xr(half, "tube_w", "half_fw - tube_w")[0], M.cross_y0(k), z0), label, ctx)
+            members[code] = (comp, None)
+            continue
+        _occ, comp = new_comp(fcomp, key, ctx)
+        body = poly_xy_body(comp, label, pts, z0, z1, ctx)
+        hollow_ends(comp, body, axis, label)
+        set_material(comp, ctx, "al")
+        members[code] = (comp, body)
     into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
     for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
+        comp, body = members[member]
         label = "%s %s" % (half, name)
-        # one sketch per row: hole k at the row's first centre + k pitches (the start, pitch and
+        # one sketch per hole: hole k at the row's first centre + k pitches (the start, pitch and
         # count are the skeleton's named values, so a rebuild follows them; Fusion's identical
-        # pattern can't paste onto these hollow tubes, and an adjusted one is too slow)
+        # pattern can't paste onto these hollow tubes, and several circles in one sketch came out
+        # over-constrained)
         count = int(round(M.ev(ctx.vals, n)))
+
         def at(e, a):
             return e if a != axis else "(%s) + %d * (%s)" % (e, k, pitch)
         cs = []
         for k in range(count):
             cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(y, "y"), at(z, "z")))
-        # one sketch per hole: several circles in one sketch came out over-constrained in Fusion
         for k, (u, v) in enumerate(cs):
             lab = label if count == 1 else "%s %d" % (label, k + 1)
             if face == "bottom":
-                circle_cut(comp, bodies[member], lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
+                circle_cut(comp, body, lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
             else:
-                circle_cut_x(comp, bodies[member], lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
+                circle_cut_x(comp, body, lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
+    comp, body = members["BACK"]
     sx, sy, sz, sw, sl = M.spigot_slot(half)
     label = "%s BACK SPIGOT SLOT" % half
     half_run = "(%s - %s) / 2" % (sl, sw)
     box_body(comp, label, ("%s - %s" % (sx, half_run), "%s + %s" % (sx, half_run), "%s - %s / 2" % (sy, sw),
                            "%s + %s / 2" % (sy, sw), sz, "%s + 2 * tube_t" % sz), ctx,
-             op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[bodies["BACK"]])
+             op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[body])
     for end, sign in (("END 1", "-"), ("END 2", "+")):
-        circle_cut(comp, bodies["BACK"], "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
+        circle_cut(comp, body, "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
                    "%s + 2 * tube_t" % sz, ctx)
+    for name, member, xf, yc, zc, wy, hz in M.cleat_slots(half):
+        comp, body = members[member]
+        slot_cut_x(comp, body, "%s %s %s" % (half, member, name), xf, yc, zc, wy, hz, "2 * tube_t",
+                   into[(member, "in")], ctx)
+    # the closing face's lead-in runs the seam member's full length now that its corners are mitred
+    # (the back member no longer reaches the closing face)
+    comp, body = members["SEAM"]
     xs, z0 = ctx.ev(M.xr(half, "0 mm", "tube_w")[1 if s < 0 else 0]), ctx.ev(M.ZF0)
-    for code in ("SEAM", "BACK"):
-        chamfer(comp, [edge_at(bodies[code], "y", {"x": xs, "z": z0})], "lead_in",
-                "%s %s LEAD-IN ON THE CLOSING FACE" % (half, code))
-    return bodies
+    chamfer(comp, [edge_at(body, "y", {"x": xs, "z": z0})], "lead_in", "%s SEAM LEAD-IN ON THE CLOSING FACE" % half)
+    return members
 
 
 def build_frame(assy, half, ctx):
+    """The frame of one half: an assembly (D-120) of its member components (build_frame_members)."""
     key = "frame_c1" if half == "C1" else "frame_c2"
     occ, comp = new_comp(assy, key, ctx)
-    build_frame_bodies(comp, half, ctx)
-    set_material(comp, ctx, "al")
+    build_frame_members(comp, half, ctx)
     return occ, comp
 
 
@@ -886,8 +1055,7 @@ def run_part(app, doc, design, root, scope, ctx):
     elif scope == "felt":
         build_felt(root, ctx)
     elif scope in ("frame_c1", "frame_c2"):
-        build_frame_bodies(root, "C1" if scope == "frame_c1" else "C2", ctx)
-        set_material(root, ctx, "al")
+        build_frame_members(root, "C1" if scope == "frame_c1" else "C2", ctx)
     elif scope in ("skin_c1", "skin_c2"):
         build_skin_bodies(root, scope, ctx)
         set_material(root, ctx, "acp")

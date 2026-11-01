@@ -12,6 +12,10 @@ import adsk.fusion
 import ceiling_model as M
 
 TOL = 0.05   # mm
+# the frame members' part numbers (D-120): each member its own component; the plain cross member
+# (X2, X3 of both halves) is one common part placed as copies
+CROSS_PN = M.PARTS["m_cross"][0]
+MEMBER_PNS = {v[0] for k, v in M.PARTS.items() if k.startswith("m_")}
 
 
 def bb_mm(b):
@@ -62,8 +66,10 @@ def actual(design):
             box = bb_mm(b)
             pn = c.partNumber
             half = "C1" if (box[0] + box[3]) / 2 < 0 else "C2"
-            if pn in ("411101", "411102"):
-                out[b.name] = box
+            if pn in MEMBER_PNS and pn != CROSS_PN:
+                out[b.name] = box                               # "C1 SIDE MEMBER" and so on
+            elif pn == CROSS_PN:
+                out.setdefault("%s|%s" % (pn, half), []).append(box)
             elif pn in ("411301", "411302"):
                 out["SKIN %s" % ("C1" if pn == "411301" else "C2")] = box
             elif pn == "513101":
@@ -95,7 +101,13 @@ def match_many(exp, act_list, keys):
 def check(design):
     exp, act = expected(design), actual(design)
     worst, bad = 0.0, []
-    single = [k for k in exp if " MEMBER" in k or k.startswith("SKIN") or k.endswith(("TRAY", "FELT 9"))]
+    shared = {"%s CROSS MEMBER %d" % (h, k) for h in ("C1", "C2") for k in (2, 3)}
+    single = [k for k in exp if (" MEMBER" in k and k not in shared) or k.startswith("SKIN") or k.endswith(("TRAY", "FELT 9"))]
+    for half in ("C1", "C2"):                       # the common cross member's copies, by nearest fit
+        keys = ["%s CROSS MEMBER %d" % (half, k) for k in (2, 3)]
+        w, b = match_many(exp, act.get("%s|%s" % (CROSS_PN, half), []), keys)
+        worst = max(worst, w)
+        bad += b
     for k in single:
         if k not in act:
             bad.append((k, "missing"))
@@ -141,10 +153,10 @@ def hole_check(design, tol=TOL):
     cyl = {"C1": [], "C2": []}
     for occ in root.allOccurrences:
         pn = occ.component.partNumber
-        if pn not in ("411101", "411102"):
+        if pn not in MEMBER_PNS:
             continue
-        half = "C1" if pn == "411101" else "C2"
         for b in occ.bRepBodies:
+            half = "C1" if (b.boundingBox.minPoint.x + b.boundingBox.maxPoint.x) < 0 else "C2"
             for f in b.faces:
                 g = f.geometry
                 if g.objectType != adsk.core.Cylinder.classType():

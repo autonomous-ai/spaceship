@@ -35,6 +35,42 @@ def to_pod(box, half, vals=VALS):
     return (box[0] + ox, box[1] + ox, box[2] + oy, box[3] + oy, box[4] + oz, box[5] + oz)
 
 
+def poly_area(p):
+    return 0.5 * abs(sum(p[i][0] * p[(i + 1) % len(p)][1] - p[(i + 1) % len(p)][0] * p[i][1] for i in range(len(p))))
+
+
+def clip_area(subject, clip):
+    """Area of the overlap of two convex polygons (Sutherland-Hodgman)."""
+    def ccw(p):
+        a = sum(p[i][0] * p[(i + 1) % len(p)][1] - p[(i + 1) % len(p)][0] * p[i][1] for i in range(len(p)))
+        return p if a > 0 else p[::-1]
+    out, clip = ccw(subject), ccw(clip)
+    for i in range(len(clip)):
+        a, b = clip[i], clip[(i + 1) % len(clip)]
+
+        def inside(q):
+            return (b[0] - a[0]) * (q[1] - a[1]) - (b[1] - a[1]) * (q[0] - a[0]) >= -1e-9
+
+        def cross(p, q):
+            x1, y1, x2, y2 = p[0], p[1], q[0], q[1]
+            dx, dy = b[0] - a[0], b[1] - a[1]
+            den = (x2 - x1) * dy - (y2 - y1) * dx
+            t = ((a[0] - x1) * dy - (a[1] - y1) * dx) / den
+            return (x1 + t * (x2 - x1), y1 + t * (y2 - y1))
+        src, out = out, []
+        for k in range(len(src)):
+            p, q = src[k], src[(k + 1) % len(src)]
+            if inside(q):
+                if not inside(p):
+                    out.append(cross(p, q))
+                out.append(q)
+            elif inside(p):
+                out.append(cross(p, q))
+        if not out:
+            return 0.0
+    return poly_area(out)
+
+
 def gap(a, b):
     """Smallest axis-aligned gap between two boxes (negative = overlap depth)."""
     d = []
@@ -79,9 +115,13 @@ class Stack(unittest.TestCase):
             ys = sorted((b[2] + b[3]) / 2 for c, b in ms if c not in ("SIDE", "SEAM"))
             for a, b in zip(ys, ys[1:]):
                 self.assertLessEqual(b - a, 400.0 + 1e-9)
-            for i in range(len(ms)):
-                for j in range(i + 1, len(ms)):
-                    self.assertGreaterEqual(gap(ms[i][1], ms[j][1]), -1e-9, "%s overlaps %s" % (ms[i][0], ms[j][0]))
+            # the members' outlines touch at the mitres and the cross members' ends but never overlap
+            # (D-117: the corners are mitred, so their boxes overlap at the corners; their outlines don't)
+            shapes = [(c, [(ev(x), ev(y)) for x, y in pts]) for c, _k, _n, _a, pts, _z0, _z1 in M.member_shapes(half)]
+            for i in range(len(shapes)):
+                for j in range(i + 1, len(shapes)):
+                    area = clip_area(shapes[i][1], shapes[j][1])
+                    self.assertLess(area, 1e-6, "%s overlaps %s by %.3f mm2" % (shapes[i][0], shapes[j][0], area))
             xs = [x for _c, b in ms for x in (b[0], b[1])]
             sign = -1 if half == "C1" else 1
             outer = VALS["pod_w"] / 2 - VALS["outer_t"] - VALS["seam_gap"]
@@ -310,6 +350,93 @@ class Sprinkler(unittest.TestCase):
                     self.assertFalse(M.overlap((pz[0], pz[1], pz[2], pz[3], mb[4], mb[5]), mb), "zone under " + mc)
 
 
+class Frames(unittest.TestCase):
+    """D-117 and D-120 (the Joints Engineer's corner design, Control's member numbers): mitred outer
+    corners, every member its own part, the cross members' cleat slots."""
+
+    def shapes(self, half):
+        return {c: (k, [(ev(x), ev(y)) for x, y in pts]) for c, k, _n, _a, pts, _z0, _z1 in M.member_shapes(half)}
+
+    def test_mitre_angles(self):
+        import math
+        for half in ("C1", "C2"):
+            sh = self.shapes(half)
+            # front corners 45 deg: the cut runs 20 across the 20 tube for 20 along it
+            p = sh["SIDE"][1]
+            self.assertAlmostEqual(abs(p[3][0] - p[0][0]), abs(p[3][1] - p[0][1]))
+            # back corners: the 40 x 40 back member cut 26.57 deg off square, the side 63.43
+            dx, dy = abs(p[2][0] - p[1][0]), abs(p[2][1] - p[1][1])
+            self.assertAlmostEqual(math.degrees(math.atan2(dx, dy)), 26.57, places=2)
+            self.assertAlmostEqual(90.0 - math.degrees(math.atan2(dx, dy)), 63.43, places=2)
+            # the outer edges run to the frame's outer corners
+            xs = [x for _k, pts in sh.values() for x, _y in pts]
+            ys = [y for _k, pts in sh.values() for _x, y in pts]
+            self.assertAlmostEqual(max(xs) - min(xs), VALS["half_fw"])
+            self.assertAlmostEqual(max(ys) - min(ys), VALS["wall_depth"])
+            # the members tile the frame's outline (no gap or overlap): their areas add up
+            ring = sum(poly_area(pts) for c, (_k, pts) in sh.items() if c in ("SIDE", "SEAM", "FRONT", "BACK"))
+            inner = (VALS["half_fw"] - 2 * VALS["tube_w"]) * (VALS["wall_depth"] - VALS["tube_w"] - VALS["back_w"])
+            self.assertAlmostEqual(ring, VALS["half_fw"] * VALS["wall_depth"] - inner, places=6)
+
+    def test_every_member_its_own_part(self):
+        for half in ("C1", "C2"):
+            keys = [k for _c, (k, _p) in self.shapes(half).items()]
+            for k in keys:
+                pn, name, _vn, kind, mat = M.PARTS[k]
+                self.assertEqual(kind, "MP", k)
+                self.assertEqual(mat, "al", k)
+                self.assertTrue(pn.startswith("412"), k)
+            self.assertEqual(keys.count("m_cross"), 2, "X2 and X3 are one common part (412001)")
+
+    def test_cleat_slots(self):
+        for half in ("C1", "C2"):
+            mem = dict(M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)]))
+            slots = M.cleat_slots(half)
+            self.assertEqual(len(slots), 6)
+            for name, member, xf, y, z, wy, hz in slots:
+                y, z, wy, hz = ev(y), ev(z), ev(wy), ev(hz)
+                self.assertEqual((wy, hz), (8.0, 22.0))
+                k = name.split()[-1]                     # X1, X2 or X3
+                cm = mem[k]
+                # inside the cross member's footprint on the side or seam member's face
+                self.assertGreaterEqual(y - wy / 2, cm[2] - 1e-9, name)
+                self.assertLessEqual(y + wy / 2, cm[3] + 1e-9, name)
+                self.assertGreaterEqual(z - hz / 2, cm[4] - 1e-9, name)
+                self.assertLessEqual(z + hz / 2, cm[5] + 1e-9, name)
+                # on the bay-side face of its member
+                m = mem[member]
+                self.assertTrue(abs(ev(xf) - m[0]) < 1e-9 or abs(ev(xf) - m[1]) < 1e-9, name)
+                # clear of every joint hole on that face by 30 (D-117: the bolts' clearance covers them)
+                for hn, d, (hx, hy, hz2) in M.hole_positions(VALS, half):
+                    if abs(hx - ev(xf)) < 1e-6:
+                        self.assertGreaterEqual(abs(hy - y), 30.0, "%s vs %s" % (name, hn))
+
+    def test_identical_in_both_halves(self):
+        """For Control (D-120: identical parts share one number): C2's side member is C1's turned upside
+        down (every feature centred across its 40 face, the mitres vertical), and C2's cross member 1 is
+        C1's turned end for end (its one hanger hole centred across its width, at the same distance from
+        the seam end)."""
+        zmid = ev(M.ZF0) + VALS["frame_t"] / 2
+        for half in ("C1", "C2"):
+            for name, member, _x, _y, z, _w, _h in M.cleat_slots(half):
+                if member == "SIDE":
+                    self.assertAlmostEqual(ev(z), zmid)
+            for name, _d, (x, y, z) in M.hole_positions(VALS, half):
+                if name.startswith("SIDE BOLT"):
+                    self.assertAlmostEqual(z, zmid, msg=name)
+        x1 = {}
+        for half in ("C1", "C2"):
+            mem = dict(M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)]))
+            b = mem["X1"]
+            seam_end = b[1] if half == "C1" else b[0]
+            holes = [(x, y) for n, _d, (x, y, _z) in M.hole_positions(VALS, half) if n == "SOFFIT HANGER X1"]
+            self.assertEqual(len(holes), 1)
+            hx, hy = holes[0]
+            self.assertAlmostEqual(hy, (b[2] + b[3]) / 2, msg="centred across X1")
+            x1[half] = abs(hx - seam_end)
+        self.assertAlmostEqual(x1["C1"], x1["C2"])
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()
@@ -320,7 +447,11 @@ class Numbers(unittest.TestCase):
             seen.add(pn)
             fam, nnnn = pn[:2], int(pn[2:])
             self.assertIn(fam, ("41", "51"), key)
-            if kind == "HS":
+            if kind == "HS" and key in ("frame_c1", "frame_c2"):
+                # D-120: the frames became assemblies of member parts but keep 411101 and 411102, the
+                # members' parents in the master BOM's allocation (v2/04-BOM/number-allocation.csv)
+                self.assertIn(pn, ("411101", "411102"), key)
+            elif kind == "HS":
                 self.assertLessEqual(nnnn, 999, key)
             elif kind == "MP":
                 self.assertTrue(1000 <= nnnn <= 7999, key)

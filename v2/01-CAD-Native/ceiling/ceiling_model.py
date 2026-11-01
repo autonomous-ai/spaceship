@@ -75,6 +75,8 @@ CEILING_PARAMS = [
     ("hole_rvn", "9.53 mm", "mm", "source", "H-03 Sherex CAH3-610-4.2 rivnut: hole 9.53 +0.10 (joints register 2.1, SHX)"),
     ("spig_hole", "8.5 mm", "mm", "confirmed", "R-J13: spigot hole 8.5, round at one end of the edge, an 8.5 x 14 slot along it at the other"),
     ("spig_slot", "14 mm", "mm", "confirmed", "R-J13: the spigot slot's length along the edge (+/-2.75 of travel for the 8 mm spigot)"),
+    ("cleat_slot_w", "8 mm", "mm", "source", "D-117, the Joints Engineer's cleat design (2026-11-01): the cross members' plug-cleat slot, 8 along the side or seam member"),
+    ("cleat_slot_h", "22 mm", "mm", "source", "D-117, the Joints Engineer's cleat design: the slot is 22 across the member's 40 face, centred, inside the cross member's footprint"),
     ("lead_in", "1 mm", "mm", "confirmed", "R-J9 (joints register 2.10): 1 x 45 deg lead-in on the lower edges of the C1-C2 faces, so C2 drops past C1 without catching the seal"),
     # J-CEIL-01's counts, start points and pitches are the skeleton's named values (v4, PR #94):
     # n_ceil_side_bolt, n_ceil_back_bolt, ceil_side_y0, ceil_side_pitch, ceil_back_x0, ceil_back_pitch
@@ -152,8 +154,21 @@ PARTS = {
     "ceiling": ("410000", "CEILING", "Trần", "HS", None),
     "assy_c1": ("410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "HS", None),
     "assy_c2": ("410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "HS", None),
-    "frame_c1": ("411101", "CEILING - PANEL FRAME - C1", "Trần trái - khung nhôm", "MP", "al"),
-    "frame_c2": ("411102", "CEILING - PANEL FRAME - C2", "Trần phải - khung nhôm", "MP", "al"),
+    # the frames are assemblies of member parts (D-120), the members joined by internal cleats (D-115, D-117);
+    # member numbers from the master BOM's allocation (v2/04-BOM/number-allocation.csv)
+    "frame_c1": ("411101", "CEILING - PANEL FRAME - C1", "Trần trái - khung nhôm", "HS", None),
+    "frame_c2": ("411102", "CEILING - PANEL FRAME - C2", "Trần phải - khung nhôm", "HS", None),
+    "m_side_c1": ("412101", "CEILING - FRAME SIDE MEMBER - C1", "Trần trái - thanh cạnh của khung", "MP", "al"),
+    "m_seam_c1": ("412102", "CEILING - FRAME SEAM MEMBER - C1", "Trần trái - thanh mối nối của khung", "MP", "al"),
+    "m_front_c1": ("412103", "CEILING - FRAME FRONT MEMBER - C1", "Trần trái - thanh trước của khung", "MP", "al"),
+    "m_back_c1": ("412104", "CEILING - FRAME BACK MEMBER 40 X 40 - C1", "Trần trái - thanh sau 40x40 của khung", "MP", "al"),
+    "m_x1_c1": ("412105", "CEILING - FRAME CROSS MEMBER 1 - C1", "Trần trái - thanh ngang 1 của khung", "MP", "al"),
+    "m_side_c2": ("412201", "CEILING - FRAME SIDE MEMBER - C2", "Trần phải - thanh cạnh của khung", "MP", "al"),
+    "m_seam_c2": ("412202", "CEILING - FRAME SEAM MEMBER - C2", "Trần phải - thanh mối nối của khung", "MP", "al"),
+    "m_front_c2": ("412203", "CEILING - FRAME FRONT MEMBER - C2", "Trần phải - thanh trước của khung", "MP", "al"),
+    "m_back_c2": ("412204", "CEILING - FRAME BACK MEMBER 40 X 40 - C2", "Trần phải - thanh sau 40x40 của khung", "MP", "al"),
+    "m_x1_c2": ("412205", "CEILING - FRAME CROSS MEMBER 1 - C2", "Trần phải - thanh ngang 1 của khung", "MP", "al"),
+    "m_cross": ("412001", "CEILING - FRAME CROSS MEMBER - PLAIN - COMMON", "Trần - thanh ngang trơn của khung (dùng chung)", "MP", "al"),
     "skin_c1": ("411301", "CEILING - SKIN - C1", "Trần trái - tấm ốp alu", "MP", "acp"),
     "skin_c2": ("411302", "CEILING - SKIN - C2", "Trần phải - tấm ốp alu (có khe thoát gió)", "MP", "acp"),
     "cassette": ("510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung trái/phải)", "HS", None),
@@ -171,15 +186,23 @@ PARTS = {
 # finish and process per part (master BOM columns); bought HOLD items' masses come from
 # the joints register (H-10, H-11)
 FINISH = {
-    "frame_c1": "mill finish with the bond prep (D-79)", "frame_c2": "mill finish with the bond prep (D-79)",
+    "frame_c1": "", "frame_c2": "",
     "skin_c1": "ACP EV3038 Dark Yellow (D-12)", "skin_c2": "ACP EV3038 Dark Yellow (D-12)", "tray": "galvanised (Z coating, grade to confirm)",
     "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
+    **{k: "mill finish with the bond prep (D-79)" for k in ("m_side_c1", "m_seam_c1", "m_front_c1", "m_back_c1", "m_x1_c1",
+                                                             "m_side_c2", "m_seam_c2", "m_front_c2", "m_back_c2", "m_x1_c2",
+                                                             "m_cross")},
 }
 PROCESS = {
-    "frame_c1": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)",
-    "frame_c2": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)",
+    "frame_c1": "members joined with internal cleats per D-115 and D-117 (corner and T cleats, crimped, with structural adhesive; no welds), in a jig",
+    "frame_c2": "members joined with internal cleats per D-115 and D-117 (corner and T cleats, crimped, with structural adhesive; no welds), in a jig",
     "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
     "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
+    # the members (D-120): cut from 6063-T6 tube; mitres per D-117; holes and slots CNC or jig drilled
+    **{k: "tube cut to length (mitred ends per D-117 where it meets the corners), CNC or jig drilled and slotted "
+          "(holes +/-0.2 from the spigot hole, R-J6)" for k in ("m_side_c1", "m_seam_c1", "m_front_c1", "m_back_c1", "m_x1_c1",
+                                                              "m_side_c2", "m_seam_c2", "m_front_c2", "m_back_c2", "m_x1_c2",
+                                                              "m_cross")},
 }
 HOLD_MASS = {   # kg each, status, source
     "clip": (0.040, "assumption", "joints register H-10 and PM ruling 2026-10-31: 0.040 kg each (D-81's working figure) until a named clip is weighed (HOLD-08)"),
@@ -317,24 +340,75 @@ def xr(half, a, b):
     return ("-(%s)" % b, "-(%s)" % a) if side_sign(half) < 0 else ("(%s)" % a, "(%s)" % b)
 
 
+def member_shapes(half):
+    """Each member of one ceiling frame as its own part (D-120), in the pod system: its outline in
+    plan, extruded over the frame's depth. The four outer corners are mitred from the outer corner
+    to the inner corner (D-117, the Joints Engineer's corner design): 45 deg at the front corners;
+    at the back the 40 x 40 back member is cut 26.57 deg off square and the side and seam members
+    63.43 deg; the cross members stay square between the side and seam members. The side and
+    seam members now run the frame's full depth and the front and back members its full width.
+    Returns [(code, part key, body name, long axis, [(x, y) expressions], z0, z1)]."""
+    s = side_sign(half)
+
+    def X(d):           # X at distance d outward from the frame's closing-seam edge
+        return "%s(close_gap / 2 + %s)" % ("-" if s < 0 else "", d)
+    xso, xsi = X("half_fw"), X("half_fw - tube_w")       # side member: outer and bay-side faces
+    xmo, xmi = X("0 mm"), X("tube_w")                    # seam member: closing face and bay-side face
+    yfo, yfi = YW, "%s + tube_w" % YW                    # front member: front and back faces
+    ybo, ybi = YB, "%s - back_w" % YB                    # back member: back and front faces
+    h = half.lower()
+    out = [
+        ("SIDE", "m_side_" + h, "SIDE MEMBER", "y", [(xso, yfo), (xso, ybo), (xsi, ybi), (xsi, yfi)]),
+        ("SEAM", "m_seam_" + h, "SEAM MEMBER", "y", [(xmo, yfo), (xmo, ybo), (xmi, ybi), (xmi, yfi)]),
+        ("FRONT", "m_front_" + h, "FRONT MEMBER", "x", [(xso, yfo), (xmo, yfo), (xmi, yfi), (xsi, yfi)]),
+        ("BACK", "m_back_" + h, "BACK MEMBER 40X40", "x", [(xso, ybo), (xmo, ybo), (xmi, ybi), (xsi, ybi)]),
+    ]
+    for k in range(1, 4):
+        y0 = cross_y0(k)
+        y1 = "%s + tube_w" % y0
+        out.append(("X%d" % k, ("m_x1_" + h) if k == 1 else "m_cross", "CROSS MEMBER %d" % k, "x",
+                    [(xsi, y0), (xmi, y0), (xmi, y1), (xsi, y1)]))
+    return [(code, key, name, axis, pts, ZF0, ZF1) for code, key, name, axis, pts in out]
+
+
 def frame_members(half):
-    """Members of one ceiling frame in the pod system. half 'C1' (-X) or 'C2' (+X).
+    """Members of one ceiling frame in the pod system, as boxes: half 'C1' (-X) or 'C2' (+X).
     The frame is half_fw wide: from the closing seam (X = +-close_gap / 2, the 5.5 mm frame
-    gap, R-J11) to the side wall's stop (one seam_gap inside the side frames). The 40 x 40
-    back member runs the frame's full width (R-J3); the side and seam members stop at it.
-    Returns [(code, name, axis, (x0, x1, y0, y1, z0, z1))]; axis = the long axis."""
+    gap, R-J11) to the side wall's stop (one seam_gap inside the side frames). With the mitred
+    corners (D-117) the side and seam members run the full depth and the front and the 40 x 40
+    back member (R-J3) the full width; the cross members stay between the side and the seam.
+    Returns [(code, name, axis, (x0, x1, y0, y1, z0, z1))]: each member's bounding box (its
+    outline is member_shapes)."""
     out = []
-    yb0 = YB + " - back_w"
     side = xr(half, "half_fw - tube_w", "half_fw")
     seam = xr(half, "0 mm", "tube_w")
+    full = xr(half, "0 mm", "half_fw")
     inner = xr(half, "tube_w", "half_fw - tube_w")
-    out.append(("SIDE", "SIDE MEMBER", "y", side + (YW, yb0, ZF0, ZF1)))
-    out.append(("SEAM", "SEAM MEMBER", "y", seam + (YW, yb0, ZF0, ZF1)))
-    out.append(("FRONT", "FRONT MEMBER", "x", inner + (YW, YW + " + tube_w", ZF0, ZF1)))
-    out.append(("BACK", "BACK MEMBER 40X40", "x", xr(half, "0 mm", "half_fw") + (yb0, YB, ZF0, ZF1)))
+    out.append(("SIDE", "SIDE MEMBER", "y", side + (YW, YB, ZF0, ZF1)))
+    out.append(("SEAM", "SEAM MEMBER", "y", seam + (YW, YB, ZF0, ZF1)))
+    out.append(("FRONT", "FRONT MEMBER", "x", full + (YW, YW + " + tube_w", ZF0, ZF1)))
+    out.append(("BACK", "BACK MEMBER 40X40", "x", full + (YB + " - back_w", YB, ZF0, ZF1)))
     for k in range(1, 4):
         y0 = cross_y0(k)
         out.append(("X%d" % k, "CROSS MEMBER %d" % k, "x", inner + (y0, y0 + " + tube_w", ZF0, ZF1)))
+    return out
+
+
+def cleat_slots(half):
+    """D-117 (the Joints Engineer's cleat design): an 8 x 22 slot through the bay-side wall of the
+    side and the seam member at each cross member's end, on the cross member's centre line and
+    centred across the 40 face, for the cross member's plug cleat; 8 along the member, 22 across
+    its face, so it stays inside the cross member's footprint. [(name, member code, x of the
+    face, y, z, size along y, size along z)]; each is cut into its member from its bay side."""
+    s = side_sign(half)
+    xsi = "%s(close_gap / 2 + half_fw - tube_w)" % ("-" if s < 0 else "")
+    xmi = "%s(close_gap / 2 + tube_w)" % ("-" if s < 0 else "")
+    zc = "(%s + frame_t / 2)" % ZF0
+    out = []
+    for k in range(1, 4):
+        yc = "(%s + tube_w / 2)" % cross_y0(k)
+        out.append(("CLEAT SLOT X%d" % k, "SIDE", xsi, yc, zc, "cleat_slot_w", "cleat_slot_h"))
+        out.append(("CLEAT SLOT X%d" % k, "SEAM", xmi, yc, zc, "cleat_slot_w", "cleat_slot_h"))
     return out
 
 
