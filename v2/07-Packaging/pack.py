@@ -1744,6 +1744,7 @@ def install_tables(m, T):
     I["ROOM_H"] = f"{pod_h + max(MINE['roof_work'].value, MINE['spigot_lift'].value):g}"
     I["GLIDE_MIN"], I["GLIDE_MAX"] = f"{MINE['glide_min'].value:g}", f"{MINE['glide_max'].value:g}"
     I["FLOOR_PV"] = f"{MINE['glide_max'].value - MINE['glide_min'].value:g}"
+    I["N_GLIDES"] = f"{sum(u for p in PIECES for h, u in p.mass if h == 'GLIDE'):g}"   # the band pieces' glides, as shipped
     I["LAY_OUT"] = f"{MINE['lay_out'].value / 1000:g}"
     I["LAY_W"] = f"{sk('pod_w') + 2 * MINE['lay_out'].value:g}"
     I["LAY_D"] = f"{sk('pod_d') + 2 * MINE['lay_out'].value:g}"
