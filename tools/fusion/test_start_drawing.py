@@ -69,6 +69,8 @@ class FakeFusion:
         self.ok_raises = None                     # an exception every OK press raises (a timed-out call)
         self.mcp_dies_after_ok = False            # MCP lost once OK is pressed
         self.ok_done = False
+        self.close_out = "DESIGN_CLOSED: every open copy of X"   # what the design close prints
+        self.queue_src = ""
 
     def _tick(self):
         nxt = []
@@ -91,6 +93,10 @@ class FakeFusion:
 
     def run(self, source, read_only=False):
         self._mcp()
+        if "NAME, KEY, STATE =" in source:        # the design close (CLOSE_DESIGN_SCRIPT)
+            self.ran.append("close")
+            self.closes.append(source)
+            return True, self.close_out
         if "ARGS = {" in source:
             mode = "close" if "'mode': 'close'" in source else "open"
             self.ran.append(mode)
@@ -101,6 +107,7 @@ class FakeFusion:
                                               else "run_script: activated 'X'")
         if sd.CREATE_CMD in source and "execute()" in source:
             self.ran.append("queue")
+            self.queue_src = source
             if self.modified:
                 return False, "X has unsaved changes; save or close it first"
             self.queued = True
@@ -242,7 +249,8 @@ class SequenceTests(unittest.TestCase):
         code, _logs = go(f)
         self.assertEqual(code, 1)
         self.assertEqual(f.ran, ["open", "queue", "close-unsaved", "close"])
-        self.assertIn("'discard': False", f.closes[-1])          # unsaved changes are never dropped
+        self.assertNotIn("close(True)", f.closes[-1])            # unsaved changes are never dropped
+        self.assertIn("nothing closed", f.closes[-1])            # (DesignCloseTests runs that script)
 
     def test_a_start_refused_after_opening_closes_the_design_too(self):
         f = FakeFusion(opened=True, modified=True)               # the queue step refuses
@@ -766,7 +774,9 @@ class SequenceTests(unittest.TestCase):
 
     def test_scripts_compile(self):
         for src in (sd.STATE_SCRIPT, sd.CLOSE_UNSAVED_SCRIPT, sd.FUSION_CANCEL_SCRIPT,
-                    sd.QUEUE_SCRIPT % {"project": "P", "design": "D", "cmd": sd.CREATE_CMD},
+                    sd.QUEUE_SCRIPT % {"project": "P", "design": "D", "cmd": sd.CREATE_CMD,
+                                       "state": sd.STATE_MODULE, "key": "k"},
+                    sd.CLOSE_DESIGN_SCRIPT % {"name": "D", "key": "k", "state": sd.STATE_MODULE},
                     sd.LIST_FOLDER + sd.FOLDER_SCRIPT % {"project": "P", "subfolders": ["F"],
                                                          "design": "D", "name": "N"},
                     sd.LIST_FOLDER + sd.SAVE_SCRIPT % {"project": "P", "subfolders": ["F"], "name": "N",
@@ -1023,6 +1033,189 @@ class CommandLineTests(unittest.TestCase):
         p = subprocess.run([sys.executable, os.path.join(HERE, "start_drawing.py"), "D", "N",
                             "--sheet", "B"], capture_output=True, text=True, timeout=60)
         self.assertEqual(p.returncode, 2)
+
+
+class FDoc:
+    """An open Fusion document, as the design close sees it."""
+    def __init__(self, name, docs, modified=False, drawing=False, stays=False, takes=()):
+        self.name, self.docs, self.isModified, self.stays, self.takes = name, docs, modified, stays, takes
+        self.objectType = "Drawing" if drawing else "Design"
+        self.isSaved, self.isValid, self.closes = True, True, []
+
+    def close(self, save):
+        self.closes.append(save)
+        if not self.stays:
+            for d in (self,) + tuple(self.takes):
+                if d in self.docs:
+                    self.docs.remove(d)
+                    d.isValid = False
+        return True
+
+
+class FDocs(list):
+    @property
+    def count(self):
+        return len(self)
+
+    def item(self, i):
+        if not 0 <= i < len(self):
+            raise RuntimeError("3 : Bad index parameter")
+        return self[i]
+
+
+def in_fusion(source, docs, active=None):
+    """Run an in-Fusion script of start_drawing against fake documents; returns what it printed."""
+    executed = []
+    cmd = types.SimpleNamespace(execute=lambda: executed.append(True) or True)
+    app = types.SimpleNamespace(
+        documents=docs, activeDocument=active,
+        data=types.SimpleNamespace(dataProjects=[types.SimpleNamespace(name="Default Project")], activeProject=None),
+        userInterface=types.SimpleNamespace(commandDefinitions=types.SimpleNamespace(itemById=lambda _i: cmd)))
+    adsk = types.ModuleType("adsk")
+    adsk.doEvents = lambda: None
+    adsk.core = types.SimpleNamespace(Application=types.SimpleNamespace(get=lambda: app))
+    adsk.drawing = types.SimpleNamespace(DrawingDocument=types.SimpleNamespace(classType=lambda: "Drawing"))
+    saved = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing")}
+    sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing})
+    out = io.StringIO()
+    try:
+        ns = {}
+        exec(compile(source, "in_fusion", "exec"), ns)
+        with contextlib.redirect_stdout(out):
+            ns["run"](None)
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                sys.modules.pop(k, None)
+            else:
+                sys.modules[k] = v
+    return out.getvalue(), executed
+
+
+class DesignCloseTests(unittest.TestCase):
+    """The design close (Lead, 2026-11-01, from BASE: twice that day, 110103 at 07:36 and the sill 111301 at
+    09:30, Fusion had two open documents with the design's name after Create Drawing, the runner's close step
+    refused them, and the design stayed open): this start's own document is found by the document itself,
+    every extra copy with the name is closed too, and nothing is closed when any copy has unsaved changes."""
+
+    def setUp(self):
+        self.addCleanup(sys.modules.pop, sd.STATE_MODULE, None)
+
+    def queue(self, doc, docs, key="k1"):
+        out, executed = in_fusion(sd.QUEUE_SCRIPT % {"project": "Default Project", "design": "X_CAD",
+                                                      "cmd": sd.CREATE_CMD, "state": sd.STATE_MODULE,
+                                                      "key": key}, docs, active=doc)
+        self.assertEqual(executed, [True])                      # Create Drawing was queued
+        return out
+
+    def close(self, docs, key="k1"):
+        return in_fusion(sd.CLOSE_DESIGN_SCRIPT % {"name": "X_CAD", "key": key, "state": sd.STATE_MODULE},
+                         docs)[0]
+
+    def test_the_queue_step_keeps_the_document_it_queues_from(self):
+        docs = FDocs()
+        ours = FDoc("X_CAD", docs)
+        docs.append(ours)
+        self.queue(ours, docs)
+        self.assertIs(sys.modules[sd.STATE_MODULE].designs["k1"], ours)
+
+    def test_two_open_copies_are_both_closed_this_starts_own_first(self):
+        docs = FDocs()
+        ours, extra = FDoc("X_CAD", docs), FDoc("X_CAD", docs)
+        docs.append(ours)
+        self.queue(ours, docs)
+        docs.insert(0, extra)                                   # Create Drawing left a second one, listed first
+        out = self.close(docs)
+        self.assertEqual(list(docs), [])
+        self.assertEqual((ours.closes, extra.closes), ([False], [False]))   # never close(True)
+        self.assertLess(out.index("closed this start's copy"), out.index("closed an extra copy"))
+        self.assertIn("this start's copy among them", out)
+        self.assertIn("DESIGN_CLOSED", out)
+        self.assertNotIn("k1", sys.modules[sd.STATE_MODULE].designs)        # used once
+
+    def test_unsaved_changes_in_any_copy_close_nothing_and_say_so(self):
+        for which in ("extra", "ours"):
+            docs = FDocs()
+            ours = FDoc("X_CAD", docs, modified=which == "ours")
+            extra = FDoc("X_CAD", docs, modified=which == "extra")
+            docs.append(ours)
+            sys.modules.pop(sd.STATE_MODULE, None)
+            if which == "extra":
+                self.queue(ours, docs)
+            else:                                               # the queue step refuses a modified design
+                in_fusion(sd.CLOSE_DESIGN_SCRIPT % {"name": "-", "key": "", "state": sd.STATE_MODULE}, docs)
+            docs.append(extra)
+            out = self.close(docs)
+            self.assertEqual(list(docs), [ours, extra], which)
+            self.assertEqual((ours.closes, extra.closes), ([], []), which)
+            self.assertIn("DESIGN_LEFT_OPEN", out)
+            self.assertIn("nothing closed", out)
+
+    def test_without_the_kept_document_every_copy_counts_as_extra(self):
+        # Fusion restarted between the queue and the close, or a start from before this change
+        docs = FDocs()
+        a, b = FDoc("X_CAD", docs), FDoc("X_CAD", docs)
+        docs.extend([a, b])
+        out = self.close(docs, key="not-kept")
+        self.assertEqual(list(docs), [])
+        self.assertIn("not known", out)
+        self.assertIn("DESIGN_CLOSED", out)
+
+    def test_other_documents_are_never_touched(self):
+        docs = FDocs()
+        ours = FDoc("X_CAD", docs)
+        others = [FDoc("Y_CAD", docs, modified=True), FDoc("X_CAD", docs, drawing=True),
+                  FDoc("X_DWG", docs, drawing=True), FDoc("X_CAD (1)", docs)]
+        docs.append(ours)
+        self.queue(ours, docs)
+        docs.extend(others)
+        out = self.close(docs)
+        self.assertEqual(list(docs), others)
+        self.assertEqual([d.closes for d in others], [[], [], [], []])
+        self.assertIn("DESIGN_CLOSED", out)
+
+    def test_a_copy_that_stays_open_is_tried_once_and_reported(self):
+        docs = FDocs()
+        ours, stuck = FDoc("X_CAD", docs), FDoc("X_CAD", docs, stays=True)
+        docs.append(ours)
+        self.queue(ours, docs)
+        docs.append(stuck)
+        out = self.close(docs)
+        self.assertEqual(list(docs), [stuck])
+        self.assertEqual(stuck.closes, [False])
+        self.assertIn("DESIGN_LEFT_OPEN", out)
+        self.assertIn("still open after their close", out)
+
+    def test_a_copy_that_went_with_an_earlier_close_is_skipped(self):
+        docs = FDocs()
+        extra = FDoc("X_CAD", docs)
+        ours = FDoc("X_CAD", docs, takes=(extra,))
+        docs.append(ours)
+        self.queue(ours, docs)
+        docs.append(extra)
+        out = self.close(docs)
+        self.assertEqual((list(docs), extra.closes), ([], []))
+        self.assertIn("DESIGN_CLOSED", out)
+
+    def test_already_closed(self):
+        self.assertIn("already closed", self.close(FDocs()))
+
+    def test_the_start_closes_with_its_own_key_and_reports_a_copy_left_open(self):
+        f = FakeFusion(opened=True)
+        f.close_out = ("open copies of X: 2 (this start's copy among them)\n"
+                       "DESIGN_LEFT_OPEN: 1 of the 2 open copies of X have unsaved changes; nothing closed")
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            code, logs = go(f)
+        self.assertEqual(code, 0)                               # the drawing was made and saved
+        self.assertEqual(f.ran, ["open", "queue", "save", "close"])
+        # the key the queue step kept the design under (a 32-digit hex word in its text)
+        keys = [k for k in f.queue_src.replace("'", " ").split() if len(k) == 32]
+        self.assertEqual(len(keys), 1)
+        self.assertIn(keys[0], f.closes[-1])                    # the close looks for the same document
+        self.assertIn("was left open", err.getvalue())
+        self.assertIn("nothing closed", err.getvalue())
+        self.assertTrue(any("DESIGN_LEFT_OPEN" in m for m in logs))
 
 
 if __name__ == "__main__":

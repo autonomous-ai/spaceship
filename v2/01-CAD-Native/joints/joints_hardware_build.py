@@ -23,7 +23,9 @@ function:
                                                (D-89 part 4: flat, cut from sheet, no drawing)
     831007_P01_HARDWARE-MITRE-PLATE-TABULATED_CAD   mitre plate family, register H-40 to H-42 (J-FRAME-01, D-131):
         831007 (two 20 x 40 at 45 deg), 831008 (a 20 x 40 meeting a 40 x 40), 831009 (two 40 x 40 at 45 deg);
-        saved at 831007; one STEP and one DXF per part number (flat, cut from sheet, no drawing)
+        each a rectangular blank on the mitre line, short of the frame's outer corner so its square ends sit 0.5
+        inside the frame's faces (the Lead's steer 2026-11-01; PLATE_BLANKS); saved at 831007; one STEP and one
+        DXF per part number (flat, cut from sheet, no drawing)
 
 Each design is saved, exported (.f3d to v2/01-CAD-Native/joints/, STEP and DXF to
 v2/03-Manufacturing/joints/), edit-tested (guideline 4.4: change a driving
@@ -723,55 +725,78 @@ def build_plates(app):
         raise
 
 
-def _build_plates(app, doc, design, f):
-    """The frames' mitre plates (joints register H-40 to H-42, J-FRAME-01): a flat 2.0 plate, the mitre's own outline.
-    Origin at the plate's corner at the frame's outer corner, on the skin-side face, on the plate's mid-plane;
-    +X along the mitre toward the frame's inner corner; +Y across the frame toward the room side; Z through the
-    plate, -1.0 to +1.0 (the joints CAD README)."""
-    add_params(design, [
-        ("tube_a", "20 mm", "mm", "CONFIRMED: one member's width in the frame's plane, 20 or 40 (D-16, R-J3)"),
-        ("tube_b", "20 mm", "mm", "CONFIRMED: the other member's width in the frame's plane, 20 or 40 (D-16, R-J3)"),
-        ("plate_len", "sqrt(tube_a * tube_a + tube_b * tube_b)", "mm",
-         "CALCULATION: the mitre line from the frame's outer corner to its inner corner"),
-        ("plate_d", "40 mm", "mm", "CONFIRMED: the frame's depth across the wall, 40 (D-16, D-42)"),
-        ("plate_t", "2.0 mm", "mm", "PROPOSED: at least 1.5 x the 1.2 mm rails, a stiffened knee (J-FRAME-01)"),
-    ])
-    num, name, a, b, stem = PLATE_VARIANTS[0]
-    root = set_root(design, num, name, "Tấm đệm góc vát - thép 2.0",
-                    "UNITS MM; MATERIAL S280GD+Z (EN 10346) OR SGC400, Z100, 2.0 SHEET; ISO 2768-m; THICKNESS 2.0 "
-                    "+-0.1; laser cut, no drawing (D-89 part 4); joints register H-40 to H-42; PROPOSED")
-    comp = root
+# the blank of each plate (J-FRAME-01; the Lead's steer 2026-11-01): where it starts along the mitre line from the
+# frame's outer corner, and its length, so each corner of both square ends sits at least 0.5 inside the frame's faces
+# on both plate faces. A plate the mitre's full size pokes out at the outer corner by its half thickness x the cut's
+# cosine (0.71 at 45 deg; 0.45 and 0.89 where a 20 x 40 meets a 40 x 40); the all-round weld fills the step and is
+# ground flush. Calculation: frame_steel_check.py's PLATE_BLANKS, which checks every corner (--check).
+PLATE_BLANKS = {"831007": ("1.75 mm", "26.5 mm"), "831008": ("3.15 mm", "41.5 mm"), "831009": ("1.75 mm", "54.8 mm")}
+PLATE_PARAMS = [
+    ("tube_a", "20 mm", "mm", "CONFIRMED: the narrower member's width in the frame's plane, 20 or 40 (D-16, R-J3)"),
+    ("tube_b", "20 mm", "mm", "CONFIRMED: the other member's width in the frame's plane, 20 or 40 (D-16, R-J3)"),
+    ("plate_mitre", "sqrt(tube_a * tube_a + tube_b * tube_b)", "mm",
+     "CALCULATION: the mitre line from the frame's outer corner to its inner corner; the blank lies on it"),
+    ("plate_x0", "1.75 mm", "mm",
+     "CALCULATION: where the blank starts along the mitre line from the frame's outer corner, so its square ends "
+     "sit 0.5 inside the frame's faces on both plate faces (the Lead's steer 2026-11-01): 1.75 at 45 deg (831007, "
+     "831009), 3.15 at 831008 (frame_steel_check.py PLATE_BLANKS)"),
+    ("plate_len", "26.5 mm", "mm",
+     "CALCULATION: the laser-cut blank's length along the mitre line, to 0.1: 26.5 (831007), 41.5 (831008), "
+     "54.8 (831009) (frame_steel_check.py PLATE_BLANKS)"),
+    ("plate_d", "40 mm", "mm", "CONFIRMED: the frame's depth across the wall, 40 (D-16, D-42)"),
+    ("plate_t", "2.0 mm", "mm", "PROPOSED: at least 1.5 x the 1.2 mm rails, a stiffened knee (J-FRAME-01)"),
+]
+PLATE_SKETCH = "SKETCH - PLATE OUTLINE"
+PLATE_EXTRUDE = "EXTRUDE - PLATE, SYMMETRIC ON THE MITRE PLANE"
+
+
+def plate_geometry(design, comp):
+    """The plate's sketch and body from the parameters (PLATE_PARAMS): a plate_len x plate_d rectangle whose corner
+    sits plate_x0 along +X from the origin (the frame's outer corner, on the skin-side face), held there by a
+    construction line from the origin, extruded plate_t symmetric on the mitre plane. Used by the build and by
+    joints_plates_trim_update.py, so both make the same plate."""
+    up = design.userParameters
+    x0, ln = mm(up.itemByName("plate_x0").value), mm(up.itemByName("plate_len").value)
     sk = comp.sketches.add(comp.xYConstructionPlane)
-    sk.name = "SKETCH - PLATE OUTLINE"
-    lines = sk.sketchCurves.sketchLines.addTwoPointRectangle(p3(0, 0), p3(28.284, 40.0))
+    sk.name = PLATE_SKETCH
+    lines = sk.sketchCurves.sketchLines.addTwoPointRectangle(p3(x0, 0), p3(x0 + ln, 40.0))
     corner = next(lines.item(i).startSketchPoint for i in range(lines.count)
-                  if abs(lines.item(i).startSketchPoint.geometry.x) < 1e-6
+                  if abs(lines.item(i).startSketchPoint.geometry.x - x0 * CM) < 1e-6
                   and abs(lines.item(i).startSketchPoint.geometry.y) < 1e-6)
-    sk.geometricConstraints.addCoincident(corner, sk.originPoint)
+    gc = sk.geometricConstraints
+    lead = sk.sketchCurves.sketchLines.addByTwoPoints(sk.originPoint, corner)    # origin -> the blank's corner
+    lead.isConstruction = True
+    try:
+        gc.addHorizontal(lead)
+    except Exception as e:                       # Fusion often gives a line between two level points its own
+        print("  (lead line already horizontal: %s)" % e)
+    dims = sk.sketchDimensions
+    dims.addDistanceDimension(lead.startSketchPoint, lead.endSketchPoint,
+                              adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
+                              p3(x0 / 2, -10.0)).parameter.expression = "plate_x0"
     horiz = next(lines.item(i) for i in range(lines.count)
                  if abs(lines.item(i).startSketchPoint.geometry.y - lines.item(i).endSketchPoint.geometry.y) < 1e-6)
     vert = next(lines.item(i) for i in range(lines.count)
                 if abs(lines.item(i).startSketchPoint.geometry.x - lines.item(i).endSketchPoint.geometry.x) < 1e-6)
-    sk.sketchDimensions.addDistanceDimension(horiz.startSketchPoint, horiz.endSketchPoint,
-                                             adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
-                                             p3(14.0, -6.0)).parameter.expression = "plate_len"
-    sk.sketchDimensions.addDistanceDimension(vert.startSketchPoint, vert.endSketchPoint,
-                                             adsk.fusion.DimensionOrientations.VerticalDimensionOrientation,
-                                             p3(-6.0, 20.0)).parameter.expression = "plate_d"
+    dims.addDistanceDimension(horiz.startSketchPoint, horiz.endSketchPoint,
+                              adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
+                              p3(x0 + ln / 2, -6.0)).parameter.expression = "plate_len"
+    dims.addDistanceDimension(vert.startSketchPoint, vert.endSketchPoint,
+                              adsk.fusion.DimensionOrientations.VerticalDimensionOrientation,
+                              p3(x0 - 6.0, 20.0)).parameter.expression = "plate_d"
     added = []
-    gc = sk.geometricConstraints
     # the API's rectangle joins its corners and nothing more (run of 2026-11-01): each edge gets its own horizontal or
     # vertical constraint, and one already held is skipped as redundant
     for i in range(lines.count):
         if sk.isFullyConstrained:
             break
-        ln = lines.item(i)
-        a, b = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+        edge = lines.item(i)
+        a, b = edge.startSketchPoint.geometry, edge.endSketchPoint.geometry
         kind = "horizontal" if abs(a.y - b.y) < 1e-6 else "vertical" if abs(a.x - b.x) < 1e-6 else None
         if kind is None:
             continue
         try:
-            (gc.addHorizontal if kind == "horizontal" else gc.addVertical)(ln)
+            (gc.addHorizontal if kind == "horizontal" else gc.addVertical)(edge)
             added.append(kind)
         except Exception as e:                                       # already held: redundant, skip it
             print("  (%s constraint skipped: %s)" % (kind, e))
@@ -782,41 +807,74 @@ def _build_plates(app, doc, design, f):
     ei = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
     ei.setSymmetricExtent(vi("plate_t"), True)
     ext = comp.features.extrudeFeatures.add(ei)
-    ext.name = "EXTRUDE - PLATE, SYMMETRIC ON THE MITRE PLANE"
+    ext.name = PLATE_EXTRUDE
     body = ext.bodies.item(0)
     body.name = "MITRE PLATE"
-    mat = material(comp, ["Steel, Galvanized", "Steel"], ["steel"])
+    return body
+
+
+def plate_state(design, root, variant):
+    """Set one variant (members, blank, part number), rebuild, and check its box against the blank; returns the box."""
+    num, name, a, b, _stem = variant
+    x0, ln = PLATE_BLANKS[num]
+    up = design.userParameters
+    for pname, expr in (("tube_a", a), ("tube_b", b), ("plate_x0", x0), ("plate_len", ln)):
+        up.itemByName(pname).expression = expr
+    root.partNumber = num            # each STEP carries its own part number (C06)
+    root.description = "%s | rev %s | members %s and %s; blank %s long from %s along the mitre | joints register " \
+                       "J-FRAME-01 | PROPOSED" % (name, REV, a, b, ln, x0)
+    adsk.doEvents()
+    health(design)
+    body = root.bRepBodies.item(0)
+    bb = box(body)
+    sx, sl = float(x0.split()[0]), float(ln.split()[0])
+    want = (sx, 0.0, -1.0, sx + sl, 40.0, 1.0)
+    if any(abs(g - w) > 0.005 for g, w in zip(bb, want)):
+        raise RuntimeError("%s: the plate is %s, want %s" % (num, fmt(bb), fmt(want)))
+    mitre = mm(up.itemByName("plate_mitre").value)
+    if bb[3] > mitre + 1e-6:
+        raise RuntimeError("%s: the blank runs past the mitre's inner corner (%.3f > %.3f)" % (num, bb[3], mitre))
+    print("    %s (%s, %s): %s, %.5f kg; the mitre line %.3f" % (num, a, b, fmt(bb), body.physicalProperties.mass, mitre))
+    return bb
+
+
+def plate_edit_test(design, root):
+    """Guideline 4.4: the blank's start moves the plate along the mitre, its length stays; then back."""
+    edit_test(design, lambda: box(root.bRepBodies.item(0)), [("plate_x0", "3.15 mm")],
+              lambda b0, a1: abs(a1[0] - 3.15) < 0.01 and abs((a1[3] - a1[0]) - (b0[3] - b0[0])) < 0.01)
+
+
+def write_plate_dxfs(design, root):
+    for v in PLATE_VARIANTS:
+        bb = plate_state(design, root, v)
+        dxf = os.path.join(REPO, MFG_DIR, v[4] + "_DXF.dxf")
+        write_dxf_rect(dxf, bb[3] - bb[0], bb[4] - bb[1])
+        print("  DXF %s: %.3f x %.3f on layer CUT" % (os.path.basename(dxf), bb[3] - bb[0], bb[4] - bb[1]))
+
+
+def _build_plates(app, doc, design, f):
+    """The frames' mitre plates (joints register H-40 to H-42, J-FRAME-01): a flat 2.0 blank on the mitre line.
+    Origin at the frame's outer corner, on the skin-side face, on the plate's mid-plane; +X along the mitre toward the
+    frame's inner corner (the blank starts plate_x0 along it); +Y across the frame toward the room side; Z through the
+    plate, -1.0 to +1.0 (the joints CAD README)."""
+    add_params(design, PLATE_PARAMS)
+    num, name, _a, _b, _stem = PLATE_VARIANTS[0]
+    root = set_root(design, num, name, "Tấm đệm góc vát - thép 2.0",
+                    "UNITS MM; MATERIAL S280GD+Z (EN 10346) OR SGC400, Z100, 2.0 SHEET; ISO 2768-m; THICKNESS 2.0 "
+                    "+-0.1; laser cut, no drawing (D-89 part 4); joints register H-40 to H-42; PROPOSED")
+    plate_geometry(design, root)
+    mat = material(root, ["Steel, Galvanized", "Steel"], ["steel"])
     health(design)
     family = (root.partNumber, root.description)
-
-    def state(num, name, a, b):
-        def go():
-            design.userParameters.itemByName("tube_a").expression = a
-            design.userParameters.itemByName("tube_b").expression = b
-            root.partNumber = num            # each STEP carries its own part number (C06)
-            root.description = "%s | rev %s | members %s and %s | joints register J-FRAME-01 | PROPOSED" % (name, REV, a, b)
-            adsk.doEvents()
-            health(design)
-            bb = box(comp.bRepBodies.item(0))
-            print("    %s (%s, %s): %s, %.5f kg" % (num, a, b, fmt(bb), comp.bRepBodies.item(0).physicalProperties.mass))
-        return go
-
     print("PLATES: material %s" % mat)
     save_export(app, doc, design, f, PLATES,
                 "Mitre plates 831007-831009, rev P01, PROPOSED (joints register H-40 to H-42, J-FRAME-01); saved at "
                 "831007. Built by joints_hardware_build.py",
-                [(stem + "_STEP.step", state(num, name, a, b)) for num, name, a, b, stem in PLATE_VARIANTS])
-    for num, name, a, b, stem in PLATE_VARIANTS:
-        state(num, name, a, b)()
-        bb = box(comp.bRepBodies.item(0))
-        dxf = os.path.join(REPO, MFG_DIR, stem + "_DXF.dxf")
-        write_dxf_rect(dxf, bb[3] - bb[0], bb[4] - bb[1])
-        print("  DXF %s: %.3f x %.3f on layer CUT" % (os.path.basename(dxf), bb[3] - bb[0], bb[4] - bb[1]))
-    num0, name0, a0, b0, _stem0 = PLATE_VARIANTS[0]
-    state(num0, name0, a0, b0)()        # back to the saved state, 831007
+                [(v[4] + "_STEP.step", (lambda v=v: plate_state(design, root, v))) for v in PLATE_VARIANTS])
+    write_plate_dxfs(design, root)
+    plate_state(design, root, PLATE_VARIANTS[0])        # back to the saved state, 831007
     root.partNumber, root.description = family
-    edit_test(design, lambda: box(comp.bRepBodies.item(0)), [("tube_b", "40 mm")],
-              lambda b0, a1: abs((a1[3] - a1[0]) - math.sqrt(20 * 20 + 40 * 40)) < 0.01)
+    plate_edit_test(design, root)
     doc.close(False)
 
 

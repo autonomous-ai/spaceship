@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -115,34 +115,33 @@ Read from: this working tree.
 
 **ELECTRICAL**
 - 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data))
-- 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04))
+- 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133))
 - 718001 ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718002 ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718003 ELECTRICAL - RCBO - 1P+N C10 30 MA TYPE A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718004 ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718005 ELECTRICAL - INLET SEALING CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718006 ELECTRICAL - LAN FEED-THROUGH - ETHERCON: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718007 ELECTRICAL - USER SOCKET - UTEN S300 UNIVERSAL: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718008 ELECTRICAL - LAN SOCKET - UTEN S300 TWO PORT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718009 ELECTRICAL - BACK BOX - 86 PLATE: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718007 ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718010 ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718011 ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718012 ELECTRICAL - FUSE - ATO 5 A 32 V: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718013 ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718019 ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718049 ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718054 ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718047 ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718014 ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718015 ELECTRICAL - BONDING WASHER - SERRATED M6 A2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718016 ELECTRICAL - RING TERMINAL - INSULATED 1.5-2.5 MM2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718017 ELECTRICAL - CONDUIT - PVC FLEXIBLE - 20 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718016 ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718017 ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718020 ELECTRICAL - WIRE - H07V-K 1.5 MM2 (BROWN, BLUE, GREEN-YELLOW): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718021 ELECTRICAL - WIRE - H05V-K 1.0 MM2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718022 ELECTRICAL - WIRE - H07V-K 2.5 MM2 GREEN-YELLOW: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718020 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718021 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718022 ELECTRICAL - WIRE - UL 1015 14 AWG GREEN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718073 ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718026 ELECTRICAL - CABLE - 4 X 20 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718027 ELECTRICAL - CABLE - 4 X 24 AWG SCREENED: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -162,8 +161,8 @@ Read from: this working tree.
 - 718067 ELECTRICAL - FUSE - ATO 1 A 32 V: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718068 ELECTRICAL - FAN Y-CABLE - 4-PIN PWM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718070 ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718071 ELECTRICAL - CORD - H05VV-F 3G1.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718072 ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718071 ELECTRICAL - CORD - SJT 14/3: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718072 ELECTRICAL - MAINS PLUG - NEMA 5-15P: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718023 ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718024 ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718029 ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -186,6 +185,7 @@ Read from: this working tree.
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718053 ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718102 ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718103 ELECTRICAL - LED PROFILE END CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -193,6 +193,9 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+**Joints register**
+- H-44 HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 A2: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
