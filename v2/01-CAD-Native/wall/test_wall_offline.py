@@ -662,7 +662,9 @@ class TrayCableTieTest(unittest.TestCase):
         table = {p[0]: p for p in ns["EL_PARAMS"]}
         self.assertEqual([float(table["el_tie_b4_z%d" % i][1].split()[0]) for i in range(1, 6)],
                          [1363.6, 1645.8, 1927.9, 2210.0, 2270.0])
-        self.assertEqual([float(table["el_tie_b2_x%d" % i][1].split()[0]) for i in range(1, 4)], [545.0, 844.2, 1143.5])
+        # B2's ties are held by ELECTRICAL's rules (past the unit's cut-out, inside the corner end), so read their values
+        b2 = resolve(load_back("B2", "cassette"))
+        self.assertEqual([round(b2["el_tie_b2_x%d" % i], 2) for i in range(1, 4)], [545.0, 844.25, 1143.5])
         self.assertTrue(v)
 
 

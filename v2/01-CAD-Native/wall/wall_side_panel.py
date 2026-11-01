@@ -476,9 +476,12 @@ EL_PARAMS = [
     ("el_tie_b4_z3", "1927.9 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 3 along the light feed (X el_lt_x)"),
     ("el_tie_b4_z4", "2210 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 4 along the light feed (X el_lt_x)"),
     ("el_tie_b4_z5", "2270 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 5 along the light feed (X el_lt_x)"),
-    ("el_tie_b2_x1", "545 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 1 along the trunk (Z el_trunk_z)"),
-    ("el_tie_b2_x2", "844.2 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 2 along the trunk (Z el_trunk_z)"),
-    ("el_tie_b2_x3", "1143.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 3 along the trunk (Z el_trunk_z)"),
+    # B2-CASS's ties along the trunk, held where ELECTRICAL's rules put them, so they follow the cassette in an edit (at
+    # the P04 size X 545, 844.25 and 1143.5; ELECTRICAL's 844.2 rounds the middle one): the first 150 past the power
+    # unit's cut-out, the last 22.5 inside the cassette's corner end, the middle one halfway
+    ("el_tie_b2_x1", "el_cut_x1 + 150 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 1 along the trunk (Z el_trunk_z), X 545: none within 150 of the power unit's cut-out"),
+    ("el_tie_b2_x3", "pod_w / 2 - stack_t - 22.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 3 along the trunk (Z el_trunk_z), X 1143.5: 22.5 inside the cassette's corner end"),
+    ("el_tie_b2_x2", "(el_tie_b2_x1 + el_tie_b2_x3) / 2", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 2 along the trunk (Z el_trunk_z), halfway: X 844.25 (ELECTRICAL's 844.2)"),
 ]
 # what each design needs, by position and kind (the el_ names these refer to come with them)
 B2_FRAME_EL = ("el_rn_xu1", "el_rn_xu2", "el_rn_xl1", "el_rn_xl2", "el_ps_mains_x", "el_ps_mains_db", "el_ps_mains_dt",
