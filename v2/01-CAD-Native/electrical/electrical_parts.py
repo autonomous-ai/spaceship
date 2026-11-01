@@ -177,10 +177,11 @@ def harnesses(v):
         conductors="PE", cable="UL 1015 14 AWG green", area_mm2=2.08, length_mm=300,
         length_status="assumption", end_a="M6 ring lug, 16-14 AWG", end_b="M6 ring lug, 16-14 AWG", grommets="", amps_max=None,
         note="B2 is the only panel a mains part touches (compliance note 3)")
-    add(id="W04", harness_pn="710001", segment="PU", function="LAN in", frm="etherCON feed-through (outside B2)",
+    add(id="W04", harness_pn="710001", segment="PU", function="LAN in", frm="etherCON jack (B2 skin)",
         to="LAN keystone jack 1 (unit face)", route="SLEEVE in B2's frame bay", circuit="LAN",
-        conductors="4 pairs", cable="Cat6 U/UTP patch cord", area_mm2=None, length_mm=L("SLEEVE") + 300,
-        end_a="RJ45 plug into the feed-through", end_b="punched down at keystone jack 1", grommets="sleeve end bushes",
+        conductors="4 pairs", cable="Cat6 U/UTP, Belden 3612 (23 AWG solid)", area_mm2=None, length_mm=L("SLEEVE") + 300,
+        end_a="pressed into the etherCON's IDC (24-22 AWG solid)", end_b="punched down at keystone jack 1",
+        grommets="sleeve end bushes",
         amps_max=None, note="plan VT09; the building LAN comes in at v1's position")
     # ---- light feed (PS2) to the light shelf: PU -> B2-CASS -> B4-CASS -> shelf
     add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="light controller outputs (PS2) via F2 5 A",
@@ -404,9 +405,11 @@ part("inlet", "718004", "ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP", "Đ
 part("inlet_cap", "718005", "ELECTRICAL - INLET SEALING CAP", "Điện - nắp che ổ nguồn vào", "PI", "710001", 1,
      "", "", 0.01, "assumption", maker="Neutrik", sku="SCNAC-01 (as named in selection E; confirm)", status=HOLD_BUY,
      source=SEL, note="keeps IP65 while unplugged")
-part("lan_ft", "718006", "ELECTRICAL - LAN FEED-THROUGH - ETHERCON", "Điện - ổ mạng xuyên vách", "PI", "710001", 1,
-     "", "", 0.04, "assumption", maker="Neutrik", sku="NE8FDP", size="flange 26 x 31; 34.55 behind",
-     status=HOLD_BUY, source=NEUTRIK + "; " + SEL, note="CAT5e coupler (so the link is CAT5e); panel up to 4 mm")
+part("lan_ft", "718006", "ELECTRICAL - LAN JACK - ETHERCON CAT6 - IDC", "Điện - ổ mạng etherCON CAT6", "PI", "710001", 1,
+     "", "", 0.04, "assumption", maker="Neutrik", sku="NE8FDY-C6-B", size="flange 26 x 31; 39.85 behind the flange",
+     status=HOLD_BUY, source=NEUTRIK + "; " + SEL,
+     note="the building LAN's outlet: W04 is pressed into its IDC, so it is a jack, not a coupler, and the kit's channel "
+          "keeps Panduit's two couplers (X1, X2); the same D-size cut-out as before (Ø24 + 2 x Ø3.2 on 19 x 24)")
 part("socket", "718007", "ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R", "Điện - ổ cắm đôi chống giật GFCI NEMA 5-15R",
      "PI", "710001", 1, "", "", 0.25, "assumption", maker="Pass & Seymour (Legrand)",
      sku="1595TRW (15 A 125 V, tamper-resistant, self-test, UL 943 Class A; or equal: Eaton TRSGF15W, Leviton GFTR1)",
@@ -456,6 +459,13 @@ part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện
 part("pe_nut", "718079", "ELECTRICAL - NUT - M5 - SERRATED FLANGE - A2", "Điện - đai ốc M5 mặt bích răng", "PI", "710001", 1,
      "stainless A2", "plain", 0.0014, "source", status=HOLD_BUY,
      note="on the earth stud 718014, over its lugs")
+_POLE = 2 + len(SUPPLIES)          # conductors per pole: the feed, the GFCI's LINE and each supply's input
+assert _POLE <= 8, _POLE            # two connectors joined by a short jumper take 8
+part("lever", "718080", "ELECTRICAL - LEVER CONNECTOR - 5 CONDUCTOR - UL 486C", "Điện - cút nối dây 5 cực", "PI", "710001",
+     2 * (1 if _POLE <= 5 else 2), "polycarbonate, transparent", "", 0.004, "assumption", status=HOLD_BUY,
+     note="the mains joints inside the unit, one set for L (from the breaker) and one for N (from the inlet): the feed, "
+          "the GFCI's LINE and each supply's input lead (%d per pole%s); kept apart from the 12 V wiring" % (
+              _POLE, "" if _POLE <= 5 else ", in two connectors joined by a short 14 AWG jumper"))
 part("serrated", "718015", "ELECTRICAL - BONDING WASHER - SERRATED M6 A2", "Điện - long đen răng tiếp địa", "PI", "710001", 1,
      "stainless A2", "", 0.001, "assumption", sku="DIN 6798 A 6.4 A2, maker HOLD", status=HOLD_BUY, source="DIN 6798",
      note="under the bond lead's lug on one mounting bolt, so the lug bites through to bare aluminium")
@@ -552,7 +562,7 @@ for key, pn, name, vi, parent, qty, sku, mass, note in (
          "assumption", maker="Molex", sku=sku, status=HOLD_BUY, source=MOLEX,
          note=note + "; 18 AWG: 9 A (2 way), 8 A (4 and 6 way) per circuit, 600 V; UL E29179 (10 way: rating to confirm)")
 for key, pn, name, vi, qty, note in (
-        ("rj45", "718038", "ELECTRICAL - RJ45 PLUG - CAT6", "Điện - đầu RJ45", 5, "W04 1, W31a 1, W31b 2, W31c 1"),
+        ("rj45", "718038", "ELECTRICAL - RJ45 PLUG - CAT6", "Điện - đầu RJ45", 4, "W31a 1, W31b 2, W31c 1"),
         ("coupler", "718039", "ELECTRICAL - RJ45 INLINE COUPLER - CAT6", "Điện - đầu nối RJ45", 2, "X1 and X2"),
         ("keystone", "718040", "ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP", "Điện - nhân mạng RJ45", 3,
          "2 snapped into the front plate (jack 1 the building LAN, W04; jack 2 the tie line W31a; D-133) and 1 at the kit's "
@@ -793,6 +803,12 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'max, height 5 max, 8 across flats, 1.4 g',
             'https://www.fabory.com/en/p/51119050001/generatePdf',
             'its serrations lock it on the top lug; 1.2 N m (see 718014)'),
+ '718080': ('WAGO 221-415',
+            'WAGO',
+            '221-415: COMPACT splicing connector, 5 conductors, levers, 24-12 AWG (0.14-4 mm2), strip 11 mm; UL 486C '
+            '(E69654) 600 V 20 A; T85 (surrounding air 85 C at most); 30 x 8.4 x 18.6 mm',
+            'https://www.wago.com/us/wire-splicing-connectors/compact-splicing-connector/p/221-415 (read 2026-11-01)',
+            "takes the LPV-60's 18 AWG leads and the 14 AWG mains together"),
  '718001': ('MEAN WELL LPV-60-12',
             'Mean Well',
             "LPV-60-12: 12 V 0-5 A, 60 W, 90-264 VAC; 'Class 2 power unit', UL1310, Class II",
@@ -817,11 +833,14 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'SCNAC-01: D-size sealing cover for NAC3MPX*, IP 65 closed',
             'https://www.neutrik.com/en/product/scnac-01',
             ''),
- '718006': ('NEUTRIK NE8FDP',
+ '718006': ('NEUTRIK NE8FDY-C6-B',
             'Neutrik',
-            'NE8FDP: etherCON CAT5e RJ45 feedthrough, D-size metal flange, panel up to 4 mm',
-            'https://www.neutrik.com/en/product/ne8fdp',
-            ''),
+            'NE8FDY-C6-B: etherCON CAT6 D-shape panel connector, black, shielded, tool-free IDC for 24-22 AWG solid; '
+            'CAT6A / Class EA channel performance (TIA/EIA 568C, ISO/IEC 11801); panel 3 mm at most; -10 to +60 C; '
+            'IP65 mated; UL 94 HB (no UL listing stated)',
+            'https://www.neutrik.com/en/product/ne8fdy-c6-b ; drawing ST-NE8FDY-C6',
+            'it takes a plain RJ45 room cord; the ACP skin is 3 mm, its limit; it reaches 39.85 mm behind its flange '
+            '(H-ELE-03); NE8FDP (CAT5e) was a feedthrough coupler, a third coupler in the kit channel'),
  '718007': ('P&S 1597TRW',
             'Pass & Seymour (Legrand)',
             '1597TRW: radiant tamper-resistant 15 A 125 V self-test duplex GFCI, white; cULus listed E42190; 43.9 '
@@ -928,7 +947,8 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'Belden',
             '3612 0081000: Cat 6 U/UTP, 4 pair, 23 AWG solid, CMR (UL 1666), OD 5.87 mm',
             'https://catalog.belden.com/techdata/EN/3612_techdata.pdf',
-            ''),
+            "Belden doesn't publish its insulated core size and the SP688E-C plug takes 0.91-1.07 mm cores (Panduit "
+            'PN649A): measure a sample before the plugs are crimped; 23 AWG solid suits the etherCON IDC (24-22 AWG)'),
  '718029': ('SOUTHWIRE R40015-1',
             'Southwire',
             'R40015-1 (spec 13060): 6 x 18 AWG stranded, PVC, CL3R, 300 V, 60 C, OD 5.38 mm',
@@ -996,15 +1016,18 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'suits the Belden 3612 cable (23 AWG solid, 5.87 mm)'),
  '718039': ('PANDUIT CC688IW',
             'Panduit',
-            'CC688IW: Mini-Com Cat 6 UTP RJ45 coupler module; UL 1863, UL 2043',
-            'https://www.panduit.com/en/products/copper-systems/connectors/jack-modules/cc688iw.html',
-            'Panduit allows up to two couplers per channel: X1 and X2 use both'),
+            'CC688IW: Mini-Com Cat 6 UTP RJ45 coupler module; c(UL)us, UL 1863',
+            'https://www.panduit.com/content/dam/panduit/en/products/media/8/58/158/6158/111836158.pdf (COSP237, p. 1)',
+            "'Up to two couplers can be used per channel while maintaining Category 6/Class E performance': X1 and X2 "
+            'are the kit channel\'s two; the etherCON 718006 is a jack, not a coupler'),
  '718040': ('PANDUIT NK688MWH',
             'Panduit',
-            'NK688MWH: NetKey Cat 6 UTP RJ45 punchdown keystone jack, 22-26 AWG; UL 1863, UL 2043; dust cap PSL-DCJB '
-            'for the capped jack at X7',
-            'https://www.panduit.com/en/products/copper-systems/connectors/jack-modules/nk688mwh.html',
-            'the 14.9 x 19.4 cut-out in 1.5 mm plate to prove on a sample'),
+            'NK688MWH: NetKey Cat 6 UTP RJ45 punchdown keystone jack, 22-26 AWG; UL 1863, UL 2043; the capped jack at '
+            'X7 takes a PSL-DCJB block-out device',
+            'https://www.panduit.com/en/products/copper-systems/connectors/jack-modules/nk688mwh.html ; '
+            'https://www.panduit.com/en/products/copper-systems/physical-security-devices/block-out-devices/psl-dcjb.html',
+            'the 14.9 x 19.4 cut-out in 1.5 mm plate to prove on a sample; the PSL-DCJB snaps in and comes out only with '
+            "Panduit's removal tool (one in each pack of 10), which goes with the kit's fitting kit"),
  '718041': ('HEYCO 2836N',
             'Heyco',
             '2836N (B 750-625N, black): thin panel snap bushing for a 19.1 mm hole, panels 0.5 to 1.6 mm, bore 15.9 '
