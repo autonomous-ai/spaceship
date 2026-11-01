@@ -264,6 +264,10 @@ class Part:
         # pocket, an uneven chamfer) would be drawn without a size, so the part is refused
         self.notches, self.chamfers, self.plates = [], [], []
         for b in self.bodies:
+            lax = geom.member_axis(b)
+            if lax is not None and not plain_section(b, lax):
+                raise NotDrawable("%s body %s is a profile whose section isn't a plain rectangle or rectangular tube: its "
+                                  "section's sizes aren't drawn yet (D-139: Fusion, or the profile reading)" % (pn, b.name))
             nt, ch, plt, odd = geom.flat_features(b, [ft.f for ft in self.features if ft.body is b and ft.kind != "hole"])
             if odd:
                 raise NotDrawable("%s body %s has flat faces this tool can't size yet: %s%s" % (
@@ -349,6 +353,7 @@ class Part:
         return "%s_%s_%s_DWG" % (self.pn, self.rev, self.file_name)
 
 
+EXTRUDED_WORDS = re.compile(r"\bextru(?:ded|sion|sions)\b", re.I)
 BENT_WORDS = re.compile(r"\b(?:bend|bends|bent|fold|folds|folded|brake|v-groove|groove and fold|press brake)\b", re.I)
 
 
@@ -361,6 +366,8 @@ def folded_or_bent(part):
     m = BENT_WORDS.search(proc)
     if m:
         return "bent or folded (its parts list says '%s')" % m.group(0)
+    if EXTRUDED_WORDS.search(proc + " " + (part.row.get("type") or "")):
+        return None         # an extrusion's open section is its profile, not a fold (plain_section judges it)
     for b in part.bodies:
         pls = geom.planes(b)
         if not pls:
@@ -380,13 +387,20 @@ def folded_or_bent(part):
                         dirs.append(d)
         if len(dirs) < 2:
             continue
-        # open or closed cross-section, across the long direction, at three places (one may cut through a hole)
-        lk = max(range(3), key=lambda k: b.size[k])
-        n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        # open or closed cross-section, at three places (one may cut through a hole), across the line both wall
+        # directions run along (a tube's axis, a fold's line); with more directions, across the longest side. A tube
+        # shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it closes
+        if len(dirs) == 2:
+            n = geom.canon_dir(geom.vnorm(geom.vcross(dirs[0], dirs[1])))
+        else:
+            lk = max(range(3), key=lambda k: b.size[k])
+            n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), n) for v in geom._vertices_of(b.shape)]
+        s0, s1 = min(sv), max(sv)
         from OCP.TopAbs import TopAbs_WIRE
         opens = 0
         for t in (0.31, 0.47, 0.63):
-            pt = tuple(b.box[k] + t * b.size[k] if k == lk else b.centroid[k] for k in range(3))
+            pt = vadd(b.centroid, vmul(n, s0 + t * (s1 - s0) - vdot(b.centroid, n)))
             faces = cut_faces(geom.half_space_keep(b.shape, pt, n), pt, n)
             wires = 0
             for f in faces:
@@ -398,6 +412,77 @@ def folded_or_bent(part):
         if opens == 3:
             return "a folded sheet (body %s: sheet faces in %d directions, open cross-section)" % (b.name, len(dirs))
     return None
+
+
+def _rectangle(wire):
+    """True when a wire is four straight edges, each parallel or square to the first."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.GeomAbs import GeomAbs_Line
+    dirs = []
+    e = TopExp_Explorer(wire, TopAbs_EDGE)
+    while e.More():
+        ed = TopoDS.Edge_s(e.Current())
+        if BRepAdaptor_Curve(ed).GetType() != GeomAbs_Line:
+            return False
+        vs = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(ed)]
+        if len(vs) != 2:
+            return False
+        dirs.append(geom.vnorm(geom.vsub(vs[1], vs[0])))
+        e.Next()
+    return len(dirs) == 4 and all(abs(vdot(d, dirs[0])) < 1e-6 or abs(abs(vdot(d, dirs[0])) - 1) < 1e-6 for d in dirs)
+
+
+def _convex(wire, lax):
+    """True when a wire is straight edges round a convex outline (seen along lax)."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepTools import BRepTools_WireExplorer
+    from OCP.GeomAbs import GeomAbs_Line
+    u = vnorm(vcross(lax, (1.0, 0.0, 0.0) if abs(lax[0]) < 0.9 else (0.0, 1.0, 0.0)))
+    v = vcross(lax, u)
+    pts = []
+    ex = BRepTools_WireExplorer(wire)
+    while ex.More():
+        if BRepAdaptor_Curve(ex.Current()).GetType() != GeomAbs_Line:
+            return False
+        p = geom.pnt(BRep_Tool.Pnt_s(ex.CurrentVertex()))
+        pts.append((vdot(p, u), vdot(p, v)))
+        ex.Next()
+    if len(pts) < 3:
+        return False
+    sgn = 0
+    for i in range(len(pts)):
+        a, b_, c = pts[i - 1], pts[i], pts[(i + 1) % len(pts)]
+        cr = (b_[0] - a[0]) * (c[1] - b_[1]) - (b_[1] - a[1]) * (c[0] - b_[0])
+        if abs(cr) < 1e-9:
+            continue
+        if sgn and (cr > 0) != (sgn > 0):
+            return False
+        sgn = cr
+    return True
+
+
+def plain_section(b, lax):
+    """True when a straight member's cross-section, at some station clear of its holes, is a solid convex outline (a
+    bar, or a block with an angled side face, as the corner keys) or a rectangle with one rectangular bore (a
+    rectangular tube): shapes its views, its section and its material line define. An angle, a channel or a custom
+    extrusion (FRONT's kick strip 361002) has a profile to size, which drawgen doesn't do yet (D-139 keeps a
+    profile's dimensioned section with Fusion)."""
+    from OCP.TopAbs import TopAbs_WIRE
+    sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), lax) for v in geom._vertices_of(b.shape)]
+    s0, s1 = min(sv), max(sv)
+    for t in (0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8):
+        pt = vadd(b.centroid, vmul(lax, s0 + t * (s1 - s0) - vdot(b.centroid, lax)))
+        faces = cut_faces(geom.half_space_keep(b.shape, pt, lax), pt, lax)
+        if len(faces) != 1:
+            continue
+        wires = []
+        e = TopExp_Explorer(faces[0], TopAbs_WIRE)
+        while e.More():
+            wires.append(TopoDS.Wire_s(e.Current()))
+            e.Next()
+        if (len(wires) == 1 and _convex(wires[0], lax)) or (len(wires) == 2 and all(_rectangle(w) for w in wires)):
+            return True
+    return False
 
 
 def principal_view(part):
@@ -610,10 +695,16 @@ def plan_views(part, spec):
     # a straight member lying off the pod's axes (FRONT's 352211, a cross tube on the diagonal): drawn along its own
     # axis, looking square to a side, so its length runs across the sheet and its end cuts read from its axis
     ma = geom.member_axis(part.bodies[0]) if len(part.bodies) == 1 and not spec.get("principal") else None
-    if ma is not None and axis_name(ma) is None:
+    turned = False
+    if ma is not None:
+        sides_ = sorted((t for t in geom.planes(part.bodies[0]) if abs(vdot(t[0], ma)) < 1e-6), key=lambda t: -t[2])
+        # its section turned about its axis (FRONT's 352208, 45°: 28.24 high as drawn): its largest side faces off the
+        # pod's axes
+        turned = bool(sides_) and axis_name(sides_[0][0]) is None
+    if ma is not None and (axis_name(ma) is None or turned):
         P0 = pl.principal
         n = P0.n
-        if abs(vdot(n, ma)) > 1e-6:
+        if abs(vdot(n, ma)) > 1e-6 or turned:     # look square to the side face nearest the view it had
             sides = [t[0] for t in geom.planes(part.bodies[0]) if abs(vdot(t[0], ma)) < 1e-6]
             n = max(sides, key=lambda v: vdot(v, P0.n)) if sides else n
         sgn = vdot(ma, P0.x) if abs(vdot(ma, P0.x)) > 1e-6 else vdot(ma, P0.y)
@@ -665,6 +756,25 @@ def plan_views(part, spec):
         g.blocked = blocked
         g.free = free
         pl.groups.append(g)
+    # every end cut (a mitre, a compound cut's faces) shown in profile by a drawn view: edge on, the member's axis
+    # across the view, where its angle from square prints at its end. A view is added where none does (FRONT's #320:
+    # 8 tubes whose only view saw their mitres face on, as bands); a cut no plain view shows in profile is refused
+    for b in part.bodies:
+        lax_ = geom.member_axis(b)
+        if lax_ is None:
+            continue
+        for n_, _off, area_, face_ in geom.planes(b):
+            if not (0.02 < abs(vdot(n_, lax_)) < 0.9998):
+                continue
+            if any(face_.IsSame(cf) for ch in getattr(part, "chamfers", []) for cf in ch.faces):
+                continue
+            prof = [nm for nm, v in rel.items() if abs(vdot(n_, v.n)) < 1e-6 and abs(vdot(lax_, v.n)) < 1e-6]
+            if any(nm in pl.plain for nm in prof):
+                continue
+            if not prof:
+                raise NotDrawable("%s: an end cut of %s (normal %s) that no plain view shows in profile: a compound cut "
+                                  "isn't drawn yet" % (part.pn, b.name, tuple(round(c, 3) for c in n_)))
+            pl.plain.add(prof[0])
     # a notch is sized in the plain view that looks at its wall from outside (enlarged in a detail when small)
     for nt in getattr(part, "notches", []):
         vname = next((nm for nm, v in rel.items() if vdot(v.n, nt.wall_n) > 0.9999), None)
@@ -1555,8 +1665,9 @@ def mapping_words(view, pod_system):
 
 
 def feature_text(ft):
+    rivet = getattr(ft, "rivet", None)
     if not ft.reg:
-        return ""
+        return ("rivet hole: %s" % rivet) if rivet else ""
     pns = []
     for p in inputs.part_numbers_in(ft.reg["mating"]):
         if p not in pns:
@@ -1564,6 +1675,8 @@ def feature_text(ft):
     t = "%s %s" % (ft.reg["id"], inputs.short_function(ft.reg["function"]))
     if pns:
         t += " (%s)" % ", ".join(pns[:3])
+    if rivet:
+        t += "; rivet hole: %s" % rivet
     return t
 
 
@@ -1697,20 +1810,25 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 S = vd.S
                 # reference line square to the member through the long point, and the angle arc between
                 sq = (0.0, 1.0) if ax_k == 0 else (1.0, 0.0)
-                L = math.dist(S(far), S(near)) + 6
+                # the arc 4 past the cut's edge, at most 22 on paper: a long shallow cut (FRONT's 352204, 75.39° over
+                # about 80 at 1:1) would swing its arc into the border; a short one keeps its arc past the edge, the edge
+                # extended to meet it
+                dist = math.dist(S(far), S(near))
+                R = min(dist + 4.0, 22.0)
+                L = R + 2.0
                 towards = 1 if (near[1 - ax_k] - far[1 - ax_k]) > 0 else -1
                 ref_end = (S(far)[0] + sq[0] * towards * L, S(far)[1] + sq[1] * towards * L)
                 sh.line(S(far), ref_end, W_THIN)
                 d_m = (S(near)[0] - S(far)[0], S(near)[1] - S(far)[1])
                 lm = math.hypot(*d_m)
                 ext_end = (S(far)[0] + d_m[0] / lm * L, S(far)[1] + d_m[1] / lm * L)
-                sh.line(S(near), ext_end, W_THIN)
+                if L > dist + 0.5:
+                    sh.line(S(near), ext_end, W_THIN)
                 a0 = math.atan2(ref_end[1] - S(far)[1], ref_end[0] - S(far)[0])
                 a1 = math.atan2(d_m[1], d_m[0])
                 lo, hi = (a0, a1) if ((a1 - a0) % (2 * math.pi)) < math.pi else (a1, a0)
                 if hi < lo:
                     hi += 2 * math.pi
-                R = L - 2
                 sh.arc(S(far), R, lo, hi, W_THIN)
                 am = (lo + hi) / 2
                 # the value by the arc's middle, out along it until it touches no line (a narrow angle puts its own
@@ -1720,6 +1838,14 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 for d_ in (1.5, 3.0, 5.0, 8.0, 12.0):
                     px, py = S(far)[0] + (R + d_) * math.cos(am), S(far)[1] + (R + d_) * math.sin(am)
                     cands += [(px, py, "left" if math.cos(am) >= 0 else "right"), (px, py, "center")]
+                # where none of those is clear: along the arc toward either end, farther out, either anchor (FRONT's
+                # 352204: its 22.45° at the arc's middle sat on the top length's extension line)
+                for d_ in (1.5, 3.0, 5.0, 8.0, 12.0, 17.0):
+                    for fr_ in (0.5, 0.3, 0.7, 0.15, 0.85):
+                        a_ = lo + fr_ * (hi - lo)
+                        px, py = S(far)[0] + (R + d_) * math.cos(a_), S(far)[1] + (R + d_) * math.sin(a_)
+                        nat = "left" if math.cos(a_) >= 0 else "right"
+                        cands += [(px, py, nat), (px, py, "center"), (px, py, "right" if nat == "left" else "left")]
                 # placed after every length dimension of the mitre (below), so their extension lines are known
                 # (BASE's D-129 111101: the value sat on the 1502.07 dimension's extension line)
                 angle_texts.append((ang_t, cands))
@@ -1758,12 +1884,16 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 a_, b_ = oth, xs[0]
             else:
                 a_, b_ = xs[0], xs[-1]
+            if abs(abs(b_ - a_) - (e2[2] - e2[0])) < 0.005:
+                continue            # the overall length already (FRONT's 352203: 1694.75 printed twice)
             sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5)
             vd2.top_used = 16.0
+    pl.angle_marks = []
     for ang_t, cands in angle_texts:
         pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
                     cands[0])
         sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
+        pl.angle_marks.append({"text": ang_t, "box": sh.text_box(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")})
     # angled-face and end views (ISO 128-30): an arrow square to the face, in a drawn view that shows the face edge
     # on, its tip just off the face by the features (else moved along the face, or shorter) where the arrow crosses
     # no line and its letter touches nothing; drawn after every dimension so those are known (BASE's D-129 111103: the
@@ -2438,14 +2568,20 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row)
+    # rivet holes: an entry lists its rivet hole sizes with the rivet (BASE's D-130 boot: blind rivets in 3.3, 4.2
+    # and about 5.0 holes, the tap drills' sizes too; the PM's ruling): those holes are no tap drills, and their
+    # table rows name the rivet
+    rivets = {float(k): str(v) for k, v in (spec.get("rivet_holes") or {}).items()}
+    for ft in part.features:
+        ft.rivet = next((v for k, v in rivets.items() if ft.kind == "hole" and abs(ft.f.dia - k) < 0.011), None)
     # tapped holes need thread callouts (item 5): until then such a part isn't drawn (the PM's ruling on #296). A hole
-    # is taken as tapped when the part's row says so, or when its size is a metric tap drill's (M3 to M8), which no
-    # clearance hole in the project uses
+    # is taken as tapped when the part's row says so (rivet holes or not), or when its size is a metric tap drill's
+    # (M3 to M8), which no clearance hole in the project uses, and its entry doesn't list it as a rivet hole
     if not spec.get("_test_allow_tapped"):
         words = " ".join((part.row.get(k) or "") for k in ("process", "note", "name", "tolerance")).lower()
         said = re.search(r"\btap(ped|ping)?\b|\bthread|\bm\d+\s*x\s*[\d.]+", words)
         drills = (2.5, 3.3, 4.2, 6.8)
-        sized = [ft for ft in part.features if ft.kind == "hole" and (
+        sized = [ft for ft in part.features if ft.kind == "hole" and not ft.rivet and (
             4.9 <= ft.f.dia <= 5.16 or any(abs(ft.f.dia - d) < 0.06 for d in drills))]
         if said or sized:
             raise NotDrawable("%s has tapped holes (%s): their thread callouts come with item 5; until then the part "
@@ -2597,4 +2733,5 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                        "C": ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
                        if dat.get("C_plane") else None},
             "views": views, "features": feats, "notches": notches, "chamfers": chamfers,
+            "angles": getattr(pl, "angle_marks", []),
             "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
