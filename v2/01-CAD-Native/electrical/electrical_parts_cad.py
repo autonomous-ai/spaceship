@@ -98,26 +98,29 @@ PARTS = {
                    "the unit's height 260 + 2 x (4 + 8) (route model pu_h, pu_clr, plate_ov)"),
                   ("edge_off", "%.1f mm" % (V["pu_clr"] + V["plate_ov"]), "mm", "calculation",
                    "the unit's edge from the plate's edge: 4 mm clear + 8 mm over the felt; every opening is placed from the unit's edge"),
-                  ("dev_zc", "edge_off + 180 mm", "mm", "assumption", "the devices' centre height: 180 above the unit's bottom; the GFCI receptacle's 106.7 mm strap runs 126.7 to 233.3, 4.7 mm clear of the top vent row and of the body's 22 mm top lip (D-133)"),
+                  ("dev_zc", "edge_off + 130 mm", "mm", "assumption", "the devices' centre height: 130 above the unit's bottom, Z 1000, the ledge height (D-70); the GFCI receptacle's 106.7 mm strap runs 76.7 to 183.3, clear of the vent rows below (to 59) and above (from 201)"),
                   ("gfci_w", "33.6 mm", "mm", HOLD, "GFCI receptacle's decorator opening width: the face 33.3 (1.31 in) + 0.3; the picked receptacle's drawing sets it (D-133)"),
                   ("gfci_h", "67 mm", "mm", HOLD, "decorator opening height: the face 66.7 (2.625 in) + 0.3 (D-133)"),
-                  ("gfci_x", "edge_off + 70 mm", "mm", "assumption", "GFCI opening centre: 70 from the unit's left side; its 43.7 mm strap is 26 mm clear of the body's 22 mm left lip"),
+                  ("gfci_x", "edge_off + 50 mm", "mm", "assumption", "GFCI opening centre: 50 from the unit's left side; its 43.9 mm body (28 to 72) clears the body's 22 mm left lip. The bare mains parts (GFCI and breaker terminals) stay left of 105, so no vent lies within 15 mm of them (UL 62368-1: side openings in a PIS's 5° drop zone; foreign objects, Annex P)"),
                   ("gfci_sp", "96.8 mm", "mm", "source", "the two 6-32 plate screws' spacing on a decorator device's strap: 3-13/16 in"),
                   ("gfci_sd", "3.8 mm", "mm", "assumption", "6-32 clearance hole (normal fit)"),
                   ("ks_w", "14.9 mm", "mm", HOLD, "keystone jack opening width (the common 0.585 x 0.760 in snap-in opening; the picked jack sets it, D-133)"),
                   ("ks_h", "19.4 mm", "mm", HOLD, "keystone jack opening height"),
-                  ("ks_x", "edge_off + 175 mm", "mm", "assumption", "LAN: the two keystone openings' centre, 175 from the unit's left side"),
+                  ("ks_x", "edge_off + 150 mm", "mm", "assumption", "LAN: the two keystone openings' centre, 150 from the unit's left side (low voltage, between the mains devices and the vents' columns)"),
                   ("ks_p", "24 mm", "mm", "assumption", "the two keystone openings' pitch: side by side, the jacks' 16.5 mm bodies 7.5 mm apart"),
                   ("din_w", "19 mm", "mm", "source", "breaker window: 1 module + 1 (Eaton FAZ-NA is 17.7 mm per pole, D-133)"),
                   ("din_h", "45 mm", "mm", "source", "DIN 43880 front height 45 mm"),
-                  ("din_x", "edge_off + 245 mm", "mm", "assumption", "breaker window centre: 245 from the unit's left side, 41 mm from the keystone openings, 19.5 mm clear of the body's 22 mm right lip"),
+                  ("din_x", "edge_off + 95 mm", "mm", "assumption", "breaker window centre: 95 from the unit's left side, beside the GFCI (the mains devices together on the left)"),
                   ("din_zc", "dev_zc", "mm", "assumption", "breaker window centre height, level with the devices"),
-                  ("vent_l", "40 mm", "mm", "assumption", "vent slot length"),
-                  ("vent_w", "4 mm", "mm", "assumption", "vent slot width"),
-                  ("vent_n", "5", "", "assumption", "vent slots per row (two rows: bottom and top)"),
-                  ("vent_p", "50 mm", "mm", "assumption", "vent slot pitch"),
-                  ("vent_z1", "edge_off + 25 mm", "mm", "assumption", "bottom vent row centre: 25 above the unit's bottom, just above the body's 22 mm lip"),
-                  ("vent_z2", "edge_off + 120 mm", "mm", "assumption", "top vent row centre: 120 above the unit's bottom, 4.7 mm under the GFCI receptacle's strap (D-133)"),
+                  ("vent_l", "44 mm", "mm", "assumption", "vent slot length"),
+                  ("vent_w", "4 mm", "mm", "assumption", "vent slot width: no finger or probe reaches in (UL 62368-1 Annex V), and nothing bare lies behind the slots"),
+                  ("vent_n", "3", "", "assumption", "vent slots per row, on the plate's right side only (x 124 to 268 from the unit's left side)"),
+                  ("vent_p", "50 mm", "mm", "assumption", "vent slot pitch along the row (6 mm webs)"),
+                  ("vent_x1", "edge_off + 146 mm", "mm", "assumption", "the first slot's centre: 146 from the unit's left side, 20 mm right of the breaker (the bare mains parts end at 104: UL 62368-1's 15 mm side-opening zone)"),
+                  ("vent_rows", "4", "", "assumption", "vent rows in each group: 4 at the bottom, 4 at the top"),
+                  ("vent_rp", "10 mm", "mm", "assumption", "vent row pitch (6 mm between rows)"),
+                  ("vent_zb", "edge_off + 27 mm", "mm", "assumption", "the lowest row's centre: 27 above the unit's bottom, 3 mm above the body's 22 mm bottom lip"),
+                  ("vent_zt", "edge_off + 233 mm", "mm", "assumption", "the highest row's centre: 233 above the unit's bottom, 3 mm under the body's 22 mm top lip; the stack between the groups is about 190 mm (the heat check, calc-results)"),
                   ("screw_d", "4.5 mm", "mm", "assumption", "M4 screw clearance hole"),
                   ("screw_x", "edge_off + 30 mm", "mm", "calculation", "screw centre: on the body's clinch nuts, 30 from the unit's sides (clinch_x)"),
                   ("screw_y", "edge_off + 10 mm", "mm", "calculation", "screw centre: on the body's clinch nuts, 10 from the unit's top and bottom (clinch_y; 22 from the plate's edge, C09)"),
@@ -204,6 +207,8 @@ def circle(sk: "adsk.fusion.Sketch", design: "adsk.fusion.Design", cx, cy, d):
     return c
 
 
+VENT_ROWS, VENT_N = 4, 3      # the front plate's vent grid: rows per group and slots per row (vent_rows, vent_n)
+
 def flat_plate(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", key):
     """A flat plate in the XZ plane (X along the width, Z up), thickness along -Y... built on XY for simplicity:
     X = width, Y = height, extruded t along +Z. The drawing's front view looks at it."""
@@ -219,9 +224,9 @@ def flat_plate(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", key)
             rect(sk, design, "(%s) - ks_w / 2" % xc, "dev_zc - ks_h / 2", "(%s) + ks_w / 2" % xc, "dev_zc + ks_h / 2",
                  "KEYSTONE OPENING (HOLD)")
         rect(sk, design, "din_x - din_w / 2", "din_zc - din_h / 2", "din_x + din_w / 2", "din_zc + din_h / 2", "BREAKER WINDOW")
-        for zc in ("vent_z1", "vent_z2"):
-            for i in range(5):
-                xc = "w / 2 + (%d - (vent_n - 1) / 2) * vent_p" % i
+        for zc in ["vent_zb + %d * vent_rp" % r for r in range(VENT_ROWS)] + ["vent_zt - %d * vent_rp" % r for r in range(VENT_ROWS)]:
+            for i in range(VENT_N):
+                xc = "vent_x1 + %d * vent_p" % i
                 rect(sk, design, "(%s) - vent_l / 2" % xc, "(%s) - vent_w / 2" % zc, "(%s) + vent_l / 2" % xc,
                      "(%s) + vent_w / 2" % zc, "VENT")
         for cx, cy in (("screw_x", "screw_y"), ("w - screw_x", "screw_y"), ("screw_x", "h - screw_y"), ("w - screw_x", "h - screw_y")):

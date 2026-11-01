@@ -190,9 +190,10 @@ def sheet_power_unit(doc, v):
         s.rect(X(kx - p["ks_w"] / 2), Z(zc + p["ks_h"] / 2), X(kx + p["ks_w"] / 2), Z(zc - p["ks_h"] / 2), SIG, 0.3)
     dw, dh = p["din_w"] / 2, p["din_h"] / 2
     s.rect(X(p["din_x"] - dw), Z(p["din_zc"] + dh), X(p["din_x"] + dw), Z(p["din_zc"] - dh), MAINS, 0.3)
-    for vz in (p["vent_z1"], p["vent_z2"]):
+    rows = int(p["vent_rows"])
+    for vz in [p["vent_zb"] + r * p["vent_rp"] for r in range(rows)] + [p["vent_zt"] - r * p["vent_rp"] for r in range(rows)]:
         for i in range(int(p["vent_n"])):
-            xc = W / 2 + (i - (p["vent_n"] - 1) / 2) * p["vent_p"]
+            xc = p["vent_x1"] + i * p["vent_p"]
             s.rect(X(xc - p["vent_l"] / 2), Z(vz + p["vent_w"] / 2), X(xc + p["vent_l"] / 2), Z(vz - p["vent_w"] / 2), GREY, 0.2)
     sx_, sy_ = p["screw_x"], p["screw_y"]
     for cx, cy in ((sx_, sy_), (W - sx_, sy_), (sx_, Hh - sy_), (W - sx_, Hh - sy_)):

@@ -35,6 +35,7 @@ from its STEP (the back face at the low Z end: the returns fold toward +Z).
 
 import argparse
 import json
+import re
 import os
 import subprocess
 import sys
@@ -552,6 +553,59 @@ def view_d_marks(page, views_json, segs, texts):
     return arrow_box, label_box
 
 
+
+def _ptb():
+    """tools/fusion/pdf_title_block.py, this checkout's copy (the shared title block reader)."""
+    d = os.path.join(REPO, "tools", "fusion")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    import pdf_title_block
+    return pdf_title_block
+
+
+def pdf_title():
+    """The PDF's title: the part's number, revision and name from the master BOM (Reviewer 7 on #173: not
+    Fusion's 'Sheet1'), as the other ELECTRICAL drawings carry it."""
+    name, _status = _ptb().bom_row(PN)
+    if not name:
+        raise RuntimeError("%s has no name in the master BOM" % PN)
+    return "%s P01 %s" % (PN, name)
+
+
+def iso_date(page):
+    """Fusion prints the drawing's date as d/m/yy on the Created by line (1/11/26); write it as 2026-11-01, the
+    form the reviewers asked for (#173). Only the date's glyph band is taken out (the lines stay), and the new date
+    goes on the same baseline at the same size, ending where the old one ended and kept 4 pt clear of the value on
+    its left. Returns the ISO date."""
+    import fitz
+    found = _ptb().created_by(page)
+    if found is None or found[2] is None:
+        raise RuntimeError("no date on the title block's Created by line")
+    _lab, left, word = found
+    day, month, year = (int(v) for v in word[4].split("/"))
+    iso = "%04d-%02d-%02d" % (year + 2000 if year < 100 else year, month, day)
+    box = fitz.Rect(word[:4])
+    spans = [sp for blk in page.get_text("dict")["blocks"] for ln in blk.get("lines", []) for sp in ln["spans"]
+             if sp["text"].strip() == word[4] and fitz.Rect(sp["bbox"]).intersects(box)]
+    if len(spans) != 1:
+        raise RuntimeError("the date %s is printed %d times on its line, not once" % (word[4], len(spans)))
+    sp = spans[0]
+    m = box.height * 0.3
+    page.add_redact_annot(fitz.Rect(box.x0, box.y0 + m, box.x1, box.y1 - m))
+    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_NONE)
+    font = fitz.Font(fontfile=FONT)
+    page.insert_font(fontname="AU", fontfile=FONT)
+    size = sp["size"]
+    floor = max([w[2] for w in left] + [box.x0 - 200]) + 4.0
+    least = font_size(BODY_H) * PT * Sheet(page).k            # 2.5 mm capitals at the least
+    while size > least and box.x1 - font.text_length(iso, fontsize=size) < floor:
+        size -= 0.1
+    x0 = box.x1 - font.text_length(iso, fontsize=size)
+    if x0 < floor:
+        raise RuntimeError("the date %s doesn't fit its cell beside the Created by value" % iso)
+    page.insert_text(fitz.Point(x0, sp["origin"][1]), iso, fontname="AU", fontsize=size)
+    return iso
+
 def clear_field(raw, out):
     """The shared finish step: Autonomous under Created by and as the PDF's author, the title block filled."""
     r = subprocess.run([sys.executable, os.path.join(REPO, "tools", "fusion", "pdf_clear_field.py"), raw, out],
@@ -581,6 +635,7 @@ def finish_pdf(raw, out, views_path=None, step=STEP):
     doc = fitz.open(tmp)
     page = doc[0]
     reference_dims(page)
+    iso_date(page)
     write_block(page, lines(), table_cells(rows))
     segs, circles, texts = geometry(page)
     view_d_marks(page, views_json, segs, texts)
@@ -597,7 +652,7 @@ def finish_pdf(raw, out, views_path=None, step=STEP):
         Sheet(page).text(spot[0], spot[1] + desc, tag, BODY_H)          # the baseline above the box's foot
         texts.append((spot[0], spot[1], spot[0] + w, spot[1] + asc + desc, tag))
     meta = dict(doc.metadata or {})
-    doc.set_metadata({k: v for k, v in {"title": meta.get("title"), "author": CREATOR, "creator": CREATOR,
+    doc.set_metadata({k: v for k, v in {"title": pdf_title(), "author": CREATOR, "creator": CREATOR,
                                         "producer": meta.get("producer"), "creationDate": meta.get("creationDate"),
                                         "modDate": meta.get("modDate")}.items() if v})
     doc.subset_fonts()
@@ -667,6 +722,13 @@ def read_back(path, views_json, box, holes, zs, rows):
     meta = doc.metadata or {}
     if meta.get("author") != CREATOR or meta.get("creator") != CREATOR:
         probs.append("author %r, creator %r" % (meta.get("author"), meta.get("creator")))
+    if meta.get("title") != pdf_title():
+        probs.append("the PDF's title is %r, not %r" % (meta.get("title"), pdf_title()))
+    found = _ptb().created_by(page)
+    if found is None or found[2] is not None:
+        probs.append("Fusion's d/m/yy date is still on the Created by line")
+    elif not any(re.fullmatch(r"20\d\d-\d\d-\d\d", w[4]) for w in found[1]):
+        probs.append("the Created by line has no date written as 2026-11-01")
     xmp = doc.get_xml_metadata() or ""
     if "creator" in xmp.lower() and CREATOR not in xmp:
         probs.append("its XMP names a creator other than %s" % CREATOR)
