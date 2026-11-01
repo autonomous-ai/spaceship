@@ -21,6 +21,8 @@
 8. Keys fitted in a part's ends: each key in Joints' corner-keys.csv gets its orientation note, and the read-back
    fails a missing note or one that names holes away from the key's screw positions.
 9. Only holes on one line through two walls count as a two-wall pair (which needs a section).
+10. Holes square to an angled face get a lettered view square to that face (ISO 128-30); blind holes with a drill
+    point read as blind.
 """
 
 import os
@@ -314,6 +316,23 @@ def test_two_wall_pairs_are_on_one_line():
     assert readback.two_wall_pairs(through) == [("H01", "H03")]
     other = side[:1] + [{"tag": "H04", "kind": "hole", "body": "STILE", "axis": (0, 0, 1), "entry": (0.0, 0.0, 100.0)}]
     assert readback.two_wall_pairs(other) == []
+
+
+def test_angled_face_gets_its_own_view():
+    """Holes square to a face no principal view looks at straight (Joints' front corner key 111212: two tapped
+    holes square to its 24.14° stud face) get a lettered view square to that face, with its own origin and hole
+    table, and an arrow in the view that shows the face edge on; the key's blind tapped holes read as blind, with
+    their drill point, and the angled through holes as THRU (a solid, not a tube wall). It reads back."""
+    out = os.path.join(TMP, "aux")
+    os.makedirs(out, exist_ok=True)
+    p = os.path.join(out, "111212.pdf")
+    rep = compose.make("111212", "joints", {"pod_system": False, "corner": "-X-Y-Z", "tolerance": "test"}, p)
+    fails, st = readback.check(p)
+    assert not fails, fails
+    assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
+    text = fitz.open(p)[0].get_text()
+    assert "looking square to the angled face" in text and "VIEW D" in text, text[:400]
+    assert text.count("THRU (34)") == 2 and text.count("18 deep, drill point 118°") == 2, text
 
 
 def main():
