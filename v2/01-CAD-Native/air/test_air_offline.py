@@ -557,6 +557,74 @@ class SleeveFlange(unittest.TestCase):
         self.assertEqual(holes, sorted((x, y) for _n, x, y in self.rn))
 
 
+DR_STEP = os.path.join(HERE, "..", "..", "03-Manufacturing", "front", "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step")
+
+
+def step_vertices(path, prefix):
+    """{solid name: set of (x, y, z) vertices, mm} for the solids whose name starts with one of `prefix`, read from a
+    Fusion STEP (cm) by following each MANIFOLD_SOLID_BREP's references to its VERTEX_POINTs."""
+    import re
+    data = open(path, encoding="utf-8", errors="replace").read().split("DATA;", 1)[1]
+    ents = {int(m.group(1)): m.group(2) for m in re.finditer(r"#(\d+)\s*=\s*(.*?);\s*(?=#\d+\s*=|ENDSEC)", data, re.S)}
+    ref = re.compile(r"#(\d+)")
+    out = {}
+    for k, v in ents.items():
+        m = re.match(r"MANIFOLD_SOLID_BREP\s*\(\s*'([^']*)'", v)
+        if not m or not m.group(1).startswith(prefix):
+            continue
+        seen, stack, pts = set(), [k], set()
+        while stack:
+            e = stack.pop()
+            if e in seen:
+                continue
+            seen.add(e)
+            body = ents.get(e, "")
+            if body.startswith("VERTEX_POINT"):
+                q = ents[int(ref.findall(body)[0])]
+                nums = re.findall(r"[-\d.E+]+", q.split("(", 2)[2])
+                pts.add(tuple(round(float(x) * 10, 2) for x in nums[:3]))
+                continue
+            if not body.startswith(("AXIS2_PLACEMENT", "DIRECTION", "CARTESIAN_POINT")):
+                stack += [int(x) for x in ref.findall(body)]
+        out[m.group(1).split()[0]] = pts
+    return out
+
+
+@unittest.skipUnless(os.path.isfile(DR_STEP), "FRONT's DR STEP isn't in this checkout")
+class DrFrameDrift(unittest.TestCase):
+    """AIR's copies of DR's frame values (the box's rest on F08 and F07, the transition's clearance to C04, the lower
+    transition's to B06) against FRONT's DR STEP in this checkout: when FRONT rebuilds DR, this says what moved."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.v = step_vertices(DR_STEP, ("F07 ", "F08 ", "C04 ", "B06 "))
+
+    def test_f08_shelf(self):
+        pts = self.v["F08"]
+        self.assertAlmostEqual(max(p[0] for p in pts), V["dr_f08_x1"], places=1)
+        self.assertAlmostEqual(max(p[2] for p in pts), V["sb_z0"], places=1, msg="F08's top is the box's floor line")
+        self.assertAlmostEqual(min(p[1] for p in pts), F08["y0"], places=1)
+        self.assertAlmostEqual(max(p[1] for p in pts), F08["y1"], places=1)
+
+    def test_f07_cross(self):
+        pts = self.v["F07"]
+        zs = sorted({p[2] for p in pts if p[0] == max(q[0] for q in pts)})
+        self.assertAlmostEqual((zs[0] + zs[-1]) / 2, V["dr_f07_zc"], places=1)
+        self.assertAlmostEqual(max(p[0] for p in pts), V["dr_f08_x1"], places=1)
+        self.assertAlmostEqual(max(p[1] for p in pts), F07["y1"], places=1)
+
+    def test_c04_inner_face(self):
+        top = max(p[2] for p in self.v["C04"])
+        plan = {(p[0], p[1]) for p in self.v["C04"] if p[2] == top}
+        for x, y in ((V["dr_fac_xa"], V["dr_fac_ya"]), (V["dr_fac_xb"], V["dr_fac_yb"])):
+            self.assertTrue(any(abs(x - a) < 0.05 and abs(y - b) < 0.05 for a, b in plan), (x, y, sorted(plan)))
+
+    def test_b06_inner_edge(self):
+        xz = {(p[0], p[2]) for p in self.v["B06"]}
+        for x, z in B06_INNER:
+            self.assertTrue(any(abs(x - a) < 0.05 and abs(z - b) < 0.05 for a, b in xz), (x, z))
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()
