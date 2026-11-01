@@ -150,7 +150,8 @@ CEILING_PARAMS = [
     ("rib_off", "cs_w / 6", "mm", "calculation",
      "rib centre from the cassette centre line: with 2 ribs the felt spans 3 equal widths of cs_w / 3 = 388"),
     ("rib_crown", "20 mm", "mm", "assumption", "flat width of the rib that carries the felt"),
-    ("rib_fl", "12 mm", "mm", "assumption", "rib top flange width against the tray base; the rib-to-tray joint is HOLD"),
+    ("rib_fl", "17 mm", "mm", "assumption", "rib top flange width against the tray base: 17 (was 12) so the eye bracket's Ø4.1 "
+     "rivets through it sit 8.5 from its free edge, over the 2-diameter rule's 8.2 (v13); the rib-to-tray joint is HOLD"),
     ("rib_end", "5 mm", "mm", "assumption", "clearance from each rib end to the returns"),
     ("fill_t", "40 mm", "mm", "confirmed", "D-24: 40 mm PET fill rides on the cassette back (24 kg/m3 by default, D-81)"),
     ("fill_c", "5 mm", "mm", "assumption",

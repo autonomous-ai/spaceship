@@ -126,10 +126,52 @@ def write_flat_parts(v):
     ents = [("POLY", "CUT", rect(0, 0, rb["width"], L))]
     for x in rb["bends"]:
         ents.append(("LINE", "BEND", (x, 0), (x, L)))
+    # the eye bracket's rivet holes through both flanges (made, D-166): at each flange's middle across, which lies
+    # rib_fl / 2 from its free edge, flat too
+    rib_y = M.ev(v, "%s + tray_t + rib_end" % M.CS_Y0)
+    ys = sorted({round(M.ev(v, y) - rib_y, 4) for _n, _x, y in M.eye_bracket_rivets()})
+    for y in ys:
+        for x in (v["rib_fl"] / 2, rb["width"] - v["rib_fl"] / 2):
+            ents.append(("CIRCLE", "CUT", (x, y), v["eb_rv"] / 2))
     p = os.path.join(OUT, fname("rib", "DXF", "dxf"))
     D.write_dxf(p, ents)
     out["rib"] = p
+    # the frames' tabs (flat cut parts, D-89 part 4: the DXF is the drawing; their place on the frame is the frame's
+    # weldment sheet): the clip tab 412002 with PC-SF1's two holes, the eye tab 412003 with its eye
+    p = os.path.join(OUT, fname("clip_tab", "DXF", "dxf"))
+    D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["tab_l"], v["tab_w"]))]
+                + [("CIRCLE", "CUT", (v["tab_l"] / 2 + dx, v["clip_y"]), v["tab_hole"] / 2)
+                   for dx in (-v["tab_pitch"] / 2, v["tab_pitch"] / 2)])
+    out["clip_tab"] = p
+    p = os.path.join(OUT, fname("eye_tab", "DXF", "dxf"))
+    D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["eye_w"], v["eye_r"])),
+                    ("CIRCLE", "CUT", (v["eye_w"] / 2, v["eye_r"] - v["eye_hy"]), v["eye_hole"] / 2)])
+    out["eye_tab"] = p
+    # the eye bracket 513103's blank: across its fold (x from the base's free edge), along it (y); the bend line on BEND
+    eb = eye_bracket_blank(v)
+    ents = [("POLY", "CUT", rect(0, 0, eb["length"], v["eb_l"])), ("LINE", "BEND", (eb["bend"], 0), (eb["bend"], v["eb_l"])),
+            ("CIRCLE", "CUT", (eb["eye_x"], v["eb_l"] / 2), v["eb_hole"] / 2)]
+    for dy in (-1, 1):
+        ents.append(("CIRCLE", "CUT", (eb["rivet_x"], v["eb_l"] / 2 + dy * (v["rib_crown"] / 2 + v["rib_fl"] / 2)), v["eb_rv"] / 2))
+    p = os.path.join(OUT, fname("eye_br", "DXF", "dxf"))
+    D.write_dxf(p, ents)
+    out["eye_br"] = p
     return out
+
+
+def eye_bracket_blank(v, k=0.44):
+    """The eye bracket 513103's L, eb_t thick, one 90 degree fold with r = t (the Lead's ruling on #335): the base's
+    outside length eb_w (its free edge to the upright's outer face), the upright's eb_h (the base's underside to its
+    top); each straight is its outside length less r + t at the fold. Gives the blank's length, the bend line, the eye
+    (eb_ez over the base's underside, so eb_h - eb_ez below the upright's free edge) and the rivets' line (their centre
+    (eb_w + eb_t) / 2 from the upright's outer face)."""
+    t = v["eb_t"]
+    r = t
+    ba = math.pi / 2 * (r + k * t)
+    base, up = v["eb_w"] - (r + t), v["eb_h"] - (r + t)
+    length = base + ba + up
+    return {"length": length, "bend": base + ba / 2, "bend_allowance": ba,
+            "eye_x": length - (v["eb_h"] - v["eb_ez"]), "rivet_x": v["eb_w"] - (v["eb_w"] + v["eb_t"]) / 2}
 
 
 def notched_outline(x0, x1, y0, y1, cuts):
@@ -250,9 +292,11 @@ def _sizes():
         "fill_a": fills("fill_a"), "fill_b": fills("fill_b"), "fill_c": fills("fill_c"), "fill_d": fills("fill_d"),
         "clip_tab": lambda v: ("%.0f x %.0f x %.1f plate, 2 x Ø%.1f at %.0f" % (v["tab_l"], v["tab_w"], v["tab_t"], v["tab_hole"],
                                                                              v["tab_pitch"]),
-                               "laser cut +/-0.2; holes +/-0.2; welded at the set's axis +/-0.5 (assumption)"),
+                               "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4); its place on the "
+                               "frame +/-0.5 at the clip's axis (assumption) on the frame's weldment sheet"),
         "eye_tab": lambda v: ("%.0f x %.0f x %.1f plate, Ø%.0f eye" % (v["eye_w"], v["eye_r"], v["tab_t"], v["eye_hole"]),
-                              "laser cut +/-0.2; welded +/-1 (assumption)"),
+                              "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4); its place on the "
+                              "frame +/-1 (assumption) on the frame's weldment sheet"),
         "eye_br": lambda v: ("L %.0f x %.0f x %.0f, %.1f sheet, Ø%.0f eye, 2 x Ø%.1f" % (v["eb_l"], v["eb_w"], v["eb_h"], v["eb_t"],
                                                                                       v["eb_hole"], v["eb_rv"]),
                              "cut +/-0.2, bent +/-0.5 (assumption); see the drawing"),

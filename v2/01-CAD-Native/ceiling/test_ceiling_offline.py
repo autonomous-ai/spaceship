@@ -767,7 +767,7 @@ class RibBlank(unittest.TestCase):
         want = 2 * flange + 2 * web + crown + 4 * math.pi / 2 * (r + 0.44 * t)
         got = E.rib_blank(VALS)
         self.assertAlmostEqual(got["width"], want, places=6)
-        self.assertAlmostEqual(got["width"], 89.524, places=3)
+        self.assertAlmostEqual(got["width"], 99.524, places=3)     # 17 mm flanges since v13 (89.524 with 12)
         self.assertEqual(len(got["bends"]), 4)
         self.assertAlmostEqual(got["bends"][0], flange + got["bend_allowance"] / 2, places=6)
         self.assertAlmostEqual(got["bends"][0] + got["bends"][3], got["width"], places=6)   # symmetric
@@ -811,6 +811,32 @@ class EditFollows(unittest.TestCase):
         v3 = M.evaluate(P, {"wall_depth": "1520 mm"})
         self.assertAlmostEqual(v3["fr_pitch"], (1520 - 20) / 4)
         self.assertAlmostEqual(v3["cs_d"], 1520 - st - 360 - 6)
+
+
+class EyeBracketAndTabFlats(unittest.TestCase):
+    """The flats v13 adds (the Lead's rule: every hole made in the flat, none drilled on site): the eye bracket's blank
+    folds back to its L, its eye and rivets land where the model puts them; the rib's two rivet holes sit at its
+    flanges' middles, where the bracket's rivets are."""
+
+    def test_eye_bracket_blank(self):
+        import ceiling_exports as E
+        v = VALS
+        eb = E.eye_bracket_blank(v)
+        t = v["eb_t"]
+        so = 2 * t                                           # r + t, r = t
+        self.assertAlmostEqual(eb["bend"] - eb["bend_allowance"] / 2 + so, v["eb_w"])            # the base folds to eb_w
+        self.assertAlmostEqual(eb["length"] - eb["bend"] - eb["bend_allowance"] / 2 + so, v["eb_h"])   # the upright to eb_h
+        self.assertAlmostEqual(eb["length"] - eb["eye_x"], v["eb_h"] - v["eb_ez"])   # the eye eb_ez over the base's underside
+        self.assertAlmostEqual(v["eb_w"] - eb["rivet_x"], (v["eb_w"] + t) / 2)
+        for x in (eb["eye_x"], eb["rivet_x"]):               # every hole outside the fold's zone
+            self.assertGreater(abs(x - eb["bend"]) - eb["bend_allowance"] / 2, v["eb_hole"] / 2)
+
+    def test_rib_rivet_holes_on_the_flanges(self):
+        v = VALS
+        for _n, x, _y in M.eye_bracket_rivets():
+            off = abs(ev(x)) - v["rib_off"]                  # from the rib's centre line
+            self.assertAlmostEqual(abs(off), v["rib_crown"] / 2 + v["rib_fl"] / 2)
+            self.assertGreaterEqual(v["rib_fl"] / 2, 2 * v["eb_rv"] - 1e-9, "2 hole diameters to the flange's free edge")
 
 
 if __name__ == "__main__":
