@@ -404,10 +404,11 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                                finish="pre-galvanized tube, zinc Z100; after welding and grinding every burnt zone "
                                       "wire-brushed and coated with a 2-component zinc-rich epoxy; no hot-dip "
                                       "(J-FRAME-01)",
-                               process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s; welded "
-                                       "into its frame (D-131)" % mitre_ends(key, prm, upper, back),
+                               process="saw cut; %s; welded into its frame (D-131); its joint holes are made after "
+                                       "welding, in the frame (J-FRAME-01)" % mitre_ends(key, prm, upper, back),
                                qty=q, unit="pc", cut_length_mm=member_length(b), size_mm=sec,
-                               tolerance="length ±0.5 (assumption, guideline 6.3); holes per the frame drawing",
+                               tolerance="length ±0.5 (assumption, guideline 6.3); its holes per the frame drawing, "
+                                         "made in the welded frame",
                                mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"] * q, 3),
                                mass_status="calculation: CAD at 7850 kg/m3 (steel; zinc not counted)", status="DRAFT",
                                source="CAD; number from the master BOM's allocation (D-120); steel D-131",
@@ -427,9 +428,15 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                            "2-component zinc-rich epoxy; no hot-dip (J-FRAME-01); the skin's bond prep per the bond spec",
                     process="weld in a jig: each mitred corner with its 2 mm mitre plate (the Joints Engineer's register "
                             "part), and every stud's T joints (D-131; weld sizes and the coupons per the joints register); "
-                            "then set the rivnuts and stop washers",
+                            "grind the beads flush on the skin-side and seam faces; wire-brush and touch up every burnt "
+                            "zone; check flatness and diagonals; then make every joint hole (spigot hole and slot, "
+                            "clearance, access and rivnut holes) by CNC or a drill jig located on the joint faces and "
+                            "the spigot hole; set the rivnuts and stop washers after the touch-up (J-FRAME-01)",
                     qty=1, unit="pc",
-                    size_mm=size_of(box_of([m["bodies"][0] for m in members])), tolerance="per its drawing",
+                    size_mm=size_of(box_of([m["bodies"][0] for m in members])),
+                    tolerance="seam faces flat within 0.5, skin-side faces within ±0.5 of one plane, diagonals equal "
+                              "within 1.5, measured after welding and before the holes (J-FRAME-01); hole positions "
+                              "Ø0.4 from the round spigot hole (R-J6); the rest per its drawing",
                     mass_each_kg=round(fm, 3), mass_total_kg=round(fm, 3),
                     mass_status="calculation: the members below (CAD); weld metal not counted",
                     status="DRAFT", source="CAD; D-120, D-131 (D-117's mitred corners, welded; its cleats cancelled)",

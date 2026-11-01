@@ -204,7 +204,10 @@ def frame_blocks(pn, src=None):
         "1. " + views_note(pos),
         datums,
         holes,
-        "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009).",
+        ("4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009); "
+         "every joint hole is made after welding and the touch-up, the jig located on the joint faces and the spigot "
+         "hole (J-FRAME-01)." if members else
+         "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009)."),
         ("5. Cut list, ends per note 6, steel box tube (walls per the Joints Engineer, D-131): " if members else
          "5. Cut list, square ends: ") + "; ".join(
             "%s: %s tube, length %g, qty %d" % (k[0].title().replace(" - ", " "), k[1], k[2], q)
@@ -223,8 +226,12 @@ def frame_blocks(pn, src=None):
          "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
          "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's "
          "capability is known (guideline 6.3)." % extra),
-        "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
-        "(HOLD-02), torque (HOLD-01). P01 DRAFT.",
+        ("7. Rivnuts and stop washers are set at the factory after the zinc-rich touch-up (J-FRAME-01; see the panel "
+         "assembly). Seam faces flat within 0.5, skin-side faces within ±0.5 of one plane, diagonals equal within "
+         "1.5, measured after welding and before the holes (J-FRAME-01). HOLD: captive bolt retainer (HOLD-02), "
+         "torque (HOLD-01). P01 DRAFT." if members else
+         "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
+         "(HOLD-02), torque (HOLD-01). P01 DRAFT."),
         "8. Lengths and hole positions without their own tolerance: ISO 2768-1 class m (steel tube, sawn and "
         "drilled), for the frame maker to confirm (guideline 3.2). Deburr every cut end and hole; break sharp "
         "edges 0.2 max. Hole tables: X to the right, Y up in each view, from the origin named in the table title.",
