@@ -1149,11 +1149,34 @@ BEFORE_WELD = re.compile(r"\bbefore\s+(?:the\s+)?weld", re.I)
 # D-162: the row gives the member's section, cut length, both end angles and quantity; the release checklist tests
 # the same (build_release_checklist.py, d162_rows), with these patterns: keep them in step
 END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
-SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends|\bsquare ends\b", re.I)
-# one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
-_ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
-BOTH_ENDS_ANGLE = re.compile(r"\b(?:both ends|ends both)\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE),
-                             re.I)
+SQUARE = re.compile(r"\bsquare\b", re.I)
+# a clause that gives both ends at once: 'both ends mitred 45 deg', 'bottom and top ends both mitred 45.00°', 'mitred 30°
+# at both ends', 'square ends' (the Lead's rulings, 2026-11-01; CEILING's rows in #348, WALL's in #343)
+BOTH_ENDS = re.compile(r"\bboth ends\b|\bends both\b|\b\w+ and \w+ ends\b|\bsquare ends\b", re.I)
+ONE_END = re.compile(r"\b(?:front|back|top|bottom|first|second|left|right|near|far|lower|upper|inner|outer)\s+end\b"
+                     r"|\bend\s*[12]\b", re.I)
+
+
+def ends_given(text):
+    """How many of a member's two ends its cut-list text gives, clause by clause (clauses split at ',' and ';'): an
+    end is given by an angle or by 'square' in the clause that names it; a clause naming both ends gives both, and a
+    clause with no end named gives as many ends as it has angles ('45 degrees and 30 degrees'), or both when it says
+    square ('square cut'). So 'both ends deburred, front end mitred 45 deg' gives one end, and 'front end mitred 45
+    deg, back end square' gives two (Reviewer 6, the Lead's ruling with Control, 2026-11-01)."""
+    n = 0
+    for clause in re.split(r"[;,]", text or ""):
+        angles = len(END_ANGLE.findall(clause))
+        square = bool(SQUARE.search(clause)) and not angles
+        if not angles and not square:
+            continue
+        if BOTH_ENDS.search(clause):
+            return 2
+        named = len(ONE_END.findall(clause))
+        if named:
+            n += named if square else min(named, angles)      # never more ends than the clause names
+        else:
+            n += 2 if square else min(angles, 2)
+    return min(n, 2)
 
 
 def member_row_lacks(row):
@@ -1161,13 +1184,19 @@ def member_row_lacks(row):
     the frame drawing' doesn't state them) and quantity."""
     cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str)
              and isinstance(v, str)}
-    ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
+    # each end-angle column holding a plain number gives its end (FRONT's end_a_deg and end_b_deg, #313); text
+    # columns read clause by clause
+    numeric = [k for k, v in cells.items() if re.search(r"deg|angle", k) and re.fullmatch(r"-?\d+(?:\.\d+)?", v)]
+    texts = [v for k, v in cells.items() if re.search(r"end|angle|cut", k) and k not in numeric]
+    ends = "; ".join(["%s end %s°" % (("first", "second")[i % 2], cells[k]) for i, k in enumerate(sorted(numeric)[:2])]
+                     + texts)
     return [what for what, ok in (
         ("its section", bool(cells.get("section"))),
         ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
-        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))
-         or bool(BOTH_ENDS_ANGLE.search(ends))),
+        ("both end angles", ends_given(ends) >= 2),
         ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
+
+
 UNSTATED_END = re.compile(r"\b(?:cope[ds]?|coping|notch(?:ed|es)?|saddle|fish-?mouth|profile[- ]cut)\b", re.I)
 
 
