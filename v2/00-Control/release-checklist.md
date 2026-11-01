@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (a8d75f6), PR #91 (0cb3135), PR #105 (bc3f023), PR #202 (7df5f48), PR #203 (1b3fa40). The Mac's screen at run time: **unlocked**. 453 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (0d355cd), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40), PR #202 (213059d). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -57,7 +57,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 410102 | CEILING - PANEL ASSY - C2 | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
 | 411101 | CEILING - PANEL FRAME - C1 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
 | 411102 | CEILING - PANEL FRAME - C2 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
-| 411301 | CEILING - SKIN - C1 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04 | done |
+| 411301 | CEILING - SKIN - C1 | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-P03, K-P04 | done |
 | 411302 | CEILING - SKIN - C2 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P06 | done |
 | 510301 | LINING - CASSETTE - CEILING - COMMON | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05, K-L10 | open: drawing |
 | 513101 | LINING - TRAY - CEILING | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
@@ -115,7 +115,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 811202 | INTERIOR - LIGHT SHELF - SIDE LH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
 | 811203 | INTERIOR - LIGHT SHELF - SIDE RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
 | 811204 | INTERIOR - LIGHT SHELF - DOWN CHANNEL RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I04 | open: drawing |
-| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | n/a | yes | yes | n/a | K-A02, K-I01, K-I05 | done |
+| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | row (D-125) | row: a plain strip or sheet (D-125) | yes | n/a | K-A02, K-I01, K-I05 | done |
 
 ### ELECTRICAL
 

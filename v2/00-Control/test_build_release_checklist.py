@@ -525,45 +525,43 @@ class FlatPartColumns(unittest.TestCase):
         self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
 
 
-class D125PlainCut(unittest.TestCase):
-    """D-125: a plain straight-cut strip or sheet needs no drawing when its line gives material and grade,
-    thickness, length and width, finish and a tolerance, and names no hole, bend, notch or other feature."""
-    FULL = {"part_number": "811299", "name": "INTERIOR - TEST STRIP", "material": "aluminium 5052-H32 sheet",
-            "finish": "mill finish", "process": "sheared to size", "size_mm": "300 x 50 x 1.5", "tolerance": "ISO 2768-m"}
+class D125PlainStrip(unittest.TestCase):
+    """D-125, read as C05 reads it: the checklist calls the mechanical check's own functions (tools/checks), so a
+    plain strip or sheet on a full parts-list row counts as drawn in both tools, or in neither."""
+    LIST = "v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv"
 
-    def lacks(self, **change):
-        return rc.plain_lacks([({**self.FULL, **change}, "list.csv")])
+    def strip_line(self, d125):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("811299", "make", "INTERIOR - TEST STRIP", "aluminium 5052-H32 sheet", team="CEILING (builds INTERIOR, D-80)", src=self.LIST)
+        part["finish"] = "mill finish"
+        file_map = files("811299_P01_INTERIOR-TEST-STRIP_CAD.f3d", "811299_P01_INTERIOR-TEST-STRIP_STEP.step",
+                         folder="v2/03-Manufacturing/interior/")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {}, {}, None, d125)
+        return made[0]
 
-    def test_a_full_plain_line_passes(self):
-        self.assertEqual(self.lacks(), [])
+    def test_it_uses_the_mechanical_checks_own_functions(self):
+        c_geometry, c_drawings = rc.load_checks()
+        here = Path(c_drawings.__file__).resolve()
+        self.assertEqual(here, (rc.ROOT / "tools/checks/c_drawings.py").resolve())
+        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape"):
+            self.assertTrue(callable(getattr(c_drawings, name)), name)
+        self.assertTrue(callable(c_geometry.load_step))
 
-    def test_a_grade_on_hold_is_no_grade(self):
-        self.assertEqual(self.lacks(material="aluminium sheet (alloy HOLD)"), ["material and grade"])
-        self.assertEqual(self.lacks(material="opal polycarbonate PC 2407 sheet"), [])
+    def test_a_full_row_counts_as_drawn(self):
+        line = self.strip_line({"811299": ([], self.LIST)})
+        self.assertEqual((line["flat"], line["dwg"]), ("row (D-125)", "row: a plain strip or sheet (D-125)"))
+        self.assertNotIn("drawing", line["gaps"])
 
-    def test_a_feature_keeps_its_drawing(self):
-        for word in ("hole", "notch", "bend", "slot"):
-            got = self.lacks(process=f"sheared, one {word}")
-            self.assertTrue(any(x.startswith("no holes, bends, notches") for x in got), (word, got))
+    def test_a_short_row_keeps_the_drawing_and_says_why(self):
+        line = self.strip_line({"811299": (["finish", "tolerance"], self.LIST)})
+        self.assertTrue(line["dwg"].startswith("no: as a plain strip or sheet (D-125)"), line["dwg"])
+        self.assertIn("finish, tolerance", line["dwg"])
+        self.assertIn("drawing", line["gaps"])
 
-    def test_a_laser_cut_plate_is_not_a_plain_cut(self):
-        # its holes live in its DXF, so silence in the line proves nothing: D-89's DXF rule decides it
-        self.assertEqual(self.lacks(process="laser cut"), ["a straight cut in its process: cut to length, sheared or sawn (D-125)"])
-
-    def test_a_tube_or_angle_is_not_a_strip(self):
-        self.assertIn("a strip or sheet (D-125)", self.lacks(material="aluminium 6063-T6 angle 20 x 20 x 2"))
-
-    def test_each_field_counts(self):
-        self.assertEqual(self.lacks(tolerance=""), ["a tolerance"])
-        self.assertEqual(self.lacks(finish=""), ["finish"])
-        self.assertEqual(self.lacks(size_mm="300 long, sheet"), ["thickness, length and width"])
-
-    def test_the_diffuser_lacks_only_its_grade(self):
-        row = {"part_number": "811205", "name": "INTERIOR - LIGHT SHELF - DIFFUSER RH",
-               "material": "Opal polycarbonate (grade HOLD: picked with ELECTRICAL's down-light strips, for their light and heat)",
-               "finish": "opal, as supplied", "process": "cut to length", "size_mm": "991.0 long, section 28.0 x 1.5, 1.5 sheet",
-               "tolerance": "cut length +/-1 (assumption)"}
-        self.assertEqual(rc.plain_lacks([(row, "list.csv")]), ["material and grade"])
+    def test_no_strip_no_change(self):
+        self.assertEqual(self.strip_line({})["dwg"], "no")
+        self.assertEqual(self.strip_line(None)["dwg"], "no")
 
 
 class OpenPrFiles(unittest.TestCase):

@@ -73,11 +73,6 @@ SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TA
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
 SHEET_CUT = re.compile(r"laser|water\s*-?\s*jet|router|routed", re.I)
-STRIP = re.compile(r"sheet|strip|plate|flat bar|board", re.I)       # D-125: a plain straight-cut strip or sheet
-STRAIGHT = re.compile(r"cut to (?:length|size)|shear|\bsaw|guillotine|straight[- ]cut|\bslit", re.I)
-NOT_STRIP = re.compile(r"\btube\b|profile|\bangle\b|channel|\brod\b|extru", re.I)
-GRADE = re.compile(r"\b(?:(?=[A-Z0-9.+-]*\d)(?=[A-Z0-9.+-]*[A-Z])(?![0-9.]+MM\b)(?!M[23]\b)[A-Z0-9][A-Z0-9.+-]+|\d{3,}(?![.\d])(?!\s*mm\b))\b", re.I)  # 6063-T6, DX51D, A2, PC 2407
-PLAIN_FIELDS = {"material and grade", "thickness, length and width", "finish", "a tolerance"}
 NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pocket|machin|\bmill(?:ed|ing)?\b|drill|\btap(?:ped|ping)?\b|"
                       r"thread|countersink|counterbore|ream|\bturn(?:ed|ing)?\b|lathe|chamfer|weld|bond", re.I)
 
@@ -379,39 +374,44 @@ def flat_lacks(rows):
     return best
 
 
-def plain_lacks(rows):
-    """D-125: what the best row lacks for a plain straight-cut strip or sheet to go without a drawing; None when no
-    row has the number. A strip or sheet (not a tube, angle, channel, rod or profile), cut straight (its process says
-    cut to length or size, sheared, sawn or guillotined; a laser, waterjet or router cut is D-89's DXF case, where
-    the holes live in the DXF), whose line names no hole, bend, notch or other feature, and gives the material and
-    grade, the thickness, length and width, the finish and a tolerance. A grade on HOLD is not a grade."""
-    best = None
-    for cells, _path in rows:
-        def has(pattern):
-            return [v for k, v in cells.items() if re.search(pattern, k, re.I) and v]
-        material = " ".join(has(r"material|grade"))
-        sizes = " ".join(has(r"size|dimension|length|width|thick|^[lwt]_?mm$"))
-        process = " ".join(has(r"process|^type$"))
-        words = " ".join([material, sizes] + has(r"process|^type$|^note|^name$"))
-        features = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(words)} | {m.group(0).lower() for m in FEATURES.finditer(words)})
-        grade = bool(material) and "HOLD" not in material.upper() and bool(GRADE.search(material))
-        lacks = [n for n, ok in (
-            ("a strip or sheet (D-125)", bool(STRIP.search(words)) and not NOT_STRIP.search(words)),
-            ("a straight cut in its process: cut to length, sheared or sawn (D-125)",
-             bool(STRAIGHT.search(process)) and not SHEET_CUT.search(process)),
-            ("no holes, bends, notches or other features (its line names %s)" % ", ".join(features), not features),
-            ("material and grade", grade),
-            ("thickness, length and width", len(re.findall(r"\d+(?:\.\d+)?", sizes)) >= 3),
-            ("finish", bool(has(r"finish"))),
-            ("a tolerance", bool(has(r"toleran")) or any("2768" in v for v in cells.values()))) if not ok]
-        if best is None or len(lacks) < len(best):
-            best = lacks
-    return best
+def load_checks():
+    """The mechanical check's modules (tools/checks): its STEP loader and C05's D-125 functions. The release
+    checklist calls the same copy C05 does, so the two can't read D-125 apart (as tools/checks/dxf_layers.py does
+    for D-89's DXF layers)."""
+    path = str(ROOT / "tools" / "checks")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    import c_drawings
+    import c_geometry
+    return c_geometry, c_drawings
+
+
+def d125_strips(root=None):
+    """D-125 as C05 reads it: {number: (what its best parts-list row lacks, that row's file), or None when no list
+    has a row} for every part whose one shape in the per-part STEP files is a plain strip or sheet. Built the way
+    the mechanical check builds it (tools/checks/run_checks.py): each different body of a number once, across the
+    files; a number counts when it has one shape, that shape is a plain rectangular block (cuboid_sides) and thin
+    enough to be a strip (is_strip); its row is read by strip_row_lacks. Read from the working tree, as C05 does."""
+    root = str(root or ROOT)
+    c_geometry, c_drawings = load_checks()
+    _models, per_part = c_geometry.models(root)
+    shapes, cuboids = {}, {}
+    for path in per_part:
+        step = c_geometry.load_step(path)
+        for inst in step.instances():
+            solid, pn = step.solid(inst["solid"]), inst["part_number"]
+            shape = c_drawings.body_shape(solid)
+            if shape not in shapes.setdefault(pn, set()):
+                shapes[pn].add(shape)
+                cuboids.setdefault(pn, []).append(c_drawings.cuboid_sides(solid))
+    one = {pn: v[0] for pn, v in cuboids.items() if len(v) == 1 and v[0]}
+    return {pn: c_drawings.strip_row_lacks(root, pn, sides) for pn, sides in one.items() if c_drawings.is_strip(sides)}
 
 
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
-                dxf_texts=None):
-    """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule)."""
+                dxf_texts=None, d125=None):
+    """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule).
+    d125: number -> C05's D-125 reading of a plain strip or sheet (d125_strips), None skips that rule."""
     chars, _, accept = fai
     tab_cover = tab_cover or {}
     by_cut_row = cut_rows(cut_texts)
@@ -436,15 +436,15 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             step = any(by_pn.get(h, {}).get("STEP") for h in holders)
             soft = soft_kind(r["name"]) if r["make_buy"] != "assembly" else ""
             by_cut = bool(soft) and cut_list_lacks(by_cut_row.get(pn, []), thickness=soft == "soft") == []
-            plain = (plain_lacks(by_cut_row.get(pn, [])) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part"
-                     else None)
+            strip = ((d125 or {}).get(pn) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part" else None)
+            strip_ok = strip is not None and not strip[0]
             if r["make_buy"] == "assembly":
                 flat = "n/a"
             elif by_cut:
                 flat = "cut list"
             elif by_pn.get(pn, {}).get("DXF"):
                 flat = "yes"
-            elif plain == []:
+            elif strip_ok:
                 flat = "row (D-125)"
             elif SHEET.search(text):
                 flat = "no"
@@ -464,6 +464,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "cut list (D-89)"
             elif soft == "soft" and by_pn.get(pn, {}).get("DXF"):
                 dwg = "DXF (D-89)"
+            elif strip_ok:
+                dwg = "row: a plain strip or sheet (D-125)"
             elif (not soft and r["make_buy"] == "make" and kind_of(pn) == "part" and by_pn.get(pn, {}).get("DXF")
                   and flat_lacks(by_cut_row.get(pn, [])) == []):
                 found = [dxf_other_layers(t) for t in dxf_texts(pn)] if dxf_texts else [set()]
@@ -474,10 +476,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                     dwg = "no: its DXF draws on %s; only CUT and MARK pass (D-89)" % ", ".join(other)
                 else:
                     dwg = "no: its DXF can't be read (D-89)"
-            elif plain == []:
-                dwg = "row: a plain cut part (D-125)"
-            elif plain and PLAIN_FIELDS.issuperset(plain):
-                dwg = "no: as a plain cut part (D-125) its line lacks " + ", ".join(plain)
+            elif strip:
+                dwg = "no: as a plain strip or sheet (D-125) its row in %s doesn't give %s" % (strip[1], ", ".join(strip[0]))
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
@@ -723,8 +723,13 @@ def main(argv=None):
                 dxf_cache[path] = text_at(path, files[path], refs)
         return [dxf_cache[p] for p in by_pn.get(pn, {}).get("DXF", [])]
 
+    try:
+        d125 = d125_strips()
+    except Exception as e:  # the checklist still runs; the drawing column then waits on D-125's drawings
+        print(f"D-125 not read ({type(e).__name__}: {e}); plain strips count only with a drawing")
+        d125 = {}
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
-                               screen, bom, labels, cut_texts, tab_cover, dxf_texts)
+                               screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125)
     made += files_only(by_pn, parts, files, labels, screen, fai[0])
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
