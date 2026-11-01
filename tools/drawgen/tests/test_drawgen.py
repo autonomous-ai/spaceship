@@ -13,7 +13,8 @@
    hole moved 10 mm and drawn again: the table moves by 10 mm, the read-back passes on both, and `stale` reports
    the first drawing out of date.
 4. drawgen never overwrites a PDF it didn't make (a Fusion drawing).
-5. A part with a feature it can't dimension (here a fillet) is refused, not drawn.
+5. A part with a feature it can't dimension (here a fillet) is refused, not drawn; so is a folded sheet, even
+   with a sharp fold (D-113).
 """
 
 import os
@@ -188,6 +189,40 @@ def test_refuses_what_it_cannot_dimension():
         raise AssertionError("drew a part with a fillet")
     except compose.NotDrawable as e:
         assert "can't dimension" in str(e)
+
+
+def _folded_sheet(path):
+    """An L-shaped 3 mm sheet with a sharp fold (no bend radius, as an ACP V-groove fold is modelled)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt
+    a = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 3, 100).Shape()
+    b = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 3, 40, 100).Shape()
+    f = BRepAlgoAPI_Fuse(a, b)
+    f.SetFuzzyValue(1e-6)
+    f.Build()
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    u = ShapeUpgrade_UnifySameDomain(f.Shape(), True, True, True)
+    u.Build()
+    w = STEPControl_Writer()
+    w.Transfer(u.Shape(), STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_refuses_a_folded_sheet():
+    """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
+    d = os.path.join(TMP, "folded")
+    os.makedirs(d, exist_ok=True)
+    step = _folded_sheet(os.path.join(d, "219997_P01_TEST-FOLDED-SHEET_STEP.step"))
+    row = dict(ROW, part_number="219997", name="TEST - FOLDED SHEET", process="laser cut")
+    try:
+        compose.make("219997", "none", SPEC, os.path.join(d, "x.pdf"), step=step, row=row)
+        raise AssertionError("drew a folded sheet")
+    except compose.NotDrawable as e:
+        assert "folded" in str(e), e
 
 
 def main():
