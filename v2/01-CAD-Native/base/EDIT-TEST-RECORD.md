@@ -6,6 +6,10 @@
 
 `base_edit_test.py` opens the exported `110000_P01_BASE_CAD.f3d` as a copy (the cloud file is never touched), changes skeleton and BASE parameters in three sets, and checks after each that the timeline stays healthy, that every part we make follows its own expressions (box to 0.05 mm), that the side band's J-BASE-01 hole centres follow, and that D-129's back corner holes and slot ends follow. Then it puts every value back and checks that every body returns. The copy is closed without saving.
 
+## Run of 2026-11-01, ended 12:55 UTC (build run E: batch 2, D-144, the welded sill): stopped in its first set
+
+Nine parts measured since batch 2: the side bands LH and RH, the back band, FR1, the sill's two members, FL1 and FL2. In the first set (`pod_w` 2700, `pod_d` 1800, `wall_depth` 1595) the timeline went unhealthy: FL1's rivnut hole for DL's round spigot found no body to cut ("No target body"). FRONT places DL's spigots from the front face (`decor_d`), while the skeleton gives DL's facet points as Y values from the pod's centre (`dl_y1` to `dl_y3`), so a deeper pod moved the spigot point 50 forward of FL1. Fixed in the test, not the model: the pod-size set now moves DL's points with the front face (`dl_y1` 720, `dl_y2` 802, `dl_y3` 894), and the DL set changes `dl_y1` by −20 as before (700). Checked offline before the next run: in every set both spigot points stayed 13 from their band's nearest edge, and every part's expected box stays a box. (D-169 has since taken DL's base spigots away; the test keeps the pod-size set, as DL's facet still belongs to the front face.)
+
 ## Run of 2026-11-01, ended 11:01 UTC (D-150: the sill's closed door end), in build run D, on its file
 
 Five parts measured: the side bands LH and RH, the back band, FR1 and the sill (now with its welded door-end plate).
