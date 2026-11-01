@@ -16,7 +16,9 @@ The sheet itself is the assembly mode's (tools/drawgen/assembly.py, the Air Engi
 table, sizes, notes and title block, through make()'s hook for an assembly built elsewhere. This file adds the reading
 of the pod and its own read-back, against the same STEPs and the master BOM (assembly.check reads one STEP and one
 team list). The entry is POD in tools/drawgen/teams/ga.py. The drawing takes the skeleton's revision (the pod's own
-number, 100000, revised as the skeleton is) and the date of its newest STEP.
+number, 100000, revised as the skeleton is). It prints the skeleton's STEP as its source (the pod's own file) and
+takes as its date the newest export day written inside the team STEPs: no file times, no checkout paths, so any Mac
+draws the same sheet from the same files; its recorded sources stay every file it reads.
 """
 
 import csv
@@ -400,8 +402,11 @@ class PodAssy(A.Assy):
         self.name_vi = (own.get("name_vi") or "").strip()
         self.rev = entry.get("rev") or skeleton_rev()
         self.dwg_name = "%s_%s_%s_DWG" % (pn, self.rev, inputs.ascii_name(self.name))
-        # the sheet's date is the newest STEP's (make() reads it from self.step's header)
-        self.step = max(self.steps, key=lambda p: (_step_date(p), p))
+        # make() prints self.step as the sheet's source: the pod's own STEP, the skeleton's, not the newest team file
+        # (Reviewer 15: the newest-file pick moved with every export); the date is the newest export day written in
+        # the team STEPs' headers (no file times, no checkout paths). The recorded sources stay every file it reads.
+        self.step = skeleton_step()
+        self.today = max((_step_date(p)[0] for p in self.steps), default="") or None
         by_item, self.files = {}, {}
         for p in self.steps:
             for tpn, name, solids in top_parts(p):
@@ -714,7 +719,8 @@ def entry():
 def make(out_path, conf=None, today=None):
     """Draw the pod's sheet into out_path; returns the assembly mode's report."""
     conf = conf if conf is not None else entry()
-    return A.make(POD_PN, TEAM, conf, out_path, today=today, assy=PodAssy(POD_PN, TEAM, conf))
+    assy = PodAssy(POD_PN, TEAM, conf)
+    return A.make(POD_PN, TEAM, conf, out_path, today=today or assy.today, assy=assy)
 
 
 def generate(out_dir=None, conf=None):

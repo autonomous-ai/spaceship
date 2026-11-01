@@ -111,6 +111,30 @@ def test_top_parts_must_be_numbered_and_in_the_master_bom():
         P.top_parts, P.skeleton_rev, P._step_date = keep
 
 
+def test_the_printed_source_and_date_depend_on_no_file_time_or_checkout():
+    # Reviewer 15 via the Lead: the sheet named the newest team STEP as its source, which moved with every export.
+    # It names the skeleton's STEP now, and its date is the newest export day written in the team STEPs' headers.
+    a = P.PodAssy(P.POD_PN, P.TEAM, P.entry())
+    assert a.step == P.skeleton_step() and "/skeleton/" in a.step
+    days = sorted(P._step_date(p)[0] for p in a.steps)
+    assert a.today == days[-1] and len(a.today) == 10
+    newest = max(a.steps, key=lambda p: P._step_date(p))
+    keep = os.stat(newest)
+    try:
+        os.utime(newest, (keep.st_atime, keep.st_mtime - 86400 * 400))      # a file time 400 days back
+        b = P.PodAssy(P.POD_PN, P.TEAM, P.entry())
+    finally:
+        os.utime(newest, (keep.st_atime, keep.st_mtime))
+    assert (b.step, b.today) == (a.step, a.today)
+    final, rep = _made()
+    import fitz
+    with fitz.open(final) as d:
+        kw = d.metadata.get("keywords", "")
+    assert "source v2/03-Manufacturing/skeleton/100000_" in kw, kw                # the printed source, repo-relative
+    roles = [s_["role"] for s_ in rep["data"]["sources"]]
+    assert roles.count("STEP") == len(a.steps) and {"parts list", "skeleton STEP", "mass"} <= set(roles)  # all kept
+
+
 def test_the_sheet_draws_and_reads_back():
     final, rep = _made()
     fails, st = P.check(final)
