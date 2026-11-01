@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (f9d8c11), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40), PR #202 (803aec9). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (3d6c2af), PR #91 (0cb3135), PR #202 (803aec9), PR #203 (f1fd14e), PR #215 (116b89a), PR #105 (ef738c3). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -24,9 +24,9 @@ Read from: main (f9d8c11), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
 | **All, each number once** | 36 | 98 | 0 | 11 | 10 | 2 | 89 |
 
-98 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
+97 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 98, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 97, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -167,7 +167,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
 | 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
-| 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | no | yes | yes | K-B08 | open: DXF or cut list, drawing |
+| 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | yes | yes | yes | K-B08 | open: DXF or cut list |
 | 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
 | 111213 | BASE CORNER KEY FRONT RH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
 | 111214 | BASE CORNER KEY KNEE LH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
@@ -394,7 +394,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 - ELECTRICAL's 710000 is drawn by its wiring diagram, whose sheet 3 holds the route and joint views (D-93).
 - The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: the Joints Engineer makes them and the teams place them by reference (D-95).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
-- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD.
+- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: "on hold" does; "holds", "holder" and "threshold" don't.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.
 - A register number's product status comes from the joints register: on HOLD, or named (DECIDED or from a source), or left to the parts list; a team number's from its parts list.
