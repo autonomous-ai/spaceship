@@ -814,6 +814,69 @@ def test_tapped_holes_wait_for_their_callouts():
         raise AssertionError("drew a part with tapped holes")
 
 
+def _mitred_member(path, length=1400.0):
+    """A test member like CEILING's seam member 412202 (#348): a 20 x 40 x 1.5 tube along pod Y, its +Y end mitred 45°
+    across its width (its +X face 20 shorter than its -X face), Ø10 holes in its -X wall (the principal view's) and in
+    its +X wall (seen only from +X: the rear view, too long to sit beside, goes under the others as a lettered view,
+    its reference arrow over the view from above)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt, gp_Vec
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    y0, z0, L = -700.0, 2354.0, length
+    sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(0, y0, z0), 20, L, 40).Shape(),
+             BRepPrimAPI_MakeBox(gp_Pnt(1.5, y0 - 1, z0 + 1.5), 17, L + 2, 37).Shape())
+    poly = BRepBuilderAPI_MakePolygon()
+    for q in ((-1, y0 + L + 1, z0 - 1), (21, y0 + L - 21, z0 - 1), (21, y0 + L + 1, z0 - 1)):
+        poly.Add(gp_Pnt(*q))
+    poly.Close()
+    sh = cut(sh, BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 0, 42)).Shape())
+    for x, ys in ((-1.0, (300.0, 900.0)), (17.5, (500.0, 1100.0))):
+        for y in ys:
+            sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y0 + y, z0 + 20), gp_Dir(1, 0, 0)), 5.0,
+                                                  3.5).Shape())
+    # edges written as their own curves, as Fusion writes them (the repo's STEP reader reads a hole's circles so), as
+    # _tray does; the setting is put back after
+    from OCP.Interface import Interface_Static
+    w = STEPControl_Writer()
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    return path
+
+
+def test_a_lettered_views_arrow_keeps_clear_of_dimensions():
+    """A lettered view's reference arrow (the rear view under the others, ISO 128-30) is drawn after every dimension,
+    where its line crosses no line and its letter touches nothing. CEILING's 412202 (#348) had its letter on the view
+    from above's true-length dimension (1431.35), which main's code drew after the arrow. A test member like it: the
+    read-back passes, with the letter clear of that dimension (main's code: a line runs through the letter)."""
+    d = os.path.join(TMP, "rear")
+    os.makedirs(d, exist_ok=True)
+    step = _mitred_member(os.path.join(d, "219986_P01_TEST-MEMBER-MITRED_STEP.step"))
+    p = os.path.join(d, "219986.pdf")
+    compose.make("219986", "none", dict(SPEC, principal={"look": "+X", "x": "-Y"}), p, step=step,
+                 row=dict(ROW, part_number="219986", name="TEST - MEMBER - MITRED"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    doc = fitz.open(p)
+    views = {v["name"]: v for v in readback.read_data(doc)["views"]}
+    assert "rear" in views and "above" in views, sorted(views)
+    words = doc[0].get_text("words")
+    assert any(w[4] == "1380" for w in words), "the +X face's true length over the view from above is missing"
+
+
 def _drilled_bar(path, dia):
     """A 300 x 40 x 20 bar with two holes of one size through its thickness."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
