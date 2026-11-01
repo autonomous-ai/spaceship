@@ -182,23 +182,16 @@ POSITIONS = {"2101": ("L1", "R1", "L2", "R2"), "2102": ("B1", "B2", "B3", "B4")}
 # D-117 and D-120: the frame's corners and parts once it is rebuilt that way (the reports show member parts)
 D117_ROW = ("F12", "{frame}", "The 4 perimeter members run to the frame's outer corners, mitred there (the mitre from the "
             "outer to the inner corner: 45 degrees where the two are the same size, 26.57 on a 40 x 40 meeting a 20 x 40 and "
-            "63.43 on the 20 x 40); the studs fit square between the rails", "internal corner and T cleats, crimped, with "
-            "structural adhesive (D-115); no hole within 100 of a corner, so the cleats (ending within 65) clear every hole",
-            "D-117; the Joints Engineer's corner details (2026-11-01)", "follows the frame (edit test)",
-            "mitre angle per the frame drawing", "DECIDED (D-117)")
+            "63.43 on the 20 x 40); the studs fit square between the rails", "welded in the factory: the 4 corners and every "
+            "stud's T joints (D-131, galvanized steel box tube in the same sections; D-117's cleats cancelled)",
+            "D-117 (the corner geometry), D-131 (welds); weld sizes and the zinc coat per the Joints spec (HOLD)",
+            "follows the frame (edit test)", "mitre angle per the frame drawing", "DECIDED (D-117, D-131)")
 D120_ROW = ("F49", "{frame}", "Every member is its own part with its own number, the studs copies of one; the frame is "
             "their assembly and keeps its number; the fill pieces, each numbered, go straight into the panel (D-123 cancels "
             "the panel's own fill number) and are cut from their DXFs (D-128); the hardware copies of one part each", "the build plan's rule 2: every part a component, never a body", "D-120, D-123; numbers from the "
             "master BOM's allocation; D-128 for the fill pieces", "copies follow their pattern and their holes", "",
             "DECIDED (D-120)")
-FAMILIES_D117 = {
-    ("RAIL - BOTTOM", 8.0, "z"): (
-        "F50", "T-joint plug cleat slot, round ends: one per stud end in the rail's bay-side wall", "the plug cleat "
-        "(831003 to 831006, the Joints Engineer's; placed when modelled)", "on the stud's centre line, its 22 across the "
-        "40 face, centred on the frame depth", "the Joints Engineer's corner details for D-117 (2026-11-01)",
-        "through the 1.2 wall only", "±0.2 (assumption)", "CNC or jig, with the rail's other holes", "DECIDED (D-117)"),
-}
-FAMILIES_D117[("RAIL - TOP", 8.0, "z")] = FAMILIES_D117[("RAIL - BOTTOM", 8.0, "z")]
+FAMILIES_D117 = {}                 # D-131 cancels the cleats, so the rails have no cleat slots
 
 # (body name, hole diameter, axis) -> id, function, mating part, rule (where and why there), source,
 # clearances, tolerance, make and check, status

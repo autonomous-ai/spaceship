@@ -327,21 +327,22 @@ def mitre_ends(key, prm, upper, back=False):
              "STILE FRONT": ("RAIL BOTTOM", "RAIL TOP"), "STILE BACK": ("RAIL BOTTOM", "RAIL TOP"),
              "STILE OUTER": ("RAIL BOTTOM", "RAIL TOP"), "STILE CENTRE": ("RAIL BOTTOM", "RAIL TOP")}
     if key not in meets:
-        return "square ends (fits between the rails; T-joint plug cleats, D-117)"
+        return "square ends (fits between the rails, welded T joints, D-131)"
     angles = ["%.2f" % math.degrees(math.atan(width[o] / width[key])) for o in meets[key]]
-    return "both ends mitred: %s and %s degrees off square (D-117)" % tuple(angles)
+    return "both ends mitred: %s and %s degrees off square (D-117), welded (D-131)" % tuple(angles)
 
 
 def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, back, lower):
     """The parts list of a panel built as D-120 asks (every part its own component): the frame an assembly of
-    its member parts (D-117 mitred corners, D-115 cleats), the fill pieces straight in the panel, each with its
+    its member parts, welded (D-131: galvanized steel box tube, D-117's mitred corners welded, the studs' T joints
+    welded; D-117's cleats cancelled), the fill pieces straight in the panel, each with its
     number (D-123) and its DXF (D-128), the hardware copies
     counted from the CAD."""
     rows = [None]
     upper = not lower
     name_en, name_vi = root_names(root, frame, lambda n: n.replace("PANEL FRAME", "PANEL ASSY"),
                                   lambda n: n.replace("khung", "cụm tấm"))
-    t, ts = prm.get("tube_t", 1.2), prm.get("stud_t", prm.get("tube_t", 1.2))
+    t, ts = prm.get("tube_t", 1.0), prm.get("stud_t", prm.get("tube_t", 1.0))
     member_rows, fm = [], 0.0
     for m in sorted(members, key=lambda c: c["part_number"]):
         b = m["bodies"][0]
@@ -352,26 +353,29 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
         fm += b["mass_kg"] * q
         member_rows.append(row(level=2, part_number=m["part_number"], name=en_name(m),
                                name_vi=vi_name(m["description"], m["part_number"]), kind="MP",
-                               material="aluminium tube 6063-T6 %s" % sec, finish="mill finish with the bond prep (D-79)",
-                               process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s" %
-                                       mitre_ends(key, prm, upper, back),
+                               material="steel box tube %s (D-131; steel grade and the gauge per the Joints "
+                                        "Engineer's check, HOLD)" % sec,
+                               finish="galvanized with the welded frame (D-131; zinc coat per the Joints spec, HOLD)",
+                               process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s; welded "
+                                       "into its frame (D-131)" % mitre_ends(key, prm, upper, back),
                                qty=q, unit="pc", cut_length_mm=member_length(b), size_mm=sec,
                                tolerance="length ±0.5 (assumption, guideline 6.3); holes per the frame drawing",
                                mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"] * q, 3),
-                               mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
-                               source="CAD; number from the master BOM's allocation (D-120)",
+                               mass_status="calculation: CAD at 7850 kg/m3 (steel; zinc not counted)", status="DRAFT",
+                               source="CAD; number from the master BOM's allocation (D-120); steel D-131",
                                note="%s; cut length outer to outer" % mitre_ends(key, prm, upper, back)))
     rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame),
                     name_vi=vi_name(frame["description"], frame["part_number"]), kind="BS",
-                    material="the aluminium tube members below, cleated and bonded",
-                    finish="mill finish with the bond prep (D-79)",
-                    process="assemble the members with internal corner and T cleats, crimped, with structural adhesive "
-                            "(D-115, D-117; cleats 831003 to 831006, the Joints Engineer's); rivnuts and stop washers set "
-                            "at the factory", qty=1, unit="pc",
+                    material="the steel box tube members below, welded (D-131)",
+                    finish="galvanized (D-131; zinc coat, and whether before or after welding, per the Joints spec, "
+                           "HOLD); the skin's bond prep on zinc per the adhesive maker (HOLD)",
+                    process="weld in a jig: the 4 mitred corners and every stud's T joints (D-131; weld sizes per the "
+                            "Joints spec, HOLD); then drill if not drilled before, and set the rivnuts and stop washers",
+                    qty=1, unit="pc",
                     size_mm=size_of(box_of([m["bodies"][0] for m in members])), tolerance="per its drawing",
                     mass_each_kg=round(fm, 3), mass_total_kg=round(fm, 3),
-                    mass_status="calculation: the members below (CAD); cleats in the roll-up allowance until modelled",
-                    status="DRAFT", source="CAD; D-115, D-117, D-120",
+                    mass_status="calculation: the members below (CAD); weld metal not counted",
+                    status="DRAFT", source="CAD; D-120, D-131 (D-117's mitred corners, welded; its cleats cancelled)",
                     note="an assembly of %d member parts (%d pieces)" % (len(members), sum(m.get("copies", 1)
                                                                                            for m in members))))
     rows += member_rows
