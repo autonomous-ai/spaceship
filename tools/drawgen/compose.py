@@ -875,6 +875,11 @@ def spigot_origin(part, spec=None):
         else:
             raise NotDrawable("%s: its spigot slot runs at %s° to its rail, neither along it (R-J13) nor across it "
                               "(R-J17): datum C isn't read for it" % (part.pn, fmt(math.degrees(math.acos(min(1.0, c_))))))
+    # A's member: B's body's name, else the one B's register row gives its body (WALL's L1 on #343's data: its members
+    # are their own parts, so its own file names no body, and the note read "bottom face of (the seat on the band)")
+    a_member = b.body.name or b.reg.get("body", "")
+    a_words = spec.get("a_words", "%s%s (the seat on the band)" % (FACE_WORDS.get(axis_name(b.f.normal), "face"),
+                                                                  " of " + a_member if a_member else ""))
     if runs == "along":
         if spec.get("c_face"):
             raise NotDrawable("%s: its entry names datum C as its %s face, but its spigot slot runs along the rail "
@@ -884,8 +889,7 @@ def spigot_origin(part, spec=None):
         k = max(range(3), key=lambda i: abs(c_normal[i]))
         return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, sl.f.entry[k]),
                 "slot": sl, "C_slot": sl, "runs": "along",
-                "words": {"A": spec.get("a_words", "%s of %s (the seat on the band)" % (
-                    FACE_WORDS.get(axis_name(b.f.normal), "face"), b.body.name)),
+                "words": {"A": a_words,
                           "B": "axis of the spigot hole %s" % "{B}",
                           "C": "the spigot slot {C}, the median plane of its width"}}
     if spec.get("c_face"):
@@ -904,8 +908,7 @@ def spigot_origin(part, spec=None):
         c_words = "the room-side face (%s %s)" % ("XYZ"[k], fmt(c_plane))
     return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, c_plane),
             "slot": slot, "runs": runs,
-            "words": {"A": spec.get("a_words", "%s of %s (the seat on the band)" % (
-                FACE_WORDS.get(axis_name(b.f.normal), "face"), b.body.name)),
+            "words": {"A": a_words,
                       "B": "axis of the spigot hole %s" % "{B}",
                       "C": c_words + ", which stops the turn about B"}}
 
