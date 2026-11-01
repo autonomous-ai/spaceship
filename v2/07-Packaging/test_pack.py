@@ -277,6 +277,17 @@ def test_roof_grille_bolts_counted_once():
     assert bolts == 4 and other == 0 and sum(o["n"] for o in ops if o["src"] == "t_bolt_captive_s") == 4
 
 
+def test_dr_inner_face_before_the_right_linings():
+    # the PM's ruling: DR's inner face can't come off past R1's and R2's cassettes, so the riser step (inner face off
+    # and on) comes before the wall linings, and the take-down unclips R1's and R2's cassettes before the inner face
+    riser = next(s["n"] for s in pack.STEPS if "2-17" in s["tags"])
+    linings = next(s["n"] for s in pack.STEPS if "1-13" in s["tags"])
+    column = next(s["n"] for s in pack.STEPS if "2-11" in s["tags"])
+    assert riser < linings < column, (riser, linings, column)
+    guide = pack.TPL_GUIDE.read_text(encoding="utf-8")
+    assert guide.index("R1's and R2's cassettes off their clips first") < guide.index("then DR's inner face")
+
+
 def test_lanes_follow_the_parts():
     # a lane is as wide as its widest part plus the wrap a side; nothing in a tier passes the deck
     m = pack.Model()
