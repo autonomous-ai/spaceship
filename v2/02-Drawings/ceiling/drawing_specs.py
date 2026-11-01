@@ -172,18 +172,30 @@ def frame_spec(key, half):
            "4 M6 x 25 pins 838002 with washers 838004 in the seam member's rivnuts; joint gasket 848001 on "
            "the back member's underside")
     return spec(key, 0.2, [
-        "Tolerances (assumption until the factory confirms): tube cut length +/-0.5; holes +/-0.2 from the round "
-        "spigot hole (R-J6); spigot positions and round spigot hole to the closing face +/-0.1 (ST-04).",
+        "Tolerances (assumption until the factory confirms): tube cut length +/-0.5, mitre angles +/-0.25 deg; holes "
+        "and slots +/-0.2 from the round spigot hole (R-J6); spigot positions and round spigot hole to the closing "
+        "face +/-0.1 (ST-04); the frame assembled in a jig, diagonals within 1.",
         "Aluminium 6063-T6 tube (alloy ISS-034): 20 x 40 x 1.2, back member 40 x 40 x 1.2 (R-J3). Mill finish "
         "with the bond prep (D-79). Frame %s, %.2f wide (skeleton half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
         "Datums: A = the closing face (the seam member's outer face, %.2f from X 0); B = the front member's front "
         "face (Y %.2f); C = the frame's underside (Z %.2f)." % (v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)),
-        "Members (cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side and seam %.2f, front and cross members "
-        "X1-X3 %.2f, back %.2f; cross members at %.2f pitch from B. Frame member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)." % (
-            v["wall_depth"] - v["back_w"], v["half_fw"] - 2 * v["tube_w"], v["half_fw"], v["fr_pitch"]),
+        "Members, each its own part (D-120; cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side %s and seam %s "
+        "%.2f; front %s and back %s %.2f, at the outer face; cross member 1 %s and the plain cross members 412001 "
+        "(X2, X3) %.2f, square cut; cross members at %.2f pitch from B." % (
+            M.PARTS["m_side_" + half.lower()][0], M.PARTS["m_seam_" + half.lower()][0], v["wall_depth"],
+            M.PARTS["m_front_" + half.lower()][0], M.PARTS["m_back_" + half.lower()][0], v["half_fw"],
+            M.PARTS["m_x1_" + half.lower()][0], v["half_fw"] - 2 * v["tube_w"], v["fr_pitch"]),
+        "Corners mitred from the outer corner to the inner corner (D-117): 45 deg at the front; at the back the "
+        "back member is cut 26.57 deg off square and the side and seam members 63.43 deg. Member joints: internal "
+        "corner cleats and plug cleats in the T joints (831003 to 831006), crimped, with structural adhesive; "
+        "no welds (D-115, D-117).",
+        "Crimp: one dent per member per joint, on its bay-side 40 face at the middle of the cleat's leg; never on "
+        "the bond face, the room face or a seam face (D-117).",
+        "Cleat slots: 8 along the member x 22 across its 40 face, through the bay-side wall only, centred on each "
+        "cross member's centre line, in the side and seam members; corner radius R2 at most (D-117).",
         "Joint holes (joints register 2.9; the register owns the bolt lines, PM ruling 2026-10-31):",
     ] + frame_hole_notes(half) + [
-        "1 x 45 deg lead-in on the closing face's lower edge, seam member and back member end (R-J9).",
+        "1 x 45 deg lead-in on the closing face's lower edge, the seam member's full length (R-J9).",
         "Every bolt is 30 or more from any member that meets its own (R-J14); none sits under the roof slot (D-60).",
         "Fitted in the factory: " + fit + ".",
     ], holes="left", views=FRAME_VIEWS, scales={"iso": 0.1})
