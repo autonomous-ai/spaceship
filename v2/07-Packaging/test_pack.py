@@ -291,31 +291,40 @@ def test_d133_us_mains():
 
 
 def test_seam_prop():
-    # D-152: the seam prop is its own 45 x 45 packing timber, labelled and marked, in a lane of its own in tier 3. In
-    # step 7 it goes under C1's seam corner while a hand keeps that corner up, so it never stands alone on its end, and
-    # it comes away after the seam pins. It is packing (911004 in the tare), not a part of the pod and not a piece
+    # D-152 and the PM's ruling 2026-11-01: the seam prop is its own 45 x 45 packing timber, labelled and marked, on a
+    # plywood foot about 300 x 300 with felt under it, screwed on at the factory, so it stands on its own and step 7
+    # stays hands-free. It rides in its own lane in tier 3, its foot clear of the lanes beside it. It is packing (911004
+    # and 911005 in the tare), not a part of the pod and not a piece
     prop = next(it for it in pack.PACKAGING if it["pn"] == "911004")
-    assert prop["pallet"] == 2 and prop["wood"] and prop["kg"] == pack.MINE["prop_kg"].value, prop
-    assert "45 X 45" in prop["name"] and "LABELLED AND MARKED" in prop["name"] and pack.MINE["prop_w"].value == 45, prop
-    assert pack.MINE["prop_h"].value == pack.sk("pod_h") - pack.sk("outer_t")
+    foot = next(it for it in pack.PACKAGING if it["pn"] == "911005")
+    assert prop["pallet"] == foot["pallet"] == 2 and prop["wood"] and not foot.get("wood"), (prop, foot)   # plywood: no ISPM 15
+    assert prop["kg"] == pack.MINE["prop_kg"].value and foot["kg"] == pack.MINE["prop_foot_kg"].value
+    assert "45 X 45" in prop["name"] and "LABELLED AND MARKED" in prop["name"], prop["name"]
+    assert "300 X 300" in foot["name"] and "FELT" in foot["name"] and "SCREWED TO THE PROP AT THE FACTORY" in foot["name"]
+    mn = pack.MINE
+    assert mn["prop_h"].value == pack.sk("pod_h") - pack.sk("outer_t") and mn["prop_w"].value == 45 and mn["prop_foot"].value == 300
+    timber = mn["prop_h"].value - mn["prop_foot_t"].value - mn["prop_felt_t"].value
+    assert mn["prop_kg"].value == round(45 * 45 * timber * 500e-9, 1), mn["prop_kg"].value
     m = pack.Model()
     tiers, _h = m.tiers2()
-    lanes = [(t["name"], ln) for t in tiers for ln in t["lanes"] if any(it["tag"] == "PROP" for it in ln["items"])]
-    assert len(lanes) == 1 and lanes[0][0].startswith("Tier 3"), lanes
-    ln = lanes[0][1]
-    assert ln["width"] == 45 and ln["items"][0]["along"] == pack.MINE["prop_h"].value and ln["ok"], ln
-    t3 = next(t for t in tiers if t["name"].startswith("Tier 3"))
-    assert t3["ok"] and t3["h"] >= 45, t3["width"]
+    lanes = [(t, ln) for t in tiers for ln in t["lanes"] if any(it["tag"] == "PROP" for it in ln["items"])]
+    assert len(lanes) == 1 and lanes[0][0]["name"].startswith("Tier 3"), lanes
+    t3, ln = lanes[0]
+    f = ln["foot"]
+    assert ln["width"] == 45 and ln["length"] == mn["prop_h"].value and f["ok"] and ln["ok"] and t3["ok"], (ln, f)
+    assert f["beside"] and f["gap"] >= mn["wrap"].value and f["y0"] >= 0 and f["y1"] <= mn["pal_std_l_exact"].value, f
+    assert t3["h"] >= f["size"]
     ceiling = next(s for s in pack.STEPS if s["title"].startswith("Ceiling"))
     srcs = [o["src"] for o in ceiling["ops"]]
-    assert srcs.index("t_overhead_rest_s") < srcs.index("t_prop_s") < srcs.index("t_prop_off_s"), srcs
-    assert next(o for o in ceiling["ops"] if o["src"] == "t_prop_s")["who"] == 2   # a hand on the corner meanwhile
-    assert "SEAM PROP" in ceiling["A"] and "keeps a hand under C1's seam corner" in ceiling["A"], ceiling["A"]
-    assert "seam prop away" in ceiling["B"]
+    assert srcs.index("t_prop_s") < srcs.index("t_overhead_rest_s") < srcs.index("t_prop_off_s"), srcs
+    assert next(o for o in ceiling["ops"] if o["src"] == "t_prop_s")["who"] == 1
+    assert "on its foot" in ceiling["A"] and "stands on its own" in ceiling["A"] and "keeps a hand" not in ceiling["A"]
+    assert "seam prop away" in ceiling["B"] and "tips easily" in ceiling["caution"]
     assert not [p for p in pack.PIECES if "PROP" in p.name]
-    assert prop in m.packaging(2) and abs(m.tare(2) - sum(it["kg"] * it["qty"] for it in m.packaging(2))) < 1e-9
+    pk2 = m.packaging(2)
+    assert prop in pk2 and foot in pk2 and abs(m.tare(2) - sum(it["kg"] * it["qty"] for it in pk2)) < 1e-9
     plan = pack.outputs(m)[pack.OUT_PLAN]
-    assert "SEAM PROP 911004" in plan and "Its own 45 × 45 timber" in plan
+    assert "SEAM PROP 911004 on its foot 911005" in plan and "Its own 45 × 45 timber" in plan and "{{" not in plan
 
 
 def test_kick_strip_brushes():
