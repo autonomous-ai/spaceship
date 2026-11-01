@@ -269,7 +269,7 @@ ELEC_LIST = os.path.join(MANUF, "electrical", "710000_P01_ELECTRICAL-PARTS-LIST_
 
 def electrical_cad(path=ELEC_LIST):
     """ELECTRICAL from its merged parts list (PR #64): the total as shipped, the power unit, and the LED strip per metre;
-    and the parts it lists under another team's assembly, by host (S51: D-126's down-light profile, cover, end caps and
+    and the parts it lists under another team's assembly, by host (S53: D-126's down-light profile, cover, end caps and
     clips under INTERIOR's light shelf 810201). 710000's total leaves those out; the host's line carries them."""
     import csv
     with open(path, encoding="utf-8") as f:
@@ -288,13 +288,13 @@ ELEC = electrical_cad()
 INTERIOR_LIST = os.path.join(MANUF, "interior", "810000_P01_INTERIOR-PARTS-LIST_BOM.csv")     # PR #92 (S46)
 
 
-SHELF_REPLACED = ("811204", "811205")     # D-126 (S51): the down-light channel and diffuser, replaced by ELECTRICAL's bought profile
+SHELF_REPLACED = ("811204", "811205")     # D-126 (S53): the down-light channel and diffuser, replaced by ELECTRICAL's bought profile
 
 
 def interior_cad(path=INTERIOR_LIST, hosted=None):
     """INTERIOR from its merged parts list (PR #92): the work-wall ledge, the light shelf (its LED strip is ELECTRICAL's)
     and the screen rail (HOLD). The shelf assembly 810201 also holds ELECTRICAL's down-light profile parts, listed in
-    ELECTRICAL's parts list under it (S51), and they ship with it; the channel and diffuser they replaced (D-126) are left
+    ELECTRICAL's parts list under it (S53), and they ship with it; the channel and diffuser they replaced (D-126) are left
     out while INTERIOR's list still carries them."""
     import csv
     with open(path, encoding="utf-8") as f:
@@ -310,11 +310,11 @@ def interior_cad(path=INTERIOR_LIST, hosted=None):
 
 
 def shelf_note():
-    """What the light shelf's CAD mass holds beyond INTERIOR's 810201 (S51), for the line texts."""
+    """What the light shelf's CAD mass holds beyond INTERIOR's 810201 (S53), for the line texts."""
     it, out = INTERIOR, []
     if it["shelf_elec"]:
         out.append(f"with ELECTRICAL's down-light profile, cover, end caps and clips {it['shelf_elec'][0]} to "
-                   f"{it['shelf_elec'][-1]} ({it['shelf_elec_kg']:.3f}), listed under 810201 (S51)")
+                   f"{it['shelf_elec'][-1]} ({it['shelf_elec_kg']:.3f}), listed under 810201 (S53)")
     if it["shelf_gone"]:
         out.append(f"less the channel and diffuser {' and '.join(it['shelf_gone'])} ({it['shelf_gone_kg']:.3f}) that D-126 "
                    "replaced, which INTERIOR's list still carries")
@@ -705,7 +705,7 @@ def lines(**adopt):
               f"{el['power_unit']:.2f}, the hub and controls zone {el['hub']:.2f}, the cord set {el['cord']:.2f}, the harnesses, "
               f"cables and connectors, and the lights ({el['strip_m']:.2f} m of shelf and down-light strip, the call light). "
               "The light shelf's strip is counted here only; the down-light profile parts listed under INTERIOR's shelf "
-              "are in the shelf's line (S51)"))
+              "are in the shelf's line (S53)"))
     it = INTERIOR
     strip = el["strip_kgm"] * shelf_m()                     # the shelf uplight's LED strip, in ELECTRICAL's line (S43)
     if a["budgets"]:
