@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (18897bb), PR #203 (f1fd14e), PR #91 (39e42a1), PR #105 (16adda2). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 88 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (316e2e7), PR #235 (e9f720d), PR #203 (43238a4), PR #91 (7a04de1). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -15,18 +15,18 @@ Read from: main (18897bb), PR #203 (f1fd14e), PR #91 (39e42a1), PR #105 (16adda2
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | BASE | 3 | 3 | 0 | 3 | 3 | 0 | 4 |
-| CEILING | 3 | 11 | 0 | 0 | 5 | 0 | 5 |
+| CEILING | 6 | 8 | 0 | 0 | 5 | 0 | 5 |
 | CEILING (builds AIR, D-80) | 8 | 17 | 0 | 6 | 1 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
 | FRONT | 5 | 17 | 0 | 0 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 37 | 97 | 0 | 11 | 10 | 2 | 93 |
+| **All, each number once** | 40 | 94 | 0 | 11 | 10 | 2 | 93 |
 
-93 of the 145 made numbers have no drawing yet; for 79 of them the drawing is the only gap, so their drawings can start now (D-84).
+90 of the 145 made numbers have no drawing yet; for 76 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 93, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 90, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -43,7 +43,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
 | 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
 | 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
+| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
 | 110401 | BASE - FLOOR PANEL ASSY - F1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | HOLD |
 | 111401 | BASE - FLOOR PANEL - F1 | main | yes | yes | yes | yes | yes | yes | n/a | K-B02, K-B03 | HOLD |
 | 111501 | BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-B04 | HOLD |
@@ -63,9 +63,9 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 513101 | LINING - TRAY - CEILING | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
 | 513102 | LINING - RIB - CEILING | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L07 | open: drawing |
 | 513201 | LINING - FELT - CEILING | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04, K-L08 | done |
-| 513301 | LINING - FILL - CEILING - BAY A | main | yes | yes | yes | yes | no | yes | n/a | K-P05, K-L09 | open: drawing |
-| 513302 | LINING - FILL - CEILING - BAY B | main | yes | yes | yes | yes | no | yes | n/a | K-P05, K-L09 | open: drawing |
-| 513303 | LINING - FILL - CEILING - BAY C | main | yes | yes | yes | yes | no | yes | n/a | K-P05, K-L09 | open: drawing |
+| 513301 | LINING - FILL - CEILING - BAY A | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
+| 513302 | LINING - FILL - CEILING - BAY B | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
+| 513303 | LINING - FILL - CEILING - BAY C | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-P05, K-L09 | done |
 
 ### CEILING (builds AIR, D-80)
 
@@ -138,23 +138,23 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 350001 | FRONT - DECOR BLOCK ASSY - DL | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D18 | open: drawing |
-| 351101 | FRONT - DECOR SKIN - DL | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D19 | open: drawing |
-| 351104 | FRONT - DECOR FRAME - DL | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D20 | open: drawing |
-| 351102 | FRONT - DECOR BACK PLATE - DL | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D21 | done |
-| 351103 | FRONT - DOOR HINGE-SIDE STOP - DL | PR #105 | yes | yes | yes | no | no | yes | yes | K-D22 | open: DXF or cut list, drawing |
-| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
-| 351201 | FRONT - DECOR SKIN - DT | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
-| 351204 | FRONT - DECOR FRAME - DT | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D15 | open: drawing |
-| 351202 | FRONT - DECOR BACK PLATE - DT | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
-| 351203 | FRONT - DOOR TOP STOP - DT | PR #105 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
-| 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
-| 351301 | FRONT - DECOR SKIN - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
-| 351306 | FRONT - DECOR FRAME - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D04, K-D05 | open: drawing |
-| 351302 | FRONT - DECOR BACK PLATE - DR | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
-| 351305 | FRONT - DECOR ACCESS PANEL - DR | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
-| 351303 | FRONT - DECOR INNER PANEL - DR | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-D08 | done |
-| 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D09 | open: drawing |
+| 350001 | FRONT - DECOR BLOCK ASSY - DL | main | yes | yes | yes | n/a | no | yes | n/a | K-D18 | open: drawing |
+| 351101 | FRONT - DECOR SKIN - DL | main | yes | yes | yes | yes | no | yes | n/a | K-D19 | open: drawing |
+| 351104 | FRONT - DECOR FRAME - DL | main | yes | yes | yes | yes | no | yes | yes | K-D20 | open: drawing |
+| 351102 | FRONT - DECOR BACK PLATE - DL | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D21 | done |
+| 351103 | FRONT - DOOR HINGE-SIDE STOP - DL | main | yes | yes | yes | no | no | yes | yes | K-D22 | open: DXF or cut list, drawing |
+| 350002 | FRONT - DECOR BLOCK ASSY - DT | main | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
+| 351201 | FRONT - DECOR SKIN - DT | main | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
+| 351204 | FRONT - DECOR FRAME - DT | main | yes | yes | yes | yes | no | yes | yes | K-D15 | open: drawing |
+| 351202 | FRONT - DECOR BACK PLATE - DT | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D16 | done |
+| 351203 | FRONT - DOOR TOP STOP - DT | main | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
+| 350003 | FRONT - DECOR BLOCK ASSY - DR | main | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
+| 351301 | FRONT - DECOR SKIN - DR | main | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
+| 351306 | FRONT - DECOR FRAME - DR | main | yes | yes | yes | yes | no | yes | yes | K-D04, K-D05 | open: drawing |
+| 351302 | FRONT - DECOR BACK PLATE - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
+| 351305 | FRONT - DECOR ACCESS PANEL - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
+| 351303 | FRONT - DECOR INNER PANEL - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-D08 | done |
+| 351304 | FRONT - DECOR INNER PANEL FELT - DR | main | yes | yes | yes | yes | no: as a felt or fill piece on its DXF (D-128) it needs in its row in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv: thickness (9 mm, as in its STEP), through features only (its row names stepped) | yes | n/a | K-D09 | open: drawing |
 | 360001 | FRONT - DOOR UNIT | main | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | main | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 | 361002 | FRONT - DOOR KICK STRIP | main | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
@@ -349,8 +349,8 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 368005 | FRONT - FRAME-STOP SEAL | PR #105 | H-20 | no | F-03 | open: maker and SKU |
-| 368007 | FRONT - DOOR CATCH - IN DT | PR #105 | H-23 | yes | F-02 | done |
+| 368005 | FRONT - FRAME-STOP SEAL | main | H-20 | no | F-03 | open: maker and SKU |
+| 368007 | FRONT - DOOR CATCH - IN DT | main | H-23 | yes | F-02 | done |
 | 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | main | H-15 | yes | T13 | done |
 | 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | main | H-16 | yes | F-03 | done |
 | 368101 | FRONT - DOOR HINGE - HOLD | main | H-21 | HOLD | T13 | HOLD |
@@ -400,6 +400,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
 - D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: "on hold" does; "holds", "holder" and "threshold" don't.
 - D-113: the parts tools/drawgen draws (its specs.py: 111101, 111103, 211101, 211102, 211501, 211502, 211503, 211504) are never blocked by a locked screen, because drawgen doesn't run in Fusion.
+- D-128 (a felt or fill piece with through-openings or edge notches on its DXF and a full parts-list row) is read by the mechanical check's own functions (prism_shapes, felt_dxf_lacks), from the working tree only, as C05 reads it; a plain rectangle on a full cut-list row passes on D-89 first.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.
 - A register number's product status comes from the joints register: on HOLD, or named (DECIDED or from a source), or left to the parts list; a team number's from its parts list.
