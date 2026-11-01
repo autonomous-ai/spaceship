@@ -390,20 +390,33 @@ def load_checks():
     return c_geometry, c_drawings
 
 
-def drawgen_parts(specs=None):
+def drawgen_parts(root=None):
     """D-113 (1): the numbers tools/drawgen draws, which a locked screen never holds: every number its specs.py
-    registers, and the numbers a registered tabulated sheet covers. Read from drawgen's own registry, so a part it
-    takes on (111103 next) counts as soon as drawgen lists it."""
-    if specs is None:
-        spec = importlib.util.spec_from_file_location("drawgen_specs", ROOT / "tools" / "drawgen" / "specs.py")
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        specs = mod.SPECS
-    out = set()
-    for pn, (_team, _kind, conf) in specs.items():
-        out.add(pn)
-        out.update((conf or {}).get("covers", []))
-    return out
+    registers, and the numbers a registered tabulated sheet covers. Read by the mechanical check's own reader
+    (c_drawings.drawgen_parts, PR #233), so the checklist and C05 can't list them apart; a part drawgen takes on
+    counts as soon as drawgen lists it."""
+    _geometry, c_drawings = load_checks()
+    return c_drawings.drawgen_parts(str(root or ROOT))
+
+
+def d128_pieces(candidates, root=None):
+    """D-128 as C05 reads it: {number: what its DXF and parts-list row still lack, [] when they stand in for a drawing}
+    for each felt or fill piece in candidates (numbers) that has a DXF. The DXF is C05's own pick: its file index
+    (c_drawings.index_files) and its highest revision, as check_drawings takes it. The shapes are the mechanical
+    check's own c_drawings.prism_shapes over the per-part STEP files c_geometry.models finds, and each piece is read by
+    its felt_dxf_lacks (PR #233). Read from the working tree, as C05 does."""
+    candidates = sorted(set(candidates or ()))
+    if not candidates:
+        return {}
+    root = str(root or ROOT)
+    c_geometry, c_drawings = load_checks()
+    idx = c_drawings.index_files(root)
+    dxf = {pn: sorted(idx[pn]["DXF"])[-1][1] for pn in candidates if idx.get(pn, {}).get("DXF")}
+    if not dxf:
+        return {}
+    _models, per_part = c_geometry.models(root)
+    prism = c_drawings.prism_shapes(per_part, c_geometry.load_step)
+    return {pn: c_drawings.felt_dxf_lacks(root, pn, prism.get(pn), path) for pn, path in dxf.items()}
 
 
 def d125_strips(root=None):
@@ -419,10 +432,11 @@ def d125_strips(root=None):
 
 
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
-                dxf_texts=None, d125=None, drawgen=None):
+                dxf_texts=None, d125=None, drawgen=None, d128=None):
     """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule).
     d125: number -> C05's D-125 reading of a plain strip or sheet (d125_strips), None skips that rule.
-    drawgen: the numbers tools/drawgen draws (drawgen_parts), never blocked by a locked screen (D-113)."""
+    drawgen: the numbers tools/drawgen draws (drawgen_parts), never blocked by a locked screen (D-113).
+    d128: number -> what a felt or fill piece's DXF and row still lack for D-128 (d128_pieces), [] when nothing."""
     chars, _, accept = fai
     tab_cover = tab_cover or {}
     by_cut_row = cut_rows(cut_texts)
@@ -475,6 +489,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "cut list (D-89)"
             elif soft == "soft" and by_pn.get(pn, {}).get("DXF"):
                 dwg = "DXF (D-89)"
+            elif soft == "felt or fill" and (d128 or {}).get(pn) == []:
+                dwg = "DXF and row (D-128)"
             elif strip_ok:
                 dwg = "row: a plain strip or sheet (D-125)"
             elif (not soft and r["make_buy"] == "make" and kind_of(pn) == "part" and by_pn.get(pn, {}).get("DXF")
@@ -489,6 +505,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                     dwg = "no: its DXF can't be read (D-89)"
             elif strip:
                 dwg = "no: as a plain strip or sheet (D-125) its row in %s doesn't give %s" % (strip[1], ", ".join(strip[0]))
+            elif soft == "felt or fill" and (d128 or {}).get(pn):
+                dwg = "no: as a felt or fill piece on its DXF (D-128) it needs %s" % "; ".join(d128[pn])
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
@@ -727,6 +745,9 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
             "does; \"holds\", \"holder\" and \"threshold\" don't.",
             "- D-113: the parts tools/drawgen draws (its specs.py: " + (", ".join(sorted(drawgen)) or "none yet") + ") are never "
             "blocked by a locked screen, because drawgen doesn't run in Fusion.",
+            "- D-128 (a felt or fill piece with through-openings or edge notches on its DXF and a full parts-list row) is read "
+            "by the mechanical check's own functions (prism_shapes, felt_dxf_lacks), from the working tree only, as C05 "
+            "reads it; a plain rectangle on a full cut-list row passes on D-89 first.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
             "that names the number or its register ID.",
@@ -784,8 +805,14 @@ def main(argv=None):
     except Exception as e:  # the checklist still runs; drawgen's parts then count as Fusion's (D-84)
         print(f"tools/drawgen's parts not read ({type(e).__name__}: {e}); a locked screen blocks them as Fusion's")
         drawgen = set()
+    felts = {r["part_number"] for r in parts if r["make_buy"] == "make" and soft_kind(r["name"]) == "felt or fill"}
+    try:
+        d128 = d128_pieces(felts)
+    except Exception as e:  # the checklist still runs; the drawing column then waits on D-128's drawings
+        print(f"D-128 not read ({type(e).__name__}: {e}); felt and fill pieces with openings count only with a drawing")
+        d128 = {}
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
-                               screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125, drawgen)
+                               screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125, drawgen, d128)
     made += files_only(by_pn, parts, files, labels, screen, fai[0], tab_cover)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]

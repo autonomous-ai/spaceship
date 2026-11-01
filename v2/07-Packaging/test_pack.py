@@ -142,8 +142,8 @@ def test_d87_in_the_steps():
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
     assert pack.PIECE["2-10"].kg <= 20 and pack.PIECE["2-17"].kg <= 20
     assert len(tags) == 42
-    step20 = next(s for s in pack.STEPS if s["n"] == 20)
-    assert all(o["secs"] < 600 for o in step20["ops"])
+    power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
+    assert all(o["secs"] < 600 for o in power["ops"])
 
 
 def test_step_picture_script_and_data():
@@ -162,13 +162,86 @@ def test_step_picture_script_and_data():
 
 
 def test_sizes_follow_the_skeleton():
-    # panel sizes are the skeleton's named values, not typed numbers
-    b1 = pack.PIECE["1-03"]
-    assert b1.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
-    l1 = pack.PIECE["1-05"]
-    assert l1.dims == pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    # a panel with no CAD yet is the skeleton's named values; one with CAD is at least that, plus what its CAD adds
+    b3 = pack.PIECE["1-07"]
+    assert b3.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    b1, l1 = pack.PIECE["1-03"], pack.PIECE["1-05"]
+    sk_b1 = pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    sk_l1 = pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    assert all(d >= s for d, s in zip(b1.dims, sk_b1)) and all(d >= s for d, s in zip(l1.dims, sk_l1)), (b1.dims, l1.dims)
+    assert b1.dims[0] == pack.sk("half_pw") and l1.dims[0] == pack.sk("side_l")
     f1 = pack.PIECE["1-01"]
     assert f1.dims[2] == pack.sk("floor_t") + pack.sk("mat_t")
+
+
+def test_cad_size_outgrowing_its_plan_is_caught():
+    # K14: a planned size smaller than the merged CAD fails (the decor blocks were planned as boxes 30 mm too narrow)
+    m = pack.Model()
+    assert "K14" not in failing(m)
+    kind, dims, files = m.cad["2-09"]
+    assert kind == "box" and dims[1] > 300, dims          # DL with its hinge-side stops
+    dl = pack.PIECE["2-09"]
+    saved = dl.dims
+    dl.dims = pack.S(2290, 278, 205)                       # the old box
+    try:
+        assert "K14" in failing(pack.Model())
+    finally:
+        dl.dims = saved
+
+
+def test_bundle_parts_each_fit():
+    # a bundle or carton is checked part by part: a ledge carton too short for the ledge top fails
+    m = pack.Model()
+    kind, parts, _ = m.cad["2-16"]
+    assert kind == "parts" and {pn for pn, _ in parts} >= {"811101", "818101", "818102"}, parts
+    led = pack.PIECE["2-16"]
+    saved = led.dims
+    led.dims = pack.S(900, 250, 120)
+    try:
+        assert "K14" in failing(pack.Model())
+    finally:
+        led.dims = saved
+
+
+def test_d129_keys_on_the_side_bands():
+    # D-129: the side bands carry the back-corner keys; the back band ships with keyholes only, 2420 long
+    keys = {p.tag: sum(u for h, u in p.mass if h == "KEY") for p in pack.PIECES}
+    assert keys["2-04"] == 0 and keys["2-05"] == 2 and keys["2-06"] == 2 and keys["2-15"] == 2, keys
+    m = pack.Model()
+    assert m.cad["2-04"][1][0] <= 2420 + 1e-6, m.cad["2-04"]
+    tiers, _ = m.tiers2()
+    lane = next(ln for t in tiers for ln in t["lanes"] if any(i["tag"] == "2-04" for i in ln["items"]))
+    assert lane["length"] <= pack.MINE["pal_long_l_exact"].value, lane["length"]
+
+
+def test_roof_sleeve_goes_on_after_the_soffit():
+    # #263: the roof sleeve and grille ride loose with C2 and go on in their own step, after the soffit hangs
+    m = pack.Model()
+    kind, c2, _ = m.cad["1-12"]
+    assert kind == "box" and c2[2] > 60, c2                 # C2 with the sleeve seated in its slot
+    assert m.cad["2-10"][1][2] < 240, m.cad["2-10"]          # the soffit without it
+    soffit = next(s["n"] for s in pack.STEPS if "2-10" in s["tags"])
+    sleeve = next(s for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
+    assert sleeve["n"] == soffit + 1 and sleeve["n"] <= pack.CLOCK_LAST_STEP
+    assert [s["n"] for s in pack.STEPS] == list(range(1, len(pack.STEPS) + 1))
+
+
+def test_lanes_follow_the_parts():
+    # a lane is as wide as its widest part plus the wrap a side; nothing in a tier passes the deck
+    m = pack.Model()
+    w = pack.MINE["wrap"].value
+    tiers, height = m.tiers2()
+    dr_lane = next(ln for t in tiers for ln in t["lanes"] if any(i["tag"] == "2-03" for i in ln["items"]))
+    assert abs(dr_lane["width"] - (pack.PIECE["2-03"].dims[1] + 2 * w)) < 1e-9, dr_lane["width"]
+    assert all(t["width"] <= pack.MINE["pal_std_l_exact"].value for t in tiers)
+    assert height <= pack.lay("max_load_h")
+    dt = pack.PIECE["2-12"]
+    saved = dt.dims
+    dt.dims = pack.S(1699, 420, 203)                       # a DT 114 mm wider no longer fits tier 3
+    try:
+        assert "K5" in failing(pack.Model())
+    finally:
+        dt.dims = saved
 
 
 def test_register_parser_reads_counts_with_notes(tmp=Path(__file__).resolve().parent / "_register_test2.md"):
@@ -226,17 +299,19 @@ def test_numbers_match_the_master_bom():
 
 
 def test_tbd_piece_takes_its_bom_number(tmp=Path(__file__).resolve().parent / "_bom_test.csv"):
-    # when an owner's list lands with the piece's exact name, the label gets the number without a code change
-    dr = pack.PIECE["2-11"]          # the air column: AIR's list hasn't landed
-    assert dr.pn_declared.startswith("TBD")
+    # when an owner's list lands with the piece's exact name, the label gets the number without a code change;
+    # the example is a piece still TBD in the real BOM (it was the air column until AIR's list landed, PR #91)
+    tag, dr = next((t, pc) for t, pc in sorted(pack.PIECE.items())
+                   if pc.pn_declared.startswith("TBD") and pc.pn == pc.pn_declared)
+    vi = dr.vi + " (thử)"
 
     def add(rows):
-        rows.append(dict(rows[-1], part_number="699999", name=dr.name, name_vi="Cột dẫn gió (thử)"))
+        rows.append(dict(rows[-1], part_number="699999", name=dr.name, name_vi=vi))
     _bom_copy(add, tmp)
     try:
         m = pack.Model(bom_path=tmp)
-        assert dr.pn == "699999" and dr.vi == "Cột dẫn gió (thử)", (dr.pn, dr.vi)
-        assert "2-11" in m.filled and "K13" not in failing(m)
+        assert dr.pn == "699999" and dr.vi == vi, (tag, dr.pn, dr.vi)
+        assert tag in m.filled and "K13" not in failing(m)
     finally:
         tmp.unlink()
         pack.Model()   # back to the real BOM

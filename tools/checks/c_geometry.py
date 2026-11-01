@@ -203,6 +203,12 @@ def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None, faces=None):
         for g in groups:
             r = (max(a0, min(x[0] for x in g) - grow), min(a1, max(x[1] for x in g) + grow),
                  max(b0, min(x[2] for x in g) - grow), min(b1, max(x[3] for x in g) + grow))
+            # a strip no wider than the decided seam along the face's own edge is the seam to a part of the next face
+            # (a decor block in front, the band below), which this face can't see; that face reports what is missing
+            edge_seam = ((r[0] <= a0 + 1e-3 or r[1] >= a1 - 1e-3) and r[1] - r[0] <= seam + 0.1) or \
+                        ((r[2] <= b0 + 1e-3 or r[3] >= b1 - 1e-3) and r[3] - r[2] <= seam + 0.1)
+            if edge_seam:
+                continue
             near = sorted({b.label.split(" / ")[-1] for b in face_bodies
                            if b.box[aa] <= r[1] + 1e-3 and b.box[aa + 3] >= r[0] - 1e-3
                            and b.box[bb] <= r[3] + 1e-3 and b.box[bb + 3] >= r[2] - 1e-3})
@@ -222,12 +228,16 @@ def _glob_exists(root, pattern):
 # "opening" there is mostly a part not merged yet (the back walls, a band, a decor block), not a gap in what is there.
 # Each face lists the parts it needs, by the words in their names; the seams between parts already there are the
 # gap rules' job. The skeleton is complete and is always checked.
+# words may be joined by spaces or by the file names' hyphens (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD)
 SHELL_FACE_NEEDS = {
-    "back": (r"PANEL ASSY\W+BACK LOWER\W+LH", r"PANEL ASSY\W+BACK LOWER\W+RH", r"PANEL ASSY\W+BACK UPPER\W+LH",
-             r"PANEL ASSY\W+BACK UPPER\W+RH", r"CEILING\W+PANEL ASSY"),
-    "left": (r"PANEL ASSY\W+SIDE LOWER\W+LH", r"PANEL ASSY\W+SIDE UPPER\W+LH", r"DECOR BLOCK\W+(ASSY\W+)?DL\b"),
-    "right": (r"PANEL ASSY\W+SIDE LOWER\W+RH", r"PANEL ASSY\W+SIDE UPPER\W+RH", r"DECOR BLOCK\W+(ASSY\W+)?DR\b"),
-    "top": (r"CEILING\W+PANEL ASSY\W+C1\b", r"CEILING\W+PANEL ASSY\W+C2\b", r"DECOR BLOCK\W+(ASSY\W+)?DT\b"),
+    "back": (r"PANEL\W+ASSY\W+BACK\W+LOWER\W+(?:LH|B1)", r"PANEL\W+ASSY\W+BACK\W+LOWER\W+(?:RH|B2)", r"PANEL\W+ASSY\W+BACK\W+UPPER\W+(?:LH|B3)",
+             r"PANEL\W+ASSY\W+BACK\W+UPPER\W+(?:RH|B4)", r"CEILING\W+PANEL\W+ASSY"),
+    # a side face's bottom seam closes on its side band, so the band is one of its parts too
+    "left": (r"PANEL\W+ASSY\W+SIDE\W+LOWER\W+LH", r"PANEL\W+ASSY\W+SIDE\W+UPPER\W+LH", r"DECOR\W+BLOCK\W+(ASSY\W+)?DL(?![A-Z0-9])",
+             r"BAND\W+(ASSY\W+)?SIDE\W+LH"),
+    "right": (r"PANEL\W+ASSY\W+SIDE\W+LOWER\W+RH", r"PANEL\W+ASSY\W+SIDE\W+UPPER\W+RH", r"DECOR\W+BLOCK\W+(ASSY\W+)?DR(?![A-Z0-9])",
+              r"BAND\W+(ASSY\W+)?SIDE\W+RH"),
+    "top": (r"CEILING\W+PANEL\W+ASSY\W+C1(?![A-Z0-9])", r"CEILING\W+PANEL\W+ASSY\W+C2(?![A-Z0-9])", r"DECOR\W+BLOCK\W+(ASSY\W+)?DT(?![A-Z0-9])"),
     # the back corners of the base are the side bands' ends, so each base face needs the bands that meet it
     "back-base": (r"BAND\W+(ASSY\W+)?BACK", r"BAND\W+(ASSY\W+)?SIDE\W+LH", r"BAND\W+(ASSY\W+)?SIDE\W+RH"),
     "left-base": (r"BAND\W+(ASSY\W+)?SIDE\W+LH", r"BAND\W+(ASSY\W+)?BACK"),
