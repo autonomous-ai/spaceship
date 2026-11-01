@@ -147,6 +147,29 @@ class Sheet:
                     return False
         return True
 
+    @staticmethod
+    def _seg_seg_dist(p, q, a, b):
+        """The shortest distance between segments pq and ab (0 when they cross)."""
+        def cross(o, u, v):
+            return (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0])
+        d1, d2, d3, d4 = cross(a, b, p), cross(a, b, q), cross(p, q, a), cross(p, q, b)
+        if ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0)) and d1 and d2 and d3 and d4:
+            return 0.0
+
+        def pt_seg(c, u, v):
+            dx, dy = v[0] - u[0], v[1] - u[1]
+            L2 = dx * dx + dy * dy
+            t = 0.0 if L2 < 1e-18 else max(0.0, min(1.0, ((c[0] - u[0]) * dx + (c[1] - u[1]) * dy) / L2))
+            return math.hypot(c[0] - u[0] - t * dx, c[1] - u[1] - t * dy)
+        return min(pt_seg(p, a, b), pt_seg(q, a, b), pt_seg(a, p, q), pt_seg(b, p, q))
+
+    def seg_free(self, p, q, gap=0.3):
+        """True when the segment pq comes no closer than gap to any line drawn so far or any text's ink box."""
+        if any(self._seg_box(p, q, b, gap) for b in self.boxes):
+            return False
+        box = (min(p[0], q[0]), min(p[1], q[1]), max(p[0], q[0]), max(p[1], q[1]))
+        return not any(self._seg_seg_dist(p, q, a, b) < gap for a, b in self.grid.near(box, gap))
+
     def is_free(self, box):
         if box[0] < 22 or box[2] > self.W - 12 or box[1] < 12 or box[3] > self.H - 12:
             return False
@@ -595,7 +618,25 @@ class Sheet:
                      (o[0] - away[0] * 3.5, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
                       "left" if away[0] < 0 else "right")]
         pick = next((c_ for c_ in cands if self.is_free(self.text_box(c_[0], c_[1], name, size, c_[2], bold=True))),
-                    cands[0])
+                    None)
+        if pick is None:
+            # farther out, on a thin leader that crosses nothing (an origin in an open slot's mouth, BASE's 111103)
+            for dist in (6.0, 9.0, 13.0, 18.0):
+                for dx, dy in ((-1, -1), (1, -1), (-1, 1), (1, 1), (0, -1), (0, 1), (-1, 0), (1, 0)):
+                    n_ = math.hypot(dx, dy)
+                    ux, uy = dx / n_, dy / n_
+                    end = (o[0] + ux * dist, o[1] + uy * dist)
+                    an = "left" if ux > 0.3 else ("right" if ux < -0.3 else "center")
+                    ty = (end[1] + (0.6 if uy >= 0 else -size - 0.6)) if abs(uy) > 0.3 else end[1] - size / 2
+                    tx = end[0] + (0.6 if an == "left" else (-0.6 if an == "right" else 0.0))
+                    if self.is_free(self.text_box(tx, ty, name, size, an, bold=True)) and \
+                            self.seg_free((o[0] + ux * 1.8, o[1] + uy * 1.8), end):
+                        self.line((o[0] + ux * 1.2, o[1] + uy * 1.2), end, 0.18)
+                        pick = (tx, ty, an)
+                        break
+                if pick:
+                    break
+        pick = pick or cands[0]
         self.text(pick[0], pick[1], name, size, pick[2], bold=True)
 
     @staticmethod
