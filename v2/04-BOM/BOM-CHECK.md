@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 369 part lines (174 made, 195 bought, 148 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 356.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 368 part lines (174 made, 194 bought, 146 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -116,8 +116,6 @@ Read from: this working tree.
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
 
 **CEILING (builds AIR, D-80)**
-- 618101 AIR - SENSOR HUB ZONE - HOLD: HOLD (HOLD)
-- 618104 AIR - SOFFIT HANGER STUD - HOLD: HOLD (HOLD)
 - 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD: HOLD (HOLD)
 - 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD: HOLD (HOLD)
 - 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
@@ -126,7 +124,6 @@ Read from: this working tree.
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
 - 618402 AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD: HOLD (HOLD)
 - 618501 AIR - RISER BUFFER - RUBBER - M6 - HOLD: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
@@ -225,7 +222,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 157 numbers, 67 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 180 numbers, 90 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -386,6 +383,29 @@ From `v2/04-BOM/number-allocation.csv`: 157 numbers, 67 not in a team's list yet
 | 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
 | 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
 | 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
+| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | ALLOCATED |
+| 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | ALLOCATED |
+| 412002 | CEILING - FRAME CLIP TAB | 411101 411102 | 12 | ALLOCATED |
+| 513103 | LINING - CATCH EYE BRACKET - CEILING | 510301 | 4 | ALLOCATED |
+| 611212 | AIR - SOFFIT UNDERSIDE HINGE - RIVETED PIN | 610201 | 4 | ALLOCATED |
+| 611213 | AIR - SOFFIT CARTRIDGE STRAP | 610201 | 2 | ALLOCATED |
+| 611214 | AIR - SOFFIT CARTRIDGE STRAP ANGLE | 610201 | 1 | ALLOCATED |
+| 618403 | AIR - FAN BOX MOUNT - EXHAUST - HOLD | 610402 | 4 | ALLOCATED |
+| 610403 | AIR - RISER TRANSITION | 610401 | 1 | ALLOCATED |
+| 610404 | AIR - SUPPLY TRANSITION | 610401 | 1 | ALLOCATED |
+| 611701 | AIR - RISER TRANSITION - LEFT WRAPPER | 610403 | 1 | ALLOCATED |
+| 611702 | AIR - RISER TRANSITION - RIGHT WRAPPER | 610403 | 1 | ALLOCATED |
+| 611703 | AIR - RISER TRANSITION - CHEEK | 610403 | 2 | ALLOCATED |
+| 611801 | AIR - SUPPLY TRANSITION - SHELL | 610404 | 1 | ALLOCATED |
+| 611802 | AIR - SUPPLY TRANSITION - FLOOR | 610404 | 1 | ALLOCATED |
+| 611803 | AIR - SUPPLY TRANSITION - VANE - OVER THE BOX | 610404 | 3 | ALLOCATED |
+| 611804 | AIR - SUPPLY TRANSITION - VANE - BESIDE THE BOX | 610404 | 2 | ALLOCATED |
+| 611215 | AIR - SOFFIT LATCH BRACKET | 610201 | 4 | ALLOCATED |
+| 611409 | AIR - FAN BOX MOUNT ANGLE | 610201 | 2 | ALLOCATED |
+| 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
+| 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
+| 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
 
 ## Rules
 

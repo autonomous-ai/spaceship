@@ -126,7 +126,7 @@ AIR_PARAMS = [
     ("rail_w", "24 mm", "mm", "assumption", "soffit top rail width (room side); the door-side rail runs from the soffit's door side to 24 from the side walls' front end (22.5 wide), so it stays 1 mm clear of the roof sleeve"),
     ("stud_l", "16 mm", "mm", "confirmed", "D-90 (HOLD-18, joints register #99): the hanger studs are M6 x 16 socket head bolts"),
     ("stud_eng", "9 mm", "mm", "assumption", "thread engaged in the ceiling's rivnut (10.16 installed length less the lead-in)"),
-    ("rvn_head", "0.76 mm", "mm", "source", "H-03 rivnut head under the frame face (Sherex CAH2-610-4.2, 0.76, SHX2)"),
+    ("rvn_head", "0.76 mm", "mm", "source", "H-03 rivnut head under the frame face (Sherex CAL2-610-4.2, 0.76 +/-0.08, SHX3; D-163)"),
     ("hd_h", "6 mm", "mm", "source", "ISO 4762 M6 head height 6 (the studs and the lock screws)"),
     ("hd_c", "1.5 mm", "mm", "confirmed", "D-90 (HOLD-18): 1.5 clear under each head"),
     ("stud_d", "10 mm", "mm", "source", "ISO 4762 M6 head diameter 10"),
@@ -218,7 +218,7 @@ AIR_PARAMS = [
     ("sb_yf", "31 mm", "mm", "source", "PM ruling 2026-11-01 and FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the supply fan box's front face at Y -819, 5 mm "
      "behind the cross tube F09 over it (Z 1904 to 1924), now 3 off the skin (was 28: Y -822)"),
     ("sb_z0", "1650 mm", "mm", "source", R7E + ": supply fan box Z 1650 to 1950"),
-    ("rs_x0", "959 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the riser's space X 959 to 1098, 5.9 off the glass-edge tube B07 (was 956; "
+    ("rs_x0", "959 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the riser's space X 959 to 1098, 5.7 off the glass-edge tube B07 at its foot (OCC on #313's DR STEP; was 956; "
      "report 7e had 955)"),
     ("rs_w", "139 mm", "mm", "source", R7E + ": intake riser 139 wide, 155 deep"),
     ("rs_d", "150 mm", "mm", "source", "the air report's D-130 table (riser_y, riser_lo): the riser Y -803 to -653, 6.5 off "
@@ -397,9 +397,9 @@ HARDWARE = {
                     "Bulong lục giác chìm M6 × 16", 4, 0.0062),
     "grille_washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
                       "Long đen to M6 inox", 4, 0.0028),
-    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 4, 0.0067),
+    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm", 4, 0.0067),
     # the riser buffer 618501 screws into one rivnut set at the factory in the riser's front wall (PM ruling 2026-11-01)
-    "buffer_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 1,
+    "buffer_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm", 1,
                       0.0067),
 }
 
