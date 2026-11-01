@@ -1850,6 +1850,14 @@ def assembly_bodies(design):
     return out
 
 
+def state_name(state):
+    """Fusion's name for a timeline item's health state."""
+    h = adsk.fusion.FeatureHealthStates
+    return {h.HealthyFeatureHealthState: "healthy", h.WarningFeatureHealthState: "warning",
+            h.ErrorFeatureHealthState: "error", h.SuppressedFeatureHealthState: "suppressed",
+            h.RolledBackFeatureHealthState: "rolled back", h.UnknownFeatureHealthState: "unknown"}.get(state, str(state))
+
+
 def placed_clashes(placed):
     """Pairwise solid overlaps over 1 mm3 between every placed copy (each copy moved by its occurrence's
     transform); the overlaps allowed_overlap() names are by design. Returns (hits, unexpected)."""
@@ -2130,15 +2138,15 @@ def run(_context):
         if it.healthState == healthy:
             continue
         msg = (it.errorOrWarningMessage or "").replace("\n", " ")[:300]
-        print("HEALTH|%s|%s|%s" % (it.name, "warning" if it.healthState == warning else "error", msg))
+        print("HEALTH|%s|%s|%s" % (it.name, state_name(it.healthState), msg))
         if it.isGroup:
-            # a group is only a container: it is judged by its own items, each printed with Fusion's message (dry
-            # runs 5 and 6 met every STEP import's group in error with no message of its own)
+            # a group is only a container: it is judged by its own items, each printed with Fusion's message (a STEP
+            # import's group reports "unknown", its occurrence and base feature healthy: dry run 7's probe)
             g = adsk.fusion.TimelineGroup.cast(it)
             kids = [g.item(j) for j in range(g.count)]
             sick = [k for k in kids if k.healthState != healthy]
             for k in kids:
-                print("HEALTH|  in %s: %s|%s|%s" % (it.name, k.name, k.healthState,
+                print("HEALTH|  in %s: %s|%s|%s" % (it.name, k.name, state_name(k.healthState),
                                                     (k.errorOrWarningMessage or "").replace("\n", " ")[:200]))
             for k in sick:
                 if not (k.healthState == warning and re.match(r"Group\d+$", it.name)):
