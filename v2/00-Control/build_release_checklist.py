@@ -401,16 +401,22 @@ def drawgen_parts(root=None):
 
 def d128_pieces(candidates, root=None):
     """D-128 as C05 reads it: {number: what its DXF and parts-list row still lack, [] when they stand in for a drawing}
-    for each felt or fill piece in candidates (number -> its DXF, repo-relative, in the working tree). The shapes are
-    the mechanical check's own c_drawings.prism_shapes over the per-part STEP files c_geometry.models finds, and each
-    piece is read by its felt_dxf_lacks (PR #233). Read from the working tree, as C05 does."""
+    for each felt or fill piece in candidates (numbers) that has a DXF. The DXF is C05's own pick: its file index
+    (c_drawings.index_files) and its highest revision, as check_drawings takes it. The shapes are the mechanical
+    check's own c_drawings.prism_shapes over the per-part STEP files c_geometry.models finds, and each piece is read by
+    its felt_dxf_lacks (PR #233). Read from the working tree, as C05 does."""
+    candidates = sorted(set(candidates or ()))
     if not candidates:
         return {}
     root = str(root or ROOT)
     c_geometry, c_drawings = load_checks()
+    idx = c_drawings.index_files(root)
+    dxf = {pn: sorted(idx[pn]["DXF"])[-1][1] for pn in candidates if idx.get(pn, {}).get("DXF")}
+    if not dxf:
+        return {}
     _models, per_part = c_geometry.models(root)
     prism = c_drawings.prism_shapes(per_part, c_geometry.load_step)
-    return {pn: c_drawings.felt_dxf_lacks(root, pn, prism.get(pn), str(Path(root, dxf))) for pn, dxf in candidates.items()}
+    return {pn: c_drawings.felt_dxf_lacks(root, pn, prism.get(pn), path) for pn, path in dxf.items()}
 
 
 def d125_strips(root=None):
@@ -799,10 +805,9 @@ def main(argv=None):
     except Exception as e:  # the checklist still runs; drawgen's parts then count as Fusion's (D-84)
         print(f"tools/drawgen's parts not read ({type(e).__name__}: {e}); a locked screen blocks them as Fusion's")
         drawgen = set()
-    felts = {r["part_number"]: sorted(p for p in by_pn.get(r["part_number"], {}).get("DXF", []) if (ROOT / p).exists())
-             for r in parts if r["make_buy"] == "make" and soft_kind(r["name"]) == "felt or fill"}
+    felts = {r["part_number"] for r in parts if r["make_buy"] == "make" and soft_kind(r["name"]) == "felt or fill"}
     try:
-        d128 = d128_pieces({pn: dxfs[-1] for pn, dxfs in felts.items() if dxfs})
+        d128 = d128_pieces(felts)
     except Exception as e:  # the checklist still runs; the drawing column then waits on D-128's drawings
         print(f"D-128 not read ({type(e).__name__}: {e}); felt and fill pieces with openings count only with a drawing")
         d128 = {}

@@ -6,7 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (316e2e7), PR #235 (e9f720d), PR #203 (43238a4), PR #91 (7a04de1). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (6d31f28), PR #235 (e9f720d), PR #91 (7a04de1), PR #243 (a926f06), PR #250 (b5594ce). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #91 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-cleats changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #91 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -19,14 +21,14 @@ Read from: main (316e2e7), PR #235 (e9f720d), PR #203 (43238a4), PR #91 (7a04de1
 | CEILING (builds AIR, D-80) | 8 | 17 | 0 | 6 | 1 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
-| FRONT | 5 | 17 | 0 | 0 | 4 | 1 | 5 |
+| FRONT | 5 | 16 | 0 | 1 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 40 | 94 | 0 | 11 | 10 | 2 | 93 |
+| **All, each number once** | 40 | 93 | 0 | 12 | 10 | 2 | 93 |
 
-90 of the 145 made numbers have no drawing yet; for 76 of them the drawing is the only gap, so their drawings can start now (D-84).
+89 of the 145 made numbers have no drawing yet; for 75 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 90, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 89, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -154,7 +156,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 351302 | FRONT - DECOR BACK PLATE - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
 | 351305 | FRONT - DECOR ACCESS PANEL - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
 | 351303 | FRONT - DECOR INNER PANEL - DR | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-D08 | done |
-| 351304 | FRONT - DECOR INNER PANEL FELT - DR | main | yes | yes | yes | yes | no: as a felt or fill piece on its DXF (D-128) it needs in its row in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv: thickness (9 mm, as in its STEP), through features only (its row names stepped) | yes | n/a | K-D09 | open: drawing |
+| 351304 | FRONT - DECOR INNER PANEL FELT - DR | main | yes | yes | yes | yes | DXF and row (D-128) | yes | n/a | K-D09 | HOLD |
 | 360001 | FRONT - DOOR UNIT | main | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | main | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 | 361002 | FRONT - DOOR KICK STRIP | main | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
@@ -384,11 +386,6 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838007 | H-28 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 |
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
-| 831003 | H-34 | HARDWARE - FRAME CORNER CLEAT - 20 X 40 - 45 DEG |
-| 831004 | H-35 | HARDWARE - FRAME CORNER CLEAT - 40 X 40 - 45 DEG |
-| 831005 | H-36 | HARDWARE - FRAME CORNER CLEAT - 40 X 40 TO 20 X 40 |
-| 831006 | H-37 | HARDWARE - FRAME T PLUG - 20 X 40 STUD |
-| 108003 | H-38 | POD - FRAME CLEAT ADHESIVE - SIKAFAST-5215 NT WITH SIKAFAST-5200 |
 
 ## How it's built
 
