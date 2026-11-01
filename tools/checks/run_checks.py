@@ -33,6 +33,7 @@ from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
 import c_frames  # noqa: E402
+import c_seal  # noqa: E402
 import c_drawings  # noqa: E402
 import c_stacks  # noqa: E402
 import register  # noqa: E402
@@ -86,9 +87,16 @@ def run(root, rev):
             findings += c_geometry.check_gap_rules(root, mdl, bodies, rules)
             ran |= {"C02:" + mdl}
     asm = mdls["assembly"]
+    seal = None
     if asm:
         findings += c_geometry.check_bond_lines(root, "assembly", asm)    # D-137: every bonded skin bond_t off its frame
         ran.add("C02:assembly")
+        seal_fs, seal = c_seal.check_seal_line(root, "assembly", asm)    # the floor seal line, traced as rings
+        findings += seal_fs
+        if seal is not None:
+            ran.add("C01:seal-line")
+            inputs["seal_line_cuts"] = seal["cuts"]
+            inputs["seal_line_open_mm2"] = seal["total_mm2"]
     if any(b.solid.holes for b in asm):
         findings += c_geometry.check_alignment(root, "assembly", asm)
         findings += c_geometry.check_unmatched(root, "assembly", asm)
@@ -211,7 +219,7 @@ def run(root, rev):
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,
             "ran": sorted(ran), "findings": [f.to_dict() for f in findings], "stacks": stack_report,
-            "shipping": ship_report, "shipping_source": ship_src, "fastener_schedule": schedule}
+            "shipping": ship_report, "shipping_source": ship_src, "fastener_schedule": schedule, "seal_line": seal}
 
 
 def report_md(res, reg_ids):
@@ -251,6 +259,24 @@ def report_md(res, reg_ids):
     for s in res["shipping"]:
         L.append("| %s %s | %s | %s | %s | %s |" % (s["id"], s["name"].replace("|", "/"), s["kg"],
                                                   " x ".join("%g" % d for d in s["dims"]), s["ships_as"], s["status"]))
+    sl = res.get("seal_line")
+    if sl:
+        L.append("\n## Floor seal line (C01)\n")
+        L.append("Horizontal cuts from the room floor to Z %g (%s): %d cuts, %d sealed all round. Openings wider "
+                 "than 1 mm: %d, **%.0f mm² open in all** (calculation: each gap's width times its height, summed over "
+                 "the cuts). %s\n" % (sl["z_top"], sl["z_top_source"], sl["cuts"], sl["sealed_cuts"],
+                                      len(sl["openings"]), sl["total_mm2"],
+                                      " ".join("Taken down to the floor: %s, %g mm (%s)." % (t["pattern"], t["mm"],
+                                                                                           t["source"])
+                                               for t in sl["travel"])))
+        if sl["openings"]:
+            L.append("| Register | Between | At X, Y | Z | Width mm | Open mm² | Owner |")
+            L.append("|---|---|---|---|---|---|---|")
+            for o in sl["openings"]:
+                key = "C01|seal-gap|" + o["subject"]
+                L.append("| %s | %s | %.1f, %.1f | %.1f to %.1f | %.2f to %.2f | %.0f | %s |" % (
+                    reg_ids.get(key, ""), o["between"].replace("|", "/"), o["at"][0], o["at"][1], o["z"][0],
+                    o["z"][1], o["width"][0], o["width"][1], o["area"], o["owner"]))
     L.append("\n## Fastener schedule (C07)\n")
     L.append("%d fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.\n" % len(res["fastener_schedule"]))
     return "\n".join(L) + "\n"
