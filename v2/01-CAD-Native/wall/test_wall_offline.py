@@ -118,8 +118,11 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["access_d"], 19)              # FR-03: passes the 18 mm head washer
         self.assertEqual(v["bolt_line_y"], 824)          # R-J15: back panel tube centre
         self.assertEqual(v["bolt_d"], 7)                 # PM ruling on F-009
-        self.assertEqual(v["tube_t"], 1.0)               # D-131 start: steel perimeters and rivnut members at 1.0
-        self.assertEqual(v["stud_t"], 0.8)               # D-131 start: inner members at 0.8 (Joints' check)
+        self.assertEqual(v["tube_t"], 1.2)               # Joints' gauges (PM 05:29): side rails and front stiles
+        self.assertEqual(v["corner_t"], 1.0)             # the 40 x 40 members
+        self.assertEqual(v["stud_t"], 0.8)               # the studs
+        self.assertEqual(v["plate_t"], 2)                # the mitre plate (Joints' corner detail)
+        self.assertEqual(resolve(load_back("B1"))["tube_t"], 1.0)   # back perimeters
         self.assertAlmostEqual(v["rivnut_head_t"] + v["stopw_t"], v["seam_gap"])   # the 2.26 metal stop (R-J5)
         # the spigot is Joints' 831001 STEP (F-189): its pin top stands where WALL's rule puts it, and its M6 stud
         # stays inside the rivnut below its origin on the rivnut head

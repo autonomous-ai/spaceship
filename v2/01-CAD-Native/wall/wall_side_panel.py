@@ -129,12 +129,15 @@ WALL_PARAMS = [
      "D-34, D-54, kept by D-131 (the same outside sections in welded, galvanized steel box tube): 20 x 40; the 20 mm "
      "face carries the skin, so the 40 mm runs through the wall (outer_t = ACP 3 + frame 40)"),
     ("tube_d", "outer_t - skin_t - bond_t", "mm", "calculation", "frame depth = outer panel 46 - skin 3 - bond 3 = 40 (D-34)"),
-    ("tube_t", "1.0 mm", "mm", "assumption",
-     "D-131 start value for the steel perimeter members and every member that takes a rivnut (rails, front and back "
-     "stiles); the Joints Engineer's gauge check sets it"),
-    ("stud_t", "0.8 mm", "mm", "assumption",
-     "D-131 start value for the inner members (studs: no rivnut, only the skin's bond line), if the Joints "
-     "Engineer's gauge check allows it"),
+    ("tube_t", "1.2 mm", "mm", "source",
+     "the Joints Engineer's gauges for D-131 (PM ruling, 2026-11-01 05:29): 1.2 for a side panel's rails and front "
+     "stile, for margin against thin tube and weak welds (corner lift 74% on L1 and L2)"),
+    ("corner_t", "1.0 mm", "mm", "source",
+     "the same: the 40 x 40 members (the back stile, and the upper panel's top member) stay 1.0"),
+    ("stud_t", "0.8 mm", "mm", "source", "the same: the studs at 0.8 (no rivnut, only the skin's bond line)"),
+    ("plate_t", "2 mm", "mm", "source",
+     "the Joints Engineer's corner detail (2026-11-01 05:05): a 2 mm steel plate welded into each mitre, the members "
+     "cut back so it fits, centred on the old mitre line"),
     ("stile_pitch_max", "300 mm", "mm", "confirmed",
      "PM ruling 2026-11-01 (D-131 sample): the ACP flexes 2 mm or less under a 100 N push at a bay's centre, edges "
      "simply supported (make_acp_spans.py), so members about 300 apart; it was 400 (D-16, D-34)"),
@@ -1175,14 +1178,30 @@ def mitre(design, comp, body, tri, label, x_lo):
     return f
 
 
-def mitre_triangles(o, i):
-    """A corner's two cut triangles: the mitre line from the outer corner o to the inner corner i, extended a
-    tenth past both, closed toward the rail's end (rail) and toward the stile's end (stile)."""
+def mitre_triangles(o, i, ext=0.1):
+    """A corner's two cut triangles: the mitre line from the outer corner o to the inner corner i, extended by `ext`
+    of its length past both, closed toward the rail's end (rail) and toward the stile's end (stile)."""
     def at(a, b, k):
         return "(%s) + %s * ((%s) - (%s))" % (a, k, b, a)
-    o2 = (at(o[0], i[0], "-0.1"), at(o[1], i[1], "-0.1"))
-    i2 = (at(o[0], i[0], "1.1"), at(o[1], i[1], "1.1"))
+    o2 = (at(o[0], i[0], "-%g" % ext), at(o[1], i[1], "-%g" % ext))
+    i2 = (at(o[0], i[0], "%g" % (1 + ext)), at(o[1], i[1], "%g" % (1 + ext)))
     return [o2, (o2[0], i2[1]), i2], [o2, (i2[0], o2[1]), i2]
+
+
+def plated_mitre_triangles(design, o, i, w_rail, w_stile):
+    """D-131's corner (the Joints Engineer's detail, 2026-11-01): the two mitre triangles, each moved back along its
+    own member so the cut lines stand plate_t apart, centred on the old mitre line, for the 2 mm plate welded in
+    between: c = (plate_t / 2) x the mitre's length in the frame plane / the member's own width (1.41 for 20 to 20
+    and 40 to 40; 2.24 off a 20 rail and 1.12 off a 40 x 40 stile where they meet). o: the outer corner, i: the
+    inner corner, (along-rail, along-stile) expressions; w_rail, w_stile: the members' widths in the frame plane."""
+    rt, st = mitre_triangles(o, i, 0.3)
+    su = 1 if ev(design, i[0]) > ev(design, o[0]) else -1      # into the rail, along it
+    sv = 1 if ev(design, i[1]) > ev(design, o[1]) else -1      # into the stile, along it
+    hyp = "sqrt((%s) * (%s) + (%s) * (%s))" % (w_rail, w_rail, w_stile, w_stile)
+    cr = "(plate_t / 2) * %s / (%s)" % (hyp, w_rail)
+    cs = "(plate_t / 2) * %s / (%s)" % (hyp, w_stile)
+    return ([("(%s) %s %s" % (u, "+" if su > 0 else "-", cr), v) for u, v in rt],
+            [(u, "(%s) %s %s" % (v, "+" if sv > 0 else "-", cs)) for u, v in st])
 
 
 def side_corners():
@@ -1190,10 +1209,14 @@ def side_corners():
     the outer corner to the inner corner, so both members run to the outer corner: 45 degrees where the two are
     the same size; where a 40 x 40 meets a 20 x 40, 26.57 off square on the 40 x 40 and 63.43 on the 20 x 40."""
     yf, yb = Y_FRONT, Y_FRAME_BACK
-    return [("BOTTOM FRONT", "RAIL - BOTTOM", "STILE - FRONT", (yf, Z0), ("(%s) + tube_w" % yf, "(%s) + tube_w" % Z0)),
-            ("BOTTOM BACK", "RAIL - BOTTOM", "STILE - BACK", (yb, Z0), ("(%s) - corner_w" % yb, "(%s) + tube_w" % Z0)),
-            ("TOP FRONT", "RAIL - TOP", "STILE - FRONT", (yf, Z1), ("(%s) + tube_w" % yf, "(%s) - top_h" % Z1)),
-            ("TOP BACK", "RAIL - TOP", "STILE - BACK", (yb, Z1), ("(%s) - corner_w" % yb, "(%s) - top_h" % Z1))]
+    return [("BOTTOM FRONT", "RAIL - BOTTOM", "STILE - FRONT", (yf, Z0), ("(%s) + tube_w" % yf, "(%s) + tube_w" % Z0),
+             "tube_w", "tube_w"),
+            ("BOTTOM BACK", "RAIL - BOTTOM", "STILE - BACK", (yb, Z0), ("(%s) - corner_w" % yb, "(%s) + tube_w" % Z0),
+             "tube_w", "corner_w"),
+            ("TOP FRONT", "RAIL - TOP", "STILE - FRONT", (yf, Z1), ("(%s) + tube_w" % yf, "(%s) - top_h" % Z1),
+             "top_h", "tube_w"),
+            ("TOP BACK", "RAIL - TOP", "STILE - BACK", (yb, Z1), ("(%s) - corner_w" % yb, "(%s) - top_h" % Z1),
+             "top_h", "corner_w")]
 
 
 def build_panel(design, root):
@@ -1243,14 +1266,14 @@ def build_frame(design, frame, out, xf, yf, zs):
         members[key], occs[key] = (c, b), occ
         return b
     make("RAIL - BOTTOM", (Y_FRONT, Y_FRAME_BACK), (Z0, "(%s) + tube_w" % Z0), "y")
-    make("RAIL - TOP", (Y_FRONT, Y_FRAME_BACK), ("(%s) - top_h" % Z1, Z1), "y")
+    make("RAIL - TOP", (Y_FRONT, Y_FRAME_BACK), ("(%s) - top_h" % Z1, Z1), "y", "corner_t" if ROW == 2 else "tube_t")
     if STOP_AFTER <= 2:
         return members
     make("STILE - FRONT", (Y_FRONT, "(%s) + tube_w" % Y_FRONT), (Z0, Z1), "z")
-    make("STILE - BACK", ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK), (Z0, Z1), "z")
+    make("STILE - BACK", ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK), (Z0, Z1), "z", "corner_t")
     x_lo = "(%s) - 1 mm" % min(xf, key=lambda e: ev(design, e))
-    for label, rail, stile, o, i in side_corners():
-        rt, st = mitre_triangles(o, i)
+    for label, rail, stile, o, i, w_rail, w_stile in side_corners():
+        rt, st = plated_mitre_triangles(design, o, i, w_rail, w_stile)
         mitre(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), x_lo)
         mitre(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile), x_lo)
     studs = ["stud_c%d" % k for k in range(1, int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1)]
@@ -1931,8 +1954,20 @@ def run(_context):
         app.activeDocument.name, DOC_NAME, n_skel, n_wall))
     bodies = build_panel(design, root) if PANEL_SIDE else build_cassette(design, root)
     tl = design.timeline
-    bad_items = [tl.item(i).name for i in range(tl.count)
-                 if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    # every item not healthy is printed with Fusion's own message; errors fail the build, and so does a warning
+    # on any feature this script made. A warning on a STEP import's timeline group (Joints' shared parts, F-189)
+    # is printed for review and doesn't stop the build (the L1 run of 05:32 met two, with no message read then).
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    warning = adsk.fusion.FeatureHealthStates.WarningFeatureHealthState
+    bad_items = []
+    for i in range(tl.count):
+        it = tl.item(i)
+        if it.healthState == healthy:
+            continue
+        msg = (it.errorOrWarningMessage or "").replace("\n", " ")[:300]
+        print("HEALTH|%s|%s|%s" % (it.name, "warning" if it.healthState == warning else "error", msg))
+        if not (it.healthState == warning and it.isGroup and re.match(r"Group\d+$", it.name)):
+            bad_items.append(it.name)
     loose = [s.name for c in design.allComponents for s in c.sketches if not s.isFullyConstrained]
     print("timeline %d items, unhealthy %d, sketches %d, loose %d" % (
         tl.count, len(bad_items), sum(c.sketches.count for c in design.allComponents), len(loose)))
