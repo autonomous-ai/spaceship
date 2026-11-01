@@ -131,6 +131,46 @@ def joints_cad(path=JOINTS_LIST):
 
 
 JOINTS = joints_cad()
+REGISTER = os.path.join(HERE, "..", "..", "joints", "joints-register.md")                    # D-116 (S48)
+FIXING_PNS = ("838001", "838002", "838003", "838004", "838005", "848001", "848004")  # bolts, rivnuts, washers, retainers,
+                                                                                    # joint gasket, closing-seam bulb seal
+
+
+def register_counts(path=REGISTER):
+    """Per-pod counts of the site fixings from the joints register's part-number table (H-rows): the M6 x 16 bolts on site
+    and in the factory, then the first number of each other row (pieces, or metres for the gasket and the bulb seal)."""
+    import re
+    out = {}
+    for line in open(path, encoding="utf-8"):
+        cells = [c.strip() for c in line.split("|")]
+        if len(cells) < 7 or not cells[1].startswith("H-"):
+            continue
+        pn = cells[2].strip("* ")
+        if pn not in FIXING_PNS or pn in out:
+            continue
+        cell = cells[5]
+        if pn == "838001":
+            out[pn] = sum(float(n) for n in re.findall(r"(\d+) (?:on site|in the factory)", cell))
+        else:
+            out[pn] = float(re.search(r"\d+(?:\.\d+)?", cell).group(0))
+    return out
+
+
+def fixings_unit_kg():
+    """Each fixing's mass from the merged parts lists (WALL's L1 list first, then CEILING's): per piece, or per metre."""
+    import glob
+    out = {}
+    for path in [glob.glob(os.path.join(MANUF, "wall", "210101_P01_*_BOM.csv"))[0], CEILING_LIST]:
+        for r in read_parts_list(path):
+            if r["pn"] in FIXING_PNS and r["pn"] not in out and r["each"]:
+                out[r["pn"]] = r["each"]
+    return out
+
+
+def fixings_kg():
+    """The site fixings by the joints register's counts and the parts lists' masses (D-116, S48)."""
+    n, kg = register_counts(), fixings_unit_kg()
+    return sum(n[pn] * kg[pn] for pn in FIXING_PNS)
 CEILING_LIST = os.path.join(MANUF, "ceiling", "410000_P01_CEILING-PARTS-LIST_BOM.csv")       # PR #32 (S35)
 
 
@@ -464,14 +504,16 @@ def lines(**adopt):
                   "LED strip"))
         L.append(("INTERIOR", "Work-wall ledge, 1000 mm, with the screen rail", 1, LEDGE_KG_ALLOW + it["rail"], "assumption",
                   "the first allowance: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70), and the screen rail"))
-    pt = base["K-FIX"]
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
-    L.append(("WALL", pt.name.split(" - ", 1)[1].capitalize() + ", spigots and stop washers, frame cleats", pt.qty,
-              pt.kg + ns * ks + nw * kw + CLEATS_N * CLEAT_KG, "calculation (part CAD); cleats assumption",
-              f"part CAD on main: {ns} spigots 831001 and {nw} stop washers 831002 from the joints' made hardware list "
-              f"({ns * ks + nw * kw:.2f} kg, S45); the bolts, rivnuts, cam connectors and gaskets this study's model "
-              f"({pt.kg:.2f} kg) until the joints register gives their masses; and a {CLEATS_N * CLEAT_KG:.1f} kg allowance for "
-              f"about {CLEATS_N} internal frame cleats at up to {CLEAT_KG * 1000:.0f} g (D-115, S47) until their models land"))
+    rc = register_counts()
+    L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats", 1,
+              fixings_kg() + ns * ks + nw * kw + CLEATS_N * CLEAT_KG, "calculation (part CAD); cleats assumption",
+              f"part CAD on main: the joints register's counts (S48: {rc['838001']:.0f} M6 x 16 and {rc['838002']:.0f} M6 x 25 "
+              f"bolts, {rc['838003']:.0f} rivnuts, {rc['838004']:.0f} washers, {rc['838005']:.0f} retainers, {rc['848001']:g} m of "
+              f"joint gasket, {rc['848004']:g} m of closing-seam seal) at the parts lists' masses ({fixings_kg():.2f} kg, D-116); "
+              f"{ns} spigots and {nw} stop washers from the joints' made hardware list ({ns * ks + nw * kw:.2f} kg, S45); and a "
+              f"{CLEATS_N * CLEAT_KG:.1f} kg allowance for about {CLEATS_N} internal frame cleats at up to "
+              f"{CLEAT_KG * 1000:.0f} g (D-115, S47) until their models land"))
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
         L.append(("LATER", "Voice cockpit kit reserve, outside the 420 kg cap", 1, pt.kg, pt.status,
@@ -524,6 +566,9 @@ def cad_swaps():
              next(r for r in lines() if r[1].startswith("Ceiling cassettes"))[3],
              "CEILING 510301 P01, PR #32 (the estimate: its first list)"),
             ("ELECTRICAL, as shipped", 1, ELEC_KG_RELAYED, ELEC["total"], "ELECTRICAL 710000 P01, PR #64 (the estimate: as relayed)"),
+            ("Site fixings: bolts, rivnuts, washers, retainers, gaskets, seals", 1, base_parts_kg("K-FIX"), fixings_kg(),
+             "the joints register's counts at the parts lists' masses (D-116); the estimate: this study's 78 bolts, 38 cam "
+             "connectors that no longer exist and gasket at 60 g/m"),
             ("Light shelf (its LED strip in ELECTRICAL's line)", 1,
              SHELF_KGM * shelf_m() + SHELF_BRACKETS_KG - ELEC_LIGHTS_KG * shelf_m() / (shelf_m() + CALL_LIGHT_M),
              INTERIOR["shelf"], "INTERIOR 810201 P01, PR #92 (the estimate: D-85's budget less the strip share)"),

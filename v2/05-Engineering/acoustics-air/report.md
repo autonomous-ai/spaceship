@@ -75,8 +75,8 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 | Side-wall outer panel | 1500 × 1145 | 11.4 |
 | Lining cassette for it | — | 10.3 |
 | Ceiling half outer panel | 1212 × 1500 | 12.1 |
-| Supply cartridge, in the air column (D-60) | 173 × 314 × 1750 | 11.2 |
-| Exhaust cartridge, in the soffit (same part) | 173 × 314 × 1750 | 11.2 |
+| Supply cartridge, in the air column (D-60) | 173 × 314 × 1750 | 10.8 |
+| Exhaust cartridge, in the soffit (same part) | 173 × 314 × 1750 | 10.8 |
 | Air column: faces, fill, frame, grille | 217 × 360 × 2105 | 10.0 |
 | Soffit: faces, fill, frame, grille | 2332 × 360 × 220 | 10.0 |
 | Intake riser, 1 mm steel, with a mesh allowance | 139–250 × 155 × 1740 | 9.2 |
@@ -235,7 +235,7 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 | 2 | Door drop seal | 11.8 | 15.3 | 18.2 | +0.3 | 1.0 |
 | 3 | Fixed glass in sealed U-profiles | 11.8 | 15.4 | 18.2 | +0.0 | 0.0 |
 | 4 | Gaskets on every panel joint | 12.0 | 15.5 | 18.4 | +0.2 | 1.0 |
-| 5 | Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 52.5 |
+| 5 | Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 51.8 |
 | 6 | Thin floor with base seal (DECIDED, D-05) | 12.9 | 16.2 | 18.7 | -0.1 | 0.5 |
 | 7 | Sealed cable holes | 13.0 | 16.3 | 18.7 | +0.0 | 0.1 |
 
@@ -259,15 +259,15 @@ Glass front (8 mm tempered or 4+4 laminated):
 | 280 | nothing fits |  |  |
 | 300 | nothing fits |  |  |
 | 320 | nothing fits |  |  |
-| 340 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 332 | 8.7 / 11.4 / 13.6 |
+| 340 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 331 | 8.7 / 11.4 / 13.6 |
 | 360 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 353 | 9.4 / 12.2 / 14.4 |
-| 380 | PLAN-NOPLY / DL-ST-40-FLG-12 / Laminated acoustic 4+4 (8.76 mm) | 366 | 9.5 / 12.3 / 14.5 |
-| 400 | DL-ST4-40-FLG-12 / PLAN-NOPLY / Tempered 8 mm | 397 | 11.9 / 15.4 / 17.7 |
+| 380 | PLAN-NOPLY / DL-ST-40-FLG-12 / Laminated acoustic 4+4 (8.76 mm) | 365 | 9.5 / 12.3 / 14.5 |
+| 400 | DL-ST4-40-FLG-12 / PLAN-NOPLY / Tempered 8 mm | 396 | 11.9 / 15.4 / 17.7 |
 | 420 | DL-ST4-40-FLG-12 / DL-ST-40-FLG-12 / Tempered 8 mm | 415 | 14.0 / 18.5 / 20.9 |
-| 440 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Tempered 8 mm | 437 | 14.8 / 19.7 / 22.1 |
-| 460 | DL-ST-60-FL / DL-2HDF-60-FL / Tempered 8 mm | 457 | 14.8 / 20.3 / 22.7 |
-| 480 | DL-2HDF-60-FL / DL-P6-HDF-60-FL / Tempered 8 mm | 479 | 15.7 / 21.5 / 23.9 |
-| 500 | DL-P6-HDF-60-FL / DL-P6-P9-60-FL / Tempered 8 mm | 500 | 16.3 / 22.1 / 24.6 |
+| 440 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Tempered 8 mm | 436 | 14.8 / 19.7 / 22.1 |
+| 460 | DL-ST-60-FL / DL-P6-HDF-60-FL / Tempered 8 mm | 460 | 14.8 / 20.4 / 22.8 |
+| 480 | DL-2HDF-60-FL / DL-P6-HDF-60-FL / Tempered 8 mm | 478 | 15.7 / 21.5 / 23.9 |
+| 500 | DL-P6-HDF-60-FL / DL-P6-P9-60-FL / Tempered 8 mm | 499 | 16.3 / 22.1 / 24.6 |
 | 520 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 518 | 17.4 / 23.1 / 25.6 |
 
 Smoked acrylic 10 mm front:
@@ -276,17 +276,17 @@ Smoked acrylic 10 mm front:
 |---:|---|---:|---|
 | 280 | nothing fits |  |  |
 | 300 | nothing fits |  |  |
-| 320 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 311 | 8.7 / 11.4 / 13.5 |
-| 340 | SW-FOAM20 / DL-ST-60-FL / Smoked acrylic 10 mm | 336 | 9.4 / 12.2 / 14.4 |
+| 320 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 310 | 8.7 / 11.4 / 13.5 |
+| 340 | SW-FOAM20 / DL-ST-60-FL / Smoked acrylic 10 mm | 335 | 9.4 / 12.2 / 14.4 |
 | 360 | PLAN-NOPLY / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 353 | 9.5 / 12.3 / 14.5 |
-| 380 | SW-FOAM20-DL / SW-FOAM20-DL / Smoked acrylic 10 mm | 380 | 11.9 / 16.8 / 19.1 |
-| 400 | DL-ST-40-FLG-12 / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 399 | 14.3 / 18.8 / 21.1 |
-| 420 | DL-ST-40-FLG-12 / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 417 | 14.7 / 19.4 / 21.8 |
-| 440 | DL-ST-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 437 | 14.7 / 20.0 / 22.4 |
+| 380 | DL-PLY4 / SW-FOAM20-DL / Smoked acrylic 10 mm | 380 | 12.3 / 17.0 / 19.3 |
+| 400 | DL-ST-40-FLG-12 / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 398 | 14.3 / 18.8 / 21.1 |
+| 420 | DL-ST-40-FLG-12 / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 416 | 14.7 / 19.4 / 21.8 |
+| 440 | DL-2HDF-60-FL / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 440 | 15.2 / 20.4 / 22.8 |
 | 460 | DL-2HDF-60-FL / DL-P6-P9-DEC / Smoked acrylic 10 mm | 459 | 15.7 / 21.1 / 23.6 |
-| 480 | DL-P6-P9-DEC / DL-2HDF-60-FL / Smoked acrylic 10 mm | 478 | 16.4 / 21.8 / 24.3 |
+| 480 | DL-P6-P9-DEC / DL-2HDF-60-FL / Smoked acrylic 10 mm | 477 | 16.4 / 21.8 / 24.3 |
 | 500 | DL-P6-P9-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 499 | 17.2 / 22.4 / 24.9 |
-| 520 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 509 | 17.9 / 22.9 / 25.4 |
+| 520 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 508 | 17.9 / 22.9 / 25.4 |
 
 Best builds inside the DECIDED rules:
 
@@ -294,10 +294,10 @@ Best builds inside the DECIDED rules:
 |---|---|---|---|---|---:|---|
 | DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 429 | 14.7 / 19.3 / 21.7 |
 | Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 436 | 14.7 / 19.3 / 21.7 |
-| Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 416 | 13.9 / 18.3 / 20.7 |
-| Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 430 | 14.7 / 19.3 / 21.7 |
-| Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 402 | 14.5 / 19.0 / 21.4 |
-| Light 0.8 mm cartridge casings (rejected: misses the fan-noise target, section 7d) | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 418 | 14.7 / 19.3 / 21.7 |
+| Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 415 | 13.9 / 18.3 / 20.7 |
+| Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 429 | 14.7 / 19.3 / 21.7 |
+| Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 401 | 14.5 / 19.0 / 21.4 |
+| Light 0.8 mm cartridge casings (rejected: misses the fan-noise target, section 7d) | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 417 | 14.7 / 19.3 / 21.7 |
 
 - **The curve rises fastest from about 380 to 420 kg:** about 3 dB for every 20 kg. Beyond 420 kg, each dB costs about 20–30 kg.
 - **30 dB isn't reached in this search.** At 520 kg the walls and ceiling are double leaves with plywood, and the pod still stops at about 23 dB.
@@ -380,8 +380,8 @@ The cartridge, the same part on both paths:
 
 | Cartridge casing | Air parts kg | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + 30 mm fill + felt-covered face R 125 | 250 | 500 | 1k | 2k | 4k dB | At 53 l/s dB(A) | Flow at 30 dB(A) l/s |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| aluminium 2.0 mm (pick) | 60.5 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.2 | 66 |
-| aluminium 0.8 mm | 49.2 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 29.9 | 53 |
+| aluminium 2.0 mm (pick) | 59.8 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.2 | 66 |
+| aluminium 0.8 mm | 48.5 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 29.9 | 53 |
 
 Pressure per path, supply / exhaust: 26 l/s 4 / 3 Pa; 53 l/s 17 / 12 Pa; 65 l/s 26 / 18 Pa. At full speed the supply pair reaches 73 l/s and the exhaust pair 82 l/s.
 
@@ -412,7 +412,7 @@ The band piece under the block is 371 mm long (skeleton P04). Open heights and f
 | Item | Size mm | Where (pod coordinates, mm) | Notes |
 |---|---|---|---|
 | Air column, outer | 212 x 360 x 2108 | X 949 to 1161, Y -645 to -285, Z 12 to 2120 | front and left faces felt-covered (12 mm: 3 mm ACP + 9 mm felt); the front face lifts off full height for service; back on the right block's inner face, right side on the side lining |
-| Supply cartridge | 173 x 314 x 1750, 11.2 kg | X 983 to 1156, Y -640 to -326, Z 134 to 1884 | 2 mm aluminium casing; two 80 mm passages running up and down between three 50 mm Pyrotek Sorberpoly 2D layers parallel to the front face; 27 mm polyester fill to the front and left faces; 5 mm clear on the other sides to slide it out |
+| Supply cartridge | 173 x 314 x 1750, 10.8 kg | X 983 to 1156, Y -640 to -326, Z 134 to 1884 | 2 mm aluminium casing; two 80 mm passages running up and down between three 50 mm Pyrotek Sorberpoly 2D layers parallel to the front face; 27 mm polyester fill to the front and left faces; 5 mm clear on the other sides to slide it out |
 | Kick grille, supply out | 100 tall x 524 along the front and left faces | Z 24 to 124 | 0.031 m2 free or more (60%); base plenum Z 12 to 134 under the cartridge |
 | Opening from the right block into the column top | 200 x 215 | in the block's inner face at X 961 to 1161, Z 1895 to 2110 | supply air from the fan box; column top plenum Z 1884 to 2120 |
 | Sensor hub and controls | 180 x 180 zone, up to 29 deep | on the column's front face, centred X 1055, Z 1200 | no fill behind it; a 30 x 30 mm cable chase in the column's front-left corner runs up to the top plenum and on to the fans; the supply fan inlet sensor (D-50) sits in the fan box inlet |
@@ -441,8 +441,8 @@ The band piece under the block is 371 mm long (skeleton P04). Open heights and f
 
 | Part | Size mm | kg | Basis |
 |---|---|---:|---|
-| Supply cartridge, in the air column | 173 x 314 x 1750 | 11.2 | aluminium 2.0 mm casing, three 50 mm layers at 40 kg/m3 |
-| Exhaust cartridge, in the soffit | same | 11.2 | same part |
+| Supply cartridge, in the air column | 173 x 314 x 1750 | 10.8 | aluminium 2.0 mm casing, three 50 mm layers at 32 kg/m3 |
+| Exhaust cartridge, in the soffit | same | 10.8 | same part |
 | Air column: felt-covered faces, fill, frame, kick grille, hub plate | 212 x 360 x 2108 | 9.9 | faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption) |
 | Soffit: felt-covered faces, fill, frame, exhaust grille | 2322 x 360 x 220 | 10.0 | underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption) |
 | Supply fan box and transition, in the right block | 300 x 155 x 300 + transition | 5.1 | 2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation) |
@@ -450,10 +450,10 @@ The band piece under the block is 371 mm long (skeleton P04). Open heights and f
 | Intake riser with a mesh allowance, in the right block | 139-250 x 155 x 1740 | 9.2 | 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption) |
 | Roof slot grille and sleeve | 285 x 294 | 0.5 | assumption |
 | Four 12 V fans | 140 x 140 x 25 | 1.2 | 0.3 kg each (assumption) |
-| **Air parts in all** |  | **61.7** | heaviest part under the 20 kg rule: 11.2 kg |
+| **Air parts in all** |  | **61.0** | heaviest part under the 20 kg rule: 10.8 kg |
 | Less the ceiling lining the soffit replaces | 2322 x 360 | -5.0 | 0.5 mm tray, returns and felt |
 | Less PR #11's cartridges, fill, riser and fans |  | -45.0 | the model's earlier air parts |
-| **Change to the pod** |  | **+11.7** | the DECIDED stack in this model goes to 429 kg |
+| **Change to the pod** |  | **+11.0** | the DECIDED stack in this model goes to 429 kg |
 
 The layout study carries PR #11's air parts at 45.0 kg (its `hw_air_kg`). With D-60 its 426.7 kg becomes about 438.5 kg, still open against the 420 kg cap (D-54, ISS-080). Every D-60 part stays under the 20 kg rule.
 
@@ -475,7 +475,7 @@ How it's checked:
 
 ### 7h. Servicing, pressure and controls
 
-- **Servicing (D-59), all from inside.** The column's front face and the soffit's underside lift off. Each cartridge (11.2 kg) slides out into the pod. The supply fans come out through the right block's inner face beside the column top, and the exhaust fans drop out of the soffit. Nothing on the walls or the outside comes off.
+- **Servicing (D-59), all from inside.** The column's front face and the soffit's underside lift off. Each cartridge (10.8 kg, its layers at 32 kg/m³, D-116) slides out into the pod. The supply fans come out through the right block's inner face beside the column top, and the exhaust fans drop out of the soffit. Nothing on the walls or the outside comes off.
 - **Pressure balance and the door.** The hub drives the two fan pairs with two signals, so both paths move the same flow and the pod stays near room pressure (section 7d). One shared signal would leave the pod about 2.7 Pa below the room at 53 l/s, about 3 N at the door handle; a 5 Pa difference adds about 6 N.
 - **Controls.** The in-house Desk Pro AI sensor hub (D-09) sits on the air column's front face at seated eye height (Z 1200), with the boost button below it. It reads the room air 1.1 m above the kick grille, shows CO2 inside, and drives both fan pairs through the column's cable chase.
   - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 66.2 l/s inside 30 dB(A) on AIR's build (calculation).
