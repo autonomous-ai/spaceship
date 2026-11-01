@@ -270,7 +270,7 @@ def build(app):
             "x", "kick_x0", "kick_x1", "DROP SEAL ENVELOPE (CATALOGUE SECTION)", "SECTION - DROP SEAL GSA 11.6 X 40",
             "EXTRUDE - DROP SEAL CUT LENGTH")
 
-    # 368008 brush seal on the kick strip's end (D-150; PM ruling 2026-11-01 with BASE): the slot from the strip's end
+    # 368008 brush seal on the kick strip's end (D-150; PM ruling 2026-11-01 with BASE; fitted on site, PM ruling 2026-11-01): the slot from the strip's end
     # to BASE's sill end plate, from the room floor (its tips close the corner under the strip) to the door's bottom
     # edge; near the top its outer face follows the fixed pane's free edge, so it never runs into the glass
     if want("KBRUSH"):
@@ -413,9 +413,12 @@ BOM_ROWS = [
     ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.8, "assumption (D-56)", "HOLD", "hardware selection C2",
      "reserved space only"),
     ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD", "Gioăng chổi mép cuối tấm chắn chân cửa (chờ)", 1,
-     "bought, HOLD", "brush (pile) seal on a carrier, about 6 mm pile, bonded to the kick strip's end face at the "
-     "factory; product not named", 0.01, "assumption (about 10 g)", "HOLD: product (D-150)",
-     "D-150; PM ruling 2026-11-01 (the seal line at the fixed glass's door end, with BASE's sill end plate)",
+     "bought, HOLD", "self-adhesive brush (pile) strip, about 6 mm pile, fitted on site on the kick strip's end face "
+     "once the glides are set and the door hangs, pressed down onto the real floor; ships in the door's kit bag with "
+     "an alcohol wipe; product HOLD-23 (its own data sheet names its adhesive and lowest fitting temperature)", 0.01,
+     "assumption (about 10 g)", "HOLD: product (D-150)",
+     "D-150; PM rulings 2026-11-01 (the seal line at the fixed glass's door end, with BASE's sill end plate; fitted "
+     "on site, not at the factory, so it meets the real floor)",
      "across the strip's depth (Y -709 to -689), from the room floor to Z 105; its pile presses about 1.5 onto BASE's "
      "sill end plate at X 218.5 and its tips on the floor close the corner under the strip; modelled compressed to that "
      "face and, near the top, to the fixed pane's free edge"),
