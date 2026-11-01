@@ -1,5 +1,5 @@
 {
- "rev": "5c8f25a",
+ "rev": "9e0dcd1",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -993,6 +993,40 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C06|required-by-decision|the base seal lip on the band's inner face, pressing on the "
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "838003",
+   "severity": "major",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv, v2/04-BOM/100000_P01_POD-MASTER_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 11 parts lists).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "BASE; CEILING; Control; ELECTRICAL; WALL",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+     "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
+     "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
+    ],
+    "register": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
+   },
+   "key": "C06|name-mismatch|838003"
   },
   {
    "check": "C06",
@@ -2868,9 +2902,9 @@
   {
    "id": "2-22",
    "name": "POD - INSTALLATION KIT (OPEN FIRST)",
-   "kg": 0.5,
+   "kg": 3.55,
    "dims": [
-    300.0,
+    900.0,
     150.0,
     80.0
    ],
