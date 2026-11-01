@@ -64,8 +64,9 @@ ASSEMBLIES = {
         ],
     },
     # The ledge is seen as the room sees it, from the left (toward the right wall), with its plan from below; a section
-    # at 1:2 through the bracket at Y 464.32 (balloon 2 takes the other) shows the folded top sitting on it. The brackets are the list's HOLD envelopes
-    # until INTERIOR's next rebuild makes them made parts, when this sheet and 810000 are drawn again.
+    # at 1:2 through the bracket at Y 464.32 shows the folded top sitting on it, and the brackets' balloon goes on the
+    # plan, clear of the cutting plane. The brackets are the list's HOLD envelopes until INTERIOR's next rebuild makes
+    # them made parts, when this sheet and 810000 are drawn again.
     "810101": {
         "principal": "left",
         "views": ["below"],
