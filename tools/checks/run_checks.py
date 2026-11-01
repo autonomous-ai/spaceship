@@ -101,7 +101,7 @@ def run(root, rev):
     inputs["part_steps"] = [rel(root, p) for p in per_part]
     # STEP products for the BOM match and the drawings
     step_products, holes_by_pn, usage, faces_by_pn, flat_by_pn = {}, {}, {}, {}, {}
-    bends_by_pn, two_wall_by_pn, shapes_by_pn, cuboids_by_pn = {}, {}, {}, {}
+    bends_by_pn, two_wall_by_pn, shapes_by_pn = {}, {}, {}
     for p in per_part:
         s = c_geometry.load_step(p)
         counts, _tops = s.usage_counts()
@@ -134,7 +134,6 @@ def run(root, rev):
                 holes_by_pn.setdefault(pn, []).extend(so.holes)
                 two_wall_by_pn[pn] = two_wall_by_pn.get(pn, 0) + c_drawings.two_wall_axes(so.holes)
                 bends_by_pn[pn] = max(bends_by_pn.get(pn, 0), len(so.bends))
-                cuboids_by_pn.setdefault(pn, []).append(c_drawings.cuboid_sides(so))
             faces_by_pn.setdefault(inst["part_number"], []).append(len(so.faces))
             fl = sf.flat_plate(so)
             if not fl[0] or inst["part_number"] not in flat_by_pn:      # one body that isn't flat decides
@@ -165,7 +164,7 @@ def run(root, rev):
             for row in rows:
                 if row["part_number"]:
                     src_by_pn.setdefault(row["part_number"], rel(root, p))
-        cuboid_by_pn = {pn: v[0] for pn, v in cuboids_by_pn.items() if len(v) == 1 and v[0]}     # one plain block
+        cuboid_by_pn = c_drawings.strip_sides(per_part, c_geometry.load_step)     # D-125's plain strips
         findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn,
                                               bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn,
                                               cuboid_by_pn=cuboid_by_pn)
