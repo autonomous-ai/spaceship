@@ -179,6 +179,34 @@ def tag(s, cx, cy, t, col):
     s.text(cx - s.text_w(t, K.BODY, True) / 2, cy + K.BODY * K.CAP / 2, t, K.BODY, col, True)
 
 
+# The unit's inside, seen from the front with the plate off (box inner mm: x from the left wall, z from the floor):
+# what sits on the back wall, and the front devices' zones. A layout to size (the factory's drawing details it); the
+# offline test checks that nothing overlaps, everything is inside 294 x 258 and the depths add up to 71.
+INSIDE_W, INSIDE_H, INSIDE_D = 294.0, 258.0, 71.0
+INSIDE = (   # name, x0, z0, x1, z1, depth from the back wall (back) or from the plate (front), side
+    ("PS1 CLG-100-24", 36.0, 186.0, 258.2, 254.0, 38.8, "back"),
+    ("PS2 LPV-60-24", 128.0, 141.0, 290.5, 183.5, 32.0, "back"),
+    ("PS3 LPV-60-12", 128.0, 96.0, 290.5, 138.5, 32.0, "back"),
+    ("controller LT-995", 121.0, 8.0, 290.0, 88.0, 39.0, "back"),
+    ("breaker, DIN rail", 85.0, 85.0, 103.0, 175.0, 70.5, "back"),
+    ("lever connectors L, N", 8.0, 30.0, 38.0, 70.0, 18.6, "back"),
+    ("GFCI receptacle", 27.0, 76.0, 71.0, 183.0, 28.7, "front"),
+    ("LAN jacks", 129.0, 118.0, 171.0, 142.0, 30.0, "front"),
+)
+
+
+def inside_layout(s, x0, y0, k):
+    """The unit's inside layout at scale k, its top left at (x0, y0) sheet mm."""
+    X = lambda x: x0 + x * k                # noqa: E731
+    Z = lambda z: y0 + (INSIDE_H - z) * k    # noqa: E731
+    s.rect(X(0), Z(INSIDE_H), X(INSIDE_W), Z(0), INK, 0.4)
+    for i, (name, a, b, c, d, _dep, side) in enumerate(INSIDE, start=1):
+        col = MAINS if name.startswith(("breaker", "lever", "GFCI")) else (SIG if name.startswith("LAN") else SELV)
+        s.rect(X(a), Z(d), X(c), Z(b), col, 0.25, dashes=None if side == "back" else "[1 1] 0")
+        tag(s, (X(a) + X(c)) / 2, (Z(b) + Z(d)) / 2, str(i), col)
+    return Z(0)
+
+
 def sheet_power_unit(doc, v):
     s = K.Sheet(doc, "A2")
     p = plate_params()
@@ -204,9 +232,10 @@ def sheet_power_unit(doc, v):
         s.rect(X(kx - p["ks_w"] / 2), Z(zc + p["ks_h"] / 2), X(kx + p["ks_w"] / 2), Z(zc - p["ks_h"] / 2), SIG, 0.3)
     dw, dh = p["din_w"] / 2, p["din_h"] / 2
     s.rect(X(p["din_x"] - dw), Z(p["din_zc"] + dh), X(p["din_x"] + dw), Z(p["din_zc"] - dh), MAINS, 0.3)
-    for vz in (p["vent_z1"], p["vent_z2"]):
+    rows = int(p["vent_rows"])
+    for vz in [p["vent_zb"] + r * p["vent_rp"] for r in range(rows)] + [p["vent_zt"] - r * p["vent_rp"] for r in range(rows)]:
         for i in range(int(p["vent_n"])):
-            xc = W / 2 + (i - (p["vent_n"] - 1) / 2) * p["vent_p"]
+            xc = p["vent_x1"] + i * p["vent_p"]
             s.rect(X(xc - p["vent_l"] / 2), Z(vz + p["vent_w"] / 2), X(xc + p["vent_l"] / 2), Z(vz - p["vent_w"] / 2), GREY, 0.2)
     sx_, sy_ = p["screw_x"], p["screw_y"]
     for cx, cy in ((sx_, sy_), (W - sx_, sy_), (sx_, Hh - sy_), (W - sx_, Hh - sy_)):
@@ -229,7 +258,16 @@ def sheet_power_unit(doc, v):
         s.text(lx, y, t, K.BODY, col)
         y += s.line_pitch(K.BODY)
     s.para(ox, oy + 6.0, "Plate %.0f x %.0f over the unit (X %.0f-%.0f, Z %.0f-%.0f in the pod), 2 mm off the felt; 4 x M4 at "
-           "%.0f / %.0f from the plate's edges." % (W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 250.0)
+           "%.0f / %.0f from the plate's edges." % (W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 180.0)
+    kl = 1.0 / 4.0
+    ix, iy = 212.0, 67.0
+    s.text(ix, iy - 3.5, "INSIDE, plate off, 1:4 (solid: on the back wall; dashed: on the plate)", K.BODY, INK, True)
+    iz = inside_layout(s, ix, iy, kl)
+    half = (len(INSIDE) + 1) // 2
+    for i, (name, a_, b_, c_, d_, dep, side) in enumerate(INSIDE, start=1):
+        col_x = ix if i <= half else ix + 58.0
+        row_y = iz + 4.5 + ((i - 1) % half) * s.line_pitch(K.BODY)
+        s.text(col_x, row_y, "%d  %s, %.0f deep" % (i, name, dep), K.BODY, INK)
     # depth section
     sx, sy = 330.0, 30.0
     s.text(sx, 22, "DEPTH SECTION THROUGH B2, 2:1 (toward the skin to the right)", K.TITLE, INK, True)

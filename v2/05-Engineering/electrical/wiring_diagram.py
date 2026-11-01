@@ -211,7 +211,7 @@ def sheet1(doc, rows, harness, v):
     s.poly([(352, 174), (355.5, 174), (355.5, 187), (358, 187)], SIG, 0.3)   # the sensor's link starts on the hub
     s.line(262, 190, 264, 190, SIG, 0.3)
     s.boxf(264, 205, 403, 232, "SAFETY AND RESERVES",
-          ["SELF-TEST (D-87): TEST checks the 3 rails, runs both fan pairs (tach), steps each light channel (current), reads",
+          ["SELF-TEST (D-87): TEST reads the 3 rails' volts, runs both fan pairs (tach), steps each light channel (current), reads",
            "the sensors and shows PASS or the failing item. PWM fail-safe: an open PWM line runs the fans at full speed.",
            "Draw wires: W32 kit drop -> column -> soffit (mic, status light); W33 back wall top -> ceiling cassette (D-41,",
            "and the sprinkler or alarm wiring point, ISS-052). Nothing is cut on site later (REQ-VCK-03)."], INK, 1.8)
@@ -239,7 +239,7 @@ def sheet2(doc, rows, harness, v):
         "1. Lengths: route model (calculation) + 150 mm loops and tails (assumption). The kit drop has a 500 mm service loop.",
         "2. Plug pairs: supply side receptacle (female), load side plug (male). W20 and W24 share one 10-way at X1, X2, X3.",
         "3. Every segment is tested in the factory before it ships (D-87): continuity, polarity, no shorts, latch pull.",
-        "4. Cables: Class 2 circuits on 300 V PVC cable (CL2 or CL3 listed for the US phase); mains only inside B2 and the unit.",
+        "4. Cables: Class 2 circuits on 300 V PVC cable (CL2 or CL3 listed for the US phase); inside the unit UL 1015 single cores, 105 °C (D-173).",
         "5. W32 and W33 are draw cords, tied off at each hole, for the voice kit's later cables (REQ-VCK-03).",
     ]
     bottom = s.frame_and_title("ELECTRICAL - HARNESS LIST", "710000  ELECTRICAL", 2, SHEETS, "table, not to scale", DATE,

@@ -347,6 +347,8 @@ def calc_md(v, mass_of, harness):
       "25 kg/m³, D-81) + the power unit %.2f kg = **%.1f kg**, under 20 kg. WALL's own B2 mass replaces the first "
       "figure when B2 is modelled." % (b2, pu, b2 + pu))
     A("")
+    import unit_heat
+    A(unit_heat.section_md(EP))
     return "\n".join(lines) + "\n"
 
 

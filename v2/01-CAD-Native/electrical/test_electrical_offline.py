@@ -179,7 +179,29 @@ class Parts(unittest.TestCase):
         self.assertTrue(EP.P["ps_kit"]["sku"].startswith("CLG-100-24"), EP.P["ps_kit"]["sku"])
         self.assertEqual([s[0] for s in EP.SUPPLIES], ["PS1", "PS2", "PS3"])     # PS4 is gone (D-168)
         w30 = [h for h in EP.harnesses(M.values()) if h["id"].startswith("W30")]
-        self.assertTrue(w30 and all(h.get("parallel", 1) == 2 and "16 AWG" in h["cable"] for h in w30))
+        self.assertTrue(w30 and all(h.get("parallel", 1) == 2 for h in w30))
+        # in the lining 4 x 16 AWG cable; inside the unit 105 °C single cores, two 18 AWG per pole (D-173)
+        self.assertTrue(all(("UL 1015 18 AWG" if h["id"] == "W30a" else "16 AWG") in h["cable"] for h in w30), [h["cable"] for h in w30])
+
+    def test_each_lead_at_its_supplys_voltage(self):
+        """Reviewer 7's P3 on #319 (the Lead, 2026-11-01): every lead that names a positive rail ("+24 V", "+12 V")
+        carries the voltage of the supply its circuit names first (D-168: PS1 and PS2 at 24 V, PS3 at 12 V), and every
+        circuit fed by a supply names one that exists. W12 once read "+12 V" on a 24 V circuit and only the stale-file
+        check caught it."""
+        import re
+        sids = {sid for sid, *_ in EP.SUPPLIES}
+        seen = 0
+        for h in EP.harnesses(M.values()):
+            rails = {float(x) for x in re.findall(r"\+(\d+(?:\.\d+)?) V", h["conductors"])}
+            first = h["circuit"].split()[0]
+            if first.startswith("PS"):
+                self.assertIn(first, sids, h["id"])
+            if not rails:
+                continue
+            seen += 1
+            self.assertTrue(first in sids, "%s names +V but no supply: %s" % (h["id"], h["circuit"]))
+            self.assertEqual(rails, {EP.BUS_V[first]}, "%s: %s on %s" % (h["id"], h["conductors"], h["circuit"]))
+        self.assertGreater(seen, 10)
 
     def test_light_strips_in_whole_sections(self):
         """D-168: Häfele's 24 V strips cut every 50 mm, so every run is a whole number of sections."""
@@ -213,14 +235,15 @@ class Parts(unittest.TestCase):
         self.assertEqual(EP.P["rec10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way receptacle"))
         self.assertEqual(EP.P["plug10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way plug"))
         # the 10-way housings carry the air feed's 4 cores (18 AWG) and the hub link's 6 (24 AWG, the 22-28 AWG terminal)
-        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 4 * EP.P["rec10"]["qty_per_parent"]
+        # D-173: X1's 10-way and 4-way receptacles take the unit's UL 1015 18 AWG leads (6 hub link + 4 kit feed cores)
+        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 4 * EP.P["rec10"]["qty_per_parent"] + 10
         m = 2 * EP.P["plug2"]["qty_per_parent"] + 6 * EP.P["plug6"]["qty_per_parent"] + 4 * EP.P["plug10"]["qty_per_parent"]
         self.assertEqual(EP.P["term_f"]["qty_per_parent"], f)
         self.assertEqual(EP.P["term_m"]["qty_per_parent"], m)
-        self.assertEqual(EP.P["term_f24"]["qty_per_parent"], 6 * EP.P["rec10"]["qty_per_parent"])
+        self.assertEqual(EP.P["term_f24"]["qty_per_parent"], 6 * (EP.P["rec10"]["qty_per_parent"] - 1))
         self.assertEqual(EP.P["term_m24"]["qty_per_parent"], 6 * EP.P["plug10"]["qty_per_parent"])
         # the 4-way housings carry the kit's 16 AWG feeds: their own terminals (the cap housing has none)
-        self.assertEqual(EP.P["term_f16"]["qty_per_parent"], 4 * EP.P["rec4"]["qty_per_parent"])
+        self.assertEqual(EP.P["term_f16"]["qty_per_parent"], 4 * (EP.P["rec4"]["qty_per_parent"] - 1))
         self.assertEqual(EP.P["term_m16"]["qty_per_parent"], 4 * (EP.P["plug4"]["qty_per_parent"] - 1))
 
 
@@ -338,6 +361,70 @@ class LoadTotal(unittest.TestCase):
         for r in rows:                                     # each load's current at its own supply's voltage (D-168)
             self.assertAlmostEqual(float(r["a_total_max"]), float(r["w_total_max"]) / EP.BUS_V[r["supply"]], places=2)
 
+
+class Inside(unittest.TestCase):
+    """The power unit's inside layout on the 710001 sheet (Reviewer 7 on #337: the three supplies and the light
+    controller, about 233 of the 258 mm inside), and its heat check (calc-results section 6)."""
+
+    def test_layout_fits_the_box(self):
+        import assembly_sheets as AS
+        items = AS.INSIDE
+        for name, a, b, c, d, dep, side in items:
+            self.assertTrue(0 <= a < c <= AS.INSIDE_W and 0 <= b < d <= AS.INSIDE_H, name)
+            self.assertLessEqual(dep, AS.INSIDE_D, name)
+
+        def overlap(p, q):
+            return min(p[3], q[3]) > max(p[1], q[1]) and min(p[4], q[4]) > max(p[2], q[2])
+        back = [x for x in items if x[6] == "back"]
+        front = [x for x in items if x[6] == "front"]
+        for i, p in enumerate(back):
+            for q in back[i + 1:]:
+                self.assertFalse(overlap(p, q), (p[0], q[0]))
+        for p in front:
+            for q in back:
+                if overlap(p, q):
+                    self.assertLessEqual(p[5] + q[5], AS.INSIDE_D, (p[0], q[0]))
+        # every supply in the parts list is placed
+        placed = " ".join(x[0] for x in items)
+        for sid, _k, _o, _w, _a, _f, _why in EP.SUPPLIES:
+            self.assertIn(sid, placed)
+
+    def test_vents_clear_the_bare_mains_parts(self):
+        """UL 62368-1: no vent slot within 15 mm of a bare mains part's band, and none above one."""
+        import unit_heat as U
+        f = U.part_params("front")
+        x0 = f["vent_x1"] - f["vent_l"] / 2 - f["edge_off"]
+        mains_x1 = max(f["din_x"] + f["din_w"] / 2, f["gfci_x"] + 43.9 / 2) - f["edge_off"]
+        self.assertGreaterEqual(x0 - mains_x1, 15.0)
+        self.assertLessEqual(f["vent_w"], 4.0)
+
+    def test_heat_worst_case_under_every_limit(self):
+        import unit_heat as U
+        air = U.results(EP, 12.0, U.SHELL_PATH_WORST)[0] + U.STRAT_K
+        for name, lim, _src in U.DEVICES:
+            self.assertLess(air, lim, name)
+        for sid, key, rated, _v, _w, feeds in U.case_supplies(EP):
+            knee = U.CLG_KNEE if key == "ps_kit" else U.LPV_KNEE
+            peak = sum(q * wm for (_i, _n, s_, _f, q, wm, _t, _st, _src, _no) in EP.LOADS if s_ == sid)
+            self.assertLess(peak, U.derated(knee, air) * rated, sid)
+
+
+    def test_heat_at_the_design_room_keeps_3k(self):
+        """D-173 (the Lead, 2026-11-01): the pod is designed for a room up to 32 °C; every part in the unit keeps its
+        rating there with at least 3 K, and a lead lying on a supply's case is a 105 °C single core (the 60 °C leads
+        before kept 0.2 K at 32 °C)."""
+        import unit_heat as U
+        self.assertEqual(U.ROOM_C, 32.0)
+        air, _l, _o, r = U.results(EP, 12.0, U.SHELL_PATH_WORST)
+        top = air + U.STRAT_K
+        for name, lim, _src in U.DEVICES:
+            self.assertGreaterEqual(lim - top, 3.0, name)
+        leads = [d for d in U.DEVICES if "leads in the unit" in d[0]]
+        self.assertEqual(len(leads), 1)
+        self.assertGreaterEqual(leads[0][1] - r["case"], 3.0)          # resting on a supply's case
+        rows = {h["id"]: h for h in EP.harnesses(M.values())}
+        for i in ("W10a", "W20a", "W24a", "W30a"):
+            self.assertIn("UL 1015", rows[i]["cable"], i)
 
 class Sheets(unittest.TestCase):
     """The PM's drawing check, item 1 (2026-11-01), and the guideline's "never shrink the font to fit a page",
