@@ -20,6 +20,7 @@ over (left to right or top to bottom), or end for end.
 """
 
 import csv
+import glob
 import os
 import re
 import sys
@@ -62,10 +63,12 @@ def side_pieces():
         y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
         z0 = v["panel_z0"] + (0 if row == "1" else v["side_h"] + v["seam_gap"])
         z1 = v["panel_z0"] + v["side_h"] if row == "1" else v["pod_h"]
-        p, n, tw, pw = v["stile_pitch"], int(round(v["stile_n_mid"])), v["tube_w"], v["pocket_w"]
+        n, tw, pw = int(round(v["stile_n_mid"])), v["tube_w"], v["pocket_w"]
         zs = (z0 + tw, z1 - v["top_h"])
-        bays = [(y_front + tw + k * p, y_front + (k + 1) * p) for k in range(n)] + \
-            [(y_front + n * p + tw, v["pod_d"] / 2 - v["skin_t"] - v["corner_w"])]
+        # the studs stand clear of the bolts (stud_c1 to stud_cN from the frame's front end, D-131 sample)
+        edges = [y_front + tw] + [y_front + v["stud_c%d" % k] + d * tw / 2 for k in range(1, n + 1) for d in (-1, 1)] + \
+            [v["pod_d"] / 2 - v["skin_t"] - v["corner_w"]]
+        bays = [(edges[i], edges[i + 1]) for i in range(0, len(edges), 2)]
         pockets = [(y_front + v["bolt_edge"] + i * v["len_bolt_pitch"] - pw / 2,
                     y_front + v["bolt_edge"] + i * v["len_bolt_pitch"] + pw / 2, zs[0], zs[0] + pw)
                    for i in range(int(round(v["n_len_bolt"])))]
@@ -79,7 +82,7 @@ def side_pieces():
 
 def back_pieces():
     out = []
-    for code in ("B1", "B2", "B3", "B4"):
+    for code in ("B1", "B3", "B4"):  # B2 waits for its layout (PM 2026-11-01; D-133)
         v = t.resolve(t.load_back(code, "panel"))
         col, row = ("L" if code in ("B1", "B3") else "R"), (1 if code in ("B1", "B2") else 2)
         xlo = (-v["close_gap"] / 2 - v["half_fw"]) if col == "L" else v["close_gap"] / 2
@@ -244,30 +247,34 @@ def main():
           "own DXF (the full outline with every notch and opening, CUT layer, 1:1 mm, seen in its first bay: u to "
           "the right, v up) and needs no drawing (D-128); its parts-list rows give material, density, thickness, "
           "tolerance and part number. The fit column of FILL-PIECES.csv says how each bay takes its piece.", "",
-          "%d bays in the 8 positions, %d distinct forms." % (len(pieces), len(forms)), "",
+          "%d bays in %d positions, %d distinct forms. B2 waits for its layout (PM 2026-11-01: the unit's 373 mm "
+          "bay framed with welded cross members; the unit changes for D-133)." % (
+              len(pieces), len({p["position"] for p in pieces}), len(forms)), "",
           "| Form | Number | Size w x h | Notches and openings (u, v ranges) | Bays it fills | DXF |",
           "|---|---|---|---|---|---|"]
-    rows, made = [], []
+    rows, made, unnumbered = [], [], []
     for i, (key, members) in enumerate(forms, 1):
         first = members[0]
         form = "F%02d" % i
-        if form not in nums:
-            raise SystemExit("form %s has no live number in v2/04-BOM/number-allocation.csv" % form)
-        pn, name = nums[form]
-        if "%s %g X %g" % (form, first["w"], first["h"]) not in name:
-            raise SystemExit("form %s is %g x %g but its number %s is %r" % (form, first["w"], first["h"], pn, name))
-        dxf = dxf_name(pn, name)
         loops = outline(first["w_raw"], first["h_raw"], first["pockets_raw"])
         want = first["w_raw"] * first["h_raw"] - open_area(first["w_raw"], first["h_raw"], first["pockets_raw"])
         if abs(sum(area(lp) for lp in loops) - want) > 0.01:
             raise SystemExit("form %s: the DXF loops enclose %.2f mm2, the piece is %.2f" % (
                 form, sum(area(lp) for lp in loops), want))
-        dxf_tools.write_dxf(os.path.join(HERE, dxf), [("POLY", "CUT", lp) for lp in loops], layers=("CUT",))
-        made.append((dxf, loops, want))
+        # its number: a live allocation row for this form at this size, else "to allocate" (no DXF until then)
+        pn, name = nums.get(form, ("", ""))
+        if not pn or "%s %g X %g" % (form, first["w"], first["h"]) not in name:
+            pn, dxf = "", ""
+            unnumbered.append("%s %g x %g" % (form, first["w"], first["h"]))
+        else:
+            dxf = dxf_name(pn, name)
+            dxf_tools.write_dxf(os.path.join(HERE, dxf), [("POLY", "CUT", lp) for lp in loops], layers=("CUT",))
+            made.append((dxf, loops, want))
         pk = "; ".join("u %g-%g, v %g-%g" % r for r in first["pockets"])
         where = ", ".join("%s bay %d" % (m["position"], m["bay"]) for m in members)
         note = " (%s)" % first["note"] if first["note"] else ""
-        md.append("| %s | %s | %g x %g | %s%s | %s | `%s` |" % (form, pn, first["w"], first["h"], pk, note, where, dxf))
+        md.append("| %s | %s | %g x %g | %s%s | %s | %s |" % (form, pn or "to allocate", first["w"], first["h"], pk, note,
+                                                          where, ("`%s`" % dxf) if dxf else "when numbered"))
         for m in members:
             rows.append({"form": form, "position": m["position"], "bay": m["bay"], "panel": m["panel"],
                          "w_mm": first["w"], "h_mm": first["h"], "t_mm": 40, "pockets": pk, "note": first["note"],
@@ -278,6 +285,14 @@ def main():
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
+    # the DXFs of forms no longer in the list (an older layout's) go, so no stale cut file stays beside the new ones
+    keep = {d for d, _l, _w in made}
+    for old in sorted(glob.glob(os.path.join(HERE, "211[56][0-9][0-9]_P01_WALL-CAVITY-FILL-PIECE-*_DXF.dxf"))):
+        if os.path.basename(old) not in keep:
+            os.remove(old)
+            print("removed %s (not a form of this layout)" % os.path.basename(old))
+    if unnumbered:
+        print("TO ALLOCATE (no live number at this size): %s" % "; ".join(unnumbered))
     for dxf, loops, want in made:
         sm = dxf_tools.summary(os.path.join(HERE, dxf))
         e = sm["extents"]

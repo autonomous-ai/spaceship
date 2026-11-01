@@ -29,13 +29,14 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 # side_h 1120, not 1000: ELECTRICAL's trunk holes in R1-CASS sit at fixed heights up to Z 1210 (el_trunk_z +
 # el_kit_dz + el_kit_d / 2), and a lower row 1000 high would put its top (Z 1112) under them; ELECTRICAL moves
 # the trunk before the rows change that much
-EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm"), ("stile_pitch_max", "300 mm")]
+# the side studs follow the bolts (stud_c1 to stud_c5, D-131 sample), not stile_pitch_max, so the rule isn't edited
+EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm")]
 # back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
 # (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
 # (2300 - 92 - 2 x 2.26 - 5.5) / 2); back_ph 1080, not 1000: ELECTRICAL's power unit cut-out in B2-CASS reaches
 # Z 1134 at a fixed height, and a lower row 1000 high would end at Z 1112, under it
 EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1080 mm"),
-              ("stile_pitch_max", "300 mm")]
+              ("stile_pitch_max", "250 mm")]
 BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
 
 
@@ -289,7 +290,8 @@ def record(design, rel):
     edits = EDITS_BACK if back_wall else EDITS
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
              "cass_len", "cass_h", "pnl_h") + EL_BACK.get(root_pn, ()) if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
-                                         "stile_pitch", "cass_len", "cass_h", "top_h", "pod_h", "panel_z0",
+                                         "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "cass_len", "cass_h",
+                                         "top_h", "pod_h", "panel_z0",
                                          "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
@@ -362,8 +364,16 @@ def record(design, rel):
             rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
             washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
             spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
-        rule = after_p["stile_pitch_max"]
-        n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / rule) - 1
+        # D-131 sample: 5 studs set from the bolts (stud_c1 to stud_c5); every bay's skin within the PM's 2 mm (a
+        # clear bay of 275 or less at these heights) and every bolt 30 or more clear of every stud (R-J14)
+        n_mid = int(round(after_p["stile_n_mid"]))
+        pitch = (after_p["wall_depth"] - seam - 440.0) / 3.0                # len_bolt_pitch (220 rule)
+        bolts = [y0p + 220.0 + i * pitch for i in range(4)]
+        y_front_in = y0p + 20.0
+        y_back_in = y0p + (after_p["wall_depth"] - seam - 3) - 40.0
+        mid_y = sorted(m[1] for m in mids)
+        faces = [y_front_in] + [y for m in sorted(mids, key=lambda m: m[1]) for y in (m[1], m[4])] + [y_back_in]
+        clear = [faces[i + 1] - faces[i] for i in range(0, len(faces), 2)]
         if rails:
             checks += [
                 ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
@@ -375,11 +385,17 @@ def record(design, rel):
                      if nm(k) in ("STILE - FRONT", "STILE - BACK"))),
                 ("studs span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
                                                                  < 0.01 for st in mids)),
-                ("mid stile count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
-                ("no stile pitch over %g" % rule, all(b[1] - a[1] <= rule + 0.01 for a, b in zip(mids, mids[1:]))),
+                ("%d studs, set from the bolts" % n_mid, len(mids) == n_mid and all(
+                    abs((m[1] + m[4]) / 2.0 - (y0p + after_p["stud_c%d" % (k + 1)])) < 0.01
+                    for k, m in enumerate(sorted(mids, key=lambda m: m[1])))),
+                ("every clear bay 275 or less (the skin's 2 mm limit) %s" % [round(c, 1) for c in clear],
+                 all(c <= 275.0 for c in clear)),
+                ("every bolt 30 or more clear of every stud (R-J14)",
+                 all(min(abs(b - y) for y in mid_y + [m[4] for m in mids]) >= 30.0 - 0.01 and
+                     not any(m[1] - 0.01 < b < m[4] + 0.01 for m in mids) for b in bolts)),
             ]
         if bays:
-            checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+            checks.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
         if skins:
             sk = skins[0]
             checks.append(("skin runs wall_depth - 2.26 and the panel height", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
@@ -397,10 +413,10 @@ def record(design, rel):
                            abs((fe[5] - fe[2]) - (zc1 - z0 - 3)) < 0.01))
         if zones:
             checks += [
-                ("clip zones sit on the first and last mid stile",
-                 sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
-                                                                      round(y0p + after_p["stile_n_mid"] *
-                                                                            after_p["stile_pitch"], 2)})),
+                ("clip zones sit on the first and last stud",
+                 sorted({round(zz[1], 2) for zz in zones}) == sorted({
+                     round(y0p + after_p["stud_c1"] - 10.0, 2),
+                     round(y0p + after_p["stud_c%d" % int(round(after_p["stile_n_mid"]))] - 10.0, 2)})),
                 ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (zc1 - 70)) < 0.01),
             ]
         if rivs:

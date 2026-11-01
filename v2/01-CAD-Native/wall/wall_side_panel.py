@@ -135,7 +135,9 @@ WALL_PARAMS = [
     ("stud_t", "0.8 mm", "mm", "assumption",
      "D-131 start value for the inner members (studs: no rivnut, only the skin's bond line), if the Joints "
      "Engineer's gauge check allows it"),
-    ("stile_pitch_max", "400 mm", "mm", "confirmed", "D-16, D-34: members 400 mm apart or less, to keep the ACP flat"),
+    ("stile_pitch_max", "300 mm", "mm", "confirmed",
+     "PM ruling 2026-11-01 (D-131 sample): the ACP flexes 2 mm or less under a 100 N push at a bay's centre, edges "
+     "simply supported (make_acp_spans.py), so members about 300 apart; it was 400 (D-16, D-34)"),
     ("pnl_len", "wall_depth - seam_gap", "mm", "calculation",
      "D-49 depth 1495 less the 2.26 gap at the decor back plate (PM ruling on F-008): 1492.74"),
     ("pnl_h", "side_h" if ROW == 1 else "pod_h - (panel_z0 + side_h + seam_gap)", "mm", "calculation",
@@ -153,10 +155,9 @@ WALL_PARAMS = [
     ("corner_w", "40 mm", "mm", "confirmed",
      "the side panel's back member is 40 x 40 x 1.2 (PM ruling on the joints register, item 3, 2026-10-31; "
      "register F2, FR-06): the back corner joint needs a 37+ mm overlap for the rivnut and the bolt"),
-    ("stile_n_mid", "ceil((frm_len - tube_w / 2 - corner_w / 2) / stile_pitch_max) - 1", "", "calculation",
-     "intermediate stiles so that no stile pitch (centre to centre) exceeds stile_pitch_max"),
-    ("stile_pitch", "(frm_len - tube_w / 2 - corner_w / 2) / (stile_n_mid + 1)", "mm", "calculation",
-     "equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"),
+    ("stile_n_mid", "5", "", "calculation",
+     "D-131 sample (PM 2026-11-01): 5 studs, placed clear of the bolts (stud_c1 to stud_c5): 4 even studs about 300 "
+     "apart pass the skin's 2 mm limit but stand 14 and 24 mm from two bolts, under R-J14's 30"),
     ("top_h", "tube_w" if ROW == 1 else "corner_w", "mm", "confirmed" if ROW == 2 else "calculation",
      "top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling "
      "R-J3, joints register FR-06)"),
@@ -197,6 +198,14 @@ WALL_PARAMS = [
      "P04; CEILING drills the same (PM ruling 2026-10-31 16:55; joints register 2.9)"),
     ("len_bolt_pitch", "(pnl_len - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
      "even pitch of the bolts along the panel"),
+    # the studs' centres from the frame's front end, each set from the bolts it stands between, so every bolt stays 30
+    # or more clear of every stud (R-J14: WALL moves a stile, never a bolt) and no bay is over the skin's 2 mm
+    # limit (stile_pitch_max); the rule holds while the bolts move with the panel length (edit test)
+    ("stud_c1", "bolt_edge + 50 mm", "mm", "calculation", "50 past the 1st bolt: its face 40 clear of it (R-J14)"),
+    ("stud_c2", "bolt_edge + len_bolt_pitch - 50 mm", "mm", "calculation", "50 before the 2nd bolt (R-J14)"),
+    ("stud_c3", "bolt_edge + 1.5 * len_bolt_pitch", "mm", "calculation", "midway between the 2nd and 3rd bolts"),
+    ("stud_c4", "bolt_edge + 2 * len_bolt_pitch + 50 mm", "mm", "calculation", "50 past the 3rd bolt (R-J14)"),
+    ("stud_c5", "bolt_edge + 3 * len_bolt_pitch - 50 mm", "mm", "calculation", "50 before the 4th bolt (R-J14)"),
     # lining cassette
     ("felt_t", "9 mm", "mm", "source", "plan VT03-PET 9 mm PET felt; HW-SEL A3; D-31 (the factory's felt)"),
     ("tray_t", "0.5 mm", "mm", "confirmed", "D-37: galvanised steel tray 0.5 mm"),
@@ -1091,6 +1100,62 @@ def poly_on(design, comp, axis, plane_expr, pts, label):
     return sk, pl
 
 
+def sketch_points(design, comp, axis, plane_expr, pts, label):
+    """Points on a plane normal to `axis` at plane_expr: pts = [(a, b), ...], their expressions in the plane's other
+    two axes in xyz order; each dimensioned from the sketch origin (points only, so nothing is tied twice). Returns
+    the sketch points, the sketch fully constrained."""
+    pl = plane_at(design, comp, axis, plane_expr, label)
+    sk = comp.sketches.add(pl)
+    sk.name = "SKETCH - %s" % label
+    other = [a for a in "xyz" if a != axis]
+    v = ev(design, plane_expr)
+    sa = {m: sketch_axis_of(sk, m) for m in other}
+    gc = sk.geometricConstraints
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    out = []
+    for a, b in pts:
+        c = {axis: v, other[0]: ev(design, a), other[1]: ev(design, b)}
+        q = sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM)))
+        for m, e in ((other[0], a), (other[1], b)):
+            if abs(ev(design, e)) < 1e-6:
+                (gc.addVerticalPoints if sa[m] == "x" else gc.addHorizontalPoints)(q, sk.originPoint)
+            else:
+                g = q.geometry
+                sk.sketchDimensions.addDistanceDimension(sk.originPoint, q, H if sa[m] == "x" else V,
+                                                         adsk.core.Point3D.create(g.x + 0.3, g.y + 0.3, 0)
+                                                         ).parameter.expression = "abs(%s)" % e
+        out.append(q)
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    return out
+
+
+def place_copies(design, parent, comp, src, targets, boxes, label):
+    """Copies of `comp` in `parent`, each held by a rigid joint from comp's reference point `src` (a sketch point of
+    comp) to one of `targets` (sketch points of parent, on a plane the same way round), so each follows its place on
+    an edit; each copy's box (mm, in parent's context) is checked, the joint flipped if needed. Returns the copies."""
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    occs = []
+    for k, (tp, want) in enumerate(zip(targets, boxes)):
+        occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
+        for flip in (False, True):
+            jin = parent.joints.createInput(adsk.fusion.JointGeometry.createByPoint(src.createForAssemblyContext(occ)),
+                                            adsk.fusion.JointGeometry.createByPoint(tp))
+            jin.setAsRigidJointMotion()
+            jin.isFlipped = flip
+            j = parent.joints.add(jin)
+            bb = bbox(occ.bRepBodies.item(0))
+            if j.healthState == healthy and all(abs(a - b) < 0.05 for a, b in zip(bb, want)):
+                j.name = "JOINT - %s COPY %d" % (label, k + 2)
+                break
+            j.deleteMe()
+        else:
+            raise RuntimeError("%s copy %d: no joint puts it at %s" % (label, k + 2, want))
+        occs.append(occ)
+    return occs
+
+
 def poly_on_x(design, comp, x_expr, pts, label):
     """poly_on on a plane normal to X (a side wall's frame plane): pts = [(y_expr, z_expr), ...]."""
     return poly_on(design, comp, "x", x_expr, pts, label)
@@ -1188,42 +1253,117 @@ def build_frame(design, frame, out, xf, yf, zs):
         rt, st = mitre_triangles(o, i)
         mitre(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), x_lo)
         mitre(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile), x_lo)
-    make("STILE - MID", ("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT), zs, "z", "stud_t")
-    coll = adsk.core.ObjectCollection.create()
-    coll.add(occs["STILE - MID"])
-    pin = frame.features.rectangularPatternFeatures.createInput(
-        coll, frame.yConstructionAxis, vi("stile_n_mid"), vi("stile_pitch"),
-        adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
-    pin.setDirectionTwo(frame.zConstructionAxis, vi("1"), vi("1 mm"))
-    pat = frame.features.rectangularPatternFeatures.add(pin)
-    pat.name = "PATTERN - STUD COPIES"
+    studs = ["stud_c%d" % k for k in range(1, int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1)]
+    yr = lambda c: ("(%s) + %s - tube_w / 2" % (Y_FRONT, c), "(%s) + %s + tube_w / 2" % (Y_FRONT, c))  # noqa: E731
+    make("STILE - MID", yr(studs[0]), zs, "z", "stud_t")
+    sc = members["STILE - MID"][0]
+    x_out = min(xf, key=lambda e: ev(design, e))
+    src = sketch_points(design, sc, "x", x_out, [("(%s) + %s" % (Y_FRONT, studs[0]), zs[0])], "STUD REFERENCE")[0]
+    dst = sketch_points(design, frame, "x", x_out, [("(%s) + %s" % (Y_FRONT, c), zs[0]) for c in studs[1:]],
+                        "STUD PLACES")
+    xs = sorted(ev(design, e) for e in xf)
+    boxes = [(xs[0], ev(design, yr(c)[0]), ev(design, zs[0]), xs[1], ev(design, yr(c)[1]), ev(design, zs[1]))
+             for c in studs[1:]]
+    place_copies(design, frame, sc, src, dst, boxes, "STUD")
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
         out[key].name = key
-    print("step 2-3: frame of %d member parts, %d stud copies at pitch %.2f, 4 mitred corners" % (
-        len(members), round(design.userParameters.itemByName("stile_n_mid").value),
-        design.userParameters.itemByName("stile_pitch").value * 10.0))
+    print("step 2-3: frame of %d member parts, %d studs (one part, copies held by joints) at Y %s from the front, "
+          "4 mitred corners" % (len(members), len(studs), ", ".join("%.1f" % ev(design, c) for c in studs)))
     return members
 
 
-def build_fill(design, parent, out, xf, zs):
-    """D-120: each bay's piece its own component with its number, straight in the panel assembly (D-123 cancels
-    the panel's fill number; WALL's FILL-PIECES list gives each bay's form): the box of its bay with the pockets
-    beside every bolt this panel drives that fall in it (FR-10), each pocket cut right through the piece it falls
-    in (an edge notch, D-128)."""
-    nums = fill_numbers(ARGS["repo_root"], CODE)
+def side_bays(design):
+    """The side frame's bays, (low Y, high Y) expressions: from the front stile to the first stud, between the studs,
+    and from the last stud to the 40 x 40 back stile."""
     n = int(round(design.userParameters.itemByName("stile_n_mid").value))
-    bays = [("(%s) + tube_w + %d * stile_pitch" % (Y_FRONT, k), "(%s) + %d * stile_pitch" % (Y_FRONT, k + 1))
-            for k in range(n)] + [("(%s) + stile_n_mid * stile_pitch + tube_w" % Y_FRONT, "(%s) - corner_w" % Y_FRAME_BACK)]
+    edges = ["(%s) + tube_w" % Y_FRONT]
+    for k in range(1, n + 1):
+        edges += ["(%s) + stud_c%d - tube_w / 2" % (Y_FRONT, k), "(%s) + stud_c%d + tube_w / 2" % (Y_FRONT, k)]
+    edges.append("(%s) - corner_w" % Y_FRAME_BACK)
+    return [(edges[i], edges[i + 1]) for i in range(0, len(edges), 2)]
+
+
+def fill_fits(repo_root, code):
+    """{bay: how it takes its form's piece} of one position, from WALL's FILL-PIECES.csv (as cut, turned over left
+    to right, turned over top to bottom, end for end)."""
+    import csv
+    with open(os.path.join(repo_root, "v2/03-Manufacturing/wall/FILL-PIECES.csv"), encoding="utf-8") as fh:
+        return {int(r["bay"]): r["fit"] for r in csv.DictReader(fh) if r["position"] == code}
+
+
+def place_piece_copies(design, parent, built, copies, label):
+    """Copies of fill pieces whose form an earlier bay of this panel already has (D-120: identical pieces are copies
+    of one part). built: {part number: (component, its bay's box (mm), (x, u, z) expressions of the piece's low
+    corner, the wall's along axis 'x' or 'y')}; copies: [(part number, this bay's box (mm), its corners'
+    expressions {name: (x, u, z)}, fit, the notch points that must stay open (mm))]. Each copy is held by a rigid
+    joint from a reference point at its part's low corner (a sketch point on a horizontal plane) to the matching
+    corner of its bay, turned half round about Z when the fit says "turned over left to right" (the piece is the
+    same right through its thickness): parametric, so it follows an edit. Checked: the copy fills its bay's box and
+    every notch it needs is open."""
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    inside = adsk.fusion.PointContainment.PointInsidePointContainment
+    refs = {}
+    for pn, want, corners, fit, open_pts in copies:
+        if fit not in ("as cut", "turned over left to right"):
+            raise RuntimeError("%s goes in %s: only as cut or turned over left to right are placed so far" % (pn, fit))
+        comp, _first_box, low, along = built[pn]
+        if pn not in refs:
+            refs[pn] = sketch_points(design, comp, "z", low[2], [(low[0], low[1]) if along == "y" else (low[1], low[0])],
+                                     "PIECE REFERENCE")[0]
+        # where the reference corner lands: as cut, the bay's low corner; turned round about Z, its high corner
+        tgt = corners["low"] if fit == "as cut" else corners["high_turned"]
+        dst = sketch_points(design, parent, "z", tgt[2], [(tgt[0], tgt[1]) if along == "y" else (tgt[1], tgt[0])],
+                            "PIECE PLACE %s" % pn)[0]
+        occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
+        done = False
+        for angle in (("0 deg", "180 deg") if fit == "as cut" else ("180 deg", "0 deg")):
+            for flip in (False, True):
+                jin = parent.joints.createInput(adsk.fusion.JointGeometry.createByPoint(refs[pn].createForAssemblyContext(occ)),
+                                                adsk.fusion.JointGeometry.createByPoint(dst))
+                jin.setAsRigidJointMotion()
+                jin.angle = vi(angle)
+                jin.isFlipped = flip
+                j = parent.joints.add(jin)
+                body = occ.bRepBodies.item(0)
+                ok = j.healthState == healthy and all(abs(a - b) < 0.05 for a, b in zip(bbox(body), want))
+                if ok:
+                    ok = not any(body.pointContainment(adsk.core.Point3D.create(x / 10.0, y / 10.0, z / 10.0)) == inside
+                                 for x, y, z in open_pts)
+                if ok:
+                    j.name = "JOINT - %s %s %s" % (label, pn, fit.upper())
+                    done = True
+                    break
+                j.deleteMe()
+            if done:
+                break
+        if not done:
+            raise RuntimeError("no joint puts %s's copy (%s) in its bay %s" % (pn, fit, want))
+
+
+def build_fill(design, parent, out, xf, zs):
+    """D-120: each bay's piece a numbered part straight in the panel assembly (D-123 cancels the panel's fill number;
+    WALL's FILL-PIECES list gives each bay's form and how it goes in): the box of its bay with the notches beside
+    every bolt this panel drives that fall in it (FR-10), each cut right through the piece (D-128). A bay whose form
+    an earlier bay has takes a copy of that part, as cut or turned round (place_piece_copies)."""
+    nums = fill_numbers(ARGS["repo_root"], CODE)
+    fits = fill_fits(ARGS["repo_root"], CODE)
+    bays = side_bays(design)
     if sorted(nums) != list(range(1, len(bays) + 1)):
         raise RuntimeError("fill numbers for %s cover bays %s; the frame has %d bays" % (CODE, sorted(nums), len(bays)))
-    pieces = []
+    xs = sorted(xf, key=lambda e: ev(design, e))
+    pieces, built = [], {}
     for k, yr in enumerate(bays):
+        pn = nums[k + 1][0]
+        if pn in built:
+            pieces.append((None, yr, pn))
+            continue
         c = child(parent, *nums[k + 1])[0]
         b = box(design, c, "FILL PIECE BAY %d" % (k + 1), xf, yr, zs).bodies.item(0)
         b.name = "FILL - BAY %d" % (k + 1)
-        pieces.append((c, yr))
+        built[pn] = (c, None, (xs[0], yr[0], zs[0]), "y")
+        pieces.append((c, yr, pn))
     pw, z_top = "pocket_w", "(%s) + tube_w" % Z0
     pockets = []
     for i in range(int(round(design.userParameters.itemByName("n_len_bolt").value))):
@@ -1234,16 +1374,32 @@ def build_fill(design, parent, out, xf, zs):
         zc = "(%s) + bolt_edge + %d * side_jnt_pitch" % (Z0, j)
         pockets.append(("DECOR BOLT %d" % (j + 1), ("(%s) + tube_w" % Y_FRONT, "(%s) + tube_w + %s" % (Y_FRONT, pw)),
                         ("(%s) - %s / 2" % (zc, pw), "(%s) + %s / 2" % (zc, pw))))
+    xm = (ev(design, xf[0]) + ev(design, xf[1])) / 2.0
+    copy_open = {}
     for label, yr, zr in pockets:
         ym = (ev(design, yr[0]) + ev(design, yr[1])) / 2.0
-        hit = [c for c, (y0, y1) in pieces if ev(design, y0) < ym < ev(design, y1)]
+        hit = [i for i, (_c, (y0, y1), _pn) in enumerate(pieces) if ev(design, y0) < ym < ev(design, y1)]
         if len(hit) != 1:
-            raise RuntimeError("fill pocket %s falls in %d pieces" % (label, len(hit)))
-        box(design, hit[0], "FILL POCKET " + label, xf, yr, zr, "cut", hit[0].bRepBodies.item(0))
-    for c, _yr in pieces:
-        b = c.bRepBodies.item(0)
-        out[b.name] = b
-    print("step 5: fill, %d piece parts, pockets at every bolt this panel drives" % len(pieces))
+            raise RuntimeError("fill notch %s falls in %d pieces" % (label, len(hit)))
+        c = pieces[hit[0]][0]
+        if c is None:              # a copy: its part carries this notch already, as cut or turned
+            copy_open.setdefault(hit[0], []).append((xm, ym, (ev(design, zr[0]) + ev(design, zr[1])) / 2.0))
+            continue
+        box(design, c, "FILL POCKET " + label, xf, yr, zr, "cut", c.bRepBodies.item(0))
+    copies = []
+    for i, (c, yr, pn) in enumerate(pieces):
+        if c is None:
+            want = (ev(design, xs[0]), ev(design, yr[0]), ev(design, zs[0]),
+                    ev(design, xs[1]), ev(design, yr[1]), ev(design, zs[1]))
+            corners = {"low": (xs[0], yr[0], zs[0]), "high_turned": (xs[1], yr[1], zs[0])}
+            copies.append((pn, want, corners, fits.get(i + 1, "as cut"), copy_open.get(i, [])))
+    place_piece_copies(design, parent, built, copies, "FILL PIECE")
+    for c, _yr, _pn in pieces:
+        if c is not None:
+            b = c.bRepBodies.item(0)
+            out[b.name] = b
+    print("step 5: fill, %d piece parts in %d bays (%d copies), notches at every bolt this panel drives" % (
+        len(built), len(pieces), len(copies)))
 
 
 def joint_features(design, members, out):
@@ -1733,8 +1889,9 @@ def build_cassette(design, root):
         return out
     # reserved zones for the captive clips (H03): in the 4 mm gap between the frame's inner face and the
     # tray back, on the first and last intermediate stiles of the panel frame, near the top and bottom
-    ys = [("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT),
-          ("(%s) + stile_n_mid * stile_pitch" % Y_FRONT, "(%s) + stile_n_mid * stile_pitch + tube_w" % Y_FRONT)]
+    last = "stud_c%d" % int(round(design.userParameters.itemByName("stile_n_mid").value))
+    ys = [("(%s) + stud_c1 - tube_w / 2" % Y_FRONT, "(%s) + stud_c1 + tube_w / 2" % Y_FRONT),
+          ("(%s) + %s - tube_w / 2" % (Y_FRONT, last), "(%s) + %s + tube_w / 2" % (Y_FRONT, last))]
     zs = [("(%s) + clip_zone_dz - clip_zone_h / 2" % Z0, "(%s) + clip_zone_dz + clip_zone_h / 2" % Z0),
           ("(%s) - clip_zone_dz - clip_zone_h / 2" % Z_CASS1, "(%s) - clip_zone_dz + clip_zone_h / 2" % Z_CASS1)]
     n = 0

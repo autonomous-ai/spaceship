@@ -8,8 +8,9 @@ The skin is bonded to every frame member (rails, stiles, studs), so its free spa
 the same bays the fill pieces fill (make_fill_pieces.py, from the build formulas; check_fill_dxfs.py matches them
 to the CAD). For each distinct bay: its clear size, and the centre deflection of a plate simply supported on its 4
 edges (bonded edges hold it better, so this is on the safe side) under two reference loads. Writes ACP-SPANS.md
-here. The pass mark is the ACP maker's limit, which the repo doesn't have yet (HOLD): this lists the numbers it
-will be read against.
+here. The pass mark (PM ruling 2026-11-01; Tien Anh gave no number): 2 mm or less under the 100 N push, edges
+simply supported; the wall sample gets a push test to confirm it. B2's bays wait for its layout (the unit's bay
+framed with welded cross members).
 
 Sources and statuses:
 - skin: 3 mm ACP with 0.21 mm aluminium skins, PE core (HW-SEL A1, v2/05-Engineering/hardware/selection.md): source
@@ -33,6 +34,7 @@ D = E * T_SKIN * (T_PANEL - T_SKIN) ** 2 / (2 * (1 - NU * NU))
 ALPHA = [(1.0, 0.00406), (1.5, 0.00772), (2.0, 0.01013), (3.0, 0.01223), (4.0, 0.01282), (5.0, 0.01297), (99.0, 0.01302)]
 BETA = [(1.0, 0.01160), (1.5, 0.01509), (2.0, 0.01653), (3.0, 0.01690), (99.0, 0.01695)]
 Q, P = 0.0005, 100.0          # N/mm2 (0.5 kPa) and N
+LIMIT = 2.0                   # mm under P: PM ruling 2026-11-01
 
 
 def interp(tab, r):
@@ -56,13 +58,6 @@ def spans():
     return out
 
 
-def tighter():
-    """(label, builder namespace, bay height) for the closer-member option, one per frame type."""
-    return [("side lower (L1, R1)", mf.t.load("panel", "L", "1"), 1102.74),
-            ("side upper (L2, R2)", mf.t.load("panel", "L", "2"), 1082.74),
-            ("back (B1-B4)", mf.t.load_back("B1", "panel"), 1078.61)]
-
-
 def main():
     rows = spans()
     md = ["# WALL: the ACP skin's free spans", "",
@@ -70,30 +65,23 @@ def main():
           "its free spans are the bays between members (the fill bays). Deflection: the bay as a plate simply "
           "supported on 4 edges (on the safe side), 3 mm ACP with 0.21 mm aluminium skins (HW-SEL A1), D = %.0f "
           "N·mm. Loads are reference cases (assumption), not a pass mark." % D, "",
-          "**Pass mark: the ACP maker's span limit — HOLD (not in the repo; Tien Anh warned that the ACP flexes "
-          "without plywood).**", "",
-          "| Bays | Clear size w x h (mm) | Short span (mm) | 0.5 kPa uniform: centre deflection | 100 N at the centre |",
-          "|---|---|---|---|---|"]
+          "**Pass mark (PM ruling 2026-11-01): 2 mm or less under a 100 N push at a bay's centre, edges simply "
+          "supported; confirmed by a push test on the wall sample.** B2 waits for its layout (the unit's 373 mm bay "
+          "framed with welded cross members).", "",
+          "| Bays | Clear size w x h (mm) | Short span (mm) | 0.5 kPa uniform: centre deflection | 100 N at the centre | "
+          "2 mm limit |", "|---|---|---|---|---|---|"]
     for where, w, h, a, wq, wp in rows:
-        md.append("| %s | %.1f x %.1f | %.1f | %.2f mm (span/%d) | %.2f mm |" % (
-            ", ".join(where), w, h, a, wq, a / wq, wp))
-    md += ["", "If a span is too long, the frame's member rule closes it: with stile_pitch_max 300 instead of 400 "
-           "(the build formulas, one more stud per panel):", "",
-           "| Panels | Studs | Clear bay (mm) | 0.5 kPa uniform | 100 N at the centre |", "|---|---|---|---|---|"]
-    for label, ns, h in tighter():
-        v = mf.t.resolve(ns, {"stile_pitch_max": 300.0})
-        a = v["stile_pitch"] - v["tube_w"]
-        r = h / a
-        wq, wp = interp(ALPHA, r) * Q * a ** 4 / D, interp(BETA, r) * P * a * a / D
-        md.append("| %s | %d | %.1f x %.1f | %.2f mm (span/%d) | %.2f mm |" % (
-            label, round(v["stile_n_mid"]), a, h, wq, a / wq, wp))
+        md.append("| %s | %.1f x %.1f | %.1f | %.2f mm (span/%d) | %.2f mm | %s |" % (
+            ", ".join(where), w, h, a, wq, a / wq, wp, "pass" if wp <= LIMIT else "FAIL"))
     with open(os.path.join(HERE, "ACP-SPANS.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(md) + "\n")
     for where, w, h, a, wq, wp in rows:
         print("%-60s %7.1f x %7.1f  short %6.1f  0.5 kPa %.2f mm (span/%d)  100 N %.2f mm" % (
             ", ".join(where)[:60], w, h, a, wq, a / wq, wp))
-    print("wrote ACP-SPANS.md: %d distinct bays, D = %.0f N.mm" % (len(rows), D))
+    bad = [r for r in rows if r[5] > LIMIT]
+    print("wrote ACP-SPANS.md: %d distinct bays, D = %.0f N.mm; %d over the 2 mm limit" % (len(rows), D, len(bad)))
+    return 1 if bad else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

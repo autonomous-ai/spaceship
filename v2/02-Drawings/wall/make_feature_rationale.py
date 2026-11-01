@@ -73,10 +73,11 @@ FAMILIES_BACK = {
 }
 
 OTHER_BACK = [
-    ("F10", "{frame}", "Two studs at 393 between centres, 1.0 wall (D-85); perimeter 1.2",
-     "keeps the ACP flat (members 400 apart or less, D-16, D-34); every bolt 30 or more from every stud (R-J14)",
-     "stile_pitch_max 400; pitch = (half_fw - 20) / 3 (calculation)", "follows half_fw (edit test)",
-     "cut list ±0.5 (assumption)", "DECIDED (D-85)"),
+    ("F10", "{frame}", "Three studs at 294.75 between centres (0.8 wall, D-131 start); perimeter 1.0",
+     "the skin flexes 2 mm or less under a 100 N push at a bay's centre (PM 2026-11-01; make_acp_spans.py: 1.99); "
+     "every bolt 30 or more from every stud (R-J14: 75 or more)", "stile_pitch_max 300 (confirmed); pitch = "
+     "(half_fw - 20) / 4 (calculation)", "follows half_fw (edit test)", "cut list ±0.5 (assumption)",
+     "DECIDED (PM 2026-11-01)"),
     ("F12", "{frame}", "Rails run the full frame width; stiles fit between them (square butt ends)",
      "a continuous bottom rail sits on its gasket in one line", "member joints: internal cleats per D-115 (corner and T "
      "cleats, crimped, structural adhesive; no welds; the cleats come from the Joints Engineer)", "", "",
@@ -264,10 +265,12 @@ FAMILIES = {
 }
 
 OTHER = [
-    ("F10", "{frame}", "Stile pitch 364.93 between centres, 3 intermediate studs at a 1.0 wall (D-85); perimeter 1.2",
-     "keeps the ACP flat between bond lines (D-16, D-34: members 400 apart or less); every bolt lands 30 or more from "
-     "every stile (R-J14; checked by test_wall_offline.py)", "stile_pitch_max 400 (confirmed); "
-     "pitch = (frame length - 10 - 20) / 4 (calculation)", "follows wall_depth (edit test)", "cut list ±0.5 (assumption)", "confirmed rule"),
+    ("F10", "{frame}", "Five studs (0.8 wall, D-131 start; perimeter 1.0), set from the bolts: 50 past the 1st, "
+     "50 before the 2nd, midway between the 2nd and 3rd, 50 past the 3rd, 50 before the 4th",
+     "the skin flexes 2 mm or less under a 100 N push at a bay's centre (PM 2026-11-01; worst bay 240 clear, 1.52) "
+     "and every bolt stays 30 or more clear of every stud (R-J14: 40); 4 even studs would stand 14 and 24 mm from two "
+     "bolts", "stud_c1 to stud_c5 (calculation; test_wall_offline.py)", "follows wall_depth (edit test)",
+     "cut list ±0.5 (assumption)", "DECIDED (PM 2026-11-01)"),
     ("F11", "{frame}", "Back stile 40 x 40 x 1.2", "room for the corner rivnut, its Ø20 stop washer and the bolt "
      "(37+ mm overlap instead of 17)", "PM ruling R-J3; %s 2.4, FR-06" % REG, "", "", "confirmed"),
     ("F12", "{frame}", "Rails run the full frame length; stiles fit between them (square butt ends)",

@@ -20,9 +20,9 @@ BACK = (("B1", "LOWER-B1"), ("B2", "LOWER-B2"), ("B3", "UPPER-B3"), ("B4", "UPPE
 
 
 def fill_forms():
-    """(part number, DXF) of each fill-piece form, from WALL's FILL-PIECES.csv (D-123, D-128)."""
+    """(part number, DXF) of each fill-piece form with a number, from WALL's FILL-PIECES.csv (D-123, D-128)."""
     with open(os.path.join(HERE, "..", "..", "03-Manufacturing", "wall", "FILL-PIECES.csv"), encoding="utf-8") as fh:
-        return sorted({(r["number"], r["dxf"]) for r in csv.DictReader(fh)})
+        return sorted({(r["number"], r["dxf"]) for r in csv.DictReader(fh) if r["number"]})
 
 
 def rows():

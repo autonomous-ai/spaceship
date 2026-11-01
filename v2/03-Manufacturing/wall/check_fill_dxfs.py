@@ -11,7 +11,8 @@ repo's own STEP reader (tools/checks/stepfile.py: mm, every placed copy), and fo
   the bay takes its piece: each corner of the DXF is a vertex of the face, each vertex of the face lies on the
   DXF's outline, and the enclosed areas agree within 1 mm2.
 The DXF is read back from its file (POLYLINE vertices on CUT), not from the script that wrote it. A bay with no
-body (B3, B4 until they are built) is listed, not failed. Exit 1 on any mismatch.
+body (B3, B4 until they are built), a position whose forms have no number yet (no DXF), and one the list
+leaves out (B2 until its layout is built) are listed, not failed. Exit 1 on any mismatch.
 """
 
 import csv
@@ -114,6 +115,13 @@ def main():
     for pos, pn in PANELS.items():
         steps = glob.glob(os.path.join(HERE, "%s_P01_*_STEP.step" % pn))
         rows = sorted(bays.get(pos, []), key=lambda r: int(r["bay"]))
+        if not rows:
+            missing.append("%s (%s): not in FILL-PIECES.csv (its layout waits)" % (pos, pn))
+            continue
+        if any(not r["dxf"] for r in rows):
+            missing.append("%s (%s): forms %s have no number yet (to allocate), so no DXF to check" % (
+                pos, pn, ", ".join(sorted({r["form"] for r in rows if not r["dxf"]}))))
+            continue
         if not steps:
             missing.append("%s (%s): no panel STEP yet, %d bays not checked" % (pos, pn, len(rows)))
             continue
