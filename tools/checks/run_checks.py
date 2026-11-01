@@ -155,6 +155,7 @@ def run(root, rev):
     findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
     findings += c_parts.check_copies(root, per_part, c_geometry.load_step)         # copies match their part
     if plists:
+        findings += c_parts.check_decided_items(root, plists, step_products)   # D-131, D-132: cancelled and added
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
     # shipping

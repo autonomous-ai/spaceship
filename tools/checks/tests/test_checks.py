@@ -339,11 +339,44 @@ def test_part_numbers_and_file_names():
 
 
 def test_pod_mass_against_the_cap(tmp_path):
-    rows = [{"kg_total": "400.0"}, {"kg_total": "26.7"}]
+    # D-131: the cap is 460 kg (provisional until the wall sample's recount), from config/policy.csv
+    rows = [{"kg_total": "440.0"}, {"kg_total": "26.7"}]
     fs, info = c_parts.check_pod_mass(str(tmp_path), rows, "list.csv")
-    assert info["total_kg"] == pytest.approx(426.7) and [f.rule for f in fs] == ["pod-mass-over-cap"]
-    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "419"}], "list.csv")
-    assert fs == []
+    assert info["total_kg"] == pytest.approx(466.7) and info["cap_kg"] == 460.0
+    assert [f.rule for f in fs] == ["pod-mass-over-cap"] and "460 kg cap (D-131" in fs[0].message
+    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "426.7"}], "list.csv")
+    assert fs == []                                                       # over the old 420, under D-131's 460
+    assert c_parts.check_pod_mass(ROOT, [{"kg_total": "1"}], "list.csv")[1]["cap_kg"] == 460.0   # the repo's policy
+
+
+def test_what_decisions_cancelled_is_gone_and_what_they_added_is_there(tmp_path):
+    # D-131 cancels the cleats, D-132 the floor parts and the threshold and adds the base seal lip
+    import shutil
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    for n in ("cancelled-items.csv", "required-items.csv"):
+        shutil.copy(os.path.join(ROOT, "v2/04-Checks/config", n), cfg / n)
+    d = tmp_path / "v2/03-Manufacturing/base"
+    d.mkdir(parents=True)
+    row = {"part_number": "111401", "name": "BASE - FLOOR PANEL - F1", "name_vi": "x", "material": "plywood 9",
+           "finish": "HPL", "qty": "1", "mass_kg": "9", "status": "DRAFT", "source": "CAD"}
+    rows = [row, dict(row, part_number="111501", name="BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM"),
+            dict(row, part_number="111101", name="BASE - BAND TUBE - SIDE - LH")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows)
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"118003": {"files": {"v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step"}, "count": 1,
+                        "name": "118003 FRONT - THRESHOLD - 13 MM"},
+             "212999": {"files": {"v2/03-Manufacturing/skeleton/x.step"}, "count": 1, "name": "212999 CORNER CLEAT"}}
+    got = {(f.rule, f.subject): f for f in c_parts.check_decided_items(str(tmp_path), plists, prods)}
+    assert {k for k in got if k[0] == "cancelled-by-decision"} == {
+        ("cancelled-by-decision", "111401"), ("cancelled-by-decision", "111501"), ("cancelled-by-decision", "118003")}
+    assert got[("cancelled-by-decision", "111401")].owner == "BASE" and "D-132" in got[("cancelled-by-decision", "111401")].message
+    assert got[("cancelled-by-decision", "118003")].owner == "FRONT"                 # the skeleton's cleat isn't a part
+    req = [f for f in got.values() if f.rule == "required-by-decision"]
+    assert len(req) == 1 and req[0].owner == "BASE" and "seal lip" in req[0].message
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT")])
+    got = c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
+    assert got == []                                                       # floor parts gone, the lip there
 
 
 def test_repo_pod_mass_from_the_newest_list_without_double_counting():

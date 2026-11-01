@@ -1,0 +1,2 @@
+pattern,folder,decision,what
+"\bSEAL\b.*\bLIP\b|\bLIP\b.*\bSEAL\b",v2/03-Manufacturing/base,D-132,"the base seal lip on the band's inner face, pressing on the room floor across the glides' range"
