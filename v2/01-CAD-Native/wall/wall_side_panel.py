@@ -123,11 +123,12 @@ HW_PARTS = {
 # bottom rail, a pad on its leg under the tray's bottom return; the upper cassette stands on the lower one through a
 # strip in the 2.26 joint (on the cassette's list). Numbers from Control, the pad, strip and rivet picked by Joints;
 # until a number is posted the build stops, except a dry run, which labels the part DRY.
-LEDGE_PN = {"ledge": "211701", "pad": None, "rivet": None}       # 211701: Control, 2026-11-01 (WALL group)
+LEDGE_PN = {"ledge": "211701", "pad": "848015", "rivet": "838012"}   # Control's numbers, 2026-11-01 (WALL group)
 LEDGE_NAMES = {
     "ledge": ("WALL - CASSETTE LEDGE - SIDE LOWER - COMMON", "Vách - thanh đỡ cassette dưới (dùng chung)"),
-    "pad": ("SEALS - CASSETTE LEDGE PAD - 18 X 2.26 - HOLD", "Đệm gờ đỡ cassette (chờ)"),
-    "rivet": ("HARDWARE - BLIND RIVET - Ø4 - STEEL ZINC - HOLD", "Đinh tán rút Ø4 thép mạ kẽm (chờ)"),
+    "pad": ("SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA", "Đệm đỡ cassette trên gờ"),
+    "rivet": ("HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8",
+              "Đinh tán rút kín đầu, đầu chìm 3.2 × 8"),
 }
 if ROW == 1:
     for _k, (_n, _v) in LEDGE_NAMES.items():
@@ -416,7 +417,7 @@ LEDGE_PARAMS = [
     ("ledge_end", "5 mm", "mm", "assumption", _LG + ": the ledge's ends 5 inside the right-hand cassette's"),
     ("ledge_len", "wall_depth - stack_t + cass_t - ledge_front_dy - 2 * ledge_end", "mm", "calculation",
      "1430: the right-hand cassette's length less 5 at each end"),
-    ("ledge_rivet_d", "4.1 mm", "mm", "source", "Joints' pick: the hole for the ISO 15979 Ø4.0 blind rivet"),
+    ("ledge_rivet_d", "3.3 mm", "mm", "source", "joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): the hole for 838012, Ø3.3 in the upright and the rail"),
     ("ledge_rivet_n", "6", "", "assumption", _LG + ": 6 rivets for the two cassettes' 20.2 kg, about 33 N each"),
     ("ledge_rivet_e", "40 mm", "mm", "assumption", "the end rivets 40 in from the ledge's ends"),
     ("ledge_rivet_z", "tube_w / 2 - 1 mm", "mm", "calculation",
@@ -424,18 +425,18 @@ LEDGE_PARAMS = [
      "edge 8.2 from the bend"),
     ("ledge_rivet_pitch", "(ledge_len - 2 * ledge_rivet_e) / (ledge_rivet_n - 1)", "mm", "calculation",
      "even, so the pattern is symmetric and the turned copy (RH) matches: one part"),
-    ("rivet_d", "4 mm", "mm", "confirmed",
-     "D-166 and the Lead's ruling of 2026-11-01: a closed-end countersunk blind rivet Ø4 (838012), its head flush in "
-     "the upright; the grip 1.5 + 1.2 = 2.7; Joints names the part"),
-    ("rivet_head_d", "7 mm", "mm", "assumption", "the countersunk head Ø7, the smallest the Lead asked for (best for "
-                                                  "the land); Joints' sheet confirms it"),
-    ("rivet_csk_angle", "120 deg", "deg", "assumption", "the head's included angle, blind rivets' usual 120 (Joints' "
-                                                         "sheet confirms it)"),
+    ("rivet_d", "3.2 mm", "mm", "source",
+     "joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): 838012, closed end (D-166), countersunk, aluminium body with a steel mandrel, 3.2 x 8, "
+     "grip 1.0 to 3.5 for the 1.5 + 1.2 = 2.7; shear 1100 N, tensile 1450 N"),
+    ("rivet_head_d", "6.7 mm", "mm", "source", "joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): the countersunk head Ø5.8 to 6.7, its largest"),
+    ("rivet_csk_angle", "120 deg", "deg", "source", "joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): the head's 120 degrees"),
     ("rivet_head_t", "(rivet_head_d - rivet_d) / 2 / tan(rivet_csk_angle / 2)", "mm", "calculation",
-     "the head's depth: 0.87 for Ø7 at 120, leaving 0.63 of land in the 1.5 upright"),
-    ("ledge_csk_d", "rivet_head_d + 0.2 mm", "mm", "assumption",
-     "the upright's countersink Ø, 0.2 over the head, so the head sits just under flush, never proud"),
-    ("rivet_len", "8 mm", "mm", "assumption", "its overall length for the 2.7 grip (envelope; Joints' sheet sets it)"),
+     "the head's cone: 1.01 deep for Ø6.7 at 120 (the standard allows 1.3 at most: a rim at most 0.3 proud still "
+     "clears the tray by 0.1 at J-FRAME-01's worst case)"),
+    ("ledge_csk_d", "rivet_head_d", "mm", "calculation",
+     "the upright's machined countersink: Ø6.7 at the head's 120, the head's largest, so every head (Ø5.8 to 6.7) "
+     "sits flush or under; 0.52 of the 1.5 upright stays under it at the Ø3.3 hole (a third of its thickness)"),
+    ("rivet_len", "8 mm", "mm", "source", "joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): 8 long overall (its envelope)"),
 ]
 if ROW == 1:
     WALL_PARAMS = WALL_PARAMS + LEDGE_PARAMS
@@ -456,7 +457,8 @@ DENSITY = {
     "spigot": (7900.0, "source", "stainless steel (H-05): 7.9 g/cm3"),
     "plate": (7850.0, "source", "joints register H-40 to H-42: 2.0 steel plate, galvanized (17.8 / 28.1 / 35.5 g)"),
     "ledge": (7850.0, "source", "galvanized steel sheet DX51D+Z (EN 10346), 7.85 g/cm3 (the zinc not counted)"),
-    "rivet": (7850.0, "source", "ISO 15979 steel blind rivet, zinc plated: 7.85 g/cm3 on its solid envelope"),
+    "rivet": (2700.0, "calculation", "838012's aluminium body, 2.70 g/cm3 on its solid envelope (the steel mandrel's "
+                                     "head left in it not counted)"),
     "pad": (320.0, "source", "Rogers PORON 4701-40, the 320 kg/m3 grade (Joints' pick, 2026-11-01)"),
 }
 

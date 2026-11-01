@@ -575,7 +575,9 @@ class CassetteLedgeTest(unittest.TestCase):
         self.assertGreaterEqual(top - centre, 2 * v["rivet_d"])
         self.assertGreaterEqual(centre - v["ledge_csk_d"] / 2 - (v["ledge_t"] + v["ledge_r"]), 2 * v["ledge_t"])
         self.assertGreaterEqual(top - centre - v["ledge_csk_d"] / 2, 2 * v["ledge_t"])
-        self.assertGreaterEqual(v["ledge_t"] - v["rivet_head_t"], v["ledge_t"] / 3)
+        csk_depth = (v["ledge_csk_d"] - v["ledge_rivet_d"]) / 2 / math.tan(v["rivet_csk_angle"] / 2)
+        self.assertGreaterEqual(v["ledge_t"] - csk_depth, v["ledge_t"] / 3)     # land under the countersink
+        self.assertGreaterEqual(v["ledge_csk_d"], v["rivet_head_d"])            # no head stands proud
 
     def test_the_leg_sits_the_squeezed_pad_under_the_frame_and_lower_panels_only(self):
         """Joints' pad (PORON 4701-40, 320 grade, 2.36 standard) squeezed about 2% to 2.31 under the cassettes, so

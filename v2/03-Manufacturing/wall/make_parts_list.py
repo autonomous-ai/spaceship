@@ -626,8 +626,9 @@ def ledge_rows(rep, prm):
         m = r["bodies"][0]["mass_kg"]
         rows.append(row(level=1, part_number=r["part_number"], name=en_name(r),
                         name_vi=vi_name(r["description"], r["part_number"]), kind="PI",
-                        material="closed-end countersunk blind rivet, steel, zinc plated (D-166; Joints' register row)",
-                        finish="zinc plated", maker="Joints' register row", qty=n, unit="pc", mass_each_kg=round(m, 5),
+                        material="closed-end countersunk blind rivet ISO 15974, aluminium body, steel mandrel (D-166; "
+                                 "joints register H-47)", finish="as supplied",
+                        maker="joints register H-47 (KK2)", qty=n, unit="pc", mass_each_kg=round(m, 5),
                         mass_total_kg=round(m * n, 4),
                         mass_status="calculation: CAD envelope (HOLD)", status="DRAFT", source="CAD; " + LEDGE_RULING,
                         note="hold the ledge to the bottom rail's room face, set after the frame's welding and "

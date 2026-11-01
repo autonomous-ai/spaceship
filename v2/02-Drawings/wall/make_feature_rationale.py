@@ -265,9 +265,10 @@ FAMILIES = {
         "hole edge 15.2 from each side face of the 40 mm wall; the Ø20 stop washer (Y 814 to 834) lies on it",
         "Ø0.4 from F03, matched by the back panel's FR-07 holes", "CNC or jig; T-01, T-02", "source (hole); PROPOSED (positions)"),
     # the cassette ledge (the Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge, not on clip shear)
-    ("RAIL - BOTTOM", 4.1, "x"): (
-        "F50", "Cassette ledge rivet holes: the ledge's blind rivets through the bottom rail's room-side wall",
-        "Ø4 steel blind rivets (HOLD: Joints picks them) through the ledge's F51 holes",
+    ("RAIL - BOTTOM", 3.3, "x"): (
+        "F50", "Cassette ledge rivet holes: the ledge's blind rivets through the bottom rail's room-side wall, plain",
+        "838012, closed-end countersunk blind rivets ISO 15974 Ø3.2 x 8 (D-166; joints register H-47), through the "
+        "ledge's countersunk F51 holes",
         "6 on a line 9 above the frame's bottom, the end ones 40 in from the ledge's ends and the rest evenly between, so the "
         "pattern is symmetric and L1's and R1's ledges are one part", "the Lead's ruling of 2026-11-01 (WALL group)",
         "inside the tube clear of the J-BASE-01 bolt heads and washers (centre line, Ø18) by 4 or more",
@@ -282,9 +283,9 @@ FAMILIES[("STILE - FRONT", 8.5, "y")] = (
     "120 clear of the nearest J-FRONT-01 bolt holes (F07)", "±0.2 to the bolt holes (Joints)",
     "drilled and slotted after welding (J-FRAME-01)", "DECIDED (D-169)")
 LEDGE_BODY = "LEDGE - STEEL ANGLE UNDER THE CASSETTE"
-FAMILIES[(LEDGE_BODY, 4.1, "x")] = (
+FAMILIES[(LEDGE_BODY, 3.3, "x")] = (
     "F51", "The ledge's own rivet holes, matching F50, countersunk on the upright's room face so the heads sit flush",
-    "closed-end countersunk blind rivets Ø4, steel (838012, D-166)",
+    "838012, closed-end countersunk blind rivets ISO 15974 Ø3.2 x 8, heads flush in Ø6.7 x 120 countersinks (D-166)",
     "as F50: 6, symmetric about the ledge's middle", "the Lead's rulings of 2026-11-01 (WALL group): the ledge, its "
     "1.5 upright and flush heads (0.40 clear of the tray at J-FRAME-01's worst case)",
     "centre 9.0 from the upright's top edge (2.2 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
