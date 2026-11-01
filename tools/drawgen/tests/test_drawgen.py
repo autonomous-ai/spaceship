@@ -1342,14 +1342,18 @@ def test_the_spigot_slot_is_the_one_square_to_bs_wall():
     spigot slot in the bottom rail, and the spigot datums took the first slot as the spigot slot (R-J13). So the sheet
     sized a pin slot '0' from the end (a zero-length dimension on the 100 to B, the read-back's clash) and lost the
     spigot slot's own 94. The spigot slot is the one square to B's wall, as B is, and a place along a hole's own axis,
-    or of length 0, gets no dimension. 211101's own holes and slots, in its view from below."""
+    or of length 0, gets no dimension. 211101's own holes and slots, in its view from below, but for its second pin
+    slot, moved off the frame's end so that only the along-its-axis rule skips it (Reviewer 13). Datum A names B's
+    member: its body's name, else the one B's register row gives it (#343's data, where the members are their own
+    parts and the frame's own file names no body)."""
     from types import SimpleNamespace as NS
 
     def feat(kind, entry, axis, words, along=(1.0, 0.0, 0.0)):
         return NS(kind=kind, f=NS(entry=entry, axis=axis, dia=8.5, normal=tuple(-a for a in axis), along=along),
                   reg={"function": words, "mating": "", "id": "F"}, body=NS(name="RAIL - BOTTOM"))
     b = feat("hole", (-1224.0, -542.74, 112.26), (0.0, 0.0, 1.0), "Locating: the fixed spigot hole (round)")
-    pins = [feat("slot", (-1224.0, -642.74, z), (0.0, 1.0, 0.0), "D-169 pin slot") for z in (1155.0, 212.26)]
+    pins = [feat("slot", (-1224.0, y, z), (0.0, 1.0, 0.0), "D-169 pin slot")
+            for y, z in ((-642.74, 1155.0), (-600.0, 212.26))]        # the second 42.74 from the frame's end
     spigot = feat("slot", (-1224.0, 750.0, 112.26), (0.0, 0.0, 1.0), "Locating: the spigot slot")
     part = NS(features=[b] + pins + [spigot], box=(-1244.0, -642.74, 100.0, -1204.0, 844.0, 1200.0),
               size=(40.0, 1486.74, 1100.0))
@@ -1358,15 +1362,25 @@ def test_the_spigot_slot_is_the_one_square_to_bs_wall():
     compose.geom.member_axis = lambda body: (0.0, 1.0, 0.0)
     try:
         dat = compose.spigot_origin(part, {})
+        # datum A's member: B's body's name (#365's frame members), else the one its register row gives (#343's data)
+        named = []
+        for body, reg_body in (("212101 WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH", "RAIL - BOTTOM"),
+                               ("", "RAIL - BOTTOM"), ("", "")):
+            b.body, b.reg = NS(name=body), dict(b.reg, body=reg_body)
+            named.append(compose.spigot_origin(part, {})["words"]["A"])
     finally:
         compose.geom.member_axis = member_axis
     assert dat["slot"] is spigot and dat["runs"] == "across", dat["slot"].f.entry
+    assert dat["words"]["A"] == "bottom face of RAIL - BOTTOM (the seat on the band)", dat["words"]["A"]
+    assert named == ["bottom face of 212101 WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH (the seat on the band)",
+                     "bottom face of RAIL - BOTTOM (the seat on the band)", "bottom face (the seat on the band)"], named
     dot = lambda p, q: sum(x * y for x, y in zip(p, q))
     view = NS(x=(0.0, 1.0, 0.0), y=(1.0, 0.0, 0.0), to2d=lambda p: (dot(p, (0.0, 1.0, 0.0)), dot(p, (1.0, 0.0, 0.0))))
     below = NS(view=view, extent=(-642.74, -1244.0, 844.0, -1204.0))      # the view from below: X along +Y
     sizes = lambda d: [round(abs(cx - ex), 2) for _f, ex, cx in compose.spigot_positions(d, below)]
     assert sizes(dat) == [100.0, 94.0], sizes(dat)
-    assert sizes(dict(dat, slot=pins[0])) == [100.0]        # a pin slot, along the frame: no place along its axis
+    for pin in pins:        # a pin slot, along the frame: no place along its own axis
+        assert sizes(dict(dat, slot=pin)) == [100.0], (pin.f.entry, sizes(dict(dat, slot=pin)))
     end = feat("slot", (-1224.0, 844.0, 112.26), (0.0, 0.0, 1.0), "a slot at the back end")
     assert sizes(dict(dat, slot=end)) == [100.0]            # 0 from the end: no dimension
 
