@@ -161,7 +161,10 @@ AIR_PARAMS = [
      "same part on both sides (turned 180 deg)"),
     ("ma_h", "30 mm", "mm", "assumption", "the mount angle's upright leg, riveted to its plate"),
     ("mt_in", "14 mm", "mm", "assumption", "each mount 14 in from the box's door or room wall"),
-    ("mt_x1", "33 mm", "mm", "assumption", "the mounts 33 in from the box's left end"),
+    ("mt_x1", "52 mm", "mm", "calculation", "the mounts 52 in from the box's left end (X 919), so the box's full mass as "
+     "installed, 3.075 kg with its fans and linings (CAD masses, the fans at 0.3 kg each an assumption until weighed), centred "
+     "at X 1014.7, puts the same load on each: 0.77 kg, inside the hemisphere's 0.45 to 0.82 kg (the Lead's check 2026-11-01; "
+     "at 33 the right pair took 0.84)"),
     ("mt_x2", "51 mm", "mm", "calculation", "and 51 in from its right end (X 1110: 8.5 clear of the harness channel)"),
     ("lt_bw", "20.5 mm", "mm", "source", "Southco E4-10-201-10 (the latch 618106, the Lead's pick 2026-11-01): body 20.5 x 13, "
      "29 long"),
@@ -372,7 +375,8 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "st_pad": ("618107", "AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD", "Hộp gió - đệm xốp đai đỡ ống tiêu âm (chờ)", "HOLD",
                "hold"),
     "m_ang": ("611409", "AIR - FAN BOX MOUNT ANGLE", "Hộp quạt thải - thanh góc đỡ chân cách rung", "MP", "al"),
-    "mount": ("618403", "AIR - FAN BOX MOUNT - EXHAUST - HOLD", "Hộp quạt thải - chân cách rung (chờ)", "PI", "hold"),
+    "mount": ("618403", "AIR - FAN BOX MOUNT - EXHAUST - SORBOTHANE 0510111-50-10", "Hộp quạt thải - chân cách rung", "PI",
+              "hold"),
     "trans": ("618102", "AIR - SUPPLY TRANSITION - HOLD", "Ống chuyển cấp (chờ)", "HOLD", "hold"),
     "rtrans": ("618103", "AIR - RISER TRANSITION - HOLD", "Ống chuyển hút (chờ)", "HOLD", "hold"),
     # how the supply fan box assembly rests in DR (PM rulings 2026-11-01; Control's numbers and names, #279)
