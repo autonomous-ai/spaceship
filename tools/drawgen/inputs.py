@@ -68,6 +68,24 @@ def team_lists(team):
     return sorted(glob.glob(os.path.join(MANUF, team, "*.csv")))
 
 
+def pod_qty(pn, path):
+    """pn's count per pod in a parts list: the sum of qty_per_pod over its rows (a part listed once per parent has a
+    row for each), and how many rows; None when a row of it gives no whole number there."""
+    total, n = 0.0, 0
+    with open(path, newline="", encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            if (r.get("part_number") or "").strip() != pn:
+                continue
+            try:
+                total += float((r.get("qty_per_pod") or "").strip())
+            except ValueError:
+                return None
+            n += 1
+    if not n or abs(total - round(total)) > 1e-9:
+        return None
+    return int(round(total)), n
+
+
 def parts_row(pn, team):
     """The richest parts-list row for pn in the team's lists, with the level-2 rows under it (the cut list),
     and the file it came from."""
@@ -91,24 +109,6 @@ def parts_row(pn, team):
     if best is None:
         return None, [], None
     return best[1], best[2], best[3]
-
-
-def pod_qty(pn, path):
-    """pn's count per pod in a parts list: the sum of qty_per_pod over its rows (a part listed once per parent has a
-    row for each), and how many rows; None when a row of it gives no whole number there."""
-    total, n = 0.0, 0
-    with open(path, newline="", encoding="utf-8") as fh:
-        for r in csv.DictReader(fh):
-            if (r.get("part_number") or "").strip() != pn:
-                continue
-            try:
-                total += float((r.get("qty_per_pod") or "").strip())
-            except ValueError:
-                return None
-            n += 1
-    if not n or abs(total - round(total)) > 1e-9:
-        return None
-    return int(round(total)), n
 
 
 # ------------------------------------------------------------------ feature rationale
