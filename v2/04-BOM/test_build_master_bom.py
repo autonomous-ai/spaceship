@@ -203,6 +203,30 @@ class WallAndRegisterV3(unittest.TestCase):
         self.assertTrue(all(i["name"].startswith("HARDWARE") for i in register), register)
         self.assertNotIn("Joints register", missing)                     # every ID has a number
 
+    def test_a_number_another_id_owns_is_not_taken_from_a_mention(self):
+        # H-14's set row names 848013, but 848013's own part-number row is H-34's (the PM, 2026-11-01)
+        text = """# Joints register
+
+### 2.1 Hardware set
+
+| ID | Item | Data | Status |
+|---|---|---|---|
+| H-14 | **Cassette edge seal.** Very soft, near-zero squeeze; not for DR's panels, which take 848013 (H-34) | data | PROPOSED |
+| H-35 | **Spare seal.** Only mentioned here, 848099 | data | PROPOSED |
+
+### Part numbers
+
+| ID | Part number | Item | Qty per pod | Mass kg |
+|---|---|---|---|---|
+| H-14 | **848012** | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 | 5 | 0.01 |
+| H-34 | **848013** | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | 10 | 0.01 |
+"""
+        items = {i["part_number"]: i for i in bom.parse_register(text, "test")}
+        self.assertEqual((items["848013"]["id"], items["848013"]["name"]),
+                         ("H-34", "SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA"))
+        self.assertEqual(items["848012"]["id"], "H-14")
+        self.assertEqual(items["848099"]["id"], "H-35")        # a number no other row owns is still the row's
+
     def test_register_number_named_differently_is_not_a_duplicate(self):
         a = door("838001,BOLT M6 X 16,,bought,steel,4,0.007,source,DRAFT,x,\n")
         b = door("838001,CAPTIVE SOCKET SCREW M6,,bought,steel,2,0.007,source,DRAFT,x,\n")

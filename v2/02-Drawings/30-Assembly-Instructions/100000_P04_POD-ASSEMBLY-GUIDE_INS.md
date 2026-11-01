@@ -64,11 +64,12 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 2](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-02_IMG.png)
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.2 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.0 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.0 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.1 kg), **2-15** BASE - SMALL PARTS CARTON (2.0 kg).
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.2 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.4 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.4 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.1 kg), **2-15** BASE - SMALL PARTS CARTON (1.1 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
-- **Person A:** Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.
+- **Person A:** Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: FL1, then FL2 at the knee (under DL), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).
-- **Check before the next step:** Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.
+- **Caution:** Nobody lifts the back band or stands on it until B1 and B2 bolt through its top wall in step 4: until then only its weight holds it on the studs (J-BASE-02).
+- **Check before the next step:** Band level within the spirit level's bubble; the back band resting on its glides with both end caps down over the studs; every front piece hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.
 
 ### Step 3. Floor and threshold
 
@@ -130,7 +131,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 8](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (10.5 kg).
+- **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (10.3 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the 5 mm hex key.
 - **Person A:** With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 7.
@@ -141,7 +142,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 9](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png)
 
 - **Time:** about 2 min for 2 people.
-- **Parts:** **2-09** FRONT - DECOR BLOCK - DL (10.0 kg).
+- **Parts:** **2-09** FRONT - DECOR BLOCK ASSY - DL (12.3 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DL stands on its spigots on the band, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** With B, carries DL (2.3 m) from its place to the front-left and stands it on its spigots on the band, against L1 and L2's front edges, hinge halves toward the door opening.
 - **Person B:** Drives 3 bolts into DL from each of L1's and L2's front bays (6). DL stands on its spigots on the band and needs no bolt there (J-FRONT-02).
@@ -152,7 +153,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK ASSY - DR (18.9 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.
 - **Person B:** Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.
@@ -174,7 +175,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 12](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-12_IMG.png)
 
 - **Time:** about 3 min for 2 people.
-- **Parts:** **2-12** FRONT - DECOR BLOCK - DT (7.1 kg).
+- **Parts:** **2-12** FRONT - DECOR BLOCK ASSY - DT (7.9 kg).
 - **Fasteners:** 4 × 838001 M6 × 16 (J-FRONT-03). Tool: the 5 mm hex key.
 - **Person A:** From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.
 - **Person B:** Drives DT's 4 bolts to the ceiling (J-FRONT-03).
@@ -203,7 +204,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 15. Air parts in DR: the intake riser with its supply fan box
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **2-17** AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS (14.1 kg).
+- **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.4 kg).
 - **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
 - **Person A:** Lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
 - **Person B:** Mates the fan box's plug-in connector; refits the inner face.
@@ -212,7 +213,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 16. Air column and supply cartridge
 
 - **Time:** about 7 min for 2 people.
-- **Parts:** **2-11** AIR - AIR COLUMN (9.7 kg), **2-18** AIR - CARTRIDGE - SUPPLY (10.8 kg).
+- **Parts:** **2-11** AIR - AIR COLUMN (8.1 kg), **2-18** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02).
 - **Person A:** With B, hangs the air column (2.1 m) on its tool-free hooks in the front-right corner (D-87), its back on DR's inner face and its right side on R1's and R2's linings; lifts its front face off.
 - **Person B:** With A, slides the supply cartridge into the column; plugs the hub into the cable chase; A refits the front face.
@@ -221,7 +222,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 17. Soffit and exhaust cartridge
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-10** AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS (13.4 kg), **2-19** AIR - CARTRIDGE - EXHAUST (10.8 kg).
+- **Parts:** **2-10** AIR - SOFFIT (15.4 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** 2 × 838002 M6 × 25 (J-AIR-01). Tool: the 5 mm hex key.
 - **Person A:** With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.
 - **Person B:** Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.
@@ -300,7 +301,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 
 | Step | Fixing | Owner | Count used here | Size | Status | Note |
 | ---: | --- | --- | ---: | --- | --- | --- |
-| 2 | Base band corner keys (6 keys) | BASE | 0 | none on site: hook studs and fixing bolts in the factory | registered: J-BASE-02 (0 on site, 20 in the factory) | D-87: the keys hook in; part numbers 111211 to 111214 (joints register) |
+| 2 | Base band corner keys (6 keys; the side bands carry the back-corner keys, D-129) | BASE | 0 | none on site: hook studs and fixing bolts in the factory | registered: J-BASE-02 (0 on site, 20 in the factory) | D-87: the keys hook in; part numbers 111211 to 111214 (joints register) |
 | 9 | DL on the base band | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | DL stands on its spigots; its bolts are J-FRONT-01's, into the side walls |
 | 10 | DR on its support behind the mesh band piece | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | D-62: the block's own support carries it; the mesh carries no load |
 | 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
@@ -314,7 +315,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | Step | What | Pieces | Register bolts | Other fixings | 2-person min | 1-person min (shared) | Elapsed min |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1 | Unpack and set the parts down at their places | 1 | 0 | 0 | 10.0 | 0.0 | **11.5** |
-| 2 | Base band | 5 | 0 | 0 | 6.3 | 1.3 | **8.0** |
+| 2 | Base band | 5 | 0 | 0 | 6.7 | 1.3 | **8.4** |
 | 3 | Floor and threshold | 3 | 0 | 0 | 2.2 | 1.8 | **3.6** |
 | 4 | Lower back wall: B1, B2 | 2 | 11 | 0 | 0.7 | 4.8 | **3.5** |
 | 5 | Lower side walls: L1, R1 | 2 | 14 | 0 | 0.7 | 5.7 | **4.0** |
@@ -403,7 +404,7 @@ Unit times used:
 
 ## 8. Taking it down
 
-Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); DR's inner face, supply fan box, intake riser; wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; floor; base band. Pack by the labels, into the same places.
+Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); DR's inner face, supply fan box, intake riser; wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; floor; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
 
 ## 9. Open items that touch this guide
 

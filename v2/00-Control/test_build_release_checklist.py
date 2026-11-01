@@ -582,7 +582,8 @@ class D125PlainStrip(unittest.TestCase):
         c_geometry, c_drawings = rc.load_checks()
         here = Path(c_drawings.__file__).resolve()
         self.assertEqual(here, (rc.ROOT / "tools/checks/c_drawings.py").resolve())
-        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape", "strip_sides"):
+        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape", "strip_sides", "prism_shapes",
+                     "felt_dxf_lacks", "drawgen_parts"):
             self.assertTrue(callable(getattr(c_drawings, name)), name)
         self.assertTrue(callable(c_geometry.load_step))
 
@@ -690,6 +691,99 @@ class D125SharedRows(unittest.TestCase):
         self.assertEqual((made[0]["dwg"], made[0]["state"]), ("row: a plain strip or sheet (D-125)", "HOLD"))
 
 
+class D128FeltPieces(unittest.TestCase):
+    """D-128, read as C05 reads it (#233): a felt or fill piece with through-openings or edge notches only needs no
+    drawing when its DXF and its parts-list row are full; the checklist calls C05's prism_shapes and felt_dxf_lacks."""
+    CUT = "v2/03-Manufacturing/wall/510000_P01_LINING-CUT-LIST_SPEC.csv"
+
+    def line(self, d128, cut=None):
+        fai = rc.fai_plan(PLAN, BOM)
+        felt = row("511302", "make", "LINING - FELT - SIDE UPPER - LH", "PET felt 9 mm Dark Gray")
+        file_map = files("511302_P01_LINING-FELT_CAD.f3d", "511302_P01_LINING-FELT_STEP.step",
+                         "511302_P01_LINING-FELT_DXF.dxf")
+        made, _ = rc.check_parts([felt], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {self.CUT: cut} if cut else {}, {}, None, None, None, d128)
+        return made[0]
+
+    def test_a_full_dxf_and_row_stand_in_for_the_drawing(self):
+        line = self.line({"511302": []})
+        self.assertEqual((line["flat"], line["dwg"]), ("yes", "DXF and row (D-128)"))
+        self.assertNotIn("drawing", line["gaps"])
+
+    def test_what_it_lacks_keeps_the_drawing_and_says_so(self):
+        line = self.line({"511302": ["a parts-list row", "a DXF it can read (ASCII)"]})
+        self.assertEqual(line["dwg"], "no: as a felt or fill piece on its DXF (D-128) it needs a parts-list row; "
+                                      "a DXF it can read (ASCII)")
+        self.assertIn("drawing", line["gaps"])
+        self.assertEqual(self.line({})["dwg"], "no")
+        self.assertEqual(self.line(None)["dwg"], "no")
+
+    def test_a_plain_rectangle_passes_on_d89_first(self):
+        # C05's order: D-89's cut-list route before D-128, even when D-128's reading would pass too
+        cut = "part_number,name,size_mm,material,tolerance_mm\n511302,LINING - FELT,9 x 1442 x 1139.74,PET felt 9 mm,+0 / -2\n"
+        self.assertEqual(self.line({"511302": []}, cut)["dwg"], "cut list (D-89)")
+        self.assertEqual(self.line({"511302": ["a parts-list row"]}, cut)["dwg"], "cut list (D-89)")
+
+    def test_it_calls_c05s_functions(self):
+        # C05's own file index and DXF pick (the highest revision), shapes and reading: nothing of the checklist's own
+        c_geometry, c_drawings = rc.load_checks()
+        seen = {}
+        old = c_geometry.models, c_drawings.prism_shapes, c_drawings.felt_dxf_lacks, c_drawings.index_files
+        c_drawings.index_files = lambda root: {"511302": {"DXF": [("P02", "/r/511302_P02_X_DXF.dxf"), ("P01", "/r/511302_P01_X_DXF.dxf")]},
+                                               "511303": {"STEP": [("P01", "/r/511303_P01_X_STEP.step")]}}
+        c_geometry.models = lambda root: ({}, ["a_STEP.step", "b_STEP.step"])
+        c_drawings.prism_shapes = lambda paths, load=None: seen.setdefault("prism", (list(paths), load)) and {"511302": "SHAPE"}
+        c_drawings.felt_dxf_lacks = lambda root, pn, shape, dxf: seen.setdefault("lacks", (root, pn, shape, dxf)) and ["X"]
+        try:
+            got = rc.d128_pieces(["511302", "511303"])
+        finally:
+            c_geometry.models, c_drawings.prism_shapes, c_drawings.felt_dxf_lacks, c_drawings.index_files = old
+        self.assertEqual(got, {"511302": ["X"]})                        # 511303 has no DXF: not read
+        self.assertEqual(seen["prism"], (["a_STEP.step", "b_STEP.step"], c_geometry.load_step))
+        self.assertEqual(seen["lacks"], (str(rc.ROOT), "511302", "SHAPE", "/r/511302_P02_X_DXF.dxf"))   # the highest revision
+        self.assertEqual(rc.d128_pieces([]), {})
+
+    def test_its_dxf_is_c05s_on_the_real_tree(self):
+        # every felt or fill piece the checklist reads gets the DXF C05's check_drawings takes for it
+        _geometry, c_drawings = rc.load_checks()
+        idx = c_drawings.index_files(str(rc.ROOT))
+        seen, old = {}, c_drawings.felt_dxf_lacks
+        c_drawings.felt_dxf_lacks = lambda root, pn, shape, dxf: seen.setdefault(pn, dxf) and []
+        try:
+            rc.d128_pieces([pn for pn, kinds in idx.items() if kinds.get("DXF") and pn.startswith("513")])
+        finally:
+            c_drawings.felt_dxf_lacks = old
+        self.assertTrue(seen)
+        for pn, dxf in seen.items():
+            self.assertEqual(dxf, sorted(idx[pn]["DXF"])[-1][1], pn)
+
+    def test_the_real_run_passes_d128_on(self):
+        # main() reads D-128 and hands that reading to check_parts; a run that stops passing it fails here
+        import inspect
+        import tempfile as _tempfile
+        seen, reading = {}, {"511302": []}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["d128"] = inspect.signature(real).bind(*args, **kw).arguments.get("d128")
+            raise Stop
+
+        real, old = rc.check_parts, (rc.d128_pieces, rc.d125_strips, rc.drawgen_parts)
+        rc.check_parts = spy
+        rc.d128_pieces = lambda candidates, root=None: seen.setdefault("candidates", set(candidates)) is not None and reading
+        rc.d125_strips, rc.drawgen_parts = (lambda root=None: {}), (lambda root=None: set())
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.check_parts = real
+            rc.d128_pieces, rc.d125_strips, rc.drawgen_parts = old
+        self.assertIs(seen.get("d128"), reading)
+        self.assertTrue({"513301", "513302", "513303"} <= seen["candidates"], sorted(seen["candidates"])[:8])   # felt and fill
+
+
 class MadeHold(unittest.TestCase):
     """A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD, not done
     (PM, 2026-11-01); open gaps show first; the totals count it under Made: HOLD."""
@@ -751,8 +845,8 @@ class DrawgenParts(unittest.TestCase):
     """D-113 (1): a part tools/drawgen draws is never blocked by a locked screen, because drawgen doesn't run in Fusion;
     the list is drawgen's own registry (tools/drawgen/specs.py), with the numbers its tabulated sheets cover."""
 
-    def line(self, pn, drawgen):
-        rh = row(pn, "make", "WALL - PANEL FRAME - " + pn, "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish")
+    def line(self, pn, drawgen, mass=1.0):
+        rh = row(pn, "make", "WALL - PANEL FRAME - " + pn, "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish", mass=mass)
         rh["cut_rows"] = True
         file_map = files(f"{pn}_P01_WALL-FRAME_CAD.f3d", f"{pn}_P01_WALL-FRAME_STEP.step")
         fai = rc.fai_plan(PLAN, BOM)
@@ -765,11 +859,31 @@ class DrawgenParts(unittest.TestCase):
         self.assertEqual(self.line("211102", set())["state"], rc.BLOCKED)
         self.assertEqual(self.line("211102", {"211102"})["state"], "open: drawing")   # drawgen's: it can draw it now
 
+    def test_a_drawgen_part_with_a_second_gap_shows_both(self):
+        # drawgen lifts only the locked screen's hold on the drawing; every other gap still shows (Reviewer 6, #227)
+        line = self.line("211102", {"211102"}, mass=None)
+        self.assertEqual((line["gaps"], line["state"]), (["drawing", "mass"], "open: drawing, mass"))
+
     def test_the_list_is_drawgens_own_registry(self):
         got = rc.drawgen_parts()
         self.assertTrue({"211101", "211102", "111101", "211501", "211504"} <= got, sorted(got))   # 211504: on 211501's sheet
-        planted = {"999901": ("wall", "part", {}), "999911": ("wall", "tabulated", {"covers": ["999911", "999912"]})}
-        self.assertEqual(rc.drawgen_parts(planted), {"999901", "999911", "999912"})
+        import tempfile as _tempfile
+        with _tempfile.TemporaryDirectory() as d:   # a planted registry, read through the same reader
+            Path(d, "tools", "drawgen").mkdir(parents=True)
+            Path(d, "tools", "drawgen", "specs.py").write_text(
+                'SPECS = {"999901": ("wall", "part", {}), "999911": ("wall", "tabulated", {"covers": ["999911", "999912"]})}\n')
+            self.assertEqual(rc.drawgen_parts(d), {"999901", "999911", "999912"})
+
+    def test_the_list_is_read_by_c05s_own_reader(self):
+        # one reader for both tools (c_drawings.drawgen_parts, #233), so they can't list drawgen's parts apart
+        _geometry, c_drawings = rc.load_checks()
+        old, seen = c_drawings.drawgen_parts, {}
+        c_drawings.drawgen_parts = lambda root: seen.setdefault("root", root) and {"999901"}
+        try:
+            got = rc.drawgen_parts()
+        finally:
+            c_drawings.drawgen_parts = old
+        self.assertEqual((got, seen["root"]), ({"999901"}, str(rc.ROOT)))
 
     def test_the_totals_and_notes_say_why(self):
         lines = [self.line("211101", {"211102"}), self.line("211102", {"211102"})]
