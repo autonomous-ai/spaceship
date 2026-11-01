@@ -135,35 +135,40 @@ PART_INFO = {
                "by the welded plate down to the band's bottom line, the lip 118001 along its bottom edge: the face FRONT's "
                "brush seal 368008 closes on (D-150). Its other end (X 965 = FR1's joint + 50) is closed by the intake's "
                "closing plate (batch 3)"),
-    "118003": ("flat end cap for the 100 x 40 x 1.5 tube's bore, black, no deeper than 2 (D-129; PE assumed, product HOLD)",
-               "black", "bonded into the band tube's open end at the factory, flush with its end face (adhesive HOLD)",
-               "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the "
-               "side band's end); FR1's door end: D-132",
-               "closes an open band end: a side band's back end (face flush with Y = pod_d / 2) or FR1's door end (face "
-               "flush with X 218.5, at the door opening)"),
-    "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad, static rating 3.5 kN or more "
-               "(PM ruling 2026-11-01: the worst glide carries about 1.7 kN with two people leaning on one wall); base 6.5 mm or "
-               "taller, so that screwed fully home against the M10 rivnut's head it holds the band at 8.5 mm: a hard stop "
-               "(product HOLD)", "", "",
-               "assumption", "HOLD", "layout study B-GLIDE 0.15 kg; lowest setting: PM ruling on F-018 (joints register PR #99)",
-               "preset at the factory (D-87); levelled from above through the band top before the walls go on, up from the "
-               "highest floor spot, never below 8.5 mm"),
+    "111111": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
+               "laser cut from its DXF, deburred, anodised black with the band; bonded into the band tube's open end at the "
+               "factory, flush with its end face (adhesive HOLD)", "calculation", "DRAFT",
+               "CAD; D-165 (Control's number, the Lead's ruling of 2026-11-01: a made part, as no catalogue cap is 2 deep); "
+               "D-129 (the key sits 2.5 from the side band's end); FR1's door end: D-132",
+               "the tube end cap, 97 x 37 x 2, 3 a pod: a side band's back end (face flush with Y = pod_d / 2) or FR1's door "
+               "end (face flush with X 218.5, at the door opening, in view); no drawing: its DXF and this row (D-89 part 4)"),
+    "111602": ("zinc-plated free-cutting steel without lead (11SMn30 / AISI 1215 or similar, assumption), turned in one piece: an M10 x 1.5 stem and a base "
+               "40 across, 7.6 tall", "zinc plated, clear passivated (assumption)",
+               "turned from bar, M10 x 1.5 rolled or cut, the 5 mm hex socket broached in the stem's top, zinc plated",
+               "calculation", "DRAFT",
+               "CAD; D-164 (the Lead's ruling of 2026-11-01 on the Sourcing Engineer's table: no catalogue glide has M10, a "
+               "5 mm top socket, a base of 40 or less, 7.6 tall and 3.5 kN); static rating 3.5 kN or more with margin, "
+               "proved by BASE test BT-04 (3.5 kN on its load block); the 8.5 stop: PM ruling on F-018",
+               "the levelling glide, made to BASE's drawing; preset at the factory (D-87), levelled before the walls go on, up "
+               "from the highest floor spot, never below 8.5 mm (the base screwed home on the M10 rivnut's 0.81 to 0.97 head: a "
+               "hard stop): with a 5 mm hex key from above through the band top, or under FR1 (no holes in its top, in view) by "
+               "turning the base (FB-24)"),
 }
 
 # bought items: (maker, exact SKU or standard designation, torque with its basis); HOLD where the
 # product isn't named yet (its issue in the status and note). Standard fasteners are ordered by
 # their standard designation from any maker; the catalogue number comes with the RFQ.
 BOUGHT = {
-    "838003": ("Sherex", "CAH2-610-4.2", "HOLD-01: set and torque from the rivnut test (D-48)"),
+    "838003": ("Sherex", "CAL2-610-4.2 (D-163: knurled round body, round hole 10.00 +0.10)",
+               "HOLD-01: set and torque from the rivnut test (D-48); spin-out 4 N m or more in the real tubes (T06)"),
     "838001": ("standard part, any maker (catalogue number at RFQ)", "ISO 4762 M6 x 16 - 8.8, zinc plated",
                "HOLD: into the corner key's M6 threads, from the joint test J-T6 (joints register)"),
     "838004": ("standard part, any maker (catalogue number at RFQ)", "ISO 7093-1 - 6 - 200 HV - A2", ""),
     "838010": ("standard part, any maker (catalogue number at RFQ)", "ISO 7380-2 M6 x 12 - A2-70",
                "HOLD: into the corner key's M6 thread, from the joint test J-T6 (joints register)"),
-    "838006": ("HOLD (glide nut not named yet)", "HOLD", "HOLD: with the glide nut's set test"),
-    "118002": ("HOLD (glide not named yet)", "HOLD", ""),
-    "118003": ("HOLD (end cap not named yet)", "HOLD", ""),
-    "118001": ("HOLD (lip seal not named yet)", "HOLD", ""),
+    "838006": ("Sherex", "CAL2-1015-7.9 (D-163: knurled round body, round hole 13.50 +0.15)",
+               "HOLD: set from the rivnut test (D-48); spin-out from T06"),
+    "118001": ("Trim-Lok (candidate, BT-06 decides)", "X2248", ""),
     # the sill's channel fixings (joints register J-FRONT-04, H-28 and H-29): the screw is a standard part; the
     # rivnut's product is HOLD-16, and the screw's torque follows from it by D-48's rule
     "838007": ("HOLD: any maker to ISO 10642, picked at the RFQ", "ISO 10642 M3 x 8 - A2-70",
@@ -178,7 +183,8 @@ TOLERANCE = {
     "111212": "the Joints Engineer's tabulated drawing 111211 to 111214",
     "111214": "the Joints Engineer's tabulated drawing 111211 to 111214",
     "111104": "see its drawing", "111105": "see its drawing",
-    "111601": "ISO 2768-m; critical hole: Ø13 +0.10/0 for the glide's M10 rivnut (HOLD with the nut), centred +-0.2; DXF 111601",
+    "111601": "ISO 2768-m; critical hole: Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163), centred +-0.2; DXF 111601",
+    "111111": "ISO 2768-m; outline 97 x 37 -0.2/-0.4 so it slides into the bore (assumption); DXF 111111",
     "831002": "joints register H-08: thickness +-0.05",
 }
 
@@ -189,9 +195,11 @@ BAND_ASSEMBLIES = ("110101", "110102", "110103", "110104", "110106")
 # material, finish, mass each kg, mass_status, status, source, note)
 EXTRA = [
     ("838006", "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD", "Tán rút M10 cho chân chỉnh", "PI", "band",
-     "glides", "pcs", "aluminium or steel (HOLD)", "zinc plated steel or plain aluminium, with the product (HOLD)", 0.006,
-     "assumption", "HOLD",
-     "number PROPOSED for the joints register (glide nut)",
+     "glides", "pcs", "steel C1008/1010 (maker)", "zinc plated with yellow trivalent chromate, SFS-01-001 SC2 (maker)", 0.0088,
+     "source", "HOLD",
+     "D-163: Sherex CAL2-1015-7.9, knurled round body, in a round hole 13.50 +0.15; the maker's drawing CAL2-1015-7.9 "
+     "rev B: weight 0.0088 kg, grip 3.8 to 7.9, installed length 10.80 max, head Ø16.76 to 18.04 x 0.81 to 0.97; joints "
+     "register (glide nut); T06's spin-out test confirms it",
      "set through the band's 1.5 bottom face and the 5 mm load block, a 6.5 mm grip (PM ruling 2026-11-01), at the factory"),
     ("838007", "HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2", "Vít đầu côn lục giác chìm M3 × 8 inox", "PI", "110106",
      "channel", "pcs", "stainless steel A2-70", "plain stainless, as supplied", 0.0006, "assumption", "DRAFT",
@@ -201,9 +209,12 @@ EXTRA = [
      "assumption", "HOLD", "joints register J-FRONT-04 (838008, HOLD-16)", "flush in the sill's seat, at X 269.4, 484.3, 699.2, 905"),
     ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "seal",
      "lip", "m", "soft lip (sweep) seal, EPDM or TPE, black: a leg bonded to the band's inner face and a fin reaching "
-     "seal_reach (21.5) below the band's bottom, so it presses on the room floor across the glides' range (product HOLD)",
+     "seal_reach (21.5) below the band's bottom, so it presses on the room floor across the glides' range. Candidate: "
+     "Trim-Lok X2248, dense EPDM flap 19 to 20 long on a 14.2 x 2.3 leg with 3M acrylic tape, the leg set about 4 below "
+     "the band's edge so the flap reaches about 23.5; BT-06 decides, an extrusion to BASE's drawing if it fails",
      "black", 0.08, "assumption", "HOLD",
-     "D-132 (PM ruling 2026-11-01: no floor); joints register 118001, renamed for D-132",
+     "D-132 (PM ruling 2026-11-01: no floor); joints register 118001, renamed for D-132; the candidate: the Sourcing "
+     "Engineer's table and BASE's call (the Lead, 2026-11-01); its maker's drawing is on the owner's RFQ list",
      "bonded along each band piece's inner face at the factory; v1's open shadow line under the band stays"),
 ]
 
@@ -222,7 +233,7 @@ def param(d, name):
 
 def extra_qty(d, rule, parent_counts):
     if rule == "glides":
-        return parent_counts.get("118002", 0)
+        return parent_counts.get("111602", 0)
     if rule == "channel":
         return 4 if "111301" in d["parts"] else 0
     raise ValueError(rule)
@@ -307,7 +318,7 @@ def make_bom(d):
         elif parent == "band":
             # one per glide, in the band assembly that holds the glide
             for asm in BAND_ASSEMBLIES:
-                q = copies.get("%s>118002" % asm, 0)
+                q = copies.get("%s>111602" % asm, 0)
                 if q:
                     extra_rows.append((pn, name, vn, typ, asm, q, unit, mat, fin, m, ms, st, src, note))
                     mass_of[asm] = round(mass_of[asm] + q * m, 4)
@@ -406,10 +417,24 @@ def make_dxf(d):
     dm.add_circle((gdx, 0.0), gh / 2, dxfattribs={"layer": "CUT"})
     for i, line in enumerate(("111601 P01 GLIDE DOUBLER - COMMON - qty per the parts list",
                               "EN AW-6082 T6 plate 5 mm - mill finish - ISO 2768-m - mm",
-                              "hole Ø%g +0.10/0 centred +-0.2 (the glide's M10 rivnut)" % gh)):
+                              "hole Ø%g +0.15/0 centred +-0.2 (the glide's M10 rivnut 838006, D-163)" % gh)):
         dm.add_text(line, dxfattribs={"layer": "MARK", "height": 2.5}).set_placement((-gw / 2, gl / 2 + 4 + 4 * (2 - i)))
     ddoc.saveas(DBL_DXF)
     print("wrote %s: %.1f x %.1f, hole Ø%g at x %.1f" % (os.path.relpath(DBL_DXF, HERE), gw, gl, gh, gdx))
+    # the tube end cap 111111 (D-165; D-89 part 4): the band's bore, 2 mm sheet, no holes
+    if "111111" in d["parts"]:
+        cw = param(d, "band_t") - 2 * param(d, "band_wall")
+        ch = param(d, "band_h") - 2 * param(d, "band_wall")
+        cdoc = _dxf(ezdxf, (("CUT", 7), ("MARK", 1)))
+        cm_ = cdoc.modelspace()
+        cm_.add_lwpolyline([(0, 0), (ch, 0), (ch, cw), (0, cw)], close=True, dxfattribs={"layer": "CUT"})
+        for i, line in enumerate(("111111 P01 TUBE END CAP - 97 X 37 X 2 - AL BLACK - 3 a pod",
+                                  "EN AW-5005 H14 sheet 2 mm - anodised black AA20 - ISO 2768-m - mm",
+                                  "outline -0.2/-0.4 so it slides into the band's bore; bonded flush (adhesive HOLD)")):
+            cm_.add_text(line, dxfattribs={"layer": "MARK", "height": 2.5}).set_placement((0, cw + 4 + 4 * (2 - i)))
+        cpath = os.path.join(HERE, "111111_%s_BASE-TUBE-END-CAP-97-X-37-X-2-AL-BLACK_DXF.dxf" % REV)
+        cdoc.saveas(cpath)
+        print("wrote %s: %.1f x %.1f" % (os.path.relpath(cpath, HERE), ch, cw))
     make_dxf_p02(d, ezdxf)
 
 

@@ -24,11 +24,16 @@ HERE = os.path.dirname(os.path.abspath(globals().get("__file__", ".")))
 BUILD = os.path.join(HERE, "base_build.py")
 F3D = os.path.join(HERE, "110000_P01_BASE_CAD.f3d")
 
-# edit sets: (label, {parameter: new expression})
+# edit sets: (label, {parameter: new expression}), applied one after the other (each set keeps the ones before).
+# The skeleton gives DL's facet points as Y values from the pod's centre (dl_y1..dl_y3), while FRONT places DL's
+# spigots from the front face (decor_d): so a deeper pod moves DL's points with its front face (+50 each for
+# pod_d +100), or FRONT's spigot on FL1 falls off the band (run E, 2026-11-01). The DL set then changes dl_y1 by
+# -20, as before.
 EDITS = [
-    ("pod size and wall depth (skeleton)", {"pod_w": "2700 mm", "pod_d": "1800 mm", "wall_depth": "1595 mm"}),
+    ("pod size and wall depth (skeleton)", {"pod_w": "2700 mm", "pod_d": "1800 mm", "wall_depth": "1595 mm",
+                                            "dl_y1": "720 mm", "dl_y2": "802 mm", "dl_y3": "894 mm"}),
     ("band section and glide height (skeleton + BASE)", {"band_h": "120 mm", "glide_h": "15 mm", "band_wall": "2.5 mm"}),
-    ("DL facet, joint and pin spacing (skeleton + BASE)", {"dl_x2": "110 mm", "dl_y1": "650 mm", "jb_e": "260 mm",
+    ("DL facet, joint and pin spacing (skeleton + BASE)", {"dl_x2": "110 mm", "dl_y1": "700 mm", "jb_e": "260 mm",
                                                            "sp_e": "120 mm", "jb_n": "5"}),
 ]
 

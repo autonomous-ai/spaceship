@@ -64,15 +64,16 @@ BASE_PARAMS = [
     ("band_finish", "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'", "Text", "confirmed",
      "PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip"),
     ("cap_t", "2 mm", "mm", "source",
-     "the side band's back-end cap 118003: flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper "
+     "the tube end cap 111111 (D-165): flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper "
      "than 2, as the back corner key sits 2.5 from the end (D-129, joints register J-BASE-02); product HOLD"),
     # the wall above (WALL owns it; these say where its bottom member sits)
     ("jb_x", "outer_t - frame_t / 2", "mm", "calculation",
      "J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)"),
     # J-BASE-01, wall to base band
-    ("rn_hole", "9.53 mm", "mm", "source",
-     "Sherex CAH2-610-4.2 M6 rivet nut, steel, zinc plated (joints register H-03, D-131): hole 9.53 +0.10/0, as the aluminium "
-     "part's it replaced (unverified for the steel part, HOLD-04)"),
+    ("rn_hole", "10 mm", "mm", "source",
+     "D-163: the M6 rivet nut 838003 is Sherex CAL2-610-4.2, steel, zinc plated, knurled round body, in a round drilled hole "
+     "10.00 +0.10; T06's spin-out test (4 N m or more in the real tubes) confirms it (the head sizes below are CAH2-610-4.2's "
+     "until the joints register gives CAL2's)"),
     ("rn_flange", "12.96 mm", "mm", "source", "CAH2-610-4.2 head diameter 12.96 (joints register H-03)"),
     ("rn_inst", "10.16 mm", "mm", "source", "CAH2-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)"),
     ("rn_head_t", "0.76 mm", "mm", "source", "CAH2-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)"),
@@ -101,15 +102,24 @@ BASE_PARAMS = [
      "On the band's centre line it spans 16 to 24 from the outer face, inboard of the PORON strip that runs beside the washer line on its outer side (8 to 16, joints register FR-11)"),
     ("gl_dx", "0 mm", "mm", "confirmed",
      "PM ruling 2026-10-31 (BASE group): the doubler's hole centred across its 36 mm width, so the glide stands on the band's centre line"),
-    ("gl_nut_hole", "13 mm", "mm", "assumption", "hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD"),
-    ("gl_pad", "36 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width"),
-    ("gl_stem", "10 mm", "mm", "assumption", "glide stem M10 (envelope, HOLD)"),
-    ("gl_nut_t", "2 mm", "mm", "assumption", "M10 rivet nut head under the band, between the band and the glide pad (HOLD)"),
+    ("gl_nut_hole", "13.5 mm", "mm", "source",
+     "D-163: the glide's M10 rivet nut 838006 is Sherex CAL2-1015-7.9, knurled round body, in a round hole 13.50 +0.15 "
+     "through the band's bottom wall and the load block 111601 (grip 1.5 + 5 = 6.5, inside its 3.8 to 7.9)"),
+    ("gl_pad", "40 mm", "mm", "source",
+     "the glide 111602's base diameter, made to BASE's drawing (D-164, the Lead's ruling of 2026-11-01): no wider than the "
+     "band's 40"),
+    ("gl_stem", "10 mm", "mm", "source", "the glide's M10 stem, zinc-plated steel (D-164)"),
+    ("gl_socket", "5 mm", "mm", "source", "the 5 mm hex socket in the stem's top, turned with a hex key through gl_key_hole (D-164)"),
+    ("gl_socket_d", "6 mm", "mm", "assumption", "the socket's depth (the glide's drawing)"),
+    ("gl_nut_t", "0.89 mm", "mm", "source",
+     "the M10 rivet nut's head under the band: Sherex CAL2-1015-7.9, 0.81 to 0.97 (D-163, the maker's drawing), between "
+     "the band and the glide's base"),
     ("gl_min", "8.5 mm", "mm", "source",
      "lowest glide setting: the corner keys' button heads hang 3.3 under the band and nothing may come within 5 of the floor (PM ruling on F-018; "
      "joints register PR #99 via the Lead, 2026-11-01)"),
     ("gl_base_min", "gl_min - gl_nut_t", "mm", "calculation",
-     "the glide's base must stand this tall (6.5), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (glide spec, HOLD)"),
+     "the glide's base stands this tall (7.61, the drawing's 7.6), so that screwed fully home against the M10 rivnut's head "
+     "it holds the band at gl_min: a hard stop (D-164)"),
     ("gd_l", "54 mm", "mm", "confirmed",
      "PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 2 hole diameters (26) from the hole; "
      "54 gives 27, clear of that line"),
@@ -187,14 +197,14 @@ PARTS = {
     "band_b_tube": ("111103", "BASE - BAND TUBE - BACK", "Viền chân nhôm 100x40 - cạnh sau", "MP", "band_b"),
     "pin": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8", "MP", None),
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
-    "glide": ("118002", "BASE - LEVELLING GLIDE - M10 - HOLD", "Chân chỉnh cao", "PI", None),
+    "glide": ("111602", "BASE - LEVELLING GLIDE - M10 - D40", "Chân chỉnh cao M10 - đế Ø40", "MP", None),
     "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
     "key": ("111211", "BASE - CORNER KEY - SQUARE - COMMON", "Ke góc đế - cắt vuông", "MP", None),
     "bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", None),
     "bscrew": ("838010", "HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2", "Vít đầu tròn có vành M6 × 12 inox",
                "PI", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", "PI", None),
-    "cap": ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD", "Nút bịt đầu ống 100x40", "PI", None),
+    "cap": ("111111", "BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK", "Nút bịt đầu ống 97 x 37 x 2 - nhôm đen", "MP", None),
     # the base seal's envelopes (D-132), one per band piece; the parts list counts the seal in metres (its runs)
     "seal_l": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_l"),
     "seal_b": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_b"),
@@ -659,10 +669,11 @@ def step3_band_back(design):
 # ---------------------------------------------------------------- holes
 
 def hole(design, key, plane, label, xyz, dims, dia_expr, depth_expr, want_dir,
-         pattern=None):
+         pattern=None, csk=None):
     """A simple hole (Hole feature) at a sketch point on `plane`, drilled along
     want_dir (model vector) to depth_expr, optionally patterned:
-    pattern = (axis attribute name, count expr, extent expr)."""
+    pattern = (axis attribute name, count expr, extent expr); csk = (diameter expr,
+    angle expr): a countersink at the face it starts from."""
     comp = find_comp(design, key)
     body = comp.bRepBodies.item(0)
     sk = comp.sketches.add(plane)
@@ -673,7 +684,8 @@ def hole(design, key, plane, label, xyz, dims, dia_expr, depth_expr, want_dir,
         dim_coord(sk, pt, direction, expr, val)
     check_sketch(sk)
     holes = comp.features.holeFeatures
-    hin = holes.createSimpleInput(vi(dia_expr))
+    hin = holes.createCountersinkInput(vi(dia_expr), vi(csk[0]), vi(csk[1])) if csk else \
+        holes.createSimpleInput(vi(dia_expr))
     hin.setPositionBySketchPoint(pt)
     hin.setDistanceExtent(vi(depth_expr))
     n = plane.geometry.normal
@@ -1113,21 +1125,41 @@ def build_bscrew(design):
 
 
 def build_glide(design):
+    """The levelling glide 111602, made to BASE's drawing (D-164): a base gl_pad across and gl_base_min tall (screwed home
+    against the M10 rivnut's head it holds the band at gl_min, a hard stop) and an M10 stem up to glide_h + band_h / 2,
+    turned from zinc-plated steel, with a gl_socket hex socket in the stem's top for the key through the band's top wall."""
     comp = find_comp(design, "glide")
-    revolve_section(design, comp, "LEVELLING GLIDE - ENVELOPE (HOLD)", [
+    revolve_section(design, comp, "LEVELLING GLIDE - BASE AND STEM", [
         PZ(design, "0 mm", "0 mm"),
         PZ(design, "gl_pad / 2", "0 mm"),
-        PZ(design, "gl_pad / 2", "glide_h - gl_nut_t"),
-        PZ(design, "gl_stem / 2", "glide_h - gl_nut_t"),
+        PZ(design, "gl_pad / 2", "gl_base_min"),
+        PZ(design, "gl_stem / 2", "gl_base_min"),
         PZ(design, "gl_stem / 2", "glide_h + band_h / 2"),
         PZ(design, "0 mm", "glide_h + band_h / 2"),
     ])
+    top = offset_plane(comp, "xy", "glide_h + band_h / 2", ev(design, "glide_h + band_h / 2"), "PLANE - GLIDE STEM TOP")
+    sk = comp.sketches.add(top)
+    sk.name = "HEX SOCKET - gl_socket ACROSS FLATS"
+    zt = ev(design, "glide_h + band_h / 2")
+    hs, af = "(gl_socket / sqrt(3) / 2)", "(gl_socket / 2)"          # half the side, half across flats
+    pts = [("2 * %s" % hs, "0 mm"), (hs, af), ("-%s" % hs, af), ("-2 * %s" % hs, "0 mm"), ("-%s" % hs, "-%s" % af),
+           (hs, "-%s" % af)]
+    polygon(design, sk, [(ex, ey, (ev(design, ex), ev(design, ey), zt)) for ex, ey in pts], X, Y)
+    check_sketch(sk)
+    ci = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    n = top.geometry.normal
+    ci.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("gl_socket_d")),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.z < 0 else
+                        adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ci.participantBodies = [single_body(comp)]
+    comp.features.extrudeFeatures.add(ci).name = "CUT - HEX SOCKET gl_socket, gl_socket_d DEEP"
+    single_body(comp, PARTS["glide"][1])
 
 
 def build_cap(design):
-    """The side band's back-end cap 118003 (D-129): flat, cap_t thick, the size of the band's bore,
-    centred on its own origin in Y, so it is placed with its outer face flush with Y = pod_d / 2.
-    Product HOLD: this is its envelope."""
+    """The tube end cap 111111 (D-165, D-129): a flat aluminium plate cap_t thick, the size of the band's bore (97 x 37),
+    anodised black like the band and bonded flush in a band's open end; centred on its own origin in Y, so it is placed
+    with its outer face flush with the band's end face."""
     comp = find_comp(design, "cap")
     sk = comp.sketches.add(comp.xZConstructionPlane)
     sk.name = "OUTLINE - TUBE END CAP - THE BAND'S BORE"
@@ -1306,8 +1338,8 @@ MATERIALS = {
     "key": ("Aluminum", None, None),
     "bolt": ("Steel", None, None),
     "bscrew": ("Steel", None, None),
-    "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
-    "cap": ("Aluminum", "Flat PE end cap 950 kg/m3 (ASSUMPTION)", 950.0),
+    "glide": ("Steel", None, None),
+    "cap": ("Aluminum", None, None),
     # the envelope (10 x 25 per metre) at 320 kg/m3 weighs the lip's 0.08 kg/m (assumption)
     "seal_l": ("Aluminum", "Lip seal envelope 320 kg/m3 (ASSUMPTION)", 320.0),
     "seal_b": ("Aluminum", "Lip seal envelope 320 kg/m3 (ASSUMPTION)", 320.0),
@@ -1780,7 +1812,7 @@ def export_data(design):
             "inner_face_length": round(v(YB) - yi, 2),
             "front_end": "mitre to DL's outer facet band piece: %.2f deg from square, long point on the outer face"
                          % math.degrees(math.atan2(yi - yo, v("band_t"))),
-            "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)"},
+            "back_end": "square, flush with the back face: its key 111211 inside and the end cap 111111 (D-129)"},
         PARTS["band_b_tube"][0]: {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
             "outer_face_length": round(v("pod_w - 2 * band_t - 2 * band_wall"), 2),
@@ -1835,6 +1867,8 @@ PART_BUILDS = {
     "band_l_tube": ("step2_band_side_lh", "holes_side_lh"),
     "band_b_tube": ("step3_band_back", "holes_back"),
     "doubler": ("build_doubler",),
+    "glide": ("build_glide",),
+    "cap": ("build_cap",),
     "pin": ("build_pin",),
     "washer": ("build_washer",),
     "key": ("build_back_key",),

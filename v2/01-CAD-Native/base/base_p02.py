@@ -65,7 +65,13 @@ P02_PARAMS = [
      "FL2's glide along its centre line from the knee face's centre: the support under DL and the door's hinges "
      "(about 650 N, DL 12.3 kg and the 48.6 kg door, FRONT's lists), 60 from DL's slot spigot rivnut (40 needed) "
      "and its load block 7 clear of the door-end block; FL1, 112 long between two keyed ends, has none"),
-    ("ch_rn_hole", "5 mm", "mm", "assumption", "hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)"),
+    ("ch_rn_hole", "5.1 mm", "mm", "source",
+     "hole for the flush-head M3 rivnut 838008 in the sill seat: Sherex TU-SM3UFO35ZT, body 4.85 to 4.98, so 5.10 +0.10 "
+     "(the Lead's ruling of 2026-11-01 on the Sourcing Engineer's table)"),
+    ("ch_rn_csk", "8 mm", "mm", "source",
+     "the hole's 90 deg countersink to about 8, for the rivnut's head (7.50 to 8.00 across, 1.45 to 1.80 deep), so it sits "
+     "flush in the 2 mm seat (the Lead's ruling of 2026-11-01)"),
+    ("ch_rn_csk_a", "90 deg", "deg", "source", "the countersink's angle (TU-SM3UFO35ZT's 90 deg head)"),
 ]
 
 # the sill's members' numbers, from Control (D-120, the Lead's message of 2026-11-01): 1 of each per sill
@@ -218,7 +224,7 @@ def step_p02_band_r(design):
 
 def step_p02_fr1(design):
     """FR1 under the fixed glass, X 218.5 to x_fr_joint: a 100 x 40 x 1.5 tube, open at the door
-    opening (bought end cap 118003) and closed at the joint by its band_wall end plate, which takes the
+    opening (the end cap 111111, D-165) and closed at the joint by its band_wall end plate, which takes the
     keyholes for the intake's inline key 111215 (D-144; FR1 goes on last, down onto the studs). Its glides
     are levelled by turning their base: FR1's top is in view in front of the glass, so it has no key
     holes on top (the glide's spec: spanner flats on the base, HOLD)."""
@@ -522,10 +528,10 @@ def step_p02_sill_bent(design):
     down.scaleBy(-1)
     hole(design, "sill_bent", seat, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 1 TO 3",
          (v("ch_screw_x1"), v("-glass_y"), v(z_st)), [(X, "ch_screw_x1"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down,
-         ("xConstructionAxis", "3", "2 * ch_screw_p"))
+         ("xConstructionAxis", "3", "2 * ch_screw_p"), csk=("ch_rn_csk", "ch_rn_csk_a"))
     seat4 = offset_plane(comp, "xy", z_st, v(z_st), "PLANE - SILL SEAT TOP (LAST SCREW)")
     hole(design, "sill_bent", seat4, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 4", (v("ch_screw_x4"), v("-glass_y"), v(z_st)),
-         [(X, "ch_screw_x4"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down)
+         [(X, "ch_screw_x4"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down, csk=("ch_rn_csk", "ch_rn_csk_a"))
     print("P02: sill's bent profile %s" % fmt_box(bbox_mm(single_body(comp))))
 
 
@@ -728,13 +734,13 @@ def p02_export(design, out):
             "outer_face_length": round(v(YB) - yo, 2), "inner_face_length": round(v(YB) - yi, 2),
             "front_end": "mitre to the intake's facet piece: %.2f deg from square, long point on the outer face"
                          % math.degrees(math.atan2(yi - yo, v("band_t"))),
-            "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)"}
+            "back_end": "square, flush with the back face: its key 111211 inside and the end cap 111111 (D-129)"}
     if "fr1" in keys:
         ln = v("%s - %s" % (X_FR_JOINT, X_FR0))
         out["tubes"][PARTS["fr1"][0]] = {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
             "outer_face_length": round(ln - v("band_wall"), 2), "inner_face_length": round(ln - v("band_wall"), 2),
-            "front_end": "square at the door opening, closed by the flat end cap 118003 (in view, D-132)",
+            "front_end": "square at the door opening, closed by the end cap 111111 (in view, D-132)",
             "back_end": "square, closed by a welded 1.5 end plate (100 x 40) with 2 keyholes at X %.1f; %.1f over the plate"
                         % (v(X_FR_JOINT), ln)}
     if "fl1" in keys:
