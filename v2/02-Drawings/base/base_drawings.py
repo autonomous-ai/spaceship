@@ -60,10 +60,11 @@ SPEC = {
     ], [("top", True, "both"), ("front", False, "v")]),
     # P02 batch 1 parts, in pod coordinates as built
     "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "tube", [      # A3; runs along X
-        ("front", VO.FrontViewOrientationType, 0.2, (150.0, 200.0)),
-        ("top", VO.TopViewOrientationType, 0.2, (150.0, 160.0)),
-        ("bottom", VO.BottomViewOrientationType, 0.2, (150.0, 240.0)),
-        ("right", VO.RightViewOrientationType, 0.5, (330.0, 200.0)),         # the keyed end plate
+        ("front", VO.FrontViewOrientationType, 0.2, (240.0, 200.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (240.0, 160.0)),
+        ("bottom", VO.BottomViewOrientationType, 0.2, (240.0, 236.0)),
+        # the keyed end plate, seen from the right: first angle puts that view on the LEFT of the front view
+        ("right", VO.RightViewOrientationType, 0.5, (85.0, 200.0)),
     ]),
     "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "plate", [              # A3; bent profile along X
         ("front", VO.FrontViewOrientationType, 0.2, (130.0, 240.0)),
@@ -387,7 +388,7 @@ def run(_context):
         o_top = nearest_end(top, (e[0], e[1]))
         n_holes += hole_dims(sheet, top, o_top, side="below")
         n_dims += mitre_angle(sheet, top)      # diameters: in the hole table (callouts cluttered the views)
-        tables += hole_table(sheet, top, o_top, "HOLES IN THE TOP WALL (VIEW FROM ABOVE), ORIGIN O = DATUMS C, B")
+        tables += hole_table(sheet, top, o_top, "HOLES SEEN FROM ABOVE (THE BOTTOM WALL'S AS HIDDEN LINES), ORIGIN O = DATUMS C, B")
         # the view from below shows the bottom wall's holes; their positions are in the hole table
         # (its dimensions ran into the front view, and a mitred end has no corner at its extent)
         end = made["left"] if "left" in made else made["right"]
