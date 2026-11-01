@@ -980,6 +980,21 @@ def _by_values(page):
 # the Lead's ruling (2026-11-01): notes carry no maker line either; a note may name the source (which STEP and its
 # revision), never an agent, a role or a script as the maker
 NOTE_VERBS = ("made", "created", "drawn", "designed", "generated", "produced", "prepared")
+# ... but only a maker counts: an agent, a role, a script or tool, or a person's name. A process note ('Holes made by
+# drilling after welding', 'prepared by abrasive pad', 'produced by laser cutting', 'made by bending the flange')
+# names how, not who, and passes (Reviewer 6 on #302, the Lead's ruling)
+MAKER_ROLE = re.compile(r"(?<![\w-])(?:engineer|agent|ai|builder|reviewer|lead|pm|checker|assistant|bot|claude|codex|gpt)"
+                        r"(?![\w-])", re.I)
+MAKER_TOOL = re.compile(r"\.(?:py|sh|js|ts|rb|exe)\b|[A-Za-z0-9_]/[A-Za-z0-9_]|\b(?:drawgen|fusion|draftwright|freecad|"
+                        r"pymupdf|pdfplot|script|generator|program|software|autocad|solidworks|onshape|inventor)\b", re.I)
+MAKER_TEAM = re.compile(r"\b(?:WALL|BASE|CEILING|FRONT|ELECTRICAL|AIR|INTERIOR|JOINTS|CONTROL)\b")   # as the teams sign
+
+
+def names_a_maker(maker, names=()):
+    """Does a maker line's 'by ...' name an agent, a role, a script or tool, or a person (not a process)?"""
+    if MAKER_ROLE.search(maker) or MAKER_TOOL.search(maker) or MAKER_TEAM.search(maker):
+        return True
+    return any(re.search(r"(?<![\w])%s(?![\w])" % re.escape(n), maker, re.I) for n in names)
 MAKER_END = re.compile(r"\s*(?:[,;]|\.(?:\s|$)|\s(?:from|using|with|for|on|at|in)\s)", re.I)
 
 
@@ -1024,7 +1039,7 @@ def drawing_people(pdf, names):
             for lab, val in _by_values(page):
                 seen_by.append((n, lab, val))
             for phrase, maker in _note_makers(page):
-                if maker.strip().lower() != AUTHOR.lower():
+                if maker.strip().lower() != AUTHOR.lower() and names_a_maker(maker, names):
                     makers.append((n, phrase, maker))
         if not seen_by:
             probs.append("no Created by field in its title block")

@@ -137,3 +137,14 @@ def test_notes_name_no_maker_but_may_name_their_source(tmp_path):
             line.split().index("by") - 1:line.split().index("by") + 1]))], (line, probs)
     for line in ("Source: 111101_P01_BASE-X_STEP.step, revision P01.", "Made by Autonomous from the P01 STEP."):
         assert cd.drawing_people(_pdf(str(tmp_path / "ok.pdf"), FUSION + [(100, 300, line)]), NAMES) == ([], [])
+    # a person named as the maker in a note
+    probs, _h = cd.drawing_people(_pdf(str(tmp_path / "jr.pdf"), FUSION + [(100, 300, "Made by Jane Roe.")]), NAMES)
+    assert probs == ["a note names 'Jane Roe' as its maker ('Made by ...', sheet 1)"]
+
+
+def test_process_notes_say_how_not_who_and_pass(tmp_path):
+    # Reviewer 6 on #302 (the Lead's ruling): the steel-frame and bond notes use exactly these words
+    for i, line in enumerate(("Holes made by drilling after welding.", "Prepared by abrasive pad, then Sika Aktivator.",
+                              "Produced by laser cutting from the DXF.", "The lip is made by bending the flange.")):
+        assert cd.drawing_people(_pdf(str(tmp_path / ("p%d.pdf" % i)), FUSION + [(100, 300, line)]), NAMES) == ([], []), line
+    assert not cd.names_a_maker("a 1 x 45 lead-in") and cd.names_a_maker("the Lead") and cd.names_a_maker("tools/drawgen")
