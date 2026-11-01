@@ -523,6 +523,56 @@ def test_folds_along_any_line():
     assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
 
 
+def test_a_fold_section_stands_for_the_folds_of_its_kind():
+    """Reviewer 15 on #369 and the Lead: one section per kind of fold (its angle and inside radius), the others of its
+    kind typical of it, each named in its title, and every fold still in the bend table with its own angle, radius
+    and direction. The test duct with two 60° folds draws two sections, one typical for the other fold, and reads
+    back; planted, a section said typical of a fold of another kind, a fold no section shows, and a title naming the
+    wrong fold each fail."""
+    import copy
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct_kinds")
+    os.makedirs(d, exist_ok=True)
+    angles = duct_piece.ANGLES
+    duct_piece.ANGLES = (90.0, 60.0, 60.0)
+    try:
+        step = duct_piece.build_step(os.path.join(d, "219968_P01_TEST-DUCT_STEP.step"))
+        good = duct_piece.write_dxf(os.path.join(d, "219968_DXF.dxf"))
+    finally:
+        duct_piece.ANGLES = angles
+    row = dict(ROW, part_number="219968", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219968.pdf")
+    compose.make("219968", "none", dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good}),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    data = readback.read_data(fitz.open(p))
+    rows = {r_["tag"]: r_ for r_ in data["flat"]["rows"]}
+    secs = data["flat"]["sections"]
+    assert len(rows) == 3 and len(secs) == 2, (rows, secs)
+    typ = next(sc for sc in secs if sc["typical"])
+    (other,) = typ["typical"]
+    assert round(rows[typ["fold"]]["angle"]) == round(rows[other]["angle"]) == 60, (typ, rows)
+    words = " ".join(page.get_text().split())
+    assert ("across %s's fold at its middle: 60°, inside R1 typical for %s" % (typ["fold"], other)) in words, words
+    assert all(("%s (" % t_) in words for t_ in rows), words      # every fold still a row of the bend table
+    plain = next(sc for sc in secs if not sc["typical"])
+    dd = copy.deepcopy(data)
+    next(sc for sc in dd["flat"]["sections"] if sc["typical"])["typical"].append(plain["fold"])
+    f = readback.fold_section_fails(dd, page.get_text())
+    assert any("is said to be typical of fold %s, but its angle or radius differs" % plain["fold"] in x for x in f), f
+    dd = copy.deepcopy(data)
+    next(sc for sc in dd["flat"]["sections"] if sc["typical"])["typical"] = []
+    f = readback.fold_section_fails(dd, page.get_text())
+    assert any("fold %s is shown by no section" % other in x for x in f), f
+    f = readback.fold_section_fails(data, " ".join(page.get_text().split()).replace("typical for %s" % other,
+                                                                                   "typical for %s" % plain["fold"]))
+    assert any("stands for %s, but its title names %s" % (other, plain["fold"]) in x for x in f), f
+
+
 class _RowSays:
     """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
 
