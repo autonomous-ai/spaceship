@@ -235,5 +235,46 @@ class PiecesTests(unittest.TestCase):
         self.assertEqual(hatch.chain_for((0, 0), (1, 1), "pairs"), [(0, 0), (1, 1)])
 
 
+class InsetTests(unittest.TestCase):
+    # live 2026-11-01 (GA B-B): hatch ends lying ON a view edge were moved to the edge's corner
+    def test_ends_move_off_the_outline_by_the_gap(self):
+        sq = [(0, 0), (10, 0), (10, 10), (0, 10)]
+        lines = hatch_segments(sq, spacing=2.0, angle_deg=45.0)
+        self.assertTrue(all(hatch.outline_distance(sq, *p) < 1e-6 for s in lines for p in s))   # on it
+        kept, dropped = hatch.inset(lines, sq, 0.3)
+        self.assertEqual(len(kept) + dropped, len(lines))
+        for a, b in kept:
+            for p in (a, b):
+                self.assertGreaterEqual(hatch.outline_distance(sq, *p), 0.3 - 1e-6)
+                self.assertLess(hatch.outline_distance(sq, *p), 0.3 + 0.02)    # no further than needed
+                self.assertTrue(inside(sq, *p))
+        # each kept line stays on its own line and only gets shorter (at 45 degrees, by 2 x 0.3 x sqrt 2)
+        by_dir = {}
+        for (a, b), (a0, b0) in zip(kept, [s for s in lines if math.dist(*s) - 2 * 0.3 * math.sqrt(2) >= 2.0]):
+            cross = (b[0] - a[0]) * (b0[1] - a0[1]) - (b[1] - a[1]) * (b0[0] - a0[0])
+            self.assertAlmostEqual(cross, 0.0, places=6)
+            self.assertAlmostEqual(math.dist(a0, b0) - math.dist(a, b), 2 * 0.3 * math.sqrt(2), delta=0.03)
+            by_dir[round(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])) % 180)] = True
+        self.assertEqual(list(by_dir), [45])
+
+    def test_a_short_line_is_dropped_and_gap_zero_changes_nothing(self):
+        strip = [(0, 0), (20, 0), (20, 2.5), (0, 2.5)]
+        lines = hatch_segments(strip, spacing=2.0, angle_deg=45.0)    # about 3.5 mm long across the strip
+        kept, dropped = hatch.inset(lines, strip, 1.0)               # 2 x 1.41 off each: under 2 mm left
+        self.assertEqual(kept, [])
+        self.assertEqual(dropped, len(lines))
+        same, none = hatch.inset(lines, strip, 0.0)
+        self.assertEqual((same, none), ([tuple(s) for s in lines], 0))
+
+    def test_holes_count_as_outline(self):
+        outer = [(0, 0), (20, 0), (20, 20), (0, 20)]
+        hole = [(8, 8), (12, 8), (12, 12), (8, 12)]
+        lines = hatch_segments([outer, hole], spacing=2.0, angle_deg=45.0)
+        kept, _ = hatch.inset(lines, [outer, hole], 0.5)
+        for a, b in kept:
+            for p in (a, b):
+                self.assertGreaterEqual(hatch.outline_distance([outer, hole], *p), 0.5 - 1e-6)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

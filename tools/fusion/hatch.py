@@ -159,6 +159,53 @@ def spaced(segments, fixed=(), snap=SNAP_MM, min_len=MIN_LINE_MM, step=0.25):
     return kept, shortened, dropped
 
 
+def outline_distance(loops, x, y):
+    """Distance from (x, y) to the face's outline: the nearest point on any edge of any loop."""
+    if loops and isinstance(loops[0][0], (int, float)):
+        loops = [loops]
+    best = float("inf")
+    for lp in loops:
+        for i in range(len(lp)):
+            (x1, y1), (x2, y2) = lp[i], lp[(i + 1) % len(lp)]
+            dx, dy = x2 - x1, y2 - y1
+            L2 = dx * dx + dy * dy
+            t = 0.0 if L2 == 0 else max(0.0, min(1.0, ((x - x1) * dx + (y - y1) * dy) / L2))
+            best = min(best, math.dist((x, y), (x1 + t * dx, y1 + t * dy)))
+    return best
+
+
+def inset(segments, loops, gap, step=0.01, min_len=MIN_LINE_MM):
+    """Each hatch line with both ends moved inward along it until they are at least `gap` from the
+    face's outline. Live 2026-11-01 (GA B-B): Fusion moved every hatch end that lay ON a view edge
+    along that edge to its nearest corner, or dropped the line. A line left shorter than min_len is
+    dropped. Returns (lines kept, lines dropped); gap 0 keeps the lines as they are."""
+    if gap <= 0:
+        return [tuple(s) for s in segments], 0
+    kept, dropped = [], 0
+    for a, b in segments:
+        L = math.dist(a, b)
+        if L == 0:
+            dropped += 1
+            continue
+        ux, uy = (b[0] - a[0]) / L, (b[1] - a[1]) / L
+
+        def walk(p, sign):
+            t = 0.0
+            while t <= L / 2.0:
+                q = (p[0] + sign * ux * t, p[1] + sign * uy * t)
+                if outline_distance(loops, *q) >= gap - 1e-9:
+                    return q
+                t += step
+            return None
+
+        a2, b2 = walk(a, 1.0), walk(b, -1.0)
+        if a2 is None or b2 is None or math.dist(a2, b2) < min_len:
+            dropped += 1
+            continue
+        kept.append((a2, b2))
+    return kept, dropped
+
+
 def loop_area_perimeter(loops):
     """(area, perimeter) of a face given as loops (outer + holes, even-odd)."""
     if loops and isinstance(loops[0][0], (int, float)):

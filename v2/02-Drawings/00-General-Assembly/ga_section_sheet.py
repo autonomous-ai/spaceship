@@ -55,6 +55,7 @@ exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
 hatch_segments = _ns["hatch_segments"]
 chain_for, read_line_mode, spacing_for = _ns["chain_for"], _ns["read_line_mode"], _ns["spacing_for"]
 fill_lines, hatch_chains, pieces, spaced = _ns["fill_lines"], _ns["chains"], _ns["pieces"], _ns["spaced"]
+inset = _ns["inset"]
 MAX_SKETCHES = 3000     # one sketch per chain, piece or line: past this the sheet would be unworkable
 # PM ruling 2026-11-01 08:3x: thin layers (skins, frames, cassettes; under 2 mm on the sheet at 1:20)
 # are shown in outline, with this note; Fusion snaps their 0.3 mm fill lines onto each other
@@ -108,6 +109,23 @@ def extent(view: "adsk.drawing.View"):
                 xs.append(p.coordinate.x)
                 ys.append(p.coordinate.y)
     return min(xs), min(ys), max(xs), max(ys)
+
+
+def view_points(view: "adsk.drawing.View"):
+    """Every end point of the view's curves, in sheet mm: Fusion pulls a sketch point onto one of
+    these when it lies on the curve or too close to it (GA B-B, 2026-11-01)."""
+    pts = []
+    vc = view.viewCurves
+    for i in range(vc.count):
+        c = vc.item(i)
+        for name in ("startPoint", "endPoint"):
+            try:
+                p = getattr(c, name)
+            except Exception:
+                p = None
+            if p is not None:
+                pts.append((p.coordinate.x, p.coordinate.y))
+    return pts
 
 
 def model_box(design: "adsk.fusion.Design"):
@@ -164,7 +182,8 @@ def run(_context):
         # promote the drawing's first version (ga_promote.py) and run this again
         raise RuntimeError("the sheet is hatched already; promote the drawing's first version to redo it")
     # the form of Lines.add that draws a straight line, from this session's live probe
-    mode = read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
+    probing = bool(ARGS.get("probe_insets"))
+    mode = "own-sketch" if probing else read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
     if mode == "none":
         print("GAP: no hatch drawn: the line probe found no form that draws a straight line exactly, so "
               "the hatch waits for a fix (the view is placed)")
@@ -209,14 +228,21 @@ def run(_context):
     plan, single = [], []
     polys = [[[to_sheet(p) for p in lp] for lp in body_loops] for _body, body_loops in loops]
     corners = [p for poly in polys for lp in poly for p in lp]   # the view draws every face's corners
-    placed = list(corners)                                       # points already on the sheet, for snapping
-    n_short = n_drop = 0
+    placed = list(corners) + view_points(view)                   # points already on the sheet, for snapping
+    # every hatch end kept this far inside its face (sheet mm): an end ON a view edge was moved along the
+    # edge to its corner, or the line was dropped (GA B-B, 2026-11-01); the inset probe sets the value
+    gap = float(ARGS.get("inset_mm", "0"))
+    if probing:
+        probe_insets(doc, sheet, polys, placed)
+        return
+    n_short = n_drop = n_inset_drop = 0
     for i, poly in enumerate(polys):
         thin = spacing_for(poly) < 1.0
         filled += thin
         if thin:
             continue                                            # outline only (the view draws it)
-        segs = fill_lines(poly, i)
+        segs, n_in = inset(fill_lines(poly, i), poly, gap)
+        n_inset_drop += n_in
         if mode == "own-sketch":
             # Fusion snaps a point onto an earlier one within about 2.5 mm (08:42 probe): every line end
             # kept 3 mm clear of the corners and of the lines drawn before it (hatch.spaced)
@@ -248,8 +274,10 @@ def run(_context):
     n_sk = len(plan)
     adsk.doEvents()
     print("section %s at %.2f mm: %d cut faces (%d thin, in outline), %d hatch lines in %d sketch(es), "
-          "the %r form (%d shortened, %d left out to keep 3 mm from other points), %d failed; view extent %s" % (
-              sec, at, len(loops), filled, n_seg, n_sk, mode, n_short, n_drop, failed, tuple(round(v, 1) for v in ex)))
+          "the %r form, ends %.2f mm inside their faces (%d too short for that), %d shortened, %d left out to "
+          "keep 3 mm from other points, %d failed; view extent %s" % (
+              sec, at, len(loops), filled, n_seg, n_sk, mode, gap, n_inset_drop, n_short, n_drop, failed,
+              tuple(round(v, 1) for v in ex)))
     if failed:
         raise RuntimeError("%d hatch sketch line(s) weren't made; nothing kept" % failed)
     # what was asked, per sketch, for the line-by-line check of the export (ga_pdf_check.py
@@ -257,10 +285,50 @@ def run(_context):
     out = os.path.join(ARGS.get("repo_root", "."), "v2", "02-Drawings", "00-General-Assembly",
                        "%s.hatch.json" % doc.name)
     with open(out, "w", encoding="utf-8") as fh:
-        json.dump({"drawing": doc.name, "form": mode, "thin": "outline", "thin_faces": filled, "layers": record}, fh)
+        json.dump({"drawing": doc.name, "form": mode, "thin": "outline", "thin_faces": filled, "inset_mm": gap,
+                   "layers": record}, fh)
     print("hatch record: %s (%d sketch(es))" % (os.path.basename(out), len(record)))
     if ARGS.get("notes_png"):
         # the thin-layer note (PM ruling): its lower-left corner at notes_px, notes_py, NOTES_WIDTH wide
         scale = insert_image(sheet, ARGS["notes_png"], float(ARGS["notes_px"]), float(ARGS["notes_py"]), NOTES_WIDTH)
         print("note placed at (%s, %s) mm, %g mm wide (scale %.4f)" % (ARGS["notes_px"], ARGS["notes_py"],
                                                                      NOTES_WIDTH, scale))
+
+
+def probe_insets(doc, sheet, polys, placed):
+    """The inset probe (--arg probe_insets=0,0.1,0.3 --arg probe_pdf=OUT.pdf): the real hatch lines of the
+    wider faces, shared round-robin between the gaps asked, each end moved that far inside its face, each line
+    in its own sketch "PROBE INSET <gap> <n>"; the sheet is exported to OUT.pdf and the cases written to
+    OUT.pdf.json for ga_pdf_check.py probe. Nothing is saved: the session closes the drawing without saving."""
+    gaps = [float(g) for g in ARGS["probe_insets"].split(",")]
+    cases = {g: [] for g in gaps}
+    faces = 0
+    for i, poly in enumerate(polys):
+        if spacing_for(poly) < 1.0:
+            continue                                            # thin faces stay in outline
+        faces += 1
+        for k, seg in enumerate(fill_lines(poly, i)):
+            g = gaps[(k + i) % len(gaps)]
+            got, _dropped = inset([seg], poly, g)
+            cases[g] += got
+    spec, report = [], []
+    for g in gaps:
+        lines, short, drop = spaced(cases[g], fixed=placed)
+        placed += [p for sg in lines for p in sg]
+        label = "INSET %.2f" % g
+        made = 0
+        for k, (a, b) in enumerate(lines, 1):
+            sk = sheet.sketches.add("PROBE %s %03d" % (label, k))
+            if sk.lines.add([p2(*a), p2(*b)]) is not None:
+                made += 1
+        adsk.doEvents()
+        spec.append([label, [[list(a), list(b)] for a, b in lines], True])
+        report.append({"case": label, "asked": len(lines), "made": made, "count": 1})
+        print("probe case %s: %d line(s) asked, %d made (%d shortened, %d left out by the 3 mm rule)"
+              % (label, len(lines), made, short, drop))
+    opts = doc.drawing.exportManager.createPDFExportOptions(ARGS["probe_pdf"])
+    opts.openPDF = False
+    ok = doc.drawing.exportManager.execute(opts)
+    with open(ARGS["probe_pdf"] + ".json", "w", encoding="utf-8") as fh:
+        json.dump({"cases": spec, "report": report}, fh)
+    print("probe pdf %s: %s (%d wider faces; nothing saved)" % (ARGS["probe_pdf"], ok, faces))
