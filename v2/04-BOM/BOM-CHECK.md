@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -193,6 +193,9 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+**Joints register**
+- H-44 HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 A2: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
