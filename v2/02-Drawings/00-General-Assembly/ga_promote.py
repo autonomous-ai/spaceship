@@ -12,12 +12,25 @@ saving crashed Fusion (PM: redo without deleting a sheet).
 Refuses when the drawing is open in Fusion (an open copy would keep the old
 version), when its newest version isn't `latest` (someone else changed it), or
 when `version` isn't there. Run with no document open; it opens nothing.
+
+Proven on a sample first (owner's rule 2026-11-01: prove a method on a sample
+before using it on real work): a name that doesn't start with ZZ_ is refused
+unless --arg proven=RECORD names the record a sample check wrote. The sample:
+a ZZ_ drawing with an empty version 1 and a view in version 2; promote version
+1; then, with the promoted drawing open (--doc),
+
+    ... ga_promote.py --arg check=1 --arg version=3 --arg record=RECORD.json
+
+checks it is the newest version and its sheet is empty again, and writes RECORD.
 """
 
+import json
+import os
 import time
 
 import adsk
 import adsk.core
+import adsk.drawing
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 FOLDER = ("Default Project", "FocusPod v2")
@@ -34,9 +47,35 @@ def find(folder, name):
     return hits[0]
 
 
+def check_sample(app: "adsk.core.Application"):
+    """With the promoted sample drawing open: it is at the expected version and its
+    sheet is empty again (version 1's content); write the proof record."""
+    doc = adsk.drawing.DrawingDocument.cast(app.activeDocument)
+    if doc is None or not doc.name.startswith("ZZ_"):
+        raise RuntimeError("open the ZZ_ sample drawing first (--doc)")
+    have = doc.dataFile.versionNumber if doc.dataFile else None
+    sheet = doc.drawing.sheets.item(0)
+    views, sheets = sheet.views.count, doc.drawing.sheets.count
+    print("sample %s: version %s, %d sheet(s), %d view(s) on sheet 1" % (doc.name, have, sheets, views))
+    if have != int(ARGS["version"]) or views != 0:
+        raise RuntimeError("the promoted sample isn't version %s with an empty sheet; promote not proven"
+                           % ARGS["version"])
+    with open(ARGS["record"], "w", encoding="utf-8") as fh:
+        json.dump({"sample": doc.name, "version": have, "views": views, "sheets": sheets,
+                   "checked_utc": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}, fh)
+    print("promote proven on %s; record %s" % (doc.name, ARGS["record"]))
+
+
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("check") == "1":
+        check_sample(app)
+        return
     name, version, latest = ARGS["name"], int(ARGS["version"]), int(ARGS["latest"])
+    proven = ARGS.get("proven")
+    if not name.startswith("ZZ_") and not (proven and os.path.isfile(proven)):
+        raise RuntimeError("promoting isn't proven on a sample yet (owner's rule 2026-11-01), so %s "
+                           "is left as it is; run the ZZ_ sample first and pass --arg proven=RECORD" % name)
     for i in range(app.documents.count):
         if app.documents.item(i).name == name:
             raise RuntimeError("%s is open in Fusion; close it before promoting a version" % name)
