@@ -66,8 +66,8 @@ TREE = [
     ("sleeve", "air", 1, "D-61: through C2's roof slot"), ("rgrille", "air", 1, "D-61"),
 ]
 FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left": "ACP EV3038 face with Dark Gray felt (D-79)",
-          "sof_under": "top band's dark tone (D-60)", "sof_under_r": "top band's dark tone (D-60)",
-          "sof_under_f": "top band's dark tone (D-60)", "sof_front": "felt face, Dark Gray (D-79)",
+          "sof_under": "felt face, Dark Gray (D-79): the top band's dark tone (D-61)", "sof_under_r": "felt face, Dark Gray (D-79): the top band's dark tone (D-61)",
+          "sof_under_f": "felt face, Dark Gray (D-79): the top band's dark tone (D-61)", "sof_front": "felt face, Dark Gray (D-79)",
           "kick": "powder coat to match the felt (HOLD)", "egrille": "powder coat to match the underside (HOLD)",
           "rgrille": "powder coat to match the roof (HOLD)", "col_foot": "mill finish (hidden, D-79)",
           "col_ang": "mill finish (hidden, D-79)", "col_side_lo": "mill finish (hidden, D-79)",
@@ -75,7 +75,7 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "sof_rail_r": "mill finish (hidden, D-79)", "sof_end": "mill finish (hidden, D-79)",
           "sof_door": "mill finish (hidden, D-79)",
           "casing": "mill finish (hidden, D-79)", "box": "mill finish (hidden, D-79)", "box_s": "mill finish (hidden, D-79)",
-          "riser": "galvanised", "sleeve": "galvanised"}
+          "riser": "galvanised", "sleeve": "galvanised", "layer": "as supplied (the maker's facing)"}
 PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
            "sof_rail_d": "laser cut flat bar, forks and holes", "sof_rail_r": "laser cut flat bar, forks", "sof_end": "laser cut",
            "col_front": "CNC routed ACP, felt laminated", "col_left": "CNC routed ACP, felt laminated",

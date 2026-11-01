@@ -103,6 +103,10 @@ AIR_PARAMS = [
     # ---- fans (selection F1, D-51)
     ("fan_s", "140 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
     ("fan_t", "25 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
+    ("blk_t", "2 mm", "mm", "source", "the air report's sizing (calc.py, D-121): each fan box's 2 mm aluminium bulkhead, the fans mounted on it"),
+    ("fan_bore", "135 mm", "mm", "source", "the air report's fan bore (calc.py FAN_BORE 0.135 m): the bulkhead's opening at each fan"),
+    ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
+    ("e_lin_gap", "50 mm", "mm", "source", "D-121, the Air Engineer: the exhaust box's far-end lining stops 50 mm under the fans"),
     # ---- supply fan box and intake riser, inside the right decor block (D-61, D-62)
     ("sb_x0", "645 mm", "mm", "source", R7E + ": supply fan box X 645 to 945"),
     ("sb_w", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
@@ -134,7 +138,7 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "ebox": ("610402", "AIR - EXHAUST FAN BOX", "Hộp quạt thải (cụm)", "HS", None),
     "col_front": ("611101", "AIR - COLUMN FACE - FRONT", "Cột gió - mặt trước (ACP + nỉ)", "MP", "face"),
     "col_left": ("611102", "AIR - COLUMN FACE - LEFT", "Cột gió - mặt trái (ACP + nỉ)", "MP", "face"),
-    "col_ang": ("611103", "AIR - COLUMN CORNER ANGLE", "Cột gió - thanh góc nhôm", "MP", "al"),
+    "col_ang": ("611103", "AIR - COLUMN CORNER ANGLE", "Cột gió - thanh góc nhôm", "MP", "alx"),
     "col_fill": ("611104", "AIR - COLUMN FILL", "Cột gió - bông", "MP", "pfill"),
     "kick": ("611105", "AIR - KICK GRILLE", "Lưới gió chân cột", "MP", "perf60"),
     "col_foot": ("611106", "AIR - COLUMN FOOT PLATE", "Cột gió - tấm chân", "MP", "al"),
@@ -174,13 +178,14 @@ HARDWARE = {
 }
 
 MATERIALS = {
-    "al": ("Aluminium (alloy HOLD)", 2700.0),
+    "al": ("Aluminium 5052-H32 sheet (alloy HOLD)", 2700.0),         # C11: a named alloy and temper; the factory confirms
+    "alx": ("Aluminium 6063-T6 extrusion (alloy HOLD)", 2700.0),     # the column's corner angles
     "perf60": ("Perforated aluminium, 60 % free", 2700.0 * 0.4),
     "perf40": ("Perforated aluminium, 40 % free", 2700.0 * 0.6),
     "perf50": ("Perforated aluminium, 50 % free", 2700.0 * 0.5),
     "steel": ("Galvanised steel DX51D+Z", 7850.0),
     "face": ("ACP 3 + felt 9 face (5.3 kg/m2)", 5.3 / 0.012),
-    "pfill": ("Polyester fill 32 kg/m3", 32.0),
+    "pfill": ("Polyester fill 24 kg/m3", 24.0),     # D-81: the lighter cavity fill (provisional on T02); the layers stay at 32
     "pyro": ("Pyrotek Sorberpoly 2D 32 kg/m3", 32.0),      # D-116: the density Pyrotek's published absorption is for (selection.md)
     "fan": ("Fan envelope 0.3 kg (assumption)", 0.3 / (0.14 * 0.14 * 0.025)),
     "hold": ("HOLD envelope - no mass", 1.0),
@@ -419,11 +424,13 @@ def cutouts():
 
 
 def fan_points():
-    """Fan centres (x, y, z of the fan's underside): two in each fan box, lying flat."""
+    """Fan centres (x, y, z of the fan's underside): two in each fan box, lying flat. The supply fans stand on their
+    bulkhead 50 above the box's floor; the exhaust fans hang under a sealed bulkhead at the box's top and blow
+    straight into the roof sleeve (D-121: low fans let the cartridge's upper passages short-circuit)."""
     pts = []
     for tag, x0, w, y0, d, z0 in (("SUPPLY", "sb_x0", "sb_w", "%s + sb_yf" % YF, "sb_d", "sb_z0 + lin_t"),
                                   ("EXHAUST", "%s - fb_w" % XR, "fb_w", "%s + clr" % YD, "cart_d",
-                                   "%s + face_t + sof_fill_t + lin_t" % ZS0)):
+                                   "%s + face_t + sof_fill_t + cart_w - blk_t - fan_t" % ZS0)):
         for k in (1, 3):
             pts.append(("%s FAN %d" % (tag, (k + 1) // 2), "%s + %s * %d / 4" % (x0, w, k), "%s + %s / 2" % (y0, d), z0))
     return pts

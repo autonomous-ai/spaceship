@@ -127,7 +127,11 @@ class Fits(unittest.TestCase):
             self.assertLessEqual(cx + h, bx[1] - V["fbox_t"] + 1e-9, name)
             self.assertGreaterEqual(cy - h, bx[2] + V["fbox_t"] - 1e-9, name)
             self.assertLessEqual(cy + h, bx[3] - V["fbox_t"] + 1e-9, name)
-            self.assertLessEqual(cz + V["fan_t"], bx[5] - V["fbox_t"] + 1e-9, name)
+            if name.startswith("EXHAUST"):
+                # D-121: under the sealed bulkhead at the open top, blowing straight into the roof sleeve
+                self.assertAlmostEqual(cz + V["fan_t"], bx[5] - V["blk_t"], msg=name)
+            else:
+                self.assertLessEqual(cz + V["fan_t"], bx[5] - V["fbox_t"] + 1e-9, name)
 
 
 class D87(unittest.TestCase):
