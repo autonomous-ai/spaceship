@@ -303,28 +303,34 @@ class Part:
             self.notches += nt
             self.chamfers += ch
             self.plates += plt
-        self.reg = inputs.feature_rows(pn, team)
-        for mpn in self._member_pns():  # a frame of members (D-120): its register lists each hole under its member
-            self.reg += inputs.feature_rows(mpn, team)
+        # a frame of members (D-120): its register lists each hole under its member, so each hole is matched in its
+        # own member's rows only (pooled, a member's Ø7 bolt hole could fit another member's row)
+        members = self._member_pns()
+        own = (lambda body: geom.part_number_of(body.name)) if members else (lambda body: None)
+        rows1 = {m: inputs.feature_rows(m, team) for m in members}
+        self.reg = inputs.feature_rows(pn, team) + [r for m in members for r in rows1[m]]
         for ft in self.features:
+            m = own(ft.body)
+            reg, bname = (rows1.get(m, []), "") if m else (self.reg, ft.body.name)
             ax = axis_name(ft.f.axis)
             if ax and ft.kind == "hole":
                 ctr = vadd(ft.f.entry, vmul(ft.f.axis, ft.f.depth / 2))
-                ft.reg = inputs.match_feature(self.reg, ft.body.name, ft.f.dia, ax[1], ctr)
+                ft.reg = inputs.match_feature(reg, bname, ft.f.dia, ax[1], ctr)
             elif ax and ft.kind == "slot":
                 # the register lists a slot as the two arcs of its ends
                 half = (ft.f.length - ft.f.width) / 2
                 for sgn in (1, -1):
                     c = vadd(vadd(ft.f.entry, vmul(ft.f.along, sgn * half)), vmul(ft.f.axis, ft.f.depth / 2))
-                    ft.reg = ft.reg or inputs.match_feature(self.reg, ft.body.name, ft.f.width, ax[1], c)
+                    ft.reg = ft.reg or inputs.match_feature(reg, bname, ft.f.width, ax[1], c)
         b = [bb.box for bb in self.bodies]
         self.box = tuple(min(x[k] for x in b) for k in range(3)) + tuple(max(x[3 + k] for x in b) for k in range(3))
         # the second register layout (BASE): matched by size, wall and a named pod coordinate
         if not any(ft.reg for ft in self.features):
-            rows_b = inputs.feature_rows_b(team, pn)
-            for mpn in self._member_pns():      # a frame of members: its register names each hole's member
-                rows_b += inputs.feature_rows_b(team, mpn)
+            rows_b0 = inputs.feature_rows_b(team, pn)
+            rows_bm = {m: inputs.feature_rows_b(team, m) for m in members}     # each member's own rows
             for ft in self.features:
+                m = own(ft.body)
+                rows_b = rows_bm.get(m, []) if m else rows_b0
                 nrm = ft.f.normal
                 k = max(range(3), key=lambda i: abs(nrm[i]))
                 if k == 2:
@@ -334,8 +340,7 @@ class Part:
                 dia = ft.f.entry_dia if ft.kind == "keyhole" else ft.f.dia
                 along = max(range(3), key=lambda i: ft.body.size[i])
                 if ft.kind == "open_slot":
-                    r = inputs.match_open_slot_b(sum((inputs.feature_rows_b(team, x, sizeless=True)
-                                                      for x in [pn] + self._member_pns()), []), ft.f.width,
+                    r = inputs.match_open_slot_b(inputs.feature_rows_b(team, m or pn, sizeless=True), ft.f.width,
                                                  ft.f.mouth)
                 else:
                     r = inputs.match_feature_b(rows_b, dia, wall, ft.f.entry, keyhole=(ft.kind == "keyhole"),
