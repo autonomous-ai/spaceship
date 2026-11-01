@@ -146,12 +146,32 @@ class SheetCheckTests(unittest.TestCase):
         sides = [seg_path(a, b) for a, b in pc.SYMBOL]
         self.assertEqual(pc.check_symbol(self.write({"PROJECTION SYMBOL - FIRST ANGLE": sides + circles})), [])
 
-    def test_off_angle_hatch_lines_are_reported(self):
-        good = [seg_path((10 + k, 10), (20 + k, 20)) for k in range(5)]
-        self.assertEqual(pc.check_hatch(self.write({"HATCH - SECTION AA": good}), "HATCH - SECTION AA", 5), [])
-        bad = good + [seg_path((50, 10), (50, 20))]
-        self.assertTrue(pc.check_hatch(self.write({"HATCH - SECTION AA": bad}), "HATCH - SECTION AA", 5))
-        self.assertTrue(pc.check_hatch(self.write({"HATCH - SECTION AA": good}), "HATCH - SECTION AA", 50))
+    def test_the_hatch_is_checked_line_by_line_against_its_record(self):
+        # ga_section_sheet.py writes NAME.hatch.json next to the PDF: the chains asked, per sketch
+        d = tempfile.mkdtemp()
+        pdf = os.path.join(d, "X_DWG.pdf")
+        chain = [[10, 10], [20, 20], [20, 22], [10, 12]]
+        with open(pdf[:-4] + ".hatch.json", "w") as fh:
+            json.dump({"layers": {"HATCH - SECTION AA 001": [chain]}}, fh)
+        good = [[("m", (10, 10)), ("l", (20, 20)), ("l", (20, 22)), ("l", (10, 12))]]
+        with open(pdf, "wb") as fh:
+            fh.write(fake_pdf({"HATCH - SECTION AA 001": good}))
+        self.assertEqual(pc.check_hatch(pdf, "HATCH - SECTION AA", 3), [])
+        bad = [[("m", (10, 10)), ("l", (20, 20)), ("l", (20, 22)), ("l", (10, 14))]]   # one end moved
+        with open(pdf, "wb") as fh:
+            fh.write(fake_pdf({"HATCH - SECTION AA 001": bad}))
+        self.assertTrue(any("differ" in p for p in pc.check_hatch(pdf, "HATCH - SECTION AA", 3)))
+
+    def test_without_a_record_only_the_count_is_checked(self):
+        lines = [seg_path((10 + k, 10), (20 + k, 20)) for k in range(5)]
+        path = self.write({"HATCH - SECTION AA 001": lines})
+        self.assertEqual(pc.check_hatch(path, "HATCH - SECTION AA", 5), [])
+        self.assertTrue(pc.check_hatch(path, "HATCH - SECTION AA", 50))
+
+    def test_a_line_drawn_back_and_forth_is_one_line(self):
+        # Fusion's export writes a 2-point line as m B l A l B l A
+        twice = [[("m", (20, 20)), ("l", (10, 10)), ("l", (20, 20)), ("l", (10, 10))]]
+        self.assertEqual(len(pc.drawn_lines(twice)), 1)
 
 
 if __name__ == "__main__":

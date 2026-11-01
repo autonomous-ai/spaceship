@@ -27,6 +27,7 @@ _ns: dict = {}
 with open(os.path.join(A.get("repo_root", "."), "tools", "fusion", "hatch.py"), encoding="utf-8") as _fh:
     exec(compile(_fh.read(), "hatch.py", "exec"), _ns)
 hatch_segments, chain_for = _ns["hatch_segments"], _ns["chain_for"]
+fill_lines, hatch_chains = _ns["fill_lines"], _ns["chains"]
 
 FORMS = ["plain", "mid", "dup-first", "dup-last"]
 
@@ -43,6 +44,12 @@ def cases():
         thin = [chain_for(a, b, form) for a, b in hatch_segments(strip, spacing=0.5, angle_deg=135.0)]
         out += [("%s small x5" % form, small, False), ("%s many" % form, many, False),
                 ("%s thin" % form, thin, False)]
+    # one Lines.add per sketch, many lines joined back and forth (hatch.chains): a 45 degree
+    # hatch of a square, and a thin strip filled along its length (both as the GA uses them)
+    sq = [(200.0, 140.0), (220.0, 140.0), (220.0, 160.0), (200.0, 160.0)]
+    strip = [(240.0, 140.0), (270.0, 140.0), (270.0, 142.0), (240.0, 142.0)]
+    out += [("chain zigzag", hatch_chains(hatch_segments(sq, spacing=0.7, angle_deg=45.0), sq), True),
+            ("chain strip", hatch_chains(fill_lines(strip), strip), True)]
     out += [("own sketch x5", [[(200.0 + 12 * k, 20.0), (210.0 + 12 * k, 40.0)] for k in range(5)], True),
             ("3pt open", [[(200.0, 80.0), (215.0, 100.0), (230.0, 80.0)]], False),
             ("4pt open", [[(240.0, 85.0), (260.0, 80.0), (260.0, 100.0), (240.0, 95.0)]], False),

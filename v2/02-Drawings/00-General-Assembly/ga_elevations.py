@@ -267,11 +267,23 @@ def step_symbol(sheet: "adsk.drawing.Sheet"):
               "that draws a straight line")
         return
     sk = None
-    for k, (a, b) in enumerate(SYMBOL_SIDES):
-        if sk is None or mode == "own-sketch":
-            sk = sheet.sketches.add(SYMBOL_NAME if sk is None else "%s %d" % (SYMBOL_NAME, k))
-        if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:
-            raise RuntimeError("side %d of the projection symbol wasn't made" % k)
+    if mode == "chain":
+        # the outline as ONE closed chain in a sketch of its own: Fusion's PDF export keeps
+        # that exactly, but dropped a corner when the chain shared its sketch with the
+        # circles (GA sheet 1, 2026-10-31; live probe 2026-11-01)
+        sk = sheet.sketches.add(SYMBOL_NAME)
+        ring = [SYMBOL_SIDES[0][0]] + [b for _a, b in SYMBOL_SIDES]
+        if sk.lines.add([p2(*q) for q in ring]) is None:
+            raise RuntimeError("the projection symbol's outline wasn't made")
+        sk = sheet.sketches.add(SYMBOL_NAME + " CIRCLES")
+    else:
+        for k, (a, b) in enumerate(SYMBOL_SIDES):
+            if sk is None or mode == "own-sketch":
+                sk = sheet.sketches.add(SYMBOL_NAME if sk is None else "%s %d" % (SYMBOL_NAME, k))
+            if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:
+                raise RuntimeError("side %d of the projection symbol wasn't made" % k)
+        if mode == "own-sketch":
+            sk = sheet.sketches.add(SYMBOL_NAME + " CIRCLES")
     for (cx, cy), r in SYMBOL_CIRCLES:
         if sk.circles.addByCenterRadius(p2(cx, cy), r) is None:
             raise RuntimeError("a circle of the projection symbol wasn't made")

@@ -110,11 +110,60 @@ class ThinFaceTests(unittest.TestCase):
         self.assertAlmostEqual(per, 80 + 72)
         self.assertEqual(hatch.spacing_for([outer, hole]), hatch.FILL_MM)
 
-    def test_a_filled_strip_reads_solid(self):
+    def test_a_thin_strip_is_filled_with_long_lines_along_it(self):
+        # Fusion's PDF export merges lines under about 1 mm into wrong paths (live probe
+        # 2026-11-01), so a thin strip gets lines along it, not short 45 degree strokes
         skin = [(0, 0), (120, 0), (120, 1.7), (0, 1.7)]          # a 34 mm cassette at 1:20
-        segs = hatch_segments(skin, spacing=hatch.spacing_for(skin))
-        self.assertGreater(len(segs), 150)                         # 120 x 0.707 / 0.5
-        self.assertLess(len(segs), 200)
+        segs = hatch.fill_lines(skin)
+        self.assertEqual(len(segs), 6)                            # 1.7 / 0.3 apart
+        for a, b in segs:
+            self.assertAlmostEqual(abs(b[1] - a[1]), 0.0, places=6)   # along the strip
+            self.assertGreater(math.dist(a, b), 119.0)
+        tilted = [(0, 0), (100, 100), (101, 99), (1, -1)]         # a strip at 45 degrees
+        self.assertAlmostEqual(hatch.long_edge_angle(tilted), 45.0)
+
+    def test_a_wide_face_keeps_the_45_degree_hatch(self):
+        block = [(0, 0), (17, 0), (17, 40), (0, 40)]
+        for a, b in hatch.fill_lines(block, index=0):
+            self.assertAlmostEqual(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])) % 180, 45, places=6)
+        for a, b in hatch.fill_lines(block, index=1):
+            self.assertAlmostEqual(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])) % 180, 135, places=6)
+
+
+class ChainTests(unittest.TestCase):
+    """One Lines.add call per face: the hatch lines joined back and forth."""
+
+    def test_a_convex_face_is_one_chain_through_every_line(self):
+        sq = [(0, 0), (20, 0), (20, 20), (0, 20)]
+        segs = hatch_segments(sq, spacing=0.7)
+        ch = hatch.chains(segs, sq)
+        self.assertEqual(len(ch), 1)
+        self.assertEqual(len(ch[0]), 2 * len(segs))
+        pairs = {tuple(sorted((tuple(map(lambda v: round(v, 6), ch[0][i])), tuple(map(lambda v: round(v, 6), ch[0][i + 1])))))
+                 for i in range(0, len(ch[0]), 2)}
+        want = {tuple(sorted((tuple(map(lambda v: round(v, 6), a)), tuple(map(lambda v: round(v, 6), b))))) for a, b in segs}
+        self.assertEqual(pairs, want)                             # every hatch line is in the chain
+        for i in range(1, len(ch[0]) - 1, 2):                    # links stay on the outline or inside
+            mid = ((ch[0][i][0] + ch[0][i + 1][0]) / 2, (ch[0][i][1] + ch[0][i + 1][1]) / 2)
+            self.assertTrue(hatch._inside(sq, *mid) or hatch._on_outline(sq, *mid))
+
+    def test_a_strip_fill_is_one_chain(self):
+        skin = [(0, 0), (120, 0), (120, 1.7), (0, 1.7)]
+        ch = hatch.chains(hatch.fill_lines(skin), skin)
+        self.assertEqual([len(c) for c in ch], [12])
+
+    def test_a_link_that_would_leave_the_face_starts_a_new_chain(self):
+        u = [(0, 0), (30, 0), (30, 20), (20, 20), (20, 5), (10, 5), (10, 20), (0, 20)]   # a U
+        segs = hatch_segments(u, spacing=1.0, angle_deg=0.0)       # rows across both arms
+        ch = hatch.chains(segs, u)
+        self.assertGreater(len(ch), 1)
+        for c in ch:
+            for i in range(1, len(c) - 1, 2):
+                mid = ((c[i][0] + c[i + 1][0]) / 2, (c[i][1] + c[i + 1][1]) / 2)
+                self.assertTrue(hatch._inside(u, *mid) or hatch._on_outline(u, *mid))
+
+    def test_chain_form_is_two_points(self):
+        self.assertEqual(hatch.chain_for((0, 0), (1, 1), "chain"), [(0, 0), (1, 1)])
 
 
 if __name__ == "__main__":

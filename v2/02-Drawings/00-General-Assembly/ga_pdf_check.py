@@ -60,9 +60,15 @@ def _streams(data):
             yield raw
 
 
+TOKEN = re.compile(rb"/[^\s/<>\[\]()%]+|<[0-9A-Fa-f\s]*>|\((?:\\.|[^\\)])*\)|[-+]?(?:\d+\.?\d*|\.\d+)|[A-Za-z*'\"]+|\[|\]")
+PAINT = {b"S", b"s", b"f", b"F", b"f*", b"B", b"B*", b"b", b"b*"}
+
+
 def layers(data):
     """{layer name: [path, ...]}, each path a list of (op, (x, y)) in sheet mm, op m, l or c
-    (for c, the curve's end point), from every drawn path inside the layer's marked content."""
+    (for c, the curve's end point): every PAINTED path (stroked or filled; clip-only paths
+    are left out) inside a layer's marked content. A page's content streams run as one,
+    so the scale (cm) set in one stream holds in the next (Fusion sets 0.06 once)."""
     objs = _objects(data)
     names = {}
     for num, body in objs.items():
@@ -76,24 +82,67 @@ def layers(data):
             if int(num) in names:
                 res[key.decode()] = names[int(num)]
     out = {}
+    k = PT_MM                                     # pt to mm until a cm says otherwise
     for s in _streams(data):
-        cm = re.search(rb"([-\d.]+) 0 0 ([-\d.]+) 0 0 cm", s)
-        k = float(cm.group(1)) * PT_MM if cm else PT_MM
-        for key, body in re.findall(rb"/OC\s*/(\w+)\s+BDC(.*?)EMC", s, re.S):
-            name = res.get(key.decode(), key.decode())
-            paths, cur = out.setdefault(name, []), None
-            for tok in re.finditer(rb"((?:[-\d.]+\s+){2,6})([mlc])\b", body):
-                nums = [float(v) for v in tok.group(1).split()]
-                op = tok.group(2).decode()
-                need = {"m": 2, "l": 2, "c": 6}[op]
-                if len(nums) < need:
-                    continue
-                p = (nums[-2] * k, nums[-1] * k)
-                if op == "m":
-                    cur = [("m", p)]
-                    paths.append(cur)
-                elif cur is not None:
-                    cur.append((op, p))
+        stack, ks, ops, path = [], [], [], None
+        for tok in TOKEN.findall(s):
+            if tok[:1].isdigit() or tok[:1] in b"-+." or tok[:1] in b"/<([":
+                ops.append(tok)
+                continue
+            if tok == b"]":
+                continue
+            nums = []
+            for o in ops:
+                try:
+                    nums.append(float(o))
+                except ValueError:
+                    pass
+            if tok == b"q":
+                ks.append(k)
+            elif tok == b"Q":
+                k = ks.pop() if ks else k
+            elif tok == b"cm" and len(nums) >= 6:
+                k = k * nums[-6] if abs(nums[-6] - nums[-3]) < 1e-9 else k
+            elif tok == b"BDC":
+                tag = ops[-2] if len(ops) >= 2 else b""
+                stack.append(res.get(ops[-1][1:].decode(), ops[-1][1:].decode()) if tag == b"/OC" and ops else None)
+            elif tok == b"BMC":
+                stack.append(None)
+            elif tok == b"EMC":
+                if stack:
+                    stack.pop()
+            elif tok == b"m" and len(nums) >= 2:
+                path = (path or []) + [("m", (nums[-2] * k, nums[-1] * k))]
+            elif tok == b"l" and len(nums) >= 2 and path is not None:
+                path.append(("l", (nums[-2] * k, nums[-1] * k)))
+            elif tok == b"c" and len(nums) >= 6 and path is not None:
+                path.append(("c", (nums[-2] * k, nums[-1] * k)))
+            elif tok == b"re" and len(nums) >= 4:
+                x, y, w, h = (v * k for v in nums[-4:])
+                path = (path or []) + [("m", (x, y)), ("l", (x + w, y)), ("l", (x + w, y + h)),
+                                       ("l", (x, y + h)), ("l", (x, y))]
+            elif tok == b"h" and path:
+                firsts = [p for op, p in path if op == "m"]
+                if firsts:
+                    path.append(("l", firsts[-1]))
+            elif tok in PAINT:
+                if path and stack and stack[-1] is not None:
+                    if tok in (b"s", b"b", b"b*"):
+                        firsts = [p for op, p in path if op == "m"]
+                        if firsts:
+                            path.append(("l", firsts[-1]))
+                    # a path with several m's is several sub-paths
+                    cur = None
+                    for op, p in path:
+                        if op == "m":
+                            cur = [("m", p)]
+                            out.setdefault(stack[-1], []).append(cur)
+                        elif cur is not None:
+                            cur.append((op, p))
+                path = None
+            elif tok == b"n":
+                path = None                       # a clip path, never painted
+            ops = []
     return out
 
 
@@ -146,6 +195,22 @@ def merge_collinear(segs, tol=TOL):
     return segs
 
 
+def dedupe(segs, tol=TOL):
+    """Each segment once: Fusion's PDF export draws a 2-point line back and forth over
+    itself (m B l A l B l A), the same line on paper."""
+    out = []
+    for a, b in segs:
+        if not any((math.dist(a, c) <= tol and math.dist(b, d) <= tol) or
+                   (math.dist(a, d) <= tol and math.dist(b, c) <= tol) for c, d in out):
+            out.append((a, b))
+    return out
+
+
+def drawn_lines(paths):
+    """The straight lines a layer really shows: pieces deduplicated, then joined."""
+    return merge_collinear(dedupe(segments(paths)))
+
+
 def same_segments(got, want, tol=TOL):
     """True when the two lists hold the same straight segments (either direction)."""
     if len(got) != len(want):
@@ -170,10 +235,10 @@ def chain_segments(chains):
 # a form is taken when all its cases come out exactly as asked: five separate lines, a
 # hatch of about 40 lines in one sketch, and tiny lines in a 0.44 mm strip (the B-B walls)
 MODES = [(f, ("%s small x5" % f, "%s many" % f, "%s thin" % f)) for f in ("plain", "mid", "dup-first", "dup-last")] \
-    + [("own-sketch", ("own sketch x5",))]
+    + [("chain", ("chain zigzag", "chain strip", "5pt closed")), ("own-sketch", ("own sketch x5",))]
 
 
-USABLE = ("plain", "mid", "dup-first", "dup-last")       # forms a hatch (thousands of lines) can use
+USABLE = ("plain", "mid", "dup-first", "dup-last", "chain")   # forms a hatch (thousands of lines) can use
 
 
 def probe(pdf_path, out_path):
@@ -191,8 +256,8 @@ def probe(pdf_path, out_path):
     for label, chains, _own in spec["cases"]:
         paths = [p for name, ps in lay.items() if name == "PROBE " + label or
                  name.startswith("PROBE " + label + " ") for p in ps]
-        got = merge_collinear(segments(paths))
-        want = merge_collinear(chain_segments(chains))
+        got = drawn_lines(paths)
+        want = merge_collinear(dedupe(chain_segments(chains)))
         ok[label] = same_segments(got, want)
         drawn[label] = [[[round(v, 2) for v in a], [round(v, 2) for v in b]] for a, b in got]
         print("probe %-22s %s: %d segment(s) drawn, %d asked" % (label, "OK  " if ok[label] else "DIFF",
@@ -204,20 +269,41 @@ def probe(pdf_path, out_path):
     return mode
 
 
-def check_hatch(pdf_path, layer, min_segments=1, angles=(45.0, 135.0)):
-    """Problems with the hatch layer: too few lines, or lines not at the hatch angles."""
+def check_hatch(pdf_path, layer, min_segments=1):
+    """Problems with the hatch of a section sheet. Its layers are every sketch whose name
+    starts with `layer` (one sketch per chain). With the record ga_section_sheet.py writes
+    next to the PDF (NAME.hatch.json: the chains asked, per sketch), each layer must hold
+    exactly the lines asked; without one, only the count is checked."""
     with open(pdf_path, "rb") as fh:
         lay = layers(fh.read())
-    paths = lay.get(layer, [])
-    segs = segments(paths)              # each piece keeps its line's angle; no need to join them
-    bad = [s for s in segs if min(abs(((math.degrees(math.atan2(s[1][1] - s[0][1], s[1][0] - s[0][0])) % 180)
-                                       - a)) for a in angles) > 1.0 and math.dist(*s) > 0.3]
-    problems = []
-    if len(segs) < min_segments:
-        problems.append("%d hatch lines in %r, fewer than %d" % (len(segs), layer, min_segments))
-    if bad:
-        problems.append("%d of %d lines are not at %s degrees" % (len(bad), len(segs), angles))
-    print("hatch %r: %d lines, %d off-angle; layers: %s" % (layer, len(segs), len(bad), sorted(lay)))
+    names = sorted(n for n in lay if n == layer or n.startswith(layer + " "))
+    record_path = pdf_path[:-4] + ".hatch.json" if pdf_path.lower().endswith(".pdf") else None
+    problems, total = [], 0
+    record = None
+    if record_path and os.path.exists(record_path):
+        with open(record_path, encoding="utf-8") as fh:
+            record = json.load(fh).get("layers", {})
+    for n in names:
+        total += len(dedupe(segments(lay[n])))
+    if total < min_segments:
+        problems.append("%d hatch lines in %d layer(s) named %r, fewer than %d" % (total, len(names), layer, min_segments))
+    if record is not None:
+        bad = []
+        for n, chs in sorted(record.items()):
+            want = merge_collinear(dedupe(chain_segments(chs))) if len(chain_segments(chs)) < 600 \
+                else dedupe(chain_segments(chs))
+            got = drawn_lines(lay.get(n, [])) if len(want) < 600 else dedupe(segments(lay.get(n, [])))
+            if not same_segments(got, want):
+                bad.append("%s (%d drawn, %d asked)" % (n, len(got), len(want)))
+        missing = [n for n in record if n not in lay]
+        if bad:
+            problems.append("%d of %d hatch layers differ from what was asked: %s" % (
+                len(bad), len(record), "; ".join(bad[:6])))
+        if missing:
+            problems.append("%d asked layers are not in the PDF" % len(missing))
+    print("hatch %r: %d layer(s), %d lines%s" % (layer, len(names), total,
+                                                  "; checked line by line against %s" % os.path.basename(record_path)
+                                                  if record is not None else "; no record, count only"))
     return problems
 
 

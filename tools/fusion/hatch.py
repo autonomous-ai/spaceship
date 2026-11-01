@@ -20,13 +20,15 @@ import math
 # preview API: on 2026-10-31 a closed 5-point chain lost a corner and 2-point lines
 # came out as scraps in the PDF). "own-sketch" is the plain form, one sketch per
 # segment; "none" means no form worked, so nothing is drawn.
-LINE_MODES = ("plain", "mid", "dup-first", "dup-last", "own-sketch")
+LINE_MODES = ("plain", "mid", "dup-first", "dup-last", "chain", "own-sketch")
 
 # ISO 128-50: a cut face too thin to hatch is shown solid; at 1:20 a skin, frame or
 # cassette layer is 0.15 to 2 mm wide on the sheet. Narrower than THIN_MM on the
-# sheet: lines FILL_MM apart (about solid at the 0.35 mm line); else HATCH_MM apart.
+# sheet: lines FILL_MM apart (about solid at the 0.35 mm line) that run ALONG the
+# strip (Fusion's PDF export merges lines under about 1 mm into wrong paths, live
+# probe 2026-11-01, so no short 45 degree strokes there); else HATCH_MM apart at 45.
 THIN_MM = 2.0
-FILL_MM = 0.5
+FILL_MM = 0.3
 HATCH_MM = 2.0
 
 
@@ -73,7 +75,7 @@ def hatch_segments(loops, spacing=3.0, angle_deg=45.0, phase=0.0):
 
 def chain_for(a, b, mode="plain"):
     """Points for one Lines.add call drawing the segment a-b in the given form."""
-    if mode in ("plain", "own-sketch"):
+    if mode in ("plain", "own-sketch", "chain"):
         return [a, b]
     if mode == "mid":
         return [a, ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0), b]
@@ -123,3 +125,79 @@ def face_width(loops):
 def spacing_for(loops, thin=THIN_MM, fill=FILL_MM, hatch=HATCH_MM):
     """FILL_MM for a face thinner than THIN_MM on the sheet, else HATCH_MM."""
     return fill if face_width(loops) < thin else hatch
+
+
+def long_edge_angle(loops):
+    """The angle (degrees) of the longest edge of the face's outer loop: the direction
+    a thin strip runs in."""
+    if loops and isinstance(loops[0][0], (int, float)):
+        loops = [loops]
+    outer = max(loops, key=lambda lp: abs(sum(lp[i][0] * lp[(i + 1) % len(lp)][1] -
+                                                lp[(i + 1) % len(lp)][0] * lp[i][1] for i in range(len(lp)))))
+    best, angle = -1.0, 0.0
+    for i in range(len(outer)):
+        p, q = outer[i], outer[(i + 1) % len(outer)]
+        d = math.dist(p, q)
+        if d > best:
+            best, angle = d, math.degrees(math.atan2(q[1] - p[1], q[0] - p[0])) % 180.0
+    return angle
+
+
+def fill_lines(loops, index=0, thin=THIN_MM, fill=FILL_MM, hatch=HATCH_MM):
+    """The lines for one cut face: a thin face gets lines FILL_MM apart along its
+    long edge; a wider one 45 or 135 degree hatch (alternating by index)."""
+    if face_width(loops) < thin:
+        return hatch_segments(loops, spacing=fill, angle_deg=long_edge_angle(loops), phase=fill / 2.0)
+    return hatch_segments(loops, spacing=hatch, angle_deg=45.0 if index % 2 == 0 else 135.0)
+
+
+def _inside(loops, x, y):
+    if loops and isinstance(loops[0][0], (int, float)):
+        loops = [loops]
+    c = False
+    for lp in loops:
+        for i in range(len(lp)):
+            (x1, y1), (x2, y2) = lp[i], lp[(i + 1) % len(lp)]
+            if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+                c = not c
+    return c
+
+
+def _on_outline(loops, x, y, tol=0.02):
+    if loops and isinstance(loops[0][0], (int, float)):
+        loops = [loops]
+    for lp in loops:
+        for i in range(len(lp)):
+            (x1, y1), (x2, y2) = lp[i], lp[(i + 1) % len(lp)]
+            dx, dy = x2 - x1, y2 - y1
+            L2 = dx * dx + dy * dy
+            t = 0.0 if L2 == 0 else max(0.0, min(1.0, ((x - x1) * dx + (y - y1) * dy) / L2))
+            if math.dist((x, y), (x1 + t * dx, y1 + t * dy)) <= tol:
+                return True
+    return False
+
+
+def chains(segments, loops, max_link=None):
+    """The hatch segments of one face joined into as few point chains as possible, back
+    and forth (each next line reversed), so one Lines.add call draws many lines: Fusion's
+    PDF export keeps one chain per sketch exactly, but garbles a sketch of many lines
+    (live probe 2026-11-01). A link between two lines must stay inside the face (or on
+    its outline) and be no longer than max_link (default: 3 x the line spacing seen);
+    otherwise a new chain starts. Returns [[point, ...], ...]."""
+    if not segments:
+        return []
+    if max_link is None:
+        gaps = [math.dist(segments[i][0], segments[i + 1][0]) for i in range(len(segments) - 1)]
+        max_link = 3.0 * (min(gaps) if gaps else 1.0) + 0.5
+    out, cur = [], [segments[0][0], segments[0][1]]
+    for a, b in segments[1:]:
+        end = cur[-1]
+        first, second = (a, b) if math.dist(end, a) <= math.dist(end, b) else (b, a)
+        mid = ((end[0] + first[0]) / 2.0, (end[1] + first[1]) / 2.0)
+        if math.dist(end, first) <= max_link and (_inside(loops, *mid) or _on_outline(loops, *mid)):
+            cur += [first, second]
+        else:
+            out.append(cur)
+            cur = [first, second]
+    out.append(cur)
+    return out

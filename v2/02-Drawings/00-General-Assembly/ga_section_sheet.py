@@ -8,22 +8,27 @@ The drawing is of the cut copy made by ga_section_design.py, so its base view
 from the viewer's side shows the cut faces. This script places that view at
 1:20, then hatches every cut face: it opens the section design, finds the
 planar faces lying on the section plane, maps their loops onto the sheet
-through the view's extent, and draws lines in a sheet sketch
+through the view's extent, and draws lines in sheet sketches
 (tools/fusion/hatch.py, pasted in; the API has no hatch). ISO 128-50: a face
 narrower than 2 mm on the sheet (a skin, frame or cassette layer at 1:20) is
-filled with lines 0.5 mm apart, so it reads solid; wider faces get 45 degree
-lines 2 mm apart. Adjacent bodies alternate 45 and 135 degrees.
+filled with lines 0.3 mm apart running along the strip, so it reads solid;
+wider faces get 45 degree lines 2 mm apart, adjacent bodies alternating 45 and
+135 degrees.
 
-Lines.add is a preview API, and what it keeps can differ from what was asked
-(2026-10-31: 2-point lines came out as scraps in the PDF). So the session first
-probes it (ga_pdf_check.py probe) and passes the form that works:
-    --arg line_mode_file=PROBE.json
-With no working form, the view is placed and the hatch is left out (a GAP
-line says so). Check the export with ga_pdf_check.py hatch. A sheet that is
+Lines.add is a preview API, and Fusion's PDF export doesn't always keep what
+it holds (live probe 2026-11-01: a sketch of many lines loses its first point,
+lines under about 1 mm are merged into wrong paths; one chain per sketch is
+kept exactly). So the session first probes it (ga_pdf_check.py probe) and
+passes the form that works: --arg line_mode_file=PROBE.json. In the "chain"
+form each face's lines are joined into chains, one sketch per chain. With no
+working form, the view is placed and the hatch is left out (a GAP line says
+so). The chains asked are written to NAME.hatch.json next to the export, and
+ga_pdf_check.py hatch checks the PDF line by line against it. A sheet that is
 hatched already is refused: redo it from the drawing's first version
 (ga_promote.py), never by deleting (a delete then save crashed Fusion).
 """
 
+import json
 import os
 import time
 
@@ -48,6 +53,7 @@ _ns = {}
 exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
 hatch_segments = _ns["hatch_segments"]
 chain_for, read_line_mode, spacing_for = _ns["chain_for"], _ns["read_line_mode"], _ns["spacing_for"]
+fill_lines, hatch_chains = _ns["fill_lines"], _ns["chains"]
 
 
 def find_in_folder(folder, name):
@@ -196,24 +202,49 @@ def run(_context):
             return (hi[k] - p[k]) if neg else (p[k] - lo[k])
         return (ex[0] + coord(sx) * SCALE, ex[1] + coord(sy) * SCALE)
 
-    sk = sheet.sketches.add("HATCH - SECTION %s" % sec)
-    n_seg, failed, first, filled = 0, 0, None, 0
-    for i, (body, body_loops) in enumerate(loops):
-        poly = [[to_sheet(p) for p in lp] for lp in body_loops]
-        gap = spacing_for(poly)          # ISO 128-50: thin faces filled, the rest hatched
-        filled += gap < 1.0
-        for a, b in hatch_segments(poly, spacing=gap, angle_deg=45.0 if i % 2 == 0 else 135.0):
-            first = first or (a, b)
-            if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:   # None when it fails
-                failed += 1
-            n_seg += 1
-            if n_seg % 250 == 0:
-                adsk.doEvents()
+    base = "HATCH - SECTION %s" % sec
+    record, n_seg, n_sk, failed, filled = {}, 0, 0, 0, 0
+    if mode == "chain":
+        # Fusion's PDF export keeps one chain per sketch exactly, but garbles a sketch of
+        # many lines (live probe 2026-11-01): each face's lines joined into chains, each
+        # chain in its own sketch; thin faces filled with long lines along the strip
+        for i, (body, body_loops) in enumerate(loops):
+            poly = [[to_sheet(p) for p in lp] for lp in body_loops]
+            filled += spacing_for(poly) < 1.0
+            segs = fill_lines(poly, i)
+            n_seg += len(segs)
+            for ch in hatch_chains(segs, poly):
+                n_sk += 1
+                name = "%s %03d" % (base, n_sk)
+                sk = sheet.sketches.add(name)
+                if sk.lines.add([p2(*q) for q in ch]) is None:      # None when it fails
+                    failed += 1
+                record[name] = [[list(q) for q in ch]]
+                if n_sk % 50 == 0:
+                    adsk.doEvents()
+    else:
+        sk = sheet.sketches.add(base)
+        n_sk = 1
+        for i, (body, body_loops) in enumerate(loops):
+            poly = [[to_sheet(p) for p in lp] for lp in body_loops]
+            filled += spacing_for(poly) < 1.0
+            for a, b in fill_lines(poly, i):
+                if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:   # None when it fails
+                    failed += 1
+                record.setdefault(base, []).append([list(q) for q in chain_for(a, b, mode)])
+                n_seg += 1
+                if n_seg % 250 == 0:
+                    adsk.doEvents()
     adsk.doEvents()
-    print("section %s at %.2f mm: %d cut bodies (%d thin, filled), %d hatch lines asked in the %r form, "
-          "%d failed; the sketch holds %d; first %s; view extent %s" % (
-              sec, at, len(loops), filled, n_seg, mode, failed, sk.lines.count,
-              tuple(tuple(round(v, 1) for v in pt) for pt in first) if first else None,
-              tuple(round(v, 1) for v in ex)))
-    if failed or sk.lines.count < n_seg:
-        raise RuntimeError("only %d of %d hatch lines were made; nothing kept" % (sk.lines.count, n_seg))
+    print("section %s at %.2f mm: %d cut faces (%d thin, filled along), %d hatch lines in %d sketch(es), "
+          "the %r form, %d failed; view extent %s" % (
+              sec, at, len(loops), filled, n_seg, n_sk, mode, failed, tuple(round(v, 1) for v in ex)))
+    if failed:
+        raise RuntimeError("%d hatch sketch line(s) weren't made; nothing kept" % failed)
+    # what was asked, per sketch, for the line-by-line check of the export (ga_pdf_check.py
+    # hatch reads NAME.hatch.json next to NAME.pdf)
+    out = os.path.join(ARGS.get("repo_root", "."), "v2", "02-Drawings", "00-General-Assembly",
+                       "%s.hatch.json" % doc.name)
+    with open(out, "w", encoding="utf-8") as fh:
+        json.dump({"drawing": doc.name, "form": mode, "layers": record}, fh)
+    print("hatch record: %s (%d sketch(es))" % (os.path.basename(out), len(record)))
