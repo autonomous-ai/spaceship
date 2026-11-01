@@ -14,6 +14,7 @@ Before any design, CAD, drawing or BOM work, read `v2/00-Control/v2-build-plan.p
 
 These are the ones that bite most often:
 
+- Do it right; speed is not important (the owner, 2026-11-01). Never skip a check to go faster, and prove a method on a sample before using it at scale.
 - Use mm everywhere. 3D uses X, Y and Z; 2D views and hole tables use X and Y only. The one exception: Fusion's STEP export always writes cm. Keep the file as Fusion wrote it, with its declared unit; don't convert it (decision D-13).
 - Every number carries a status: confirmed, source, calculation, assumption or unverified.
 - Don't edit `sources/`. Don't contact suppliers or order anything.
