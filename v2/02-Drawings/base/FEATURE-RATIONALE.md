@@ -25,7 +25,9 @@ Statuses: **confirmed** (PM decision), **source** (named document), **calculatio
 
 The joint hardware (rivnut 838003, stop washer 831002, spigot 831001) is the joints register's (J-BASE-01, section 3.4); this file covers where BASE puts it.
 
-## Band tubes (111101, 111103)
+## Band tubes (111101, 111102, 111103)
+
+The right side band 111102 is 111101's mirror (FB-21): its R1 holes sit at the same Y as L1's, at +X.
 
 | ID | Feature | Function | Size, position | Constraint behind it | Status |
 |---|---|---|---|---|---|
@@ -41,6 +43,7 @@ The joint hardware (rivnut 838003, stop washer 831002, spigot 831001) is the joi
 | FB-10 | Stud bolt holes Ø7.0 in the side band's inner wall, at the back | The back key's 2 hook stud bolts 838001 pass through the inner wall into the key, which stands against the wall from inside; their heads, 1.8 off the wall's outside face, hold the back band's end plate (FB-14) | 2, at Y 830 (the back band's centre line), Z 37.5 and 71.5 (`corner-keys.csv`) | D-129: the side bands carry the back keys, so the back band can drop in between them; Ø7.0 clears the M6 bolt (joints register FR-15) | source; PROPOSED |
 | FB-11 | Back key fixing holes Ø7.0, side band bottom wall | The factory screws (838010, M6 × 12 flanged button heads, no washer) that hold the back key in the side band's end (D-129) | 2 per side band: X ∓1231 (10.5 from the key's back face at ∓1241.5), Y 823 and 837 (`corner-keys.csv`); no glide in the band's last 70 mm (its back glide is 150 from the back face) | Joints register J-BASE-02, D-129. F-018: the heads hang 3.3 under the band, so the glides never go below 8.5 (FB-08) | source; PROPOSED |
 | FB-12 | Front key fixing holes Ø7.0, left band bottom wall | The left band's front end carries the front corner key 111212 (the register's carrier), fitted at the factory like the back keys | 2: X −1237 and −1223, Y −641.53 (10.5 from the key's back face, which is 30 behind the mitre face's centre) | Joints register #127, `corner-keys.csv` (the 30 mm key keeps them 2 diameters from the mitred end, the Lead's ruling of 2026-11-01: no edge exception, the screws carry the joint's pull); the key itself comes with the front pieces (P02) | source; PROPOSED |
+| FB-17 | Front key fixing holes Ø7.0, right band bottom wall | The right band's front end carries the front corner key 111213 (the register's carrier), fitted at the factory like the back keys | 2: X 1223 and 1237, Y −643.59 (10.5 from the key's back face, which is 30 behind the mitre face's centre) | Joints register #127, `corner-keys.csv`; the key's keyhole piece is the intake support rail (P02 batch 3) | source; PROPOSED |
 | FB-13 | Back band end plates, welded, 1.5 | Close both ends of the back band; it is lowered straight down between the side bands, so it can't slide onto studs at both ends and takes them in open slots instead of keyholes (D-129) | 1.5 thick at X ∓1210…∓1208.5; 2420 over both plates (tube 2417) | The band's length is the gap between the side bands; it ships at 2420 on pallet 2's 2438 deck (D-129) | source |
 | FB-14 | End plate slot, open at the bottom edge | Takes the side band's 2 key studs as the band comes down: the upper shank first, then the lower; locates the corner across the band to ±0.25 (Ø5.97 shank in 6.5) | On Y 830: 12 wide at the bottom edge, narrowing to 6.5 over its bottom 6, then 6.5 wide up to its round closed end centred at Z 73.5, 2 above the upper stud | A lowered plate meets the studs with its bottom edge, so the slot opens downward (BASE's fit check, joints register FR-15); the band rests on its glides, never on the studs | source |
 | FB-15 | Head notches in the bottom wall | The stud heads (Ø10 × 6, 1.8 off the side band's face) end up inside the band's tube, so on the way down they come up through these | 12 wide × 9 deep from each end, on Y 830 | The head's far face is 1.8 + 6 = 7.8 from the side band's face; 1 clear each side of the Ø10 head (joints register FR-15) | source |
@@ -77,11 +80,16 @@ The key is the Joints Engineer's part (PM ruling 2026-11-01: model, STEP and the
 | FK-02 | Hook stud holes, M6 tapped through the stud face | Take the stud bolts 838001 through the side band's inner wall (FB-10), set at the factory with their heads 1.8 off the wall's outside face (the 1.5 end plate + 0.3), threadlocked | 2 on the back band's centre line, 26 and 60 above the key's bottom (pod Z 37.5 and 71.5) | Tapped through; the bolt engages 16 − 1.5 − 1.8 = 12.7, over 2 diameters (joints register J-BASE-02, D-129) | confirmed (thread), source (positions) |
 | FK-03 | Fixing holes, M6 with 15 of full thread, in the bottom | The 2 factory screws from below (FB-11) | 10.5 from the back face and from each side face (7.0 either side of the centre line); tap drill Ø5.0 × 18 | The M6 × 12 button head engages 10.5 (12 − 1.5 wall) in the 15 of thread (PM ruling on F-017; joints register PR #99) | confirmed (thread); positions PROPOSED |
 
-## Right band (111102), FR1 (111106) and its sill (111301): P02 batch 1
+## Right band (111102): P02 batch 1
 
 | ID | Feature | Function | Size, position | Constraint behind it | Status |
 |---|---|---|---|---|---|
 | FB-21 | 111102 as the mirror of 111101 | The right side band under R1, with the same J-BASE-01 holes (from the skeleton's `base_side_y0`), glides, and the back key's stud bolt and fixing holes at BR (D-129) | Front end mitred to the intake's facet piece (DR's facet, `dr_xc`, `dr_yc`): outer corner (1250, −672), inner (1210, −654.17) | The look (Lead ruling 3): the band follows DR's facet; front key 111213's fixing holes at Y −643.59 (joints register #127) | calculation; source |
+
+## FR1 (111106) and its sill (111301): P02 batch 1
+
+| ID | Feature | Function | Size, position | Constraint behind it | Status |
+|---|---|---|---|---|---|
 | FB-22 | FR1's length X 218.5…915 | The band under the fixed glass, from the door opening to the intake | `x_fr_joint` = pod_w/2 − dr_xc − mesh_front − fr_stub, 915 | The joint left of the mesh so the intake's key sits behind no mesh (PM rulings 2026-11-01: X 920, then X 915 for the 30 mm key) | confirmed |
 | FB-23 | FR1's end plate with 2 keyholes | FR1 is the keyhole piece of the inline joint: it goes on last, down onto the intake's key studs | The tube closed at X 915 by its 1.5 wall (welded plate in the shop); Ø12 entries 10 below the seats, 6.5 slots up to them, seats at Z 37.5 and 71.5 on Y −830 | Joints register J-BASE-02 (keyhole fix, #127) | source |
 | FB-24 | FR1's glides, no key holes on its top | 2 glides with doublers, 75 in from each end | Nut holes Ø13 at X 293.5 and 840 | FR1's top is in view in front of the glass, so its glides turn by their base (spanner flats on the glide, HOLD) | assumption |
