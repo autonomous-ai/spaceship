@@ -51,11 +51,13 @@ def fmt(v, nd=2):
 
 
 class _Smaller(Exception):
-    """The sheet's row of removed sections and flat pattern ran off the sheet at this scale: draw again smaller."""
+    """The sheet's row of removed sections and flat pattern (or a view square to an angled face, `what`) ran off the
+    sheet at this scale: draw again smaller."""
 
-    def __init__(self, scale):
+    def __init__(self, scale, what=None):
         Exception.__init__(self, scale)
         self.scale = scale
+        self.what = what
 
 
 class NotDrawable(Exception):
@@ -246,6 +248,9 @@ FACE_WORDS = {"-Z": "bottom face", "+Z": "top face", "-Y": "front face", "+Y": "
 VIEW_WORDS = {"principal": "PRINCIPAL VIEW", "above": "VIEW FROM ABOVE", "below": "VIEW FROM BELOW",
               "from_left": "VIEW FROM THE LEFT", "from_right": "VIEW FROM THE RIGHT", "rear": "REAR VIEW"}
 POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right": (-1, 0), "rear": (2, 0)}
+# a view within 5° of showing a face edge on can carry the arrow of the view square to that face, when none shows it
+# exactly (AIR's 611703: its facet 4° off every view of a member drawn along its own axis)
+EDGE_ON_NEAR = math.sin(math.radians(5.0))
 
 
 class Part:
@@ -1181,6 +1186,21 @@ def plan_views(part, spec):
             g.view = g.vname
             if g.vname not in pl.aux:
                 pl.plain.add(g.vname)
+    # a view square to an angled face needs a drawn view that shows that face edge on (or within EDGE_ON_NEAR), for its
+    # arrow (ISO 128-30): where no planned view does exactly, a related view that does is added; where none does, and
+    # no planned view is within EDGE_ON_NEAR, the related view nearest to it (AIR's 611703: its only view is square to
+    # its main facet, and its related views are 3° to 4° off its view F's face)
+    for _nm, va in sorted(pl.aux.items()):
+        off = lambda nm: abs(vdot(rel[nm].n, va.n))
+        planned = [nm for nm in pl.plain if nm in rel]
+        if any(off(nm) < 1e-6 for nm in planned):
+            continue
+        cands = [nm for nm in ("above", "below", "from_left", "from_right", "rear") if off(nm) < EDGE_ON_NEAR]
+        exact = [nm for nm in cands if off(nm) < 1e-6]
+        if exact:
+            pl.plain.add(exact[0])
+        elif cands and not any(off(nm) < EDGE_ON_NEAR for nm in planned):
+            pl.plain.add(min(cands, key=off))
     for g in pl.groups:
         if not g.blocked:
             continue
@@ -1346,6 +1366,60 @@ def _trace(view, point, normal, ext):
             return None
         return (c[0] + d[0] * lo, c[1] + d[1] * lo), (c[0] + d[0] * hi, c[1] + d[1] * hi)
     return None
+
+
+def _row_top(views, pvd, main_bottom, O=None):
+    """The top of the row under the main views: under every view's title (the principal's title sits 28 under it, its
+    mapping up to three lines) and, when origin marks are drawn (O given), under every view's origin mark with its name
+    below it, with room over the row for the sections' hole callouts (AIR's 611703: O lies far off its added view from
+    the left, and that view's O2 sat on section E-E's title)."""
+    under = [vd_.box()[1] - (28.0 if vd_ is pvd else 10.0) - 4.2 - 3.4 * 2 for vd_ in views]
+    if O is not None:
+        under += [vd_.S(vd_.view.to2d(getattr(vd_, "origin3d", None) or O))[1] - 4.7 for vd_ in views]
+    return min(main_bottom - 34, min(under) - 12.0)
+
+
+def _row(items, rx0, ry, right_limit, scale):
+    """Where each view of the row under the main views goes (removed sections, views square to angled faces, details,
+    flat patterns; items as (kind, letter, w, h)), left to right, 80 apart: each one's top left corner, or None for a
+    detail with no room (its parent view keeps its tags). A view square to an angled face that runs past the row's end
+    starts a row of its own under it, when it fits there (AIR's 611703: view F after the two sections across its
+    folds); else the sheet is drawn again at the next smaller scale (_Smaller), naming the view, or the sections when
+    they already ran off the row (AIR's 611702: nine of them before its view N). A section or a flat pattern past the
+    row's end starts a row under it too, when it fits there with its title (611703 on #369's f3d59e0: its flat after
+    D-D and view E); else it stays, and the run-off check draws the sheet smaller. In a row under others, a view sits
+    58 under the views above it that it overlaps (their titles, then its own callouts), not under the row's tallest:
+    611703's flat fits under D-D, beside view E."""
+    out, rx, row_h = [], rx0, 0.0
+    above, cur = [], []         # the views placed in the rows above, and in this one: (x0, x1, bottom)
+
+    def top_at(x0, x1, level, over):
+        ys = [b - 58 for a0, a1, b in over if a0 < x1 + 40 and x0 - 40 < a1]
+        return min(ys) if ys else level
+
+    for kind, letter, w, h in items:
+        top = top_at(rx, rx + w, ry, above)
+        wrap = None             # True: an angled view past the end; False: a section or flat pattern past it
+        if kind in ("detail", "aux") and (rx + w + 40 > right_limit or top - h - 40 < 20):
+            if kind == "detail":
+                out.append(None)
+                continue
+            wrap = True
+        elif kind != "detail" and rx > rx0 and rx + w > right_limit:
+            wrap = False
+        if wrap is not None:
+            below = ry - row_h - 58
+            t2 = top_at(rx0, rx0 + w, below, above + cur)
+            if rx > rx0 and rx0 + w + 40 <= right_limit and t2 - h - 40 >= 20:
+                above, cur = above + cur, []
+                rx, ry, row_h, top = rx0, below, 0.0, t2
+            elif wrap:
+                raise _Smaller(scale, what=None if rx > right_limit else "view %s (square to an angled face)" % letter)
+        out.append((rx, top))
+        cur.append((rx, rx + w, top - h))
+        rx += w + 80
+        row_h = max(row_h, h)
+    return out
 
 
 def draw(part, spec, out_path, today=None):
@@ -1659,22 +1733,16 @@ def draw(part, spec, out_path, today=None):
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             ry = ry - h - 58
     elif place:
-        # under every view's title too (the principal's title sits 28 under it, its mapping up to three lines), with
-        # room over the row for the sections' hole callouts
-        under_titles = min([vd_.box()[1] - (28.0 if vd_ is pvd else 10.0) - 4.2 - 3.4 * 2
-                            for vd_ in list(vds.values()) + secs])
-        rx, ry = 20 + GAP_PL + 14, min(main_bottom - 34, under_titles - 12.0)
         right_limit = W - 10 - pl.table_w - 4 - 10
-        for vd in place:
-            w, h = vd.size()
-            if vd.kind in ("detail", "aux") and (rx + w + 40 > right_limit or ry - h - 40 < 20):
-                if vd.kind == "aux":
-                    raise NotDrawable("%s: no room on the sheet for view %s (square to an angled face)" % (
-                        part.pn, vd.letter))
+        tops = _row([(vd.kind, getattr(vd, "letter", None)) + tuple(vd.size()) for vd in place], 20 + GAP_PL + 14,
+                    _row_top(list(vds.values()) + secs, pvd, main_bottom, O if part.features else None), right_limit,
+                    scale)
+        for vd, top in zip(place, tops):
+            if top is None:
                 vd.dropped = True       # no room: the parent view keeps its tags
                 continue
-            vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
-            rx += w + 80
+            h = vd.size()[1]
+            vd.off = (top[0] - vd.scale * vd.extent[0], top[1] - h - vd.scale * vd.extent[1])
     # the removed sections and the flat pattern stay on the sheet: the scale was chosen for the main views alone, so
     # where this row runs off the sheet the views are drawn again at the next smaller scale (make retries)
     right_edge = W - 10 - pl.table_w - 4 - 10
@@ -2412,8 +2480,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             if avd is None:
                 continue
             n3 = avd.view.n
-            hosts = [vds[h] for h in ("principal", "above", "below", "from_left", "from_right", "rear")
-                     if h in vds and abs(vdot(n3, vds[h].view.n)) < 1e-6]
+            drawn = [vds[h] for h in ("principal", "above", "below", "from_left", "from_right", "rear") if h in vds]
+            hosts = [v for v in drawn if abs(vdot(n3, v.view.n)) < 1e-6] or \
+                sorted((v for v in drawn if abs(vdot(n3, v.view.n)) < EDGE_ON_NEAR),
+                       key=lambda v: abs(vdot(n3, v.view.n)))
             if not hosts:
                 raise NotDrawable("%s: no view shows the angled face edge on, for view %s's arrow" % (
                     part.pn, avd.letter))
@@ -3295,7 +3365,8 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
         except _Smaller as e:
             smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
             if not smaller:
-                raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
+                raise NotDrawable("%s: no room on the sheet for %s at any scale" % (
+                    pn, e.what or "its sections and flat pattern"))
             spec = dict(spec, _max_scale=smaller[0])
     spec = dict(spec)
     spec["_scale"] = scale
