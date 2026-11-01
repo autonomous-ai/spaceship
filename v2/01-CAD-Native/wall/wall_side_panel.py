@@ -1351,10 +1351,12 @@ PLATES_BUILT = {}
 
 def plate_part(design, frame, key, length):
     """One component per mitre plate (D-120), in the frame (welded into it): Joints' STEP when it is in the repo,
-    else the plain 2.0 box that the Joints Engineer says it matches (2026-11-01), built about the joints README's
-    origin and axes: the origin at the plate's corner on the frame's outer corner, on the skin-side face, on the
-    plate's mid-plane; +X along the mitre (its length), +Y across the frame (tube_d), Z the thickness (+-plate_t/2).
-    Returns (component, body, the reference point at its origin)."""
+    else a plain 2.0 box over the full mitre (a stand-in only), built about the joints README's origin and axes: the
+    origin at the frame's outer corner, on the skin-side face, on the plate's mid-plane; +X along the mitre toward
+    the inner corner, +Y across the frame (tube_d), Z the thickness (+-plate_t/2). Joints' blanks are a little
+    shorter than the mitre so their square edges sit about 0.5 inside the frame's faces (the Lead, 2026-11-01): each
+    starts along +X from the origin (1.75, 3.15 for 831008) and ends at the inner corner; mitre_plates reads each
+    blank's own extents. Returns (component, body, the joint origin at the README origin)."""
     if key in PLATES_BUILT:
         return PLATES_BUILT[key]
     pn = PARTS[key][0]
