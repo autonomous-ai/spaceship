@@ -712,6 +712,8 @@ with open(DRAWING_HELPER_PATH, encoding="utf-8") as _fh:
 # another name, and never calls close(True) (that opens a dialog).
 DOC_SCRIPT = '''import adsk.core, adsk.fusion, time
 ARGS = %(args)r
+DUP_WAIT_S = 30.0   # a design made a moment ago can be listed twice for ~10 s (CEILING 2026-11-01)
+DUP_PAUSE_S = 3.0
 
 def _folder(app, path):
     parts = [p for p in path.split("/") if p]
@@ -766,6 +768,18 @@ def run(_context):
                                    "nothing was opened or made (try again later): %%s" %% (
                                        name, ARGS["folder"], "an entry" if len(risky) == 1 else
                                        "%%d entries" %% len(risky), "; ".join(risky)))
+        if len(files) > 1:
+            # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the
+            # cloud lists it twice. Read the folder again for up to 30 s while it does;
+            # still twice after that: refused, as before
+            t_end = time.time() + DUP_WAIT_S
+            while len(files) > 1 and time.time() < t_end:
+                print("run_script: %%r is listed %%d times; reading the folder again in %%g s"
+                      %% (name, len(files), DUP_PAUSE_S))
+                adsk.doEvents()
+                time.sleep(DUP_PAUSE_S)
+                again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
+                files = again.get(name, files)
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
