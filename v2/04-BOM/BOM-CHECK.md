@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 300 part lines (123 made, 177 bought, 136 on HOLD) and 45 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 365.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 320 part lines (129 made, 191 bought, 145 on HOLD) and 46 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 362.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -39,13 +39,20 @@ Read from: this working tree.
 
 **BASE**
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
+- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
-- 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM: HOLD (HOLD)
-- 118001: the list still names it 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP'; the joints register's H-06 now names it 'BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
+- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 838008 HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 
 **WALL**
