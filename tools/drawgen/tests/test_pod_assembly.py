@@ -167,6 +167,113 @@ def test_readback_fails_a_changed_or_missing_step():
     assert any("_P01_AIR_STEP.step is in the pod's STEPs now but not on the sheet" in f for f in fails), fails
 
 
+def _box(x0, y0, z0, x1, y1, z1):
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.gp import gp_Pnt
+    return BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, z0), gp_Pnt(x1, y1, z1)).Shape()
+
+
+def test_a_free_stretch_ends_on_the_nearest_material_each_way():
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    import assembly as A
+    # an L profile on the left (like DL's stop 351103: its face at X -942 only 2 mm deep), a plate on the right,
+    # a farther plate behind it
+    ell = BRepAlgoAPI_Fuse(_box(-972, -690, 0, -942, -688, 100), _box(-972, -690, 0, -970, -670, 100)).Shape()
+    bodies = [P.Body("350000", ("350001", "351103"), ell), P.Body("360000", ("360002", "368003"),
+                                                                  _box(90, -705, 0, 92, -693, 100)),
+              P.Body("360000", ("360002", "361003"), _box(200, -705, 0, 210, -693, 100))]
+    ends = P.free_run(bodies, "x", (-373.5, -700, 50), {"y": (-850, -640)})
+    assert abs(ends["lo"][0] - (-942.0)) < 1e-6 and ends["lo"][1].chain[-1] == "351103"
+    assert abs(ends["hi"][0] - 90.0) < 1e-6 and ends["hi"][1].chain[-1] == "368003"
+    for e_ in (ends["lo"], ends["hi"]):             # the end's point is on its body, not in the L's open middle
+        assert A._in_or_on([e_[1].solid], e_[2]), e_[2]
+    spec = {"along": "x", "beam": {"y": (-850, -640)}, "ends": [["351103"], ["368003", "361003"]]}
+    m = P.measure(bodies, spec, (-373.5, -700, 50), 0.0)
+    assert m is not None and abs(m[0] - 1032.0) < 1e-6 and (m[3], m[4]) == ("351103", "368003")
+    assert P.measure(bodies, dict(spec, ends=[["351103"], ["361003"]]), (-373.5, -700, 50), 0.0) is None
+    try:                                            # a body across the start: no free stretch there
+        P.free_run(bodies, "x", (91.0, -700, 50), {"y": (-850, -640)})
+        raise AssertionError("a start inside a body was measured")
+    except ValueError as e:
+        assert "368003" in str(e)
+    up = P.measure([P.Body("510000", ("410000", "510301"), _box(-500, -500, 2316.5, 500, 500, 2350))],
+                   {"along": "z", "ends": [["floor"], ["510301"]]}, (0.0, 0.0, 1200.0), 0.0)
+    assert up is not None and abs(up[0] - 2316.5) < 1e-6 and up[3] == "floor" and abs(up[1][2]) < 1e-9
+
+
+def test_the_door_turns_outward_about_its_pivot_and_must_not_run_into_anything():
+    leaf = P.Body("360000", ("360001", "361001"), _box(0, -5, 0, 1000, 5, 2000))
+    hinge = P.Body("360000", ("360001", "368101"), _box(-20, -20, 300, 100, 20, 400))
+    wall = P.Body("210000", ("210101",), _box(-500, 100, 0, -400, 200, 2000))
+    spec = {"unit": "360001", "pivot": [-5.0, -10.0], "angle": 90, "left_out": ["368101"]}
+    out = P.turned_door([leaf, hinge, wall], spec)
+    assert len(out) == 2 and not any(b.named(["368101"]) for b in out)        # the hinge's HOLD space left out
+    b = [x for x in out if x.named(["361001"])][0].box
+    # (x, y) -> (px + (y - py), py - (x - px)): the leaf stands out in front, its inner face (y 5) now at X 10
+    assert all(abs(u - v) < 1e-6 for u, v in zip(b, (0.0, -1015.0, 0.0, 10.0, -15.0, 2000.0))), b
+    post = P.Body("350000", ("350001",), _box(0, -600, 0, 50, -500, 2000))     # in the open leaf's way
+    try:
+        P.turned_door([leaf, post], spec)
+        raise AssertionError("an open door through a post was drawn")
+    except NotDrawable as e:
+        assert "runs into 350001" in str(e)
+
+
+def test_the_mass_is_the_weight_rollups_pod():
+    path = os.path.join(TMP, "rollup.md")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("| Assembly | kg |\n|---|---:|\n| WALL | 82.7 |\n| **Pod as shipped** | **393.0** |\n")
+    assert P.rollup_mass(path) == ("393.0", path)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("| Assembly | kg |\n| WALL | 82.7 |\n")
+    try:
+        P.rollup_mass(path)
+        raise AssertionError("a roll-up without the pod's row gave a mass")
+    except NotDrawable as e:
+        assert "Pod as shipped" in str(e)
+
+
+def test_the_sheet_has_its_clear_sizes_position_codes_and_mass():
+    final, rep = _made()
+    fails, st = P.check(final)
+    assert not fails, fails
+    e = P.entry()
+    x = rep["data"]["extra"]
+    assert [r["name"] for r in x["sizes"]] == [s["name"] for s in e["clear"]]
+    assert st["clear sizes"] == len(e["clear"])
+    assert st["codes"] == sum(len(v) for v in e["codes"].values()) == 10
+    assert sorted(c["code"] for c in x["codes"]) == ["B1", "B2", "B3", "B4", "C1", "C2", "L1", "L2", "R1", "R2"]
+    assert x["mass"]["kg"] == P.rollup_mass()[0]
+    by = {r["name"]: r for r in x["sizes"]}
+    assert (by["inside width"]["lo_pn"], by["inside width"]["hi_pn"]) == ("510101", "510102")
+    assert by["door clear width"]["lo_pn"] == "351103"           # DL's stop, not the open leaf, sets it
+    assert by["door clear width at the head"]["value"] < by["door clear width"]["value"] < \
+        by["door clear width at the foot"]["value"]                 # the slanted edge: narrower going up
+
+
+def test_readback_fails_a_changed_clear_size_a_code_off_its_panel_and_a_stale_mass():
+    final, rep = _made()
+
+    def size(d):
+        d["extra"]["sizes"][0]["value"] += 1.0
+    fails, _st = P.check(_with_data(final, os.path.join(TMP, "t_size.pdf"), size))
+    assert any("measured again" in f for f in fails), fails
+
+    def code(d):
+        c = d["extra"]["codes"][0]
+        c["centre"] = [c["centre"][0] + 200.0, c["centre"][1]]
+    fails, _st = P.check(_with_data(final, os.path.join(TMP, "t_code.pdf"), code))
+    assert any("sits off its panel" in f for f in fails), fails
+
+    def mass(d):
+        for s in d["sources"]:
+            if s["role"] == "mass":
+                s["kg"] = "999.9"
+        d["extra"]["mass"]["kg"] = "999.9"
+    fails, _st = P.check(_with_data(final, os.path.join(TMP, "t_mass.pdf"), mass))
+    assert any("roll-up gives the pod" in f for f in fails) and any(f.startswith("MASS:") for f in fails), fails
+
+
 def main():
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     ok = 0
