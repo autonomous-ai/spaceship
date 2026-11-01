@@ -1,6 +1,6 @@
-# Mechanical check run: 4969faf on 2026-11-01
+# Mechanical check run: 68c1a4d on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `4969faf`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `68c1a4d`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 76** (32 severe, 43 major, 1 minor). Register numbers in brackets.
 
@@ -147,14 +147,14 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.117 | 729 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK - DL | 9.976 | 2290 x 278 x 205 | long | calculation |
-| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.705 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
+| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.405 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
 | 2-11 AIR - AIR COLUMN | 9.735 | 2105 x 360 x 217 | long | calculation; fill provisional |
 | 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |
 | 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.282 | 600 x 250 x 200 | long | calculation (CAD) |
 | 2-14 INTERIOR - LIGHT SHELF ASSY | 1.564 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-15 BASE - SMALL PARTS CARTON | 1.968 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-16 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
-| 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.655 | 1845 x 460 x 155 | long | assumption; calculation |
+| 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.086 | 1845 x 460 x 155 | long | assumption; calculation |
 | 2-18 AIR - CARTRIDGE - SUPPLY | 10.8 | 1750 x 314 x 173 | long | calculation |
 | 2-19 AIR - CARTRIDGE - EXHAUST | 10.8 | 1750 x 314 x 173 | long | calculation |
 | 2-20 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |

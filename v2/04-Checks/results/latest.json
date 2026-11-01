@@ -1,5 +1,5 @@
 {
- "rev": "4969faf",
+ "rev": "68c1a4d",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -1520,7 +1520,7 @@
   {
    "id": "2-10",
    "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 13.705,
+   "kg": 13.405,
    "dims": [
     2332.0,
     360.0,
@@ -1604,7 +1604,7 @@
   {
    "id": "2-17",
    "name": "AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS",
-   "kg": 14.655,
+   "kg": 14.086,
    "dims": [
     1845.0,
     460.0,
