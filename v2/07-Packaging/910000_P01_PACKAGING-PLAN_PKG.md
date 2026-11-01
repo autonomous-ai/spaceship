@@ -225,7 +225,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-06** | TBD (BASE) | BASE - BAND ASSY - SIDE - RH | Viền chân nhôm - cạnh phải (cụm) | - | 2.41 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm) | 1517 × 118 × 48 | 2 |
 | **2-07** | TBD (BASE) | BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | Viền chân nhôm - trước phải, dưới kính | - | 1.12 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) | 729 × 118 × 40 | 2 |
 | **2-08** | TBD (BASE) | BASE - DOOR THRESHOLD - 13 MM | Ngưỡng cửa thấp 13 mm | - | 1.20 | assumption | 1175 × 60 × 13 | 3 |
-| **2-09** | 350001 | FRONT - DECOR BLOCK ASSY - DL | Khối trang trí trái (cụm) | DL | 12.30 | calculation (CAD) | 2292 × 308 × 199 | 9 |
+| **2-09** | 350001 | FRONT - DECOR BLOCK ASSY - DL | Khối trang trí trái (cụm) | DL | 12.29 | calculation (CAD) | 2292 × 308 × 199 | 9 |
 | **2-10** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.76 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 17 |
 | **2-11** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 16 |
 | **2-12** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.91 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 12 |
@@ -276,7 +276,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | BASE | Glide load blocks: BASE's glide doublers, one at each glide | 1 | 0.12 | calculation (CAD) | 2-04 × 0.375, 2-05 × 0.25, 2-06 × 0.25, 2-07 × 0.125 |
 | BASE | Floor panels, 9 mm poplar-core plywood with a hard face veneer | 2 | 14.24 | confirmed (9 mm, poplar core); calculation (CAD) | 1-01, 1-02 |
 | BASE | Floor mat, 3 mm firm closed-cell foam | 1 | 2.12 | calculation (CAD) | 1-01 × 0.5, 1-02 × 0.5 |
-| FRONT | Decor block - left | 1 | 12.30 | calculation (CAD) | 2-09 |
+| FRONT | Decor block - left | 1 | 12.29 | calculation (CAD) | 2-09 |
 | FRONT | Decor block - right | 1 | 18.32 | calculation (CAD) | 2-03 |
 | FRONT | Decor block - top | 1 | 7.84 | calculation (CAD) | 2-12 |
 | FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.59 | calculation (CAD); hinges and pull HOLD | 2-02 |

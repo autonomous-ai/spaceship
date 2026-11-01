@@ -37,7 +37,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Wall cassette, back, lower | 2 | 8.41 | 8.01 | -0.40 | WALL 510201 and 510202 P01, PR #152 |
 | Door unit 360001 | 1 | 49.08 | 48.59 | -0.49 | FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip) |
 | Fixed glass unit 360002 | 1 | 29.58 | 29.54 | -0.04 | FRONT 360002 P01, PR #28 (the estimate: its first list) |
-| Decor block DL, left | 1 | 9.98 | 12.30 | +2.32 | FRONT 350001 P01, PR #105 (the estimate: this study's model from v1's shapes) |
+| Decor block DL, left | 1 | 9.98 | 12.29 | +2.31 | FRONT 350001 P01, PR #105 (the estimate: this study's model from v1's shapes) |
 | Decor block DR, right | 1 | 18.06 | 18.32 | +0.26 | FRONT 350003 P01, PR #105 (the estimate: this study's model from v1's shapes) |
 | Decor block DT, top | 1 | 7.02 | 7.84 | +0.82 | FRONT 350002 P01, PR #105 (the estimate: this study's model from v1's shapes) |
 | Door edge seals on 3 sides, in the seal kit | 1 | 1.00 | 0.00 | -1.00 | now in FRONT 350001, 350002, 360001 and 360002 P01 (PR #105; PM ruling 2026-11-01) |
@@ -55,7 +55,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.19 | +0.19 | joints 831001 and 831002 P01, PR #139 |
 | Floor panel | 2 | 7.66 | 7.12 | -0.54 | BASE 111401 P01, PR #55 |
 | Floor mat | 1 | 2.10 | 2.12 | +0.02 | BASE 111501 P01, PR #55 |
-| **In all** | | | | **-2.98** | |
+| **In all** | | | | **-2.99** | |
 
 Lines by basis: 30 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 10 estimated.
 
@@ -85,7 +85,7 @@ Lines by basis: 30 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 1
 | BASE | Glide load blocks: BASE's glide doublers, one at each glide | 1 | 0.12 | 0.12 | calculation (CAD) | S44, CAD on main: BASE parts list 111601 P01, 8 x 0.0147 kg, a 52 x 36 x 3 aluminium doubler inside the band at each glide (D-86's load block); one line, as the packing plan shares it out by glide | CAD, main |
 | BASE | Floor panels, 9 mm poplar-core plywood with a hard face veneer | 2 | 7.12 | 14.24 | confirmed (9 mm, poplar core); calculation (CAD) | S44, CAD on main: BASE parts list 111401 P01 (F2 as F1's mirror), D-85, D-86; the castor and edge tests on the sample are planned | CAD, main |
 | BASE | Floor mat, 3 mm firm closed-cell foam | 1 | 2.12 | 2.12 | calculation (CAD) | S44, CAD on main: BASE parts list 111501 P01 under F1, and F2's the same (D-76) | CAD, main |
-| FRONT | Decor block - left | 1 | 12.30 | 12.30 | calculation (CAD) | S51, CAD on main: FRONT parts list 350001 P01: skin 4.002, welded frame 4.668 (26 tubes), plates, stops and seals 3.630; the door's 3 hinges are in the door unit's line, the 2 mm back plate takes J-FRONT-01's rivnuts | CAD, main |
+| FRONT | Decor block - left | 1 | 12.29 | 12.29 | calculation (CAD) | S51, CAD on main: FRONT parts list 350001 P01: skin 4.002, welded frame 4.666 (26 tubes), plates, stops and seals 3.622; the door's 3 hinges are in the door unit's line, the 2 mm back plate takes J-FRONT-01's rivnuts | CAD, main |
 | FRONT | Decor block - right | 1 | 18.32 | 18.32 | calculation (CAD) | S51, CAD on main: FRONT parts list 350003 P01: skin 6.917, welded frame 4.159 (24 tubes), plates, stops and seals 7.244; AIR's riser, transitions and supply fan box are reserved air spaces in it with no mass, counted in AIR's lines (PM ruling 2026-11-01); the fixed glass's right and diagonal channels, fitted in it, are in the fixed glass unit's line | CAD, main |
 | FRONT | Decor block - top | 1 | 7.84 | 7.84 | calculation (CAD) | S51, CAD on main: FRONT parts list 350002 P01: skin 2.518, welded frame 2.756 (13 tubes), plates, stops and seals 2.566; with the door's magnetic catch 368007 and the top stop | CAD, main |
 | FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.59 | 48.59 | calculation (CAD); hinges and pull HOLD | S36, CAD on main: FRONT parts list 360001 P01: leaf 43.854, kick strip 1.218 (hollow, D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair | CAD, main |
