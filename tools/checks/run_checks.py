@@ -153,6 +153,7 @@ def run(root, rev):
         pick = files[own_file_first(pn, files)]
         holes_by_pn[pn], two_wall_by_pn[pn], bends_by_pn[pn] = pick["holes"], pick["two_wall"], pick["bends"]
     findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
+    findings += c_parts.check_copies(root, per_part, c_geometry.load_step)         # copies match their part
     if plists:
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))

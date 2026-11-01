@@ -8,7 +8,7 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 80 (32 severe, 48 major, 0 minor)
+## Open: 81 (32 severe, 49 major, 0 minor)
 
 By owner group:
 
@@ -18,6 +18,7 @@ By owner group:
 - ELECTRICAL: F-149
 - FRONT: F-030, F-031, F-097, F-029, F-096
 - WALL: F-020, F-021, F-024, F-109, F-110, F-111, F-112, F-113, F-114, F-121, F-122, F-123, F-179, F-180, F-185, F-186, F-019, F-022, F-023, F-106, F-107, F-108, F-115, F-116, F-117, F-118, F-119, F-120, F-160, F-161, F-162, F-163, F-164, F-165, F-166, F-167, F-170, F-171, F-172, F-173, F-174, F-175, F-176, F-177, F-178, F-181, F-182, F-183, F-184
+- WALL; Joints Engineer: F-189
 
 | ID | Severity | Check | Part | Finding | File | Fix | Owner group | Found | Posted |
 |---|---|---|---|---|---|---|---|---|---|
@@ -101,6 +102,7 @@ By owner group:
 | F-182 | major | C05 | 211602 | 211602 WALL - CAVITY FILL - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle. |  | For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing. | WALL | 2026-11-01 2f76545 | WALL group, 2026-11-01 |
 | F-183 | major | C05 | 510201 | 510201 LINING - CASSETTE - BACK LOWER - B1 has no drawing PDF (510201_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step. | `v2/03-Manufacturing/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | WALL | 2026-11-01 2f76545 | WALL group, 2026-11-01 |
 | F-184 | major | C05 | 510202 | 510202 LINING - CASSETTE - BACK LOWER - B2 has no drawing PDF (510202_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step. | `v2/03-Manufacturing/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | WALL | 2026-11-01 2f76545 | WALL group, 2026-11-01 |
+| F-189 | major | C06 | 831001 | 831001's body in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step isn't the part its own STEP 831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step holds: its sizes differ (own STEP: 0 holes, sizes ((2.94, 8.0), (4.0, 6.24)); the copy: 0 holes, sizes ((3.0, 10.0), (4.0, 7.24))), whichever way the copy is turned. The assembly's fits were set round the copy. | `v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` | Put the part's current model in the assembly (one component placed as copies, D-120) and check the holes and fits round it; if the copy is right, the part's owner updates its own STEP. | WALL; Joints Engineer | 2026-11-01 d79cd8c |  |
 
 ## Closed and accepted: 108
 

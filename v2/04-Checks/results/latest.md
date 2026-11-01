@@ -1,8 +1,8 @@
-# Mechanical check run: f3013d7 on 2026-11-01
+# Mechanical check run: d79cd8c on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `f3013d7`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `d79cd8c`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 79** (31 severe, 48 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 80** (31 severe, 49 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,7 +13,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `f3013d7`. The Fusion 
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 59 |
-| C06 BOM completeness | yes | 19 |
+| C06 BOM completeness | yes | 20 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 0 |
@@ -105,6 +105,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-170 | major | C06 | 831001 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS is one component holding 2 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (2 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (2 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (2 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
 | F-171 | major | C06 | 831002 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL is one component holding 7 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (7 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (4 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
 | F-172 | major | C06 | 838003 | 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (9 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
+| F-189 | major | C06 | 831001 | 831001's body in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step isn't the part its own STEP 831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step holds: its sizes differ (own STEP: 0 holes, sizes ((2.94, 8.0), (4.0, 6.24)); the copy: 0 holes, sizes ((3.0, 10.0), (4.0, 7.24))), whichever way the copy is turned. The assembly's fits were set round the copy. | WALL; Joints Engineer |
 
 ## Tolerance stacks (C02)
 

@@ -1420,3 +1420,35 @@ def test_a_parts_holes_come_from_its_own_step_first():
              "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step": 2}
     assert run_checks.own_file_first("111211", files).endswith("111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step")
     assert run_checks.own_file_first("111999", files).endswith("110000_P01_BASE_STEP.step")
+
+
+def test_a_parts_copies_must_be_the_part_its_own_step_holds():
+    # a copy of a part in another team's STEP must have its own STEP's hole layout and sizes, however it is turned
+    class FakeStep:
+        def __init__(self, rows):
+            self.rows = rows
+        def instances(self):
+            return [{"solid": i, "part_number": pn} for i, (pn, _so) in enumerate(self.rows)]
+        def solid(self, sid):
+            return self.rows[sid][1]
+    a = math.radians(90.0)
+    turned = sf.Frame.from_axes((500.0, 300.0, 20.0), (0, 0, 1), (math.cos(a), math.sin(a), 0))
+    key = lambda frame=sf.Frame(), holes=((20.0, 6.6), (80.0, 6.6)), length=100.0: \
+        _profile(frame, length=length, w=30.0, h=10.0, t=None, holes=holes)
+    own = os.path.join(ROOT, "v2/03-Manufacturing/joints/831999_P01_HARDWARE-TEST-KEY_STEP.step")
+    base = os.path.join(ROOT, "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step")
+    wall = os.path.join(ROOT, "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    front = os.path.join(ROOT, "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR_STEP.step")
+    files = {own: FakeStep([("831999", key())]),
+             base: FakeStep([("831999", key(turned))]),                        # turned and moved: the same part
+             wall: FakeStep([("831999", key(holes=((20.0, 6.6), (70.0, 6.6))))]),   # a hole 10 mm off
+             front: FakeStep([("831999", key(length=102.0))])}                 # 2 mm longer
+    got = {(f.owner, f.severity): f for f in c_parts.check_copies(ROOT, list(files), files.get)}
+    assert set(got) == {("WALL; Joints Engineer", "severe"), ("FRONT; Joints Engineer", "major")}
+    assert "hole layout" in got[("WALL; Joints Engineer", "severe")].message
+    assert "sizes" in got[("FRONT; Joints Engineer", "major")].message
+    # round parts compare the length at each radius both have; a detailed and a plain model aren't compared as boxes
+    spigot = ("round", ((2.94, 8.0), (4.0, 6.24)))
+    assert not c_parts._sizes_differ(spigot, ("round", ((3.0, 8.0), (4.0, 6.24))))          # BASE's plain copy
+    assert c_parts._sizes_differ(spigot, ("round", ((3.0, 10.0), (4.0, 7.24))))              # WALL's longer one
+    assert not c_parts._sizes_differ(("box", (4.0, 6.31, 15.24)), spigot)                    # can't compare: skip
