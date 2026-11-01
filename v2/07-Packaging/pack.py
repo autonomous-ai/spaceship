@@ -384,7 +384,7 @@ PIECES = [
           "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
     Piece("2-15", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
           [("BAND_FL", 1), ("BAND_FR", 0.337), ("KEY", 2)], S(600, 400, 150),
-          "carton (assumption): front-left band piece (faceted, under DL) with its knee key 111214, mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111211",
+          "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111211",
           2, 2, "BASE", carton=True, note="mesh piece share of the front-r line by length, 371 of 1100 mm (calculation); the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
     Piece("2-16", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
           "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "
@@ -551,11 +551,12 @@ STEPS = [
               op("unload pallet 2 tiers 5 to 2, each part to its place", 2, lay("t_unpack_long_ordered_min") * 60, 1, "t_unpack_long_ordered_min")],
          joints={}),
     dict(n=2, title="Base band", tags=["2-04", "2-05", "2-06", "2-07", "2-15"],
-         A="Sets the left and right side bands on their glides; then, with B at the other end, lowers the back band onto both side bands' back-corner key studs at once (D-129); then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.",
+         A="Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: FL1, then FL2 at the knee (under DL), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).",
+         caution="Nobody lifts the back band or stands on it until B1 and B2 bolt through its top wall in step 4: until then only its weight holds it on the studs (J-BASE-02).",
          B="Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).",
-         check="Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.",
+         check="Band level within the spirit level's bubble; the back band resting on its glides with both end caps down over the studs; every front piece hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.",
          ops=[carry("2-04"), carry("2-05"), carry("2-06"), carry("2-07"), carry("2-15"),
-              op("set each band piece on its keys", 2, lay("t_place_hung_s"), 6, "t_place_hung_s"),
+              op("set each band piece on its keys", 2, lay("t_place_hung_s"), 7, "t_place_hung_s"),
               op("check the level, turn the glides that are out", 2, TIME["t_level_preset_s"].value, 1, "t_level_preset_s")],
          joints={}),
     dict(n=3, title="Floor and threshold", tags=["1-01", "1-02", "2-08"],
@@ -1430,7 +1431,8 @@ def guide_tables(m, T):
             f"- **Fasteners:** {'; '.join(bolts) if bolts else 'none'}.{tool}\n"
             f"- **Person A:** {st['A']}\n"
             f"- **Person B:** {st['B']}\n"
-            f"- **Check before the next step:** {st['check']}\n")
+            + (f"- **Caution:** {st['caution']}\n" if st.get("caution") else "")
+            + f"- **Check before the next step:** {st['check']}\n")
         srow.append([st["n"], st["title"], len(st["tags"]), tr["bolts"], tr["other"], f"{tr['two'] / 60:.1f}", f"{tr['one'] / 60:.1f}",
                      f"**{tr['elapsed'] / 60:.1f}**" + ("" if st["n"] <= CLOCK_LAST_STEP else " (after)")])
     G["STEPS"] = "\n".join(steps_md)
