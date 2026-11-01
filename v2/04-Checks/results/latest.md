@@ -1,8 +1,8 @@
-# Mechanical check run: e796357 on 2026-11-01
+# Mechanical check run: 23aeade on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `e796357`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `23aeade`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 195** (52 severe, 137 major, 6 minor). Register numbers in brackets.
+**Findings in this run: 179** (52 severe, 121 major, 6 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `e796357`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 119 |
+| C05 drawing completeness | yes | 103 |
 | C06 BOM completeness | yes | 40 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -121,14 +121,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-258 | major | C05 | 610401 | 610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-259 | major | C05 | 610402 | 610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-261 | major | C05 | 611104 | 611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches). | CEILING |
-| F-218 | major | C05 | 710000 | 710000 ELECTRICAL drawing 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: 129 texts (sheet 1) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.15 mm: '710001 POWER UNIT - in panel B' 1.51 mm; 'INLET  (outside B2)' 1.51 mm; 'powerCON TRUE1 TOP' 1.36 mm. 255 texts (sheet 2) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HARNESS LIST  (every field, wi' 1.72 mm; 'ID' 1.44 mm; 'SEGMENT' 1.44 mm. 64 texts (sheet 3) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'VIEW A - BACK WALL FROM INSIDE' 1.65 mm; 'X view = +X, Y view = +Z; orig' 1.36 mm; 'B1-CASS' 1.36 mm. | ELECTRICAL |
-| F-219 | major | C05 | 710001 | 710001 ELECTRICAL - POWER UNIT - B2 drawing 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: 235 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'FACE OF THE POWER UNIT, seen f' 1.58 mm; 'SOCKET (86, HOLD)' 1.29 mm; 'LAN 2-PORT (86, HOLD)' 1.29 mm. | ELECTRICAL |
-| F-220 | major | C05 | 710011 | 710011 ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 drawing 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: 104 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm. | ELECTRICAL |
-| F-221 | major | C05 | 710021 | 710021 ELECTRICAL - HARNESS - TRUNK - B2/R1 drawing 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: 143 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm. | ELECTRICAL |
-| F-222 | major | C05 | 710023 | 710023 ELECTRICAL - HARNESS - AIR COLUMN drawing 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: 121 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm. | ELECTRICAL |
-| F-223 | major | C05 | 710024 | 710024 ELECTRICAL - HARNESS - CALL LIGHT - R2 drawing 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: 51 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm. | ELECTRICAL |
-| F-224 | major | C05 | 710031 | 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE drawing 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: 59 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm. | ELECTRICAL |
-| F-225 | major | C05 | 710041 | 710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm. | ELECTRICAL |
 | F-338 | major | C05 | 810000 | 810000 INTERIOR has no drawing PDF (810000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step. | CEILING |
 | F-151 | major | C05 | 810101 | 810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-152 | major | C05 | 810201 | 810201 INTERIOR - LIGHT SHELF ASSY has no drawing PDF (810201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
@@ -136,14 +128,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-325 | major | C05 | 111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG | 111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf: a note names 'tools/drawgen (D-112)' as its maker ('Made by ...', sheet 2); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | Drawing Generator |
 | F-326 | major | C05 | 111103_P01_BASE-BAND-TUBE-BACK_DWG | 111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf: a note names 'tools/drawgen (D-112)' as its maker ('Made by ...', sheet 2); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | Drawing Generator |
 | F-327 | major | C05 | 111401_P01_BASE-FLOOR-PANEL-F1_DWG | 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: a note names 'the BASE Engineer (AI agent)' as its maker ('Made by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | BASE |
-| F-328 | major | C05 | 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG | 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-329 | major | C05 | 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG | 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-330 | major | C05 | 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG | 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-331 | major | C05 | 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG | 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-332 | major | C05 | 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG | 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-333 | major | C05 | 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG | 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-334 | major | C05 | 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG | 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
-| F-335 | major | C05 | 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG | 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling). | ELECTRICAL |
 | F-098 | major | C06 | 111211 | Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95). | BASE |
 | F-160 | major | C06 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
 | F-161 | major | C06 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (7 bodies); 211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
@@ -240,7 +224,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 1-01 BASE - FLOOR PANEL ASSY - F1 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
 | 1-02 BASE - FLOOR PANEL ASSY - F2 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
 | 1-03 WALL - PANEL ASSY - BACK LOWER - B1 | 8.641 | 1200.61 x 1127 x 46 | upright | calculation (part CAD); fill provisional |
-| 1-04 WALL - PANEL ASSY - BACK LOWER - B2 | 11.529 | 1200.61 x 1127 x 88 | upright | calculation (CAD); calculation (part CAD); fill provisional |
+| 1-04 WALL - PANEL ASSY - BACK LOWER - B2 | 11.514 | 1200.61 x 1127 x 88 | upright | calculation (CAD); calculation (part CAD); fill provisional |
 | 1-05 WALL - PANEL ASSY - SIDE LOWER - LH | 11.163 | 1492.74 x 1151 x 48.5 | upright | calculation (CAD); fill provisional |
 | 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.163 | 1492.74 x 1151 x 48.5 | upright | calculation (CAD); fill provisional |
 | 1-07 WALL - PANEL ASSY - BACK UPPER - B3 | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
@@ -269,7 +253,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-10 AIR - SOFFIT | 14.756 | 2322 x 359 x 233 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
 | 2-11 AIR - AIR COLUMN | 8.147 | 2108 x 359 x 212 | long | calculation (CAD); fill provisional |
 | 2-12 FRONT - DECOR BLOCK ASSY - DT | 7.913 | 1699 x 306 x 203 | long | calculation (CAD); calculation (CAD); magnetic seal HOLD |
-| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.28 | 600 x 250 x 200 | long | calculation (CAD) |
+| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.41 | 600 x 250 x 200 | long | calculation (CAD) |
 | 2-14 INTERIOR - LIGHT SHELF ASSY | 1.585 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-15 BASE - SMALL PARTS CARTON | 1.14 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-16 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |

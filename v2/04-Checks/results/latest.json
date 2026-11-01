@@ -1,5 +1,5 @@
 {
- "rev": "e796357",
+ "rev": "23aeade",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -2315,102 +2315,6 @@
   },
   {
    "check": "C05",
-   "rule": "letter-height",
-   "subject": "710000",
-   "severity": "major",
-   "message": "710000 ELECTRICAL drawing 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: 129 texts (sheet 1) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.15 mm: '710001 POWER UNIT - in panel B' 1.51 mm; 'INLET  (outside B2)' 1.51 mm; 'powerCON TRUE1 TOP' 1.36 mm. 255 texts (sheet 2) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HARNESS LIST  (every field, wi' 1.72 mm; 'ID' 1.44 mm; 'SEGMENT' 1.44 mm. 64 texts (sheet 3) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'VIEW A - BACK WALL FROM INSIDE' 1.65 mm; 'X view = +X, Y view = +Z; orig' 1.36 mm; 'B1-CASS' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710000"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710001",
-   "severity": "major",
-   "message": "710001 ELECTRICAL - POWER UNIT - B2 drawing 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: 235 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'FACE OF THE POWER UNIT, seen f' 1.58 mm; 'SOCKET (86, HOLD)' 1.29 mm; 'LAN 2-PORT (86, HOLD)' 1.29 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710001"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710011",
-   "severity": "major",
-   "message": "710011 ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 drawing 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: 104 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710011"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710021",
-   "severity": "major",
-   "message": "710021 ELECTRICAL - HARNESS - TRUNK - B2/R1 drawing 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: 143 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710021"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710023",
-   "severity": "major",
-   "message": "710023 ELECTRICAL - HARNESS - AIR COLUMN drawing 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: 121 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710023"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710024",
-   "severity": "major",
-   "message": "710024 ELECTRICAL - HARNESS - CALL LIGHT - R2 drawing 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: 51 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710024"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710031",
-   "severity": "major",
-   "message": "710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE drawing 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: 59 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710031"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710041",
-   "severity": "major",
-   "message": "710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710041"
-  },
-  {
-   "check": "C05",
    "rule": "no-drawing",
    "subject": "711001",
    "severity": "severe",
@@ -2572,118 +2476,6 @@
     "model": "pdf-people"
    },
    "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
-   "severity": "major",
-   "message": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
-   "severity": "major",
-   "message": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
-   "severity": "major",
-   "message": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
-   "severity": "major",
-   "message": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
-   "severity": "major",
-   "message": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
-   "severity": "major",
-   "message": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
-   "severity": "major",
-   "message": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
-   "severity": "major",
-   "message": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG"
   }
  ],
  "stacks": [
@@ -2831,7 +2623,7 @@
   {
    "id": "1-04",
    "name": "WALL - PANEL ASSY - BACK LOWER - B2",
-   "kg": 11.529,
+   "kg": 11.514,
    "dims": [
     1200.61,
     1127.0,
@@ -3179,7 +2971,7 @@
   {
    "id": "2-13",
    "name": "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS",
-   "kg": 2.28,
+   "kg": 2.41,
    "dims": [
     600.0,
     250.0,
