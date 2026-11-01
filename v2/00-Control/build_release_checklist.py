@@ -527,8 +527,10 @@ def state_of(gaps, screen, hold=False):
     return "open: " + ", ".join(gaps)
 
 
-def files_only(by_pn, parts, files, labels, screen, chars=()):
-    """Made parts found in the folders whose number no parts list carries: no BOM row."""
+def files_only(by_pn, parts, files, labels, screen, chars=(), tab_cover=None):
+    """Made parts found in the folders whose number no parts list carries: no BOM row. A number that a tabulated
+    drawing lists counts as drawn, as it does for a listed part (D-89)."""
+    tab_cover = tab_cover or {}
     listed = {r["part_number"] for r in parts}
     out = []
     for pn, kinds in sorted(by_pn.items()):
@@ -538,11 +540,12 @@ def files_only(by_pn, parts, files, labels, screen, chars=()):
         team = next((FOLDER_TEAM[s] for s in some.split("/") if s in FOLDER_TEAM), "other")
         names = {re.sub(FILE_RE, r"\3", p.rsplit("/", 1)[-1]) for ps in kinds.values() for p in ps}
         ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
-        gaps = ["BOM row"] + [k for k, n in (("CAD", "CAD"), ("STEP", "STEP"), ("drawing", "DWG")) if not kinds.get(n)]
+        dwg = True if kinds.get("DWG") else (f"on {tab_cover[pn]}, tabulated (D-89)" if pn in tab_cover else False)
+        gaps = ["BOM row"] + [k for k, ok in (("CAD", kinds.get("CAD")), ("STEP", kinds.get("STEP")), ("drawing", dwg)) if not ok]
         gaps += [] if ids else ["FAI"]
         out.append({"part_number": pn, "name": sorted(names)[0].replace("-", " "), "team": team, "bom_row": False,
                     "cad": bool(kinds.get("CAD")), "step": bool(kinds.get("STEP")), "flat": "yes" if kinds.get("DXF") else "—",
-                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
+                    "dwg": dwg, "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
                     "state": state_of(gaps, screen),
                     "from": {labels.get(files[p], "this tree" if files[p] == "working tree" else files[p])
                              for ps in kinds.values() for p in ps}})
@@ -743,7 +746,7 @@ def main(argv=None):
         d125 = {}
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
                                screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125)
-    made += files_only(by_pn, parts, files, labels, screen, fai[0])
+    made += files_only(by_pn, parts, files, labels, screen, fai[0], tab_cover)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
     fell = fell_back_notes(bom, labels)
