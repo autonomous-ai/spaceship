@@ -86,6 +86,16 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   read from a section through the middle, or the nearest one clear of holes and cut-outs, and the profile section is
   cut there. A model that folds sharp takes its inside radius from the entry. Anything else is refused with the reason
   (INTERIOR's 811201: a hole the DXF cuts in a bend zone).
+- Folds along any line (an entry marked `bent: {"unfold": True, "k": ...}`; AIR's duct transitions): each fold is
+  read from the model's own bend (a cylinder of one skin and its partner on the other, t apart; its angle from the
+  cylinder), and the part unfolds face by face from its largest flange, each bend leaving a strip of its allowance
+  a (r + K t) at the entry's K. The DXF must take the unfolded model by one plane isometry: every bend line on a
+  BEND line, every hole on a circle, the outline on its outline, each within 0.05 both ways (the outline pins K).
+  The sheet has a section across each fold at its middle (2:1, round the fold) and a bend table giving each line
+  from end to end in the flat, its direction, angle, inside radius and allowance. Cut-outs and slots aren't read in
+  this mode yet. The read-back checks each recorded flange against the STEP's faces, each strip's width against
+  its allowance at the printed K with the DXF's line in its middle, and the STEP's holes through the recorded flanges
+  onto the DXF's circles, both ways.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
   Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.

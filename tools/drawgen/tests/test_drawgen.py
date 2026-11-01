@@ -481,6 +481,48 @@ def test_bent_sheet_from_step_and_dxf():
     assert doc1 is not None
 
 
+def test_folds_along_any_line():
+    """AIR's duct transitions (the Lead's queue): folds in several directions, read fold by fold from the model's bend
+    cylinders and unfolded face by face. A test duct piece (a tapered base, a 90° fold with a hole, a 60° fold with a
+    tapering flange and a 30° kink, all R1 = t) draws against its flat worked by hand at K 0.44 and reads back: its
+    bend table gives each line from end to end at its own angle, UP, with its allowance; a section across each fold.
+    A DXF with the hole 1 mm off, or the right DXF at K 0.40, is refused; the good sheet's read-back fails against
+    the moved hole."""
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct")
+    os.makedirs(d, exist_ok=True)
+    step = duct_piece.build_step(os.path.join(d, "219991_P01_TEST-DUCT_STEP.step"))
+    good = duct_piece.write_dxf(os.path.join(d, "219991_DXF.dxf"))
+    moved = duct_piece.write_dxf(os.path.join(d, "219991_moved_DXF.dxf"), move=1.0)
+    row = dict(ROW, part_number="219991", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219991.pdf")
+    spec = dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good})
+    compose.make("219991", "none", spec, p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    rows = data["flat"]["rows"]
+    assert sorted(round(r_["angle"]) for r_ in rows) == [30, 60, 90] and all(r_["dir"] == "UP" for r_ in rows), rows
+    for r_ in rows:
+        assert abs(r_["ba"] - math.radians(r_["angle"]) * (1.0 + 0.44)) < 1e-6, r_
+    text = " ".join(doc[0].get_text().split())
+    assert text.count("fold at its middle") == 3 and "K-factor 0.44" in text, text[:600]
+    for dxf_path, k, want in ((moved, 0.44, "don't sit where the model unfolds to"),
+                              (good, 0.40, "outline isn't where the model unfolds to")):
+        try:
+            compose.make("219991", "none", dict(SPEC, bent={"unfold": True, "k": k, "dxf": dxf_path}),
+                         os.path.join(d, "x.pdf"), step=step, row=row)
+            raise AssertionError("drew against %s at K %s" % (dxf_path, k))
+        except compose.NotDrawable as e:
+            assert want in str(e), e
+    data["flat"]["dxf"] = moved
+    f2 = readback.unfold_fails(data, readback.step_holes(step, "219991"), readback.step_faces(step, "219991"))
+    assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
