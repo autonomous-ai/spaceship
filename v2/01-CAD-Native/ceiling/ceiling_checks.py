@@ -53,7 +53,9 @@ def expected(design):
             cs(b, n)
         for key, bay, b, _n in M.fill_strips():
             cs(b, "FILL BAY %d" % bay)
-        for n, b in M.clip_boxes() + M.catch_boxes():
+        for n, b in M.clip_boxes() + M.catch_boxes() + M.eye_bracket_boxes():
+            cs(b, n)
+        for n, b, _x in M.clip_tab_boxes() + M.eye_tab_boxes():     # welded to the frame, given over the cassette
             cs(b, n)
     return out
 
@@ -123,9 +125,10 @@ def check(design):
         if d > TOL:
             bad.append((k, round(d, 3)))
     groups = {"513102": "RIB", "513301": "FILL BAY", "513302": "FILL BAY", "513303": "FILL BAY",
-              "518001": "CLIP", "518002": "CATCH", "831007": "MITRE", "831008": "MITRE"}
+              "518001": "CLIP X", "518002": "CATCH", "831007": "MITRE", "831008": "MITRE",
+              "412002": "CLIP TAB", "412003": "EYE TAB", "513103": "EYE BRACKET"}
     for half in ("C1", "C2"):
-        for prefix in ("RIB", "FILL BAY", "CLIP", "CATCH", "MITRE"):
+        for prefix in ("RIB", "FILL BAY", "CLIP X", "CATCH", "MITRE", "CLIP TAB", "EYE TAB", "EYE BRACKET"):
             keys = [k for k in exp if k.startswith("%s %s" % (half, prefix))]
             acts = []
             for pn, pre in groups.items():

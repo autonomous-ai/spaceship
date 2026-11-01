@@ -248,6 +248,14 @@ def _sizes():
         "felt": lambda v: ("%.1f x %.1f x %.0f" % (v["cs_w"] - 2 * (v["tray_t"] + v["felt_c"]), v["cs_d"] - 2 * (v["tray_t"] + v["felt_c"]), v["felt_t"]),
                            "knife cut +/-1 (assumption); two sprinkler zones marked, nothing cut"),
         "fill_a": fills("fill_a"), "fill_b": fills("fill_b"), "fill_c": fills("fill_c"), "fill_d": fills("fill_d"),
+        "clip_tab": lambda v: ("%.0f x %.0f x %.1f plate, 2 x Ø%.1f at %.0f" % (v["tab_l"], v["tab_w"], v["tab_t"], v["tab_hole"],
+                                                                             v["tab_pitch"]),
+                               "laser cut +/-0.2; holes +/-0.2; welded at the set's axis +/-0.5 (assumption)"),
+        "eye_tab": lambda v: ("%.0f x %.0f x %.1f plate, Ø%.0f eye" % (v["eye_w"], v["eye_r"], v["tab_t"], v["eye_hole"]),
+                              "laser cut +/-0.2; welded +/-1 (assumption)"),
+        "eye_br": lambda v: ("L %.0f x %.0f x %.0f, %.1f sheet, Ø%.0f eye, 2 x Ø%.1f" % (v["eb_l"], v["eb_w"], v["eb_h"], v["eb_t"],
+                                                                                      v["eb_hole"], v["eb_rv"]),
+                             "cut +/-0.2, bent +/-0.5 (assumption); see the drawing"),
     }
 
 
@@ -263,12 +271,13 @@ def parts_list(v, mass):
         "m_side": (1, "frame_c1|frame_c2"), "m_x1": (1, "frame_c1|frame_c2"),     # one part each for both frames
         "m_cross": (2, "frame_c1|frame_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
-        "clip": (6, "cassette"), "catch": (2, "cassette"),
+        "clip": (6, "cassette"), "catch": (2, "cassette"), "eye_br": (2, "cassette"),
+        "clip_tab": (6, "frame_c1|frame_c2"), "eye_tab": (2, "frame_c1|frame_c2"),     # one part each for both frames
     }
     for key, _bay, _b, _n in M.fill_strips():
         q[key] = (q.get(key, (0, "cassette"))[0] + 1, "cassette")
     per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin_c1": 1, "skin_c2": 1,
-               "cassette": 2, "m_cross": 4, "m_side": 2, "m_x1": 2,
+               "cassette": 2, "m_cross": 4, "m_side": 2, "m_x1": 2, "clip_tab": 12, "eye_tab": 4,
                **{"m_%s_%s" % (m, h): 1 for h in ("c1", "c2") for m in ("seam", "front", "back")}}
     for k in [k for k in q if k not in per_pod]:
         per_pod[k] = q[k][0] * 2
@@ -278,7 +287,7 @@ def parts_list(v, mass):
             continue                     # a fill kind this layout doesn't use
         m = mass.get(pn)
         each = round(m[0], 3) if m else None
-        if kind == "HOLD":
+        if kind == "HOLD" or key in M.HOLD_MASS:       # a held part, or a bought one the CAD holds as space only
             hm, hst, hsrc = M.HOLD_MASS[key]
             mass_txt, status = "%.3f" % hm, hst
         elif kind == "HS":
@@ -302,17 +311,27 @@ def parts_list(v, mass):
             "felt": "D-17, D-31; felt fixing HOLD H09",
             "fill_a": "D-24, D-54; fixing HOLD H10", "fill_b": "D-24, D-54; fixing HOLD H10",
             "fill_c": "D-24, D-54; fixing HOLD H10", "fill_d": "D-24, D-54; fixing HOLD H10",
-            "clip": "D-47, D-81; joints register H-10; HOLD-08, ISS-076", "catch": "D-47; joints register H-11; HOLD-08, ISS-076",
+            "clip": "D-47, D-81; joints register H-10 (the Lead's ruling 2026-11-01: PC-SF1 on a welded tab, PC-SVMX on the tray)",
+            "catch": "D-47; joints register H-11 (the Lead's rulings 2026-11-01: from an eye tab welded to cross member 2 to "
+                     "the eye bracket 513103, nothing across the bond line)",
+            "clip_tab": "Control's number 2026-11-01; D-131, J-FRAME-01 (welded to the frame); the clip's female PC-SF1 under it",
+            "eye_tab": "Control's number 2026-11-01; the Lead's ruling 2026-11-01 (a welded 2 mm steel eye under X2 at each "
+                       "catch); D-131, J-FRAME-01",
+            "eye_br": "Control's number 2026-11-01; the Lead's ruling 2026-11-01 (a bent steel bracket riveted through the rib's "
+                      "flanges and the tray, D-166)",
             "cassette": "D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)",
         }.get(key, "assembly tree; conventions s6")
-        if kind == "HOLD":
+        if kind == "HOLD" or key in M.HOLD_MASS:
             src = "%s; mass: %s" % (src, M.HOLD_MASS[key][2])
         rows.append({
             "part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": q[key][1] or "",
             "qty_per_parent": q[key][0], "qty_per_pod": per_pod[key], "material": matname,
             "finish": M.FINISH.get(key, ""), "process": M.PROCESS.get(key, ""),
-            "maker": "HOLD-08" if kind == "HOLD" else "", "sku": ({"clip": "HOLD-08: rated 4.9 kg pull-out each (ceiling, J-LIN-01), captive lock; latches when pushed home, so a ceiling cassette holds itself before its two catches go on (Packing's assembly review, PM ruling 2026-11-01)",
-                                                                  "catch": "HOLD-08: 48 kg working load per lanyard (T08)"}.get(key, "")),
+            "maker": {"clip": "Fastmount (Sugatsune)", "catch": "Gripple"}.get(key, "HOLD-08" if kind == "HOLD" else ""),
+            "sku": {"clip": "PC-SF1 (female, on the tab, 2 x #6 thread-forming) + PC-SVMX (male, on the tray, 3 x #6-32 82 deg "
+                            "flat head with nylon lock nuts, stainless; its hole circle HOLD for the maker's drawing): 15 kg pull-out, "
+                            "4.9 kg needed a clip (J-LIN-01)",
+                    "catch": "Gripple Loop No.3 (3.0 mm rope, SWL 90 kg straight): 48 kg working load a lanyard (T08)"}.get(key, ""),
             "torque": "", "size_mm": size, "tolerance": tol,
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,

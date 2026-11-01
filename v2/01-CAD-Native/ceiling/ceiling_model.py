@@ -183,8 +183,8 @@ CEILING_PARAMS = [
     ("eye_hole", "8 mm", "mm", "assumption", "the eye for the Gripple No.3's 3 mm rope loop"),
     ("eye_hy", "18 mm", "mm", "assumption", "the eye's centre in front of cross member 2's front face"),
     ("eb_t", "1.5 mm", "mm", "assumption", "the eye bracket 513103: bent 1.5 galvanized steel"),
-    ("eb_l", "rib_crown + 2 * rib_fl", "mm", "calculation", "the eye bracket across X: the rib's width, so a rivet goes "
-     "through each of its flanges"),
+    ("eb_l", "rib_crown + 2 * rib_fl + 6 mm", "mm", "calculation", "the eye bracket across X: the rib's width and 3 each "
+     "side, so a rivet goes through each of the rib's flanges 9 from the bracket's ends (2 hole diameters or more)"),
     ("eb_w", "24 mm", "mm", "assumption", "the eye bracket's base along Y, its upright at the eye's line"),
     ("eb_h", "16 mm", "mm", "assumption", "the eye bracket's upright: the Gripple runs up 20 from its top to the eye tab"),
     ("eb_hole", "6 mm", "mm", "assumption", "the eye bracket's eye for the Gripple No.3's hanger end"),
@@ -246,8 +246,16 @@ PARTS = {
     "fill_b": ("513302", "LINING - FILL - CEILING - BAY B", "Bông PET 40 mm - trần - ô B", "MP", "fill"),
     "fill_c": ("513303", "LINING - FILL - CEILING - BAY C", "Bông PET 40 mm - trần - ô C", "MP", "fill"),
     "fill_d": ("513304", "LINING - FILL - CEILING - BAY D", "Bông PET 40 mm - trần - ô D", "MP", "fill"),
-    "clip": ("518001", "LINING - CASSETTE CLIP", "Kẹp treo cassette", "HOLD", "hold"),
-    "catch": ("518002", "LINING - CEILING SAFETY CATCH", "Dây an toàn cassette trần", "HOLD", "hold"),
+    # the clips and catches are decided (the Lead's rulings 2026-11-01; the joints register's names, H-10 and H-11): the
+    # sets stay space envelopes in the CAD (the makers' parts), their masses from HOLD_MASS until weighed
+    "clip": ("518001", "LINING - CASSETTE CLIP - CEILING - FASTMOUNT PC-SF1 + PC-SVMX", "Kẹp treo cassette trần", "PI", "hold"),
+    "catch": ("518002", "LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3", "Dây an toàn cassette trần", "PI", "hold"),
+    # the tabs welded to the frames' cross members (Control's numbers 2026-11-01) and the eye bracket on the cassette
+    "clip_tab": ("412002", "CEILING - FRAME CLIP TAB - COMMON", "Trần - tai hàn đỡ kẹp cassette của khung (dùng chung)", "MP",
+                 "steel_fr"),
+    "eye_tab": ("412003", "CEILING - FRAME CATCH EYE TAB - COMMON", "Trần - tai hàn móc dây an toàn của khung (dùng chung)", "MP",
+                "steel_fr"),
+    "eye_br": ("513103", "LINING - CATCH EYE BRACKET - CEILING", "Tai móc dây an toàn cassette trần", "MP", "steel"),
 }
 
 # the frame members' part keys (D-120): the side member and cross member 1 are one part each for both
@@ -280,6 +288,7 @@ FINISH = {
     "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
     **{k: "pre-galvanized Z100; each weld's burnt zone wire-brushed and coated with 2-component zinc-rich epoxy "
           "(J-FRAME-01); the bond prep on the skin face (D-137)" for k in MEMBER_KEYS},
+    "clip_tab": FRAME_FINISH, "eye_tab": FRAME_FINISH, "eye_br": "galvanised (Z coating, grade to confirm)",
 }
 PROCESS = {
     "frame_c1": "welded in a jig (D-131, J-FRAME-01): the corners with their mitre plates, then the T joints; no vent or drain "
@@ -292,10 +301,18 @@ PROCESS = {
     #      for the mitre plates; holes CNC or jig drilled after welding
     **{k: "tube cut to length (mitred ends where it meets the corners, cut back for the 2.0 mitre plate), welded into "
           "the frame; holes CNC or jig drilled after welding (+/-0.2 from the spigot hole, R-J6)" for k in MEMBER_KEYS},
+    "clip_tab": "laser cut 2.0 galvanized steel with PC-SF1's two holes pierced (no drill chips); welded to the cross "
+                "member's back face in the frame's jig (D-131, J-FRAME-01)",
+    "eye_tab": "laser cut 2.0 galvanized steel with its eye; welded to cross member 2's front face in the frame's jig "
+               "(D-131, J-FRAME-01)",
+    "eye_br": "laser cut 1.5 galvanized sheet with its eye and two rivet holes, bent once (inside R = the sheet); riveted "
+              "through the tray and the rib's flanges with two closed-end rivets (D-166), all holes made, none drilled on site",
 }
 HOLD_MASS = {   # kg each, status, source
-    "clip": (0.040, "assumption", "joints register H-10 and PM ruling 2026-10-31: 0.040 kg each (D-81's working figure) until a named clip is weighed (HOLD-08)"),
-    "catch": (0.100, "assumption", "PM ruling 2026-10-31 for the BOM check: 0.100 kg each until a named catch is weighed (joints register H-11, HOLD-08)"),
+    "clip": (0.040, "assumption", "a PC-SF1 + PC-SVMX set: the catalogue prints no mass, so D-81's working 0.040 kg a set "
+             "(joints register H-10) until the sample (T07) is weighed"),
+    "catch": (0.100, "assumption", "a Gripple Loop No.3 with its rope: 0.100 kg each (the PM's 2026-10-31 figure) until the "
+              "sample (T08) is weighed (joints register H-11)"),
 }
 
 # Joint hardware fitted in the factory to each ceiling half (joints register 2.1 numbers and
@@ -789,6 +806,35 @@ def eye_bracket_boxes():
         xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
         out.append(("EYE BRACKET %s" % ("L" if side < 0 else "R"),
                     ("%s - eb_l / 2" % xc, "%s + eb_l / 2" % xc, "%s - eb_w" % ye, ye, "0 mm", "eb_h")))
+    return out
+
+
+def eye_bracket_section():
+    """The eye bracket 513103's L in its own frame, as the build draws it (then turns it -90 deg about Z onto the tray):
+    local X across its upright and out along its base (the cassette's -Y), Z up, the extrusion along local Y (the
+    cassette's +X) over eb_l. [(x, z)]: 0 the fold's outside corner, 3 its inside one."""
+    return [("0 mm", "0 mm"), ("eb_w", "0 mm"), ("eb_w", "eb_t"), ("eb_t", "eb_t"), ("eb_t", "eb_h"), ("0 mm", "eb_h")]
+
+
+# its one fold, real (the Lead's ruling 2026-11-01 on #335: the inside radius is the sheet)
+EYE_BRACKET_FOLDS = [(0, "outside"), (3, "inside")]
+
+
+def eye_bracket_fold_radius(side):
+    return "2 * eb_t" if side == "outside" else "eb_t"
+
+
+def eye_bracket_rivets():
+    """[(name, x, y)] in CS-510301: each eye bracket's two closed-end rivets (D-166) through its base, the tray base and
+    the rib's flanges, at the flanges' middles across X and the base's flat middle along Y."""
+    out = []
+    ye = "%s - eye_hy" % member_front_cs(2)
+    yr = "%s - (eb_w + eb_t) / 2" % ye
+    for side in (-1, 1):
+        xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
+        for k, sx in ((1, "-"), (2, "+")):
+            out.append(("EYE BRACKET %s RIVET %d" % ("L" if side < 0 else "R", k),
+                        "%s %s (rib_crown / 2 + rib_fl / 2)" % (xc, sx), yr))
     return out
 
 

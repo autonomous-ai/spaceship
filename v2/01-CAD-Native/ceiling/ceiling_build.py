@@ -870,13 +870,49 @@ def build_plates(fcomp, half, ctx):
         place_rotated(fcomp, occ, xyz, want, "%s %s" % (half, name), ctx, settings)
 
 
+def tab_part(fcomp, key, ctx):
+    """A tab welded to a cross member (D-131's weldment, J-FRAME-01): the clip tab 412002 with PC-SF1's two pierced
+    holes, or the eye tab with the Gripple's eye; built once in its own frame (its low corner at the origin) and copied
+    into both frames (D-120)."""
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
+    if key in shared:
+        return fcomp.occurrences.addExistingComponent(shared[key], adsk.core.Matrix3D.create())
+    occ, c = new_comp(fcomp, key, ctx)
+    if key == "clip_tab":
+        body = box_body(c, "CLIP TAB", ("0 mm", "tab_l", "0 mm", "tab_w", "0 mm", "tab_t"), ctx)
+        for k, dx in ((1, "tab_l / 2 - tab_pitch / 2"), (2, "tab_l / 2 + tab_pitch / 2")):
+            circle_cut(c, body, "CLIP TAB HOLE %d" % k, dx, "clip_y", "tab_hole", "-1 mm", "tab_t + 1 mm", ctx)
+    else:
+        body = box_body(c, "EYE TAB", ("0 mm", "eye_w", "0 mm", "eye_r", "0 mm", "tab_t"), ctx)
+        circle_cut(c, body, "EYE TAB EYE", "eye_w / 2", "eye_r - eye_hy", "eye_hole", "-1 mm", "tab_t + 1 mm", ctx)
+    set_material(c, ctx, "steel_fr")
+    shared[key] = c
+    return occ
+
+
+def build_tabs(fcomp, half, ctx):
+    """The tabs welded to this frame's cross members: a clip tab 412002 behind each clip set (6) and an eye tab in front
+    of cross member 2 at each catch (2, the Lead's ruling 2026-11-01): copies placed by joints at their boxes' low
+    corners, which the model gives in CS-510301 over the cassette, so they follow it."""
+    ox, oy, oz = M.CASSETTE_CS[half]
+    for key, items in (("clip_tab", [(n, b) for n, b, _h in M.clip_tab_boxes()]),
+                       ("eye_tab", [(n, b) for n, b, _e in M.eye_tab_boxes()])):
+        for name, b in items:
+            occ = tab_part(fcomp, key, ctx)
+            place(fcomp, occ, ("(%s) + (%s)" % (ox, b[0]), "(%s) + (%s)" % (oy, b[2]), "(%s) + (%s)" % (oz, b[4])),
+                  "%s %s" % (half, name), ctx)
+
+
 def build_frame(assy, half, ctx):
-    """The frame of one half: an assembly (D-120) of its member components (build_frame_members) and the mitre plates
-    welded into its corners (build_plates, D-131)."""
+    """The frame of one half: an assembly (D-120) of its member components (build_frame_members), the mitre plates
+    welded into its corners (build_plates, D-131) and the tabs welded to its cross members (build_tabs)."""
     key = "frame_c1" if half == "C1" else "frame_c2"
     occ, comp = new_comp(assy, key, ctx)
     build_frame_members(comp, half, ctx)
     build_plates(comp, half, ctx)
+    build_tabs(comp, half, ctx)
     return occ, comp
 
 
@@ -1011,13 +1047,16 @@ def build_tray(cass_occ_root, cass_comp, ctx):
             ei.participantBodies = [body]
             f = comp.features.extrudeFeatures.add(ei)
             f.name = "CUT - CABLE HOLE %s RETURN (D-41)" % tag
+        # the eye brackets' closed-end rivets through the base (D-166), made in the flat (no hole drilled on site)
+        for name, x, y in M.eye_bracket_rivets():
+            circle_cut(comp, body, "TRAY " + name, x, y, "eb_rv", "-tray_t - 1 mm", "1 mm", ctx)
     finally:
         ctx.design.activateRootComponent()
     set_material(comp, ctx, "steel")
     return occ, comp
 
 
-def fold_fillets(comp, body, name, sec, folds, ctx):
+def fold_fillets(comp, body, name, sec, folds, ctx, radius=None):
     """Real folds on a sheet section extruded along Y (the Lead's ruling 2026-11-01 on #335: the inside radius is the
     sheet, so the model, its STEP and its DXF agree): fillet the straight edge along Y through each fold's corner of
     the section, the outside corners by bend_r + the sheet and the inside ones by bend_r (M.rib_fold_radius). The
@@ -1042,7 +1081,7 @@ def fold_fillets(comp, body, name, sec, folds, ctx):
                 raise RuntimeError("%s: %d edges at fold corner %d (%.3f, %.3f), want 1" % (name, len(hits), idx, x, z))
             coll.add(hits[0])
         fi = comp.features.filletFeatures.createInput()
-        fi.edgeSetInputs.addConstantRadiusEdgeSet(coll, vi(M.rib_fold_radius(side)), False)
+        fi.edgeSetInputs.addConstantRadiusEdgeSet(coll, vi((radius or M.rib_fold_radius)(side)), False)
         f = comp.features.filletFeatures.add(fi)
         f.name = "BEND %s R - %s" % (side.upper(), name)
 
@@ -1056,6 +1095,14 @@ def build_rib(cass_comp, ctx):
     fe = extrude_y(comp, sk, "0 mm", "cs_d - 2 * tray_t - 2 * rib_end", "RIB")
     fe.bodies.item(0).name = "RIB"
     fold_fillets(comp, fe.bodies.item(0), "RIB", pts, M.RIB_FOLDS, ctx)
+    # the eye bracket's two closed-end rivets through the flanges (D-166; the Lead's ruling 2026-11-01), the same on
+    # both ribs: the rib's own frame starts rib_end inside the tray's front return
+    rib_y = "%s + tray_t + rib_end" % M.CS_Y0
+    for name, x, y in M.eye_bracket_rivets():
+        if name.startswith("EYE BRACKET L"):
+            dx = "-(rib_crown / 2 + rib_fl / 2)" if name.endswith("1") else "(rib_crown / 2 + rib_fl / 2)"
+            circle_cut(comp, fe.bodies.item(0), "RIB " + name.split(" L ")[1], dx, "(%s) - (%s)" % (y, rib_y), "eb_rv",
+                       "-tray_t - 1 mm", "1 mm", ctx)
     set_material(comp, ctx, "steel")
     return occ, comp
 
@@ -1128,22 +1175,45 @@ def build_cassette_contents(cass, cass_occ, ctx):
             o, c = build_fill(cass, key, bbox, use, ctx)
             fill_occ[key] = c
         place(cass, o, ("0 mm", bbox[2], "0 mm"), "FILL BAY %d" % bay, ctx)
+    # the clip sets 518001 (PC-SF1 + PC-SVMX, engaged): the bought set's space, its origin on its axis on the tray base
     clip_comp = None
     for name, b in M.clip_boxes():
         if clip_comp is None:
-            o, clip_comp = build_hold(cass, "clip", ("-clip_w / 2", "clip_w / 2", "0 mm", "clip_d", "0 mm", "clip_h"), ctx)
+            o, clip_comp = build_hold(cass, "clip", ("-clip_w / 2", "clip_w / 2", "-clip_d / 2", "clip_d / 2", "0 mm",
+                                                     "clip_h"), ctx)
         else:
             o = cass.occurrences.addExistingComponent(clip_comp, adsk.core.Matrix3D.create())
-        xc = "(%s) + clip_w / 2" % b[0]
-        place(cass, o, (xc, b[2], "0 mm"), name, ctx)      # origin on the member's back face
+        place(cass, o, ("(%s) + clip_w / 2" % b[0], "(%s) + clip_d / 2" % b[2], "0 mm"), name, ctx)
+    # the eye brackets 513103: their L built with its fold along Y, so the rib's section and fold method serves, then
+    # turned -90 deg about Z onto the tray (the mitre plates' turned placement): the upright on the eye's line
+    eb_comp = None
+    for name, b in M.eye_bracket_boxes():
+        if eb_comp is None:
+            o, eb_comp = new_comp(cass, "eye_br", ctx)
+            sec = M.eye_bracket_section()
+            sk = poly_xz(eb_comp, "SECTION - EYE BRACKET", sec, ctx)
+            fe = extrude_y(eb_comp, sk, "0 mm", "eb_l", "EYE BRACKET")
+            body = fe.bodies.item(0)
+            body.name = "EYE BRACKET"
+            fold_fillets(eb_comp, body, "EYE BRACKET", sec, M.EYE_BRACKET_FOLDS, ctx, radius=M.eye_bracket_fold_radius)
+            circle_cut_x(eb_comp, body, "EYE BRACKET EYE", "-1 mm", "eb_l / 2", "eb_ez", "eb_hole", "eb_t + 2 mm", 1, ctx)
+            for k, sx in ((1, "-"), (2, "+")):
+                circle_cut(eb_comp, body, "EYE BRACKET RIVET %d" % k, "(eb_w + eb_t) / 2",
+                           "eb_l / 2 %s (rib_crown / 2 + rib_fl / 2)" % sx, "eb_rv", "-1 mm", "eb_t + 1 mm", ctx)
+            set_material(eb_comp, ctx, "steel")
+        else:
+            o = cass.occurrences.addExistingComponent(eb_comp, adsk.core.Matrix3D.create())
+        place_rotated(cass, o, (b[0], b[3], "0 mm"), rotation(-90.0, False), name, ctx,
+                      [(False, "-90.0000 deg"), (True, "90.0000 deg")])
+    # the safety catches 518002 (Gripple Loop No.3): the rope's space from the bracket up to its eye tab, its origin
+    # on cross member 2's front face
     catch_comp = None
     for name, b in M.catch_boxes():
         if catch_comp is None:
-            o, catch_comp = build_hold(cass, "catch", ("-catch_w / 2", "catch_w / 2", "-catch_d", "0 mm", "0 mm", "catch_h"), ctx)
+            o, catch_comp = build_hold(cass, "catch", ("-eye_w / 2", "eye_w / 2", "-eye_r", "-lin_gap", "eb_h", "eye_z"), ctx)
         else:
             o = cass.occurrences.addExistingComponent(catch_comp, adsk.core.Matrix3D.create())
-        xc = "(%s) + catch_w / 2" % b[0]
-        place(cass, o, (xc, b[3], "0 mm"), name, ctx)      # origin on the member's front face
+        place(cass, o, ("(%s) + eye_w / 2" % b[0], M.member_front_cs(2), "0 mm"), name, ctx)
     return tray_comp
 
 
