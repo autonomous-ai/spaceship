@@ -19,7 +19,7 @@ import re
 import shutil
 import subprocess
 
-from common import Finding, owner_for, rel, walk_files, parse_file_name, pn_class, is_soft
+from common import PN_RE, Finding, owner_for, read_csv, rel, walk_files, parse_file_name, pn_class, is_soft
 import dxf_layers
 import stepfile as sf
 
@@ -1140,8 +1140,146 @@ def processed_bought(plists, holes_by_pn):
     return out
 
 
+# The Lead's ruling (2026-11-01) for D-131's welded frames: a member's drawing is its row in its frame's cut list, on
+# the weldment drawing. A member needs a sheet of its own only for features made before welding, or end cuts a cut
+# list can't state. The cut lists key each member's number in a member-part column beside its frame's number.
+MEMBER_COL = re.compile(r"^member_?(?:part|pn)(?:_?number)?$", re.I)
+FRAME_COLS = ("frame", "weldment", "frame_part", "frame_number")
+BEFORE_WELD = re.compile(r"\bbefore\s+(?:the\s+)?weld", re.I)
+# D-162: the row gives the member's section, cut length, both end angles and quantity; the release checklist tests
+# the same (build_release_checklist.py, d162_rows), with these patterns: keep them in step
+END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
+SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends|\bsquare ends\b", re.I)
+# one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
+_ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
+BOTH_ENDS_ANGLE = re.compile(r"\b(?:both ends|ends both)\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE),
+                             re.I)
+
+
+def member_row_lacks(row):
+    """What a member's cut-list row doesn't give of D-162's: its section, cut length, both end angles ('angles on
+    the frame drawing' doesn't state them) and quantity."""
+    cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str)
+             and isinstance(v, str)}
+    ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
+    return [what for what, ok in (
+        ("its section", bool(cells.get("section"))),
+        ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
+        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))
+         or bool(BOTH_ENDS_ANGLE.search(ends))),
+        ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
+UNSTATED_END = re.compile(r"\b(?:cope[ds]?|coping|notch(?:ed|es)?|saddle|fish-?mouth|profile[- ]cut)\b", re.I)
+
+
+def weldment_members(root):
+    """{member's part number: [(its frame's number, its cut-list row, the cut list)]} from the frames' cut lists."""
+    out = {}
+    for f in walk_files(root, "v2/03-Manufacturing", exts=(".csv",)):
+        try:
+            rows = read_csv(f)
+        except (UnicodeDecodeError, OSError):
+            continue
+        if not rows:
+            continue
+        cols = [c for c in rows[0].keys() if isinstance(c, str)]
+        mcol = next((c for c in cols if MEMBER_COL.match(c.strip())), None)
+        fcol = next((c for c in cols if c.strip().lower() in FRAME_COLS), None)
+        if not mcol or not fcol:
+            continue
+        for r in rows:
+            m, w = (r.get(mcol) or "").strip(), (r.get(fcol) or "").strip()
+            if PN_RE.match(m) and PN_RE.match(w):
+                out.setdefault(m, []).append((w, r, rel(root, f)))
+    return out
+
+
+def member_ends(solid):
+    """A straight member's two ends: how many distinct planes cut each (one: square or one mitre, which a cut list
+    states; two or more: a notch, a cope or a double cut, which it can't). Its run is the direction of its longest
+    straight edges. None when it isn't a straight member: no straight edges, or shorter than 1.5 times its section."""
+    lines = [(a, b) for f in solid.faces for a, b in f.lines if sf.norm(sf._sub(b, a)) != sf._sub(b, a)]
+    lines = [(a, b, math.dist(a, b)) for a, b in lines if math.dist(a, b) > 1e-6]
+    if not lines:
+        return None
+    a0, b0, _l = max(lines, key=lambda t: t[2])
+    axis = sf.norm(sf._sub(b0, a0))
+    acc = [0.0, 0.0, 0.0]
+    for a, b, length in lines:
+        d = sf.norm(sf._sub(b, a))
+        c = sf.dot(d, axis)
+        if abs(c) > 0.9999:
+            for k in range(3):
+                acc[k] += d[k] * length * (1.0 if c > 0 else -1.0)
+    axis = sf.norm(tuple(acc))
+    pts = [p for f in solid.faces for p in f.points]
+    ts = [sf.dot(p, axis) for p in pts]
+    lo, hi = min(ts), max(ts)
+    u = sf.norm(sf.cross(axis, (1.0, 0.0, 0.0) if abs(axis[0]) < 0.9 else (0.0, 1.0, 0.0)))
+    v = sf.cross(axis, u)
+    size = max(max(sf.dot(p, u) for p in pts) - min(sf.dot(p, u) for p in pts),
+               max(sf.dot(p, v) for p in pts) - min(sf.dot(p, v) for p in pts))
+    if hi - lo < 1.5 * size:
+        return None
+    # an end cut reaches its end, or lies within twice the section's size of it (a notch's floor); a face further
+    # in (a slot's end, a cut-out) is a feature along the member, not an end cut
+    reach = 2.0 * size + 5.0
+    found = ([], [])
+    for f in solid.faces:
+        if f.kind != "plane" or not f.normal or not f.points or abs(sf.dot(f.normal, axis)) < 1e-3:
+            continue
+        ft = [sf.dot(p, axis) for p in f.points]
+        if min(ft) - lo <= 0.5 or max(ft) - lo <= reach:      # it reaches the end (a steep mitre), or lies near it
+            side_i = 0
+        elif hi - max(ft) <= 0.5 or hi - min(ft) <= reach:
+            side_i = 1
+        else:
+            continue
+        n = f.normal if sf.dot(f.normal, axis) > 0 else sf._mul(f.normal, -1.0)
+        plane = (n, sf.dot(n, f.points[0]))
+        if not any(abs(sf.dot(n, q[0]) - 1.0) < 1e-4 and abs(plane[1] - q[1]) < 0.05 for q in found[side_i]):
+            found[side_i].append(plane)
+    return len(found[0]), len(found[1])
+
+
+def member_lacks(pn, entries, idx, ends=None, text_of=None):
+    """What keeps a weldment member off its frame's cut-list route ([] when its row is its drawing): D-162's row
+    (the best of its rows), work before welding or an end a cut list can't state, and a frame drawing that doesn't
+    carry its row. A frame with no drawing yet carries its members in its own finding, not theirs."""
+    text_of = text_of or pdf_text
+    lacks = []
+    best = min((member_row_lacks(row) for _w, row, _f in entries), key=len)
+    if best:
+        lacks.append("its cut-list row doesn't give %s (D-162)" % ", ".join(best))
+    words = " ".join(str(v) for _w, row, _f in entries for k, v in row.items() if isinstance(k, str) and v)
+    m = BEFORE_WELD.search(words)
+    if m:
+        lacks.append("its cut-list row has work done before welding ('%s')" % words[max(0, m.start() - 30):m.end() + 20]
+                     .strip())
+    m = UNSTATED_END.search(words)
+    if m:
+        lacks.append("its cut-list row names an end cut a cut list can't state ('%s')" % m.group(0))
+    for body in ends or ():
+        if body and max(body) > 1:
+            lacks.append("its STEP shows an end cut by %d planes (a notch, a cope or a double cut), which a cut list "
+                         "can't state" % max(body))
+            break
+    drawn, why = [], []
+    for w, f in sorted({(w, f) for w, _row, f in entries}):      # a member on several rows of one list: once
+        pdfs = sorted(p for _rv, p in idx.get(w, {}).get("DWG", []) if p.lower().endswith(".pdf"))
+        if not pdfs:
+            continue                    # the frame's own missing drawing is the finding
+        text = text_of(pdfs[-1]) or ""
+        drawn.append(bool(re.search(r"(?<!\d)%s(?!\d)" % pn, text)))
+        if not drawn[-1]:
+            why.append("its frame %s's drawing %s doesn't show its cut-list row" % (w, os.path.basename(pdfs[-1])))
+    if drawn and not any(drawn):
+        lacks.extend(why)
+    return lacks
+
+
 def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
-                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None, made_why=None):
+                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None, made_why=None,
+                   ends_by_pn=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -1150,10 +1288,16 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     faces_by_pn = faces_by_pn or {}
     src_by_pn = src_by_pn or {}
     flat_by_pn = flat_by_pn or {}      # pn -> (ok, thickness, why) from the STEP (D-89 part 4)
-    bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (D-113)
+    bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (no rule since D-158: kept for callers)
     two_wall_by_pn = two_wall_by_pn or {}   # pn -> hole axes through two walls of one body (D-113)
     cuboid_by_pn = cuboid_by_pn or {}  # pn -> sides of its one shape when that is a plain rectangular block (D-125)
     prism_by_pn = prism_by_pn or {}    # pn -> (its one shape cut straight through from sheet, or None, why) (D-128)
+    ends_by_pn = ends_by_pn or {}      # pn -> [(planes at one end, at the other)] per body (weldment members)
+    members = weldment_members(root)   # the Lead's ruling and D-162: a D-120 member's row in its frame's cut list
+    frames = {}
+    for m, entries in members.items():
+        for w, _row, _f in entries:
+            frames.setdefault(w, set()).add(m)
     fs = []
     idx = index_files(root)
     drawgen = drawgen_parts(root) if policy(root, "missing_drawing_severity", "severe") == "auto-screen-lock" else set()
@@ -1264,12 +1408,31 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                               "finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
                               r_where, owner))
             continue
+        d_member = ""
+        if not pdfs and cls == "part" and pn in members:
+            lacks = member_lacks(pn, members[pn], idx, ends_by_pn.get(pn))
+            if not lacks:
+                continue        # its row in its frame's cut list, on the frame's drawing, is its drawing
+            d_member = (" As a member of a welded frame its row in the frame's cut list, on the frame's drawing, "
+                        "would do, but %s." % "; ".join(lacks))
+        d_frame = ""
+        if not pdfs and pn in frames:
+            ms = sorted(frames[pn])
+            d_frame = (" Its drawing is also its members' drawing: it carries their cut list (D-162), %d member%s "
+                       "(%s)." % (len(ms), "" if len(ms) == 1 else "s", ", ".join(ms[:6]) + (", ..." if len(ms) > 6
+                                                                                         else "")))
         if not pdfs:
             why = " %s." % (made_why or {})[pn] if pn in (made_why or {}) else ""
             fs.append(Finding("C05", "no-drawing", pn, missing_for(pn) if cls == "part" else "major",
-                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s%s" % (
-                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125, why),
-                              "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s%s%s%s" % (
+                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125, why,
+                                  d_member, d_frame),
+                              "Make the ISO first-angle drawing, export it through the name strip, and commit it" +
+                              ("; or, for a member of a welded frame, give its section, cut length, both end angles "
+                               "and quantity in its row of the frame's cut list, on the frame's drawing (a sheet of "
+                               "its own only for work done before welding or an end cut a cut list can't state)."
+                               if d_member else
+                               "; with its members' cut list on it (D-162)." if d_frame else "."),
                               r_where, owner))
             continue
         revs = {rv for rv, _p in pdfs}
@@ -1281,12 +1444,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             owner, gen_fix = GENERATOR_OWNER, GENERATOR_FIX
         else:
             gen_fix = ""
-        if gen and bends_by_pn.get(pn):
-            fs.append(Finding("C05", "generated-bent-part", pn, "major",
-                              "%s has %d bends in its STEP, but its drawing %s was made by tools/drawgen; D-113 keeps "
-                              "bent parts, brackets included, in Fusion." % (label, bends_by_pn[pn], os.path.basename(rp)),
-                              "Leave this part to Fusion: take it off the generator's list and delete the generated "
-                              "drawing once Fusion's is in (D-113).", rp, owner))
+        # D-158 replaced D-113 (3): bent parts are the generator's too (its bent sheet mode, #335); Fusion is for
+        # models and exports only, so a generated drawing of a bent part is no finding
         if cad_revs and not (revs & cad_revs):
             fs.append(Finding("C05", "rev-mismatch", pn, "major",
                               "%s: drawing revision %s but CAD/STEP revision %s." % (
