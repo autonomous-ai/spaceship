@@ -478,17 +478,16 @@ def frame_members():
                         ("C08", "CHAMFER TUBE RIGHT", xc_r)):
         add(key, nm, ("y", "z"), ch_pts, "x", x0, "%s + fr_w" % x0,
             ends="lower end sits on the front ring's top tube, upper end square to the back ring's top tube")
-    # along the DT joint (plan), on the ledge DT stands on: the joint turns at X 449 from v1's slanted line to
-    # straight back, so two tubes mitred at the turn
+    # along the DT joint (plan), on the ledge DT stands on: v1's slanted joint line turns at X 449 to run straight
+    # back, but only 5.5 mm before the back ring, so one slanted tube runs on to the back ring, its end cut along the
+    # ring's face; the skin's last 5.5 mm of straight edge is backed by the ring itself (the 15 x 5.5 mm wedge that was
+    # C10 is no part anyone can cut or weld: drawgen refused it; PM ruling 2026-11-01, 352321 cancelled)
     jl = FL.line("dr_jnx", "dr_jny", "dr_jc")
     j20 = FL.push(jl, "fr_w")
-    xdt, xdt20 = "(%s + dt_xr)" % XL, "(%s + dt_xr + fr_w)" % XL
-    turn_o, turn_i = FL.meet(jl, FL.line(1, 0, xdt)), FL.meet(j20, FL.line(1, 0, xdt20))
-    add("C09", "DT JOINT TUBE SLANTED", ("x", "y"), [FL.meet(jl, FL.line(0, 1, yf1)), turn_o, turn_i,
-                                                     FL.meet(j20, FL.line(0, 1, yf1))],
-        "z", ZT, "%s + fr_w" % ZT, ends="front end square to the front ring, back end mitred to C10")
-    add("C10", "DT JOINT TUBE STRAIGHT", ("x", "y"), [turn_o, (xdt, yb0), (xdt20, yb0), turn_i], "z", ZT, "%s + fr_w" % ZT,
-        axis=(0, 1), ends="front end mitred to C09, back end square to the back ring")
+    add("C09", "DT JOINT TUBE SLANTED", ("x", "y"), [FL.meet(jl, FL.line(0, 1, yf1)), FL.meet(jl, FL.line(0, 1, yb0)),
+                                                     FL.meet(j20, FL.line(0, 1, yb0)), FL.meet(j20, FL.line(0, 1, yf1))],
+        "z", ZT, "%s + fr_w" % ZT, ends="both ends cut along the rings' faces: the front ring's at the front, the "
+                                        "back ring's at the back")
     return M
 
 

@@ -18,11 +18,11 @@ Checked on the model (the frame data evaluated on skeleton P04: each tube's soli
 
 | Frame | Tubes | Parts | Repeats (each a pure shift of the first) |
 |---|---:|---:|---|
-| DR 351306 | 24 (25 with F09) | 21 (22) | C01, C04, C05 (Z +1820, +2068.86); C06, C08 (X +541.85) |
+| DR 351306 | 24 (with F09, less C10) | 21 | C01, C04, C05 (Z +1820, +2068.86); C06, C08 (X +541.85) |
 | DT 351204 | 13 | 11 | C01, C02, C03 (X +555.28, +984.82) |
 | DL 351104 | 26 | 16 | R1D to R4D and R1K to R4K (Z +612.25, +1366.75, +1988.75); R2O to R4O and R2F to R4F (Z +754.5, +1376.5) |
 
-D-131's skin span check (PM ruling 2026-11-01) adds DR's front-ring cross tube F09 over the fan box, a single part (its number from Control). DR's glass-edge tubes F06 and B07 have the same length but different end cuts: two parts. DL's bottom ring tubes R1O and R1F carry the J-FRONT-02 spigot hole and slot: their own parts. The tubes with holes (DR B01, B02, B05, B08; DT B01, B03; DL B04, R1O, R1F) and the hinge posts (H1 to H3, hinge holes HOLD) are single parts; DT's F02 and R02 take the stop's and catch's screws (holes not modelled yet) and stay single.
+D-131's skin span check (PM ruling 2026-11-01) adds DR's front-ring cross tube F09 over the fan box, a single part (352322 from Control). DR's C10, the DT joint's straight end, was a 5.5 × 15 mm wedge of tube (the joint turns 5.5 mm before the back ring): it is dropped and C09 runs on to the back ring, so 352321 is cancelled (PM ruling 2026-11-01, after drawgen refused the wedge). DR's glass-edge tubes F06 and B07 have the same length but different end cuts: two parts. DL's bottom ring tubes R1O and R1F carry the J-FRONT-02 spigot hole and slot: their own parts. The tubes with holes (DR B01, B02, B05, B08; DT B01, B03; DL B04, R1O, R1F) and the hinge posts (H1 to H3, hinge holes HOLD) are single parts; DT's F02 and R02 take the stop's and catch's screws (holes not modelled yet) and stay single.
 
 ## How the model changes (FRONT's files only)
 
