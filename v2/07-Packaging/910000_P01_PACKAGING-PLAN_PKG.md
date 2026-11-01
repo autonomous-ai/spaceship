@@ -15,7 +15,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 2. **Masses are the layout study's P04 roll-up**, 399.9 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 403.9 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 403.4 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **39 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 9; inside the crate the fixed glass lies on top because it goes in first.
-5. **Checks: FAIL: K14** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
+5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
 6. **PM rulings this plan follows** (packing group, 2026-10-31): the hinge halves that sit in DL ship fitted in DL, so the door travels 1177 mm wide (its 1175 glass and the magnetic seal half, FRONT's CAD); the door hangs before DT; the intake riser and the supply fan box ship apart and go into DR on site, so DR ships at 20 kg or less. And (2026-11-01): nothing rests on DR's felt panel, so DR lies face down with its felt up; the side bands carry the two back-corner keys, so the back band ships 2420 mm long on the 2438 mm deck (D-129); nothing overhangs either deck.
 
 ## 1. Pallets at a glance
@@ -32,14 +32,14 @@ Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`
 
 ![Pallet 1](910001_P01_PALLET-1-48X40_PKG.svg)
 
-Every piece stands on edge with its along-size on the 48 in side; the stack runs across the 40 in side. 18 pieces, 840 mm of parts + 17 foam interleaves of 4 mm + 2 edge boards of 10 mm = **928 mm of 1016** across the 40 in side. Tallest piece 1,495 mm up: 121 deck + 1,495 + 25 cap = **1,641 mm loaded**.
+Every piece stands on edge with its along-size on the 48 in side; the stack runs across the 40 in side. 18 pieces, 919 mm of parts + 17 foam interleaves of 4 mm + 2 edge boards of 10 mm = **1,007 mm of 1016** across the 40 in side. Tallest piece 1,495 mm up: 121 deck + 1,495 + 25 cap = **1,641 mm loaded**.
 
 | Out | Label | Pos. | Piece | kg | Along × up, mm | Thick mm | Fitted in step |
 | ---: | --- | --- | --- | ---: | --- | ---: | ---: |
-| 1 | **1-01** | B1 | WALL - PANEL ASSY - BACK LOWER - B1 | 8.6 | 1200.61 × 1127 | 46 | 3 |
-| 2 | **1-02** | B2 | WALL - PANEL ASSY - BACK LOWER - B2 | 11.5 | 1200.61 × 1127 | 88 | 3 |
-| 3 | **1-03** | L1 | WALL - PANEL ASSY - SIDE LOWER - LH | 15.0 | 1151 × 1492.74 | 48.5 | 4 |
-| 4 | **1-04** | R1 | WALL - PANEL ASSY - SIDE LOWER - RH | 15.0 | 1151 × 1492.74 | 48.5 | 4 |
+| 1 | **1-01** | B1 | WALL - PANEL ASSY - BACK LOWER - B1 | 8.6 | 1200.61 × 1131 | 74 | 3 |
+| 2 | **1-02** | B2 | WALL - PANEL ASSY - BACK LOWER - B2 | 11.5 | 1200.61 × 1131 | 88 | 3 |
+| 3 | **1-03** | L1 | WALL - PANEL ASSY - SIDE LOWER - LH | 15.0 | 1155 × 1492.74 | 74 | 4 |
+| 4 | **1-04** | R1 | WALL - PANEL ASSY - SIDE LOWER - RH | 15.0 | 1155 × 1492.74 | 74 | 4 |
 | 5 | **1-05** | B3 | WALL - PANEL ASSY - BACK UPPER - B3 | 8.6 | 1200.61 × 1118.61 | 46 | 5 |
 | 6 | **1-06** | B4 | WALL - PANEL ASSY - BACK UPPER - B4 | 8.6 | 1200.61 × 1118.61 | 46 | 5 |
 | 7 | **1-07** | L2 | WALL - PANEL ASSY - SIDE UPPER - LH | 11.3 | 1142.74 × 1492.74 | 48.5 | 6 |
@@ -179,10 +179,10 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 
 | Label | Part number | Piece | Vietnamese | Pos. | kg | Status | Size mm | Step |
 | --- | --- | --- | --- | --- | ---: | --- | --- | ---: |
-| **1-01** | 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | Vách hậu - cụm tấm dưới trái | B1 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1127 × 46 | 3 |
-| **1-02** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 11.51 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 3 |
-| **1-03** | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | L1 | 15.03 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 4 |
-| **1-04** | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | R1 | 15.03 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 4 |
+| **1-01** | 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | Vách hậu - cụm tấm dưới trái | B1 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1131 × 74 | 3 |
+| **1-02** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 11.51 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1131 × 88 | 3 |
+| **1-03** | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | L1 | 15.03 | calculation (CAD); fill provisional | 1492.74 × 1155 × 74 | 4 |
+| **1-04** | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | R1 | 15.03 | calculation (CAD); fill provisional | 1492.74 × 1155 × 74 | 4 |
 | **1-05** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - B3 | Vách hậu - cụm tấm trên trái | B3 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1118.61 × 46 | 5 |
 | **1-06** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - B4 | Vách hậu - cụm tấm trên phải | B4 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1118.61 × 46 | 5 |
 | **1-07** | 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | Vách trái - cụm tấm trên | L2 | 11.34 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 48.5 | 6 |
@@ -299,7 +299,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 | K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 403.9 kg; 0 lines miscounted, 0 unknown | yes |
 | K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-03 FRONT - DECOR BLOCK ASSY - DR 18.9 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 39 pieces, 0 fail | yes |
-| K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 928 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
+| K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 1007 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1563 mm; widest tier 1219 mm; longest lane 2430 mm; failing tiers none | yes |
 | K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
 | K7 | The guide's bolts match the joints register, joint by joint | guide 92 (80 × M6 × 16, 12 × M6 × 25); register 92; differences none | yes |
@@ -309,7 +309,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
 | K12 | Every skeleton body maps to exactly one label, for the step pictures | 31 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
 | K13 | Every part number on a label is the master BOM's number for that name | 35 of 39 pieces numbered, 2 of them from the BOM by name (1-17, 1-18); still TBD: BASE 1, ELECTRICAL 1, WALL 2; named otherwise in the BOM: none; not in the BOM: none; two numbers for one name: none; neither a number nor TBD: none | yes |
-| K14 | Every piece's planned size holds its own CAD, as it ships | 32 pieces checked against 22 STEP files; no CAD yet: 7 (1-05, 1-06, 1-17, 1-18, 2-12, 2-14, 2-21); over: ['1-03 CAD 1492.74 × 1154.55 × 74 over planned 1492.74 × 1151 × 48.5']; unreadable: none | **NO** |
+| K14 | Every piece's planned size holds its own CAD, as it ships | 32 pieces checked against 22 STEP files; no CAD yet: 7 (1-05, 1-06, 1-17, 1-18, 2-12, 2-14, 2-21); over: none; unreadable: none | yes |
 | K15 | Every piece goes into the install sheet's elevator, leaned in through its door (the glass out of its crate) | car 2032 × 1295 × 2286 mm inside, door 1070 × 2134: not in: none; a typical car with a 914 mm door: not in: ['2-03']; the crate itself: opened at the entrance | yes |
 
 ### Sizes against CAD (K14)
@@ -318,10 +318,10 @@ Each piece's planned size (sorted, mm) against the box of its own CAD as it ship
 
 | Label | Piece | Planned mm | CAD mm, as it ships | STEP |
 | --- | --- | --- | --- | --- |
-| **1-01** | WALL - PANEL ASSY - BACK LOWER - B1 | 1200.61 × 1127 × 46 | 1200.61 × 1126.61 × 46 | `210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step` |
-| **1-02** | WALL - PANEL ASSY - BACK LOWER - B2 | 1200.61 × 1127 × 88 | 1200.61 × 1126.61 × 87.5 | `210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step`, `710000_P01_ELECTRICAL_STEP.step` |
-| **1-03** | WALL - PANEL ASSY - SIDE LOWER - LH | 1492.74 × 1151 × 48.5 | 1492.74 × 1154.55 × 74 | `210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` |
-| **1-04** | WALL - PANEL ASSY - SIDE LOWER - RH | 1492.74 × 1151 × 48.5 | 1492.74 × 1150.74 × 48.26 | `210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step` |
+| **1-01** | WALL - PANEL ASSY - BACK LOWER - B1 | 1200.61 × 1131 × 74 | 1200.61 × 1126.61 × 46 | `210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step` |
+| **1-02** | WALL - PANEL ASSY - BACK LOWER - B2 | 1200.61 × 1131 × 88 | 1200.61 × 1126.61 × 87.5 | `210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step`, `710000_P01_ELECTRICAL_STEP.step` |
+| **1-03** | WALL - PANEL ASSY - SIDE LOWER - LH | 1492.74 × 1155 × 74 | 1492.74 × 1154.55 × 74 | `210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` |
+| **1-04** | WALL - PANEL ASSY - SIDE LOWER - RH | 1492.74 × 1155 × 74 | 1492.74 × 1150.74 × 48.26 | `210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step` |
 | **1-05** | WALL - PANEL ASSY - BACK UPPER - B3 | 1200.61 × 1118.61 × 46 | no CAD yet | - |
 | **1-06** | WALL - PANEL ASSY - BACK UPPER - B4 | 1200.61 × 1118.61 × 46 | no CAD yet | - |
 | **1-07** | WALL - PANEL ASSY - SIDE UPPER - LH | 1492.74 × 1142.74 × 48.5 | 1492.74 × 1142.74 × 48.26 | `210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step` |
