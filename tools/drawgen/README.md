@@ -63,8 +63,10 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
 - A notch through one wall at a member's end (BASE's stud-head notches): its width, its place across from the
   nearer side face and its length from the end, in the view that looks at that wall (enlarged in a detail when
   small). Notches alike at the two ends are sized once, and the detail says the other end is the same.
-- A chamfer with equal legs between a square end and a side face: "1 x 45°" on a leader, in the view that looks
-  along its edge. A welded end plate (a square face just inside an end) needs no size: the material line gives it.
+- A chamfer with equal legs between a square end and a side face, or along a tube's outer corner the whole length
+  (CEILING's seam member): "1 x 45°" on a leader, in the view that shows its true angle (looking along its edge, or
+  a removed section across its member), else where it shows as a band it faces (CEILING's back member's end bevel,
+  seen from below). A view is planned for a bevel no other view shows. A welded end plate (a square face just inside an end) needs no size: the material line gives it.
 - Frames: member balloons, the cut list from the parts list, stile positions, the D-115 joint note.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
@@ -85,8 +87,8 @@ itself hides, a part that fits no ISO scale on its sheet. On a straight member, 
 profile, an end, a mitre or compound end cut, a slot's own sides, a notch, an even chamfer or a welded end plate's
 inner face (a step, a pocket, a window in a wall, an uneven chamfer): drawgen would draw it without a size, so it
 names the faces and refuses the part. A straight member whose section isn't a solid convex outline or a
-rectangular tube (an angle, a channel, a custom extrusion, a tube with a bevel along a corner): drawgen would size
-only its outside, so it refuses it as a profile (D-139 keeps a profile's dimensioned section with Fusion until the
+rectangular tube (an angle, a channel, a custom extrusion, a tube with a corner cut that isn't an even 45° bevel of
+5 or less): drawgen would size only its outside, so it refuses it as a profile (D-139 keeps a profile's dimensioned section with Fusion until the
 profile reading lands). An extrusion's open section is judged as a profile, not as a fold. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
 their team's file with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
 make: a Fusion drawing stays.
