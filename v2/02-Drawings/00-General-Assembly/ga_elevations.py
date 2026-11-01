@@ -202,6 +202,14 @@ def step_views(sheet: "adsk.drawing.Sheet"):
         want = SCALE if name != "iso" else SCALE * 0.75
         if abs(v.scaleValue - want) > 1e-9:
             v.scaleValue = want     # the input's scale was ignored in Phase 0
+        # Fusion ignores the style given in the input (hidden lines showed on every view,
+        # the iso too: CEILING 2026-11-01), so set it again on the made view and check it
+        visible = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
+        if v.style != visible:
+            v.style = visible
+            adsk.doEvents()
+        if v.style != visible:
+            raise RuntimeError("the %s view keeps its hidden lines (style %s)" % (name, v.style))
         print("added %s view at %s" % (name, center))
     describe(sheet)
 
