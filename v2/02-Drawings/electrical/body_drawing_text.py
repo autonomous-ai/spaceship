@@ -202,8 +202,9 @@ def lines(date="2026-11-01"):
              % v["t"], BODY_H, False),
             ("   711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DXF.dxf (same revision).", BODY_H, False),
             ("4. Fit the Heyco 2836N bushings in H01-H03 after folding. Press the PEM CLA-M4-1 clinch nuts into H05-H08 "
-             "and the FHA-M5-12 earth stud into H09, head outside (PEM's installation data; the order with the folding "
-             "is the factory's, with its tooling).", BODY_H, False),
+             "from inside the box, head inside, so the plate's screws pull them onto the lips (PEM CL-18). Press the "
+             "FHA-M5-12 earth stud into H09 head outside, with PEM's anvil for sheet up to 1.5 mm (FH-18). The order "
+             "with the folding is the factory's, with its tooling.", BODY_H, False),
             ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12). H09's place is an assumption until the "
              "unit's inside layout (the factory's).", BODY_H, False),
             ("6. (%s) and (%s): the H05-H08 pitch, for reference; the hole table gives the positions." % pitch(p),

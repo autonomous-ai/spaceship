@@ -372,9 +372,12 @@ part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - h
      source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
           "ISO 2768-m; covers B2-CASS's cut felt edge 8 mm all round and stands 2 mm off the felt on 4 spacers (718049); critical holes: "
-          "the 4 x Ø4.5 M4 holes on the body's clinch nuts (42 and 23 mm from the plate's edges, true "
-          "position Ø0.3), the breaker window 19 x 45 +0.5/0; HOLD: the GFCI receptacle's decorator opening 33.6 x 67 "
-          "with its two 6-32 plate screw holes 96.8 apart, and the two keystone openings 14.9 x 19.4 (D-133)")
+          "the 4 x Ø4.5 M4 holes on the body's clinch nuts (42 and 22 mm from the plate's edges, true "
+          "position Ø0.3), the breaker window 19 x 45 +0.5/0; the GFCI and the breaker on the left, the vent grille "
+          "(8 rows of 3 slots 44 x 4, the unit's heat check, calc-results §6) on the right, 20 mm or more from the "
+          "bare mains parts (UL 62368-1 openings); one M4 screw carries the bonding washer 718083; HOLD: the GFCI "
+          "receptacle's decorator opening 33.6 x 67 with its two 6-32 plate screw holes 96.8 apart, and the two "
+          "keystone openings 14.9 x 19.4 (D-133)")
 # ---- power unit 710001: bought parts
 part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 1,
      "potted plastic case, IP67", "", 0.40, "source", maker="Mean Well", sku="LPV-60-12",
@@ -477,6 +480,11 @@ part("lever", "718080", "ELECTRICAL - LEVER CONNECTOR - 5 CONDUCTOR - UL 486C", 
      note="the mains joints inside the unit, one set for L (from the breaker) and one for N (from the inlet): the feed, "
           "the GFCI's LINE and each supply's input lead (%d per pole%s); kept apart from the 12 V wiring" % (
               _POLE, "" if _POLE <= 5 else ", in two connectors joined by a short 14 AWG jumper"))
+part("plate_bond", "718083", "ELECTRICAL - BONDING WASHER - SERRATED M4 A2", "Điện - long đen răng tiếp địa M4", "PI",
+     "710001", 1, "stainless A2", "", 0.00015, "source", status=HOLD_BUY,
+     note="the front plate's bond: under one M4 plate screw's head, its teeth bite through the anodising, and the screw "
+          "runs into the body's clinch nut, so the plate is earthed through the body (the plate stands on nylon "
+          "spacers, so nothing else bonds it)")
 part("serrated", "718015", "ELECTRICAL - BONDING WASHER - SERRATED M6 A2", "Điện - long đen răng tiếp địa", "PI", "710001", 1,
      "stainless A2", "", 0.001, "assumption", sku="DIN 6798 A 6.4 A2, maker HOLD", status=HOLD_BUY, source="DIN 6798",
      note="under the bond lead's lug on one mounting bolt, so the lug bites through to bare aluminium")
@@ -823,6 +831,12 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'max, height 5 max, 8 across flats, 1.4 g',
             'https://www.fabory.com/en/p/51119050001/generatePdf',
             'its serrations lock it on the top lug; 1.2 N m (see 718014)'),
+ '718083': ('FABORY 51460.040.001 DIN 6798 A',
+            'Fabory',
+            '51460.040.001: serrated lock washer, external teeth, DIN 6798 A, M4 (4.3 x 8), stainless spring steel A2 '
+            '(1.4310), 0.15 g',
+            'https://www.fabory.com/en/p/51460040001/generatePdf',
+            "the front plate's bond to the earthed body (UL: accessible metal near mains parts is earthed)"),
  '718080': ('WAGO 221-415',
             'WAGO',
             '221-415: COMPACT splicing connector, 5 conductors, levers, 24-12 AWG (0.14-4 mm2), strip 11 mm; UL 486C '

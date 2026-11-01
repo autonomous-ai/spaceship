@@ -339,6 +339,53 @@ class LoadTotal(unittest.TestCase):
             self.assertAlmostEqual(float(r["a_total_max"]), float(r["w_total_max"]) / EP.BUS_V[r["supply"]], places=2)
 
 
+class Inside(unittest.TestCase):
+    """The power unit's inside layout on the 710001 sheet (Reviewer 7 on #337: the three supplies and the light
+    controller, about 233 of the 258 mm inside), and its heat check (calc-results section 6)."""
+
+    def test_layout_fits_the_box(self):
+        import assembly_sheets as AS
+        items = AS.INSIDE
+        for name, a, b, c, d, dep, side in items:
+            self.assertTrue(0 <= a < c <= AS.INSIDE_W and 0 <= b < d <= AS.INSIDE_H, name)
+            self.assertLessEqual(dep, AS.INSIDE_D, name)
+
+        def overlap(p, q):
+            return min(p[3], q[3]) > max(p[1], q[1]) and min(p[4], q[4]) > max(p[2], q[2])
+        back = [x for x in items if x[6] == "back"]
+        front = [x for x in items if x[6] == "front"]
+        for i, p in enumerate(back):
+            for q in back[i + 1:]:
+                self.assertFalse(overlap(p, q), (p[0], q[0]))
+        for p in front:
+            for q in back:
+                if overlap(p, q):
+                    self.assertLessEqual(p[5] + q[5], AS.INSIDE_D, (p[0], q[0]))
+        # every supply in the parts list is placed
+        placed = " ".join(x[0] for x in items)
+        for sid, _k, _o, _w, _a, _f, _why in EP.SUPPLIES:
+            self.assertIn(sid, placed)
+
+    def test_vents_clear_the_bare_mains_parts(self):
+        """UL 62368-1: no vent slot within 15 mm of a bare mains part's band, and none above one."""
+        import unit_heat as U
+        f = U.part_params("front")
+        x0 = f["vent_x1"] - f["vent_l"] / 2 - f["edge_off"]
+        mains_x1 = max(f["din_x"] + f["din_w"] / 2, f["gfci_x"] + 43.9 / 2) - f["edge_off"]
+        self.assertGreaterEqual(x0 - mains_x1, 15.0)
+        self.assertLessEqual(f["vent_w"], 4.0)
+
+    def test_heat_worst_case_under_every_limit(self):
+        import unit_heat as U
+        air = U.results(EP, 12.0, U.SHELL_PATH_WORST)[0] + U.STRAT_K
+        for name, lim, _src in U.DEVICES:
+            self.assertLess(air, lim, name)
+        for sid, key, rated, _v, _w, feeds in U.case_supplies(EP):
+            knee = U.CLG_KNEE if key == "ps_kit" else U.LPV_KNEE
+            peak = sum(q * wm for (_i, _n, s_, _f, q, wm, _t, _st, _src, _no) in EP.LOADS if s_ == sid)
+            self.assertLess(peak, U.derated(knee, air) * rated, sid)
+
+
 class Sheets(unittest.TestCase):
     """The PM's drawing check, item 1 (2026-11-01), and the guideline's "never shrink the font to fit a page",
     read back from the saved PDFs, independent of the generators' own checks."""
