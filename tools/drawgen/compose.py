@@ -1640,8 +1640,9 @@ def mapping_words(view, pod_system):
 
 
 def feature_text(ft):
+    rivet = getattr(ft, "rivet", None)
     if not ft.reg:
-        return ""
+        return ("rivet hole: %s" % rivet) if rivet else ""
     pns = []
     for p in inputs.part_numbers_in(ft.reg["mating"]):
         if p not in pns:
@@ -1649,6 +1650,8 @@ def feature_text(ft):
     t = "%s %s" % (ft.reg["id"], inputs.short_function(ft.reg["function"]))
     if pns:
         t += " (%s)" % ", ".join(pns[:3])
+    if rivet:
+        t += "; rivet hole: %s" % rivet
     return t
 
 
@@ -2523,14 +2526,20 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row)
+    # rivet holes: an entry lists its rivet hole sizes with the rivet (BASE's D-130 boot: blind rivets in 3.3, 4.2
+    # and about 5.0 holes, the tap drills' sizes too; the PM's ruling): those holes are no tap drills, and their
+    # table rows name the rivet
+    rivets = {float(k): str(v) for k, v in (spec.get("rivet_holes") or {}).items()}
+    for ft in part.features:
+        ft.rivet = next((v for k, v in rivets.items() if ft.kind == "hole" and abs(ft.f.dia - k) < 0.011), None)
     # tapped holes need thread callouts (item 5): until then such a part isn't drawn (the PM's ruling on #296). A hole
-    # is taken as tapped when the part's row says so, or when its size is a metric tap drill's (M3 to M8), which no
-    # clearance hole in the project uses
+    # is taken as tapped when the part's row says so (rivet holes or not), or when its size is a metric tap drill's
+    # (M3 to M8), which no clearance hole in the project uses, and its entry doesn't list it as a rivet hole
     if not spec.get("_test_allow_tapped"):
         words = " ".join((part.row.get(k) or "") for k in ("process", "note", "name", "tolerance")).lower()
         said = re.search(r"\btap(ped|ping)?\b|\bthread|\bm\d+\s*x\s*[\d.]+", words)
         drills = (2.5, 3.3, 4.2, 6.8)
-        sized = [ft for ft in part.features if ft.kind == "hole" and (
+        sized = [ft for ft in part.features if ft.kind == "hole" and not ft.rivet and (
             4.9 <= ft.f.dia <= 5.16 or any(abs(ft.f.dia - d) < 0.06 for d in drills))]
         if said or sized:
             raise NotDrawable("%s has tapped holes (%s): their thread callouts come with item 5; until then the part "
