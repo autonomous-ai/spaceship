@@ -59,9 +59,36 @@ PERIMETER_T, INNER_T = 1.0, 0.8  # mm, the gauges this check sets (D-131's start
 SIDE_T = 1.2                     # mm, the side panels' rails and front stiles (PM ruling 2026-11-01)
 MAX_USE = 0.90                   # every frame's corner lift at the thinnest accepted wall (PM ruling 2026-11-01)
 PLATE_T = 2.0                    # mm, the plate in each mitre (PROPOSED; at least 1.5 x the 1.0 wall)
-# corner plates: the mitre's outline (its length along the mitre line x the 40 frame depth), per corner type
-PLATES = {"20x40 to 20x40, 45 deg": 20 * 2 ** 0.5, "rail to 40x40, 63.43 / 26.57 deg": (20 ** 2 + 40 ** 2) ** 0.5,
-          "40x40 to 40x40, 45 deg": 40 * 2 ** 0.5}
+PLATE_GAP = 0.5                  # mm: each square end of a plate sits at least this far inside the frame's faces, on
+                                 # both plate faces (the Lead's steer, 2026-11-01: a plate the mitre's full size pokes
+                                 # out at the outer corner by its half thickness x the cut's cosine; the all-round
+                                 # weld fills the step and is ground flush)
+# corner plates, per corner type: (the two members' widths in the frame's plane, the narrower first; where the blank
+# starts along the mitre line from the frame's outer corner; its length along that line). Laser-cut blanks, the
+# length to 0.1 and the start to 0.05 (calculation; plate_corners() checks them; the joints CAD README places them).
+# Each is 40 across the frame (its depth) and PLATE_T thick.
+PLATE_BLANKS = {"20x40 to 20x40, 45 deg": (20.0, 20.0, 1.75, 26.5),
+                "rail to 40x40, 63.43 / 26.57 deg": (20.0, 40.0, 3.15, 41.5),
+                "40x40 to 40x40, 45 deg": (40.0, 40.0, 1.75, 54.8)}
+PLATES = {k: v[3] for k, v in PLATE_BLANKS.items()}    # the blank's length, for its mass
+
+
+def plate_corners(a, b, x0, length, half=PLATE_T / 2):
+    """How far each corner of a plate's two square ends sits inside the frame's outline (negative: outside it).
+    The corner in the frame's plane: member A along +x (0 <= y <= a), member B along +y (0 <= x <= b), the outer
+    corner at the origin and the inner one at (b, a); the plate's mid-plane on the mitre line between them, its
+    faces half a thickness either side. Found from the corner's coordinates, so no face is assumed to be the one."""
+    L = math.hypot(a, b)
+    u, n = (b / L, a / L), (-a / L, b / L)
+
+    def inside(x, y):
+        if x < 0 or y < 0:
+            return -math.hypot(min(x, 0.0), min(y, 0.0))
+        if x > b and y > a:                                   # in the frame's opening
+            return -min(x - b, y - a)
+        return min(x, y, math.hypot(max(b - x, 0.0), max(a - y, 0.0)))
+    return {"%s end, %s face" % (end, face): inside(s * u[0] + t * n[0], s * u[1] + t * n[1])
+            for end, s in (("outer", x0), ("inner", x0 + length)) for face, t in (("one", half), ("other", -half))}
 
 # the aluminium frames they replace: bare frame and panel masses from each team's parts list on main (calculation)
 AL_FRAME_KG = {"L1": 3.105, "L2": 3.262, "B1": 2.366, "C1": 3.410}
@@ -363,8 +390,11 @@ def report():
           " would be about %.0f%%. With the %.1f mm plate in each mitre (a stiffened knee, plate at least 1.5 t) the corner"
           " carries the tube's moment: the use is the table's." % (k20, k40, tc, 100 * use_plain, PLATE_T))
     n_plates = {k: sum(FRAMES[f][1] * CORNERS[f].get(k, 0) for f in FRAMES) for k in PLATES}
-    print("Corner plates per pod: " + ", ".join("%d of %s (%.1f x 40 x %.1f, %.1f g)" % (
-        n, k, PLATES[k], PLATE_T, 1000 * plate_kg(k)) for k, n in n_plates.items()) +
+    print("Corner plates per pod: " + ", ".join("%d of %s (%.1f x 40 x %.1f from %.2f along the mitre, %.1f g; ends"
+                                                " %.2f inside the faces, %.2f at full size)" % (
+        n, k, PLATES[k], PLATE_T, PLATE_BLANKS[k][2], 1000 * plate_kg(k), min(plate_corners(*PLATE_BLANKS[k]).values()),
+        min(plate_corners(PLATE_BLANKS[k][0], PLATE_BLANKS[k][1], 0.0, math.hypot(*PLATE_BLANKS[k][:2])).values()))
+        for k, n in n_plates.items()) +
           "; %.2f kg in all (in the frame masses above)." % sum(n * plate_kg(k) for k, n in n_plates.items()))
     print("Every perimeter at 1.2 mm: %.0f%% at worst with any grade above, the wall at %.0f%%, for %.1f kg more a pod."
           % (100 * p12[0], 100 * WALL_MIN, d12))
@@ -412,6 +442,14 @@ def check():
         bad.append("T joint weld under the shear")
     if PLATE_T < 1.5 * max(PERIMETER_T, SIDE_T):
         bad.append("mitre plate thinner than 1.5 x the wall: not a stiffened knee")
+    for kind, (a, b, x0, length) in PLATE_BLANKS.items():
+        worst = min(plate_corners(a, b, x0, length).values())
+        if worst < PLATE_GAP - 1e-9:
+            bad.append("mitre plate %s: a square end %.3f inside the frame's faces, under %.1f" % (kind, worst, PLATE_GAP))
+        if min(plate_corners(a, b, 0.0, math.hypot(a, b)).values()) >= 0:      # the rule is checked, not assumed
+            bad.append("a full-size %s plate stays inside the frame: the trim isn't needed, re-check" % kind)
+        if a > b:
+            bad.append("mitre plate %s: the narrower member first" % kind)
     if sum(sum(c.values()) * FRAMES[f][1] for f, c in CORNERS.items()) != 40:
         bad.append("corner count: want 40 a pod")
     # the rules are checked, not assumed: 0.8 perimeters must fail, and so must the weakest grade left out
