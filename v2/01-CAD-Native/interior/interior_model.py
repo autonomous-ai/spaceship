@@ -30,6 +30,7 @@ INTERIOR_PARAMS = [
     ("sh_hb", "40 mm", "mm", "assumption", "back flange height, screwed to the wall cassette"),
     ("sh_hl", "20 mm", "mm", "assumption", "front lip height: hides the up-light strip from a seated eye"),
     ("sh_t", "1 mm", "mm", "assumption", "D-85 budget 0.4 kg/m: 1.0 mm aluminium, 118 mm2 section (0.32 kg/m) plus the strip"),
+    ("sh_r", "sh_t", "mm", "confirmed", "inside bend radius of the shelf's two folds: the Lead's ruling 2026-11-01 on #335 (the drawing generator's bent sheet mode): every fold's inside radius equals the sheet, a safe bend for this aluminium; the flats use K 0.44 (assumption until the factory's bend table sets it), and model, STEP and DXF must agree"),
     ("sh_z0", "2230 mm", "mm", "assumption", "shelf underside; ELECTRICAL's feed and call-light drop are at Z 2250, in the back flange, and the felt ceiling (Z 2316) is 46 above the flange"),
     # the down-light (D-126): a bought surface LED aluminium profile under the right run, with a clip-on
     # cover (D-127: satin, at least 86 % of the light, the same clip-in style), end caps and mounting
@@ -47,6 +48,7 @@ INTERIOR_PARAMS = [
     ("lg_d", "250 mm", "mm", "assumption", "ledge depth: room for a keyboard, leaning on it standing"),
     ("lg_z", "1067 mm", "mm", "assumption", "ledge top: standing lean height"),
     ("lg_t", "1.5 mm", "mm", "confirmed", "D-85: 1.5 mm folded aluminium"),
+    ("lg_r", "lg_t", "mm", "confirmed", "inside bend radius of the ledge's two folds: the Lead's ruling 2026-11-01 on #335 (the drawing generator's bent sheet mode): every fold's inside radius equals the sheet, a safe bend for this aluminium; the flats use K 0.44 (assumption until the factory's bend table sets it), and model, STEP and DXF must agree"),
     ("lg_lip", "25 mm", "mm", "assumption", "front lip folded down"),
     ("lg_up", "25 mm", "mm", "assumption", "back flange folded down, at the wall"),
     ("lg_gap", "5 mm", "mm", "calculation", "the ledge, its brackets and the screen rail stand 5 off the lining's face, so "
@@ -56,6 +58,8 @@ INTERIOR_PARAMS = [
     ("br_w", "200 mm", "mm", "assumption", "ledge bracket arm under the ledge, HOLD (a rated concealed shelf bracket)"),
     ("br_h", "150 mm", "mm", "assumption", "ledge bracket height at the wall, HOLD"),
     ("br_t", "30 mm", "mm", "assumption", "ledge bracket width along the wall, HOLD"),
+    ("br_rel", "2 * lg_t", "mm", "calculation", "each bracket envelope's top back edge cut 45 deg this far, so it clears the "
+     "ledge's inside bend (radius lg_r) where the top meets the back flange: a real bracket needs the same relief"),
     ("br_y1", "98.63 mm", "mm", "source", "WALL's right lower panel R1: mid stile at Y 98.63 (side panel stile pitch 365.69, mirror of L1)"),
     ("br_y2", "464.32 mm", "mm", "source", "WALL's R1: mid stile at Y 464.32"),
     # ---- screen rail (a screen up to about 900 wide, D-70; the screen itself is an option)
@@ -148,6 +152,27 @@ def ledge_section():
             ("%s + lg_t" % xa, "%s - lg_lip" % z1), (xa, "%s - lg_lip" % z1)]
 
 
+# the folds of each bent section (shelf_section, ledge_section): (corner index, inside or outside, radius expression).
+# Corners 0 and 1 are the two folds' outside corners, 5 and 4 their inside ones (the sections list their corners in
+# that order); the outside radius is the inside one plus the sheet.
+def bends(key):
+    r, t = ("lg_r", "lg_t") if key == "ledge" else ("sh_r", "sh_t")
+    return [(0, "outside", "%s + %s" % (r, t)), (1, "outside", "%s + %s" % (r, t)), (5, "inside", r), (4, "inside", r)]
+
+
+BENT = ("shelf_back", "shelf_lh", "shelf_rh", "ledge")
+
+
+def bracket_section(yb):
+    """A ledge bracket envelope's section in the XZ plane: the arm from the back flange's inside face out br_w, down
+    br_h from under the top, its top back edge cut 45 deg by br_rel so it clears the ledge's inside bend."""
+    x0 = "(%s - lg_gap - br_w)" % XIR
+    x1 = "(%s - lg_gap - lg_t)" % XIR
+    z1 = "(lg_z - lg_t)"
+    z0 = "(%s - br_h)" % z1
+    return [(x0, z0), (x1, z0), (x1, "%s - br_rel" % z1), ("%s - br_rel" % x1, z1), (x0, z1)]
+
+
 def ledge_y():
     """The ledge's Y range: centred in the right wall's free length beside the column."""
     y0 = "(%s + (%s - %s - lg_l) / 2)" % (YFACE, YBL, YFACE)
@@ -171,9 +196,8 @@ def layout():
     y0, y1 = ledge_y()
     out.append(("ledge", "LEDGE TOP", "xz", (ledge_section(), y0, y1)))
     for k, yb in (("1", "br_y1"), ("2", "br_y2")):
-        out.append(("bracket", "LEDGE BRACKET %s" % k, "box", ("%s - lg_gap - br_w" % XIR, "%s - lg_gap - lg_t" % XIR,
-                                                              "%s - br_t / 2" % yb, "%s + br_t / 2" % yb,
-                                                              "lg_z - lg_t - br_h", "lg_z - lg_t")))
+        out.append(("bracket", "LEDGE BRACKET %s" % k, "xz", (bracket_section(yb), "%s - br_t / 2" % yb,
+                                                             "%s + br_t / 2" % yb)))
     yc = "(%s + %s) / 2" % (y0, y1)
     out.append(("rail", "SCREEN RAIL", "box", ("%s - lg_gap - sr_d" % XIR, "%s - lg_gap" % XIR, "%s - sr_l / 2" % yc, "%s + sr_l / 2" % yc,
                                               "sr_z - sr_h / 2", "sr_z + sr_h / 2")))
