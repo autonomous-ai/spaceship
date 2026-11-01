@@ -65,6 +65,12 @@ def run(_context):
         comp: dict = {"part_number": c.partNumber, "name": c.name, "description": c.description,
                       "is_root": c == root, "copies": 1 if c == root else len(occs), "parents": parents,
                       "bodies": []}
+        # each body's "box" below is in the component's own space (a part's shape: a STEP-imported or joint-placed
+        # copy sits at its own origin there); "placed_box" is where its copies are in the design, all of them
+        placed = [box(b) for b in c.bRepBodies] if c == root else [
+            box(o.bRepBodies.item(j)) for o in occs for j in range(o.bRepBodies.count)]
+        comp["placed_box"] = ([min(q[k] for q in placed) for k in range(3)] +
+                              [max(q[k + 3] for q in placed) for k in range(3)]) if placed else None
         for b in c.bRepBodies:
             pp = b.physicalProperties
             comp["bodies"].append({"name": b.name, "box": box(b), "volume_mm3": r(b.volume * 1000.0, 1),

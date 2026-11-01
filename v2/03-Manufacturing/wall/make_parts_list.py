@@ -200,6 +200,25 @@ def box_of(bodies):
     return [min(b["box"][i] for b in bodies) for i in range(3)] + [max(b["box"][i + 3] for b in bodies) for i in range(3)]
 
 
+def placed_box_of(comps):
+    """The box of these components' copies where they are in the design (the report's placed_box, D-120: a body's
+    own box is in its component's space, so a joint-placed or imported copy sits at its own origin there); a
+    report from before placed_box falls back to the bodies' own boxes."""
+    boxes = [c["placed_box"] for c in comps if c.get("placed_box")]
+    if len(boxes) == len([c for c in comps if c["bodies"] or c.get("placed_box")]) and boxes:
+        return [min(b[i] for b in boxes) for i in range(3)] + [max(b[i + 3] for b in boxes) for i in range(3)]
+    return box_of([b for c in comps for b in c["bodies"]])
+
+
+def frame_box(rep, members):
+    """A D-120 frame's box: its members and mitre plates where they are placed; from a report without placed boxes,
+    its members' own boxes (members are built in place; a plate's own box sits at its origin)."""
+    plates = [c for c in rep["components"] if c["part_number"] in ("831007", "831008", "831009")]
+    if all(c.get("placed_box") for c in members + plates):
+        return placed_box_of(members + plates)
+    return box_of([m["bodies"][0] for m in members])
+
+
 def size_of(box):
     return "%g x %g x %g" % tuple(round(box[i + 3] - box[i], 2) for i in range(3))
 
@@ -349,7 +368,7 @@ def panel_rows(rep):
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
                   material="see the parts below", qty=1, unit="pc",
-                  size_mm=size_of(box_of([b for c in comps.values() for b in c["bodies"]])),
+                  size_mm=size_of(placed_box_of(list(comps.values()))),
                   mass_total_kg=made, mass_status="calculation: the sum of the rows below (CAD bodies and hardware)",
                   status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
                   note="outer panel, bonded and hardware-fitted at the factory; the lining cassette is a separate part "
@@ -435,7 +454,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                                 "; the closing seam's top corner weld ground to a 1 x 45 lead-in (R-J9, FR-13)"
                                 if back else ""),
                     qty=1, unit="pc",
-                    size_mm=size_of(box_of([m["bodies"][0] for m in members])),
+                    size_mm=size_of(frame_box(rep, members)),
                     tolerance="seam faces flat within 0.5, skin-side faces within ±0.5 of one plane, diagonals equal "
                               "within 1.5, measured after welding and before the holes (J-FRAME-01); hole positions "
                               "Ø0.4 from the round spigot hole (R-J6); the rest per its drawing",
@@ -499,7 +518,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
                   material="see the parts below", qty=1, unit="pc",
-                  size_mm=size_of(box_of([b for c in comps.values() for b in c["bodies"]])),
+                  size_mm=size_of(placed_box_of(list(comps.values()))),
                   mass_total_kg=made, mass_status="calculation: the sum of the rows below (CAD bodies and hardware)",
                   status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
                   note="outer panel, bonded and hardware-fitted at the factory; every part its own component (D-120); "
