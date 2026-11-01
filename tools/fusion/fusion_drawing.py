@@ -161,6 +161,20 @@ def first_angle_symbol(sheet: "adsk.drawing.Sheet", x0=None, cy=None, small=5.0,
     return outline, circles
 
 
+# What was seen (2026-11-01): GA sheet 1's isometric view at 0.0375 read back near the scale asked but not within
+# 1e-9 of it, so the old 1e-9 check refused a view at the right scale. The error printed 0.0375 at 6 digits, so it
+# was 1e-9 to 5e-8 off, up to 1.3e-6 of the value. 1:5 (ELECTRICAL's 711001, two live runs) and 1:20 (the GA
+# sections) passed the 1e-9 check. How Fusion keeps a scale isn't known, so a scale counts as set within 1e-5 of the
+# value, which still refuses any wrong scale (1:26.67 and 1:26.7 differ by 1.2e-3 of theirs), and each view's
+# read-back is printed with all its digits.
+SCALE_REL_TOL = 1e-5
+
+
+def scale_is(got, want):
+    """True when a view's read-back scale `got` is the scale `want` (SCALE_REL_TOL of it)."""
+    return abs(got - want) <= SCALE_REL_TOL * abs(want)
+
+
 def base_view(sheet: "adsk.drawing.Sheet", orientation, scale, at, style=None):
     """A base view at `at` (sheet mm, its centre), with the style and scale set again on
     the made view and checked (Fusion ignores the input's style). Default style:
@@ -178,14 +192,16 @@ def base_view(sheet: "adsk.drawing.Sheet", orientation, scale, at, style=None):
         raise RuntimeError("Views.add returned None")
     if view.style != style:
         view.style = style
-    if abs(view.scaleValue - scale) > 1e-9:
+    if not scale_is(view.scaleValue, scale):
         view.scaleValue = scale
     if adsk is not None:
         adsk.doEvents()
     if view.style != style:
         raise RuntimeError("the view's style stays %s after setting %s" % (view.style, style))
-    if abs(view.scaleValue - scale) > 1e-9:
-        raise RuntimeError("the view's scale stays %g after setting %g" % (view.scaleValue, scale))
+    got = view.scaleValue
+    print("view scale: asked %r, read back %r" % (scale, got))     # all the digits, for the record
+    if not scale_is(got, scale):
+        raise RuntimeError("the view's scale stays %r after setting %r" % (got, scale))
     return view
 
 
