@@ -82,6 +82,25 @@ def rows():
     return out
 
 
+# WALL's cloud documents in Default Project / FocusPod v2 renamed NAME_SUPERSEDED-<date> by rename_superseded.py
+# (D-141: never deleted), so nobody opens one by its old name: (old name, date, why)
+_D158 = "D-158: the drawing generator draws every sheet now (the Lead's word, 2026-11-01)"
+SUPERSEDED = [
+    ("211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_CAD", "2026-11-01", "D-123 cancels the panels' fill set numbers"),
+    ("211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_CAD", "2026-11-01", "D-123 cancels the panels' fill set numbers"),
+    ("211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG", "2026-11-01", _D158 + "; its sheet is the generator's in this folder"),
+    ("210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG", "2026-11-01", _D158 + "; it showed the aluminium frame"),
+    ("210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_DWG", "2026-11-01", _D158 + "; it showed the aluminium frame"),
+    ("211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG", "2026-11-01", _D158 + "; it showed the aluminium frame (the GUI "
+                                                                    "copy someone else made is left as it is)"),
+    ("211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_DWG", "2026-11-01", _D158 + "; it showed the aluminium frame"),
+    ("510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_DWG", "2026-11-01", _D158 + "; the assembly mode draws the cassette"),
+    ("511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG", "2026-11-01", _D158 + "; its sheet is the generator's in this folder"),
+    ("211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_DWG", "2026-11-01", "D-123 cancels the fill set; D-128 cuts the pieces "
+                                                                   "from their DXFs"),
+]
+
+
 def main():
     done = {os.path.basename(p)[:-4] for p in glob.glob(os.path.join(HERE, "*_DWG.pdf"))}
     table = [(d, " ".join(pns), "done" if d in done else ("cut list" if d.startswith("(") else "to do"), note)
@@ -97,6 +116,11 @@ def main():
           "with ELECTRICAL's openings are cut from their DXFs, with full rows (D-128).", "",
           "| Drawing | Covers | Status | Note |", "|---|---|---|---|"]
     md += ["| %s | %s | %s | %s |" % r for r in table]
+    md += ["", "## Superseded cloud documents (D-141)", "",
+           "WALL's own Fusion documents in Default Project / FocusPod v2 that are no longer current, renamed "
+           "NAME_SUPERSEDED-<date> by `v2/01-CAD-Native/wall/rename_superseded.py`, never deleted, so nobody opens one "
+           "by its old name.", "", "| Document | Renamed to | Why |", "|---|---|---|"]
+    md += ["| %s | %s_SUPERSEDED-%s | %s |" % (n, n, d, why) for n, d, why in SUPERSEDED]
     with open(os.path.join(HERE, "DRAWING-INDEX.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(md) + "\n")
     print("wrote DRAWING-INDEX.csv and .md: %d drawings (%d done), %d cut-list families" % (
