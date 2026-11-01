@@ -36,7 +36,9 @@ for _path in sorted(_glob.glob(_os.path.join(_TEAMS, "*.py"))):
             raise ValueError("drawgen: %s is listed twice (%s's no-drawing list, and elsewhere)" % (_pn, _team))
         NO_DRAWING[_pn] = _why
 
-# The sample the PM reviewed before anything else was generated (#202): the frame, its RH pair, the tube. The
-# sample's table drawing of the fills was dropped by D-128 (the fill pieces go on DXFs), and its plate (811205)
-# needed no drawing under D-125, then D-126 cancelled it.
-SAMPLE = ["211101", "211102", "111101"]
+# The drawings `generate --sample` makes and the tests regenerate and read back every run. #202's sample was the
+# frame 211101, its RH pair 211102 and the tube 111101: the frames now wait for WALL's D-131 steel list (their
+# entry refuses the aluminium one), so the tests draw their geometry with that guard lifted; 111103 joined with
+# #225.
+SAMPLE = ["111101", "111103"]
+FRAMES = ["211101", "211102"]
