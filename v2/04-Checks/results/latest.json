@@ -1,5 +1,5 @@
 {
- "rev": "6028cf8",
+ "rev": "2774e80",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -1832,6 +1832,18 @@
    "owner": "FRONT",
    "evidence": {},
    "key": "C05|no-drawing|361003"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "368004",
+   "severity": "major",
+   "message": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|368004"
   },
   {
    "check": "C05",

@@ -1,8 +1,8 @@
-# Mechanical check run: 6028cf8 on 2026-11-01
+# Mechanical check run: 2774e80 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `6028cf8`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `2774e80`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 190** (47 severe, 135 major, 8 minor). Register numbers in brackets.
+**Findings in this run: 191** (47 severe, 136 major, 8 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `6028cf8`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 115 |
+| C05 drawing completeness | yes | 116 |
 | C06 BOM completeness | yes | 39 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -98,6 +98,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-210 | major | C05 | 351405 | 351405 FRONT - AIR TRANSITION - UPPER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for the upper air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count. | AIR |
 | F-029 | major | C05 | 360001 | 360001 FRONT - DOOR UNIT has no drawing PDF (360001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step. | FRONT |
 | F-096 | major | C05 | 360002 | 360002 FRONT - FIXED GLASS UNIT has no drawing PDF (360002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step. | FRONT |
+| F-339 | major | C05 | 368004 | 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles. | FRONT |
 | F-138 | major | C05 | 410000 | 410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step. | CEILING |
 | F-139 | major | C05 | 410101 | 410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-140 | major | C05 | 410102 | 410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
