@@ -43,7 +43,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Door edge seals on 3 sides, in the seal kit | 1 | 1.00 | 0.00 | -1.00 | now in FRONT 350001, 350002, 360001 and 360002 P01 (PR #105; PM ruling 2026-11-01) |
 | Ceiling outer panels C1 and C2 | 2 | 10.03 | 10.05 | +0.01 | CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list) |
 | Ceiling cassettes | 2 | 9.48 | 9.46 | -0.02 | CEILING 510301 P01, PR #32 (the estimate: its first list) |
-| ELECTRICAL, as shipped | 1 | 4.94 | 6.32 | +1.38 | ELECTRICAL 710000 P01, PR #64 (the estimate: as relayed) |
+| ELECTRICAL, as shipped | 1 | 4.94 | 6.33 | +1.39 | ELECTRICAL 710000 P01, PR #64 (the estimate: as relayed) |
 | Site fixings: bolts, rivnuts, washers, retainers, gaskets, seals | 1 | 4.67 | 1.79 | -2.89 | the joints register's counts at the parts lists' masses (D-116); the estimate: this study's 78 bolts, 38 cam connectors that no longer exist and gasket at 60 g/m |
 | Light shelf (its LED strip in ELECTRICAL's line) | 1 | 1.95 | 1.58 | -0.37 | INTERIOR 810201 P01, PR #92, with ELECTRICAL's down-light profile, cover, end caps and clips 718101 to 718104 (0.210), listed under 810201 (S53) (the estimate: D-85's budget less the strip share) |
 | Work-wall ledge | 1 | 1.40 | 1.40 | +0.00 | INTERIOR 810101 P01, PR #92 (the estimate: D-85's budget) |
@@ -56,7 +56,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Corner keys, the 30 mm family | 6 | 0.15 | 0.21 | +0.06 | joints 111211 to 111214 P01, PR #139 |
 | Glide load blocks (D-86's 0.4 kg), now BASE's 9 blocks | 1 | 0.40 | 0.22 | -0.18 | BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6 |
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.18 | +0.18 | joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157) |
-| **In all** | | | | **+0.70** | |
+| **In all** | | | | **+0.71** | |
 
 Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9 estimated.
 
@@ -101,7 +101,7 @@ Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9
 | AIR | Four 12 V fans | 1 | 1.20 | 1.20 | assumption | S52: AIR parts list 618401 x 4, 0.3 kg each until the sample is weighed | estimate |
 | BASE | Base seal: BASE's soft lip along the band pieces' inner faces | 6.129 | 0.08 | 0.49 | calculation (CAD); kg/m source | S54, CAD on main: BASE parts list 118001 P02 batch 1, 6.129 m (the left side band 1.462, the right side band 1.464, the back band 2.4, FR1 0.803) at the PM's 0.08 kg/m (D-132); none across the door, where the door's drop seal closes on the room floor; the front-left pieces and the intake piece add theirs in batches 2 and 3; the door edge seals are in FRONT's parts lists (PM ruling 2026-11-01) | CAD, main |
 | BASE | Cable grommets: the sealed cable holes | 1 | 0.10 | 0.10 | source | S20 | estimate |
-| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 6.32 | 6.32 | calculation (CAD) | S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 3.81, the hub and controls zone 0.36, the cord set 0.59, the harnesses, cables and connectors, and the lights (6.30 m of shelf and down-light strip, the call light). The light shelf's strip is counted here only; the down-light profile parts listed under INTERIOR's shelf are in the shelf's line (S53) | CAD, main |
+| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 6.33 | 6.33 | calculation (CAD) | S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 3.82, the hub and controls zone 0.36, the cord set 0.59, the harnesses, cables and connectors, and the lights (6.30 m of shelf and down-light strip, the call light). The light shelf's strip is counted here only; the down-light profile parts listed under INTERIOR's shelf are in the shelf's line (S53) | CAD, main |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | 1.58 | calculation (CAD) | S46, CAD on main: INTERIOR parts list 810201 P01: the back and side shelves, with ELECTRICAL's down-light profile, cover, end caps and clips 718101 to 718104 (0.210), listed under 810201 (S53); the LED strips are in ELECTRICAL's line | CAD, main |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | 1.90 | calculation (CAD); brackets and screen rail HOLD | S46, CAD on main: INTERIOR parts list 810101 P01, the ledge and its 2 brackets (1.403), and 818102, the screen rail on HOLD (0.50); one line, as the packing plan ships them together | CAD, main |
 | WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.17 | 3.17 | calculation (part CAD); cleats assumption | part CAD on main: the joints register's counts (S48: 98 M6 x 16 and 12 M6 x 25 bolts, 124 rivnuts, 92 washers, 76 retainers, 26.9 m of joint gasket, 3.73 m of closing-seam seal) at the parts lists' masses (1.79 kg, D-116); 26 spigots (24 of 831001, 2 of 831010) and 76 stop washers from the joints' made hardware list (0.18 kg, S45); and a 1.2 kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and 6.7 g T plugs (D-117, S49), until their models land | CAD, main (part) |
