@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 309 part lines (118 made, 191 bought, 145 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 47 hardware items in the joints register (42 with a part number). Listed parts weigh 353.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 309 part lines (118 made, 191 bought, 145 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 48 hardware items in the joints register (46 with a part number). Listed parts weigh 353.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -209,11 +209,8 @@ Read from: this working tree.
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
 **Joints register**
-- H-47 HARDWARE - BLIND RIVET - CLOSED END - ISO 15976 - ST/ST ZINC - 4.0 X 8: no part number
-- H-48 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA: no part number
 - H-49 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5: no part number
 - H-50 HARDWARE - BLIND RIVET - CLOSED END - CLIP MALE - HOLD: no part number
-- H-51 HARDWARE - BLIND RIVET - CLOSED END - ISO 15973 - AL/ST - 4.8 X 9.5: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
