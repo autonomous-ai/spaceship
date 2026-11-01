@@ -123,6 +123,61 @@ class ReadFolderTests(unittest.TestCase):
         self.assertEqual(c.sleeps, [])                          # no waiting for the broken entry
 
 
+class ArrayFiles(Files):
+    """A folder whose listing comes in one asArray() call; item() must not be used."""
+
+    def __init__(self, items, fail_array=False):
+        super().__init__(items)
+        self.arrays, self.fail_array = 0, fail_array
+
+    def asArray(self):
+        self.arrays += 1
+        if self.fail_array:
+            raise Unreadable("asArray failed")
+        return [File("HEALED_CAD", "f3d") if it == "boom" and self.arrays > 2 else
+                (None if it == "boom" else it) for it in self.items]
+
+
+class OneListingTests(unittest.TestCase):
+    """Live 2026-11-01: each DataFiles.item(i) fetched the whole folder listing again (about
+    2 s each; 89 entries took 3 minutes a pass). One asArray() call per pass instead."""
+
+    def folder(self, items, **kw):
+        f = Folder([])
+        f.dataFiles = ArrayFiles(items, **kw)
+        f.dataFiles.item = lambda i: (_ for _ in ()).throw(AssertionError("item(i) used"))
+        return f
+
+    def test_a_pass_is_one_listing(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("B_DWG", "f2d")])
+        files, unknown, others = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD", "B_DWG"])
+        self.assertEqual((unknown, others, folder.dataFiles.arrays), ([], {}, 1))
+
+    def test_an_empty_slot_is_unknown_and_read_again_until_it_heals(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), "boom"])
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD", "HEALED_CAD"])
+        self.assertEqual(unknown, [])
+        self.assertEqual(folder.dataFiles.arrays, 3)               # one listing per pass
+
+    def test_a_name_that_cant_be_read_is_sorted_as_before(self):
+        c = Clock()
+        folder = self.folder([File(None, "f2d"), File(None, None)])
+        _files, unknown, others = ff.read_folder(folder, wait_s=0, sleep=c.sleep, now=c.now)
+        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1"])
+        self.assertEqual({k: [t.split(" (")[0] for t in v] for k, v in others.items()}, {"f2d": ["entry 0"]})
+
+    def test_a_failing_listing_falls_back_to_reading_each_entry(self):
+        c = Clock()
+        folder = Folder([File("A_CAD", "f3d")])
+        folder.dataFiles = ArrayFiles([File("A_CAD", "f3d")], fail_array=True)
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown), (["A_CAD"], []))
+
+
 class SafeToCreateTests(unittest.TestCase):
     def test_a_free_name_in_a_clean_folder(self):
         warnings, c = check(Folder([File("A_CAD", "f3d")]), "NEW_CAD")
