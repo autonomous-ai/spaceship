@@ -620,7 +620,7 @@ class HarnessRoute(unittest.TestCase):
     def test_fr_angle_points(self):
         """FR is FL turned 180 deg about Y (TURNED): FL's holes, mirrored about the angle's mid-height and moved to the
         right side leg, must land on the agreed points (ELECTRICAL 15:47): entries Ø11.1 at Y -307, Z 1150 and 1175;
-        tie pairs Ø6.4 at Z 1960/1975 and 2090/2105."""
+        tie pairs Ø6.4 at Z 1960/1975 and 2040/2055 (ELECTRICAL 16:08)."""
         fl, fr = b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
         got = []
         for y, z, x0, x1, d in self.feats("COLUMN ANGLE FL", "xcircle"):
@@ -628,7 +628,7 @@ class HarnessRoute(unittest.TestCase):
             self.assertAlmostEqual(x1 - x0, V["ang_t"])
             got.append((round(y, 2), round(fr[4] + fr[5] - z, 2), d))         # where FR shows it
         self.assertEqual(got, [(-307.0, 1150.0, 11.1), (-307.0, 1175.0, 11.1), (-307.0, 1960.0, 6.4), (-307.0, 1975.0, 6.4),
-                               (-307.0, 2090.0, 6.4), (-307.0, 2105.0, 6.4)])
+                               (-307.0, 2040.0, 6.4), (-307.0, 2055.0, 6.4)])
         for _y, z, d in got:          # the opening rule's rim (2 x the sheet, 3 or more) to the angle's ends
             self.assertGreaterEqual(min(z - d / 2 - fr[4], fr[5] - (z + d / 2)), max(2 * V["ang_t"], 3.0))
         for y, _z, d in got:                                                  # the opening rule's 4 mm rims (2 x 2 mm)

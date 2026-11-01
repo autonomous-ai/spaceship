@@ -63,8 +63,9 @@ AIR_PARAMS = [
     ("hn_tie_d", "6.4 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: tie holes for the air-path leads "
      "(flame-rated, tied about every 150 mm: the Lead's rule)"),
     ("hn_tie_z1", "1960 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's first tie hole, between the fill's top and the soffit"),
-    ("hn_tie_z2", "dt_zb - 30 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's second tie point, 30 under the "
-     "soffit's underside (Z 2090), so its pair follows the column's top"),
+    ("hn_tie_z2", "dt_zb - 80 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 16:08: the FR angle's second tie point 80 under "
+     "the soffit's underside (Z 2040), so the lead has about 40 to bend from the angle over to the cordgrip hanging about 21 "
+     "under 611208 (to about Z 2100); its pair follows the column's top"),
     ("hn_ch_w", "24 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the 24 x 24 cable channels cut in the fills"),
     ("hn_sof_d", "12 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): the exhaust fan leads' hole through the soffit's fixed underside over the "
      "column (it crosses from the supply plenum into the soffit), sealed by a Heyco RLTCG M12 cordgrip (Ø12.0 hole, "
