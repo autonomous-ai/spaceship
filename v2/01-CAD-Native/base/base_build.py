@@ -1976,6 +1976,17 @@ def run(_context):
     app = adsk.core.Application.get()
     close_own_documents(app)
     close_unsaved_builds(app)
+    try:
+        build_run(app)
+    except Exception:
+        # a run that stops part way leaves no unsaved BASE document for the next team's script (PM, 2026-11-01);
+        # saved documents stay as they are; --arg keep=1 keeps the unsaved ones open to look at
+        if ARGS.get("keep") != "1":
+            close_unsaved_builds(app)
+        raise
+
+
+def build_run(app):
     if ARGS.get("scope") == "p02":
         load_p02()
     if ARGS.get("part"):
