@@ -61,7 +61,10 @@ TUBE = re.compile(r"\btube\b|\d+\s*x\s*\d+\s*x\s*\d|profile|6063|\bframe\b", re.
 METAL = re.compile(r"alumin|steel|zinc", re.I)
 COATED = re.compile(r"galvani|\+Z\b|stainless|\bA2\b|\bzinc\b|plated|anodi[sz]ed|mill finish|powder|painted", re.I)
 SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{3,}\b|\b(?:ISO|EN|DIN) \d{3,}")
-PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD", re.I)
+# HOLD is a whole word, in any case (Reviewer 6, #211): "on hold" counts; "holds", "holder" and "threshold" don't.
+# PRODUCT_HOLD reads the joints register's status cell, HOLD_WORD a made part's material, grade or status.
+PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD\b", re.I)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
 PRODUCT_NAMED = re.compile(r"\b(?:part|product|system)\b[^;]*\b(?:DECIDED|source)\b", re.I)
 TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
@@ -505,14 +508,15 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
 def made_hold(r, rows):
     """A made part on HOLD (PM, 2026-11-01): its own material, grade or status says HOLD. Read from the part's own
     parts-list rows (its number in the part-number column, not a row of another part that names it) and their columns
-    named exactly material, grade or status (not mass_status or process_status), and from the BOM's material."""
-    if "HOLD" in (r.get("material") or "").upper():
+    named exactly material, grade or status (not mass_status or process_status), and from the BOM's material.
+    HOLD counts as a whole word only ("holds", "holder" and "threshold" don't; Reviewer 6, #211)."""
+    if HOLD_WORD.search(r.get("material") or ""):
         return True
     pn = r.get("part_number")
     for cells, _p in rows:
         if not any(re.fullmatch(r"part_?(?:number|no)|pn", (k or "").strip(), re.I) and v == pn for k, v in cells.items()):
             continue
-        if any(re.fullmatch(r"material|grade|status", (k or "").strip(), re.I) and "HOLD" in (v or "").upper()
+        if any(re.fullmatch(r"material|grade|status", (k or "").strip(), re.I) and HOLD_WORD.search(v or "")
                for k, v in cells.items()):
             return True
     return False
@@ -527,8 +531,10 @@ def state_of(gaps, screen, hold=False):
     return "open: " + ", ".join(gaps)
 
 
-def files_only(by_pn, parts, files, labels, screen, chars=()):
-    """Made parts found in the folders whose number no parts list carries: no BOM row."""
+def files_only(by_pn, parts, files, labels, screen, chars=(), tab_cover=None):
+    """Made parts found in the folders whose number no parts list carries: no BOM row. A number that a tabulated
+    drawing lists counts as drawn, as it does for a listed part (D-89)."""
+    tab_cover = tab_cover or {}
     listed = {r["part_number"] for r in parts}
     out = []
     for pn, kinds in sorted(by_pn.items()):
@@ -538,11 +544,12 @@ def files_only(by_pn, parts, files, labels, screen, chars=()):
         team = next((FOLDER_TEAM[s] for s in some.split("/") if s in FOLDER_TEAM), "other")
         names = {re.sub(FILE_RE, r"\3", p.rsplit("/", 1)[-1]) for ps in kinds.values() for p in ps}
         ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
-        gaps = ["BOM row"] + [k for k, n in (("CAD", "CAD"), ("STEP", "STEP"), ("drawing", "DWG")) if not kinds.get(n)]
+        dwg = True if kinds.get("DWG") else (f"on {tab_cover[pn]}, tabulated (D-89)" if pn in tab_cover else False)
+        gaps = ["BOM row"] + [k for k, ok in (("CAD", kinds.get("CAD")), ("STEP", kinds.get("STEP")), ("drawing", dwg)) if not ok]
         gaps += [] if ids else ["FAI"]
         out.append({"part_number": pn, "name": sorted(names)[0].replace("-", " "), "team": team, "bom_row": False,
                     "cad": bool(kinds.get("CAD")), "step": bool(kinds.get("STEP")), "flat": "yes" if kinds.get("DXF") else "—",
-                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
+                    "dwg": dwg, "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
                     "state": state_of(gaps, screen),
                     "from": {labels.get(files[p], "this tree" if files[p] == "working tree" else files[p])
                              for ps in kinds.values() for p in ps}})
@@ -688,7 +695,8 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
             "- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP "
             "reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch "
             "shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or "
-            "status says HOLD shows HOLD.",
+            "status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: \"on hold\" "
+            "does; \"holds\", \"holder\" and \"threshold\" don't.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
             "that names the number or its register ID.",
@@ -743,7 +751,7 @@ def main(argv=None):
         d125 = {}
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
                                screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125)
-    made += files_only(by_pn, parts, files, labels, screen, fai[0])
+    made += files_only(by_pn, parts, files, labels, screen, fai[0], tab_cover)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
     fell = fell_back_notes(bom, labels)
