@@ -93,10 +93,11 @@ def _line_x(p1, d1, p2, d2):
     return (p1[0] + s * d1[0], p1[1] + s * d1[1])
 
 
-def chain_of(b, axis):
-    """The fold chain across bend lines along `axis`, or None when the section there isn't one thin open strip
-    (one loop: two skins joined by two end caps of the thickness) with at least one fold."""
-    loops, u, v, _pt = _section_loops(b, axis)
+def chain_of(b, axis, frac=0.5):
+    """The fold chain across bend lines along `axis`, from the section at frac of the part's length along them, or
+    None when the section there isn't one thin open strip (one loop: two skins joined by two end caps of the
+    thickness) with at least one fold."""
+    loops, u, v, _pt = _section_loops(b, axis, frac)
     if len(loops) != 1:
         return None
     loop = loops[0]
@@ -198,6 +199,7 @@ def chain_of(b, axis):
     skins = {"A": [skin_a[0][1]] + [c for _k, _a, c, _r in skin_a], "B": [skin_b[0][1]] + [c for _k, _a, c, _r in skin_b]}
     ch = Chain(axis, u, v, t, start, flanges, folds, skins)
     ch.runs = runs              # each skin's straight runs, one per flange
+    ch.frac, ch.point = frac, _pt       # where the section was taken (clear of holes and cut-outs)
     return ch
 
 
@@ -324,6 +326,7 @@ class Flat:
         self.radius_from = None
         self.dxf = None
         self.viewed = None
+        self.cutouts = []
         self.vgroove = None
 
 
@@ -340,7 +343,7 @@ def bend_axes(body):
     return axes
 
 
-def unexplained_faces(body, chains, holes, slots):
+def unexplained_faces(body, chains, holes, slots, cutouts=()):
     """Curved faces of a bent part that are neither a hole nor a slot, nor a fold's inside or outside cylinder (its
     axis along the chain's bend lines, its radius the fold's inside radius or that plus the thickness), nor the small
     cut end of a bend zone where the outline meets it (a corner relief's spline, no wider than twice r + t)."""
@@ -365,10 +368,21 @@ def unexplained_faces(body, chains, holes, slots):
             if info["concave"] and (any(abs(h.dia / 2 - info["r"]) < 1e-3 for h in holes) or
                                     any(abs(sl.width / 2 - info["r"]) < 1e-3 for sl in slots)):
                 continue
+            if info["concave"] and any(c.r > 0 and abs(c.r - info["r"]) < 1e-3 and abs(abs(vdot(info["dir"], c.axis)) - 1)
+                                       < 1e-6 for c in cutouts):
+                continue            # a cut-out's rounded corner or slot end
             if any(abs(abs(vdot(info["dir"], a)) - 1) < 1e-6 and (abs(info["r"] - r) < 1e-3 or abs(info["r"] - r - t) < 1e-3)
                    for a, r, t in radii):
                 continue
             out.append("a cylinder r%.2f" % info["r"])
+            continue
+        from OCP.GeomAbs import GeomAbs_Cone
+        if typ == GeomAbs_Cone:
+            # a countersink, called out with its hole (D-143); any other cone is refused, never taken for a corner
+            # relief's cut end, so no sheet shows a plain hole where the part has a countersink (the Lead)
+            if any(getattr(h, "csk", None) and h.csk["face"].IsSame(f) for h in holes):
+                continue
+            out.append("a cone (a countersink or a dimple this tool doesn't read)")
             continue
         pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(f)]
         if pts and span and all(max(p[k] for p in pts) - min(p[k] for p in pts) <= 2 * span + 0.1 for k in range(3)):
@@ -556,17 +570,110 @@ def _solve3(rows, rhs):
     return tuple(out)
 
 
-def cutouts(body):
-    """The model's cut-outs that aren't round holes: inner boundaries of its flat faces made of anything but one
-    circle (a rectangle, a slot). The flat's check matches round holes only, so these would go unchecked."""
+class Cutout:
+    """A cut-out through one flange that isn't a round hole (WALL's 511202: the power unit's 304 x 268 and its corner
+    slot 80 x 11): a rectangle (sharp corners, or rounded at r) or a slot (round ends of r, half its width), sized
+    along `along` (its length) and across (its width) about its centre on the entry skin; `axis` runs into the
+    material, `depth` the sheet. `boundary`: its edge on the entry skin, sampled (3D)."""
+
+    def __init__(self, shape, entry, axis, along, width, length, r, depth, boundary):
+        self.shape, self.entry, self.axis, self.along = shape, entry, axis, along
+        self.width, self.length, self.r, self.depth = width, length, r, depth
+        self.boundary = boundary
+        self.through = True
+        self.dia = min(width, length)       # what tags and marks size themselves by
+        self.entry_dia, self.neck, self.tag = None, None, None
+
+    @property
+    def normal(self):
+        return vmul(self.axis, -1.0)
+
+    def size_words(self):
+        if self.shape == "slot":
+            return "%s x %s" % (_f(self.width), _f(self.length))
+        return "%s x %s" % (_f(self.length), _f(self.width))
+
+
+def _wire_edges(w):
+    """A wire's edges in order: ("L", p0, p1) or ("C", centre, radius, p0, p1, span degrees) or ("?",), with points
+    sampled along each (3D, ends included, about 0.5 mm apart on arcs and 2 mm on lines)."""
+    from OCP.BRepTools import BRepTools_WireExplorer
+    out = []
+    ex = BRepTools_WireExplorer(w)
+    while ex.More():
+        c = BRepAdaptor_Curve(ex.Current())
+        u0, u1 = c.FirstParameter(), c.LastParameter()
+        p0, p1 = geom.pnt(c.Value(u0)), geom.pnt(c.Value(u1))
+        if c.GetType() == GeomAbs_Line:
+            n = max(1, int(math.ceil(_d3(p0, p1) / 2.0)))
+            out.append((("L", p0, p1), [geom.pnt(c.Value(u0 + (u1 - u0) * i / n)) for i in range(n + 1)]))
+        elif c.GetType() == GeomAbs_Circle:
+            ci = c.Circle()
+            r = ci.Radius()
+            span = math.degrees(abs(u1 - u0))
+            n = max(4, int(math.ceil(r * abs(u1 - u0) / 0.5)))
+            out.append((("C", geom.pnt(ci.Location()), r, p0, p1, span),
+                        [geom.pnt(c.Value(u0 + (u1 - u0) * i / n)) for i in range(n + 1)]))
+        else:
+            out.append((("?",), [p0, p1]))
+        ex.Next()
+    return out
+
+
+def _d3(a, b):
+    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
+
+
+def _shape_of(edges):
+    """A cut-out's shape from its edges: ("rect", corners centre, along, width, length, r) for a rectangle (sharp or
+    rounded corners), ("slot", ...) for a slot, None for anything else."""
+    lines = [e for e, _s in edges if e[0] == "L"]
+    arcs = [e for e, _s in edges if e[0] == "C"]
+    if any(e[0] == "?" for e, _s in edges):
+        return None
+    if len(lines) == 4 and len(arcs) in (0, 4):
+        if arcs and (len({round(a[2], 3) for a in arcs}) != 1 or any(abs(a[5] - 90.0) > 0.01 for a in arcs)):
+            return None
+        ds = [vnorm(vsub(l[2], l[1])) for l in lines]
+        ls = [_d3(l[1], l[2]) for l in lines]
+        # opposite sides parallel and equal, neighbours square
+        for i in range(4):
+            if abs(vdot(ds[i], ds[(i + 1) % 4])) > 1e-6 or abs(abs(vdot(ds[i], ds[(i + 2) % 4])) - 1) > 1e-6 or \
+                    abs(ls[i] - ls[(i + 2) % 4]) > 1e-3:
+                return None
+        r = arcs[0][2] if arcs else 0.0
+        pts = [p for l in lines for p in (l[1], l[2])]
+        centre = tuple(sum(p[k] for p in pts) / len(pts) for k in range(3))
+        i = max(range(2), key=lambda j: ls[j])
+        along = ds[i]
+        length, width = ls[i] + 2 * r, ls[1 - i] + 2 * r
+        return ("rect", centre, along, width, length, r)
+    if len(lines) == 2 and len(arcs) == 2:
+        a, b = arcs
+        if abs(a[2] - b[2]) > 1e-3 or abs(a[5] - 180.0) > 0.01 or abs(b[5] - 180.0) > 0.01:
+            return None
+        if abs(abs(vdot(vnorm(vsub(lines[0][2], lines[0][1])), vnorm(vsub(lines[1][2], lines[1][1])))) - 1) > 1e-6:
+            return None
+        centre = tuple((a[1][k] + b[1][k]) / 2 for k in range(3))
+        along = vnorm(vsub(b[1], a[1]))
+        return ("slot", centre, along, 2 * a[2], _d3(a[1], b[1]) + 2 * a[2], a[2])
+    return None
+
+
+def model_cutouts(body):
+    """The model's cut-outs that aren't round holes, each once (a cut-out through the sheet bounds both skins: the
+    entry is the skin away from the body's centre, as for holes), and the ones drawgen can't size (any other shape,
+    or a pocket that doesn't go through)."""
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.BRepTools import BRepTools
     from OCP.GeomAbs import GeomAbs_Plane
-    from OCP.TopAbs import TopAbs_EDGE
-    out = []
+    found, odd = [], []
     for f in geom._faces(body.shape):
-        if BRepAdaptor_Surface(f, True).GetType() != GeomAbs_Plane:
+        s = BRepAdaptor_Surface(f, True)
+        if s.GetType() != GeomAbs_Plane:
             continue
+        d = s.Plane().Axis().Direction()
+        n = (d.X(), d.Y(), d.Z())
         outer = BRepTools.OuterWire_s(f)
         e = TopExp_Explorer(f, TopAbs_WIRE)
         while e.More():
@@ -574,26 +681,81 @@ def cutouts(body):
             e.Next()
             if w.IsSame(outer):
                 continue
-            circ, other = set(), 0
-            ee = TopExp_Explorer(w, TopAbs_EDGE)
-            while ee.More():
-                c = BRepAdaptor_Curve(TopoDS.Edge_s(ee.Current()))
-                if c.GetType() == GeomAbs_Circle:
-                    ci = c.Circle()
-                    p = ci.Location()
-                    circ.add((round(p.X(), 3), round(p.Y(), 3), round(p.Z(), 3), round(ci.Radius(), 3)))
-                else:
-                    other += 1
-                ee.Next()
-            if other or len(circ) != 1:
-                pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(w)]
+            edges = _wire_edges(w)
+            arcs = [x for x, _s in edges if x[0] == "C"]
+            if arcs and len(arcs) == len(edges) and len({(tuple(round(v, 3) for v in a[1]), round(a[2], 3))
+                                                          for a in arcs}) == 1:
+                continue            # a round hole: the holes' own check
+            shp = _shape_of(edges)
+            pts = [p for _x, ss in edges for p in ss]
+            if shp is None:
                 ext = sorted((max(p[k] for p in pts) - min(p[k] for p in pts) for k in range(3)), reverse=True)
                 mid = tuple((max(p[k] for p in pts) + min(p[k] for p in pts)) / 2 for k in range(3))
-                size = "%s x %s" % (_f(ext[0]), _f(ext[1]))
-                # a cut-out through the sheet bounds both skins: count it once
-                if not any(sz == size and max(abs(a - b) for a, b in zip(mid, m)) < 10.0 for sz, m in out):
-                    out.append((size, mid))
-    return [sz for sz, _m in out]
+                sz = "%s x %s" % (_f(ext[0]), _f(ext[1]))
+                # through the sheet it bounds both skins: named once
+                if not any(o_ == sz and _d3(m_, mid) < 10.0 for o_, m_ in odd):
+                    odd.append((sz, mid))
+                continue
+            found.append((shp, n, pts))
+    cuts, used = [], set()
+    for i, (shp, n, pts) in enumerate(found):
+        if i in used:
+            continue
+        twin = next((j for j, (s2, n2, _p) in enumerate(found) if j != i and j not in used and s2[0] == shp[0]
+                     and abs(abs(vdot(n, n2)) - 1) < 1e-6 and abs(s2[3] - shp[3]) < 1e-3 and abs(s2[4] - shp[4]) < 1e-3
+                     and _d3(vsub(s2[1], vmul(n, vdot(vsub(s2[1], shp[1]), n))), shp[1]) < 1e-3), None)
+        if twin is None:
+            odd.append("a %s x %s pocket (not through)" % (_f(shp[4]), _f(shp[3])))
+            continue
+        used.update((i, twin))
+        a_, b_ = (shp, pts), (found[twin][0], found[twin][2])
+        # the entry: the skin farther from the body's centre
+        da = abs(vdot(vsub(a_[0][1], body.centroid), n))
+        db = abs(vdot(vsub(b_[0][1], body.centroid), n))
+        ent, oth = (a_, b_) if da >= db else (b_, a_)
+        axis = vnorm(vsub(oth[0][1], ent[0][1]))
+        cuts.append(Cutout(ent[0][0], ent[0][1], axis, ent[0][2], ent[0][3], ent[0][4], ent[0][5],
+                           _d3(oth[0][1], ent[0][1]), ent[1]))
+    cuts.sort(key=lambda c: tuple(round(v, 3) for v in c.entry))
+    return cuts, [o_ if isinstance(o_, str) else o_[0] for o_ in odd]
+
+
+def _shape_match(flat_pts, loop_prims, tol):
+    """True when a cut-out's edge, unfolded (points in the flat), and a DXF cut-out are the same shape: every point
+    of each within tol of the other."""
+    import dxf as dxfmod
+    g = dxfmod._Grid(loop_prims, tol)
+    if any(g.dist(p) > tol for p in flat_pts):
+        return False
+    segs = [("L", flat_pts[i], flat_pts[i + 1]) for i in range(len(flat_pts) - 1)
+            if _d2(flat_pts[i], flat_pts[i + 1]) < 3.0]       # consecutive samples of one edge
+    g2 = dxfmod._Grid(segs, tol)
+    return all(g2.dist(q) <= tol for pr in loop_prims for q in dxfmod._samples(pr, 1.0))
+
+
+def cutout_fails(fm, cuts, loops, tol=0.05):
+    """The model's cut-outs against the DXF's (each a closed shape of cut lines inside the outline) under one
+    reading, counted both ways: each model cut-out's edge, unfolded, the same shape as one DXF cut-out; each DXF
+    cut-out on a model cut-out."""
+    fails, used = [], set()
+    for c in cuts:
+        flat = [fm.where(p) for p in c.boundary]
+        if any(q is None for q in flat):
+            fails.append("the model's %s cut-out isn't on the straight part of one flange" % c.size_words())
+            continue
+        hit = next((i for i, lp in enumerate(loops) if i not in used and _shape_match(flat, lp["prims"], tol)), None)
+        if hit is not None:
+            used.add(hit)
+            continue
+        ctr = fm.where(c.entry)
+        fails.append("the model's %s cut-out belongs round (%s, %s) in the flat; the DXF has no cut-out of that shape "
+                     "there" % (c.size_words(), _f(ctr[0]), _f(ctr[1])))
+    for i, lp in enumerate(loops):
+        if i not in used:
+            b = lp["box"]
+            fails.append("the DXF's %s x %s cut-out at (%s, %s) is on no cut-out of the model" % (
+                _f(b[2] - b[0]), _f(b[3] - b[1]), _f((b[0] + b[2]) / 2), _f((b[1] + b[3]) / 2)))
+    return fails
 
 
 def is_identity(T, tol=0.01):
@@ -640,6 +802,16 @@ def _hole_miss(fm, holes, circles):
     return total
 
 
+def _cut_miss(fm, cuts, loops):
+    """How far the model's cut-out centres land from the DXF cut-outs' (each to the nearest box centre)."""
+    total = 0.0
+    for c in cuts:
+        q = fm.where(c.entry)
+        ds = [_d2(q, ((lp["box"][0] + lp["box"][2]) / 2, (lp["box"][1] + lp["box"][3]) / 2)) for lp in loops] if q else []
+        total += min(ds) if ds else 1e6
+    return total
+
+
 def _zone_fails(chains, matches, zones, k, tol):
     """The bend zones the DXF marks (MARK / BEND_EXTENT pairs) must be the bend allowance at K round each line."""
     for ch, m in zip(chains, matches):
@@ -669,18 +841,22 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, v
         raise ValueError("its DXF isn't in mm ($INSUNITS %s)" % fl.dxf.units)
     seen = []
     for ax in bend_axes(body):
-        ch = chain_of(body, ax)
-        if ch is None or any(abs(abs(vdot(ax, a)) - 1) < 1e-6 for a in seen):
+        if any(abs(abs(vdot(ax, a)) - 1) < 1e-6 for a in seen):
+            continue
+        # the section through the middle, or the nearest one clear of a hole or cut-out (it must be one strip)
+        ch = next((c for c in (chain_of(body, ax, fr) for fr in (0.5, 0.45, 0.55, 0.4, 0.6, 0.35, 0.65, 0.3, 0.7))
+                   if c is not None), None)
+        if ch is None:
             continue
         seen.append(ax)
         fl.chains.append(ch)
     if not fl.chains:
         raise ValueError("drawgen can't read its folds (no section across them is one strip of sheet)")
-    cuts = cutouts(body)
-    if cuts:
-        raise ValueError("its model has %d cut-out%s that %s round holes (%s): drawgen sizes and checks round holes "
-                         "only so far" % (len(cuts), "s" if len(cuts) > 1 else "", "aren't" if len(cuts) > 1 else "isn't a",
-                                          ", ".join(cuts)))
+    cuts, odd = model_cutouts(body)
+    if odd:
+        raise ValueError("its model has cut-outs drawgen can't size yet (%s): rectangles, rounded rectangles and slots "
+                         "through the sheet only" % ", ".join(odd))
+    fl.cutouts = cuts
     if len(fl.chains) > 2:
         raise ValueError("its bend lines run in %d directions; drawgen reads one or two" % len(fl.chains))
     if len(fl.chains) == 2 and abs(vdot(fl.chains[0].axis, fl.chains[1].axis)) > 1e-6:
@@ -688,10 +864,11 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, v
     nb = len(fl.dxf.bend_lines())
     if nb != sum(len(ch.folds) for ch in fl.chains):
         raise ValueError("its DXF has %d bend lines, its model %d folds" % (nb, sum(len(ch.folds) for ch in fl.chains)))
-    loops = fl.dxf.cut_loops()
-    if loops != 1:
-        raise ValueError("its DXF's cut lines make %d closed shapes besides its round holes; drawgen reads one outline "
-                         "and round holes" % loops)
+    comps = fl.dxf.cut_components()
+    if len(comps) != 1 + len(cuts):
+        raise ValueError("its DXF cuts %d shapes inside its outline besides round holes, its model %d cut-outs" % (
+            len(comps) - 1, len(cuts)))
+    loops = comps[1:]           # the outline is the largest
     options = []
     for ch in fl.chains:
         rs = {round(f.r, 4) for f in ch.folds if f.r is not None}
@@ -750,9 +927,9 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, v
                 w = box[2 + fm.along["ax"]] - box[fm.along["ax"]]
                 if abs(w - fm.along["width"]) > tol:
                     raise ValueError("its DXF's flat is %s along the bend lines, the model %s" % (_f(w), _f(fm.along["width"])))
-            hf = hole_fails(fm, holes, circles, tol)
+            hf = hole_fails(fm, holes, circles, tol) + cutout_fails(fm, cuts, loops, tol)
             if hf:
-                why.append((len(hf), _hole_miss(fm, holes, circles), hf))
+                why.append((len(hf), _hole_miss(fm, holes, circles) + _cut_miss(fm, cuts, loops), hf))
                 continue
             readings.append(fm)
     if not readings:

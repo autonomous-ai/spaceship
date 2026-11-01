@@ -7,6 +7,9 @@ owner reviews the code and a team's first entries). See tools/drawgen/teams/READ
 WALL_FRAME = {
     "datums": "spigot",
     "material_has": "steel", "material_why": "D-131's welded, galvanized steel frame",
+    # the bottom rail's cassette-ledge rivets (lower panels): plain Ø3.3 holes, drilled after welding, for the
+    # closed-end countersunk blind rivets 838012 (ISO 15974, Ø3.2; D-166) - not M4 tap drills
+    "rivet_holes": {3.3: "blind rivet 838012, closed end, countersunk, Ø3.2 (ISO 15974)"},
     "notes": [
         "FRAME: welded, galvanized steel box tube (D-131, J-FRAME-01). Corners mitred, with a 2.0 mm mitre plate "
         "welded into each mitre (831007 to 831009, placed as the joints CAD README gives). Every corner and T joint "
@@ -92,8 +95,27 @@ def _tray(hand):
                             "C": "front face (at the cassette's front end)"}}
 
 
+# WALL's cassette ledges (D-170): a 1.5 galvanized steel angle under each lower cassette, riveted to the bottom rail's
+# room face after welding with closed-end countersunk blind rivets, the heads flush in countersinks machined in the upright
+LEDGE_NOTES = [
+    "LEDGE (D-170): galvanized steel sheet 1.5, DX51D+Z (EN 10346), Z100. Blank laser cut from its DXF with its 6 rivet "
+    "holes Ø3.3; each hole countersunk Ø6.7 x 120° by machining on the upright's room face; then folded 90° on a press "
+    "brake, inside radius 1 x t (the model's; K 0.44 in the DXF, an assumption until the factory's bend table).",
+    "Fitted after the frame is welded and touched up (J-FRAME-01): held on the bottom rail's room face as the drill jig "
+    "for the rail's plain Ø3.3 holes, then riveted with 6 closed-end countersunk blind rivets 838012 (ISO 15974, Ø3.2 x 8; "
+    "D-166), the heads flush, 0 to 0.3 under the face, so they stay clear of the cassette's tray.",
+    "The pad 848015 (PORON 4701-40, 18 wide, PSA) goes on the leg's flat past its bend; the cassette's bottom return rests "
+    "on it (D-170).",
+]
+LEDGE_TOLERANCE = ("blank ±0.5; fold 90° ±1° (assumption); rivet holes ±0.2 to each other and to the ends (assumption: "
+                   "the ledge is the rail's drill jig); countersinks Ø6.7 +0.2/0 at 120° ±1°, so every head (Ø5.8 to "
+                   "6.7) sits flush or under, with 0.52 of the upright left under it")
+LEDGE = {"bent": True, "notes": LEDGE_NOTES, "tolerance": LEDGE_TOLERANCE,
+         "rivet_holes": {3.3: "blind rivet 838012, closed end, countersunk, Ø3.2 (ISO 15974)"}}
+
 PARTS = {
     "511101": _tray("LH"),
+    "211701": LEDGE,
     "211101": WALL_FRAME,
     "211102": WALL_FRAME,
     "211301": _skin("LH"),
@@ -106,4 +128,58 @@ _FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with
          "piece split), so no drawing; D-123 cancels this set number")
 NO_DRAWING = {
     "211501": _FILL, "211502": _FILL, "211503": _FILL, "211504": _FILL, "211601": _FILL, "211602": _FILL,
+}
+
+# Assembly sheets (tools/drawgen/assembly.py): the lining cassettes. WALL's STEP models the four held cassette clips
+# as one shape without a number, 'NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)': each of its four
+# bodies is one clip 518001 (the list's 4), drawn and ballooned as that part until it is named (HOLD-08).
+# Datums as the ceiling cassette's (CEILING's facts for 510301), which these trays match (feature rationale F20):
+# A the tray's back face (toward the panel frame), B the end return's outer face (the front one on a side cassette,
+# the one at the side wall on a back cassette), C the bottom return's outer face. The clip centres run across from B
+# and up from C in the principal view, and the build-up (D-147 (2)) is a 1:2 section through the lowest clip, its
+# faces from A, lettered D after the datums. The fitting order is the one WALL's feature rationale gives (F20, F22,
+# F23) and the parts list's notes.
+_ORDER = ("Fitting order (WALL's feature rationale F20, F22, F23 and the parts list): (1) the tray, its 34 mm "
+          "returns turned in as 12 mm lips; (2) the felt, dropped in behind the lips, 1 mm clear inside the "
+          "returns: the lips hold it with no glue (settles H09), over the 24 mm air gap (D-17); (3) the clips "
+          "518001 in their four zones, 100 from the cassette's top and bottom on the panel frame's studs (HOLD "
+          "H03, HOLD-08). The cassette is a floating inner leaf that clips onto the panel frame from inside (D-17, "
+          "D-47). Items marked * go as their rows say: the hook-and-loop pads 848011 only line the cassette up and "
+          "carry no load (D-47); the edge seal 848012 only touches across the 2.26 gap (R-J18).")
+
+
+def _cassette(tray, back, end, **more):
+    return dict(more, **{
+        "envelopes": {"NO-PN-HOLD-H03": "518001"},
+        "datums": [
+            {"letter": "A", "pn": tray, "face": back, "view": "section_D",
+             "words": "the tray's back face, toward the panel frame"},
+            {"letter": "B", "pn": tray, "face": end, "view": "principal",
+             "words": "the tray's end return, its outer face"},
+            {"letter": "C", "pn": tray, "face": "-Z", "view": "principal",
+             "words": "the tray's bottom return, its outer face"},
+        ],
+        "interfaces": [
+            {"view": "principal", "of": ["518001"], "along": "x", "origin": {"pn": tray, "face": end}, "list": True,
+             "words": "the clip centres across the cassette, from datum B (principal view)"},
+            {"view": "principal", "of": ["518001"], "along": "y", "origin": {"pn": tray, "face": "-Z"}, "list": True,
+             "words": "the clip centres up the cassette, from datum C (principal view)"},
+        ],
+        # 10 below the clip's centre (still through it), so its trace doesn't lie along the clip's ordinate line
+        "sections": [{"letter": "D", "around": "518001", "offset": 10, "normal": [0, 0, -1], "half": 70, "scale": 0.5,
+                      "slice": 10,
+                      "stack": True, "stack_from": {"pn": tray, "face": back}}],
+        "notes": [_ORDER],
+    })
+
+
+ASSEMBLIES = {
+    "510101": _cassette("511101", "-X", "-Y"),      # L1: back face toward -X, front return toward -Y
+    # R1 and R2 seen from the wall side too (Reviewer 9 on #350), where their clips are: the view from the right
+    "510102": _cassette("511102", "+X", "-Y", principal="right", overall_sides={"y": "right"}),
+    "510103": _cassette("511103", "-X", "-Y"),      # L2
+    "510104": _cassette("511104", "+X", "-Y", principal="right", overall_sides={"y": "right"}),
+    "510201": _cassette("511201", "+Y", "-X"),      # B1: back face toward +Y, its end at the left side wall
+    # B2: its end at the right side wall, the left edge of its rear view, so the overall height goes on the right
+    "510202": _cassette("511202", "+Y", "+X", overall_sides={"y": "right"}),
 }

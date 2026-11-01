@@ -32,11 +32,24 @@ entry} (D-139). An entry holds only what the STEP and the list can't give:
 - views: the related first-angle views ('above', 'below', 'from_left', 'from_right'); else as many as it takes to
   show every part, at least one;
 - sections: [{letter, point, normal (toward the viewer), scale, slice (depth kept behind the plane), window (x0, x1,
-  y0, y1 in the section's view), stack (the layers' faces as ordinates and a balloon on each layer: a build-up,
-  D-147 (2)), on (the view its plane is drawn on)}]; when a part is hidden in every view and no section is given, a
-  section across the parts that hide it is added;
-- interfaces: [{view, of: [part numbers], along: 'x' or 'y', origin: {pn, pick: '-Y'...}, at: 'centre', 'min' or
-  'max', side, words}]: ordinates of those parts from the origin part (guideline 5.1's interface sizes);
+  y0, y1 in the section's view), around (a part number: the plane through its first placement or body, offset mm
+  along the normal from its centre, the window the assembly's full thickness by that part +- half), stack (the layers' faces as ordinates and a balloon on each
+  layer: a build-up, D-147 (2)), stack_from ({pn, face}: the build-up's 0 on that datum face, positive the way it
+  looks), on (the view its plane is drawn on)}]; with no sections given, a section across a part hidden in every
+  view is added; a part still hidden in every view and every section the entry gives stops the sheet with a message
+  naming it;
+- interfaces: [{view, of: [part numbers], along: 'x' or 'y', origin: {pn, pick: '-Y'...}, {pn, face: '-Y'} (a datum
+  face) or {assembly: True} (its centre), at: 'centre', 'min' or 'max' (or a list), side, sign ('view': signed along
+  the view's axis, for an origin in the middle), origin_line (the origin is a centre plane: its chain line across
+  the view), list (the notes give each part's values), words}]: ordinates of those parts from the origin (guideline
+  5.1's interface sizes);
+- centre_lines: [{view, of: [part numbers]}]: a chain line along each of those parts (a cassette's ribs);
+- datums: [{letter, pn, face ('+Z'...), view, words}]: a part's outer face seen edge on, named (ISO 5459); or
+  {letter, pn, median: 'x' or 'y', view, words}: the part's centre plane, on the view's overall size of it;
+- balloon_views: {part number: view}: where that item's balloon goes (a cassette's clips and catches on its plan);
+- overall_sides: {'x': 'up' or 'down', 'y': 'left' or 'right'}: the principal's overall sizes on those sides;
+- envelopes: {name start: part number}: a held part the STEP models as a named shape without a number (WALL's
+  'NO-PN-HOLD-H03' clip zones for the clip 518001), drawn and ballooned as that part;
 - unhatched: part numbers a section leaves whole (ISO 128-50: shafts, pins, studs and the like cut along their
   axis are drawn uncut), such as a spigot or a glide's stem;
 - hidden: part numbers whose hidden lines are drawn;
@@ -208,7 +221,11 @@ def read_assembly(path, pn):
     st.GetFreeShapes(tops)
     found = []
 
-    def solids_under(lab, loc):
+    counter = [0]
+
+    def solids_under(lab, loc, chain=()):
+        """[(solid, chain)]: each solid under lab with the numbered parts it sits in below lab, as (part number,
+        occurrence id) pairs, so a part the list puts higher up can be lifted out of the part that holds it."""
         if st.IsAssembly_s(lab):
             out = []
             comps = TDF_LabelSequence()
@@ -217,12 +234,15 @@ def read_assembly(path, pn):
                 c = comps.Value(i)
                 ref = TDF_Label()
                 st.GetReferredShape_s(c, ref)
-                out += solids_under(ref, loc.Multiplied(st.GetLocation_s(c)))
+                cpn = _pn(_label_name(ref) or _label_name(c))
+                counter[0] += 1
+                out += solids_under(ref, loc.Multiplied(st.GetLocation_s(c)),
+                                    chain + (((cpn, counter[0]),) if cpn else ()))
             return out
         shape = st.GetShape_s(lab)
         if not loc.IsIdentity():
             shape = shape.Moved(loc)
-        return _solids_of(shape)
+        return [(x, chain) for x in _solids_of(shape)]
 
     def children(lab, loc):
         out = []
@@ -238,7 +258,10 @@ def read_assembly(path, pn):
             if cpn is None and st.IsAssembly_s(ref):
                 out += children(ref, cloc)          # a grouping without a part number: look through it
                 continue
-            out.append(Occ(cpn, name, solids_under(ref, cloc)))
+            entries = solids_under(ref, cloc)
+            occ = Occ(cpn, name, [x for x, _ch in entries])
+            occ.entries = entries
+            out.append(occ)
         return out
 
     def walk(lab, loc, name):
@@ -262,6 +285,11 @@ def read_assembly(path, pn):
     if not found:
         raise LookupError("no assembly %s in %s" % (pn, inputs.rel(path)))
     return found[0]
+
+
+def find_step(pn, team):
+    """The assembly's own STEP (PN_REV_NAME_STEP.step, as WALL and FRONT export each assembly), else its team's."""
+    return inputs.own_step(pn) or team_step(team)
 
 
 def team_step(team):
@@ -293,26 +321,58 @@ def qty_text(s):
     return ("%d" % v) if abs(v - round(v)) < 1e-9 else ("%g" % v)
 
 
+def children_of(rows, pn, keys, path):
+    """The rows of one list that sit directly under assembly pn, and pn's own row, in the list's three layouts:
+    a parent column (by number or by the team's key, several parents split by '|'); a level column (the rows one
+    level under pn's row, up to the next row at its level or above: WALL's per-assembly lists); or a list of one
+    assembly, named after it, whose first row is the assembly and the others its parts (FRONT's)."""
+    if not rows or "part_number" not in rows[0]:
+        return None, []
+    own = next((r for r in rows if (r.get("part_number") or "").strip() == pn), None)
+    if "parent" in rows[0]:
+        kids = [r for r in rows if keys & {x.strip() for x in (r.get("parent") or "").split("|")}]
+        return own, kids
+    if "level" in rows[0]:
+        if own is None:
+            return None, []
+        i = rows.index(own)
+        lvl = int((own.get("level") or "0").strip() or 0)
+        kids = []
+        for r in rows[i + 1:]:
+            lv = (r.get("level") or "").strip()
+            if not lv:
+                continue
+            if int(lv) <= lvl:
+                break
+            if int(lv) == lvl + 1 and (r.get("part_number") or "").strip():
+                kids.append(r)
+        return own, kids
+    m = inputs.NAME_RE.match(os.path.basename(path))
+    if m and m.group(1) == pn and own is rows[0]:
+        return own, [r for r in rows[1:] if (r.get("part_number") or "").strip()]
+    return own, []
+
+
 def list_rows(pn, team, parent_keys=()):
-    """(the assembly's own row, [rows whose parent is the assembly], the list file). A team list names a parent by
-    its part number, or (CEILING) by a key such as 'assy_c1': the entry gives those keys. A cell may hold several
-    parents ('assy_c1|assy_c2')."""
+    """(the assembly's own row, [the rows directly under it], the list file) from the team's lists; rows under it in
+    two lists are an error (one list owns an assembly's parts)."""
     keys = {pn} | set(parent_keys)
     own, kids, src = None, [], None
     for p in inputs.team_lists(team):
         with open(p, newline="", encoding="utf-8") as fh:
             rows = list(csv.DictReader(fh))
-        if not rows or "part_number" not in rows[0] or "parent" not in rows[0]:
-            continue
-        mine = [r for r in rows if keys & {x.strip() for x in (r.get("parent") or "").split("|")}]
-        me = [r for r in rows if (r.get("part_number") or "").strip() == pn]
-        if me and own is None:
-            own, src = me[0], p
+        me, mine = children_of(rows, pn, keys, p)
+        if me is not None and own is None:
+            own, src = me, p
         if mine:
             if kids and src != p:
                 raise NotDrawable("%s: rows under it in two lists (%s and %s)" % (pn, inputs.rel(src), inputs.rel(p)))
             kids, src = mine, p
     return own, kids, src
+
+
+def qty_of(row):
+    return row.get("qty_per_parent") if row.get("qty_per_parent") not in (None, "") else row.get("qty")
 
 
 def unit_of(row):
@@ -348,14 +408,27 @@ class Item:
 
 
 class Assy:
-    """Everything one assembly sheet needs, read from the team STEP and the team parts list."""
+    """Everything one assembly sheet needs, read from the team STEP and the team parts list. A class built on it (the
+    whole-pod GA) may give its sheet another kind, its own sources, and an extra(sh, views, sides) step that draws
+    more annotation; make() uses them when present."""
+
+    kind = "assembly"           # the sheet's kind in its drawing data; check() reads only 'assembly'
+
+    def sources(self):
+        """What the sheet was drawn from, with their hashes: the STEP and the parts list."""
+        return [{"role": "STEP", "path": inputs.rel(self.step), "sha256_12": inputs.sha12(self.step)},
+                {"role": "parts list", "path": inputs.rel(self.list_file), "sha256_12": inputs.sha12(self.list_file)}]
 
     def __init__(self, pn, team, entry, step=None):
         self.pn, self.team, self.entry = pn, team, entry
-        self.step = step or team_step(team)
+        self.step = step or find_step(pn, team)
         if not self.step:
-            raise NotDrawable("%s: %s has no team STEP under v2/03-Manufacturing/%s" % (pn, team, team))
+            raise NotDrawable("%s: no STEP of its own and no team STEP under v2/03-Manufacturing/%s" % (pn, team))
         self.step_name, occs = read_assembly(self.step, pn)
+        for o in occs:                  # a held part modelled as a named envelope without a number (WALL's clip zones)
+            for key, epn in entry.get("envelopes", {}).items():
+                if o.pn is None and (o.name or "").startswith(key):
+                    o.pn, o.envelope = epn, key
         loose = [o for o in occs if o.pn is None]
         if loose:
             raise NotDrawable("%s: its STEP has parts without a part number (%s): every body belongs to a numbered "
@@ -378,6 +451,27 @@ class Assy:
         by_pn = {}
         for o in occs:
             by_pn.setdefault(o.pn, []).append(o)
+        listed = {(r.get("part_number") or "").strip() for r in kids}
+        for want in sorted(listed - set(by_pn)):
+            # the list puts it here, the STEP inside one of the assembly's parts (AIR's cartridges in the column and
+            # the soffit): it is drawn as its own item, and taken out of the part that holds it
+            for o in list(occs):
+                groups = {}
+                for x, ch in getattr(o, "entries", ()):
+                    hit = next((oid for p_, oid in ch if p_ == want), None)
+                    if hit is not None:
+                        groups.setdefault(hit, []).append(x)
+                for _oid, sols in sorted(groups.items()):
+                    gone = {id(x) for x in sols}
+                    o.solids = [x for x in o.solids if id(x) not in gone]
+                    o.entries = [(x, ch) for x, ch in o.entries if id(x) not in gone]
+                    lifted = Occ(want, want, sols)
+                    lifted.within = o.pn
+                    occs.append(lifted)
+                    by_pn.setdefault(want, []).append(lifted)
+        occs = [o for o in occs if o.solids]
+        by_pn = {k: [o for o in v if o.solids] for k, v in by_pn.items()}
+        by_pn = {k: v for k, v in by_pn.items() if v}
         self.items, seen = [], set()
         for r in kids:
             p = (r.get("part_number") or "").strip()
@@ -398,10 +492,19 @@ class Assy:
         for it in self.items:
             if it.ref or not it.occs:
                 continue
-            q = _num(it.row.get("qty_per_parent"))
-            if q is not None and abs(q - round(q)) < 1e-9 and int(round(q)) != len(it.occs):
+            q = _num(qty_of(it.row))
+            # a count in sets is counted as pieces are (the Lead, 2026-11-01): WALL's clips 518003, '4 set' (a
+            # female and a male part each, #343), are its four clip zones; a cavity fill's '1 set' is one placement
+            if q is None or abs(q - round(q)) > 1e-9 or unit_of(it.row).lower() not in ("", "pc", "pcs", "set", "sets"):
+                continue
+            n_occ, n_sol = len(it.occs), sum(len(o.solids) for o in it.occs)
+            # a count matches the STEP's placements of the part, or (one placement holding them all as bodies, as
+            # WALL models its rivnuts and clip zones) its bodies
+            if n_occ == 1 and n_sol > 1 and int(round(q)) == n_sol:
+                it.occs[0].pieces = True
+            if int(round(q)) not in (n_occ, n_sol if n_occ == 1 else -1):
                 raise NotDrawable("%s: the list has %d of %s under it, the STEP %d" % (pn, int(round(q)), it.pn,
-                                                                                    len(it.occs)))
+                                                                                    n_occ if n_occ > 1 else n_sol))
 
     @property
     def table_items(self):
@@ -648,6 +751,19 @@ def section_view(assy, spec, views):
     slice depth (only what lies within it behind the plane), its own scale, and the view the cutting plane is
     drawn on."""
     P = views["principal"]
+    if spec.get("around") and not spec.get("point"):
+        # a build-up through a named part: the plane through its first placement's centre (lowest, then nearest
+        # the front, then the left), the window the assembly's full thickness by the part's centre +- half
+        boxes = []
+        for o in assy.occs:
+            if o.item.pn == spec["around"]:     # each body on its own when one placement holds them all (pieces)
+                boxes += [box_of([x]) for x in o.solids] if getattr(o, "pieces", False) else [box_of(o.solids)]
+        if not boxes:
+            raise NotDrawable("%s: section %s's part %s is not in the STEP" % (assy.pn, spec["letter"], spec["around"]))
+        b = sorted(boxes, key=lambda b: tuple(round((b[k] + b[k + 3]) / 2, 1) for k in (2, 1, 0)))[0]
+        n_ = vnorm(tuple(spec["normal"]))
+        sh_ = float(spec.get("offset", 0.0))   # mm along the normal: off the part's centre, still through it
+        spec = dict(spec, point=[(b[k] + b[k + 3]) / 2 + n_[k] * sh_ for k in range(3)])
     letter, point, normal = spec["letter"], tuple(spec["point"]), vnorm(tuple(spec["normal"]))
     base = None
     for v in views.values():
@@ -665,6 +781,16 @@ def section_view(assy, spec, views):
         else:
             raise NotDrawable("%s: section %s's plane is square to no axis of the principal view" % (assy.pn, letter))
     view = View("section_" + letter, base.n, base.x, base.y)
+    if spec.get("around") and not spec.get("window"):
+        A = assy.box
+        corners = [(A[0] if j & 1 else A[3], A[1] if j & 2 else A[4], A[2] if j & 4 else A[5]) for j in range(8)]
+        xs, ys = [vdot(c, view.x) for c in corners], [vdot(c, view.y) for c in corners]
+        cx, cy = view.to2d(point)
+        half = float(spec.get("half", 70.0))
+        if max(xs) - min(xs) <= max(ys) - min(ys):     # the thickness runs along the view's X
+            spec = dict(spec, window=[min(xs) - 2.0, max(xs) + 2.0, cy - half, cy + half])
+        else:
+            spec = dict(spec, window=[cx - half, cx + half, min(ys) - 2.0, max(ys) + 2.0])
     kept = []
     whole = set(assy.entry.get("unhatched", ()))
     off = vdot(point, normal)
@@ -939,9 +1065,10 @@ class Side:
 
     def __init__(self):
         self.dims = {"left": 0.0, "right": 0.0, "up": 0.0, "down": 0.0}
+        self.overall = {}       # axis: (p1, p2, side, gap) of the overall size drawn on this view
 
 
-def overall_dims(sh, views, sides):
+def overall_dims(sh, views, sides, entry=None):
     """The three overall sizes (true mm, read from the exact projection): the principal's width and height, and
     the depth on the first related view; each on a side no neighbouring view uses."""
     P = views["principal"]
@@ -960,10 +1087,13 @@ def overall_dims(sh, views, sides):
         txt = fmt(val, 1)
         sh.dim_linear(p1, p2, side, 10.0, txt, 2.5)
         sides[av.name].dims[side] = max(sides[av.name].dims[side], 14.0)
+        sides[av.name].overall[axis] = (p1, p2, side, 10.0)
         out.append({"view": av.name, "axis": axis, "value": round(val, 3), "text": txt})
 
-    put(P, "x", "up" if "below" not in views else ("down" if "above" not in views else "up"))
-    put(P, "y", "left" if "from_right" not in views else ("right" if "from_left" not in views else "left"))
+    want = (entry or {}).get("overall_sides", {})     # the entry may move one (a datum's leader goes that way)
+    put(P, "x", want.get("x") or ("up" if "below" not in views else ("down" if "above" not in views else "up")))
+    put(P, "y", want.get("y") or ("left" if "from_right" not in views else ("right" if "from_left" not in views
+                                                                             else "left")))
     for nm, axis, side in (("above", "y", "left"), ("from_left", "x", "down"), ("below", "y", "left"),
                            ("from_right", "x", "down")):
         if nm in views:
@@ -1007,7 +1137,8 @@ def _std_name(view):
 
 
 FAR = 1e5               # the viewer's distance for a sight line (mm)
-CLEAR = 0.8             # an arrow's tip at least this far (paper mm) from every other part's line
+CLEAR = 1.5             # an arrow's tip at least this far (paper mm) from every other part's line, so at print size
+                        # the two lines don't merge (Reviewer 9 on #350: 0.8 read as the tray's edge)
 DOT_CLEAR = 1.2         # a dot at least this far (paper mm) from every line
 
 
@@ -1159,7 +1290,7 @@ def lane_spots(av, side, S):
              ("up", (None, y1 + d["up"] + LANE))]
     dist = {"left": S[0] - x0, "right": x1 - S[0], "down": S[1] - y0, "up": y1 - S[1]}
     lanes.sort(key=lambda ln: dist[ln[0]])
-    for k in range(0, 15):
+    for k in range(0, 8):
         for nm, (lx, ly) in lanes[:3]:
             for sgn in ((0,) if k == 0 else (1, -1)):
                 off = sgn * k * 11.0
@@ -1181,10 +1312,16 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
     for it in (items if items is not None else assy.table_items):
         if not it.occs:
             continue
+        want = assy.entry.get("balloon_views", {}).get(it.pn)
+        if want and not only and want not in views:
+            raise NotDrawable("%s: item %d's balloon view %s is not drawn" % (assy.pn, it.no, want))
+        it_order = [want] if (want and not only) else order
         done = None
-        for style in ("arrow", "dot"):
+        # an arrow first, in a section one whose leader crosses no drawn line (not through another layer's cut face,
+        # its hatching or a dimension: WALL's felt); then any arrow; then a dot
+        for style, clear in (("arrow", True), ("arrow", False), ("dot", False)):
             cands = []
-            for k, nm in enumerate(order):
+            for k, nm in enumerate(it_order):
                 av = views[nm]
                 if style == "arrow":
                     cs = edge_candidates(av, assy, it)[:40]
@@ -1203,7 +1340,7 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                         continue
                     dx, dy = S[0] - ctr[0], S[1] - ctr[1]
                     L = math.hypot(dx, dy)
-                    if L < r + 6.0 or L > 170.0:
+                    if L < r + 6.0 or L > 120.0:
                         continue
                     u = (dx / L, dy / L)
                     a = (ctr[0] + u[0] * r, ctr[1] + u[1] * r)
@@ -1214,6 +1351,10 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                     if any(_seg_box(a, S, b, 0.6) for b in sh.boxes):
                         continue
                     if any(_cross(a, S, p, q) for p, q in leaders):
+                        continue
+                    if clear and av.kind == "section" and _crossings(sh, a, S, u):
+                        continue
+                    if _runs_along(sh, a, S):
                         continue
                     if any(seg_dist(cc, a, S) < r + 1.5 for cc in centres):
                         continue
@@ -1227,7 +1368,9 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
             if done:
                 break
         if not done:
-            raise NotDrawable("%s: no free place for the balloon of item %d (%s)" % (assy.pn, it.no, it.pn))
+            hint = ("; it is hidden in every view and every section the entry gives, so the entry needs a section "
+                    "through it" if it in getattr(assy, "missing", ()) else "")
+            raise NotDrawable("%s: no free place for the balloon of item %d (%s)%s" % (assy.pn, it.no, it.pn, hint))
         nm, kind, i, pt, S, ctr, a, u, t3 = done
         if kind == "arrow":
             sh.line(a, (S[0] - u[0] * 0.5, S[1] - u[1] * 0.5), W_THIN)
@@ -1246,6 +1389,36 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
     return recs
 
 
+def _runs_along(sh, a, S, gap=0.4, length=2.0):
+    """True when the leader from a to S lies along a drawn line (within gap mm, parallel, for more than length mm):
+    it would read as part of that line (a rib's centre line, an outline)."""
+    L = math.hypot(S[0] - a[0], S[1] - a[1])
+    if L < 1e-9:
+        return False
+    u = ((S[0] - a[0]) / L, (S[1] - a[1]) / L)
+    box = (min(a[0], S[0]), min(a[1], S[1]), max(a[0], S[0]), max(a[1], S[1]))
+    for p, q in sh.grid.near(box, gap):
+        M = math.hypot(q[0] - p[0], q[1] - p[1])
+        if M < length:
+            continue
+        v = ((q[0] - p[0]) / M, (q[1] - p[1]) / M)
+        if abs(u[0] * v[1] - u[1] * v[0]) > 0.05:          # not parallel (about 3 degrees)
+            continue
+        if abs((p[0] - a[0]) * u[1] - (p[1] - a[1]) * u[0]) > gap:      # not on the leader's line
+            continue
+        t0, t1 = sorted(((p[0] - a[0]) * u[0] + (p[1] - a[1]) * u[1], (q[0] - a[0]) * u[0] + (q[1] - a[1]) * u[1]))
+        if min(t1, L) - max(t0, 0.0) > length:
+            return True
+    return False
+
+
+def _crossings(sh, a, S, u):
+    """How many drawn lines a leader from a to its tip S crosses, short of the last 1.5 mm (the edge it lands on)."""
+    e = (S[0] - u[0] * 1.5, S[1] - u[1] * 1.5)
+    box = (min(a[0], e[0]), min(a[1], e[1]), max(a[0], e[0]), max(a[1], e[1]))
+    return sum(1 for p, q in sh.grid.near(box, 0.0) if _cross(a, e, p, q))
+
+
 def _bbox_near(p, pt, pad):
     x0, y0, x1, y1 = p.bbox()
     return x0 - pad <= pt[0] <= x1 + pad and y0 - pad <= pt[1] <= y1 + pad
@@ -1262,13 +1435,23 @@ def table_rows(assy):
         r = it.row
         u = unit_of(r)
         rows.append({"no": it.no, "mark": "" if it.occs else "*", "pn": it.pn, "name": it.name,
-                     "qty": qty_text(r.get("qty_per_parent")) + ((" " + u) if u else ""),
+                     "qty": qty_text(qty_of(r)) + ((" " + u) if u else ""),
                      "material": (r.get("material") or "").strip() or "-",
                      "finish": (r.get("finish") or "").strip() or "-"})
     return rows
 
 
-def notes_for(assy, views):
+def _view_words(views, nm):
+    """How a view is named on the sheet, for the notes ('VIEW FROM ABOVE', 'SECTION D-D')."""
+    v = views.get(nm)
+    if v is None:
+        return nm
+    if v.kind == "section":
+        return "SECTION %s-%s" % (v.letter, v.letter)
+    return STD_WORDS.get(_std_name(v.view)) or VIEW_WORDS.get(nm) or "VIEW"     # as view_title names it
+
+
+def notes_for(assy, views, ifaces=None, datums=None):
     e = assy.entry
     out = ["Parts, quantities, materials and finishes as the parts list %s (its rows under %s), word for word; each "
            "part's own drawing holds its sizes and tolerances." % (os.path.basename(assy.list_file), assy.pn)]
@@ -1277,6 +1460,13 @@ def notes_for(assy, views):
         out.append("Items marked * (%s) are not in the STEP %s %s: they have no balloon; their places are in their "
                    "rows and the joints register." % (", ".join("%d %s" % (it.no, it.pn) for it in un),
                                                       os.path.basename(assy.step), assy.rev))
+    for it in assy.table_items:
+        keys = sorted({getattr(o, "envelope", None) for o in it.occs} - {None})
+        if keys:
+            out.append("Item %d %s is shown by the STEP's held envelope%s %s: the part isn't named yet (%s); its "
+                       "places and count are the envelope's." % (
+                           it.no, it.pn, "s" if len(it.occs[0].solids) > 1 else "", ", ".join(keys),
+                           (it.row.get("status") or "HOLD").strip()))
     for it in assy.refs:
         r, _k, _f = list_rows(it.pn, assy.team)
         par = (r or {}).get("parent", "").strip() if r else ""
@@ -1286,9 +1476,29 @@ def notes_for(assy, views):
                        it.pn, it.name, par or "another assembly", (" (%s)" % why) if why else ""))
     out.append("Views in first angle (ISO 5456-2); each view title gives its X and Y in pod axes (guideline 3.3). "
                "Visible outlines only, as an assembly drawing shows them.")
-    for g in e.get("interfaces", ()):
-        if g.get("words"):
-            out.append("Interface sizes (ordinates, true mm from the STEP): %s." % g["words"])
+    for d in e.get("datums", ()):
+        if d.get("median"):
+            rec = next((r for r in (datums or ()) if r["letter"] == d["letter"]), None)
+            out.append("Datum %s: %s's centre plane%s: the median plane of its %s size in the %s (ISO 5459: the "
+                       "triangle on that size's extension line)." % (
+                           d["letter"], d["pn"], (", " + d["words"]) if d.get("words") else "",
+                           fmt(rec["size"], 2) if rec else d["median"].upper(),
+                           _view_words(views, d.get("view", "principal"))))
+        else:
+            out.append("Datum %s: %s's %s face%s (ISO 5459)." % (d["letter"], d["pn"], d["face"],
+                                                                 (", " + d["words"]) if d.get("words") else ""))
+    for k, g in enumerate(e.get("interfaces", ())):
+        if not g.get("words"):
+            continue
+        t = "Interface sizes (ordinates, true mm from the STEP): %s" % g["words"]
+        if g.get("list") and ifaces is not None and k < len(ifaces):
+            vals = {}
+            for p_ in ifaces[k]["points"]:
+                if p_["value"] not in vals.setdefault(p_["pn"], []):
+                    vals[p_["pn"]].append(p_["value"])
+            t += ": " + "; ".join("%s at %s" % (pn_, ", ".join(sorted(v_, key=float)))
+                                  for pn_, v_ in sorted(vals.items()))
+        out.append(t + ".")
     out += list(e.get("notes", ()))
     out.append("TOLERANCE: " + e.get("tolerance", "the overall sizes are for reference; each part's drawing holds its "
                                                   "own tolerances. Not ISO 2768."))
@@ -1316,9 +1526,10 @@ def _title_height(size, assy, spec, today):
     return top
 
 
-def make(pn, team, entry, out_path, today=None, step=None):
-    """Draw assembly pn's sheet into out_path; returns a report (as compose.make does)."""
-    assy = Assy(pn, team, entry, step=step)
+def make(pn, team, entry, out_path, today=None, step=None, assy=None):
+    """Draw assembly pn's sheet into out_path; returns a report (as compose.make does). assy: an assembly already
+    built (an Assy, or a class built on it, such as the whole-pod GA's), drawn as given."""
+    assy = assy or Assy(pn, team, entry, step=step)
     views = plan_views(assy)
     size, s = choose_sheet(views, entry)
     with open(assy.step, encoding="latin-1") as fh:
@@ -1343,10 +1554,15 @@ def make(pn, team, entry, out_path, today=None, step=None):
     for nm in order:
         draw_prims(sh, views[nm], assy.occs)
     cuts = cutting_planes(sh, views)
+    clines = centre_lines(sh, assy, views)
     sides = {nm: Side() for nm in views}
-    dims = overall_dims(sh, views, sides)
+    dims = overall_dims(sh, views, sides, entry)
     ifaces = interface_dims(sh, assy, views, sides)
     stacks = stack_dims(sh, assy, views, sides)
+    datums = datum_symbols(sh, assy, views, sides)
+    # an assembly class's own annotation (the GA's clear sizes and position codes), drawn after the sizes and before
+    # the titles and balloons, so they keep clear of it
+    extra = assy.extra(sh, views, sides) if hasattr(assy, "extra") else None
     for nm in order:
         av = views[nm]
         av.title_gap = sides[nm].dims["down"] + 9.0
@@ -1362,8 +1578,10 @@ def make(pn, team, entry, out_path, today=None, step=None):
                 it = assy.occs[i].item
                 if not it.ref and it not in cut:
                     cut.append(it)
-            place_balloons(sh, assy, views, sides, items=sorted(cut, key=lambda it: it.no), only=sv.name,
-                           recs=balloons, leaders=leaders, centres=centres)
+            done_here = {b["pn"] for b in balloons if b["view"] == sv.name}
+            place_balloons(sh, assy, views, sides, items=sorted([it for it in cut if it.pn not in done_here],
+                                                                 key=lambda it: it.no),
+                           only=sv.name, recs=balloons, leaders=leaders, centres=centres)
     # ---- the right column: the parts table at the top, the title block at the bottom, the notes between
     spec = {"_scale": s}
     rows = table_rows(assy)
@@ -1371,7 +1589,7 @@ def make(pn, team, entry, out_path, today=None, step=None):
     tx, ty = W - 10 - TABLE_W - 2.0, H - 10 - 2.0
     title = "PARTS LIST: %s %s" % (assy.pn, assy.name)
     y_bot, row_spans = draw_table(sh, tx, ty, COLS, cells, 2.5, title=title, title_size=3.5)
-    notes = notes_for(assy, views)
+    notes = notes_for(assy, views, ifaces, datums)
     nw = TABLE_W - 9.0
     need = 9.0 + sum(len(wrap2(sh, t, 2.5, nw)) * 2.5 * 1.6 + 2.0 for t in notes)
     tb_top = _title_height(size, assy, spec, today)
@@ -1400,11 +1618,9 @@ def make(pn, team, entry, out_path, today=None, step=None):
     xs = [tx]
     for c in COLS:
         xs.append(xs[-1] + c[1])
-    data = {"kind": "assembly", "generator": TOOL_REV, "pn": assy.pn, "rev": assy.rev, "dwg": assy.dwg_name,
+    data = {"kind": assy.kind, "generator": TOOL_REV, "pn": assy.pn, "rev": assy.rev, "dwg": assy.dwg_name,
             "sheet": size, "sheet_h": H, "team": team,
-            "sources": [{"role": "STEP", "path": inputs.rel(assy.step), "sha256_12": inputs.sha12(assy.step)},
-                        {"role": "parts list", "path": inputs.rel(assy.list_file),
-                         "sha256_12": inputs.sha12(assy.list_file)}],
+            "sources": assy.sources(),
             "parent_keys": list(entry.get("parent_keys", ())), "unhatched": list(entry.get("unhatched", ())),
             "views": [{"name": nm, "kind": v.kind, "n": v.view.n, "x": v.view.x, "y": v.view.y, "scale": v.scale,
                        "off": v.off, "box": v.box(), "letter": v.letter,
@@ -1415,6 +1631,11 @@ def make(pn, team, entry, out_path, today=None, step=None):
             "table": {"x": xs, "y_top": ty, "y_bot": y_bot,
                       "rows": [{"no": r["no"], "pn": r["pn"], "top": a, "bottom": b} for r, (a, b) in zip(rows, row_spans)]},
             "refs": [it.pn for it in assy.refs], "unmodelled": [it.pn for it in assy.table_items if not it.occs]}
+    # what only some sheets have goes in only when they have it (a sheet without it keeps its bytes)
+    for k, v in (("envelopes", dict(entry.get("envelopes", {}))), ("datums", datums), ("centre_lines", clines),
+                 ("extra", extra)):
+        if v:
+            data[k] = v
     sh.meta["creationDate"] = "D:%s000000Z" % today.replace("-", "")
     sh.meta["modDate"] = sh.meta["creationDate"]
     sh.data = data
@@ -1446,6 +1667,14 @@ def generate(pn, team, entry, out_dir):
 # ------------------------------------------------------------------ interface sizes
 
 
+def _face_point(b, n3):
+    """The centre of box b moved along unit pod axis n3 onto the box's outer face that way."""
+    c = [(b[k] + b[k + 3]) / 2 for k in range(3)]
+    corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+    off = max(vdot(q, n3) for q in corners) - vdot(tuple(c), n3)
+    return tuple(c[k] + n3[k] * off for k in range(3))
+
+
 def _ref_point(occ, at, axis3):
     """A part's centre (its box's), or the point of its box at the low or high end along a view axis."""
     b = box_of(occ.solids)
@@ -1470,34 +1699,71 @@ def interface_dims(sh, assy, views, sides):
         axis = g.get("along", "x")
         ax3 = av.view.x if axis == "x" else av.view.y
         o_spec = g["origin"]
-        cand = [o for o in assy.occs if o.item.pn == o_spec["pn"]]
-        if not cand:
-            raise NotDrawable("%s: interface origin %s is not in the STEP" % (assy.pn, o_spec["pn"]))
-        pick = {"+X": (1, 0, 0), "-X": (-1, 0, 0), "+Y": (0, 1, 0), "-Y": (0, -1, 0), "+Z": (0, 0, 1),
-                "-Z": (0, 0, -1)}[o_spec.get("pick", "-Y")]
-        org3 = max((_ref_point(o, o_spec.get("at", "centre"), ax3) for o in cand), key=lambda c: vdot(c, pick))
+        if o_spec.get("assembly"):          # the assembly's own centre (its box's)
+            A = assy.box
+            org3 = ((A[0] + A[3]) / 2, (A[1] + A[4]) / 2, (A[2] + A[5]) / 2)
+        elif o_spec.get("face"):            # a part's outer face along a pod axis (a datum face): its box's centre
+            cand = [x for o in assy.occs if o.item.pn == o_spec["pn"] for x in o.solids]   # moved onto that face
+            if not cand:
+                raise NotDrawable("%s: interface origin %s is not in the STEP" % (assy.pn, o_spec["pn"]))
+            org3 = _face_point(box_of(cand), AXES[o_spec["face"]])
+        else:
+            cand = [o for o in assy.occs if o.item.pn == o_spec["pn"]]
+            if not cand:
+                raise NotDrawable("%s: interface origin %s is not in the STEP" % (assy.pn, o_spec["pn"]))
+            pick = {"+X": (1, 0, 0), "-X": (-1, 0, 0), "+Y": (0, 1, 0), "-Y": (0, -1, 0), "+Z": (0, 0, 1),
+                    "-Z": (0, 0, -1)}[o_spec.get("pick", "-Y")]
+            org3 = max((_ref_point(o, o_spec.get("at", "centre"), ax3) for o in cand), key=lambda c: vdot(c, pick))
         pts3 = []
         for o in assy.occs:
-            if o.item.pn in g["of"]:
-                pts3.append((o.item.pn, _ref_point(o, g.get("at", "centre"), ax3)))
+            if o.item.pn not in g["of"]:
+                continue
+            ats = g.get("at", "centre")
+            for piece in ([Occ(o.pn, o.name, [x]) for x in o.solids] if getattr(o, "pieces", False) else [o]):
+                for at in (ats if isinstance(ats, (list, tuple)) else [ats]):
+                    pts3.append((o.item.pn, _ref_point(piece, at, ax3)))
         if not pts3:
             raise NotDrawable("%s: no part of interface group %s in the STEP" % (assy.pn, g["of"]))
         o2 = av.S(av.view.to2d(org3))
+        if g.get("origin_line"):            # the origin is a centre plane: a chain line along it across the view
+            from sheet import DASH_CTR      # (ISO 128-24), and its 0 drawn from the outline, not from inside
+            ex0, ey0, ex1, ey1 = av.extent
+            k_ = 0 if axis == "x" else 1
+            oc = av.view.to2d(org3)[k_]
+            ext = 3.0 / av.scale
+            if axis == "x":
+                sh.line(av.S((oc, ey0 - ext)), av.S((oc, ey1 + ext)), W_THIN, DASH_CTR)
+            else:
+                sh.line(av.S((ex0 - ext, oc)), av.S((ex1 + ext, oc)), W_THIN, DASH_CTR)
         sp = [av.S(av.view.to2d(c)) for _pn, c in pts3]
         raw = [vdot(vsub(c, org3), ax3) for _pn, c in pts3]
-        sgn = 1.0 if sum(1 for r_ in raw if r_ > 1e-6) >= sum(1 for r_ in raw if r_ < -1e-6) else -1.0
+        if g.get("sign") == "view":         # signed along the view's own axis (an origin in the middle)
+            sgn = 1.0
+        else:                               # positive the way most points lie from the origin (an origin at an end)
+            sgn = 1.0 if sum(1 for r_ in raw if r_ > 1e-6) >= sum(1 for r_ in raw if r_ < -1e-6) else -1.0
         vals = [fmt(sgn * r_, 2) for r_ in raw]
-        side = g.get("side", "up" if axis == "x" else "right")
-        x0, y0, x1, y1 = av.box()
         d = sides[av.name].dims
+        if axis == "x":
+            side = g.get("side") or ("up" if not d["up"] else "down")
+        else:
+            side = g.get("side") or ("right" if not d["right"] else "left")
+        x0, y0, x1, y1 = av.box()
         if axis == "x":
             level = (y1 + d["up"] + 12.0) if side == "up" else (y0 - d["down"] - 12.0)
         else:
             level = (x1 + d["right"] + 12.0) if side == "right" else (x0 - d["left"] - 12.0)
+        if g.get("origin_line"):
+            ex0, ey0, ex1, ey1 = av.extent
+            if axis == "x":
+                o2 = (o2[0], av.S((0.0, ey1 if side == "up" else ey0))[1])
+            else:
+                o2 = (av.S((ex1 if side == "right" else ex0, 0.0))[0], o2[1])
         draw_ordinates(sh, o2, sp, axis, level, vals)
         d[side] += 12.0 + 4.0 + max(sh.text_width(v_, 2.5) for v_ in vals + ["0"])
         out.append({"view": av.name, "axis": axis, "origin3d": org3, "words": g.get("words", ""),
                     "points": [{"pn": pn, "at3d": c, "value": v_} for (pn, c), v_ in zip(pts3, vals)]})
+        if g.get("list"):                   # the notes give each part's values (which square is a clip, a catch)
+            out[-1]["list"] = True
     sh.flush()
     return out
 
@@ -1508,8 +1774,10 @@ def draw_ordinates(sh, origin, pts, axis, level, values):
     jog; points sharing a position give one value."""
     k = 0 if axis == "x" else 1
     items = {}
-    for p, v in zip(pts, values):
-        items.setdefault(round(p[k], 3), (p, v))
+    for p, v in zip(pts, values):       # points sharing a position: the one nearest the values draws the line
+        key = round(p[k], 3)
+        if key not in items or abs(level - p[1 - k]) < abs(level - items[key][0][1 - k]) - 1e-9:
+            items[key] = (p, v)
     rows = [(origin[k], origin, "0")] + sorted((c, p, v) for c, (p, v) in items.items() if abs(c - origin[k]) > 1e-6)
     rows.sort(key=lambda r: r[0])
     lab = [r[0] for r in rows]
@@ -1561,19 +1829,33 @@ def stack_dims(sh, assy, views, sides):
         cuts = sorted({round(c, 3) for lo, hi in ext.values() for c in (lo, hi)})
         if len(cuts) < 2:
             continue
+        i0, sgn = 0, 1.0            # the origin: the lowest face, or a datum face the entry names ('stack_from'),
+        o_spec = sv.spec.get("stack_from")      # then positive the way that face looks (out of the part), so
+        if o_spec:                              # mirrored assemblies read alike
+            cand = [x for o in assy.occs if o.item.pn == o_spec["pn"] for x in o.solids]
+            if not cand:
+                raise NotDrawable("%s: section %s's stack origin %s is not in the STEP" % (assy.pn, sv.letter,
+                                                                                         o_spec["pn"]))
+            c0 = vdot(_face_point(box_of(cand), AXES[o_spec["face"]]), sv.view.y if axis == "y" else sv.view.x)
+            i0 = min(range(len(cuts)), key=lambda i: abs(cuts[i] - c0))
+            if abs(cuts[i0] - c0) > 0.01:
+                raise NotDrawable("%s: section %s: %s's %s face is not a layer face of the build-up" % (
+                    assy.pn, sv.letter, o_spec["pn"], o_spec["face"]))
+            sgn = 1.0 if vdot(AXES[o_spec["face"]], sv.view.y if axis == "y" else sv.view.x) > 0 else -1.0
         x0, y0, x1, y1 = sv.box()
         if axis == "y":
             pts = [(x1, sv.S((0.0, c))[1]) for c in cuts]
-            org = pts[0]
             level = x1 + sides[sv.name].dims["right"] + 12.0
         else:
             pts = [(sv.S((c, 0.0))[0], y1) for c in cuts]
-            org = pts[0]
             level = y1 + sides[sv.name].dims["up"] + 12.0
-        vals = [fmt(c - cuts[0], 2) for c in cuts]
-        draw_ordinates(sh, org, pts[1:], axis, level, vals[1:])
+        vals = [fmt(sgn * (c - cuts[i0]), 2) for c in cuts]
+        draw_ordinates(sh, pts[i0], [p for i, p in enumerate(pts) if i != i0], axis, level,
+                       [v_ for i, v_ in enumerate(vals) if i != i0])
         sides[sv.name].dims["right" if axis == "y" else "up"] += 12.0 + 4.0 + max(sh.text_width(v_, 2.5) for v_ in vals)
         out.append({"view": sv.name, "axis": axis, "faces": cuts, "values": vals})
+        if o_spec:
+            out[-1].update({"origin": i0, "from": dict(o_spec), "sign": sgn})
     return out
 
 
@@ -1623,10 +1905,11 @@ def table_text(page, data):
     return out
 
 
-def _solids_by_pn(step_path):
+def _solids_by_pn(step_path, envelopes=None, groups=None):
     """{part number: its solids in the file's top coordinates}. A sub-assembly's number owns every solid under it
     (a D-120 welded frame's members, a cassette's parts), as drawing takes a sub-assembly as one item; a part's
-    bodies without names of their own belong to it."""
+    bodies without names of their own belong to it, and a held shape an entry's envelope names counts as its part.
+    groups, when given, gets each placement's solids apart ({part number: [[solids], ...]})."""
     _doc, st = _xcaf(step_path)
     tops = TDF_LabelSequence()
     st.GetFreeShapes(tops)
@@ -1646,12 +1929,38 @@ def _solids_by_pn(step_path):
         if not loc.IsIdentity():
             shape = shape.Moved(loc)
         sol = _solids_of(shape)
-        for pn in {geom.part_number_of(nm) for nm in names} - {None}:
+        pns = set()
+        for nm in names:
+            pn = geom.part_number_of(nm) or next((v for k, v in (envelopes or {}).items() if (nm or "").startswith(k)),
+                                                 None)
+            if pn:
+                pns.add(pn)
+        for pn in pns:
             out.setdefault(pn, []).extend(sol)
+            if groups is not None:
+                groups.setdefault(pn, []).append(sol)
 
     for i in range(1, tops.Length() + 1):
         lab = tops.Value(i)
         walk(lab, TopLoc_Location(), [_label_name(lab)])
+    return out
+
+
+def _planes_along(solids, ax):
+    """The offsets along unit axis ax of the solids' plane faces square to it."""
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_Plane
+    out = []
+    for so in solids:
+        ex = TopExp_Explorer(so, TopAbs_FACE)
+        while ex.More():
+            srf = BRepAdaptor_Surface(TopoDS.Face_s(ex.Current()))
+            if srf.GetType() == GeomAbs_Plane:
+                pl = srf.Plane()
+                d, o = pl.Axis().Direction(), pl.Location()
+                if abs(abs(d.X() * ax[0] + d.Y() * ax[1] + d.Z() * ax[2]) - 1.0) < 1e-6:
+                    out.append(o.X() * ax[0] + o.Y() * ax[1] + o.Z() * ax[2])
+            ex.Next()
     return out
 
 
@@ -1690,6 +1999,65 @@ def _arrow_or_dot_at(page, sheet_h, tip, end):
     return False
 
 
+def _outline_at(page, sheet_h, tip, tol=0.05):
+    """True when a part outline drawn on the page passes within tol (sheet mm) of tip: a stroke at the visible
+    outline's width or wider, or the edge of a filled area larger than an arrowhead or a dot (a thin part drawn
+    solid). Thin lines (dimensions, leaders, centre lines, hatching) don't count."""
+    from sheet import MM as _MM
+
+    def mm(p):
+        return (p.x / _MM, sheet_h - p.y / _MM)
+    for d in page.get_drawings():
+        stroked = d.get("color") is not None and (d.get("width") or 0.0) / _MM >= W_VIS * 0.9
+        filled = d.get("fill") is not None
+        if not stroked and not filled:
+            continue
+        r = d["rect"]
+        if not stroked and r.width / _MM < 4.0 and r.height / _MM < 4.0:
+            continue                                # an arrowhead or a dot
+        if not (r.x0 / _MM - 1 <= tip[0] <= r.x1 / _MM + 1 and sheet_h - r.y1 / _MM - 1 <= tip[1] <= sheet_h - r.y0 / _MM + 1):
+            continue
+        for it in d["items"]:
+            if it[0] == "l":
+                pts = [mm(it[1]), mm(it[2])]
+            elif it[0] == "c":
+                q = [mm(x) for x in it[1:5]]
+                pts = [bez(q, k / 16.0) for k in range(17)]
+            elif it[0] == "re":
+                R = it[1]
+                pts = [mm(R.tl), mm(R.tr), mm(R.br), mm(R.bl), mm(R.tl)]
+            elif it[0] == "qu":
+                Q = it[1]
+                pts = [mm(Q.ul), mm(Q.ur), mm(Q.lr), mm(Q.ll), mm(Q.ul)]
+            else:
+                continue
+            if any(seg_dist(tip, pts[k], pts[k + 1]) <= tol for k in range(len(pts) - 1)):
+                return True
+    return False
+
+
+def _hidden_by(solids, p3, view, tol=TOL_ON):
+    """The depth (mm) by which something lies in front of 3D point p3 along the view's sight line, or 0 when p3 is
+    the first surface there; in a section only what lies behind the cutting plane counts."""
+    from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+    n = tuple(view["n"])
+    start = 1e5
+    if view.get("cut"):
+        start = max(0.0, vdot(vsub(tuple(view["cut"]["point"]), p3), n))
+    o = vadd(p3, vmul(n, start))
+    lin = gp_Lin(gp_Pnt(*o), gp_Dir(*vmul(n, -1.0)))
+    best = start
+    for so in solids:
+        it = IntCurvesFace_ShapeIntersector()
+        it.Load(so, 1e-6)
+        it.Perform(lin, 0.0, start + 1.0)
+        if not it.IsDone():
+            continue
+        for k in range(1, it.NbPnt() + 1):
+            best = min(best, it.WParameter(k))
+    return max(0.0, start - best - tol)
+
+
 def check(pdf_path):
     """Read an assembly sheet back against its STEP and parts list, independently of how it was drawn: every
     table row against the list's rows under the assembly (item order, number, name, quantity, material, finish,
@@ -1714,7 +2082,7 @@ def check(pdf_path):
     # 1. the table against the list
     keys = {pn} | set(data.get("parent_keys", ()))
     with open(lst, newline="", encoding="utf-8") as fh:
-        rows = [r for r in csv.DictReader(fh) if keys & {x.strip() for x in (r.get("parent") or "").split("|")}]
+        _own, rows = children_of(list(csv.DictReader(fh)), pn, keys, lst)
     tab = table_text(page, data)
     if sorted(tab) != list(range(1, len(rows) + 1)):
         fails.append("the table's items %s are not 1 to %d (the list's rows under %s)" % (sorted(tab), len(rows), pn))
@@ -1724,7 +2092,7 @@ def check(pdf_path):
         stats["rows"] += 1
         u = unit_of(r)
         want = [str(n), (r.get("part_number") or "").strip(), (r.get("name") or "").strip(),
-                qty_text(r.get("qty_per_parent")) + ((" " + u) if u else ""),
+                qty_text(qty_of(r)) + ((" " + u) if u else ""),
                 (r.get("material") or "").strip() or "-", (r.get("finish") or "").strip() or "-"]
         got = tab[n][1]
         for k, (w, g) in enumerate(zip(want, got)):
@@ -1740,17 +2108,31 @@ def check(pdf_path):
     for o in occ:
         kids.setdefault(o["parent"], []).append(o["child"])
     under = set()
+    env = data.get("envelopes", {})
+
+    def pn_of(p_):
+        n = geom.part_number_of(p_.get("part_number", "")) or geom.part_number_of(p_.get("name", ""))
+        if n:
+            return n
+        return next((v for k, v in env.items() if (p_.get("name") or "").startswith(k) or
+                     (p_.get("part_number") or "").startswith(k)), None)
     for pd, p_ in prods.items():
         if p_["part_number"] == pn or geom.part_number_of(p_["name"]) == pn:
             stack = [pd]
             while stack:
                 c = stack.pop()
                 for ch in kids.get(c, []):
-                    q = prods.get(ch, {})
-                    under.add(geom.part_number_of(q.get("part_number", "")) or geom.part_number_of(q.get("name", "")))
+                    under.add(pn_of(prods.get(ch, {})))
                     stack.append(ch)
     views = {v["name"]: v for v in data["views"]}
-    solids = _solids_by_pn(step)
+    groups = {}
+    solids = _solids_by_pn(step, env, groups)
+    sight, _seen = [], set()
+    for p_ in sorted(x for x in under if x):
+        for so in solids.get(p_, []):
+            if id(so) not in _seen:
+                _seen.add(id(so))
+                sight.append(so)
     ballooned = set()
     for b in data.get("balloons", []):
         stats["balloons"] += 1
@@ -1774,6 +2156,13 @@ def check(pdf_path):
             pt, nr = v["cut"]["point"], v["cut"]["normal"]
             if vdot(vsub(t3, pt), nr) > TOL_ON:
                 fails.append("balloon %d: its point lies in front of section %s's plane" % (n, v.get("letter")))
+        if b["end"] == "arrow" and not _outline_at(page, data["sheet_h"], tuple(b["tip"])):
+            fails.append("balloon %d: its arrow doesn't end on an outline drawn in its view (%s)" % (n, b["view"]))
+        if b["end"] == "dot" and v is not None:
+            hid = _hidden_by(sight, t3, v)
+            if hid > 0:
+                fails.append("balloon %d: its point is hidden in its view (%s), %.2f mm behind another surface" % (
+                    n, b["view"], hid))
         ballooned.add(bpn)
         txt = [t for t in readback.text_boxes(page, data["sheet_h"]) if t[4] == str(n) and
                math.dist(((t[0] + t[2]) / 2, (t[1] + t[3]) / 2), tuple(b["centre"])) < 1.5]
@@ -1803,6 +2192,80 @@ def check(pdf_path):
             want = abs(vdot(vsub(c3, o3), ax))
             if abs(abs(float(p_["value"])) - want) > TOL_ON:
                 fails.append("interface value %s for %s, the STEP gives %.2f" % (p_["value"], p_["pn"], want))
+    for dm in data.get("datums", []):
+        v = views[dm["view"]]
+        inst = groups.get(dm["pn"], [])
+        if not inst:
+            fails.append("datum %s: %s is not in the STEP" % (dm["letter"], dm["pn"]))
+            continue
+        # the datum sits on the face (or on an extension line of the size) of one placement of the part: a STEP
+        # may hold the assembly more than once (CEILING's two cassettes)
+        miss = []
+        for sol in inst:
+            b = box_of(sol)
+            corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+            if dm.get("median"):        # on an extension line of the part's size, a size the view prints
+                k = 0 if dm["median"] == "x" else 1
+                ax = v["x"] if k == 0 else v["y"]
+                lo, hi = min(vdot(c, ax) for c in corners), max(vdot(c, ax) for c in corners)
+                at = (dm["at"][k] - v["off"][k]) / v["scale"]
+                miss.append(min(abs(at - lo), abs(at - hi)))
+                if miss[-1] <= TOL_ON and not any(
+                        x["view"] == dm["view"] and x["axis"] == dm["median"] and abs(x["value"] - (hi - lo)) <= TOL_ON
+                        for x in data.get("dims", [])):
+                    miss[-1] = float("inf")
+                    fails.append("datum %s: the %s view prints no %s size of %.2f (%s's)" % (
+                        dm["letter"], dm["view"], dm["median"], hi - lo, dm["pn"]))
+            else:
+                n3 = AXES[dm["face"]]
+                off = max(vdot(c, n3) for c in corners)
+                x, y = (dm["at"][0] - v["off"][0]) / v["scale"], (dm["at"][1] - v["off"][1]) / v["scale"]
+                n2 = (vdot(n3, v["x"]), vdot(n3, v["y"]))
+                miss.append(abs(n2[0] * x + n2[1] * y - off))
+        if min(miss) > TOL_ON and min(miss) != float("inf"):
+            fails.append("datum %s is %.3f mm off %s's %s" % (dm["letter"], min(miss), dm["pn"],
+                                                           ("size along " + dm["median"]) if dm.get("median")
+                                                           else dm["face"] + " face"))
+    # the build-up's layer faces: each a plane face of one of the assembly's parts, square to the stack's axis, and
+    # each printed value its distance from the origin face
+    items_pns = {tab[n][1][1] for n in tab}
+    for st in data.get("stacks", []):
+        v = views[st["view"]]
+        ax = v["y"] if st["axis"] == "y" else v["x"]
+        planes = _planes_along([x for p_ in items_pns for x in solids.get(p_, [])], ax)
+        i0, sgn = st.get("origin", 0), st.get("sign", 1.0)
+        for c, val in zip(st["faces"], st["values"]):
+            stats["stack faces"] = stats.get("stack faces", 0) + 1
+            if fmt(sgn * (c - st["faces"][i0]), 2) != val:
+                fails.append("section %s: stack value %s is not its face's distance %s" % (
+                    st["view"], val, fmt(sgn * (c - st["faces"][i0]), 2)))
+            if not any(abs(c - q) <= TOL_ON for q in planes):
+                fails.append("section %s: stack face at %.3f is no plane face of the parts" % (st["view"], c))
+        if st.get("from"):
+            inst = groups.get(st["from"]["pn"], [])
+            n3 = AXES[st["from"]["face"]]
+            offs = []
+            for sol in inst:
+                b_ = box_of(sol)
+                offs.append(vdot(_face_point(b_, n3), ax))
+            if not any(abs(st["faces"][i0] - q) <= TOL_ON for q in offs):
+                fails.append("section %s: the stack's 0 is not on %s's %s face" % (st["view"], st["from"]["pn"],
+                                                                                st["from"]["face"]))
+    # centre lines: through the centre of a placement of their part
+    for cl in data.get("centre_lines", []):
+        v = views[cl["view"]]
+        ok = False
+        for sol in groups.get(cl["pn"], []):
+            b_ = box_of(sol)
+            c3 = ((b_[0] + b_[3]) / 2, (b_[1] + b_[4]) / 2, (b_[2] + b_[5]) / 2)
+            S = (v["off"][0] + v["scale"] * vdot(c3, v["x"]), v["off"][1] + v["scale"] * vdot(c3, v["y"]))
+            if seg_dist(S, tuple(cl["p"]), tuple(cl["q"])) <= TOL_TIP:
+                ok = True
+                break
+        stats["centre lines"] = stats.get("centre lines", 0) + 1
+        if not ok:
+            fails.append("the centre line of %s in %s doesn't pass through the part's centre" % (cl["pn"],
+                                                                                              cl["view"]))
     text = "\n".join(pg.get_text() for pg in doc)
     up = text.upper()
     for need, pat in (("UNITS: mm", r"UNITS:\s*MM\b"), ("MATERIAL", r"MATERIAL:"), ("FINISH", r"FINISH:"),
@@ -2053,6 +2516,171 @@ def main(argv=None):
                 print("  - " + f)
             bad += bool(fails)
     return 1 if bad else 0
+
+
+
+# ------------------------------------------------------------------ datums (ISO 5459)
+
+AXES = {"+X": (1.0, 0.0, 0.0), "-X": (-1.0, 0.0, 0.0), "+Y": (0.0, 1.0, 0.0), "-Y": (0.0, -1.0, 0.0),
+        "+Z": (0.0, 0.0, 1.0), "-Z": (0.0, 0.0, -1.0)}
+
+
+def _datum_clear(sh, S, n2, lead):
+    """The datum symbol at S fits (sheet.datum_free: its frame clear, nothing on text), and its triangle and leader
+    cross no line either (a leader through another part's section reads as that part's face)."""
+    if not sh.datum_free(S, n2, leader=lead):
+        return False
+    L = math.hypot(*n2)
+    d = (n2[0] / L, n2[1] / L)
+    nx, ny = -d[1], d[0]
+    # the triangle's body from 0.6 off the face (the face's own line is 0.4 clear of it: sheet._seg_box's gap)
+    tri = [(S[0] + d[0] * 0.6 + nx * 1.6, S[1] + d[1] * 0.6 + ny * 1.6),
+           (S[0] + d[0] * 0.6 - nx * 1.6, S[1] + d[1] * 0.6 - ny * 1.6), (S[0] + d[0] * 2.56, S[1] + d[1] * 2.56)]
+    e = (S[0] + d[0] * lead, S[1] + d[1] * lead)
+    tb = (min(p[0] for p in tri), min(p[1] for p in tri), max(p[0] for p in tri), max(p[1] for p in tri))
+    lb = (min(tri[2][0], e[0]) - 0.1, min(tri[2][1], e[1]) - 0.1,
+          max(tri[2][0], e[0]) + 0.1, max(tri[2][1], e[1]) + 0.1)
+    return sh.is_free(tb) and sh.is_free(lb)
+
+
+def _datum_draw(sh, S, n2, letter, lead):
+    """Draw the datum symbol and keep its whole extent (triangle, leader, frame) clear of what is placed after it:
+    balloons, their leaders, view titles."""
+    sh.datum(S, n2, letter, leader=lead)
+    L = math.hypot(*n2)
+    d = (n2[0] / L, n2[1] / L)
+    nx, ny = -d[1], d[0]
+    b = 2.5 * 2.4                                   # the frame's side (sheet.datum at 2.5 mm letters)
+    fc = (S[0] + d[0] * (lead + b / 2), S[1] + d[1] * (lead + b / 2))
+    pts = [(S[0] + nx * 1.6, S[1] + ny * 1.6), (S[0] - nx * 1.6, S[1] - ny * 1.6),
+           (fc[0] - b / 2, fc[1] - b / 2), (fc[0] + b / 2, fc[1] + b / 2)]
+    sh.boxes.append((min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)))
+
+
+def _median_datum(sh, assy, views, sides, d):
+    """A datum that is a part's median plane (ISO 5459: the triangle on an extension line of that feature of
+    size, in line with its dimension line): here a view's overall size, which the part must span exactly. The
+    triangle goes at whichever end of the dimension line leaves its frame clear."""
+    nm = d.get("view", "principal")
+    av, axis = views[nm], d["median"]
+    idx = [i for i, o in enumerate(assy.occs) if o.item.pn == d["pn"]]
+    if not idx:
+        raise NotDrawable("%s: datum %s's part %s is not in the STEP" % (assy.pn, d["letter"], d["pn"]))
+    b = box_of([x for i in idx for x in assy.occs[i].solids])
+    ax3 = av.view.x if axis == "x" else av.view.y
+    corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+    lo, hi = min(vdot(c, ax3) for c in corners), max(vdot(c, ax3) for c in corners)
+    k = 0 if axis == "x" else 1
+    if abs(lo - av.extent[k]) > 0.05 or abs(hi - av.extent[k + 2]) > 0.05:
+        raise NotDrawable("%s: datum %s: %s doesn't span the %s view's overall %s size" % (assy.pn, d["letter"],
+                                                                                         d["pn"], nm, axis))
+    g = sides[nm].overall.get(axis)
+    if not g:
+        raise NotDrawable("%s: datum %s: the %s view has no overall %s size to put it on" % (assy.pn, d["letter"],
+                                                                                           nm, axis))
+    p1, p2, side, gap = g
+    if axis == "x":
+        yl = (max(p1[1], p2[1]) + gap) if side == "up" else (min(p1[1], p2[1]) - gap)
+        ends = [((max(p1[0], p2[0]), yl), (1.0, 0.0)), ((min(p1[0], p2[0]), yl), (-1.0, 0.0))]
+    else:
+        xl = (max(p1[0], p2[0]) + gap) if side == "right" else (min(p1[0], p2[0]) - gap)
+        ends = [((xl, max(p1[1], p2[1])), (0.0, 1.0)), ((xl, min(p1[1], p2[1])), (0.0, -1.0))]
+    for lead in (7.0, 12.0, 18.0, 26.0):
+        for S, n2 in ends:
+            if _datum_clear(sh, S, n2, lead):
+                _datum_draw(sh, S, n2, d["letter"], lead)
+                return {"letter": d["letter"], "pn": d["pn"], "median": axis, "view": nm, "at": S,
+                        "size": round(hi - lo, 3), "words": d.get("words", "")}
+    raise NotDrawable("%s: no free place for datum %s on the %s view's overall %s size" % (assy.pn, d["letter"],
+                                                                                         nm, axis))
+
+
+def datum_symbols(sh, assy, views, sides=None):
+    """The datums an entry names (ISO 5459): a part's outer face along a pod axis, seen edge on in a view (the
+    entry's first, then any other); the filled triangle sits on that face's line where its frame touches no line
+    and no text, its leader as short as that allows, and the notes say what the letter is. A median plane (the
+    entry's 'median': the view axis) goes on that view's overall size."""
+    out = []
+    for d in assy.entry.get("datums", ()):
+        if d.get("median"):
+            out.append(_median_datum(sh, assy, views, sides, d))
+            continue
+        n3 = AXES[d["face"]]
+        idx = [i for i, o in enumerate(assy.occs) if o.item.pn == d["pn"]]
+        if not idx:
+            raise NotDrawable("%s: datum %s's part %s is not in the STEP" % (assy.pn, d["letter"], d["pn"]))
+        b = box_of([x for i in idx for x in assy.occs[i].solids])
+        corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+        off = max(vdot(c, n3) for c in corners)          # the part's outer face along n3
+        names = [d["view"]] if d.get("view") in views else []
+        names += [nm for nm in VIEW_ORDER if nm in views and nm not in names] + \
+            [nm for nm in views if nm not in VIEW_ORDER and nm not in names]
+        placed = None
+        for nm in names:
+            av = views[nm]
+            n2 = (vdot(n3, av.view.x), vdot(n3, av.view.y))
+            if abs(math.hypot(*n2) - 1.0) > 1e-6:
+                continue
+            for lead in (7.0, 12.0, 18.0, 26.0):
+                for i in idx:
+                    for p in av.prims[i]:
+                        if not p.vis or p.kind != "line":
+                            continue
+                        if any(abs(n2[0] * q[0] + n2[1] * q[1] - off) > 0.01 for q in (p.p, p.q)):
+                            continue
+                        # from the middle of the edge outward, in steps of a 40th
+                        for t in [0.5 + sg * k / 40.0 for k in range(20) for sg in ((1,) if k == 0 else (-1, 1))]:
+                            pt, _dv = prim_point(p, t)
+                            S = av.S(pt)
+                            if _datum_clear(sh, S, n2, lead):
+                                placed = (av, n2, S, lead)
+                                break
+                        if placed:
+                            break
+                    if placed:
+                        break
+                if placed:
+                    break
+            if placed:
+                break
+        if not placed:
+            raise NotDrawable("%s: no free place for datum %s on %s's %s face" % (assy.pn, d["letter"], d["pn"],
+                                                                                 d["face"]))
+        av, n2, S, lead = placed
+        _datum_draw(sh, S, n2, d["letter"], lead)
+        out.append({"letter": d["letter"], "pn": d["pn"], "face": d["face"], "view": av.name, "at": S,
+                    "offset": off, "words": d.get("words", "")})
+    sh.flush()
+    return out
+
+
+# ------------------------------------------------------------------ centre lines (ISO 128-24)
+
+
+def centre_lines(sh, assy, views):
+    """Centre lines the entry names: a thin long-dash-dot line along each named part's long direction in a view,
+    through its centre, 3 mm past its ends (ISO 128-24 type 04), such as a cassette's rib centre lines."""
+    from sheet import DASH_CTR
+    out = []
+    for g in assy.entry.get("centre_lines", ()):
+        av = views[g.get("view", "principal")]
+        for o, ps in zip(assy.occs, av.prims):
+            if o.item.pn not in g["of"]:
+                continue
+            b = box_of(o.solids)
+            c = av.view.to2d(((b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2))
+            corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+            xs = [vdot(q, av.view.x) for q in corners]
+            ys = [vdot(q, av.view.y) for q in corners]
+            ext = 3.0 / av.scale
+            if max(xs) - min(xs) >= max(ys) - min(ys):
+                p, q = (min(xs) - ext, c[1]), (max(xs) + ext, c[1])
+            else:
+                p, q = (c[0], min(ys) - ext), (c[0], max(ys) + ext)
+            sh.line(av.S(p), av.S(q), W_THIN, DASH_CTR)
+            out.append({"view": av.name, "pn": o.item.pn, "p": av.S(p), "q": av.S(q), "centre": av.S(c)})
+    sh.flush()
+    return out
 
 
 if __name__ == "__main__":

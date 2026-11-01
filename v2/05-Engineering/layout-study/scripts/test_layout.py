@@ -237,12 +237,18 @@ def test_cad_masses_from_main():
     assert abs(ld[3] - rollup.INTERIOR["ledge"] - rollup.INTERIOR["rail"]) < 1e-9 and rollup.basis(ld) == "CAD, main", ld
     bb = rows["B1 to B4, back outer panels"]                                      # B1 and B2 from CAD (PR #152)
     k10, k12 = rollup.al_rhs(20, rollup.P04["frame_d"], rollup.T_STUD_LIGHT), rollup.al_rhs(20, rollup.P04["frame_d"], 1.2)
-    want = (sum(rollup.back_cad_kg(n, rollup.FILL_LIGHT, k10, rollup.BACK_STUDS) for n in (1, 2))
-            + 2 * rollup.back_est_kg(rollup.FILL_LIGHT, k12, k10, rollup.BACK_STUDS)) / 4
-    assert abs(bb[3] - want) < 1e-9 and rollup.basis(bb) == "CAD, main (part)", bb
+    cad_n = sorted(rollup.WALL_BACK)                                             # B3 and B4 once built (D-131)
+    want = (sum(rollup.back_cad_kg(n, rollup.FILL_LIGHT, k10, rollup.BACK_STUDS) for n in cad_n)
+            + (4 - len(cad_n)) * rollup.back_est_kg(rollup.FILL_LIGHT, k12, k10, rollup.BACK_STUDS)) / 4
+    assert abs(bb[3] - want) < 1e-9 and rollup.basis(bb) == ("CAD, main" if len(cad_n) == 4 else "CAD, main (part)"), bb
+    assert cad_n[:2] == [1, 2], cad_n
     for n in (1, 2):
         w = rollup.WALL_BACK[n]
-        assert w["mid_n"] == rollup.BACK_STUDS and w["mid_t"] == rollup.T_STUD_LIGHT, w     # D-85's 2 studs at 1.0 mm
+        if w["steel"]:                         # D-131, D-135: the steel frame's 3 studs are the design, at their CAD mass
+            assert w["mid_n"] == 3 and w["mid_kg"] == 0.0 and rollup.back_cad_kg(n, rollup.FILL_LIGHT, k10, 2) == \
+                rollup.back_cad_kg(n, rollup.FILL_LIGHT, k10, 3), w
+        else:
+            assert w["mid_n"] == rollup.BACK_STUDS and w["mid_t"] == rollup.T_STUD_LIGHT, w     # D-85's 2 studs at 1.0 mm
     cbl = next(r for k, r in rows.items() if k.startswith("Wall cassette, back, lower"))
     cad = sum(rollup.WALL_BACK[n]["tray"] + rollup.WALL_BACK[n]["felt"] + rollup.WALL_BACK[n]["cass_seals"] for n in (1, 2))
     assert abs(cbl[3] - cad / 2) < 1e-9 and rollup.basis(cbl) == "CAD, main", cbl
