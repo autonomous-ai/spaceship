@@ -102,7 +102,11 @@ OWN = [
     ("dr_back_t", "1.5 mm", "mm", "confirmed",
      "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10); "
      "1.5, not 2, so DR stays under 20 kg (D-03; PM ruling 2026-11-01)"),
-    ("dr_strip_x0", "jf_x - 2 * jf_hole - 0.5 mm", "mm", "calculation",
+    ("fr_hole_rn", "10 mm", "mm", "source",
+     "D-163 (PM ruling 2026-11-01): the rivnut 838003 is Sherex CAL2-610-4.2, the knurled round body, in a round drilled "
+     "hole 10.00 +0.10 (was 9.53 for the half-hex CAH2, whose body needs a hex hole); every rivnut hole in DR, the "
+     "J-FRONT-01 strip's and the hook studs' too (DL and DT take it in their next rebuild)"),
+    ("dr_strip_x0", "jf_x - 2 * fr_hole_rn - 0.5 mm", "mm", "calculation",
      "the fixed back strip's inner edge, 2 hole diameters plus 0.5 from the J-FRONT-01 rivnut holes (mechanical "
      "check C09); the rest of the back comes off for the air unit (D-87)"),
     ("dr_acc_t", "3 mm", "mm", "calculation",
@@ -110,7 +114,8 @@ OWN = [
      "(PM ruling 2026-11-01); 2 mm would see about 110 MPa if the column pulls 50 N, 3 mm about 50 MPa"),
     # D-130 (PM rulings 2026-11-01, Joints' seal and stop pair): one removable inner face panel, on stops off the frame
     ("dr_rn_head", "0.76 mm", "mm", "source",
-     "rivnut 838003 head 0.76 +/-0.08 (joints register H-03: Sherex CAH2-610-4.2, zinc-plated steel, D-131)"),
+     "rivnut 838003 head 0.76 +/-0.08: Sherex CAL2-610-4.2 since D-163 (its own page: HT 0.76 +/-0.08, the same as "
+     "the CAH2's), zinc-plated steel (D-131)"),
     ("dr_stop_w", "1.6 mm", "mm", "source",
      "an 838004 washer (ISO 7093 6.4 x 18, 1.6 thick) on each rivnut head: the panel's stop (Joints, D-130)"),
     ("dr_pnl_gap", "dr_rn_head + dr_stop_w", "mm", "calculation",
@@ -166,20 +171,20 @@ OWN = [
     ("fb_w", "300 mm", "mm", "source", "D-60 air table: fan box 300 x 155 x 300"),
     ("fb_d", "155 mm", "mm", "source", "D-60 air table"),
     ("fb_z0", "1650 mm", "mm", "source", "D-60 air table: fan box Z 1650 to 1950"),
-    ("fb_clear", "12 mm", "mm", "assumption",
-     "fan box to the fixed glass's hidden channel: 12, so the front frame's 20 mm inner-edge member fits between them "
-     "with 4 mm to spare (was 5 before the frame)"),
-    ("fb_x0", "((fg_dc + gu_prof_d + fb_clear - fg_dnz * fb_z0) / fg_dnx)", "mm", "calculation",
-     "fan box left side: the D-60 table's X 645 cut into the fixed glass channel (FRONT combined check, 2026-10-31), "
-     "so the box sits fb_clear clear of the channel at its lower-left corner (about X 662) and follows the glass line"),
+    ("fb_x0", "680 mm", "mm", "source",
+     "fan box left side, X 680 to 980 (PM ruling 2026-11-01, from the AIR Transitions Engineer's check: with the 3 mm "
+     "bond line the box's lower-left back corner came within 1.0 of the back ring's diagonal B06; 7 mm right it keeps "
+     "6.3 to B06, 8.1 to the front ring's diagonal F05 and 17.3 to the fixed glass channel); AIR's model has the "
+     "same X (sb_x0)"),
     ("fb_h", "300 mm", "mm", "source", "D-60 air table"),
     ("fb_t", "2 mm", "mm", "source", "D-60 air table: 2 mm aluminium"),
     # opening from DR into the air column's top (D-60 air table)
     ("op_x0", "961 mm", "mm", "source", "air report 7f: the opening into the column from X 961"),
-    ("op_w", "dr_col_x1 - op_x0", "mm", "calculation",
-     "D-130: the opening runs to the column's edge, 200 wide (air report 7f: 200 x 215; the old table's 203 retired)"),
-    ("op_z0", "1895 mm", "mm", "source", "D-60 air table: opening Z 1895 to 2110"),
-    ("op_h", "215 mm", "mm", "source", "D-60 air table"),
+    ("op_w", "185 mm", "mm", "source",
+     "the opening X 961 to 1146 (PM ruling 2026-11-01, from the AIR Transitions Engineer: the upper duct's gasket face "
+     "and every metal edge keep 6 from the bolt-line tube and the band; it ran to the column's edge, 200 x 215)"),
+    ("op_z0", "1895 mm", "mm", "source", "D-60 air table: opening Z 1895 to 2102 (PM ruling 2026-11-01)"),
+    ("op_h", "207 mm", "mm", "source", "Z 1895 to 2102 (PM ruling 2026-11-01, the AIR Transitions Engineer; was 215)"),
     # ---- the tube frame (stage 2): v1's front and back frames of 16 mm steel box (sources/v1 decor frame drawing),
     # in 6063-T6 aluminium tube (D-79)
     ("fr_w", "20 mm", "mm", "calculation",
@@ -214,8 +219,6 @@ OWN = [
     ("fr_hole_jf", "14 mm", "mm", "calculation",
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
-    ("fr_hole_rn", "9.53 mm", "mm", "source",
-     "joints register H-03: hole for the rivnut 838003 (Sherex CAH2-610-4.2, zinc-plated steel, D-131; HOLD-04)"),
     # J-FRONT-02 (PM ruling 2026-11-01): DR stands on 2 spigots on BASE's support behind the mesh piece, a round hole
     # and a slot along X in the bottom back tube's bottom wall
     ("dr_sp_x1", "1050 mm", "mm", "confirmed", "J-FRONT-02: DR's round spigot hole (PM ruling 2026-11-01)"),
@@ -474,7 +477,8 @@ def frame_members():
                         ("C03", "FACET TUBE FAN BOX SHELF", "fb_z0 - fr_w"), ("C04", "FACET TUBE FAN BOX TOP", "fb_z0 + fb_h - fr_w"),
                         ("C05", "FACET TUBE TOP", "%s - fr_w" % zch)):
         add(key, nm, ("x", "y"), fac_pts, "z", z0, "%s + fr_w" % z0, S20_SHELF if key == "C03" else S20,
-            ends="front end square to the facet tube's side, back end square, back corner cut to the side skin")
+            ends="front end flush on the side of the front ring's facet tube, back end flush on the back ring with its corner cut "
+                 "along the side skin")
     # along the top chamfer (side view), from the front ring's top tube up to the back ring's top tube
     chl = FL.line("-dr_cny", "-dr_cnz", "-dr_cc")
     c3, c23 = FL.push(chl, sk3), FL.push(chl, sk23)
@@ -485,7 +489,8 @@ def frame_members():
     for key, nm, x0 in (("C06", "CHAMFER TUBE LEFT", xc_l),
                         ("C08", "CHAMFER TUBE RIGHT", xc_r)):
         add(key, nm, ("y", "z"), ch_pts, "x", x0, "%s + fr_w" % x0,
-            ends="lower end sits on the front ring's top tube, upper end square to the back ring's top tube")
+            ends="lower end flush on the front ring's top tube, upper end flush on the back ring's top tube with its "
+                 "top corner cut level under the top skin")
     # along the DT joint (plan), on the ledge DT stands on: v1's slanted joint line turns at X 449 to run straight
     # back, but only 5.5 mm before the back ring, so one slanted tube runs on to the back ring, its end cut along the
     # ring's face; the skin's last 5.5 mm of straight edge is backed by the ring itself (the 15 x 5.5 mm wedge that was
@@ -618,7 +623,7 @@ def build(app):
               "EXTRUDE - DR BACK PLATE")
     bp = f.bodies.item(0)
     sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-01 RIVNUTS (6)",
-                   [("jf_x", "jf_z%d" % i) for i in range(1, 7)], "jf_hole")
+                   [("jf_x", "jf_z%d" % i) for i in range(1, 7)], "fr_hole_rn")
     L.extrude_span(c, sk, "y", YB + " - dr_back_t - 1 mm", YB + " + 1 mm", CUT, [bp], "CUT - J-FRONT-01 RIVNUT HOLES",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     bp.name = "DR BACK PLATE AL 2"
@@ -647,7 +652,7 @@ def build(app):
     L.extrude_span(c, sk, "y", ya + " - 1 mm", yb_acc + " + 1 mm", CUT, [ap], "CUT - THE PANEL'S SCREW HOLES",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - AIR COLUMN HOOK STUD RIVNUTS (2)",
-                   [("dr_stud_x", "dr_stud_z1"), ("dr_stud_x", "dr_stud_z2")], "jf_hole")
+                   [("dr_stud_x", "dr_stud_z1"), ("dr_stud_x", "dr_stud_z2")], "fr_hole_rn")
     L.extrude_span(c, sk, "y", ya + " - 1 mm", yb_acc + " + 1 mm", CUT, [ap], "CUT - HOOK STUD RIVNUT HOLES",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     ap.name = "DR INNER FACE PANEL AL 3"
@@ -947,8 +952,8 @@ def export_all(app):
         seen.add(pn)
         keys = [k for k in MP.DR_MEMBERS if MP.DR_MEMBERS[k] == pn]
         num = FL.member_numbers(m, ev)
-        note = "member%s %s of the frame %s; %.1f long, ends: %s" % (
-            "s" if len(keys) > 1 else "", ", ".join(keys), FRAME_PN, num["length"], m["ends"])
+        note = "member%s %s of the frame %s; %s long, ends: %s" % (
+            "s" if len(keys) > 1 else "", ", ".join(keys), FRAME_PN, FL.fmt_mm(num["length"]), m["ends"])
         if m["key"] in MEMBER_NOTES:
             note += "; " + MEMBER_NOTES[m["key"]].format(n=sum(1 for k, _p in panel_screws() if k == m["key"]))
         member_rows.append((pn, mname, mvn, len(keys), "made: tube cut to length, ends as its cut list row",
@@ -975,7 +980,7 @@ def export_all(app):
          "aluminium EN AW-5754-H22 sheet 1.5 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (1.0 to 2.7 at each bolt, HOLD-10); "
          "1.5 mm by PM ruling 2026-11-01 (DR under 20 kg)",
-         "DXF " + DXF_FLAT["BACK"] + "; fixed: the strip on X +1224 with 6 holes 9.53 +0.10/0 for the rivnuts 838003 "
+         "DXF " + DXF_FLAT["BACK"] + "; fixed: the strip on X +1224 with 6 holes 10.00 +0.10/0 for the rivnuts 838003 "
          "(critical: on the wall's bolt line), and the band behind the soffit; blind-riveted to the frame (HOLD: rivet)"),
         ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet; its drawing gives the "
          "flatness, about 0.5 mm, D-130), removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish: mill finish "
@@ -988,7 +993,7 @@ def export_all(app):
          "7089 6.4 x 12, 200 HV zinc), about 400 apart into rivnuts 838003 in the frame's tube walls (Joints' counts); the "
          "heads stand 7.6 proud of its room face and AIR clears the ones it covers (its supply cartridge lifted 6, "
          "reliefs at the soffit); the glass-edge tube's lowest screw stands 10 left of the air column's edge; 2 holes "
-         "9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the column's 2 hook studs (J-AIR-02); its "
+         "10.00 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the column's 2 hook studs (J-AIR-02); its "
          "room-side face is AIR's named value dr_acc_face_y; ships loose with its screws and felt and goes on after "
          "the air unit; for service the column comes off, then the panel drops 40 and comes out under the soffit (PM "
          "rulings 2026-11-01)" % n_screws),
@@ -1018,7 +1023,7 @@ def export_all(app):
          "the space AIR's riser transition takes, riser top to fan box inlet"),
         ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply fan box 610401 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
-         "the space AIR's supply fan box takes; 12 from the fixed glass channel, so the frame's inner-edge tube fits; "
+         "the space AIR's supply fan box takes, X 680 to 980 (PM ruling 2026-11-01: 6.3 to the back ring's diagonal, 17.3 to the fixed glass channel); "
          "its front 5 behind the cross tube F09 (Y -819 with the 3 mm bond line; PM rulings 2026-11-01, D-131)"),
         ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply transition 618102 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
@@ -1037,10 +1042,8 @@ def export_all(app):
         print("DXF skin panels FAILED: %r" % (exc,))
     # the tube cut list (no part_number column: the frame row above carries the part)
     import csv
-    with open(os.path.join(root_dir, CUT_REL), "w", encoding="utf-8", newline="") as fh:
-        w = csv.writer(fh)
-        w.writerow(["frame", "member", "member_part", "name", "section", "length_mm", "qty", "ends", "status"])
-        w.writerows(tuple(r[:2]) + (mparts[r[1]][0],) + tuple(r[2:]) for r in FL.cut_list_rows(members, ev, FRAME_PN))
+    # D-162: each row is its member's drawing (section, material, length, both end angles and the lean)
+    FL.write_cut_list(os.path.join(root_dir, CUT_REL), members, ev, FRAME_PN, mparts, "aluminium EN AW-6063-T6")
     print("cut list %s: %d tubes, %.2f m" % (CUT_REL, len(members), tube_m))
     for key, fn in DXF_FLAT.items():
         comp_ = [c for c in design.allComponents if c.partNumber == PARTS[key][0]][0]

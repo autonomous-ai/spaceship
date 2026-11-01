@@ -327,6 +327,134 @@ def cut_list_rows(members, ev, frame_pn):
     return rows
 
 
+# the tube cut list (D-162, PM ruling 2026-11-01): a welded frame's member is drawn by its cut list row (section,
+# material, cut length long point to long point, both end angles from square and how they lean, quantity, tolerance);
+# a member keeps its own sheet only for an end the row can't state (two cuts at one end)
+CUT_HEADER = ["frame", "member", "member_part", "name", "section", "material", "length_mm", "end_a_deg", "end_b_deg",
+              "lean", "qty", "tolerance", "ends", "status"]
+CUT_TOL = "length +/-0.5; end angles +/-0.5 deg (PROPOSED)"
+
+
+def fmt_mm(x, nd=1):
+    """x rounded half up to nd decimals, steady against float noise: Fusion's values and the offline evaluator's can
+    fall either side of an exact half (DL's posts, 592.25 long, came out 592.3 from the build and 592.2 offline)."""
+    f = 10.0 ** nd
+    r = math.floor(abs(x) * f + 0.5 + 1e-6) / f
+    return "%.*f" % (nd, -r if x < 0 and r else r)
+
+
+def end_angles(m, ev):
+    """The cut angles at each end of a member, degrees from square, signed by lean ({"a": [...], "b": [...]}): its
+    polygon's edges that aren't its two long sides. End A is the end its axis starts from. A lengthwise member (its
+    polygon is its section) is square at both ends."""
+    num = member_numbers(m, ev)
+    if num["axis"] is None:
+        return {"a": [0.0], "b": [0.0]}
+    pts, ax = num["pts"], num["axis"]
+    perp = (-ax[1], ax[0])
+    n = len(pts)
+    proj = [p[0] * ax[0] + p[1] * ax[1] for p in pts]
+    mid = (max(proj) + min(proj)) / 2
+    ends = {"a": [], "b": []}
+    for i in range(n):
+        p, q = pts[i], pts[(i + 1) % n]
+        d = (q[0] - p[0], q[1] - p[1])
+        L = math.hypot(*d)
+        if L < 1e-6:
+            continue
+        along = (d[0] * ax[0] + d[1] * ax[1]) / L
+        if abs(along) > 0.999 and L > 25.0:          # a long side
+            continue
+        if d[0] * perp[0] + d[1] * perp[1] < 0:        # run each end edge across the tube the same way
+            d = (-d[0], -d[1])
+        ang = math.degrees(math.atan2(d[0] * ax[0] + d[1] * ax[1], d[0] * perp[0] + d[1] * perp[1]))
+        side = "a" if (proj[i] + proj[(i + 1) % n]) / 2 < mid else "b"
+        ends[side].append(ang)
+    return ends
+
+
+def end_cuts(m, ev):
+    """(end A degrees from square, end B, lean, cuts at end A, cuts at end B) of a member (end_angles). Lean:
+    'parallel' when both cuts lean the same way (a parallelogram), 'opposite' when they lean apart (a trapezoid),
+    'square' when one end is square, 'two cuts at one end' when an end has two (its angle is then None)."""
+    ends = end_angles(m, ev)
+    na, nb = len(ends["a"]), len(ends["b"])
+    a = ends["a"][0] if na == 1 else None
+    b = ends["b"][0] if nb == 1 else None
+    if a is None or b is None:
+        lean = "two cuts at one end"
+    elif abs(a) < 0.05 or abs(b) < 0.05:
+        lean = "square"
+    else:
+        lean = "parallel" if a * b > 0 else "opposite"
+    return a, b, lean, na, nb
+
+
+def _deg(x):
+    return "square (0°)" if abs(x) < 0.05 else "%s°" % fmt_mm(abs(x))
+
+
+def end_names(m, ev):
+    """Its two ends named by where they point in the pod: left/right (X), front/back (Y: the front is -Y), lower/upper
+    (Z), by the axis's components of 0.4 or more (a diagonal gets two words), with A and B as in end_angles."""
+    num = member_numbers(m, ev)
+    if num["axis"] is None:
+        return "end A", "end B"
+    a3 = axis3(m["axes"], *num["axis"])
+    words = {0: ("left", "right"), 1: ("front", "back"), 2: ("lower", "upper")}
+    use = [i for i in (2, 1, 0) if abs(a3[i]) >= 0.4]
+
+    def name(sign):
+        return " ".join(words[i][1] if a3[i] * sign > 0 else words[i][0] for i in use) + " end"
+    return name(-1.0) + " (A)", name(1.0) + " (B)"
+
+
+def end_text(m, ev, pn):
+    """A member's ends in words for its cut-list row (D-162: the row is its drawing): each end, named by where it
+    points, with its angle from square and the unit, how the two cuts lean, and the member's own note on what each end
+    meets. An end with two cuts names both angles and the member's own sheet, which shows them (a cut list can't place
+    two cuts)."""
+    ends = end_angles(m, ev)
+    a, b, lean, _na, _nb = end_cuts(m, ev)
+    na_, nb_ = end_names(m, ev)
+
+    def one(lst):
+        if len(lst) == 1:
+            return _deg(lst[0])
+        return "two cuts, %s (its own sheet %s)" % (" and ".join(_deg(x) for x in lst), pn)
+    note = m.get("ends", "")
+    if note and "angles on the frame drawing" in note:
+        note = ""
+    if a is not None and b is not None and abs(a) < 0.05 and abs(b) < 0.05:
+        s = "square both ends"
+        if note.startswith(s):
+            return note
+    else:
+        s = "%s %s; %s %s" % (na_, one(ends["a"]), nb_, one(ends["b"]))
+        if lean in ("parallel", "opposite"):
+            s += "; the cuts lean %s" % ("the same way (parallel)" if lean == "parallel" else "apart (opposite)")
+    return s + ("; " + note if note else "")
+
+
+def write_cut_list(path, members, ev, frame_pn, mparts, material):
+    """The frame's tube cut list CSV (CUT_HEADER), one row per tube: the same rounding (fmt_mm) in the build and
+    offline (frame_preflight.py --cut-lists), so both write the same file."""
+    import csv
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(CUT_HEADER)
+        for m in members:
+            num = member_numbers(m, ev)
+            ends = end_angles(m, ev)
+            a, b, lean, na, nb = end_cuts(m, ev)
+            fmt = lambda lst: (fmt_mm(abs(lst[0])) if len(lst) == 1
+                               else " and ".join(fmt_mm(abs(x)) for x in lst) + " (two cuts)")
+            pn = mparts[m["key"]][0]
+            w.writerow([frame_pn, m["key"], pn, m["name"], "tube " + m["section"], material,
+                        fmt_mm(num["length"]), fmt(ends["a"]), fmt(ends["b"]), lean, 1, CUT_TOL,
+                        end_text(m, ev, pn), "calculation (from the parameters)"])
+
+
 def write_plate_dxf(path, body, along="y"):
     """A flat plate or panel laid flat 1:1 (D-89 part 4: its DXF gives the full outline and every hole): the largest
     face square to `along`, its loops as LINE and CIRCLE entities in mm, in the plate's own corner (the lowest-left

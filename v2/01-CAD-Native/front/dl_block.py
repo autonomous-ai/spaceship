@@ -542,8 +542,8 @@ def export_all(app):
         seen.add(pn)
         keys = [k for k in MP.DL_MEMBERS if MP.DL_MEMBERS[k] == pn]
         num = FL.member_numbers(m, ev)
-        note = "member%s %s of the frame %s; %.1f long, ends: %s" % (
-            "s" if len(keys) > 1 else "", ", ".join(keys), FRAME_PN, num["length"], m["ends"])
+        note = "member%s %s of the frame %s; %s long, ends: %s" % (
+            "s" if len(keys) > 1 else "", ", ".join(keys), FRAME_PN, FL.fmt_mm(num["length"]), m["ends"])
         if m["key"] in MEMBER_NOTES:
             note += "; " + MEMBER_NOTES[m["key"]]
         member_rows.append((pn, mname, mvn, len(keys), "made: tube cut to length, ends as its cut list row",
@@ -605,10 +605,8 @@ def export_all(app):
     except Exception as exc:          # the model exports stand; the flat patterns are reported and retried
         print("DXF skin panels FAILED: %r" % (exc,))
     import csv
-    with open(os.path.join(root_dir, CUT_REL), "w", encoding="utf-8", newline="") as fh:
-        w = csv.writer(fh)
-        w.writerow(["frame", "member", "member_part", "name", "section", "length_mm", "qty", "ends", "status"])
-        w.writerows(tuple(r[:2]) + (mparts[r[1]][0],) + tuple(r[2:]) for r in FL.cut_list_rows(members, ev, FRAME_PN))
+    # D-162: each row is its member's drawing (section, material, length, both end angles and the lean)
+    FL.write_cut_list(os.path.join(root_dir, CUT_REL), members, ev, FRAME_PN, mparts, "aluminium EN AW-6063-T6")
     print("cut list %s: %d tubes, %.2f m" % (CUT_REL, len(members), tube_m))
     back_comp = [c for c in design.allComponents if c.partNumber == PARTS["BACK"][0]][0]
     try:
