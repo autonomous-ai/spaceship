@@ -668,3 +668,70 @@ def check_mixed_metals(root, plists, contacts):
                               "Coat the steel part (zinc, powder) or separate them with an isolating layer.", f,
                               owner_for(f, a)))
     return fs
+
+
+# ----------------------------------------------------------------- C06: every part its own component (D-120)
+
+ROUTE_COMPONENT = re.compile(r"^7100\d\d")       # ELECTRICAL's route model: routes, pockets, grommets, spaces (D-92)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
+
+
+def check_components(root, step_paths, load):
+    """D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.
+    A component (one product definition in a STEP) that holds several bodies is reported, one finding per part
+    number and team: copies of one part should be one component placed several times; different pieces (a frame's
+    members, D-115; a fill's bay pieces) each their own component, the part becoming an assembly of them.
+    Left out, as ruled: ELECTRICAL's route components (D-92), HOLD spaces and placeholders without a number,
+    reserved spaces, and ENVELOPE bodies standing in for hardware (D-104)."""
+    from c_drawings import body_shape
+    reserved = reserved_spaces(root)
+    hits = {}                                     # (pn, owner) -> {"name", "files": [(file, n, names, shapes)]}
+    for p in step_paths:
+        s = load(p)
+        bodies, info = defaultdict(dict), {}
+        for inst in s.instances():
+            bodies[inst["pd"]].setdefault(inst["solid"], None)
+            info[inst["pd"]] = (inst["part_number"] or "", inst["name"] or "")
+        r = rel(root, p)
+        for pd, sids in bodies.items():
+            if len(sids) < 2:
+                continue
+            raw, name = info[pd]
+            m = re.match(r"^(\d{6})(?!\d)", raw)
+            if not m or ROUTE_COMPONENT.match(m.group(1)) or HOLD_WORD.search(name) or m.group(1) in reserved:
+                continue
+            pn = m.group(1)
+            solids = [s.solid(sid) for sid in sids]
+            real = [so for so in solids if not re.search(r"\bENVELOPE\b", so.name or "", re.I)]
+            if len(real) < 2:
+                continue
+            owner = owner_for(r, "")
+            if owner == "PM":
+                owner = owner_for(r, pn)
+            d = hits.setdefault((pn, owner), {"name": name, "files": []})
+            d["files"].append((r, len(real), sorted({(so.name or "").strip() for so in real}),
+                               len({body_shape(so) for so in real})))
+    fs = []
+    for (pn, owner), d in sorted(hits.items()):
+        n = max(f[1] for f in d["files"])
+        shapes = max(f[3] for f in d["files"])
+        where = "; ".join("%s (%d bodies)" % (os.path.basename(f[0]), f[1]) for f in d["files"])
+        names = sorted({x for f in d["files"] for x in f[2]})
+        label = d["name"] if d["name"].startswith(pn) else ("%s %s" % (pn, d["name"])).strip()
+        if shapes == 1:
+            msg = ("%s is one component holding %d bodies, all copies of one part, in %s. D-120 (build plan rule 2, "
+                   "BP-04): every part is its own component, never a loose body; copies are one component placed "
+                   "several times." % (label, n, where))
+            fix = ("Make it one component and place it %d times (copies of one component), then export the STEP "
+                   "again (D-120)." % n)
+        else:
+            msg = ("%s is one component holding %d bodies of %d different shapes (%s) in %s. D-120 (build plan rule "
+                   "2, BP-04): every part is its own component with its own number, never a loose body." % (
+                       label, n, shapes, ", ".join(names)[:300], where))
+            fix = ("Make each piece its own component with its own part number (the master BOM assigns them), so this "
+                   "number becomes an assembly of them; copies of one piece are one component placed several times "
+                   "(D-120; for the frames, D-115's cleated members).")
+        fs.append(Finding("C06", "bodies-not-components", pn, "major", msg, fix, d["files"][0][0], owner,
+                          {"bodies": n, "shapes": shapes, "files": len(d["files"])}))
+    return fs
+

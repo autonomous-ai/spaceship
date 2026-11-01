@@ -763,6 +763,7 @@ def load_sibling(here, filename, modname):
     spec = importlib.util.spec_from_file_location(modname, os.path.join(here, filename))
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
+    print("helper module %s: %s" % (m.__name__, m.__file__))
     return m
 
 
