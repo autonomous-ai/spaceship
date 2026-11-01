@@ -1864,28 +1864,9 @@ def placed_clashes(placed):
             vol = tmp[0].volume * 1000.0 if tmp[0] else 0.0
             if vol > 1.0:
                 hits.append((items[i][0], items[j][0], round(vol)))
-                if not allowed_overlap(items[i][0], items[j][0]) and not plate_end(items[i][0], items[j][0], vol):
+                if not allowed_overlap(items[i][0], items[j][0]):
                     bad.append(hits[-1])
     return hits, bad
-
-
-PLATE_END_MAX = 30.0      # mm3
-
-
-def plate_end(na, nb, vol):
-    """A mitre plate modelled as the plain 2.0 box (the Joints Engineer's STEP, 2026-11-01): its square ends stand
-    0.71 past the mitre's faces, so at the outer corner it touches the side skin's back return and at the inner
-    corner it presses into the soft fill's corner. Allowed up to PLATE_END_MAX each, printed; the made plate's
-    outer end is ground flush (register J-FRAME-01)."""
-    def part(n):
-        return n.split(" / ")[0].split("+")[-1].split(" ")[0]
-    pa, pb = part(na), part(nb)
-    plate = {"831007", "831008", "831009"} & {pa, pb}
-    other = (pb if pa in plate else pa)[:4]
-    ok = bool(plate) and other in ("2113", "2115", "2116") and vol <= PLATE_END_MAX
-    if ok:
-        print("PLATE END|%s with %s: %.1f mm3 (allowed: a plain box's square end)" % (na, nb, vol))
-    return ok
 
 
 def allowed_overlap(na, nb):
