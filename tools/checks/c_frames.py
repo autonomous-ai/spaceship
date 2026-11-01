@@ -140,22 +140,26 @@ def accepted_grades(spec):
     return [a[0].split(",")[0].strip() for a in spec.ACCEPTED]
 
 
-def callout_lacks(spec, text):
-    """What a material text lacks for J-FRAME-01's steel: [] when it names galvanized steel, an accepted grade (or a
-    yield of the least accepted one or more) and Z100."""
-    lacks = []
+def callout_lacks(spec, text, grade=True):
+    """What a material text lacks for J-FRAME-01's steel, as (kind, words): kind 'steel' or 'grade' (major) or 'zinc'
+    (minor); [] when it names steel, an accepted grade (or a yield of the least accepted one or more) and Z100.
+    grade=False: steel alone is asked (a welded frame's own row, whose members carry the grade and zinc)."""
     if NOT_STEEL.search(text) or not STEEL.search(text):
-        return ["galvanized steel (it reads '%s')" % text.strip()[:80]]
+        return [("steel", "galvanized steel (it reads '%s')" % text.strip()[:80])]
+    if not grade:
+        return []
+    lacks = []
     fy_min = min(a[1] for a in spec.ACCEPTED)
     grades = accepted_grades(spec)
     if not any(g.upper().replace("+Z", "") in text.upper() for g in grades) and \
             not any(float(v) >= fy_min for v in YIELD.findall(text)):
-        lacks.append("an accepted grade (%s, or a stated yield of %.0f MPa or more)" % (" or ".join(grades), fy_min))
+        lacks.append(("grade", "an accepted grade (%s, or a stated yield of %.0f MPa or more)" % (
+            " or ".join(grades), fy_min)))
     z = ZINC.findall(text)
     if not z:
-        lacks.append("its zinc, Z100")
+        lacks.append(("zinc", "its zinc class, Z100"))
     elif any(v != "100" for v in z):
-        lacks.append("Z100 zinc (it reads Z%s)" % z[0])
+        lacks.append(("zinc", "Z100 zinc (it reads Z%s)" % z[0]))
     return lacks
 
 
@@ -236,25 +240,33 @@ def check_frame_lists(root, spec, frames, rows=None):
         name = d["rows"][0][2].get("name", "")
         key = frame_key(name)
         owner = owner_for(f0, pn)
-        lacks = []
+        lacks, major = [], False
+        has_members = bool(d["members"])
         for f, i, row in d["rows"]:
-            mat = row.get("material", "")
-            ls = callout_lacks(spec, mat)
+            ls = callout_lacks(spec, row.get("material", "") + " " + row.get("finish", ""), grade=not has_members)
             if ls:
-                lacks.append("its row (%s line %d) lacks %s" % (os.path.basename(f), i, "; ".join(ls)))
+                lacks.append("its row (%s line %d) lacks %s" % (os.path.basename(f), i, "; ".join(w for _k, w in ls)))
+                major = major or any(k != "zinc" for k, _w in ls)
             fin = row.get("finish", "")
             if not GALV.search(fin):
                 lacks.append("its finish (%s line %d) doesn't name the zinc ('%s')" % (os.path.basename(f), i, fin[:60]))
+                major = True
             elif not TOUCH_UP.search(fin + " " + row.get("process", "")):
-                lacks.append("its finish (%s line %d) doesn't name the zinc-rich touch-up on the welds" % (
-                    os.path.basename(f), i))
-        steel[pn] = not any(callout_lacks(spec, r.get("material", "")) for _f, _i, r in d["rows"])
-        bad_members, gauge_bad, thin, unknown = [], [], False, []
+                lacks.append("its finish (%s line %d) doesn't say zinc-rich for the weld touch-up (J-FRAME-01: a "
+                             "2-component zinc-rich epoxy on every weld)" % (os.path.basename(f), i))
+        steel[pn] = not any(k == "steel" for _f, _i, r in d["rows"]
+                            for k, _w in callout_lacks(spec, r.get("material", ""), grade=False))
+        bad_members, zinc_members, gauge_bad, thin, unknown = [], [], [], False, []
         for f, i, row in d["members"]:
-            ls = callout_lacks(spec, _member_text(row))
-            if ls:
-                bad_members.append("%s (%s line %d)" % (_member_name(row) or "?", os.path.basename(f), i))
-                continue
+            ls = callout_lacks(spec, _member_text(row) + " " + row.get("finish", ""))
+            if any(k != "zinc" for k, _w in ls):
+                bad_members.append("%s (%s line %d): %s" % (_member_name(row) or "?", os.path.basename(f), i,
+                                                            "; ".join(w for k, w in ls if k != "zinc")))
+                if any(k == "steel" for k, _w in ls):
+                    steel[pn] = False
+                    continue
+            elif ls:
+                zinc_members.append("%s (%s line %d)" % (_member_name(row) or "?", os.path.basename(f), i))
             role = member_role(key, _member_name(row))
             if role is None or table_member(spec, key, role) is None:
                 unknown.append("%s (%s line %d)" % (_member_name(row), os.path.basename(f), i))
@@ -273,13 +285,17 @@ def check_frame_lists(root, spec, frames, rows=None):
                 gauge_bad.append("%s is %.2f thick, the %s's gauge is %.1f" % (_member_name(row), sec[2], role, want))
                 thin = thin or sec[2] < want
         if bad_members:
+            major = True
             lacks.append("%d member row%s not in J-FRAME-01's steel: %s" % (
                 len(bad_members), "s" if len(bad_members) > 1 else "", ", ".join(bad_members[:6])))
+        if zinc_members:
+            lacks.append("%d member row%s without its zinc class, Z100: %s" % (
+                len(zinc_members), "s" if len(zinc_members) > 1 else "", ", ".join(zinc_members[:6])))
         if lacks:
             gauges = "/".join("%.1f" % g for g in sorted({getattr(spec, a) for a in ("SIDE_T", "PERIMETER_T", "INNER_T")
                                                          if hasattr(spec, a)}, reverse=True))
             fs.append(Finding(
-                "C11", "frame-steel", pn, "major",
+                "C11", "frame-steel", pn, "major" if major else "minor",
                 "%s %s: D-131 makes it welded galvanized steel (joints register J-FRAME-01: %s, Z100, %s mm gauges, "
                 "zinc-rich touch-up on the welds), but %s." % (
                     pn, name, " or ".join(accepted_grades(spec)), gauges, "; ".join(lacks)),

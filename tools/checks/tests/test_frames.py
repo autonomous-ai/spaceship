@@ -127,11 +127,35 @@ def test_a_thin_member_is_severe_a_thick_one_minor_and_the_callout_needs_grade_z
     assert "the table's back stile is 40 x 40" in fs[0].message
     lacks = c_frames.callout_lacks
     assert lacks(spec, "galvanized steel tube DX51D Z100") == [
-        "an accepted grade (S280GD+Z or SGC400, or a stated yield of 280 MPa or more)"]
+        ("grade", "an accepted grade (S280GD+Z or SGC400, or a stated yield of 280 MPa or more)")]
     assert lacks(spec, "galvanized steel DX51D Z100, yield 280 MPa or more by 3 tensile tests") == []
-    assert lacks(spec, "galvanized steel S280GD+Z Z275") == ["Z100 zinc (it reads Z275)"]
+    assert lacks(spec, "galvanized steel S280GD+Z100") == []
+    assert lacks(spec, "galvanized steel S280GD+Z Z275") == [("zinc", "Z100 zinc (it reads Z275)")]
+    assert lacks(spec, "the steel box tube members below, welded", grade=False) == []
     fs, _s = c_frames.check_frame_lists(_tree(tmp_path / "d", _l1_rows(finish="pre-galvanized Z100")), spec, ["211101"])
-    assert [f.rule for f in fs] == ["frame-steel"] and "zinc-rich touch-up" in fs[0].message
+    assert [(f.rule, f.severity) for f in fs] == [("frame-steel", "minor")] and "zinc-rich" in fs[0].message
+
+
+def test_walls_rework_wording_reads_as_steel_with_only_its_zinc_class_and_touch_up_words_missing(tmp_path):
+    # the rows WALL's make_parts_list.py writes for D-131 (wall-rework, 2026-11-01): the welded frame's own row points
+    # to its member rows, which carry the grade; neither names Z100, and the welds are "zinc-painted"
+    fin = "pre-galvanized tube; the weld spots zinc-painted after welding, no hot-dip (Joints, D-131)"
+    mat = ("steel box tube %s, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more (D-131; the "
+           "Joints Engineer's gauges and grade)")
+    rows = [{"level": "1", "part_number": "211101", "name": "WALL - PANEL FRAME - SIDE LOWER - LH",
+             "material": "the steel box tube members below and the 4 mitre plates, welded (D-131)", "finish": fin}]
+    for name, sec in (("WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH", "20 x 40 x 1.2"),
+                      ("WALL - FRAME STILE FRONT - SIDE LOWER - LH", "20 x 40 x 1.2"),
+                      ("WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH", "40 x 40 x 1"),
+                      ("WALL - FRAME STILE MID - SIDE LOWER - LH", "20 x 40 x 0.8"),
+                      ("HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL", "28.3 x 40 x 2")):
+        rows.append({"level": "2", "part_number": "2121xx", "name": name, "material": mat % sec, "finish": fin,
+                     "size_mm": sec})
+    root = _tree(tmp_path, rows)
+    fs, steel = c_frames.check_frame_lists(root, c_frames.load_spec(root), ["211101"])
+    assert steel == {"211101": True}
+    assert [(f.rule, f.severity) for f in fs] == [("frame-steel", "minor")]
+    assert "4 member rows without its zinc class, Z100" in fs[0].message and "zinc-rich" in fs[0].message
 
 
 class _Face:
