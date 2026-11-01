@@ -259,13 +259,17 @@ def frame_members():
         x1 = "(%s + fr_w)" % x0
         add(key, nm, ("x", "y"), [FL.meet(f23, FL.line(1, 0, x0)), FL.meet(f23, FL.line(1, 0, x1)), (x1, yr0), (x0, yr0)],
             "z", zb3, "%s + fr_w" % zb3, axis=(1, 2), ends="front end cut to the facet tube, back end square to the rail")
-    ch_pts = [FL.meet(c3, t1), FL.meet(c3, FL.line(0, 1, "pod_h - dt_fo")), (yb0, "pod_h - dt_fo"),
-              FL.meet(c23, FL.line(1, 0, yb0)), FL.meet(c23, t1)]
+    # the back end runs from where the chamfer's bond face meets the top's down to the back ring's face at the
+    # chamfer tube's inner line: with the bond line those two points stand 0.05 apart across the ring's face, so the
+    # end is square to it within 0.1 deg (a 0.05 step to the top would be no cut anyone makes), and the tube never
+    # rises above the top's bond face at another size (frame_preflight.py)
+    ch_pts = [FL.meet(c3, t1), FL.meet(c3, FL.line(0, 1, "pod_h - dt_fo")), FL.meet(c23, FL.line(1, 0, yb0)),
+              FL.meet(c23, t1)]
     for key, nm, x0 in (("C01", "CHAMFER CROSS TUBE LEFT", "(%s + dt_x2 + 280 mm)" % XL),
                         ("C02", "CHAMFER CROSS TUBE MIDDLE", "(%s - fr_w / 2)" % CATCH_X),
                         ("C03", "CHAMFER CROSS TUBE RIGHT", "(%s - 2 * fr_w)" % x_ch1)):
         add(key, nm, ("y", "z"), ch_pts, "x", x0, "%s + fr_w" % x0,
-            ends="front end square to the chamfer tube, back end square to the back ring's top")
+            ends="front end square to the chamfer tube, back end to the back ring's top tube (square within 0.1 deg)")
     return M
 
 

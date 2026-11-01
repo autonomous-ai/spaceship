@@ -233,8 +233,9 @@ def frame_members():
                  "(dl_y2 - dl_y1) / dl_l1 * (%s) + dl_x2 / dl_l1 * (-dl_y1)" % XL)
     f2 = front_facet()
     p_front = FL.line(0, 1, "-dl_y3")
-    # the 7 mm front face is too short for a tube: the door-side tube's front end follows the front skin and the
-    # front facet, and the front facet tube stops on the door-side tube's inner face
+    # the 7 mm front face gets no tube: at the tubes' depth (skin and bond line, dl_fo) it has no width left (the facet's
+    # and the door side's bond faces cross 0.45 in front of it), so the door-side tube's front end follows the front
+    # facet's bond face alone, and the front facet tube stops on the door-side tube's inner face
     P = FL.push
     d3, d23 = P(p_door, "dl_fo"), P(p_door, "dl_fo + fr_w")
     k0, k20 = p_back, P(p_back, "fr_w")
@@ -244,7 +245,8 @@ def frame_members():
     E, A, B, C = FL.meet(fr3, q3), FL.meet(fr3, d3), FL.meet(d3, k0), FL.meet(d23, k20)
     D, D2 = FL.meet(q3, d23), FL.meet(q23, d23)
     G, G2, K, K2 = FL.meet(k0, o3), FL.meet(k20, o23), FL.meet(o3, q3), FL.meet(o23, q23)
-    ring_parts = (("D", "DOOR SIDE", [E, A, B, C, D], (1, 2)), ("K", "BACK", [B, G, G2, C], (0, 1)),
+    Q = FL.meet(d3, q3)
+    ring_parts = (("D", "DOOR SIDE", [Q, B, C, D], (0, 1)), ("K", "BACK", [B, G, G2, C], (0, 1)),
                   ("O", "OUTER FACET", [G, K, K2, G2], (0, 1)), ("F", "FRONT FACET", [K, D, D2, K2], (0, 1)))
     levels = [("1", "BOTTOM", ZB), ("2", "BETWEEN HINGES 1 AND 2", "fr_z2"),
               ("3", "BETWEEN HINGES 2 AND 3", "fr_z3"), ("4", "TOP", "fr_z4")]

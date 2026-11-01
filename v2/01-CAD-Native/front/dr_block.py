@@ -149,15 +149,17 @@ OWN = [
     ("dr_fny", "-dr_xc / dr_f_len", "", "calculation", "corner facet outward normal, Y"),
     ("dr_fc", "dr_fnx * (pod_w / 2 - dr_xc) + dr_fny * (-pod_d / 2)", "mm", "calculation", "corner facet line constant"),
     # intake riser, 1 mm galvanised steel (D-60 air table)
-    ("ri_x0", "956 mm", "mm", "source", "D-60 air table: riser X 956 to 1095"),
+    ("ri_x0", "959 mm", "mm", "source",
+     "the D-60 air table's riser X 956 to 1095, moved 3 mm right with DR's 3 mm bond line so it keeps its 5.9 to B07 "
+     "(AIR's change, CEILING Engineer 2026-11-01)"),
     ("ri_w", "139 mm", "mm", "source", "D-60 air table: riser 139 wide"),
     ("ri_y0", "-803 mm", "mm", "source", "D-60 air table: riser Y -803 to -648"),
     ("ri_d", "155 mm", "mm", "source", "D-60 air table: riser 155 deep"),
     ("ri_zt", "1445 mm", "mm", "source", "D-60 air table: riser up to Z 1445"),
     ("ri_gap", "140 mm", "mm", "assumption",
      "the riser's open foot stands 140 mm over DR's open base, so the air rises straight into it and the riser clears "
-     "the back frame's inner-edge member B07 by 2.9 mm (the glass line runs to X 950 there; 5.9 before the 3 mm bond "
-     "line); was 60 before the frame"),
+     "the back frame's inner-edge member B07 by 5.9 mm (the glass line runs to X 950 there; the riser moved 3 mm right "
+     "with the 3 mm bond line); was 60 before the frame"),
     ("slot_clear", "1 mm", "mm", "assumption", "fitting clearance each side of the glass channel in DR's skin slot"),
     ("ri_t", "1 mm", "mm", "source", "D-60 air table: 1 mm galvanised steel"),
     # supply fan box (D-60 air table)
@@ -895,9 +897,10 @@ ANCHORS = [
     ("FBOX", 0, "fb_x0"), ("FBOX", 2, "fb_z0"), ("FBOX", 5, "fb_z0 + fb_h"),
     ("TUP", 5, "op_z0 + op_h"),
     # the frame's sides, each on a single tube that reaches it (every tube its own component, D-120)
-    ("B06", 0, "((fg_dc + dr_skin_t - fg_dnz * (fg_vis_zt)) / fg_dnx)"), ("B02", 3, "pod_w / 2 - dr_skin_t"),
-    ("F02", 1, "-pod_d / 2 + dr_skin_t"), ("B04", 4, "-pod_d / 2 + decor_d - dr_back_t"),
-    ("F01", 2, "fg_vis_zb"), ("B03", 5, "pod_h - dr_skin_t"),
+    # (the tubes on a skin stand its 3 mm bond line off it: dr_fo)
+    ("B06", 0, "((fg_dc + dr_fo - fg_dnz * (fg_vis_zt)) / fg_dnx)"), ("B02", 3, "pod_w / 2 - dr_fo"),
+    ("F02", 1, "-pod_d / 2 + dr_fo"), ("B04", 4, "-pod_d / 2 + decor_d - dr_back_t"),
+    ("F01", 2, "fg_vis_zb"), ("B03", 5, "pod_h - dr_fo"),
 ]
 
 # what each tube's row says about its holes and fixings (the cuts in build(); none on the copies)
