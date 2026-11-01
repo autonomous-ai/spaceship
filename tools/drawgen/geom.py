@@ -598,3 +598,17 @@ def placed(shape, m, t):
     tr = gp_Trsf()
     tr.SetValues(m[0][0], m[0][1], m[0][2], t[0], m[1][0], m[1][1], m[1][2], t[1], m[2][0], m[2][1], m[2][2], t[2])
     return transformed(shape, tr)
+
+
+def window_keep(shape, view, x0, x1, y0, y1, big=1e5):
+    """The part of shape inside a window of a view: x0..x1 along the view's X, y0..y1 along its Y, all depths (what
+    a detail view shows)."""
+    from OCP.gp import gp_Ax2, gp_Dir
+    o = vadd(vadd(vmul(view.x, x0), vmul(view.y, y0)), vmul(view.n, -big / 2))
+    ax = gp_Ax2(gp_Pnt(*o), gp_Dir(*view.n), gp_Dir(*view.x))
+    box = BRepPrimAPI_MakeBox(ax, x1 - x0, y1 - y0, big).Shape()
+    op = BRepAlgoAPI_Common(shape, box)
+    op.Build()
+    if not op.IsDone():
+        raise RuntimeError("detail cut failed")
+    return op.Shape()

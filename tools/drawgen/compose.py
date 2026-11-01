@@ -830,19 +830,56 @@ def draw(part, spec, out_path, today=None):
 
     main_right = max([v.box()[2] for v in vds.values()] + [s.box()[2] for s in secs])
     main_bottom = min([v.box()[1] for v in vds.values()] + [s.box()[1] for s in secs])
-    # removed sections: a column between the views and the tables when it is wide enough, else a row under the views
+    # detail views (guideline 6.1: details for what is small): where tags crowd at this scale, an enlarged copy of that
+    # stretch of the view, cut from the solids (exact edges, the cut drawn thin as the detail's boundary)
+    details = []
+    for nm, vd in list(vds.items()):
+        win = crowded_window(vd, [ft for g in pl.groups if g.view == nm for ft in g.feats], part)
+        if not win:
+            continue
+        x0, x1, y0, y1 = win
+        ds = next((c for c in (2.0, 1.0, 0.5) if c >= 2 * vd.scale - 1e-9 and (x1 - x0) * c <= 140.0), None)
+        if ds is None:
+            continue
+        kept, hid = [], set()
+        own = {id(ft.body) for g in pl.groups if g.view == nm for ft in g.feats}
+        for b in part.bodies:
+            k_ = geom.window_keep(b.shape, vd.view, x0, x1, y0, y1)
+            if geom._solids(k_):
+                if id(b) in own:
+                    hid.add(len(kept))
+                kept.append(k_)
+        if not kept:
+            continue
+        prims = view_prims(None, vd.view, ds, bodies=kept, hidden_from=hid)
+        for p_ in prims:        # the cut at the window's edges is the detail's boundary: thin
+            if p_.kind == "line" and all(min(abs(q[0] - x0), abs(q[0] - x1)) < 1e-4 or
+                                         min(abs(q[1] - y0), abs(q[1] - y1)) < 1e-4 for q in (p_.p, p_.q)):
+                p_.src = "boundary"
+        dv = VD(vd.view, prims, ds, "detail")
+        dv.name = "detail"
+        dv.parent = vd
+        dv.parent_name = nm
+        dv.window = win
+        dv.letter = next(letters)
+        vd.detail = dv
+        details.append(dv)
+    pl.details = details
+    place = removed + details
+    # removed sections and details: a column between the views and the tables when it is wide enough, else a row
+    # under the views
     mid_x0 = main_right + GAP + 18
     mid_x1 = W - 10 - spec.get("table_w", TABLE_W) - 4 - 10
-    need_w = (max(vd.size()[0] for vd in removed) + 70) if removed else 0
-    if removed and mid_x1 - mid_x0 >= need_w:
+    need_w = (max(vd.size()[0] for vd in place) + 70) if place else 0
+    if place and mid_x1 - mid_x0 >= need_w:
         rx, ry = mid_x0, H - 10 - 30
-        for vd in removed:
+        for vd in place:
             w, h = vd.size()
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             ry = ry - h - 58
-    elif removed:
+    elif place:
         rx, ry = 20 + GAP_PL + 14, main_bottom - 34
-        for vd in removed:
+        for vd in place:
             w, h = vd.size()
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             rx += w + 80
@@ -854,6 +891,8 @@ def draw(part, spec, out_path, today=None):
         for p in vd.prims:
             w = W_VIS if p.vis else W_HID
             d = None if p.vis else DASH_HID
+            if p.src == "boundary":
+                w = W_THIN
             if p.kind == "line":
                 sh.line(vd.S(p.p), vd.S(p.q), w, d)
             elif p.kind == "arc":
@@ -883,7 +922,7 @@ def draw(part, spec, out_path, today=None):
                         sh.line(vd.S(p.p), vd.S(p.q), W_VIS)
                     elif p.kind == "arc":
                         sh.arc(vd.S(p.c), p.r * vd.scale, p.a0, p.a1, W_VIS)
-    for vd in list(vds.values()) + secs + removed:
+    for vd in list(vds.values()) + secs + removed + details:
         draw_prims(vd)
     sh.flush()
 
@@ -929,9 +968,27 @@ def draw(part, spec, out_path, today=None):
                 sh.tag(c2, r, "/".join(labels), d, size=2.5, leader=4.5)
                 placed.append(c2)
 
+    def in_window(vd, ft):
+        w = getattr(vd, "detail", None)
+        if not w:
+            return False
+        c = vd.view.to2d(ft.f.entry)
+        x0, x1, y0, y1 = w.window
+        return x0 <= c[0] <= x1 and y0 <= c[1] <= y1
+
     for nm, vd in vds.items():
         feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
-        mark_features(vd, feats)
+        mark_features(vd, [ft for ft in feats if not in_window(vd, ft)])
+        mark_features(vd, [ft for ft in feats if in_window(vd, ft)], tags=False)
+        if getattr(vd, "detail", None):
+            dv = vd.detail
+            mark_features(dv, [ft for ft in feats if in_window(vd, ft)])
+            # the detail's place on its parent: a thin circle round the window and its letter
+            x0, x1, y0, y1 = dv.window
+            c = vd.S(((x0 + x1) / 2, (y0 + y1) / 2))
+            r = max((x1 - x0), (y1 - y0)) / 2 * vd.scale * 1.08 + 2.0
+            sh.circle(c, r, W_THIN)
+            sh.text(c[0] + r * 0.75 + 1.5, c[1] + r * 0.75 + 1.0, dv.letter, 3.5, "left", bold=True)
         # the far-wall holes behind (hidden circles) get their centre marks too, untagged
         keys = {(id(ft.body), ft.f.line_key) for ft in feats if ft.kind == "hole"}
         others = [ft for ft in part.features if ft not in feats and _end_on(ft, vd.view) and ft.kind == "hole"
@@ -941,7 +998,7 @@ def draw(part, spec, out_path, today=None):
         mark_features(vd, vd.group.feats)
     sh.flush()
 
-    # origins: one 3D origin O, its projection named per view
+    # origins: one 3D origin O, its projection named per view (a detail shows its parent's origin, same name)
     onames = {}
     k = 0
     for vd in [vds[n_] for n_ in order if n_ in vds] + secs:
@@ -959,8 +1016,45 @@ def draw(part, spec, out_path, today=None):
                 lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
             sh.origin_mark(o2, vd.origin_name, away=away, label_y=lab_y)
         onames[id(vd)] = vd.origin_name
+    for dv in details:
+        dv.origin_name = dv.parent.origin_name
+        oc = dv.view.to2d(O)
+        x0, x1, y0, y1 = dv.window
+        if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
+            o2 = dv.S(oc)
+            bx = dv.box()
+            away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+            inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+            lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
+            sh.origin_mark(o2, dv.origin_name, away=away, label_y=lab_y)
     sh.flush()
     return sh, pl, vds, secs, removed, dat, scale, report, groups
+
+
+def crowded_window(vd, feats, part, near=7.0, reach=25.0):
+    """A window (x0, x1, y0, y1 in view mm) round tags that crowd: two tagged features closer than `near` mm on
+    paper, with every tagged feature within `reach` mm of them, the part's end when it is that close too, and the
+    view's full height. None when nothing crowds."""
+    s = vd.scale
+    pts = [vd.view.to2d(ft.f.entry) for ft in feats if _end_on(ft, vd.view)]
+    pair = None
+    for i, a in enumerate(pts):
+        for b in pts[i + 1:]:
+            if math.dist(a, b) * s < near and (pair is None or math.dist(a, b) < math.dist(*pair)):
+                pair = (a, b)
+    if pair is None:
+        return None
+    cx = (pair[0][0] + pair[1][0]) / 2
+    xs = [p[0] for p in pts if abs(p[0] - cx) * s <= reach]
+    if len(xs) < 2:
+        return None
+    e = vd.extent
+    x0, x1 = min(xs) - 6.0 / s, max(xs) + 6.0 / s
+    if (x0 - e[0]) * s < 15.0:
+        x0 = e[0] - 2.0
+    if (e[2] - x1) * s < 15.0:
+        x1 = e[2] + 2.0
+    return (max(x0, e[0] - 2.0), min(x1, e[2] + 2.0), e[1] - 2.0, e[3] + 2.0)
 
 
 def _vertices(face):
@@ -1061,6 +1155,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         g = vd.group
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, sname),
               mapping_words(vd.view, part.pod_system) + osfx(vd))
+    for dv in getattr(pl, "details", []):
+        title(dv, "DETAIL %s  %s" % (dv.letter, scale_text(dv.scale)),
+              "of the %s; %s; origin %s" % (VIEW_WORDS.get(dv.parent_name, "view").lower(),
+                                            mapping_words(dv.view, part.pod_system), dv.origin_name))
     for vd in removed:
         tags = sorted({f.tag for s in vd.r.all for f in s})
         vd.title_drop = 14.0
@@ -1210,13 +1308,18 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             if not (0.02 < c < 0.9998):
                 continue
             ang = math.degrees(math.acos(c))
-            for nm, vd in vds.items():
+            views_m = [(("detail-" + dv.letter), dv) for dv in getattr(pl, "details", [])] + list(vds.items())
+            for nm, vd in views_m:
                 if abs(vdot(n, vd.view.n)) > 1e-6 or abs(vdot(lax, vd.view.n)) > 1e-6:
                     continue
                 # the face's two ends along the line it shows as
                 pts = [vd.view.to2d(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v)))) for v in _vertices(face)]
                 if len(pts) < 2:
                     continue
+                if getattr(vd, "window", None):
+                    wx0, wx1, wy0, wy1 = vd.window
+                    if not all(wx0 - 1e-6 <= q[0] <= wx1 + 1e-6 for q in pts):
+                        continue
                 n2 = vd.view.to2d(n)
                 t2 = (-n2[1], n2[0])
                 pts.sort(key=lambda q: q[0] * t2[0] + q[1] * t2[1])
