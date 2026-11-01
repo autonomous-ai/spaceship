@@ -179,6 +179,7 @@ class Views:
         return BaseViewInput()
 
     def add(self, inp):
+        LOG.append("view")
         vp, c = inp.viewParameters, inp.placementPoint.coordinate
         v = Fake.view(vp.orientation, vp.scaleValue, (c.x, c.y))
         self.items.append(v)
@@ -308,9 +309,37 @@ def load(name):
     return mod
 
 
-def app_with(sheet, dwg_name):
+class Ref:
+    def __init__(self, name, stale):
+        self.dataFile, self.version, self.isOutOfDate = types.SimpleNamespace(name=name), 1, stale
+
+
+class Refs:
+    def __init__(self, items):
+        self.items, self.count = items, len(items)
+
+    def item(self, i):
+        return self.items[i]
+
+
+class Doc:
+    """The drawing document: one reference to the body's design, out of date when the design has a newer version."""
+    def __init__(self, name, stale=True, body="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD"):
+        self.name = name
+        self.documentReferences = Refs([Ref(body, stale)])
+        self.updated = False
+
+    def updateAllReferences(self):
+        LOG.append("update")
+        for r in self.documentReferences.items:
+            r.isOutOfDate = False
+        self.updated = True
+        return True
+
+
+def app_with(sheet, dwg_name, doc=None):
     dwg = types.SimpleNamespace(activeSheet=sheet, exportManager=ExportManager())
-    return types.SimpleNamespace(activeProduct=dwg, activeDocument=types.SimpleNamespace(name=dwg_name + " v1"))
+    return types.SimpleNamespace(activeProduct=dwg, activeDocument=doc or Doc(dwg_name + " v1"))
 
 
 # ------------------------------------------------------------------ the test
@@ -345,7 +374,10 @@ def main():
         raw_dir = os.path.join(REPO, md.HERE, ".raw")
         sheet = Sheet()
         del LOG[:]
-        md.annotate(app_with(sheet, md.DWG))
+        doc = Doc(md.DWG + " v1", stale=True)
+        md.annotate(app_with(sheet, md.DWG, doc))
+        check(doc.updated and LOG.index("update") < LOG.index("view"),
+              "an out-of-date reference to the body's design is updated before any view (run of 2026-11-01)")
         views = sheet.views.items
         boxes = [box_of(v) for v in views]
         check(len(views) == 6, "6 views (front, top, bottom, left, right, iso), got %d" % len(views))
@@ -425,6 +457,13 @@ def main():
                   TEXT[1] - 0.5 <= 420.0 - bb[3] / pt and 420.0 - bb[1] / pt <= TEXT[3] + 0.5 for _t, _s, bb in block),
               "the text block stays inside its space")
         os.remove(raw)
+        # a drawing that doesn't reference the body stops before any view
+        try:
+            md.annotate(app_with(Sheet(), md.DWG, Doc(md.DWG + " v1", body="SOMETHING_ELSE_CAD")))
+            wrong_ref = False
+        except RuntimeError as e:
+            wrong_ref = "doesn't reference" in str(e)
+        check(wrong_ref, "a drawing that doesn't reference the body's design stops before any view")
         # a FRONT that isn't the room side stops the run before any dimension
         Fake.wrong_front = True
         sheet2 = Sheet()

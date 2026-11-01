@@ -223,6 +223,28 @@ def place_views(sheet: "adsk.drawing.Sheet", w, h, d):
     return views
 
 
+BODY_CAD = "711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD"
+
+
+def references_up_to_date(doc: "adsk.core.Document"):
+    """The drawing points at one version of the body's design. After the design gets a newer version, views can't be
+    added until the drawing's references are updated (Views.add: "failed to create base view", run of 2026-11-01).
+    Prints each reference, updates the out-of-date ones, and stops if the body's design isn't among them."""
+    refs = doc.documentReferences
+    names = []
+    for i in range(refs.count):
+        r = refs.item(i)
+        names.append(r.dataFile.name)
+        print("reference: %s version %s%s" % (r.dataFile.name, r.version, ", out of date" if r.isOutOfDate else ""))
+    if not any(n.startswith(BODY_CAD) for n in names):
+        raise RuntimeError("the drawing doesn't reference %s (it references %s)" % (BODY_CAD, names or "nothing"))
+    if any(refs.item(i).isOutOfDate for i in range(refs.count)):
+        print("updating the drawing's references: %s" % doc.updateAllReferences())
+        stale = [refs.item(i).dataFile.name for i in range(refs.count) if refs.item(i).isOutOfDate]
+        if stale:
+            raise RuntimeError("references still out of date after the update: %s" % stale)
+
+
 def annotate(app: "adsk.core.Application"):
     dwg = adsk.drawing.Drawing.cast(app.activeProduct)
     if dwg is None:
@@ -233,6 +255,7 @@ def annotate(app: "adsk.core.Application"):
     if sheet.views.count:
         raise RuntimeError("the sheet already has %d views; start a new drawing" % sheet.views.count)
     print("sheet %s: %s x %s" % (sheet.name, round(sheet.width, 2), round(sheet.height, 2)))
+    references_up_to_date(app.activeDocument)
     w, h, d = part_size()
     views = place_views(sheet, w, h, d)
     f, t, r = views["front"], views["top"], views["right"]
