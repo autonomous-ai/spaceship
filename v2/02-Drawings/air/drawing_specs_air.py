@@ -116,7 +116,7 @@ SPECS = {
         "Riser 1 mm steel 139 x 155, Z 105 to 1445; box 300 x 155 x 300 at Z 1650 to 1950.",
     ], bbox(names=["SUPPLY FAN BOX", "INTAKE RISER", "RISER TRANSITION", "SUPPLY TRANSITION"])),
     "ebox": spec("ebox", [
-        "Exhaust fan box: 294 x 314 x 173, 2 mm aluminium, lined 50 (air report 7e); two NF-A14 fans 618401 lying flat.",
+        "Exhaust fan box: 294 x 314 x 173, 3 mm aluminium (D-124), lined 50 (air report 7e); two NF-A14 fans 618401 lying flat.",
         "Fitted in the soffit at the factory (D-87); under C2's roof sleeve.",
     ], bbox(names=["EXHAUST FAN BOX"]), sheet="A2"),
     "col_ang": spec("col_ang", [

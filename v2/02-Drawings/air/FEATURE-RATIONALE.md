@@ -42,14 +42,14 @@ Why every feature of the air column, the soffit, the cartridges, the fan boxes, 
 | F-6102-06b | Door-side plate, 2 aluminium | Y −643.5…−641.5, Z 2140…2346.24 | Carries the door-side rail and closes the soffit's door side; stops above the hinges. It is not sealed to DR (open 4.76 under the ceiling frame, open below Z 2140), so DR's riveted back-plate band behind it stays DR's sound wall | D-90 (HOLD-18); PM ruling 2026-11-01 (DR keeps the band) | assumption (thickness) |
 | F-6102-07 | Open forks in the rails | 6.5 wide, from each rail's door-side edge to the stud, at X ∓583 | Lift the soffit 24 mm back from its place, hook, slide toward the door; the forks open toward the door, so closed keyholes aren't needed where the door-side studs sit 10 in from the edge | PM ruling 2026-11-01 (forks instead of keyholes, 24 mm slide) | confirmed |
 | F-6102-08 | Lock screws | 2 captive M6 × 25 (838002) through Ø6.6 holes in the door-side rail at X −1100 and −950, into C1's rivnuts | So taking out a cassette can never free the soffit; the same 5 mm key | PM ruling 2026-11-01 | confirmed; retainer HOLD |
-| F-6102-09 | Exhaust cartridge and fan box | cartridge X −883…867, fan box X 867…1161 (2 fans), Z 2159…2332; the box's 2 mm casing is open on its left face (the cartridge's air comes in) and its top (the fans blow up into the roof sleeve) | Silence and drive the exhaust; the box sits under C2's roof slot | D-61, air report 7e; D-87 (fan box fitted at the factory) | confirmed |
+| F-6102-09 | Exhaust cartridge and fan box | cartridge X −883…867, fan box X 867…1161 (2 fans), Z 2159…2332; the box's 3 mm casing (D-124) is open on its left face (the cartridge's air comes in) and its top (the fans blow up into the roof sleeve) | Silence and drive the exhaust; the box sits under C2's roof slot | D-61, air report 7e; D-87 (fan box fitted at the factory) | confirmed |
 | F-6102-10 | Left end plate, 2 mm | X −1161…−1159 | Closes the inlet plenum's end | D-87 | assumption |
 
 ## Supply fan box 610401, riser and roof parts
 
 | Feature ID | Feature | Size, offset | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
-| F-6104-01 | Supply fan box | 300 × 155 × 300 at X 645…945, Z 1650…1950 (in DR); the 2 mm casing is open at the bottom (the riser's air comes in) and the top (the fans blow up into the upper transition) | Drives the supply; joined with the riser (D-87) | Air report 7e; all four fans are AIR's (PM ruling 2026-11-01) | confirmed |
+| F-6104-01 | Supply fan box | 300 × 155 × 300 at X 645…945, Z 1650…1950 (in DR); the 3 mm casing (D-124) is open at the bottom (the riser's air comes in) and the top (the fans blow up into the upper transition) | Drives the supply; joined with the riser (D-87) | Air report 7e; all four fans are AIR's (PM ruling 2026-11-01) | confirmed |
 | F-6104-02 | Intake riser, 1 mm steel | 139 × 155, Z 105…1445 (in DR) | Draws room air from low in DR | D-61 | confirmed |
 | F-6104-03 | Transitions | supply box to the column top; riser to the supply box | Air path | Air report 7e | HOLD (ducts not designed) |
 | F-6106-01 | Roof sleeve, 1 mm steel | 285 × 294 from the fan box top to the roof skin | Exhaust through C2's slot | D-61; slot owned by CEILING | confirmed |

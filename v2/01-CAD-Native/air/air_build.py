@@ -339,7 +339,7 @@ def build_scope(root, design, ctx, scope):
 
     def casing(bname, key):
         b = body(bname)
-        hollow_open(root, b, A.FAN_BOX_OPEN[bname], "box_t", bname)
+        hollow_open(root, b, A.FAN_BOX_OPEN[bname], "fbox_t", bname)
         return b
     for item in SCOPE_KEYS[scope]:
         if item.startswith("CART:"):
@@ -548,7 +548,7 @@ def run(_context):
             ck = "box" if key == "ebox" else "box_s"
             _o2, casing = new_comp(fb, ck)
             b = put(casing, bname)
-            hollow_open(casing, b, A.FAN_BOX_OPEN[bname], "box_t", bname)
+            hollow_open(casing, b, A.FAN_BOX_OPEN[bname], "fbox_t", bname)
             set_material(design, casing, ck)
             tag = "EXHAUST" if key == "ebox" else "SUPPLY"
             for fname, fx, fy, fz in [f for f in fans if f[0].startswith(tag)]:

@@ -81,7 +81,8 @@ AIR_PARAMS = [
     ("fb_w", "294 mm", "mm", "source", R7E + ": exhaust fans and box 294 x 314 x 173"),
     ("sof_fill_t", "27 mm", "mm", "source", R7E + ": the exhaust cartridge sits on 27 mm of fill over the underside (Z 2159), as in the column"),
     ("lin_t", "50 mm", "mm", "source", R7E + ": fan boxes lined with 50 mm"),
-    ("box_t", "2 mm", "mm", "source", R7E + ": fan boxes in 2 mm aluminium"),
+    ("box_t", "2 mm", "mm", "source", R7E + ": 2 mm aluminium sheet, used for the soffit's left end plate"),
+    ("fbox_t", "3 mm", "mm", "confirmed", "D-124: both fan box casings in 3 mm aluminium (boost about 29.5 dB(A) at 65 l/s, 66.6 l/s reach, +1.4 kg; the fan sample decides)"),
     # ---- soffit hanging (D-87; PM ruling 2026-11-01): open forks in two top rails on 4 studs in
     #      the ceiling frame, lift and slide toward the door, 2 captive lock screws; the underside
     #      in two hinged sections and a fixed strip over the column
@@ -151,8 +152,8 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "egrille": ("611204", "AIR - EXHAUST GRILLE", "Lưới gió thải", "MP", "perf40"),
     "casing": ("611301", "AIR - CARTRIDGE CASING", "Vỏ ống tiêu âm nhôm 2 mm", "MP", "al"),
     "layer": ("611302", "AIR - CARTRIDGE LAYER 50", "Lớp tiêu âm 50 mm", "MP", "pyro"),
-    "box": ("611401", "AIR - FAN BOX CASING - EXHAUST", "Vỏ hộp quạt thải nhôm 2 mm", "MP", "al"),
-    "box_s": ("611402", "AIR - FAN BOX CASING - SUPPLY", "Vỏ hộp quạt cấp nhôm 2 mm", "MP", "al"),
+    "box": ("611401", "AIR - FAN BOX CASING - EXHAUST", "Vỏ hộp quạt thải nhôm 3 mm", "MP", "al"),
+    "box_s": ("611402", "AIR - FAN BOX CASING - SUPPLY", "Vỏ hộp quạt cấp nhôm 3 mm", "MP", "al"),
     "riser": ("611501", "AIR - INTAKE RISER", "Ống hút gió đứng", "MP", "steel"),
     "sleeve": ("611601", "AIR - ROOF SLEEVE", "Ống thải qua mái", "MP", "steel"),
     "rgrille": ("611602", "AIR - ROOF GRILLE", "Lưới thải mái", "MP", "perf50"),

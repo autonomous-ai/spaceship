@@ -123,11 +123,11 @@ class Fits(unittest.TestCase):
             bx = boxes[name.split()[0]]
             cx, cy, cz = A.ev(V, x), A.ev(V, y), A.ev(V, z)
             h = V["fan_s"] / 2
-            self.assertGreaterEqual(cx - h, bx[0] + V["box_t"] - 1e-9, name)
-            self.assertLessEqual(cx + h, bx[1] - V["box_t"] + 1e-9, name)
-            self.assertGreaterEqual(cy - h, bx[2] + V["box_t"] - 1e-9, name)
-            self.assertLessEqual(cy + h, bx[3] - V["box_t"] + 1e-9, name)
-            self.assertLessEqual(cz + V["fan_t"], bx[5] - V["box_t"] + 1e-9, name)
+            self.assertGreaterEqual(cx - h, bx[0] + V["fbox_t"] - 1e-9, name)
+            self.assertLessEqual(cx + h, bx[1] - V["fbox_t"] + 1e-9, name)
+            self.assertGreaterEqual(cy - h, bx[2] + V["fbox_t"] - 1e-9, name)
+            self.assertLessEqual(cy + h, bx[3] - V["fbox_t"] + 1e-9, name)
+            self.assertLessEqual(cz + V["fan_t"], bx[5] - V["fbox_t"] + 1e-9, name)
 
 
 class D87(unittest.TestCase):
