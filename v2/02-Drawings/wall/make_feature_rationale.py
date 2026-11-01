@@ -365,6 +365,9 @@ def holes(rep):
                 if h.get("convex") or (b["name"].startswith("SKIN") and fold_d and not h["full_circle"]
                                        and abs(h["d"] - fold_d) < 0.01):
                     continue
+                # the cassette ledge's fold: its inside bend (radius ledge_r) is a part cylinder along the ledge
+                if b["name"] == LEDGE_BODY and not h["full_circle"] and abs(h["d"] - 2 * prm.get("ledge_r", -1)) < 0.01:
+                    continue
                 key = (b["name"], h["d"], h["axis"])
                 rows.setdefault(key, []).append(h)
     return rows

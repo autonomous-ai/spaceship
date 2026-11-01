@@ -377,9 +377,10 @@ def out_of_plane(key, grade):
 
 # --- seam bolts and rivnuts (joints register 2.6 and J-T1) ----------------------------------------------------
 BOLT_LOADS = {"walls": 200.0, "DL (the door's side)": 533.0}  # N per bolt: J-T1's pass loads / 3 (assumption, J-T1)
-GRIP = (0.70, 4.20)              # rivnut 838003's grip range, Sherex CAH2-610-4.2 steel (source: SHX2)
+GRIP = (0.70, 4.20)              # rivnut 838003's grip range, Sherex CAL2-610-4.2 (D-163; source: SHX3, as CAH2's)
+RIVNUT_HOLE = (10.00, 0.10)      # its round hole, drilled after welding: Ø10.00 +0.10/0 (D-163; Sherex allows +0.15)
 STOP_WASHER = 1.5                # H-08, under the stopped joints' rivnut heads (register H-08)
-BULGE = 13.0                     # set rivnut's bulge diameter, about its head's 12.96 (assumption)
+BULGE = 13.0                     # set rivnut's bulge diameter, about its head's Ø12.70 (assumption; not on the drawing)
 HEAD_WASHER = 18.0               # 838004 under each bolt head (register H-09)
 FU_MIN = min(g[2] for g in ACCEPTED)
 
@@ -496,7 +497,7 @@ def report():
         pull_through(0.8, HEAD_WASHER) / 1000, pull_through(1.0, HEAD_WASHER) / 1000))
     print("| M6 bearing in the Ø7.0 hole (kN) | %.1f | %.1f |" % (bearing(0.8) / 1000, bearing(1.0) / 1000))
     print("Highest bolt loads: " + ", ".join("%s %.2f kN" % (k, v / 1000) for k, v in BOLT_LOADS.items()) +
-          " (J-T1's pass loads are 3 x these). The rivnut's own strength (CAH2-610-4.2, steel) is shown by T06 and"
+          " (J-T1's pass loads are 3 x these). The rivnut's own strength (CAL2-610-4.2, steel, D-163) is shown by T06 and"
           " J-T1 in the steel tube, not by a figure.")
     print("T joint weld, full perimeter, throat 0.7 x the core wall: %.1f kN in a 0.8 stud, %.1f kN in 1.0, against"
           " %.1f kN shear." % (t_joint_weld(0.8) / 1000, t_joint_weld(1.0) / 1000, V_T / 1000))

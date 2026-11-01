@@ -94,12 +94,17 @@ def wall_side_cad(n):
     frame_kg, fill_kg, rho, fill_pns, mids, t_mid, steel = wall_panel_parts(rows, by, fr, fi, rows.index(by[cas]))
     panel = rows[rows.index(by[asm]) + 1:rows.index(by[cas])]
     hardware = sum(r["kg"] for r in panel if r["level"] == 1 and r["pn"] not in {fr, sk, "108002"} | fill_pns)
-    seals = sum(by[k]["kg"] for k in ("848011", "848012") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    seals = sum(by[k]["kg"] for k in ("848011", "848012", "848016") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    # the cassette ledge set on a rebuilt lower panel (the Lead's ruling of 2026-11-01): the made angle (2117xx, 2118xx),
+    # its pad 848015 and its rivets 838012, none of them in the fixings kit's line; 0 on a panel not rebuilt yet
+    ledge = sum(r["kg"] for r in rows[rows.index(by[asm]) + 1:rows.index(by[cas])] if r["level"] == 1
+                and (r["pn"].startswith(("2117", "2118")) or r["pn"] in ("848015", "838012")))
     mid_cad = sum(r["kg"] for r in mids)
     return dict(path=os.path.basename(path), frame=frame_kg, skin=by[sk]["kg"], fill=fill_kg, fill_rho=rho,
                 bond=by["108002"]["kg"], mid_kg=0.0 if steel else mid_cad, mid_kg_cad=mid_cad,
                 mid_n=int(sum(r["qty"] for r in mids)), mid_t=t_mid, steel=steel, hardware=hardware,
-                tray=by[f"51110{n}"]["kg"], felt=by[f"51130{n}"]["kg"], cass_seals=seals, clips=by["518001"]["kg"])
+                tray=by[f"51110{n}"]["kg"], felt=by[f"51130{n}"]["kg"], cass_seals=seals, ledge=ledge,
+                clips=next(by[k]["kg"] for k in ("518003", "518001") if k in by))      # the walls' clip, or the old one
 
 
 WALL_SIDE = {n: wall_side_cad(n) for n in (1, 2, 3, 4)}      # L1, R1, L2, R2 (S34)
@@ -114,14 +119,18 @@ def wall_back_cad(n):
     path = glob.glob(os.path.join(MANUF, "wall", f"21020{n}_P01_*_BOM.csv"))[0]
     rows = read_parts_list(path)
     by = {r["pn"]: r for r in rows if r["pn"]}
-    fr, sk, fi, cas = f"21120{n}", f"21140{n}", f"21160{n}", f"51020{n}"
+    fr, sk, fi, asm, cas = f"21120{n}", f"21140{n}", f"21160{n}", f"21020{n}", f"51020{n}"
     frame_kg, fill_kg, rho, _pns, mids, t_mid, steel = wall_panel_parts(rows, by, fr, fi, rows.index(by[sk]))
-    seals = sum(by[k]["kg"] for k in ("848011", "848012") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    seals = sum(by[k]["kg"] for k in ("848011", "848012", "848016") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    # the cassette ledge set on a rebuilt lower panel (the Lead's ruling of 2026-11-01): the made angle (2117xx, 2118xx),
+    # its pad 848015 and its rivets 838012, none of them in the fixings kit's line; 0 on a panel not rebuilt yet
+    ledge = sum(r["kg"] for r in rows[rows.index(by[asm]) + 1:rows.index(by[cas])] if r["level"] == 1
+                and (r["pn"].startswith(("2117", "2118")) or r["pn"] in ("848015", "838012")))
     mid_cad = sum(r["kg"] for r in mids)
     return dict(path=os.path.basename(path), frame=frame_kg, skin=by[sk]["kg"], fill=fill_kg, fill_rho=rho,
                 bond=by["108002"]["kg"], mid_kg=0.0 if steel else mid_cad, mid_kg_cad=mid_cad,
                 mid_n=int(sum(r["qty"] for r in mids)), mid_t=t_mid, steel=steel, tray=by[f"51120{n}"]["kg"],
-                felt=by[f"51140{n}"]["kg"], cass_seals=seals)
+                felt=by[f"51140{n}"]["kg"], cass_seals=seals, ledge=ledge)
 
 
 WALL_BACK = {n: wall_back_cad(n) for n in (1, 2)}            # B1 and B2, the lower back panels (S50)
@@ -582,7 +591,7 @@ def back_cad_kg(n, fill, kgm_s, n_back):
     """WALL's back panel B<n> from its CAD (S50): its made parts and bond set, with the fill at `fill` and the inner studs
     at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model)."""
     w = WALL_BACK[n]
-    return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
+    return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"] + w["ledge"]
             + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1)
             + (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s)
 
@@ -616,14 +625,17 @@ def lines(**adopt):
         up = final_outer_kg(P04["side_w"], P04["side_up_h"], P04["frame_d"], FINAL)
     def side(n):
         w = WALL_SIDE[n]
-        return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
+        return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"] + w["ledge"]
                 + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1))
     for item, a_, b_ in (("L1 and R1, lower side outer panels", 1, 2), ("L2 and R2, upper side outer panels", 3, 4)):
         wa, wb = WALL_SIDE[a_], WALL_SIDE[b_]
         L.append(("WALL", item, 2, (side(a_) + side(b_)) / 2, "calculation (CAD)" + prov,
                   f"S34, CAD on main: WALL parts lists 21010{a_} and 21010{b_} P01: frames {wa['frame']:.3f} and "
                   f"{wb['frame']:.3f} (mid stiles at {wa['mid_t']:g} mm), skins {wa['skin']:.3f}, fill {wa['fill']:.3f} at "
-                  f"{wa['fill_rho']:g} kg/m3, bond sets {wa['bond']:.2f}; their hardware stays in the fixings kit's line"))
+                  f"{wa['fill_rho']:g} kg/m3, bond sets {wa['bond']:.2f}"
+                  + (f", cassette ledge sets {wa['ledge']:.3f} and {wb['ledge']:.3f} (angle, pad and rivets; a panel not "
+                     f"rebuilt yet has none)" if wa["ledge"] or wb["ledge"] else "")
+                  + "; their other hardware stays in the fixings kit's line"))
     est_back = back_est_kg(fill, kgm12, kgm_s, n_back)
     b1, b2 = WALL_BACK[1], WALL_BACK[2]
     cad1, cad2 = (back_cad_kg(n, fill, kgm_s, n_back) for n in (1, 2))
@@ -793,14 +805,16 @@ def lines(**adopt):
         L.append(("INTERIOR", "Work-wall ledge, 1000 mm, with the screen rail", 1, LEDGE_KG_ALLOW + it["rail"], "assumption",
                   "the first allowance: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70), and the screen rail"))
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
+    nt, kt = JOINTS.get("831010", (0, 0.0))     # DT's two 11 mm spigots on DR's ledge (J-FRONT-03, D-157)
     rc = register_counts()
     L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers", 1,
-              fixings_kg() + ns * ks + nw * kw, "calculation (part CAD)",
+              fixings_kg() + ns * ks + nt * kt + nw * kw, "calculation (part CAD)",
               f"part CAD on main: the joints register's counts (S48: {rc['838001']:.0f} M6 x 16 and {rc['838002']:.0f} M6 x 25 "
               f"bolts, {rc['838003']:.0f} rivnuts, {rc['838004']:.0f} washers, {rc['838005']:.0f} retainers, {rc['848001']:g} m of "
               f"joint gasket, {rc['848004']:g} m of closing-seam seal) at the parts lists' masses ({fixings_kg():.2f} kg, D-116); "
-              f"{ns} spigots and {nw} stop washers from the joints' made hardware list ({ns * ks + nw * kw:.2f} kg, S45); no "
-              f"frame cleats: D-131 welds the frames, so D-117's cleats are cancelled"))
+              f"{ns + nt} spigots ({ns} of 831001, {nt} of 831010) and {nw} stop washers from the joints' made hardware "
+              f"list ({ns * ks + nt * kt + nw * kw:.2f} kg, S45); no frame cleats: D-131 welds the frames, so D-117's "
+              f"cleats are cancelled"))
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
         L.append(("LATER", f"Voice cockpit kit reserve, outside the {CAP_KG:.0f} kg cap", 1, pt.kg, pt.status,
@@ -898,8 +912,8 @@ def base_swaps():
             ("Glide load blocks (D-86's 0.4 kg), now BASE's %g blocks" % sum(bc["blocks"].values()), 1, LOAD_BLOCKS_KG,
              sum(bc["blocks"].values()) * bc["doubler"], "BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6"),
             ("Spigots and stop washers (not in this study's fixings kit)", 1, 0.0,
-             JOINTS["831001"][0] * JOINTS["831001"][1] + JOINTS["831002"][0] * JOINTS["831002"][1],
-             "joints 831001 and 831002 P01, PR #139")]
+             sum(q * kg for q, kg in (JOINTS[pn] for pn in ("831001", "831010", "831002") if pn in JOINTS)),
+             "joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157)")]
 
 
 def pod_kg(rows=None):

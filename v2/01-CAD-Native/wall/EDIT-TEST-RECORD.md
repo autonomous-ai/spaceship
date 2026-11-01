@@ -4,10 +4,10 @@ Guideline section 4.4. `edit_test_wall.py` (run by `post_wall_doc.py`) opens eac
 
 ## Edit test: 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD.f3d
 
-Copy opened as a new, unsaved document and closed without saving. Components: 211101, 211301, 211515, 211516, 211517, 211518, 212101, 212102, 212103, 212104, 212105, 831001, 831002, 831007, 831008, 838003.
+Copy opened as a new, unsaved document and closed without saving. Components: 211101, 211301, 211515, 211516, 211517, 211518, 211701, 212101, 212102, 212103, 212104, 212105, 831001, 831002, 831007, 831008, 838003, 838012, 848015.
 
-1. Reopen: timeline 209 items, 0 not healthy; sketches 48, 48 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 209 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 252 items, 0 not healthy; sketches 60, 60 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 252 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
@@ -55,6 +55,7 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | 211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 3 | (-1244.0, -111.83, 132.26, -1204.0, 93.63, 1235.0) | (-1244.0, -18.17, 132.26, -1204.0, 154.78, 1212.26) |
 | 211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON:2 / FILL - BAY 3 | (-1244.0, 113.63, 132.26, -1204.0, 319.09, 1235.0) | (-1244.0, 247.48, 132.26, -1204.0, 420.43, 1212.26) |
 | 211518 WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 6 | (-1244.0, 590.0, 132.26, -1204.0, 804.0, 1235.0) | (-1244.0, 590.0, 132.26, -1204.0, 804.0, 1212.26) |
+| 211701 WALL - CASSETTE LEDGE - SIDE LOWER - COMMON:1 / LEDGE - STEEL ANGLE UNDER THE CASSETTE | (-1204.0, -635.0, 108.45, -1176.0, 795.0, 130.26) | (-1204.0, -440.0, 108.45, -1176.0, 795.0, 130.26) |
 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:1 / SPIGOT | (-1228.0, -546.74, 1247.76, -1220.0, -538.74, 1263.0) | (-1228.0, -351.74, 1225.02, -1220.0, -343.74, 1240.26) |
 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:2 / SPIGOT | (-1228.0, 746.0, 1247.76, -1220.0, 754.0, 1263.0) | (-1228.0, 746.0, 1225.02, -1220.0, 754.0, 1240.26) |
 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:1 / STOP WASHER | (-1234.0, -432.74, 1255.0, -1214.0, -412.74, 1256.5) | (-1234.0, -237.74, 1232.26, -1214.0, -217.74, 1233.76) |
@@ -64,15 +65,22 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:5 / STOP WASHER | (-1204.0, 814.0, 322.26, -1202.5, 834.0, 342.26) | (-1204.0, 814.0, 322.26, -1202.5, 834.0, 342.26) |
 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:6 / STOP WASHER | (-1204.0, 814.0, 661.56, -1202.5, 834.0, 681.56) | (-1204.0, 814.0, 661.56, -1202.5, 834.0, 681.56) |
 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:7 / STOP WASHER | (-1204.0, 814.0, 1000.87, -1202.5, 834.0, 1020.87) | (-1204.0, 814.0, 1000.87, -1202.5, 834.0, 1020.87) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:1 / RIVNUT | (-1230.48, -429.22, 1246.34, -1217.52, -416.26, 1257.26) | (-1230.48, -234.22, 1223.6, -1217.52, -221.26, 1234.52) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:2 / RIVNUT | (-1230.48, -78.31, 1246.34, -1217.52, -65.35, 1257.26) | (-1230.48, 51.69, 1223.6, -1217.52, 64.65, 1234.52) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:3 / RIVNUT | (-1230.48, 272.61, 1246.34, -1217.52, 285.57, 1257.26) | (-1230.48, 337.61, 1223.6, -1217.52, 350.57, 1234.52) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:4 / RIVNUT | (-1230.48, 623.52, 1246.34, -1217.52, 636.48, 1257.26) | (-1230.48, 623.52, 1223.6, -1217.52, 636.48, 1234.52) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:5 / RIVNUT | (-1230.48, -549.22, 1244.84, -1217.52, -536.26, 1255.76) | (-1230.48, -354.22, 1222.1, -1217.52, -341.26, 1233.02) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:6 / RIVNUT | (-1230.48, 743.52, 1244.84, -1217.52, 756.48, 1255.76) | (-1230.48, 743.52, 1222.1, -1217.52, 756.48, 1233.02) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:7 / RIVNUT | (-1212.66, 817.52, 325.78, -1201.74, 830.48, 338.74) | (-1212.66, 817.52, 325.78, -1201.74, 830.48, 338.74) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:8 / RIVNUT | (-1212.66, 817.52, 665.09, -1201.74, 830.48, 678.04) | (-1212.66, 817.52, 665.09, -1201.74, 830.48, 678.04) |
-| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:9 / RIVNUT | (-1212.66, 817.52, 1004.39, -1201.74, 830.48, 1017.35) | (-1212.66, 817.52, 1004.39, -1201.74, 830.48, 1017.35) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:1 / RIVNUT | (-1230.47, -429.22, 1246.85, -1217.53, -416.26, 1257.26) | (-1230.47, -234.22, 1224.11, -1217.53, -221.26, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:2 / RIVNUT | (-1230.47, -78.3, 1246.85, -1217.53, -65.35, 1257.26) | (-1230.47, 51.7, 1224.11, -1217.53, 64.65, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:3 / RIVNUT | (-1230.47, 272.61, 1246.85, -1217.53, 285.56, 1257.26) | (-1230.47, 337.61, 1224.11, -1217.53, 350.56, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:4 / RIVNUT | (-1230.47, 623.52, 1246.85, -1217.53, 636.48, 1257.26) | (-1230.47, 623.52, 1224.11, -1217.53, 636.48, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:5 / RIVNUT | (-1230.47, -549.22, 1245.35, -1217.53, -536.26, 1255.76) | (-1230.47, -354.22, 1222.61, -1217.53, -341.26, 1233.02) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:6 / RIVNUT | (-1230.47, 743.53, 1245.35, -1217.53, 756.47, 1255.76) | (-1230.47, 743.53, 1222.61, -1217.53, 756.47, 1233.02) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:7 / RIVNUT | (-1212.15, 817.53, 325.78, -1201.74, 830.48, 338.74) | (-1212.15, 817.53, 325.78, -1201.74, 830.48, 338.74) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:8 / RIVNUT | (-1212.15, 817.53, 665.09, -1201.74, 830.48, 678.04) | (-1212.15, 817.53, 665.09, -1201.74, 830.48, 678.04) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:9 / RIVNUT | (-1212.15, 817.53, 1004.4, -1201.74, 830.48, 1017.35) | (-1212.15, 817.53, 1004.4, -1201.74, 830.48, 1017.35) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:1 / BLIND RIVET | (-1210.5, -598.35, 117.91, -1202.5, -591.65, 124.61) | (-1210.5, -403.35, 117.91, -1202.5, -396.65, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:2 / BLIND RIVET | (-1210.5, -328.35, 117.91, -1202.5, -321.65, 124.61) | (-1210.5, -172.35, 117.91, -1202.5, -165.65, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:3 / BLIND RIVET | (-1210.5, -58.35, 117.91, -1202.5, -51.65, 124.61) | (-1210.5, 58.65, 117.91, -1202.5, 65.35, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:4 / BLIND RIVET | (-1210.5, 211.65, 117.91, -1202.5, 218.35, 124.61) | (-1210.5, 289.65, 117.91, -1202.5, 296.35, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:5 / BLIND RIVET | (-1210.5, 481.65, 117.91, -1202.5, 488.35, 124.61) | (-1210.5, 520.65, 117.91, -1202.5, 527.35, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:6 / BLIND RIVET | (-1210.5, 751.65, 117.91, -1202.5, 758.35, 124.61) | (-1210.5, 751.65, 117.91, -1202.5, 758.35, 124.61) |
+| 848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA:1 / PAD - ON THE LEDGE UNDER THE CASSETTE (HOLD) | (-1200.5, -635.0, 109.95, -1182.5, 795.0, 112.26) | (-1200.5, -440.0, 109.95, -1182.5, 795.0, 112.26) |
 
 | Check | Result |
 |---|---|
@@ -90,7 +98,7 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | front spigot follows the panel's front end (+100) | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 209 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 252 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD.f3d
 
@@ -441,8 +449,8 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211101, 212101, 212102, 212103, 212104, 212105, 831007, 831008.
 
-1. Reopen: timeline 136 items, 0 not healthy; sketches 34, 34 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 136 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 158 items, 0 not healthy; sketches 41, 41 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 158 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
@@ -495,7 +503,7 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | every bolt 30 or more clear of every stud (R-J14) | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 136 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 158 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_CAD.f3d
 
