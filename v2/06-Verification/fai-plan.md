@@ -193,7 +193,7 @@ What to inspect on the first article of each made part and assembly, the functio
 | `368007` `368102` | Door catch and strike | F-02 | the door check |
 | `368002` `368004` `368005` | Glazing U-seal, U-profile, frame-stop seal | F-03 | the light test |
 | `618106` | Soffit underside latch | K-A07 | each latch holds 25 N |
-| `618xxx` | AIR's bought parts (the fans) | T04 | test plan T04 |
+| `618401` | AIR's fans (T04 tests the fans' flow and noise, not AIR's other bought parts) | T04 | test plan T04 |
 | `71xxxx` | ELECTRICAL's parts | F-06 | the hub's self-test, with the harness tested at the factory (D-87) |
 | `718101` `718102` `718103` `718104` | The light shelf's down-light profile, satin cover, end caps and clips (D-126, D-127) | F-07 | the lights check; the light on the ledge is K-I06, on the sample (D-127) |
 

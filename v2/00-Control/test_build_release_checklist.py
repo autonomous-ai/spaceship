@@ -465,6 +465,17 @@ class BoughtParts(unittest.TestCase):
         self.assertEqual(bought[0]["tests"], ["K-A07"])
         self.assertNotIn("test", bought[0]["state"])
 
+    def test_the_real_plan_gives_the_fans_test_to_the_fans_only(self):
+        # T04 tests the fans' flow and noise: in the real FAI plan it reaches the fans (618401), not the latch (which has
+        # K-A07) or AIR's other bought parts, such as the supply fan box's pads
+        _, _, accept = rc.fai_plan((rc.ROOT / rc.FAI).read_text(encoding="utf-8"), BOM)
+        def ids_for(pn):
+            return sorted({t for pats, ids in accept if any(p.fullmatch(pn) for p in pats) for t in ids})
+        self.assertEqual(ids_for("618401"), ["T04"])
+        self.assertEqual(ids_for("618106"), ["K-A07"])
+        self.assertEqual(ids_for("618402"), [])
+        self.assertIn("K-J19", ids_for("838003"))
+
     def test_the_register_reads_hold_as_a_whole_word(self):
         text = REGISTER + ("| H-30 | **838009** | HARDWARE - GROMMET | bought | 4 | part DECIDED; the strip holds the seal |\n"
                            "| H-31 | **838010** | HARDWARE - CLIP | bought | 4 | number adopted; product on hold until T07 |\n")
