@@ -123,9 +123,9 @@ HW_PARTS = {
 # bottom rail, a pad on its leg under the tray's bottom return; the upper cassette stands on the lower one through a
 # strip in the 2.26 joint (on the cassette's list). Numbers from Control, the pad, strip and rivet picked by Joints;
 # until a number is posted the build stops, except a dry run, which labels the part DRY.
-LEDGE_PN = {"ledge": None, "pad": None, "rivet": None}
+LEDGE_PN = {"ledge": "211701", "pad": None, "rivet": None}       # 211701: Control, 2026-11-01 (WALL group)
 LEDGE_NAMES = {
-    "ledge": ("WALL - CASSETTE LEDGE - SIDE LOWER - COMMON", "Vách - gờ đỡ cassette dưới (dùng chung)"),
+    "ledge": ("WALL - CASSETTE LEDGE - SIDE LOWER - COMMON", "Vách - thanh đỡ cassette dưới (dùng chung)"),
     "pad": ("SEALS - CASSETTE LEDGE PAD - 18 X 2.26 - HOLD", "Đệm gờ đỡ cassette (chờ)"),
     "rivet": ("HARDWARE - BLIND RIVET - Ø4 - STEEL ZINC - HOLD", "Đinh tán rút Ø4 thép mạ kẽm (chờ)"),
 }
@@ -213,6 +213,11 @@ WALL_PARAMS = [
     ("rivnut_d", "10 mm", "mm", "confirmed",
      "D-163 (the Lead's ruling, 2026-11-01): Sherex CAL2-610-4.2 in a round drilled hole Ø10.00 +0.10/0, inside the maker's 10.00 +0.15/-0.0 (Sherex drawing CAL2-610-4.2 rev B, note 2) so the bolt-hole stack ST-03 stays positive; T06's spin-out test confirms it"),
     ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
+    # D-169 (ruled in the Joints group, 2026-11-01; Joints' sizes and places): the decor block locates on two pins
+    # along its pull (its 831001 spigots, 5.7 into the member), in two Z slots in the lower front stile's front wall
+    ("pin_slot_w", "8.5 mm", "mm", "confirmed", "D-169 (Joints, 2026-11-01): the decor block's pin slots 8.5 wide in X"),
+    ("pin_slot_l", "12 mm", "mm", "confirmed", "D-169: 12 long in Z, along the member; on the bolt line, 100 from "
+                                               "each end of the seam edge (the register's spigot rule)"),
     ("spigot_slot", "16 mm", "mm", "confirmed",
      "D-167 (the Lead's ruling, 2026-11-01): the seam gasket is 4.78 (PORON 4701-40's standard), so the side panels' "
      "back-end slot for the second spigot grows from 8.5 x 14 to 8.5 x 16, ±4 of travel, the panel held 3.4 out"),
@@ -392,7 +397,10 @@ WALL_PARAMS = WALL_PARAMS + el_params(CODE, EL_KIND)
 # the cassette ledge (the Lead's ruling of 2026-11-01, WALL's sizes accepted the same day): lower panels only
 _LG = "the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted)"
 LEDGE_PARAMS = [
-    ("ledge_t", "1 mm", "mm", "assumption", _LG + ": galvanized steel sheet 1.0, DX51D+Z (EN 10346), Z100"),
+    ("ledge_t", "1.5 mm", "mm", "confirmed",
+     _LG + ": galvanized steel sheet, DX51D+Z (EN 10346), Z100; 1.5 (the Lead's ruling the same day) so each rivet's "
+           "countersink is machined in the upright with land under it, the heads flush and the rail's hole plain: "
+           "0.40 clear of the tray at J-FRAME-01's worst case"),
     ("ledge_r", "ledge_t", "mm", "assumption", "inside bend radius 1 x t, as the trays (the sheet metal rule's)"),
     ("ledge_out", "28 mm", "mm", "assumption", _LG + ": the leg from the rail's room face, under the tray's 34 deep "
                                                     "bottom return; its tip 10 short of the lining's room face, out of sight"),
@@ -416,13 +424,18 @@ LEDGE_PARAMS = [
      "edge 8.2 from the bend"),
     ("ledge_rivet_pitch", "(ledge_len - 2 * ledge_rivet_e) / (ledge_rivet_n - 1)", "mm", "calculation",
      "even, so the pattern is symmetric and the turned copy (RH) matches: one part"),
-    ("rivet_d", "4 mm", "mm", "source", "Joints' pick: blind rivet ISO 15979, open end, steel/steel, zinc plated, "
-                                         "Ø4.0 x 6, grip 1.0 to 3.0 (the stack 1.0 + 1.2 = 2.2); tensile 2200 N, "
-                                         "shear 1700 N (Keller & Kalmbach 580000130040060)"),
-    ("rivet_head_d", "8 mm", "mm", "source", "Joints' pick: the dome head Ø8"),
-    ("rivet_head_t", "1 mm", "mm", "source", "Joints' pick: the dome head 1.0 high"),
-    ("rivet_len", "6 mm", "mm", "source", "Joints' pick: the body 6 long as supplied (its envelope; set, it is "
-                                           "shorter and bulged inside the tube)"),
+    ("rivet_d", "4 mm", "mm", "confirmed",
+     "D-166 and the Lead's ruling of 2026-11-01: a closed-end countersunk blind rivet Ø4 (838012), its head flush in "
+     "the upright; the grip 1.5 + 1.2 = 2.7; Joints names the part"),
+    ("rivet_head_d", "7 mm", "mm", "assumption", "the countersunk head Ø7, the smallest the Lead asked for (best for "
+                                                  "the land); Joints' sheet confirms it"),
+    ("rivet_csk_angle", "120 deg", "deg", "assumption", "the head's included angle, blind rivets' usual 120 (Joints' "
+                                                         "sheet confirms it)"),
+    ("rivet_head_t", "(rivet_head_d - rivet_d) / 2 / tan(rivet_csk_angle / 2)", "mm", "calculation",
+     "the head's depth: 0.87 for Ø7 at 120, leaving 0.63 of land in the 1.5 upright"),
+    ("ledge_csk_d", "rivet_head_d + 0.2 mm", "mm", "assumption",
+     "the upright's countersink Ø, 0.2 over the head, so the head sits just under flush, never proud"),
+    ("rivet_len", "8 mm", "mm", "assumption", "its overall length for the 2.7 grip (envelope; Joints' sheet sets it)"),
 ]
 if ROW == 1:
     WALL_PARAMS = WALL_PARAMS + LEDGE_PARAMS
@@ -720,10 +733,11 @@ def sketch_axis_of(sk, model_axis):
     return "x" if abs(e.x - o.x) > abs(e.y - o.y) else "y"
 
 
-def hole(design, comp, body, axis, plane_expr, into, pos, dia, depth, label):
+def hole(design, comp, body, axis, plane_expr, into, pos, dia, depth, label, csk=None):
     """A simple hole feature on a plane normal to `axis` at `plane_expr`, drilled `into` (+1 or -1 along
     the axis) for `depth`. pos: {model axis: coordinate expression} for the two in-plane axes. The centre
-    point is dimensioned from the sketch origin by those expressions, so the sketch is fully constrained."""
+    point is dimensioned from the sketch origin by those expressions, so the sketch is fully constrained.
+    csk: (diameter, included angle) expressions for a countersink at the hole's start, on the plane."""
     pl = plane_at(design, comp, axis, plane_expr, label)
     sk = comp.sketches.add(pl)
     sk.name = "HOLE CENTRE - %s" % label
@@ -745,7 +759,8 @@ def hole(design, comp, body, axis, plane_expr, into, pos, dia, depth, label):
                                                      tp).parameter.expression = "abs(%s)" % e
     if not sk.isFullyConstrained:
         raise RuntimeError("sketch not fully constrained: " + sk.name)
-    hin = comp.features.holeFeatures.createSimpleInput(vi(dia))
+    hf = comp.features.holeFeatures
+    hin = hf.createCountersinkInput(vi(dia), vi(csk[0]), vi(csk[1])) if csk else hf.createSimpleInput(vi(dia))
     hin.setPositionBySketchPoint(pt)
     hin.setDistanceExtent(vi(depth))
     n = pl.geometry.normal
@@ -830,7 +845,7 @@ def hw_site(label, axis, face, into, pos, pat=None, washer=True, spigot=False, m
                      "washer": washer, "spigot": spigot, "member": member, "kind": kind})
 
 
-def cyl(design, comp, label, axis, plane_expr, out, pos, od, length, bore=None):
+def cyl(design, comp, label, axis, plane_expr, out, pos, od, length, bore=None, taper=None):
     """New body: a cylinder (or a tube, with `bore`) on a plane normal to `axis` at `plane_expr`, extruded `out`
     (+1 or -1 along the axis) by `length`. The circle's centre is dimensioned from the sketch origin by the `pos`
     expressions and its diameters by `od` and `bore`, so the sketch is fully constrained."""
@@ -868,7 +883,10 @@ def cyl(design, comp, label, axis, plane_expr, out, pos, od, length, bore=None):
         profs = [sk.profiles.item(i) for i in range(sk.profiles.count)]
         prof = max(profs, key=lambda q: q.profileLoops.count) if bore else profs[0]
         ein = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-        ein.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(length)), dirn)
+        if taper:                        # a cone: the side faces lean in (negative) or out by the taper
+            ein.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(length)), dirn, vi(taper))
+        else:
+            ein.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(length)), dirn)
         f = comp.features.extrudeFeatures.add(ein)
         b = bbox(f.bodies.item(0))
         if abs((b[k] if out > 0 else b[k + 3]) - v) < 0.01:
@@ -1728,6 +1746,18 @@ def joint_features(design, members, out):
     b = hole(design, fc, fc.bRepBodies.item(0), "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d",
              t, "FRONT STILE KEY ACCESS 1")
     pattern_feat(fc, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
+    if ROW == 1:
+        # D-169: the decor block's two locating pins in Z slots in the front wall, on the bolt line, 100 from each end
+        # of the seam edge (Joints: Z 212.26 and 1155.00 on L1, 120 clear of the nearest bolts); made after welding
+        # (J-FRAME-01), as the bottom rail's spigot slot: a box through the wall and a hole at each end
+        sh = "(pin_slot_l - pin_slot_w) / 2"
+        for k, zc in (("LOWER", "(%s) + spigot_edge" % Z0), ("UPPER", "(%s) - spigot_edge" % Z1)):
+            box(design, fc, "FRONT STILE PIN SLOT %s" % k, ("(%s) - pin_slot_w / 2" % xc, "(%s) + pin_slot_w / 2" % xc),
+                (Y_FRONT, "(%s) + %s" % (Y_FRONT, t)), ("(%s) - %s" % (zc, sh), "(%s) + %s" % (zc, sh)), "cut",
+                fc.bRepBodies.item(0))
+            for i, sgn in enumerate(("-", "+")):
+                hole(design, fc, fc.bRepBodies.item(0), "y", Y_FRONT, +1, {"x": xc, "z": "(%s) %s %s" % (zc, sgn, sh)},
+                     "pin_slot_w", t, "FRONT STILE PIN SLOT %s END %d" % (k, i + 1))
     # 40 x 40 back stile, nut side of J-WALL-02 (back corner): rivnut in the room-side face (FR-01, FR-06)
     r = hole(design, kc, back, "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
              "rivnut_d", t, "BACK STILE CORNER RIVNUT 1")
@@ -1804,11 +1834,13 @@ def hw_part(design, root, key):
         c, b = import_joints_part(design, root, key)
         ring = {"stopw": "stopw_od", "spigot": "spigot_pin_d"}[key]
     elif key == "rivet":
-        # the ledge's blind rivet as its set envelope (HOLD until Joints picks it): the head from Z 0 up, the body
-        # down through the ledge and the rail's wall (Z 0 = the underside of the head, on the ledge)
+        # the ledge's closed-end countersunk blind rivet (D-166) as its envelope: Z 0 the head's top, flush with
+        # the upright's room face; the head a cone down into the upright's countersink, the body on through the
+        # rail's wall
         c = new_comp(root, key)
         o = {"x": "0 mm", "y": "0 mm"}
-        head = cyl(design, c, "RIVET HEAD", "z", "0 mm", +1, o, "rivet_head_d", "rivet_head_t")
+        head = cyl(design, c, "RIVET HEAD", "z", "0 mm", -1, o, "rivet_head_d", "rivet_head_t",
+                   taper="-(rivet_csk_angle / 2)")
         shank = cyl(design, c, "RIVET BODY", "z", "0 mm", -1, o, "rivet_d", "rivet_len")
         b = join_bodies(c, head, [shank], "RIVET")
         b.name, ring = "BLIND RIVET", "rivet_head_d"
@@ -1846,7 +1878,7 @@ def circle_edge(body, dia_mm, centre=None, axis=None):
 
 
 OUTWARD = {"stopw": "stopw_t", "rivnut": "rivnut_head_t", "spigot": "spigot_proud - rivnut_head_t",
-           "rivet": "rivet_head_t"}
+           "rivet": "0 mm"}                  # a countersunk head: nothing stands out past its Z 0
 
 
 def place_one(design, root, key, site, offset_expr, member_body_proxy, hole_d):
@@ -2134,7 +2166,7 @@ def build_tray(design, root, tray, yc, zc):
 
 def build_ledge(design, root, out):
     """The cassette ledge (the Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge, not on clip
-    shear): a 1.0 galvanized steel angle in sheet metal, its upright on the bottom rail's room face (riveted through
+    shear): a galvanized steel angle (ledge_t) in sheet metal, its upright on the bottom rail's room face (riveted through
     the rail's LEDGE RIVET holes, after welding), its leg ledge_pad_t under the frame's bottom and reaching ledge_out
     toward the room, under the tray's bottom return; the pad on the leg fills the 2.26 to the cassette, so the lining
     doesn't move. One part for L1 and R1 (ledge_front_dy, a symmetric rivet pattern). The bend and the leg's side are
@@ -2144,9 +2176,9 @@ def build_ledge(design, root, out):
         raise RuntimeError("the cassette ledge's %s has no number yet (Control posts it in WALL's group): only a "
                            "dry run builds it" % ", ".join(unnumbered))
     ledge = new_comp(root, "ledge", sheet_metal=True)
-    rule = design.designSheetMetalRules.itemByName("GALV STEEL 1.0 - CASSETTE LEDGE")
+    rule = design.designSheetMetalRules.itemByName("GALV STEEL - CASSETTE LEDGE")
     if rule is None:
-        rule = design.designSheetMetalRules.addByCopy(ledge.activeSheetMetalRule, "GALV STEEL 1.0 - CASSETTE LEDGE")
+        rule = design.designSheetMetalRules.addByCopy(ledge.activeSheetMetalRule, "GALV STEEL - CASSETTE LEDGE")
     rule.thickness.expression = "%.4f mm" % ev(design, "ledge_t")   # a rule takes values only (Fusion 2706)
     rule.bendRadius.expression = "Thickness"                         # = ledge_r (1 x t)
     rule.kFactor = 0.44
@@ -2210,9 +2242,10 @@ def build_ledge(design, root, out):
             raise RuntimeError("ledge: no bend position or side keeps the leg's outer faces on the outline")
         leg.name = "FLANGE - LEDGE LEG UNDER THE CASSETTE"
         body = ledge.bRepBodies.item(0)
-        body.name = "LEDGE - STEEL 1.0 ANGLE UNDER THE CASSETTE"
+        body.name = "LEDGE - STEEL ANGLE UNDER THE CASSETTE"
         pl = {"y": "%s + ledge_rivet_e" % LEDGE_Y0, "z": "(%s) + ledge_rivet_z" % Z0}
-        h = hole(design, ledge, body, "x", X_FRAME_IN, -S, pl, "ledge_rivet_d", "ledge_t", "LEDGE RIVET HOLE 1")
+        h = hole(design, ledge, body, "x", sx("pod_w / 2 - outer_t - ledge_t"), S, pl, "ledge_rivet_d", "ledge_t",
+                 "LEDGE RIVET HOLE 1", csk=("ledge_csk_d", "rivet_csk_angle"))
         pattern_feat(ledge, [h], "y", "ledge_rivet_n", "ledge_rivet_pitch", "LEDGE RIVET HOLES")
         body = ledge.bRepBodies.item(0)
         big = max((fc for fc in body.faces if fc.geometry.objectType == adsk.core.Plane.classType()
@@ -2222,7 +2255,7 @@ def build_ledge(design, root, out):
     finally:
         design.activateRootComponent()
     body = ledge.bRepBodies.item(0)
-    set_material(design, [body], "ledge", "GALVANIZED STEEL 1.0")
+    set_material(design, [body], "ledge", "GALVANIZED STEEL SHEET")
     out[body.name] = body
     # the pad on the leg's flat, from 0.5 past the bend to ledge_pad_w, the cassette's bottom on its top (Z0)
     pad = new_comp(root, "pad")

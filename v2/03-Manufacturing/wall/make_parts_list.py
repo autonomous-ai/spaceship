@@ -591,9 +591,12 @@ def ledge_rows(rep, prm):
                                                                                           lg["part_number"]),
                 kind="MP", material="galvanized steel sheet %g, DX51D+Z (EN 10346), Z100" % prm.get("ledge_t", 1.0),
                 finish="pre-galvanized sheet, Z100; cut edges as cut (assumption)",
-                process="laser cut from its DXF, folded 90 degrees on a press brake (inside radius 1 x t); riveted to "
-                        "the bottom rail's room face with %d blind rivets after the frame's welding and touch-up "
-                        "(J-FRAME-01); its pad bonded on the leg" % int(round(prm.get("ledge_rivet_n", 6))),
+                process="laser cut from its DXF; its %d rivet holes countersunk on the room face (machined, Ø%g x %g "
+                        "deg); folded 90 degrees on a press brake (inside radius 1 x t); riveted to the bottom rail's "
+                        "room face through the rail's plain holes with closed-end countersunk blind rivets, heads flush "
+                        "(D-166), after the frame's welding and touch-up (J-FRAME-01); its pad bonded on the leg" % (
+                            int(round(prm.get("ledge_rivet_n", 6))), prm.get("ledge_csk_d", 7.2),
+                            round(prm.get("rivet_csk_angle", 2.0944) * 180 / 3.14159265, 1)),
                 qty=1, unit="pc", size_mm="%g x %g x %g" % tuple(dims[::-1]),
                 tolerance="length ±0.5, fold 90° ±1°, rivet hole positions ±0.2 from the ends (assumption)",
                 mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"], 3),
@@ -623,8 +626,8 @@ def ledge_rows(rep, prm):
         m = r["bodies"][0]["mass_kg"]
         rows.append(row(level=1, part_number=r["part_number"], name=en_name(r),
                         name_vi=vi_name(r["description"], r["part_number"]), kind="PI",
-                        material="steel, zinc plated (HOLD: Joints picks the rivet)", finish="zinc plated",
-                        maker="HOLD: Joints picks it", qty=n, unit="pc", mass_each_kg=round(m, 5),
+                        material="closed-end countersunk blind rivet, steel, zinc plated (D-166; Joints' register row)",
+                        finish="zinc plated", maker="Joints' register row", qty=n, unit="pc", mass_each_kg=round(m, 5),
                         mass_total_kg=round(m * n, 4),
                         mass_status="calculation: CAD envelope (HOLD)", status="DRAFT", source="CAD; " + LEDGE_RULING,
                         note="hold the ledge to the bottom rail's room face, set after the frame's welding and "

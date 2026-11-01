@@ -89,8 +89,11 @@ def resolve(ns, override=None):
 
 
 def evaluate(expr, vals):
+    """A parameter expression as Fusion evaluates it: lengths in mm, angles ("deg") in radians, tan() on them."""
     py = re.sub(r"(\d)\s*mm\b", r"\1", expr)
-    return eval(py, {"__builtins__": {}}, dict(vals, ceil=math.ceil, floor=math.floor, abs=abs))
+    py = re.sub(r"(\d+(?:\.\d+)?)\s*deg\b", r"(\1 * pi / 180)", py)
+    return eval(py, {"__builtins__": {}}, dict(vals, ceil=math.ceil, floor=math.floor, abs=abs, tan=math.tan,
+                                               pi=math.pi))
 
 
 # joints register V2-ENG-JNT-01 table 2.1 (main, PR #47): numbers and names of the hardware WALL models
@@ -565,11 +568,14 @@ class CassetteLedgeTest(unittest.TestCase):
         first = v["ledge_rivet_e"]
         last = first + (v["ledge_rivet_n"] - 1) * v["ledge_rivet_pitch"]
         self.assertAlmostEqual(v["ledge_len"] - last, first, places=6)
-        # centre to the upright's top edge at least 2 x the rivet (edge distance), the hole clear of the bend
+        # centre to the upright's top edge at least 2 x the rivet (edge distance); the countersink's edge at least 2t
+        # clear of the bend and of the top edge; the head's depth leaves land in the upright (the Lead's 1.5 ruling)
         top = v["ledge_pad_t"] + v["ledge_t"] + v["ledge_up"]            # the upright's top above the leg's bottom
         centre = v["ledge_pad_t"] + v["ledge_t"] + v["ledge_rivet_z"]
         self.assertGreaterEqual(top - centre, 2 * v["rivet_d"])
-        self.assertGreaterEqual(centre - v["ledge_rivet_d"] / 2 - (v["ledge_t"] + v["ledge_r"]), 2 * v["ledge_t"])
+        self.assertGreaterEqual(centre - v["ledge_csk_d"] / 2 - (v["ledge_t"] + v["ledge_r"]), 2 * v["ledge_t"])
+        self.assertGreaterEqual(top - centre - v["ledge_csk_d"] / 2, 2 * v["ledge_t"])
+        self.assertGreaterEqual(v["ledge_t"] - v["rivet_head_t"], v["ledge_t"] / 3)
 
     def test_the_leg_sits_the_squeezed_pad_under_the_frame_and_lower_panels_only(self):
         """Joints' pad (PORON 4701-40, 320 grade, 2.36 standard) squeezed about 2% to 2.31 under the cassettes, so
