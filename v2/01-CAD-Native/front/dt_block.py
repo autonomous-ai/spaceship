@@ -269,7 +269,7 @@ def frame_members():
                         ("C02", "CHAMFER CROSS TUBE MIDDLE", "(%s - fr_w / 2)" % CATCH_X),
                         ("C03", "CHAMFER CROSS TUBE RIGHT", "(%s - 2 * fr_w)" % x_ch1)):
         add(key, nm, ("y", "z"), ch_pts, "x", x0, "%s + fr_w" % x0,
-            ends="front end square to the chamfer tube, back end to the back ring's top tube (square within 0.1 deg)")
+            ends="front end square to the chamfer tube, back end flat on the back ring's top tube's front face (to within 0.1 deg)")
     return M
 
 
