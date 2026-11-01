@@ -118,8 +118,8 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["access_d"], 19)              # FR-03: passes the 18 mm head washer
         self.assertEqual(v["bolt_line_y"], 824)          # R-J15: back panel tube centre
         self.assertEqual(v["bolt_d"], 7)                 # PM ruling on F-009
-        self.assertEqual(v["tube_t"], 1.2)               # D-85: perimeter members keep 1.2 (they carry the rivnuts)
-        self.assertEqual(v["stud_t"], 1.0)               # D-85: intermediate studs at 1.0
+        self.assertEqual(v["tube_t"], 1.0)               # D-131 start: steel perimeters and rivnut members at 1.0
+        self.assertEqual(v["stud_t"], 0.8)               # D-131 start: inner members at 0.8 (Joints' check)
         self.assertAlmostEqual(v["rivnut_head_t"] + v["stopw_t"], v["seam_gap"])   # the 2.26 metal stop (R-J5)
         # the spigot is Joints' 831001 STEP (F-189): its pin top stands where WALL's rule puts it, and its M6 stud
         # stays inside the rivnut below its origin on the rivnut head
@@ -241,7 +241,7 @@ class WallBackPanelTest(unittest.TestCase):
             self.assertAlmostEqual(v["len_bolt_pitch"], 253.0, places=2)   # register 2.9: 220, 473, 725.99, 978.99
             self.assertAlmostEqual(v["side_jnt_pitch"], 339.31, delta=0.01)  # register 2.9: 220, 559.31, 898.61
             self.assertAlmostEqual(v["cass_len"], 1164.87, places=2)    # side lining face to 1.13 short of X 0
-            self.assertEqual(v["stud_t"], 1.0)
+            self.assertEqual(v["stud_t"], 0.8)                         # D-131 start value, Joints' check
         self.assertAlmostEqual(resolve(load_back("B1"))["cass_h"], 1118.61, places=2)
         self.assertAlmostEqual(resolve(load_back("B3"))["cass_h"], 1116.87, places=2)   # floats 4 under the roof frame
 

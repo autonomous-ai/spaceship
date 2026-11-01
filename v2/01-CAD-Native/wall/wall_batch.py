@@ -119,6 +119,11 @@ def open_or_make(app, name, make, allow_existing=False):
 
 SKELETON = "100000_P04_POD-SKELETON_CAD"
 
+# D-131 (PM, 2026-11-01): the frames turn to welded, galvanized steel, L1 first as the sample panel; the other
+# panels follow after its review (Lead). Specs for a held position are skipped, so a queued run builds no panel
+# out of turn. "ALL" holds every position (while the builder is being changed).
+ON_HOLD = {"R1", "L2", "R2", "B1", "B2", "B3", "B4"}
+
 
 def preflight(app):
     """Before making any document: every skeleton name the builders link must be a favorite of the cloud
@@ -174,6 +179,9 @@ def run(_context):
             mode, builder, part, position = spec.split(":")
             if mode not in ("new", "rebuild", "front", "auto") or builder not in BUILDERS:
                 raise RuntimeError("bad spec %r" % spec)
+            if "ALL" in ON_HOLD or position in ON_HOLD:
+                print("BATCH|skip %s: on hold (D-131: L1 is the steel sample; the others wait for its review)" % spec)
+                continue
             if part == "fill":           # D-123: no fill part any more; its pieces are built in the panel
                 print("BATCH|skip %s: the panel's fill number is cancelled (D-123); the fill pieces are built "
                       "straight into the panel and cut from their DXFs (D-128)" % spec)

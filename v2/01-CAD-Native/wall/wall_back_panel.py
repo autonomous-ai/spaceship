@@ -12,7 +12,8 @@ Options (--arg KEY=VALUE): pos=B1|B2|B3|B4 (B1 lower left, B2 lower right, B3 up
 seen from outside facing the door, conventions.md section 4); part=panel|cassette|frame|skin|tray|felt (the
 fill pieces are built in the panel, D-123); rebuild=1; post=1; skeleton=NAME; stop_after=N (as
 wall_side_panel.py). D-117 and D-120: the frame is an assembly of member parts mitred at its 4 corners, the fill
-pieces numbered parts straight in the panel, the hardware copies of one part each.
+pieces numbered parts straight in the panel, the hardware copies of one part each. D-131: the frame is
+welded, galvanized steel box tube in the same sections (corners and T joints welded, no cleats).
 
 Geometry (skeleton P04, pod coordinates): the panel lies in the XZ plane; its thickness runs along Y, with
 the ACP's outer face at Y +850 and the room toward -Y. Rows follow the skeleton (B1/B2 from panel_z0, B3/B4
@@ -97,7 +98,7 @@ WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
      "intermediate stiles so that no stile pitch exceeds stile_pitch_max"),
     ("stile_pitch", "(frm_len - tube_w) / (stile_n_mid + 1)", "mm", "calculation", "equal stile pitch, centre to centre"),
     ("stile_len", "frm_h - 2 * tube_w", "mm", "calculation",
-     "studs between the rails (square ends, T cleats); the perimeter stiles run the full height, mitred (D-117)"),
+     "studs between the rails (square ends, welded T joints, D-131); the perimeter stiles run the full height, mitred (D-117) and welded"),
     ("n_len_bolt", "n_base_bolt", "", "calculation",
      "the skeleton's n_base_bolt (4): also on the horizontal seam and the ceiling back edge (register 2.9; the "
      "skeleton's n_ceil_back_bolt 3 is an old assumption, flagged)"),
@@ -201,28 +202,11 @@ def back_corners():
             ("TOP CENTRE", "RAIL - TOP", "STILE - CENTRE", (xc, Z1), ("(%s) %s tube_w" % (xc, tc), zt))]
 
 
-def cleat_slots_back(design, comp, body, z_face, into, label):
-    """The T-joint cleat slots in a back rail's bay-side wall (the Joints Engineer's corner details, D-117): one
-    cleat_slot_w x cleat_slot_l slot with round ends at every stud end, on the stud's centre line, its length
-    across the 40 face (along Y, centred on the frame depth), through the tube wall; patterned with the studs."""
-    xc = "(%s) + stile_pitch + tube_w / 2" % X_LOW
-    half = "(cleat_slot_l - cleat_slot_w) / 2"
-    z_in = "(%s) %s tube_t" % (z_face, "+" if into > 0 else "-")
-    lo, hi = (z_face, z_in) if into > 0 else (z_in, z_face)
-    feats = [box(design, comp, "%s CLEAT SLOT" % label, ("(%s) - cleat_slot_w / 2" % xc, "(%s) + cleat_slot_w / 2" % xc),
-                 ("(%s) - %s" % (YC, half), "(%s) + %s" % (YC, half)), (lo, hi), "cut", body)]
-    for k, sg in enumerate(("-", "+")):
-        feats.append(hole(design, comp, comp.bRepBodies.item(0), "z", z_face, into,
-                          {"x": xc, "y": "(%s) %s %s" % (YC, sg, half)}, "cleat_slot_w", "tube_t",
-                          "%s CLEAT SLOT END %d" % (label, k + 1)))
-    pattern_feat(comp, feats, "x", "stile_n_mid", "stile_pitch", "%s CLEAT SLOTS" % label)
-
-
 def build_frame_back(design, frame, out, yf, zs):
-    """D-117 and D-120 for a back frame: each member its own component with its master BOM number (the frame keeps
-    its number and parents them, D-123). The 4 perimeter members run to the frame's outer corners, mitred there;
-    the studs fit square between the rails, one component placed by a pattern of copies; each rail has the T-joint
-    cleat slots at every stud end. The cleats (831003 to 831006) are placed when their models land. Returns
+    """D-120 and D-131 for a back frame: each member its own component with its master BOM number (the frame keeps
+    its number and parents them, D-123), welded in the factory: the 4 perimeter members run to the frame's outer
+    corners, mitred there (D-117's geometry) and welded; the studs fit square between the rails and are welded
+    there, one component placed by a pattern of copies; no cleat slots (D-131 cancels the cleats). Returns
     {member key: (component, body)}."""
     nums = member_numbers(ARGS["repo_root"], frame.partNumber)
     need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - OUTER", "STILE - CENTRE", "STILE - MID"]
@@ -259,8 +243,6 @@ def build_frame_back(design, frame, out, yf, zs):
     pin.setDirectionTwo(frame.zConstructionAxis, vi("1"), vi("1 mm"))     # see wall_side_panel.pattern_y
     pat = frame.features.rectangularPatternFeatures.add(pin)
     pat.name = "PATTERN - STUD COPIES"
-    cleat_slots_back(design, *members["RAIL - BOTTOM"], "(%s) + tube_w" % Z0, -1, "BOTTOM RAIL")
-    cleat_slots_back(design, *members["RAIL - TOP"], "(%s) - top_h" % Z1, +1, "TOP RAIL")
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
@@ -295,7 +277,7 @@ def build_panel(design, root):
     if PART == "panel":
         place_hardware(design, root, members, out)
     set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
-                 "ALUMINIUM TUBE 6063-T6 MILL")
+                 "STEEL BOX TUBE GALVANIZED")
     set_material(design, [b for k, b in out.items() if k.startswith("SKIN")], "skin", "ACP 3 MM EV3038")
     set_material(design, [b for k, b in out.items() if k.startswith("FILL")], "fill", "PET FILL 40 MM")
     return out

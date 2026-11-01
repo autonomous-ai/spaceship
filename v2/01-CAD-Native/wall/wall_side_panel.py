@@ -126,14 +126,15 @@ DOC_NAME = "%s_%s_%s_CAD" % (PARTS[ROOT_KEY][0], REV, re.sub(r"[^A-Z0-9]+", "-",
 WALL_PARAMS = [
     # outer panel
     ("tube_w", "20 mm", "mm", "confirmed",
-     "D-34, D-54: aluminium tube 20 x 40 x 1.2; the 20 mm face carries the skin, so the 40 mm runs through the "
-     "wall (outer_t = ACP 3 + frame 40). The joint register may turn it for the bond width (HOLD)"),
+     "D-34, D-54, kept by D-131 (the same outside sections in welded, galvanized steel box tube): 20 x 40; the 20 mm "
+     "face carries the skin, so the 40 mm runs through the wall (outer_t = ACP 3 + frame 40)"),
     ("tube_d", "outer_t - skin_t - bond_t", "mm", "calculation", "frame depth = outer panel 46 - skin 3 - bond 3 = 40 (D-34)"),
-    ("tube_t", "1.2 mm", "mm", "confirmed",
-     "D-34, D-54, D-85: perimeter members (rails, front and back stiles) keep the 1.2 mm wall; they carry the rivnuts "
-     "(grip check passed)"),
-    ("stud_t", "1.0 mm", "mm", "confirmed",
-     "D-85 (weight): intermediate studs at a 1.0 mm wall; they carry no rivnut, only the skin's bond line"),
+    ("tube_t", "1.0 mm", "mm", "assumption",
+     "D-131 start value for the steel perimeter members and every member that takes a rivnut (rails, front and back "
+     "stiles); the Joints Engineer's gauge check sets it"),
+    ("stud_t", "0.8 mm", "mm", "assumption",
+     "D-131 start value for the inner members (studs: no rivnut, only the skin's bond line), if the Joints "
+     "Engineer's gauge check allows it"),
     ("stile_pitch_max", "400 mm", "mm", "confirmed", "D-16, D-34: members 400 mm apart or less, to keep the ACP flat"),
     ("pnl_len", "wall_depth - seam_gap", "mm", "calculation",
      "D-49 depth 1495 less the 2.26 gap at the decor back plate (PM ruling on F-008): 1492.74"),
@@ -185,10 +186,6 @@ WALL_PARAMS = [
     ("side_jnt_pitch", "(pnl_h - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "equal pitch of the 3 bolts up the corner and decor joints"),
     ("pocket_w", "60 mm", "mm", "assumption", "register FR-10: fill left out 60 x 60 next to each bolt for the key"),
-    ("cleat_slot_w", "8 mm", "mm", "source", "the Joints Engineer's corner details for D-117 (2026-11-01): an 8 x 22 "
-                                             "slot in each rail's bay-side wall at every stud end, for the T-joint "
-                                             "plug cleat"),
-    ("cleat_slot_l", "22 mm", "mm", "source", "the same: 22 across the 40 face, centred on the stud's centre line"),
     ("corner_z0", "panel_z0" if ROW == 1 else "panel_z0 + back_ph + seam_gap", "mm", "calculation",
      "bottom of the back panel row this side panel meets at the corner (B1/B2 or B3/B4, skeleton P04)"),
     ("corner_bolt_pitch", "(back_ph - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
@@ -339,7 +336,7 @@ WALL_PARAMS = WALL_PARAMS + el_params(CODE, EL_KIND)
 
 # kg/m3, status, source; used for body materials (mass properties)
 DENSITY = {
-    "frame": (2700.0, "source", "6063-T6 mill finish (PM ruling 2026-10-31, hidden frame tubes): 2.70 g/cm3"),
+    "frame": (7850.0, "source", "D-131: galvanized steel box tube, 7.85 g/cm3 (the zinc coat's mass not counted)"),
     "skin": (3.5 / 0.003, "calculation", "HW-SEL A1: 3.5 kg/m2 for 3 mm Alcorest / 3 mm; real kg/m2 HOLD (H16)"),
     "fill": (24.0, "confirmed", "PM ruling 2026-10-31: 24 kg/m3 by default, the grade Pyrotek lists (the wall sample's "
                                 "T02 confirms it, else 32)"),
@@ -950,7 +947,8 @@ Z_SKIN1 = "(%s) - skin_setback" % Z1 if ROW == 1 else Z1   # the upper skins run
 Z_CASS1 = Z1 if ROW == 1 else "pod_h - outer_t - lin_gap"
 
 
-# ---------------------------------------------------------------- D-120: every part its own component (D-117)
+# ---------------------------------------------------------------- D-120: every part its own component (D-117 corner
+# geometry; D-131 welds the corners and T joints in steel)
 
 _ALLOC = []
 MEMBER_WORDS = {"RAIL - BOTTOM": "RAIL BOTTOM", "RAIL - TOP": "RAIL TOP", "STILE - FRONT": "STILE FRONT",
@@ -1099,7 +1097,8 @@ def poly_on_x(design, comp, x_expr, pts, label):
 
 
 def mitre(design, comp, body, tri, label, x_lo):
-    """One mitre (D-117): a triangle in the frame's plane, cut through the member's depth from x_lo."""
+    """One mitre (D-117's corner, welded under D-131): a triangle in the frame's plane, cut through the member's
+    depth from x_lo."""
     sk, pl = poly_on_x(design, comp, x_lo, tri, "MITRE " + label)
     depth = "tube_d + 2 mm" if pl.geometry.normal.x > 0 else "-(tube_d + 2 mm)"
     ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0),
@@ -1132,23 +1131,6 @@ def side_corners():
             ("TOP BACK", "RAIL - TOP", "STILE - BACK", (yb, Z1), ("(%s) - corner_w" % yb, "(%s) - top_h" % Z1))]
 
 
-def cleat_slots(design, comp, body, z_face, into, xc, label):
-    """The T-joint cleat slots in a rail's bay-side wall (the Joints Engineer's corner details, D-117): one
-    cleat_slot_w x cleat_slot_l slot with round ends at every stud end, on the stud's centre line, its length
-    across the 40 face (centred on the frame depth), through the tube wall; patterned with the studs."""
-    yc = "(%s) + stile_pitch + tube_w / 2" % Y_FRONT
-    half = "(cleat_slot_l - cleat_slot_w) / 2"
-    z_in = "(%s) %s tube_t" % (z_face, "+" if into > 0 else "-")
-    lo, hi = (z_face, z_in) if into > 0 else (z_in, z_face)
-    feats = [box(design, comp, "%s CLEAT SLOT" % label, ("(%s) - %s" % (xc, half), "(%s) + %s" % (xc, half)),
-                 ("(%s) - cleat_slot_w / 2" % yc, "(%s) + cleat_slot_w / 2" % yc), (lo, hi), "cut", body)]
-    for k, sg in enumerate(("-", "+")):
-        feats.append(hole(design, comp, comp.bRepBodies.item(0), "z", z_face, into,
-                          {"x": "(%s) %s %s" % (xc, sg, half), "y": yc}, "cleat_slot_w", "tube_t",
-                          "%s CLEAT SLOT END %d" % (label, k + 1)))
-    pattern_feat(comp, feats, "y", "stile_n_mid", "stile_pitch", "%s CLEAT SLOTS" % label)
-
-
 def build_panel(design, root):
     out = {}
     want = WANT[PART]
@@ -1171,18 +1153,18 @@ def build_panel(design, root):
     if PART == "panel":
         place_hardware(design, root, members, out)
     set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
-                 "ALUMINIUM TUBE 6063-T6 MILL")
+                 "STEEL BOX TUBE GALVANIZED")
     set_material(design, [b for k, b in out.items() if k.startswith("SKIN")], "skin", "ACP 3 MM EV3038")
     set_material(design, [b for k, b in out.items() if k.startswith("FILL")], "fill", "PET FILL 40 MM")
     return out
 
 
 def build_frame(design, frame, out, xf, yf, zs):
-    """D-117 and D-120: each member its own component with its master BOM number; the frame an assembly of
-    them (it keeps its number, D-123). The 4 perimeter members run to the frame's outer corners, mitred there;
-    the studs fit square between the rails, one component placed by a pattern of copies; each rail has the
-    T-joint cleat slots at every stud end. The cleats (831003 to 831006) are placed when their models land.
-    Returns {member key: (component, body)}."""
+    """D-120 and D-131: each member its own component with its master BOM number; the frame an assembly of
+    them (it keeps its number, D-123), welded in the factory: the 4 perimeter members run to the frame's outer
+    corners, mitred there (D-117's geometry) and welded; the studs fit square between the rails and are welded
+    there (T joints), one component placed by a pattern of copies. D-131 cancels D-117's cleats, so the rails have
+    no cleat slots. Returns {member key: (component, body)}."""
     nums = member_numbers(ARGS["repo_root"], frame.partNumber)
     need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - FRONT", "STILE - BACK", "STILE - MID"]
     if [k for k in need if k not in nums]:
@@ -1215,9 +1197,6 @@ def build_frame(design, frame, out, xf, yf, zs):
     pin.setDirectionTwo(frame.zConstructionAxis, vi("1"), vi("1 mm"))
     pat = frame.features.rectangularPatternFeatures.add(pin)
     pat.name = "PATTERN - STUD COPIES"
-    xc = sx("pod_w / 2 - skin_t - bond_t - tube_d / 2")
-    cleat_slots(design, *members["RAIL - BOTTOM"], "(%s) + tube_w" % Z0, -1, xc, "BOTTOM RAIL")
-    cleat_slots(design, *members["RAIL - TOP"], "(%s) - top_h" % Z1, +1, xc, "TOP RAIL")
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
