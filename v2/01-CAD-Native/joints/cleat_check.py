@@ -185,7 +185,7 @@ V_T = 300.0   # N, T joint shear to carry: 3 x the highest end reaction, about 0
               # soffit hanger (about 5.5 kg) and two cassette clips (about 3.3 kg), assumption on the masses
 GLUE_DENSITY = 1.19e-3 * 1000   # g/ml mixed, source (PDS)
 
-# --- counts per frame: the joint count on WALL's and CEILING's models (main; B1 to B4 on WALL's #152) --------
+# --- counts per frame: the joint count on WALL's and CEILING's models on main (B3, B4 mirror B1, B2) ---------
 FRAME_COUNTS = {
     "211101 L1": {"831003": 2, "831005": 2, "831006": 6},
     "211102 R1": {"831003": 2, "831005": 2, "831006": 6},
