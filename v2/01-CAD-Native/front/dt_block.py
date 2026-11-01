@@ -177,6 +177,7 @@ PARTS = {
 EXPECTED = []
 FRAME_PN = "351204"
 S20 = "20 x 20 x 1.5"
+S40 = "40 x 20 x 1.5"          # the back ring's top tube B03 (fr_wtop 40): the J-FRONT-03 rivnut tails go into it
 
 
 def frame_members():
@@ -192,7 +193,7 @@ def frame_members():
 
     def add(key, name, axes, pts, along, a, b, axis=(0, 1), ends=None, lengthwise=False):
         M.append({"key": key, "name": name, "axes": axes, "pts": pts, "along": along, "a": a, "b": b,
-                  "section": S20, "axis": axis, "lengthwise": lengthwise,
+                  "section": S40 if key == "B03" else S20, "axis": axis, "lengthwise": lengthwise,
                   "ends": ends or "mitred to its neighbours (angles on the frame drawing)"})
 
     back = FL.ring([(bot, "dt_skin_t", "fr_w"), (right, "0 mm", "fr_w"), (top, "dt_skin_t", "fr_wtop"),
@@ -474,21 +475,23 @@ def export_all(app):
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-49, D-79; PM rulings 2026-10-31; this build",
          "skin bonded to the welded tube frame 351204; goes on after the door hangs (packing plan)"),
         ("351201", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1, bonded to "
-         "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 1300 kg/m3)", "DRAFT",
+         "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
          "D-12, D-49; skeleton DT shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
          "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "made: welded frame, %d tubes (cut list %s)" % (
-            len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, finish: mill "
-         "finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
-         "v1 decor frame drawing (front and back frames); D-79",
-         "%.1f m of tube; the rail F02 carries the catch 368007 and the top stop 351203; DT to DR and DL, and DT to "
-         "the ceiling: joints HOLD (joints register)" % tube_m),
-        ("351202", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (CNC-routed ACP, bonded to the frame: keeps a "
-         "drawing with the bond area and surface prep, PM ruling 2026-11-01)",
-         "ACP 3 mm EV3038 Dark Yellow, PE core, finish EV3038 Dark Yellow face as supplied (D-12); " + gt, "cad",
-         "calculation (CAD)", "DRAFT", "this build; PM ruling 2026-11-01 (bonded, so drawn)",
-         "outline cut from DXF " + DXF_BACK_REL.split("/")[-1] + "; behind it the soffit (D-60); bonded to the "
-         "frame's back ring per the joints register's ACP bond spec (bond area and surface prep on its drawing)"),
+            len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 "
+         "(the back ring's top), finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes "
+         "shelled)", "DRAFT", "v1 decor frame drawing (front and back frames); D-79; joints register J-FRONT-03",
+         "%.1f m of tube; the rail F02 carries the catch 368007 and the top stop 351203; J-FRONT-03: the top back "
+         "tube B03 has 4 holes 14 for the back plate's rivnut tails at Z 2374, and the bottom back tube B01 the spigot "
+         "hole 8.5 and slot 8.5 x 14 at X 270 and 410, over DR's ledge" % tube_m),
+        ("351202", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
+         "aluminium EN AW-5754-H22 sheet 2.0 mm, finish mill finish (hidden, D-79); " + gt, "cad",
+         "calculation (CAD, 2700 kg/m3)", "DRAFT",
+         "joints register J-FRONT-03 (HOLD-10 met by 2 mm aluminium); PM ruling 2026-11-01",
+         "DXF " + DXF_BACK_REL.split("/")[-1] + "; 4 holes 9.53 +0.10/0 for the rivnuts 838003 with their stop "
+         "washers (counted in the joints register) on Z 2374 (critical: on the ceiling's bolt line); behind it the "
+         "soffit (D-60); blind-riveted to the frame (HOLD: rivet)"),
         ("351203", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, cut to length)",
          "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20)", "cad", "calculation (CAD)", "DRAFT",
          "selection C3 (frame gap 2 to 6)", "screwed up through DT's underside into the frame's rail F02"),
