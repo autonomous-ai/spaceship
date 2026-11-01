@@ -1,10 +1,10 @@
-"""Views, dimensions, datums, hole tables, projection symbol and raw PDF for drawing 711001, the power unit's
+"""Views, dimensions, datums, projection symbol and raw PDF for drawing 711001, the power unit's
 folded enclosure body (a folded part keeps its drawing, D-89), in one Fusion run.
 
     python3 tools/fusion/start_drawing.py 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD \\
         711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG --sheet A2
     python3 tools/fusion/run_script.py v2/02-Drawings/electrical/make_body_drawing.py --label "ELECTRICAL Engineer" \\
-        --doc 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG --save "views, dimensions, hole tables" --close
+        --doc 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG --save "views, dimensions, datums" --close
     python3 v2/02-Drawings/electrical/body_drawing_text.py --pdf \\
         v2/02-Drawings/electrical/.raw/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG.pdf \\
         v2/02-Drawings/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG.pdf
@@ -17,6 +17,13 @@ view is placed, and every view is measured against the size it should have: a vi
 the run before any dimension is added (nothing wrong gets drawn). Dimensions attach to view geometry
 (WALL's helpers, copied); the hole list goes into the PDF. Text can't go on a sheet through the API, so the data block, notes and hole list are written into
 the exported PDF by body_drawing_text.py, which also removes the account name (the repo is public).
+
+The shared drawing helpers (tools/fusion/fusion_drawing.py, PM 2026-11-01, after CEILING's first sample) make
+the views, the symbol and the dimensions: Fusion ignores the view style given at creation, so each view's style
+(visible edges only, no hidden lines, the iso too) is set again on the made view and checked; the symbol's
+outline is alone in its own sketch, its circles in another (one sketch printed a triangle); each dimension is
+placed once. Centre marks and centre lines go on the views' holes after the dimensions, so they can't change
+the edge lines the dimensions attach to; every view's style is checked again before the export.
 """
 
 import os
@@ -25,6 +32,7 @@ import sys
 import adsk.core
 import adsk.drawing
 import adsk.fusion
+from fusion_drawing import DimensionSet, base_view, first_angle_symbol   # given by run_script.py
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 VO = adsk.drawing.ViewOrientationTypes
@@ -151,28 +159,31 @@ def end_on(view: "adsk.drawing.View", side, near):
     return min((a, b), key=lambda p: (xy(p)[0] - near[0]) ** 2 + (xy(p)[1] - near[1]) ** 2)
 
 
+VISIBLE = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
+
+
 def add_view(sheet: "adsk.drawing.Sheet", orientation, centre, scale):
-    inp = sheet.views.createBaseViewInput()
-    vp = inp.viewParameters
-    vp.orientation = orientation
-    vp.scaleValue = scale
-    vp.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
-    vp.centerMarkOptions.isAppliedToHoles = True
-    vp.centerLineOptions.isAppliedToHoles = True
-    inp.placementPoint = dpt(*centre)
-    v = sheet.views.add(inp)
-    if v is None:
-        raise RuntimeError("Views.add returned None for %s" % orientation)
-    if abs(v.scaleValue - scale) > 1e-6:
-        v.scaleValue = scale            # the input's scale is ignored in this build (tools/fusion/README.md)
-    return v
+    """A base view at `centre` (sheet mm): the shared helper sets its style (visible edges only) and scale again
+    on the made view and checks both, since Fusion ignores the input's style."""
+    return base_view(sheet, orientation, scale, centre, VISIBLE)
 
 
-def dim(sheet: "adsk.drawing.Sheet", a: "adsk.drawing.DrawingPoint", b: "adsk.drawing.DrawingPoint", place):
-    d = sheet.drawingDimensions.addLinearDimension(a, b, dpt(*place), False)
-    if d is None:
-        raise RuntimeError("addLinearDimension returned None")
-    return d
+def centre_marks(view: "adsk.drawing.View", name):
+    """Centre marks and centre lines on the view's holes, set on the made view and read back."""
+    marks = view.getCenterMarkOptions()
+    marks.isAppliedToHoles = True
+    lines = view.getCenterLineOptions()
+    lines.isAppliedToHoles = True
+    if not view.setCenterMarkOptions(marks) or not view.setCenterLineOptions(lines):
+        raise RuntimeError("centre marks or lines not applied to the %s view" % name)
+    if not (view.getCenterMarkOptions().isAppliedToHoles and view.getCenterLineOptions().isAppliedToHoles):
+        raise RuntimeError("the %s view's holes have no centre marks or lines after setting them" % name)
+
+
+def dim(dims: "DimensionSet", a: "adsk.drawing.DrawingPoint", b: "adsk.drawing.DrawingPoint", place, label):
+    """Every size on this sheet is needed once: one the shared helper skips as a double is a mistake here."""
+    if dims.linear(a, b, dpt(*place), False, label) is None:
+        raise RuntimeError("the %s dimension doubles one already placed" % label)
 
 
 def datum(sheet: "adsk.drawing.Sheet", letter, line: "adsk.drawing.ViewCurve", place):
@@ -185,17 +196,6 @@ def datum(sheet: "adsk.drawing.Sheet", letter, line: "adsk.drawing.ViewCurve", p
     inp.placementPoint = dpt(*place)
     if syms.addDatumIdentifier(inp) is None:
         raise RuntimeError("datum %s not added" % letter)
-
-
-def projection_symbol(sheet: "adsk.drawing.Sheet", x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
-    """ISO first-angle symbol (as the Phase 0 proof drew it)."""
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
-    pts = [p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
-           p2(x0, y0 + d / 2), p2(x0, y0 - d / 2)]
-    sk.lines.add(pts)
-    cx = x0 + length + gap + big / 2
-    sk.circles.addByCenterRadius(p2(cx, y0), big / 2)
-    sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
 # ---------------------------------------------------------------- this drawing
@@ -240,16 +240,23 @@ def annotate(app: "adsk.core.Application"):
     # overall sizes, each in the gap beside its view (nothing crosses another view): width under the front
     # view (datum A), height beside the view from the right (outer side), depth beside the top view
     # each from the edge lines on the two opposite sides, so a corner relief can't move it
-    dim(sheet, end_on(f, "left", (fe[0], fe[1])), end_on(f, "right", (fe[2], fe[1])), ((fe[0] + fe[2]) / 2, fe[1] - 9.0))
-    dim(sheet, end_on(r, "bottom", (re_[0], re_[1])), end_on(r, "top", (re_[0], re_[3])), (re_[0] - 9.0, (re_[1] + re_[3]) / 2))
-    dim(sheet, end_on(t, "bottom", (te[2], te[1])), end_on(t, "top", (te[2], te[3])), (te[2] + 9.0, (te[1] + te[3]) / 2))
+    dims = DimensionSet(sheet)
+    dim(dims, end_on(f, "left", (fe[0], fe[1])), end_on(f, "right", (fe[2], fe[1])), ((fe[0] + fe[2]) / 2, fe[1] - 9.0), "width")
+    dim(dims, end_on(r, "bottom", (re_[0], re_[1])), end_on(r, "top", (re_[0], re_[3])), (re_[0] - 9.0, (re_[1] + re_[3]) / 2), "height")
+    dim(dims, end_on(t, "bottom", (te[2], te[1])), end_on(t, "top", (te[2], te[3])), (te[2] + 9.0, (te[1] + te[3]) / 2), "depth")
     print("dimensions: width (front view), height (view from the right), depth (top view)")
     datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 30.0, fe[1] - 17.0))
     datum(sheet, "B", edge_line(f, "left"), (fe[0] - 14.0, fe[1] + 30.0))
     datum(sheet, "C", edge_line(t, "top"), (te[2] - 20.0, te[3] + 8.0))
     # no Fusion hole tables: on this folded body the view corners are relieved, so a table's origin can't sit on
     # the datum corner; the hole list H01-H08 from the datums goes into the PDF (body_drawing_text.py)
-    projection_symbol(sheet, *SYMBOL_AT)
+    for name, _o, _w in VIEWS:              # after the dimensions: centre lines can't move an edge line now
+        centre_marks(views[name], name)
+    first_angle_symbol(sheet, *SYMBOL_AT)
+    hidden = [n for n, v in views.items() if v.style != VISIBLE]
+    if hidden:
+        raise RuntimeError("views showing hidden lines before the export: %s" % ", ".join(hidden))
+    print("views: visible edges only (%s); centre marks on the holes of the 5 orthographic views" % ", ".join(views))
     raw = os.path.join(ARGS["repo_root"], HERE, ".raw", DWG + ".pdf")
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)

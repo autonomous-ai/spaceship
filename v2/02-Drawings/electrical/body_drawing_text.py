@@ -12,6 +12,10 @@ block above the title block, where the drawing check and a reader can find it. -
 "Created by" name with tools/fusion/pdf_clear_field.py (the repo is public), then writes the block, then
 re-reads the PDF and fails if a required item (units, material, finish, tolerance, hole tags) is missing.
 
+Letter sizes are capital heights (ISO 3098), as the reviewers measure them: 2.5 mm for every line, 3.5 mm for
+the headings. The font size is the capital height / 0.716, Arial's capital H measured by rendering it
+(716 px high at 1000 pt). A line too long for the block wraps at a space, indented under its first line.
+
 --zs: the side the body opens to in its design, +1 or -1 (the build prints "returns toward +Z/-Z"). The
 FRONT view looks at the open side with +Y up, so with -1 the FRONT view's left is the design's X = w; the
 hole list gives every position from the datums on the drawing (A bottom face, B the FRONT view's left
@@ -32,6 +36,9 @@ PN = "711001"
 SHEET_H = 420.0                 # A2 landscape, mm
 BLOCK = (410.0, 62.0, 584.0, 240.0)   # x0, y0, x1, y1 in sheet mm (origin bottom left): above the title block
 PT = 72.0 / 25.4
+CAP = 0.716                     # Arial (Unicode) capital H height / font size: rendered at 1000 pt, 716 px (confirmed)
+LEAD = 1.9                      # baseline to baseline, in capital heights
+BODY_H, HEAD_H = 2.5, 3.5       # capital heights, mm: notes and headings (ISO 3098, the reviewers' minimum)
 
 
 def _parts_cad():
@@ -89,27 +96,28 @@ def lines(zs=1, date="2026-11-01"):
     """[(text, size_mm, bold)] for the block: data, notes, hole list."""
     p = params()
     v = p["v"]
-    out = [("%s %s - DRAWING DATA" % (p["pn"], p["name"]), 3.0, True),
-           ("Tên (VN): %s" % p["vn"], 2.5, False),
-           ("Rev / status: %s / DRAFT, not for production" % p["rev"], 2.5, False),
-           ("UNITS: mm. Scale 1:2 (iso 1:5) on A2. ISO first-angle projection (ISO 5456-2), symbol below.", 2.5, False),
-           ("MATERIAL: aluminium 5052-H32, %.1f mm sheet (status: %s)." % (v["t"], p["status"]["t"].lower()), 2.5, False),
-           ("FINISH: mill finish, hidden inside the pod (D-79). Deburr every edge.", 2.5, False),
-           ("Made by: v2/02-Drawings/electrical/make_body_drawing.py (Fusion) and body_drawing_text.py; %s." % date, 2.5, False),
+    out = [("DRAWING DATA", HEAD_H, True),
+           ("Part: %s %s" % (p["pn"], p["name"]), BODY_H, False),
+           ("Tên (VN): %s" % p["vn"], BODY_H, False),
+           ("Rev / status: %s / DRAFT, not for production" % p["rev"], BODY_H, False),
+           ("UNITS: mm. Scale 1:2 (iso 1:5) on A2. ISO first-angle projection (ISO 5456-2), symbol below.", BODY_H, False),
+           ("MATERIAL: aluminium 5052-H32, %.1f mm sheet (status: %s)." % (v["t"], p["status"]["t"].lower()), BODY_H, False),
+           ("FINISH: mill finish, hidden inside the pod (D-79). Deburr every edge.", BODY_H, False),
+           ("Made by: v2/02-Drawings/electrical/make_body_drawing.py (Fusion) and body_drawing_text.py; %s." % date, BODY_H, False),
            ("", 1.5, False),
-           ("GENERAL NOTES", 3.0, True),
-           ("1. GENERAL TOLERANCE: ISO 2768-m. Hole positions ±0.2; hole diameters +0.1/0.", 2.5, False),
+           ("GENERAL NOTES", HEAD_H, True),
+           ("1. GENERAL TOLERANCE: ISO 2768-m. Hole positions ±0.2; hole diameters +0.1/0.", BODY_H, False),
            ("2. Outside size %.0f x %.0f x %.0f (datums A bottom, B left in the FRONT view, C back face); lips %.0f inward."
-            % (v["w"], v["h"], v["d"], v["lip"]), 2.5, False),
+            % (v["w"], v["h"], v["d"], v["lip"]), BODY_H, False),
            ("3. Inside bend radius %.1f (= thickness), K-factor 0.44, square bend reliefs. Cut from the flat pattern"
-            % v["t"], 2.5, False),
-           ("   711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DXF.dxf (same revision).", 2.5, False),
-           ("4. Fit the Heyco 2836 bushings in H01-H03 and the M4 clinch nuts in H05-H08 after folding.", 2.5, False),
-           ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data).", 2.5, False),
+            % v["t"], BODY_H, False),
+           ("   711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DXF.dxf (same revision).", BODY_H, False),
+           ("4. Fit the Heyco 2836 bushings in H01-H03 and the M4 clinch nuts in H05-H08 after folding.", BODY_H, False),
+           ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data).", BODY_H, False),
            ("", 1.5, False),
-           ("HOLES (from the build's parameters; Fusion's hole tables give the same in each view)", 3.0, True)]
+           ("HOLES (positions from the datums)", HEAD_H, True)]
     for tag, where, pos, dia, note in holes(p, zs):
-        out.append(("%s  %s: %s, Ø%.1f THRU, %s" % (tag, where, pos, dia, note), 2.5, False))
+        out.append(("%s  %s: %s, Ø%.1f THRU, %s" % (tag, where, pos, dia, note), BODY_H, False))
     return out
 
 
@@ -131,25 +139,52 @@ def required_missing(text):
     return miss
 
 
+def font_size(h):
+    """PDF font size (mm) for a capital height h (mm)."""
+    return h / CAP
+
+
+def wrap(rows, width, font):
+    """Rows whose text fits `width` (mm): a longer line breaks at spaces, the rest indented 3 spaces."""
+    out = []
+    for text, h, bold in rows:
+        fit = lambda t: font.text_length(t, fontsize=font_size(h)) <= width      # noqa: E731
+        if not text or fit(text):
+            out.append((text, h, bold))
+            continue
+        lead = "   " if not text.startswith(" ") else text[:len(text) - len(text.lstrip(" "))] + "   "
+        words, line = text.split(" "), ""
+        for wd in words:
+            trial = (line + " " + wd) if line else wd
+            if line and not fit(trial):
+                out.append((line, h, bold))
+                trial = lead + wd
+            line = trial
+        if not fit(line):
+            raise RuntimeError("a word is wider than the block: %r" % line[:60])
+        out.append((line, h, bold))
+    return out
+
+
 def write_block(page, rows, block=BLOCK):
-    """Rows of text, top down, inside the block (sheet mm, origin bottom left) on a PDF page of an A2 sheet."""
+    """Rows of text, top down, inside the block (sheet mm, origin bottom left) on a PDF page of an A2 sheet.
+    Sizes are capital heights; long lines wrap. Returns the rows as written (after wrapping)."""
     import fitz
     page.insert_font(fontname="AU", fontfile=FONT)
     x0, y0, x1, y1 = block
     font = fitz.Font(fontfile=FONT)
-    for text, size, bold in rows:                     # every line must fit the block's width
-        wmm = font.text_length(text, fontsize=size * PT * (1.1 if bold else 1.0)) / PT
-        if wmm > x1 - x0 - 4.0:
-            raise RuntimeError("a line is %.0f mm wide, the block %.0f: %r" % (wmm, x1 - x0, text[:60]))
+    rows = wrap(rows, x1 - x0 - 4.0, font)
     scale = page.rect.height / (SHEET_H * PT)           # the page may not be exactly A2 in points
     y = y1 - 4.0
-    for text, size, bold in rows:
-        if y - size < y0:
+    for text, h, _bold in rows:
+        y -= h                                          # the line's capital top to its baseline
+        if y < y0:
             raise RuntimeError("the text block overflows its space; shorten the notes")
         if text:
             page.insert_text(fitz.Point(x0 * PT * scale, (SHEET_H - y) * PT * scale), text, fontname="AU",
-                             fontsize=size * PT * scale * (1.1 if bold else 1.0))
-        y -= size * 1.45
+                             fontsize=font_size(h) * PT * scale)
+        y -= h * (LEAD - 1.0)
+    return rows
 
 
 def finish_pdf(raw, out, zs=1):
