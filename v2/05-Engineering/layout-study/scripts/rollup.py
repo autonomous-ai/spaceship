@@ -787,13 +787,15 @@ def lines(**adopt):
         L.append(("INTERIOR", "Work-wall ledge, 1000 mm, with the screen rail", 1, LEDGE_KG_ALLOW + it["rail"], "assumption",
                   "the first allowance: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70), and the screen rail"))
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
+    nt, kt = JOINTS.get("831010", (0, 0.0))     # DT's two 11 mm spigots on DR's ledge (J-FRONT-03, D-157)
     rc = register_counts()
     L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats", 1,
-              fixings_kg() + ns * ks + nw * kw + CLEATS_KG, "calculation (part CAD); cleats assumption",
+              fixings_kg() + ns * ks + nt * kt + nw * kw + CLEATS_KG, "calculation (part CAD); cleats assumption",
               f"part CAD on main: the joints register's counts (S48: {rc['838001']:.0f} M6 x 16 and {rc['838002']:.0f} M6 x 25 "
               f"bolts, {rc['838003']:.0f} rivnuts, {rc['838004']:.0f} washers, {rc['838005']:.0f} retainers, {rc['848001']:g} m of "
               f"joint gasket, {rc['848004']:g} m of closing-seam seal) at the parts lists' masses ({fixings_kg():.2f} kg, D-116); "
-              f"{ns} spigots and {nw} stop washers from the joints' made hardware list ({ns * ks + nw * kw:.2f} kg, S45); and a "
+              f"{ns + nt} spigots ({ns} of 831001, {nt} of 831010) and {nw} stop washers from the joints' made hardware "
+              f"list ({ns * ks + nt * kt + nw * kw:.2f} kg, S45); and a "
               f"{CLEATS_KG:.1f} kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and "
               f"6.7 g T plugs (D-117, S49), until their models land"))
     pt = base["E-VOICE-RESERVE"]
@@ -893,8 +895,8 @@ def base_swaps():
             ("Glide load blocks (D-86's 0.4 kg), now BASE's %g blocks" % sum(bc["blocks"].values()), 1, LOAD_BLOCKS_KG,
              sum(bc["blocks"].values()) * bc["doubler"], "BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6"),
             ("Spigots and stop washers (not in this study's fixings kit)", 1, 0.0,
-             JOINTS["831001"][0] * JOINTS["831001"][1] + JOINTS["831002"][0] * JOINTS["831002"][1],
-             "joints 831001 and 831002 P01, PR #139")]
+             sum(q * kg for q, kg in (JOINTS[pn] for pn in ("831001", "831010", "831002") if pn in JOINTS)),
+             "joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157)")]
 
 
 def pod_kg(rows=None):
