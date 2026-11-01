@@ -55,7 +55,7 @@ PARTS = {
             "L + 8 IS ITS OVERALL LENGTH; THE TABLE GIVES BOTH FOR EACH PART.",
             {"indent": 5.0,
              "table": [["PART", "L", "PROUD", "OVERALL", "POD", "WHERE"],
-                       ["831001", "7.24", "8.00", "15.24", "26", "BAND, SEAMS, CEILING, DL, DR"],
+                       ["831001", "7.24", "8.00", "15.24", "24", "BAND, SEAMS, CEILING, DL, DR"],
                        ["831010", "10.24", "11.00", "18.24", "2", "DR'S LEDGE, UNDER DT"]]},
             "4. STUD M6x1-6g, 8 LONG (SHOWN AT THE 6g MEAN MAJOR Ø5.88). HEX SOCKET 4 AF x 3.5 DEEP.",
             "5. FITTED AT THE FACTORY INTO RIVNUT 838003 WITH THREADLOCKER; THE SHOULDER SITS ON THE RIVNUT'S "

@@ -12,7 +12,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 ## Result
 
 1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **207 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **325 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 532 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 393.1 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 397.1 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 396.6 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+2. **Masses are the layout study's P04 roll-up**, 393.0 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 397.0 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 396.6 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **39 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 9; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
@@ -199,7 +199,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-18** | 510204 | LINING - CASSETTE - BACK UPPER - B4 | Cassette lót vách hậu trên phải (khay thép + tấm tiêu âm) | B4 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 38 | 14 |
 | - | - | 40 × 40 corner edge tubes in L2, R2, C1, C2 (D-63) |  | - | 0.01 | calculation | inside the pieces | - |
 | - | - | Bond beyond L1 and R1 (D-71) |  | - | 0.05 | calculation | inside the pieces | - |
-| - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 3.18 | calculation (part CAD); cleats assumption | inside the pieces | - |
+| - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 3.17 | calculation (part CAD); cleats assumption | inside the pieces | - |
 | - | - | Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes |  | - | 1.28 | assumption | inside the pieces | - |
 | - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
 | - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film |  | - | 6.00 | assumption | - | - |
@@ -285,7 +285,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.28 | calculation (CAD) | 1-02 × 0.544682, 2-12 × 0.455318 |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | calculation (CAD) | 2-13 |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-15 |
-| WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.18 | calculation (part CAD); cleats assumption | A-3 |
+| WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.17 | calculation (part CAD); cleats assumption | A-3 |
 | LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | assumption | L-1 |
 
 A share like "x 0.5" means the piece carries that part of the roll-up line: BASE's lip ships on the band pieces, each carrying its own metres from BASE's list, and each band piece its own glides and load blocks; the four fans ride two in each fan box; the named clips are split by count, 32 wall clips on pallet 1 and 12 ceiling clips with the 4 catch lanyards on pallet 2 (calculation at the roll-up's 40 g a clip and 100 g a lanyard).
@@ -296,7 +296,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 
 | Check | What | Result | Pass |
 | --- | --- | --- | --- |
-| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 397.1 kg; 0 lines miscounted, 0 unknown | yes |
+| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 397.0 kg; 0 lines miscounted, 0 unknown | yes |
 | K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-03 FRONT - DECOR BLOCK ASSY - DR 18.9 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 39 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 928 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
