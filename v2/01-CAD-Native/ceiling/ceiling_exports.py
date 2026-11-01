@@ -253,7 +253,7 @@ def parts_list(v, mass):
             "part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": q[key][1] or "",
             "qty_per_parent": q[key][0], "qty_per_pod": per_pod[key], "material": matname,
             "finish": M.FINISH.get(key, ""), "process": M.PROCESS.get(key, ""),
-            "maker": "HOLD-08" if kind == "HOLD" else "", "sku": ({"clip": "HOLD-08: rated 4.9 kg pull-out each (ceiling, J-LIN-01), captive lock",
+            "maker": "HOLD-08" if kind == "HOLD" else "", "sku": ({"clip": "HOLD-08: rated 4.9 kg pull-out each (ceiling, J-LIN-01), captive lock; latches when pushed home, so a ceiling cassette holds itself before its two catches go on (Packing's assembly review, PM ruling 2026-11-01)",
                                                                   "catch": "HOLD-08: 48 kg working load per lanyard (T08)"}.get(key, "")),
             "torque": "", "size_mm": size, "tolerance": tol,
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
