@@ -26,7 +26,8 @@ def fill_forms():
 
 
 def rows():
-    fusion_assy, gen = "Fusion: an assembly sheet (D-139)", "the drawing generator, from the STEP (D-139)"
+    fusion_assy, gen = ("the drawing generator's assembly mode (D-158)",
+                        "the drawing generator, from the STEP (D-139)")
     out = [("210000_P01_WALL_DWG", ["210000"], "WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py); %s"
             % fusion_assy)]
     for i, (code, tag) in enumerate(SIDE, 1):

@@ -1,29 +1,29 @@
 drawing,covers,status,note
-210000_P01_WALL_DWG,210000,to do,WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py); Fusion: an assembly sheet (D-139)
-210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG,210101,to do,panel assembly L1; Fusion: an assembly sheet (D-139)
+210000_P01_WALL_DWG,210000,to do,WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py); the drawing generator's assembly mode (D-158)
+210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG,210101,to do,panel assembly L1; the drawing generator's assembly mode (D-158)
 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG,211101,to do,"frame L1, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_DWG,510101,to do,cassette L1; Fusion: an assembly sheet (D-139)
-210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_DWG,210102,to do,panel assembly R1; Fusion: an assembly sheet (D-139)
+510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_DWG,510101,to do,cassette L1; the drawing generator's assembly mode (D-158)
+210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_DWG,210102,to do,panel assembly R1; the drawing generator's assembly mode (D-158)
 211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_DWG,211102,to do,"frame R1, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_DWG,510102,to do,cassette R1; Fusion: an assembly sheet (D-139)
-210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_DWG,210103,to do,panel assembly L2; Fusion: an assembly sheet (D-139)
+510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_DWG,510102,to do,cassette R1; the drawing generator's assembly mode (D-158)
+210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_DWG,210103,to do,panel assembly L2; the drawing generator's assembly mode (D-158)
 211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_DWG,211103,to do,"frame L2, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_DWG,510103,to do,cassette L2; Fusion: an assembly sheet (D-139)
-210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_DWG,210104,to do,panel assembly R2; Fusion: an assembly sheet (D-139)
+510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_DWG,510103,to do,cassette L2; the drawing generator's assembly mode (D-158)
+210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_DWG,210104,to do,panel assembly R2; the drawing generator's assembly mode (D-158)
 211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_DWG,211104,to do,"frame R2, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_DWG,510104,to do,cassette R2; Fusion: an assembly sheet (D-139)
-210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_DWG,210201,to do,panel assembly B1; Fusion: an assembly sheet (D-139)
+510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_DWG,510104,to do,cassette R2; the drawing generator's assembly mode (D-158)
+210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_DWG,210201,to do,panel assembly B1; the drawing generator's assembly mode (D-158)
 211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_DWG,211201,to do,"frame B1, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510201_P01_LINING-CASSETTE-BACK-LOWER-B1_DWG,510201,to do,cassette B1; Fusion: an assembly sheet (D-139)
-210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_DWG,210202,to do,panel assembly B2; Fusion: an assembly sheet (D-139)
+510201_P01_LINING-CASSETTE-BACK-LOWER-B1_DWG,510201,to do,cassette B1; the drawing generator's assembly mode (D-158)
+210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_DWG,210202,to do,panel assembly B2; the drawing generator's assembly mode (D-158)
 211202_P01_WALL-PANEL-FRAME-BACK-LOWER-B2_DWG,211202,to do,"frame B2, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510202_P01_LINING-CASSETTE-BACK-LOWER-B2_DWG,510202,to do,cassette B2; Fusion: an assembly sheet (D-139)
-210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_DWG,210203,to do,panel assembly B3; Fusion: an assembly sheet (D-139)
+510202_P01_LINING-CASSETTE-BACK-LOWER-B2_DWG,510202,to do,cassette B2; the drawing generator's assembly mode (D-158)
+210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_DWG,210203,to do,panel assembly B3; the drawing generator's assembly mode (D-158)
 211203_P01_WALL-PANEL-FRAME-BACK-UPPER-B3_DWG,211203,to do,"frame B3, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510203_P01_LINING-CASSETTE-BACK-UPPER-B3_DWG,510203,to do,cassette B3; Fusion: an assembly sheet (D-139)
-210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_DWG,210204,to do,panel assembly B4; Fusion: an assembly sheet (D-139)
+510203_P01_LINING-CASSETTE-BACK-UPPER-B3_DWG,510203,to do,cassette B3; the drawing generator's assembly mode (D-158)
+210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_DWG,210204,to do,panel assembly B4; the drawing generator's assembly mode (D-158)
 211204_P01_WALL-PANEL-FRAME-BACK-UPPER-B4_DWG,211204,to do,"frame B4, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
-510204_P01_LINING-CASSETTE-BACK-UPPER-B4_DWG,510204,to do,cassette B4; Fusion: an assembly sheet (D-139)
+510204_P01_LINING-CASSETTE-BACK-UPPER-B4_DWG,510204,to do,cassette B4; the drawing generator's assembly mode (D-158)
 211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG,211301,to do,"side skin L1, V-grooved and folded at its 2 mm outside radius (D-161); the drawing generator, from the STEP (D-139)"
 511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG,511101,done,"side tray L1, bent sheet; the drawing generator, from the STEP (D-139)"
 211302_P01_WALL-SKIN-SIDE-LOWER-RH_DWG,211302,to do,"side skin R1, V-grooved and folded at its 2 mm outside radius (D-161); the drawing generator, from the STEP (D-139)"

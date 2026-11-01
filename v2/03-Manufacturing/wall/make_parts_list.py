@@ -356,7 +356,10 @@ def panel_rows(rep):
                              "CNC router: cut, V-groove the back (groove A of the maker's guide: a 110° V with a 2 mm flat root, 0.1 to 0.5 of core left) and fold the back return 90° at an outside radius of 2 min (Alcorest guide 01/2021/HDTC-VD 4.4, 4.5); the first fold of each batch is a test fold that confirms the blank (H16)"),
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
                     tolerance=("ISO 2768-m general tolerance (router cut; assumption until the ACP maker's own)" if back
-                               else "per the tabulated skin drawing (D-89)"), mass_each_kg=sm, mass_total_kg=sm,
+                               else "cut sizes ±0.5 (CNC router; assumption, guideline 6.3); the blank and the fold "
+                                    "line as the batch's test fold confirms them; fold 90° ±1° (assumption); outside "
+                                    "radius 2 min (the maker's guide 4.5); per its own drawing (D-139)"),
+                    mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
                     source="CAD" + ("; holes ELECTRICAL P01 (PR #64)" if "el_inlet_x" in prm else ""),
                     note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
@@ -507,7 +510,10 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                              "CNC router: cut, V-groove the back (groove A of the maker's guide: a 110° V with a 2 mm flat root, 0.1 to 0.5 of core left) and fold the back return 90° at an outside radius of 2 min (Alcorest guide 01/2021/HDTC-VD 4.4, 4.5); the first fold of each batch is a test fold that confirms the blank (H16)"),
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
                     tolerance=("ISO 2768-m general tolerance (router cut; assumption until the ACP maker's own)" if back
-                               else "per the tabulated skin drawing (D-89)"), mass_each_kg=sm, mass_total_kg=sm,
+                               else "cut sizes ±0.5 (CNC router; assumption, guideline 6.3); the blank and the fold "
+                                    "line as the batch's test fold confirms them; fold 90° ±1° (assumption); outside "
+                                    "radius 2 min (the maker's guide 4.5); per its own drawing (D-139)"),
+                    mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
                     source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
                                         if back else "blank and fold line in the skin DXF")))
@@ -751,7 +757,8 @@ def cassette_rows(rep):
     rows.append(row(level=1, part_number=tray["part_number"], name=en_name(tray), name_vi=vi_name(tray["description"], tray["part_number"]),
                     kind="MP", material="galvanised steel sheet 0.5, EN 10346 DX51D+Z",
                     finish="hot-dip zinc (coating mass to confirm)", process="laser or punch blank, brake bend (sheet metal)",
-                    qty=1, unit="pc", size_mm=size_of(tb["box"]), tolerance="per the tabulated tray drawing (D-89)",
+                    qty=1, unit="pc", size_mm=size_of(tb["box"]), tolerance="blank sizes ±0.5; fold positions ±0.5; folds 90° ±1°; the back flat within 2 over "
+                              "its length (assumption, guideline 6.3); per its own drawing (D-139)",
                     mass_each_kg=tb["mass_kg"], mass_total_kg=tb["mass_kg"],
                     mass_status="calculation: CAD at 7850 kg/m3", status="DRAFT",
                     source="CAD; 0.5 confirmed (D-37); lips PM ruling 2026-10-31" + (

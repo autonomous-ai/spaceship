@@ -60,12 +60,12 @@ SKIN_TOLERANCE = ("cut sizes ±0.5 (CNC router; assumption, guideline 6.3); the 
 def _skin(hand):
     """A side skin's entry: LH skins (L1, L2) have their outer face at -X, RH skins (R1, R2) at +X."""
     out = "-X" if hand == "LH" else "+X"
-    inner = "+X" if hand == "LH" else "-X"
     return {"bent": {"vgroove": SKIN_GROOVE}, "notes": SKIN_NOTES, "tolerance": SKIN_TOLERANCE,
-            "corner": out + "-Y-Z", "datum_faces": {"A": "-Z", "B": "-Y", "C": inner},
+            # A and B on the faces the views show edge on; no C: the skin has no holes, and its back face shows edge
+            # on only in the section (the WALL Drawings Engineer's trial on #343)
+            "corner": out + "-Y-Z", "datum_faces": {"A": "-Z", "B": "-Y"},
             "datum_words": {"A": "bottom edge (flush with the frame's bottom)",
-                            "B": "front edge (2.26 seam to the decor block)",
-                            "C": "back face (bonded to the frame through the 3 mm line)"}}
+                            "B": "front edge (2.26 seam to the decor block)"}}
 
 
 # WALL's lining trays (D-17, D-37): 0.5 galvanized steel folded into a pan, four returns toward the room and 12 mm lips
