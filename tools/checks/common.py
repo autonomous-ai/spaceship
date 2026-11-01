@@ -213,12 +213,14 @@ def walk_files(root, top, exts=None, skip=("/proof/", "/.raw/", "/__pycache__/")
     return sorted(out)
 
 
-def export_ref(ref, repo=REPO_ROOT, dest=None):
+def export_ref(ref, repo=REPO_ROOT, dest=None, ref_rows=False):
     """Check out a git ref (for example origin/main or a PR head) into a
     fresh folder with git archive, so a run checks exactly that revision.
     Returns (folder, short sha). The rule files in v2/04-Checks/config and
     stacks come from this checkout, so a revision without them is still
-    checked with the current rules."""
+    checked with the current rules. ref_rows: a team's PR that adds rows to
+    a rule file (an edge exception or a clash allowance its ruling asks for)
+    keeps them: the ref's rows that the current file lacks are added to it."""
     import shutil
     import subprocess
     import tarfile
@@ -233,8 +235,25 @@ def export_ref(ref, repo=REPO_ROOT, dest=None):
         src = os.path.join(repo, sub)
         if os.path.isdir(src):
             dst = os.path.join(dest, sub)
+            theirs = {}
+            if ref_rows and os.path.isdir(dst):
+                for f in os.listdir(dst):
+                    if f.endswith(".csv"):
+                        with open(os.path.join(dst, f), encoding="utf-8") as fh:
+                            theirs[f] = fh.read().splitlines()
             shutil.rmtree(dst, ignore_errors=True)
             shutil.copytree(src, dst)
+            for f, lines in theirs.items():
+                p = os.path.join(dst, f)
+                if not os.path.exists(p) or not lines:
+                    continue
+                with open(p, encoding="utf-8") as fh:
+                    text = fh.read()
+                ours = text.splitlines()
+                extra = [l for l in lines[1:] if l.strip() and l not in ours]
+                if extra and lines[0] == (ours[0] if ours else ""):     # the same columns: add the PR's rows
+                    with open(p, "a", encoding="utf-8") as fh:
+                        fh.write(("" if not text or text.endswith("\n") else "\n") + "\n".join(extra) + "\n")
     return dest, sha
 
 

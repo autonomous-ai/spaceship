@@ -1652,3 +1652,24 @@ def test_the_base_keys_are_joints_parts_from_111211_to_111215():
     from common import owner_for, JOINTS_KEYS
     assert all(JOINTS_KEYS.match("11121%d" % i) for i in range(1, 6)) and not JOINTS_KEYS.match("111216")
     assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "111215") == "Joints Engineer"
+
+
+def test_a_pre_check_keeps_the_rule_rows_a_pr_adds(tmp_path):
+    # FRONT's #313 added D-145's edge exception to the checks' own list: a pre-check must read it, while the
+    # current rules still win for everything else
+    import subprocess
+    from common import export_ref
+    repo = tmp_path / "repo"
+    cfg = repo / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    run = lambda *a: subprocess.run(["git", "-C", str(repo)] + list(a), check=True, capture_output=True)
+    run("init", "-q")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n351305,7.0\n")
+    run("add", "-A")
+    run("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "pr")
+    (cfg / "edge-exceptions.csv").write_text("part_number,hole_dia_mm\n111601,13.0\n368004,3.4\n")   # ours now
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "a"), ref_rows=True)
+    rows = open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read().splitlines()
+    assert rows == ["part_number,hole_dia_mm", "111601,13.0", "368004,3.4", "351305,7.0"]
+    dest, _sha = export_ref("HEAD", repo=str(repo), dest=str(tmp_path / "b"))
+    assert "351305,7.0" not in open(os.path.join(dest, "v2/04-Checks/config/edge-exceptions.csv")).read()
