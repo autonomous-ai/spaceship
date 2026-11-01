@@ -1948,8 +1948,7 @@ def cut_list_table(sh, part, members, x, y, width):
                                   m["tol"].split(",")[0])).strip("; ")])
     mat = part.row.get("material", "")
     return sh.table(x, y, ccols, crow, size=2.5,
-                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""),
-                           "aluminium 6063-T6 tube: %s" % mat.split(":", 1)[-1].strip()], title_size=2.5)
+                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""), mat], title_size=2.5)
 
 
 def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
@@ -2084,6 +2083,12 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row)
+    # an entry written for a material (D-131's welded steel frames) never draws over a list that still says another
+    need = spec.get("material_has")
+    if need and need.lower() not in (part.row.get("material") or "").lower():
+        raise NotDrawable("%s: its parts list gives the material as '%s', but its drawing entry is for %s (%s): the "
+                          "list and the model change first" % (pn, part.row.get("material", ""), need,
+                                                               spec.get("material_why", "its notes")))
     with open(part.step, encoding="latin-1") as fh:
         head = fh.read(4000)
     import re as _re
