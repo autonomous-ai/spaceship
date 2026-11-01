@@ -332,13 +332,16 @@ def air_cad(path=AIR_LIST):
     densities the CAD gives the column's and soffit's fill and the cartridge layers, and the layers per cartridge."""
     import csv
     import re
-    rows = {}
+    rows, hw = {}, {}
     with open(path, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             rows.setdefault(r["part_number"], r)
+            if r["kind"] == "PI" and r["part_number"][:2] in ("83", "84"):     # joints register hardware (D-63)
+                hw[r["parent"]] = hw.get(r["parent"], 0.0) + float(r["qty_per_parent"]) * float(r["mass_each_kg"])
     rho = lambda pn: float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", rows[pn]["material"]).group(1))
     return dict(kg={pn: float(r["mass_each_kg"]) for pn, r in rows.items()}, fill_rho=rho("611104"),
-                sof_fill_rho=rho("611203"), layer_rho=rho("611302"), n_layers=float(rows["611302"]["qty_per_parent"]))
+                sof_fill_rho=rho("611203"), layer_rho=rho("611302"), n_layers=float(rows["611302"]["qty_per_parent"]),
+                register_hw=hw)
 
 
 AIR = air_cad()
@@ -373,7 +376,7 @@ def air_parts(fill):
     col_fill, sof_fill = k["611104"] * fill / AIR["fill_rho"], k["611203"] * fill / AIR["sof_fill_rho"]
     sc = t3 / AIR_FBOX_T_CAD
     col = k["610101"] - k["611104"] + col_fill
-    sof = k["610201"] - k["610402"] - k["611203"] + sof_fill
+    sof = k["610201"] - k["610402"] - k["611203"] - AIR["register_hw"].get("610201", 0.0) + sof_fill
     sbox = k["611402"] * sc + k["618102"] + k["618103"] + un["supply bulkhead"] + un["supply linings"]
     ebox = k["611401"] * sc + un["exhaust bulkhead"] + un["exhaust linings"]
     cad = "S52, CAD on main: AIR parts list "
@@ -387,9 +390,10 @@ def air_parts(fill):
          "calculation (CAD)", f"{cad}610101 P01 {k['610101']:.3f}, its fill 611104 at {fill:g} kg/m3 (D-81; the CAD has "
          f"{AIR['fill_rho']:.0f} until the AIR follow-up); the hub zone 618101 is the in-house module's (no mass here)"),
         ("Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, "
-         "hinges, latches, lock screws", sof, "calculation (CAD); hinges, latches and studs HOLD",
-         f"{cad}610201 P01 {k['610201']:.3f} less its exhaust fan box {k['610402']:.3f} (the next line but one), its fill "
-         f"611203 at {fill:g} kg/m3 (D-81; the CAD has {AIR['sof_fill_rho']:.0f})"),
+         "hinges, latches", sof, "calculation (CAD); hinges, latches and studs HOLD",
+         f"{cad}610201 P01 {k['610201']:.3f} less its exhaust fan box {k['610402']:.3f} (the next line but one) and its "
+         f"lock screws {AIR['register_hw'].get('610201', 0.0):.3f} (the joints register counts them in the fixings kit's "
+         f"line), its fill 611203 at {fill:g} kg/m3 (D-81; the CAD has {AIR['sof_fill_rho']:.0f})"),
         ("Supply fan box 610401 with its two transitions, in the right block", sbox,
          "calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses",
          f"{cad}610401 P01: {sbox:.2f} kg = casing 611402 {k['611402'] * sc:.2f} (the CAD's {k['611402']:.3f} at "
