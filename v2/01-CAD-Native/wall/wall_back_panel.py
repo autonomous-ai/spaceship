@@ -41,13 +41,13 @@ with open(_LIB, "r", encoding="utf-8") as _fh:
 (HW_PARTS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, ev, hole, hw_site, new_comp,
  pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi, el_params, el_inside, EL_KIND,
  child, member_numbers, fill_numbers, plated_mitre_triangles, place_hardware, poly_on, fill_fits,
- place_piece_copies, sketch_points, place_copies, mitre_plates) = [
+ place_piece_copies, offset_origin, joint_copy, mitre_plates) = [
     globals()[_n] for _n in (
         "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "ev",
         "hole", "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of",
         "span", "vi", "el_params", "el_inside", "EL_KIND", "child", "member_numbers", "fill_numbers",
-        "plated_mitre_triangles", "place_hardware", "poly_on", "fill_fits", "place_piece_copies", "sketch_points",
-        "place_copies", "mitre_plates")]
+        "plated_mitre_triangles", "place_hardware", "poly_on", "fill_fits", "place_piece_copies",
+        "offset_origin", "joint_copy", "mitre_plates")]
 
 import adsk.core      # noqa: E402  (already imported by the library; named here for readers)
 import adsk.fusion    # noqa: E402
@@ -252,16 +252,15 @@ def build_frame_back(design, frame, out, yf, zs):
     n = int(round(design.userParameters.itemByName("stile_n_mid").value))
     xr = lambda k: ("(%s) + %d * stile_pitch" % (X_LOW, k), "(%s) + %d * stile_pitch + tube_w" % (X_LOW, k))  # noqa: E731
     make("STILE - MID", xr(1), zs, "z", "stud_t")
-    # the other studs: copies of the one part, each held by a rigid joint at its place (place_copies, as on the side
-    # walls; the occurrence pattern in the frame came out unhealthy in the L1 run of 2026-11-01)
+    # the other studs: copies of the one part, each held by a rigid joint in the root from the stud's joint origin to
+    # one of the frame's, moved along X by whole stud pitches (expressions, so they follow the width; joint_copy)
     sc = members["STILE - MID"][0]
-    y_out = max(yf, key=lambda e: ev(design, e))
-    src = sketch_points(design, sc, "y", y_out, [(xr(1)[0], zs[0])], "STUD REFERENCE")[0]
-    dst = sketch_points(design, frame, "y", y_out, [(xr(k)[0], zs[0]) for k in range(2, n + 1)], "STUD PLACES")
+    ref = offset_origin(sc, None, None, None, name="JOINT ORIGIN - STUD")
     ys = sorted(ev(design, e) for e in yf)
-    boxes = [(ev(design, xr(k)[0]), ys[0], ev(design, zs[0]), ev(design, xr(k)[1]), ys[1], ev(design, zs[1]))
-             for k in range(2, n + 1)]
-    place_copies(design, frame, sc, src, dst, boxes, "STUD")
+    for k in range(2, n + 1):
+        tgt = offset_origin(frame, "%d * stile_pitch" % (k - 1), None, None, name="JOINT ORIGIN - STUD %d" % k)
+        joint_copy(design, frame, sc, ref, tgt, (ev(design, xr(k)[0]), ys[0], ev(design, zs[0]), ev(design, xr(k)[1]),
+                                                 ys[1], ev(design, zs[1])), "STUD %d" % k)
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)

@@ -1158,29 +1158,46 @@ def sketch_points(design, comp, axis, plane_expr, pts, label):
     return out
 
 
-def place_copies(design, parent, comp, src, targets, boxes, label):
-    """Copies of `comp` in `parent`, each held by a rigid joint from comp's reference point `src` (a sketch point of
-    comp) to one of `targets` (sketch points of parent, on a plane the same way round), so each follows its place on
-    an edit; each copy's box (mm, in parent's context) is checked, the joint flipped if needed. Returns the copies."""
+def offset_origin(comp, dx, dy, dz, angle=None, name=None):
+    """A joint origin on comp's origin moved by (dx, dy, dz) along comp's own axes (expressions, so it follows the
+    parameters) and turned `angle` about comp's Z; no sketch to constrain."""
+    jin = comp.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(comp.originConstructionPoint))
+    for attr, e in (("offsetX", dx), ("offsetY", dy), ("offsetZ", dz)):
+        if e not in (None, "", "0", "0 mm"):
+            setattr(jin, attr, vi(e))
+    if angle:
+        jin.angle = vi(angle)
+    jo = comp.jointOrigins.add(jin)
+    if name:
+        jo.name = name
+    return jo
+
+
+def joint_copy(design, parent, comp, ref, tgt, want, label):
+    """A copy of comp in `parent` (D-120: copies of one part), held by a rigid joint IN THE ROOT from comp's joint
+    origin `ref` to parent's joint origin `tgt` (the dry run of 06:45 showed a joint made inside a sub-component
+    stays where it is, while the root's joints place the part), checked against its box `want` (mm, pod
+    coordinates), flipped if needed. Returns the copy's occurrence in parent."""
+    root = design.rootComponent
     healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
-    occs = []
-    for k, (tp, want) in enumerate(zip(targets, boxes)):
-        occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
-        for flip in (False, True):
-            jin = parent.joints.createInput(adsk.fusion.JointGeometry.createByPoint(src.createForAssemblyContext(occ)),
-                                            adsk.fusion.JointGeometry.createByPoint(tp))
-            jin.setAsRigidJointMotion()
-            jin.isFlipped = flip
-            j = parent.joints.add(jin)
-            bb = bbox(occ.bRepBodies.item(0))
-            if j.healthState == healthy and all(abs(a - b) < 0.05 for a, b in zip(bb, want)):
-                j.name = "JOINT - %s COPY %d" % (label, k + 2)
-                break
-            j.deleteMe()
-        else:
-            raise RuntimeError("%s copy %d: no joint puts it at %s" % (label, k + 2, want))
-        occs.append(occ)
-    return occs
+    p_occ = root_occ(design, parent) if parent != root else None
+    occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
+    occ_r = occ.createForAssemblyContext(p_occ) if p_occ else occ
+    g1 = ref.createForAssemblyContext(occ_r)
+    g2 = tgt.createForAssemblyContext(p_occ) if p_occ else tgt
+    for flip in (False, True):
+        jin = root.joints.createInput(g1, g2)
+        jin.setAsRigidJointMotion()
+        jin.isFlipped = flip
+        j = root.joints.add(jin)
+        got = bbox(occ_r.bRepBodies.item(0))
+        if j.healthState == healthy and all(abs(x - y) < 0.05 for x, y in zip(got, want)):
+            j.name = "JOINT - %s" % label
+            return occ
+        print("COPY|%s: flip %s gave %s, want %s" % (label, flip, [round(x, 2) for x in got],
+                                                      [round(x, 2) for x in want]))
+        j.deleteMe()
+    raise RuntimeError("%s: no joint puts the copy at %s" % (label, [round(x, 2) for x in want]))
 
 
 def poly_on_x(design, comp, x_expr, pts, label):
@@ -1306,14 +1323,12 @@ def build_frame(design, frame, out, xf, yf, zs):
     yr = lambda c: ("(%s) + %s - tube_w / 2" % (Y_FRONT, c), "(%s) + %s + tube_w / 2" % (Y_FRONT, c))  # noqa: E731
     make("STILE - MID", yr(studs[0]), zs, "z", "stud_t")
     sc = members["STILE - MID"][0]
-    x_out = min(xf, key=lambda e: ev(design, e))
-    src = sketch_points(design, sc, "x", x_out, [("(%s) + %s" % (Y_FRONT, studs[0]), zs[0])], "STUD REFERENCE")[0]
-    dst = sketch_points(design, frame, "x", x_out, [("(%s) + %s" % (Y_FRONT, c), zs[0]) for c in studs[1:]],
-                        "STUD PLACES")
+    ref = offset_origin(sc, None, None, None, name="JOINT ORIGIN - STUD")
     xs = sorted(ev(design, e) for e in xf)
-    boxes = [(xs[0], ev(design, yr(c)[0]), ev(design, zs[0]), xs[1], ev(design, yr(c)[1]), ev(design, zs[1]))
-             for c in studs[1:]]
-    place_copies(design, frame, sc, src, dst, boxes, "STUD")
+    for k, c in enumerate(studs[1:], 2):
+        tgt = offset_origin(frame, None, "(%s) - (%s)" % (c, studs[0]), None, name="JOINT ORIGIN - STUD %d" % k)
+        joint_copy(design, frame, sc, ref, tgt, (xs[0], ev(design, yr(c)[0]), ev(design, zs[0]), xs[1],
+                                                 ev(design, yr(c)[1]), ev(design, zs[1])), "STUD %d" % k)
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
@@ -1405,12 +1420,10 @@ def mitre_plates(design, frame, corners, axis, face, toward_room):
             vec(getattr(rp, "secondaryAxisVector", None)), vec(getattr(tgt, "primaryAxisVector", None)),
             vec(getattr(tgt, "secondaryAxisVector", None))))
         done = False
-        # joints in the frame (the plate is a part of the welded frame); if none fits, the same in the root, as the
-        # hardware's joints are, with the frame's copy as the context (the dry runs of 06:00 and 06:30 found no fit)
+        # the joint in the root, with the frame's copy as the context: a joint made inside the frame stays where it
+        # is (the dry run of 06:45 tried both; only the root's joints placed the plates)
         frame_occ = root_occ(design, frame) if frame != design.rootComponent else None
-        for where in ("frame", "root"):
-            if where == "root" and frame_occ is None:
-                break
+        for where in ("root",) if frame_occ is not None else ("frame",):
             owner = frame if where == "frame" else design.rootComponent
             g1 = rp if where == "frame" else ref.createForAssemblyContext(occ.createForAssemblyContext(frame_occ))
             g2 = tgt if where == "frame" else tgt.createForAssemblyContext(frame_occ)
@@ -1473,51 +1486,32 @@ def fill_fits(repo_root, code):
 
 def place_piece_copies(design, parent, built, copies, label):
     """Copies of fill pieces whose form an earlier bay of this panel already has (D-120: identical pieces are copies
-    of one part). built: {part number: (component, its bay's box (mm), (x, u, z) expressions of the piece's low
-    corner, the wall's along axis 'x' or 'y')}; copies: [(part number, this bay's box (mm), its corners'
-    expressions {name: (x, u, z)}, fit, the notch points that must stay open (mm))]. Each copy is held by a rigid
-    joint from a reference point at its part's low corner (a sketch point on a horizontal plane) to the matching
-    corner of its bay, turned half round about Z when the fit says "turned over left to right" (the piece is the
-    same right through its thickness): parametric, so it follows an edit. Checked: the copy fills its bay's box and
-    every notch it needs is open."""
-    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    of one part). built: {part number: (component, None, (thickness, along, z) expressions of the piece's low
+    corner, the wall's along axis 'x' or 'y')}; copies: [(part number, this bay's box (mm), its corners' expressions
+    {"low": (thickness, along, z), "high_turned": (...)}, fit, the notch points that must stay open (mm))]. Each copy
+    is held by a rigid joint in the root from a joint origin on its part's low corner to one on the matching corner
+    of its bay, turned half round about Z when the fit says "turned over left to right" (the piece is the same right
+    through its thickness), so it follows an edit. Checked: the copy fills its bay's box and its notches are open."""
     inside = adsk.fusion.PointContainment.PointInsidePointContainment
     refs = {}
+
+    def xyz(corner, along):                # (thickness, along, z) -> pod (x, y, z) expressions
+        return (corner[0], corner[1], corner[2]) if along == "y" else (corner[1], corner[0], corner[2])
     for pn, want, corners, fit, open_pts in copies:
         if fit not in ("as cut", "turned over left to right"):
             raise RuntimeError("%s goes in %s: only as cut or turned over left to right are placed so far" % (pn, fit))
         comp, _first_box, low, along = built[pn]
         if pn not in refs:
-            refs[pn] = sketch_points(design, comp, "z", low[2], [(low[0], low[1]) if along == "y" else (low[1], low[0])],
-                                     "PIECE REFERENCE")[0]
-        # where the reference corner lands: as cut, the bay's low corner; turned round about Z, its high corner
-        tgt = corners["low"] if fit == "as cut" else corners["high_turned"]
-        dst = sketch_points(design, parent, "z", tgt[2], [(tgt[0], tgt[1]) if along == "y" else (tgt[1], tgt[0])],
-                            "PIECE PLACE %s" % pn)[0]
-        occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
-        done = False
-        for angle in (("0 deg", "180 deg") if fit == "as cut" else ("180 deg", "0 deg")):
-            for flip in (False, True):
-                jin = parent.joints.createInput(adsk.fusion.JointGeometry.createByPoint(refs[pn].createForAssemblyContext(occ)),
-                                                adsk.fusion.JointGeometry.createByPoint(dst))
-                jin.setAsRigidJointMotion()
-                jin.angle = vi(angle)
-                jin.isFlipped = flip
-                j = parent.joints.add(jin)
-                body = occ.bRepBodies.item(0)
-                ok = j.healthState == healthy and all(abs(a - b) < 0.05 for a, b in zip(bbox(body), want))
-                if ok:
-                    ok = not any(body.pointContainment(adsk.core.Point3D.create(x / 10.0, y / 10.0, z / 10.0)) == inside
-                                 for x, y, z in open_pts)
-                if ok:
-                    j.name = "JOINT - %s %s %s" % (label, pn, fit.upper())
-                    done = True
-                    break
-                j.deleteMe()
-            if done:
-                break
-        if not done:
-            raise RuntimeError("no joint puts %s's copy (%s) in its bay %s" % (pn, fit, want))
+            refs[pn] = offset_origin(comp, *xyz(low, along), name="JOINT ORIGIN - PIECE %s" % pn)
+        tgt_corner = corners["low"] if fit == "as cut" else corners["high_turned"]
+        tgt = offset_origin(parent, *xyz(tgt_corner, along), angle="180 deg" if fit != "as cut" else None,
+                            name="JOINT ORIGIN - PIECE %s %s" % (pn, fit.upper()))
+        occ = joint_copy(design, parent, comp, refs[pn], tgt, want, "%s %s %s" % (label, pn, fit.upper()))
+        body = occ.bRepBodies.item(0)
+        shut = [pt for pt in open_pts
+                if body.pointContainment(adsk.core.Point3D.create(pt[0] / 10.0, pt[1] / 10.0, pt[2] / 10.0)) == inside]
+        if shut:
+            raise RuntimeError("%s's copy (%s) fills its bay but its notches at %s are closed" % (pn, fit, shut))
 
 
 def build_fill(design, parent, out, xf, zs):
