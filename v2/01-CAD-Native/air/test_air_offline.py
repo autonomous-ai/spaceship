@@ -10,6 +10,7 @@ sleeve passes through the right outer ceiling panel clear of its members.
 """
 
 import os
+import re
 import sys
 import unittest
 
@@ -337,8 +338,10 @@ class FrontInterface(unittest.TestCase):
                  "SOFFIT UNDERSIDE FIXED", "SOFFIT RAIL DOOR", "SOFFIT DOOR PLATE")
 
     def test_door_side_on_the_panel_face(self):
-        yd = V["dr_acc_face_y"]
-        self.assertAlmostEqual(yd, -643.5)
+        yd = V["dr_acc_face_y"]          # FRONT's named value, read from its DR model (Y -643.5 on #105's DR, -641.14 on its stops)
+        theirs = A.front_table(A.REPO_ROOT)["dr_acc_face_y"]
+        self.assertAlmostEqual(yd, CM.evaluate(CM.all_params() + [p for p in A.front_entries(have={q[0] for q in CM.all_params()})])["dr_acc_face_y"])
+        self.assertEqual(theirs[1], dict((p[0], p[1]) for p in A.all_params())["dr_acc_face_y"])
         for name in self.DOOR_SIDE:
             self.assertAlmostEqual(b6(name)[2], yd, msg=name)
         for name, (_k, bx) in LAY.items():
@@ -351,18 +354,44 @@ class FrontInterface(unittest.TestCase):
         self.assertAlmostEqual(b6("SOFFIT RAIL DOOR")[3] - b6("SOFFIT RAIL DOOR")[2], 22.5)
 
     def test_same_as_front(self):
-        """AIR's copies of FRONT's named values carry FRONT's expressions and units (no drift);
-        checked against FRONT's DR model whenever its file is in this checkout."""
-        mine = {p[0]: (p[1], p[2]) for p in A.AIR_PARAMS if p[0] in A.FRONT_NAMED}
-        self.assertEqual(set(mine), set(A.FRONT_NAMED))
-        self.assertEqual(mine["dr_acc_face_y"][0], "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t")
-        root = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-        theirs = A.front_named(os.environ.get("FRONT_REPO", root))
-        if theirs is None:
-            self.skipTest("FRONT's DR model (%s) is not in this checkout yet" % A.FRONT_FILE)
+        """AIR keeps no copy of FRONT's named values (the Lead, 2026-11-01): its list holds only the place they
+        go, and the parameters AIR builds carry FRONT's own expressions and units, read from FRONT's DR model,
+        with every input those expressions use that the skeleton and the ceiling don't define."""
+        self.assertFalse([p[0] for p in A.AIR_PARAMS if p[0] in A.FRONT_NAMED], "a copy of FRONT's value in AIR's list")
+        self.assertEqual([p[0] for p in A.AIR_PARAMS].count("@FRONT"), 1)
+        theirs = A.front_named(A.REPO_ROOT)
+        self.assertIsNotNone(theirs, "FRONT's DR model (%s) is not in this checkout" % A.FRONT_FILE)
+        built = {p[0]: (p[1], p[2]) for p in A.all_params()}
         for name in A.FRONT_NAMED:
             self.assertIn(name, theirs, "FRONT no longer publishes %s" % name)
-            self.assertEqual(theirs[name], mine[name], "%s drifted from FRONT's DR model" % name)
+            self.assertEqual(built[name], theirs[name], name)
+        names = [p[0] for p in A.all_params()]
+        self.assertEqual(len(names), len(set(names)), "a parameter twice")
+        for name, expr, _u, _st, _src in A.all_params():        # each parameter after every one it uses
+            for ident in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", expr):
+                if ident in names:
+                    self.assertLess(names.index(ident), names.index(name), "%s uses %s before it is made" % (name, ident))
+
+    def test_front_inputs_come_along(self):
+        """A new input in FRONT's expression (as DR's stops will bring) comes into AIR's parameters with it, in
+        FRONT's order, without a copy in AIR's list."""
+        import tempfile
+        with open(os.path.join(A.REPO_ROOT, A.FRONT_FILE), encoding="utf-8") as f:
+            src = f.read()
+        old = '"-pod_d / 2 + decor_d - dr_back_t + dr_acc_t"'
+        if old not in src:
+            self.skipTest("FRONT's DR model has moved on from #105's expression")
+        new = src.replace('    ("dr_acc_face_y", ' + old, '    ("dr_stop_t", "2.36 mm", "mm", "source", "test stop"),\n'
+                          '    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_stop_t + dr_acc_t"')
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, os.path.dirname(A.FRONT_FILE)))
+            with open(os.path.join(d, A.FRONT_FILE), "w", encoding="utf-8") as f:
+                f.write(new)
+            have = {p[0] for p in CM.all_params()}
+            got = A.front_entries(d, have)
+            self.assertEqual([p[0] for p in got], ["dr_back_t", "dr_acc_t", "dr_stop_t", "dr_acc_face_y"])
+            v = CM.evaluate(CM.all_params() + got)
+            self.assertAlmostEqual(v["dr_acc_face_y"], -641.14, places=6)
 
 
 class EditTest(unittest.TestCase):
@@ -564,7 +593,8 @@ def step_vertices(path, prefix):
     """{solid name: set of (x, y, z) vertices, mm} for the solids whose name starts with one of `prefix`, read from a
     Fusion STEP (cm) by following each MANIFOLD_SOLID_BREP's references to its VERTEX_POINTs."""
     import re
-    data = open(path, encoding="utf-8", errors="replace").read().split("DATA;", 1)[1]
+    with open(path, encoding="utf-8", errors="replace") as f:
+        data = f.read().split("DATA;", 1)[1]
     ents = {int(m.group(1)): m.group(2) for m in re.finditer(r"#(\d+)\s*=\s*(.*?);\s*(?=#\d+\s*=|ENDSEC)", data, re.S)}
     ref = re.compile(r"#(\d+)")
     out = {}

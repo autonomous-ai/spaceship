@@ -14,9 +14,11 @@ Coordinates: the pod system (conventions.md section 4), mm.
 """
 
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.environ.get("FRONT_REPO") or os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, os.path.join(HERE, "..", "ceiling"))
 import ceiling_model as CM  # noqa: E402  (skeleton loader and expression tools)
 
@@ -27,11 +29,10 @@ AIR_PARAMS = [
     # ---- floor and linings (PM rulings 2026-11-01 from BASE)
     ("col_gap", "5 mm", "mm", "confirmed", "PM ruling 2026-11-01 (BASE): the column keeps 5 mm off the floating side lining (D-17), X up to 1161; the soffit's ends the same"),
     # ---- FRONT's named values (350003 DR model; PM rulings 2026-11-01): the column and the whole soffit
-    #      start at the room-side face of DR's access panel, so neither overlaps it. Same names,
-    #      expressions and inputs as FRONT's model; test_air_offline fails if they drift
-    ("dr_back_t", "1.5 mm", "mm", "confirmed", "FRONT's named value (350003 DR model): DR's back plate, aluminium 1.5 (J-FRONT-01; DR under 20 kg, D-03)"),
-    ("dr_acc_t", "3 mm", "mm", "calculation", "FRONT's named value (350003 DR model): DR's access panel, aluminium 3; it carries the column's two hook studs"),
-    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t", "mm", "calculation", "FRONT's named value (350003 DR model, PM ruling 2026-11-01): the room-side face of DR's access panel (Y -643.5), where the column and the soffit start"),
+    #      start at the room-side face of DR's access panel, so neither overlaps it. AIR keeps no copy:
+    #      FRONT_ENTRIES() reads them, and any input they use, from FRONT's DR model at load (the Lead,
+    #      2026-11-01: DR's panel face moved to Y -641.14 on its stops; read FRONT's named value)
+    ("@FRONT", "", "", "", ""),
     # ---- faces of the column and the soffit
     ("face_acp", "3 mm", "mm", "source", R7E + ": faces 3 mm ACP + 9 mm felt"),
     ("face_felt", "9 mm", "mm", "source", R7E + ": faces 3 mm ACP + 9 mm felt"),
@@ -40,7 +41,7 @@ AIR_PARAMS = [
     # ---- column (front-right inside corner)
     ("col_x0", "949 mm", "mm", "source", R7E + ": the column's left face, X 949 (220 wide on P03, 217 on P04)"),
     ("col_d", "360 mm", "mm", "confirmed", "D-61: the room face 360 from the side walls' front end (Y -285), flush with the soffit's face; the column itself starts at DR's access-panel face, so it is 358.5 deep"),
-    ("plen_lo", "120 mm", "mm", "source", R7E + ": base plenum Z 15 to 135 under the cartridge"),
+    ("plen_lo", "126 mm", "mm", "confirmed", "PM ruling 2026-11-01 (the Air Engineer's fix): the base plenum under the supply cartridge, 120 in the air report (7e) plus 6, so the cartridge clears the two socket heads of DR's panel on FRONT's B01 (7.6 proud); the cartridge is Z 140 to 1890, 5 under the column's opening (Z 1895)"),
     ("grille_h", "100 mm", "mm", "confirmed", "D-61: a 100 mm kick grille at the column's foot"),
     ("grille_z", "10 mm", "mm", "source", R7E + ": kick grille Z 25 to 125, 10 mm above the column's foot"),
     ("grille_l", "312 mm", "mm", "source", R7E + ": 529 along the front and left faces, 217 of it on the front"),
@@ -308,31 +309,71 @@ FRONT_NAMED = ("dr_back_t", "dr_acc_t", "dr_acc_face_y")
 FRONT_FILE = "v2/01-CAD-Native/front/dr_block.py"     # FRONT's DR model, which publishes them
 
 
-def front_named(repo_root):
-    """FRONT's own entries for FRONT_NAMED, read from its DR model's parameter table without Fusion
-    (a list of (name, expression, unit, status, source) tuples), or None when the file isn't here."""
+def front_table(repo_root):
+    """FRONT's DR model's parameter table, read without Fusion: {name: (expression, unit, status, source)}
+    in the file's order (FRONT builds its parameters in that order), or None when the file isn't here.
+    Its entries are (name, expression, unit, status, source) tuples of strings."""
     import ast
     path = os.path.join(repo_root, FRONT_FILE)
     if not os.path.isfile(path):
         return None
-    out = {}
+    found = []
     with open(path, encoding="utf-8") as f:
         tree = ast.parse(f.read())
     for node in ast.walk(tree):
-        if isinstance(node, ast.Tuple) and len(node.elts) == 5:
-            vals = [e.value for e in node.elts[:3] if isinstance(e, ast.Constant)]
-            if len(vals) == 3 and vals[0] in FRONT_NAMED and vals[0] not in out:
-                out[vals[0]] = (vals[1], vals[2])
+        if isinstance(node, ast.Tuple) and len(node.elts) == 5 and all(
+                isinstance(e, ast.Constant) and isinstance(e.value, str) for e in node.elts[:4]):
+            name = node.elts[0].value
+            if re.fullmatch(r"[a-z][a-z0-9_]*", name):
+                src = node.elts[4].value if isinstance(node.elts[4], ast.Constant) else ""
+                found.append(((node.lineno, node.col_offset), name, tuple(e.value for e in node.elts[:4]) + (src,)))
+    out = {}
+    for _at, name, entry in sorted(found):          # the file's order (ast.walk goes breadth first)
+        out.setdefault(name, entry)
     return out
+
+
+def front_named(repo_root):
+    """FRONT's own (expression, unit) for each of FRONT_NAMED, or None when its DR model isn't here."""
+    t = front_table(repo_root)
+    return None if t is None else {n: t[n][1:3] for n in FRONT_NAMED if n in t}
+
+
+def front_entries(repo_root=REPO_ROOT, have=()):
+    """AIR's parameter entries for FRONT's named values, taken from FRONT's DR model, plus every input their
+    expressions use that neither the skeleton, the ceiling nor AIR defines (in FRONT's order, so each comes
+    after what it uses). Raises when FRONT's model or one of the names is missing: AIR keeps no copy."""
+    t = front_table(repo_root)
+    if t is None:
+        raise RuntimeError("FRONT's DR model %s is not in this checkout; AIR reads DR's panel face from it" % FRONT_FILE)
+    missing = [n for n in FRONT_NAMED if n not in t]
+    if missing:
+        raise RuntimeError("FRONT's DR model no longer publishes %s" % missing)
+    own = {p[0] for p in AIR_PARAMS} | set(have)
+    take, todo = set(), list(FRONT_NAMED)
+    while todo:
+        n = todo.pop()
+        if n in take:
+            continue
+        take.add(n)
+        for ident in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", t[n][1]):
+            if ident in t and ident not in own and ident not in take:
+                todo.append(ident)
+    return [(n, t[n][1], t[n][2], t[n][3], "FRONT's DR model (%s), read at load: %s" % (FRONT_FILE.split("/")[-1], t[n][4]))
+            for n in t if n in take]
 
 
 def all_params():
     base = CM.all_params()
     have = {p[0] for p in base}
-    clash = [p[0] for p in AIR_PARAMS if p[0] in have and p[0] not in AIR_MAY_DEFINE]
+    mine = [p for p in AIR_PARAMS if p[0] != "@FRONT"]
+    clash = [p[0] for p in mine if p[0] in have and p[0] not in AIR_MAY_DEFINE]
     if clash:
         raise ValueError("AIR parameter names clash with the skeleton or the ceiling: %s" % clash)
-    return base + [p for p in AIR_PARAMS if p[0] not in have]
+    front = [p for p in front_entries(have=have) if p[0] not in have]
+    at = [p[0] for p in AIR_PARAMS].index("@FRONT")
+    out = [p for p in AIR_PARAMS[:at] if p[0] not in have] + front + [p for p in AIR_PARAMS[at + 1:] if p[0] not in have]
+    return base + out
 
 
 def evaluate(params=None, overrides=None):
