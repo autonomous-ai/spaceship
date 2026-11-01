@@ -622,6 +622,136 @@ def test_v_groove_with_its_outside_radius():
     assert any("no outside arc R2.5" in x_ for x_ in f4), f4
 
 
+def _spigot_rail(path, slot="along", width=20.0, hole_y=10.0, slot_y=10.0):
+    """A 600 long rail along X, a 40 high x width x 1.2 tube seated on its bottom face, with a Ø8.5 spigot hole at
+    X 100 and an 8.5 x 14 spigot slot at X 500 through its bottom wall; the slot runs along the rail (toward the
+    hole when slot_y is hole_y) or across it. Returns the path and the slot's two end centres (X, Y)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        return c.Shape()
+    sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 600, width, 40).Shape(),
+             BRepPrimAPI_MakeBox(gp_Pnt(-1, 1.2, 1.2), 602, width - 2.4, 40 - 2.4).Shape())
+    sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(100, hole_y, -1), gp_Dir(0, 0, 1)), 4.25, 4).Shape())
+    half = (14.0 - 8.5) / 2
+    if slot == "along":
+        ends = [(500 - half, slot_y), (500 + half, slot_y)]
+        tool = BRepPrimAPI_MakeBox(gp_Pnt(500 - half, slot_y - 4.25, -1), 2 * half, 8.5, 4).Shape()
+    else:
+        ends = [(500, slot_y - half), (500, slot_y + half)]
+        tool = BRepPrimAPI_MakeBox(gp_Pnt(500 - 4.25, slot_y - half, -1), 8.5, 2 * half, 4).Shape()
+    for x, y in ends:
+        f = BRepAlgoAPI_Fuse(tool, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, -1), gp_Dir(0, 0, 1)), 4.25, 4).Shape())
+        f.Build()
+        tool = f.Shape()
+    u = ShapeUpgrade_UnifySameDomain(cut(sh, tool), True, True, True)
+    u.Build()
+    w = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(u.Shape(), STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    return path, ends
+
+
+def _spigot_sheet(d, pn, slot, spec=None, **kw):
+    """_spigot_rail drawn with spigot datums, its hole and slot named as spigots by a test register."""
+    step, ends = _spigot_rail(os.path.join(d, "%s_P01_TEST-RAIL-SPIGOT_STEP.step" % pn), slot, **kw)
+    reg = os.path.join(d, "FEATURE-RATIONALE-%s.md" % pn)
+    with open(reg, "w") as fh:
+        fh.write("test register for %s\n" % pn)
+    base = {"body": "", "dia": 8.5, "axis": "Z", "rule": "", "tolerance": "", "status": "", "file": reg,
+            "mating": "the frame's spigot (test)"}
+    rows = [dict(base, id="F-T-01", centres=[(100.0, kw.get("hole_y", 10.0))], function="spigot hole (test)"),
+            dict(base, id="F-T-02", centres=ends, function="spigot slot (test)")]
+    real = compose.inputs.feature_rows
+    compose.inputs.feature_rows = lambda pn_, team: rows if pn_ == pn else real(pn_, team)
+    try:
+        p = os.path.join(d, "%s.pdf" % pn)
+        row = dict(ROW, part_number=pn, name="TEST - RAIL - SPIGOT")
+        compose.make(pn, "none", spec or {"datums": "spigot", "tolerance": "test", "iso": False}, p, step=step, row=row)
+        return p
+    finally:
+        compose.inputs.feature_rows = real
+
+
+def _datum_near(doc, data, tag, letter="C", within=25.0):
+    """True when the sheet prints the datum letter within `within` mm of the feature's centre, in the view that shows
+    it face on."""
+    ft = next(f for f in data["features"] if f["tag"] == tag)
+    tb = readback.text_boxes(doc[0], data["sheet_h"])
+    for v in data["views"]:
+        if abs(abs(sum(a * b for a, b in zip(v["n"], ft["axis"]))) - 1) > 1e-6:
+            continue
+        q = (sum(a * b for a, b in zip(ft["entry"], v["x"])), sum(a * b for a, b in zip(ft["entry"], v["y"])))
+        c = (v["off"][0] + v["scale"] * q[0], v["off"][1] + v["scale"] * q[1])
+        if any(t[4] == letter and math.dist(((t[0] + t[2]) / 2, (t[1] + t[3]) / 2), c) < within for t in tb):
+            return True
+    return False
+
+
+def test_datum_c_is_the_spigot_slot_where_it_runs_along_the_rail():
+    """The Lead's ruling on datum C (2026-11-01): a spigot slot that runs along its rail toward B (R-J13: CEILING's
+    frames, WALL's back panels) stops the turn about B, so C is the slot, and the note says so. A test rail with its
+    slot along it, in line with B: datum C is the slot, its symbol on the slot, and the note gives R-J13's sentence,
+    never R-J17's. A slot along its rail but off B's line is refused, and so is an entry that names a face for C."""
+    d = os.path.join(TMP, "datum_c_along")
+    os.makedirs(d, exist_ok=True)
+    p = _spigot_sheet(d, "219980", "along")
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    slot = next(f for f in data["features"] if f["kind"] == "slot")
+    hole = next(f for f in data["features"] if f["tag"] == data["datums"]["B"])
+    assert hole["kind"] == "hole" and data["datums"]["C"] == "slot %s" % slot["tag"], data["datums"]
+    notes = " ".join(" ".join(pg.get_text().split()) for pg in doc)
+    want = ("C = the spigot slot %s, the median plane of its width (it runs along the rail toward B, R-J13, so it "
+            "stops the turn about B)" % slot["tag"])
+    assert want in notes and "R-J17" not in notes, notes[notes.find("Datums"):][:400]
+    assert _datum_near(doc, data, slot["tag"]), "no datum C symbol at the slot"
+    try:
+        _spigot_sheet(d, "219979", "along", width=40.0, hole_y=10.0, slot_y=30.0)
+        raise AssertionError("read datum C from a slot that misses B's line")
+    except compose.NotDrawable as e:
+        assert "its line passes 20 from B's axis" in str(e), e
+    try:
+        _spigot_sheet(d, "219978", "along", spec={"datums": "spigot", "c_face": "-Y", "tolerance": "test", "iso": False})
+        raise AssertionError("took a face for C with the slot along the rail")
+    except compose.NotDrawable as e:
+        assert "so C is the slot" in str(e), e
+
+
+def test_datum_c_is_a_face_where_the_spigot_slot_runs_across_the_rail():
+    """The Lead's ruling on datum C (2026-11-01): a spigot slot that runs across its rail (R-J17: WALL's side
+    panels' back ends) doesn't stop the turn about B, so C stays the room-side face. A test rail with its slot across
+    it: datum C is that face, and the note gives R-J17's sentence, never R-J13's."""
+    d = os.path.join(TMP, "datum_c_across")
+    os.makedirs(d, exist_ok=True)
+    p = _spigot_sheet(d, "219977", "across")
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    slot = next(f for f in data["features"] if f["kind"] == "slot")
+    assert data["datums"]["C"] == "plane -Y at 0", data["datums"]
+    notes = " ".join(" ".join(pg.get_text().split()) for pg in doc)
+    want = ("C = the room-side face (Y 0), which stops the turn about B (the spigot slot %s runs across the rail, "
+            "R-J17, so it locates along the rail only)" % slot["tag"])
+    assert want in notes and "R-J13, so it stops" not in notes, notes[notes.find("Datums"):][:400]
+    assert not _datum_near(doc, data, slot["tag"], within=8.0), "a datum C symbol on the slot"
+
+
 def test_datums_are_never_dropped():
     """WALL (the Lead's order): a corner datum whose face no plain view shows edge on was dropped without a word. It
     now goes on a section that shows its face edge on, or the sheet is refused. WALL's tray 511101 with its
