@@ -803,6 +803,13 @@ def test_cutouts_matched_both_ways():
     doc = fitz.open(p)
     text = " ".join(doc[0].get_text().split())
     assert "CUT-OUT 304 x 268 along X" in text and "CUT-OUT 80 x 11 along Y" in text, text[:800]
+    # each cut-out's row names its register feature (Reviewer 6's P2): WALL's F44 and F45, by part, size and place
+    assert "F44 Power unit cut-out 304 x 268" in text and "F45 Corner slot S-CNR 11 x 80" in text, text[:1200]
+    import inputs
+    rows = [{"id": "F44", "size": (304.0, 268.0), "ranges": {"X": (91.0, 395.0), "Z": (866.0, 1134.0)}}]
+    assert inputs.match_cutout(rows, 268.0, 304.0, (91.0, 799.5, 866.0, 395.0, 800.0, 1134.0)) is rows[0]
+    assert inputs.match_cutout(rows, 304.0, 268.0, (92.0, 799.5, 866.0, 396.0, 800.0, 1134.0)) is None   # 1 mm off
+    assert inputs.match_cutout(rows, 304.0, 260.0, (91.0, 799.5, 866.0, 395.0, 800.0, 1134.0)) is None   # other size
     data = readback.read_data(doc)
     assert sorted(f["kind"] for f in data["features"]) == ["cutout", "cutout", "hole"], data["features"]
     src = os.path.join(readback.REPO, data["flat"]["dxf"])

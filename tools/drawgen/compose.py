@@ -334,9 +334,13 @@ class Part:
         # slot is one of them (its size, place and DXF shape are the cut-out's)
         if self.flat:
             self.features = [ft for ft in self.features if ft.kind != "slot"]
+        cut_rows = inputs.cutout_rows(pn, team) if self.flat and self.flat.cutouts else []
         for c in (self.flat.cutouts if self.flat else []):
             ft = Feature(c, "cutout")
             ft.body = self.bodies[0]
+            box = tuple(min(q[k] for q in c.boundary) for k in range(3)) + tuple(max(q[k] for q in c.boundary)
+                                                                               for k in range(3))
+            ft.reg = inputs.match_cutout(cut_rows, c.length, c.width, box)     # its register row (F44, F45...)
             self.features.append(ft)
 
     def _to_pod(self):
