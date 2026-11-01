@@ -1109,7 +1109,16 @@ def place(design, host_key, key, xyz, rot=None):
     Positions come from the same expressions as the holes and are set when
     the script runs (see the manifest)."""
     m = adsk.core.Matrix3D.create()
-    if rot == "x+":
+    if isinstance(rot, tuple) and rot[0] == "z":
+        # ("z", deg): turned deg about Z (a front key, its +X along its carrier at any angle)
+        m.setToRotation(math.radians(rot[1]), Z, adsk.core.Point3D.create(0, 0, 0))
+    elif isinstance(rot, tuple) and rot[0] == "hz":
+        # ("hz", deg): its +Z laid level, pointing deg in plan (a hook stud out of a mitred stud face)
+        m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
+        r2 = adsk.core.Matrix3D.create()
+        r2.setToRotation(math.radians(rot[1]), Z, adsk.core.Point3D.create(0, 0, 0))
+        m.transformBy(r2)
+    elif rot == "x+":
         m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
     elif rot == "y-":
         m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
@@ -1222,7 +1231,9 @@ def step7_hardware(design):
     build_pin(design)
     build_washer(design)
     build_doubler(design)
-    import_owner_part(design, "key")         # the Joints Engineer's 111211 (D-95), not a copy
+    for k in OWNER_STEP:                     # the Joints Engineer's keys (D-95), not copies: 111211, and P02's
+        if k in PARTS:
+            import_owner_part(design, k)
     build_bolt(design)
     build_bscrew(design)
     build_glide(design)

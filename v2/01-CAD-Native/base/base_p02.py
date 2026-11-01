@@ -4,8 +4,8 @@ Executed inside base_build.py's namespace (it uses its helpers and adds to its
 PARTS, BASE_PARAMS, MATERIALS, steps and hardware). Adds:
 
   right side band 110102 / 111102 (mirror of the left; the back key at BR, D-129)
-  front band pieces: FL1 111104, FL2 111105 (DL's two facets), FL2's door-side
-      end cap 111110, FR1 111106 (under the fixed glass)
+  front band pieces: FL1 111104, FL2 111105 (DL's two facets; FL2 with its door-end
+      block welded on), FR1 111106 (under the fixed glass)
   the DR intake (D-62): mesh 111107, support rail 111108, closing plate 111109
 
 The front keys 111212 to 111214 are the Joints Engineer's (J-BASE-02), placed
@@ -39,6 +39,10 @@ P02_PARAMS = [
     ("ch_screw_x4", "905 mm", "mm", "confirmed",
      "the last channel screw at X 905: on FR1's sill seat, 2 hole diameters from FR1's end at x_fr_joint (joints register J-FRONT-04, "
      "the Lead 2026-11-01: X 905 or less; FRONT's 914.1 moves)"),
+    ("gl_fl2", "145 mm", "mm", "calculation",
+     "FL2's glide along its centre line from the knee face's centre: the support under DL and the door's hinges "
+     "(about 650 N, DL 12.3 kg and the 48.6 kg door, FRONT's lists), 60 from DL's slot spigot rivnut (40 needed) "
+     "and its load block 7 clear of the door-end block; FL1, 112 long between two keyed ends, has none"),
     ("ch_rn_hole", "5 mm", "mm", "assumption", "hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)"),
 ]
 
@@ -50,7 +54,11 @@ P02_PARTS = {
     "front_l": ("110104", "BASE - BAND ASSY - FRONT - LH", "Viền chân trước - trái (cụm)", "HS", None),
     "fl1": ("111104", "BASE - BAND TUBE - FRONT - FACET 1 - LH", "Viền chân trước - mặt vát 1", "MP", "front_l"),
     "fl2": ("111105", "BASE - BAND TUBE - FRONT - FACET 2 - LH", "Viền chân trước - mặt vát 2", "MP", "front_l"),
-    "cap_l": ("111110", "BASE - BAND END CAP - DOOR SIDE - LH", "Nắp đầu viền chân - phía cửa", "MP", "front_l"),
+    "seal_fl1": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_l"),
+    "seal_fl2": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "front_l"),
+    # the Joints Engineer's keys (J-BASE-02), imported from their STEPs and placed by reference (D-95)
+    "key_f": ("111212", "BASE - CORNER KEY - FRONT - LH", "Ke góc đế trước - trái", "MP", None),
+    "key_k": ("111214", "BASE - CORNER KEY - KNEE - LH", "Ke góc đế - gối trái", "MP", None),
     "front_r": ("110106", "BASE - BAND ASSY - FRONT - FIXED GLASS", "Viền chân trước - dưới kính cố định (cụm)", "HS", None),
     "fr1": ("111106", "BASE - BAND TUBE - FRONT - FIXED GLASS", "Viền chân trước - dưới kính cố định", "MP", "front_r"),
     "intake": ("110107", "BASE - INTAKE ASSY - DR", "Cụm cửa gió dưới khối phải", "HS", None),
@@ -88,28 +96,40 @@ BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "seal_r", "seal_fr1
 
 
 # batch 2: the front-left pieces under DL (with --arg batch2=1; its method sample first: --arg part=fl1)
-BATCH2 = ("front_l", "fl1", "fl2", "cap_l")
+BATCH2 = ("front_l", "fl1", "fl2", "seal_fl1", "seal_fl2", "key_f", "key_k")
 
 P02_BATCH_KEYS = BATCH1 + (BATCH2 if ARGS.get("batch2") == "1" else ())
 
 
 def p02_setup(keys=P02_BATCH_KEYS):
     """Adds the P02 parameters and the parts of this batch (keys) to base_build's tables."""
-    global SUB_DESIGNS, WITH_ASSEMBLY
+    global SUB_DESIGNS, WITH_ASSEMBLY, HOLDING_KEYS
     BASE_PARAMS.extend(P02_PARAMS)
     if "fl1" in keys or "fl2" in keys:
         BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02)
     PARTS.update({k: P02_PARTS[k] for k in keys})
-    mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "cap_l", "fr1", "rail", "cplate", "sill")}
+    mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "fr1", "rail", "cplate", "sill",
+                                                    "key_f", "key_k")}
     mats.update({"mesh": ("Aluminum", "Expanded mesh 80% free, 540 kg/m3 (ASSUMPTION)", 540.0),
-                 "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"]})
+                 "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"],
+                 "seal_fl1": MATERIALS["seal_l"], "seal_fl2": MATERIALS["seal_l"]})
     MATERIALS.update({k: m for k, m in mats.items() if k in keys})
-    SUB_DESIGNS = tuple(SUB_DESIGNS) + tuple(k for k in ("band_r", "front_r") if k in keys)
+    SUB_DESIGNS = tuple(SUB_DESIGNS) + tuple(k for k in ("band_r", "front_r", "front_l") if k in keys)
+    if "fl1" in keys:             # batch 2: the front keys come from their owner's STEPs (D-95), held at the root and copied
+        OWNER_STEP.update({"key_f": "v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step",
+                           "key_k": "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step"})
+        HOLDING_KEYS = tuple(HOLDING_KEYS) + ("key_f", "key_k")
+        EXPECTED_OWN.extend([
+            ("838001", "111212", "hook stud threads in the front corner key's tapped holes (J-BASE-02)"),
+            ("838010", "111212", "fixing screw threads in the front corner key's tapped holes (J-BASE-02)"),
+            ("838001", "111214", "hook stud threads in the knee key's tapped holes (J-BASE-02)"),
+            ("838010", "111214", "fixing screw threads in the knee key's tapped holes (J-BASE-02)")])
+        WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("fl1", "fl2")
     if "band_r_tube" in keys:     # its back end carries a corner key (D-129): its part design follows each assembly save, as 111101's
         WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("band_r_tube",)
     PART_BUILDS.update({k: fns for k, fns in (
         ("band_r_tube", ("step_p02_band_r",)), ("fr1", ("step_p02_fr1",)), ("sill", ("step_p02_sill",)),
-        ("fl1", ("step_p02_fl1",)))
+        ("fl1", ("step_p02_fl1",)), ("fl2", ("step_p02_fl2",)))
         if k in keys})
 
 
@@ -155,29 +175,6 @@ def step_p02_band_r(design):
     print("P02: right side band built")
 
 
-def step_p02_front(design):
-    # FL1: DL's first facet, from the FL corner mitre to the knee mitre
-    fl1 = [P(design, XL_, "-dl_y1"), P(design, "%s + dl_x2" % XL_, "-dl_y2"), P(design, IL2_X, IL2_Y),
-           P(design, "%s + band_t" % XL_, Y_MITRE_IN)]
-    bore_note = "bore: the tube's inside, 1.5 mm in from each face"
-    plan_tube(design, "fl1", "FRONT FACET 1 LH", fl1, bore_note)
-    fl2 = [P(design, "%s + dl_x2" % XL_, "-dl_y2"), P(design, "%s + dl_x3" % XL_, "-dl_y3"),
-           P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END), P(design, IL2_X, IL2_Y)]
-    plan_tube(design, "fl2", "FRONT FACET 2 LH", fl2, bore_note)
-    cap = [P(design, "%s + dl_x3" % XL_, "-dl_y3"), P(design, "%s + dl_w" % XL_, "-dl_y3"),
-           P(design, "%s + dl_w" % XL_, Y_CAP_IN), P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END)]
-    plan_solid(design, "cap_l", "BAND END CAP - DOOR SIDE LH", cap)
-    fr1 = [P(design, X_FR0, "-pod_d / 2"), P(design, X_FR_JOINT, "-pod_d / 2"),
-           P(design, X_FR_JOINT, "-pod_d / 2 + band_t"), P(design, X_FR0, "-pod_d / 2 + band_t")]
-    v = lambda e: ev(design, e)  # noqa: E731
-    plan_tube(design, "fr1", "FRONT FIXED GLASS", fr1, bore_note,
-              closed_near=(v(X_FR_JOINT), v("-pod_d / 2 + band_t / 2")))
-    # FR1 is the keyhole piece of the inline joint (joints register PR #99: the intake carries
-    # 111215, D-144, in its stub's end and FR1 goes on last, down onto the studs)
-    keyholes_x(design, "fr1", X_FR_JOINT, "-pod_d / 2 + band_t / 2", -1, "FR1 END")    # through the end plate
-    print("P02: front band pieces built (FL1, FL2 with its cap, FR1 with its keyed end plate)")
-
-
 def step_p02_fr1(design):
     """FR1 under the fixed glass, X 218.5 to x_fr_joint: a 100 x 40 x 1.5 tube, open at the door
     opening (bought end cap 118003) and closed at the joint by its band_wall end plate, which takes the
@@ -196,6 +193,54 @@ def step_p02_fr1(design):
     hole(design, "fr1", bot, "GLIDE NUT - FR1", (v(xg0), v(yg), v("glide_h")), [(X, xg0), (Y, yg)],
          "gl_nut_hole", "band_wall", up, ("xConstructionAxis", "2", "%s - %s - 2 * gl_e_f" % (X_FR_JOINT, X_FR0)))
     print("P02: FR1 %s, keyed end plate at X %.1f" % (fmt_box(bbox_mm(single_body(c))), v(X_FR_JOINT)))
+
+
+def step_p02_fl2(design):
+    """FL2 (111105): DL's second facet, from the knee mitre with FL1 to its square end at X -pod_w/2 + dl_x3, with
+    the door-end block welded on out to DL's door face (X -pod_w/2 + dl_w): one part, ground flush and anodised
+    after welding. Its knee end is closed by its band_wall end plate with the keyholes for FL1's knee key 111214
+    (FL2 is the keyhole piece: on along the studs, then down kh_drop); its top wall has the rivnut hole for DL's
+    slot spigot at FRONT's named point (J-FRONT-02); one glide with its load block, gl_fl2 from the knee face's
+    centre along FL2. Checked against corner-keys.csv."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    fl2 = [P(design, "%s + dl_x2" % XL_, "-dl_y2"), P(design, "%s + dl_x3" % XL_, "-dl_y3"),
+           P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END), P(design, IL2_X, IL2_Y)]
+    knee = (v(FC_KX), v(FC_KY))
+    plan_tube(design, "fl2", "FRONT FACET 2 LH", fl2, "", closed_near=knee)
+    n_k = unit_xy(v(D1X) + v(D2X), v(D1Y) + v(D2Y))
+    n_out = (-n_k[0], -n_k[1])                        # FL2's knee face looks back at FL1
+    keyholes_on_face(design, "fl2", knee, n_out, W_KNEE, "FL2 KNEE (111214)")
+    c = find_comp(design, "fl2")
+    body = c.bRepBodies.item(0)
+    bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
+    # the door-end block, welded on: joined to the tube, it closes FL2's open end
+    sk = c.sketches.add(bot)
+    sk.name = "PLAN - FL2 DOOR-END BLOCK (WELDED ON) - TO DL'S DOOR FACE"
+    polygon(design, sk, [P(design, "%s + dl_x3" % XL_, "-dl_y3"), P(design, "%s + dl_w" % XL_, "-dl_y3"),
+                         P(design, "%s + dl_w" % XL_, Y_CAP_IN), P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END)], X, Y)
+    check_sketch(sk)
+    ei = c.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.JoinFeatureOperation)
+    ei.setDistanceExtent(False, vi("band_h"))
+    ei.participantBodies = [body]
+    f = c.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - FL2 DOOR-END BLOCK band_h, JOINED (WELDED)"
+    if c.bRepBodies.count != 1:
+        raise RuntimeError("FL2: the door-end block didn't join the tube (%d bodies)" % c.bRepBodies.count)
+    top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
+    down = Z.copy()
+    down.scaleBy(-1)
+    hole_that_cuts(design, "fl2", top, "DL SPIGOT RIVNUT - SLOT (J-FRONT-02)", (v("dlf_sp_bx"), v("dlf_sp_by"), v("wall_z0")),
+                   [(X, "dlf_sp_bx"), (Y, "dlf_sp_by")], "rn_hole", "band_wall", down)
+    xg, yg = "%s + gl_fl2 * %s" % (FC_KX, D2X), "%s + gl_fl2 * %s" % (FC_KY, D2Y)
+    hole_that_cuts(design, "fl2", bot, "GLIDE NUT - FL2", (v(xg), v(yg), v("glide_h")), [(X, xg), (Y, yg)],
+                   "gl_nut_hole", "band_wall", Z)
+    hole_that_cuts(design, "fl2", top, "GLIDE KEY - FL2", (v(xg), v(yg), v("wall_z0")), [(X, xg), (Y, yg)],
+                   "gl_key_hole", "band_wall", down)
+    off = keyhole_check(design, "fl2", "111214", "front left knee", knee, n_out)
+    print("  111105 holes (centre across the axis, diameter; axis): %s" % holes_of_all(c.bRepBodies.item(0)))
+    if off:
+        raise RuntimeError("FL2: off against corner-keys.csv")
+    print("P02: FL2 %s" % fmt_box(bbox_mm(single_body(c))))
 
 
 def keyholes_x(design, key, x_face_expr, y_expr, into_sign, label):
@@ -419,6 +464,42 @@ def p02_hardware(design):
         out.append(("front_r", "doubler", (xg, yf, zd), "z-90"))
     # FR1's open end at the door opening is in view now (no threshold, D-132): the same flat cap as the side bands'
     out.append(("front_r", "cap", (v("%s + cap_t / 2" % X_FR0), yf, v("glide_h")), "z-90"))
+    if "fl1" in PARTS:
+        out += p02_hardware_front_l(design)
+    return out
+
+
+def p02_hardware_front_l(design):
+    """Batch 2 (J-BASE-02, J-FRONT-02): the front corner key 111212 in the left side band's front end (its carrier)
+    and the knee key 111214 in FL1's knee end, each with 2 flanged button head fixing screws from below and 2 hook
+    stud bolts in its stud face, heads st_gap off it; DL's 2 spigots in rivnuts on FL1 and FL2 (no stop washer);
+    FL2's glide with its load block. Positions from the same expressions as the holes; the keys' come from their
+    stud faces (the mitres' centres) and their carriers' directions, as corner-keys.csv has them."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    out = []
+    d1, d2 = (v(D1X), v(D1Y)), (v(D2X), v(D2Y))
+    n_c = unit_xy(d1[0], d1[1] - 1.0)                # the corner mitre's normal, out of the side band
+    n_k = unit_xy(d1[0] + d2[0], d1[1] + d2[1])      # the knee mitre's normal, out of FL1
+    deg = lambda u: math.degrees(math.atan2(u[1], u[0]))  # noqa: E731
+    zk, zs = v("glide_h + band_wall"), v("glide_h")
+    for host, key, face, carrier, n in (("band_l", "key_f", (v(FC_CX), v(FC_CY)), (0.0, -1.0), n_c),
+                                        ("front_l", "key_k", (v(FC_KX), v(FC_KY)), d1, n_k)):
+        lx, ly = -carrier[1], carrier[0]             # the key's +y, left of its +x (joints README)
+        bx, by = face[0] - v("ck_x") * carrier[0], face[1] - v("ck_x") * carrier[1]   # its back face's centre
+        out.append((host, key, (bx, by, zk), ("z", deg(carrier))))
+        for sy in (1, -1):
+            out.append((host, "bscrew", (bx + v("ck_e") * carrier[0] + sy * v("ck_y / 2 - ck_e") * lx,
+                                         by + v("ck_e") * carrier[1] + sy * v("ck_y / 2 - ck_e") * ly, zs), "z-"))
+        for zz in ("st_z1", "st_z2"):
+            out.append((host, "bolt", (face[0] + v("st_gap") * n[0], face[1] + v("st_gap") * n[1], zk + v(zz)),
+                        ("hz", deg(n))))
+    z_top, head = v("wall_z0"), v("rn_head_t")
+    for x, y in ((v("dlf_sp_ax"), v("dlf_sp_ay")), (v("dlf_sp_bx"), v("dlf_sp_by"))):
+        out.append(("front_l", "rivnut", (x, y, z_top), None))
+        out.append(("front_l", "pin", (x, y, z_top + head), None))
+    xg, yg = v("%s + gl_fl2 * %s" % (FC_KX, D2X)), v("%s + gl_fl2 * %s" % (FC_KY, D2Y))
+    out.append(("front_l", "glide", (xg, yg, 0.0), None))
+    out.append(("front_l", "doubler", (xg, yg, zk), ("z", deg(d2) - 90.0)))     # its 54 along FL2
     return out
 
 
@@ -432,6 +513,28 @@ def p02_seal_runs(design):
     if "band_r_tube" in PARTS:
         runs.append(("seal_r", "band_r", "X = %.2f (side band RH, inner face)" % v(xi), Y_MITRE_IN_R, yb,
                      [("%s - seal_t" % xi, Y_MITRE_IN_R), (xi, Y_MITRE_IN_R), (xi, yb), ("%s - seal_t" % xi, yb)]))
+    if "fl1" in PARTS:
+        # FL1's inner face from the inner corner to the inner knee, FL2's from there to DL's door face (along the
+        # welded block's inner edge). The envelopes meet without overlapping: FL1's starts where it clears the side
+        # band's (its far corner on X = -pod_w/2 + band_t + seal_t), the two meet at the knee's offset point (the
+        # inner knee's own formula with seal_t), and FL2's ends on the door face's line.
+        xc, yc = "(%s + band_t)" % XL_, Y_MITRE_IN
+        p1x, p1y = "(%s / %s)" % (B1, L1), "(%s / %s)" % (A1, L1)          # FL1's left normal, into the pod
+        p2x, p2y = "(%s / %s)" % (B2, L2), "(%s / %s)" % (A2, L2)          # FL2's
+        t0 = "(seal_t * (1 - %s) / %s)" % (p1x, D1X)
+        s0x, s0y = "(%s + %s * %s)" % (xc, t0, D1X), "(%s + %s * %s)" % (yc, t0, D1Y)
+        qx = "(%s + seal_t * (%s + %s) / (1 + %s))" % (IL2_X, p1x, p2x, DOT)
+        qy = "(%s + seal_t * (%s + %s) / (1 + %s))" % (IL2_Y, p1y, p2y, DOT)
+        xe, ye = "(%s + dl_w)" % XL_, Y_CAP_IN
+        l1 = "sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)" % (IL2_X, xc, IL2_Y, yc)
+        l2 = "sqrt((%s - %s) ^ 2 + (%s - %s) ^ 2)" % (xe, IL2_X, ye, IL2_Y)
+        # FL1's envelope starts at the inner corner and wraps round the side band envelope's front corner
+        # (X -pod_w/2 + band_t + seal_t, Y_MITRE_IN): the two only touch along edges
+        runs.append(("seal_fl1", "front_l", "FL1, inner face", "0 mm", l1,
+                     [(xc, yc), (IL2_X, IL2_Y), (qx, qy), ("(%s + seal_t * %s)" % (s0x, p1x), "(%s + seal_t * %s)" % (s0y, p1y)),
+                      ("(%s + seal_t)" % xc, yc)]))
+        runs.append(("seal_fl2", "front_l", "FL2, inner face, to DL's door face", "0 mm", l2,
+                     [(IL2_X, IL2_Y), (xe, ye), (xe, "(%s + seal_t / %s)" % (ye, p2y)), (qx, qy)]))
     if "fr1" in PARTS:
         yf = "-pod_d / 2 + band_t"
         runs.append(("seal_fr1", "front_r", "Y = %.2f (FR1, inner face)" % v(yf), X_FR0, X_FR_JOINT,
@@ -535,6 +638,7 @@ def front_dl_params(prefix="dlf_"):
 
 # FL1's corner mitre with the left side band and its knee mitre with FL2, in plan (expressions)
 D1X, D1Y = "(dl_x2 / %s)" % L1, "(-(dl_y2 - dl_y1) / %s)" % L1          # FL1's direction, corner to knee
+D2X, D2Y = "(%s / %s)" % (A2, L2), "(-%s / %s)" % (B2, L2)                  # FL2's direction, knee to door end
 P1X, P1Y = "((dl_y2 - dl_y1) / %s)" % L1, D1X                           # Z x D1, to its left
 FC_CX, FC_CY = "(%s + band_t / 2)" % XL_, "((-dl_y1 + %s) / 2)" % Y_MITRE_IN     # corner face centre (-1230, -661.03)
 FC_KX, FC_KY = "((%s + dl_x2 + %s) / 2)" % (XL_, IL2_X), "((-dl_y2 + %s) / 2)" % IL2_Y   # knee face centre
@@ -759,3 +863,7 @@ def step_p02_fl1(design):
     if off or not ok:
         raise RuntimeError("FL1 sample: off against corner-keys.csv")
     print("P02: FL1 %s" % fmt_box(bbox_mm(single_body(c))))
+
+
+if "fl1" in P02_BATCH_KEYS:      # batch 2: DL's two facets (their steps are defined above)
+    P02_STEPS = P02_STEPS + [step_p02_fl1, step_p02_fl2]
