@@ -1,5 +1,5 @@
 {
- "next": 273,
+ "next": 279,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3094,7 +3094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3119,7 +3119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -3149,7 +3149,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -3407,7 +3407,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3432,7 +3432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3457,7 +3457,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3482,7 +3482,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3507,7 +3507,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3532,7 +3532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3557,7 +3557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3582,7 +3582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3607,7 +3607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3632,7 +3632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3657,7 +3657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3682,7 +3682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3707,7 +3707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3732,7 +3732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3757,7 +3757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3782,7 +3782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3807,7 +3807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -3832,7 +3832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4335,7 +4335,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C01",
@@ -4394,7 +4394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4419,7 +4419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4444,7 +4444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4469,7 +4469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4494,7 +4494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4519,7 +4519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4544,7 +4544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4569,7 +4569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4687,7 +4687,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -4742,7 +4742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4767,7 +4767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4792,7 +4792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4817,7 +4817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4842,7 +4842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4867,7 +4867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4892,7 +4892,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -4927,7 +4927,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d",
+   "last_seen": "2026-11-01 5c8f25a",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4953,7 +4953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -4982,7 +4982,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5011,7 +5011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5040,7 +5040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5069,7 +5069,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5098,7 +5098,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5127,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5156,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5185,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5214,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5243,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5272,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5301,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5330,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5359,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5388,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5417,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5446,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5471,7 +5471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5496,7 +5496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5521,7 +5521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5546,7 +5546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5571,7 +5571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5596,7 +5596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5621,7 +5621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5646,7 +5646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5671,7 +5671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5696,7 +5696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5783,7 +5783,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5812,7 +5812,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5841,7 +5841,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5870,7 +5870,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5899,7 +5899,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -5928,7 +5928,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5953,7 +5953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -5978,7 +5978,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6003,7 +6003,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6028,7 +6028,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6053,7 +6053,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6078,7 +6078,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6103,7 +6103,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6128,7 +6128,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6153,7 +6153,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6178,7 +6178,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6203,7 +6203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6228,7 +6228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6253,7 +6253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6278,7 +6278,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6303,7 +6303,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6328,7 +6328,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6383,7 +6383,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6408,7 +6408,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6433,7 +6433,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6458,7 +6458,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6513,7 +6513,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6538,7 +6538,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6563,7 +6563,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6588,7 +6588,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6613,7 +6613,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6638,7 +6638,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6663,7 +6663,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6688,7 +6688,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6713,7 +6713,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -6738,7 +6738,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C08",
@@ -6767,7 +6767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6792,7 +6792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6817,7 +6817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6842,7 +6842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6867,7 +6867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6892,7 +6892,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6917,7 +6917,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6942,7 +6942,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6967,7 +6967,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -6992,7 +6992,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -7017,7 +7017,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -7042,7 +7042,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -7067,7 +7067,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -7092,7 +7092,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -7117,7 +7117,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C11",
@@ -7142,7 +7142,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7167,7 +7167,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C09",
@@ -7195,7 +7195,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C09",
@@ -7223,7 +7223,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7252,7 +7252,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7281,7 +7281,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7310,7 +7310,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7339,7 +7339,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7368,7 +7368,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7397,7 +7397,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7422,7 +7422,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7447,7 +7447,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7472,7 +7472,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7497,7 +7497,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7522,7 +7522,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7547,7 +7547,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7572,7 +7572,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7597,7 +7597,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7622,7 +7622,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7647,7 +7647,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7672,7 +7672,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7697,7 +7697,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7722,7 +7722,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7747,7 +7747,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7772,7 +7772,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7797,7 +7797,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C05",
@@ -7822,7 +7822,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5fa198d"
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7846,7 +7846,8 @@
      "rev": "5fa198d",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7870,7 +7871,8 @@
      "rev": "5fa198d",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7894,7 +7896,8 @@
      "rev": "5fa198d",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5c8f25a"
   },
   {
    "check": "C06",
@@ -7916,6 +7919,169 @@
     {
      "date": "2026-11-01",
      "rev": "5fa198d",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5c8f25a"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211101 SIDE LOWER - LH",
+   "severity": "major",
+   "message": "211101 SIDE LOWER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211101 SIDE LOWER - LH",
+   "id": "F-273",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5c8f25a",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5c8f25a",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211102 SIDE LOWER - RH",
+   "severity": "major",
+   "message": "211102 SIDE LOWER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211102 SIDE LOWER - RH",
+   "id": "F-274",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5c8f25a",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5c8f25a",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211103 SIDE UPPER - LH",
+   "severity": "major",
+   "message": "211103 SIDE UPPER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211103 SIDE UPPER - LH",
+   "id": "F-275",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5c8f25a",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5c8f25a",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211104 SIDE UPPER - RH",
+   "severity": "major",
+   "message": "211104 SIDE UPPER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211104 SIDE UPPER - RH",
+   "id": "F-276",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5c8f25a",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5c8f25a",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211201 BACK LOWER - B1",
+   "severity": "major",
+   "message": "211201 BACK LOWER - B1 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 373.0,
+    "bays_over": 3
+   },
+   "key": "C09|acp-bay|assembly 211201 BACK LOWER - B1",
+   "id": "F-277",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5c8f25a",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5c8f25a",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211202 BACK LOWER - B2",
+   "severity": "major",
+   "message": "211202 BACK LOWER - B2 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 373.0,
+    "bays_over": 3
+   },
+   "key": "C09|acp-bay|assembly 211202 BACK LOWER - B2",
+   "id": "F-278",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5c8f25a",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5c8f25a",
      "event": "opened"
     }
    ]

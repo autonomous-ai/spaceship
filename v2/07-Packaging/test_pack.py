@@ -226,6 +226,30 @@ def test_roof_sleeve_goes_on_after_the_soffit():
     assert [s["n"] for s in pack.STEPS] == list(range(1, len(pack.STEPS) + 1))
 
 
+def test_design_review_glass_handling():
+    # design review 2026-11-01: both people carry DR while stays hold the glass; the door stands on packers; panes tilt up
+    def ops(title):
+        return [o["text"] for o in next(s for s in pack.STEPS if s["title"].startswith(title))["ops"]]
+    ten, eleven = ops("Fixed glass"), ops("Door")
+    assert any("glass stay on" in o for o in ten) and any("glass stay off" in o for o in ten), ten
+    assert any("tilt" in o for o in ten) and any("tilt" in o for o in eleven), (ten, eleven)
+    assert any("packers" in o for o in eleven), eleven
+    dr = next(o for o in next(s for s in pack.STEPS if s["title"].startswith("Fixed glass"))["ops"] if "2-03" in o["text"])
+    assert dr["who"] == 2, dr                      # DR (2.3 m) is carried by both people
+    kit = pack.PIECE["2-22"]
+    assert "glass stays" in kit.extra_note and "setting packers" in kit.extra_note, kit.extra_note
+
+
+def test_install_sheet_numbers():
+    # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
+    outs = pack.outputs(pack.Model())
+    sheet = outs[pack.OUT_INSTALL]
+    room = pack.sk("pod_h") + pack.MINE["roof_work"].value
+    assert f"at least {room:g} mm" in sheet, room
+    assert f"within {pack.MINE['glide_max'].value - pack.MINE['glide_min'].value:g} mm" in sheet
+    assert "120 V" in sheet and "{{" not in sheet
+
+
 def test_lanes_follow_the_parts():
     # a lane is as wide as its widest part plus the wrap a side; nothing in a tier passes the deck
     m = pack.Model()

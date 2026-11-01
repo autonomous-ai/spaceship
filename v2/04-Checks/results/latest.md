@@ -1,8 +1,8 @@
-# Mechanical check run: 5fa198d on 2026-11-01
+# Mechanical check run: 5c8f25a on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `5fa198d`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `5c8f25a`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 161** (49 severe, 105 major, 7 minor). Register numbers in brackets.
+**Findings in this run: 167** (49 severe, 111 major, 7 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -16,7 +16,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `5fa198d`. The Fusion 
 | C06 BOM completeness | yes | 38 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
-| C09 edge distance, bend radius, hole-to-bend | yes | 2 |
+| C09 edge distance, bend radius, hole-to-bend | yes | 8 |
 | C10 mixed metals | yes | 0 |
 | C11 material grade and finish | yes | 15 |
 
@@ -165,6 +165,12 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-252 | major | C06 | 611301 | 611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-253 | major | C06 | 611302 | 611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing. | CEILING |
 | F-227 | major | C08 | assembly SOFFIT RAIL DOOR holes Ø6.60 | 610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig. | CEILING |
+| F-273 | major | C09 | assembly 211101 SIDE LOWER - LH | 211101 SIDE LOWER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
+| F-274 | major | C09 | assembly 211102 SIDE LOWER - RH | 211102 SIDE LOWER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
+| F-275 | major | C09 | assembly 211103 SIDE UPPER - LH | 211103 SIDE UPPER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
+| F-276 | major | C09 | assembly 211104 SIDE UPPER - RH | 211104 SIDE UPPER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
+| F-277 | major | C09 | assembly 211201 BACK LOWER - B1 | 211201 BACK LOWER - B1 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
+| F-278 | major | C09 | assembly 211202 BACK LOWER - B2 | 211202 BACK LOWER - B2 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | WALL |
 | F-228 | major | C11 | 611106 | 611106 AIR - COLUMN FOOT PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'. | CEILING |
 | F-229 | major | C11 | 611103 | 611103 AIR - COLUMN CORNER ANGLE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'. | CEILING |
 | F-230 | major | C11 | 611107 | 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'. | CEILING |
@@ -232,7 +238,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.117 | 729 x 118 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2292 x 308 x 199 | long | calculation (CAD) |
-| 2-10 AIR - SOFFIT | 14.772 | 2322 x 359 x 233 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
+| 2-10 AIR - SOFFIT | 14.756 | 2322 x 359 x 233 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
 | 2-11 AIR - AIR COLUMN | 8.147 | 2108 x 359 x 212 | long | calculation (CAD); fill provisional |
 | 2-12 FRONT - DECOR BLOCK ASSY - DT | 7.913 | 1699 x 306 x 203 | long | calculation (CAD); calculation (CAD); magnetic seal HOLD |
 | 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.28 | 600 x 250 x 200 | long | calculation (CAD) |
@@ -248,5 +254,5 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 
 ## Fastener schedule (C07)
 
-125 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+131 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 

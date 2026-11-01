@@ -41,8 +41,10 @@ OUT_LIST = HERE / "910000_P01_PACKING-LIST_BOM.csv"
 OUT_PLAN = HERE / "910000_P01_PACKAGING-PLAN_PKG.md"
 OUT_SVG = {1: HERE / "910001_P01_PALLET-1-48X40_PKG.svg", 2: HERE / "910002_P01_PALLET-2-96X48_PKG.svg"}
 OUT_GUIDE = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE_INS.md"
+OUT_INSTALL = GUIDE_DIR / "100000_P04_POD-INSTALL-SHEET_INS.md"
 TPL_PLAN = HERE / "templates" / "packing-plan.md"
 TPL_GUIDE = HERE / "templates" / "assembly-guide.md"
+TPL_INSTALL = HERE / "templates" / "install-sheet.md"
 
 sys.path.insert(0, str(LAY / "scripts"))
 from inputs import P as LAYP  # noqa: E402  (the layout study's inputs: value, unit, status, source, note)
@@ -113,6 +115,17 @@ MINE = {
     "wrap": N(5, "mm", "assumption", "this plan", "per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box"),
     "dr_bed": N(10, "mm", "assumption", "this plan", "foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01)"),
     "cad_tol": N(0.5, "mm", "assumption", "this plan", "check K14: how far a CAD box may pass the planned size (rounding)"),
+    # installation kit aids (design review 2026-11-01)
+    "stay_kg": N(1.5, "kg", "assumption", "this plan", "one clamp-on glass stay: a padded clamp on the fixed glass's top edge with a telescopic prop to the base band, so the glass stands while both people bring DR (step 10)"),
+    "packer_h": N(7, "mm", "source", "step 11 (FRONT's door: the 7 mm running gap over the threshold)", "the setting packers the door stands on at hinge height while it is hung"),
+    "packer_kg": N(0.05, "kg", "assumption", "this plan", "a pair of plastic setting packers"),
+    "kit_aids_l": N(900, "mm", "assumption", "this plan", "the kit carton's length, for the collapsed glass stays"),
+    # the room (install sheet, IF-17)
+    "roof_work": N(150, "mm", "assumption", "this plan", "clear above the roof at its slot: room to drop the 68 mm roof sleeve in and for hands and a short driver at the grille's screws (step 18)"),
+    "spigot_lift": N(20, "mm", "assumption", "this plan", "DT and the ceiling halves are lifted over their 8 mm locating spigots and lowered on (J-FRONT-03, J-CEIL-01)"),
+    "glide_min": N(8.5, "mm", "confirmed", "PM ruling on F-018 (joints register)", "the lowest glide setting: the band's bottom 8.5 mm above the floor"),
+    "glide_max": N(15, "mm", "assumption", "ISS-054 (PROPOSED): the glides take the floor's 10 ± 5 mm", "the highest glide setting"),
+    "lay_out": N(1000, "mm", "assumption", "this plan", "clear round the footprint while the pod goes together: the parts set down at their places (step 1) and the step stools"),
     # stated limits
     "pal_std_l_exact": N(1219.2, "mm", "calculation", "requirements C1", "48 in exactly; the controlling number for 'fits the pallet'"),
     "pal_std_w_exact": N(1016.0, "mm", "calculation", "requirements C1", "40 in exactly"),
@@ -141,6 +154,10 @@ TIME = {
     "t_carry_staged_s": N(20, "s", "assumption", "this plan (D-87)", "carry a pallet 2 part that step 1 set down at its place: a few steps"),
     "t_level_preset_s": N(240, "s", "assumption", "this plan (D-87)", "check the band with the spirit level and turn only the glides that are out; glides preset at the factory"),
     "t_hook_s": N(120, "s", "assumption", "this plan (D-87)", "hang a part on its tool-free hooks and check it"),
+    "t_tilt_s": N(60, "s", "assumption", "this plan (design review)", "tilt a pane up in the crate on its padded long edge, both lifters at its top edge, onto the padded glass rest"),
+    "t_stay_on_s": N(60, "s", "assumption", "this plan (design review)", "clamp one glass stay on the fixed glass and set its prop"),
+    "t_stay_off_s": N(30, "s", "assumption", "this plan (design review)", "take one glass stay off"),
+    "t_packer_s": N(30, "s", "assumption", "this plan (design review)", "lay the setting packers under the door, or slide them out"),
     "t_sleeve_s": N(90, "s", "assumption", "this plan (#263)", "from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box"),
     "t_grille_s": N(120, "s", "assumption", "this plan (#263)", "screw the roof grille on over the sleeve (AIR's screws not listed yet)"),
     "t_selftest_s": N(180, "s", "assumption", "this plan (D-87)", "power on and the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail"),
@@ -407,9 +424,9 @@ PIECES = [
           "CEILING 410000 P01 STEP: 1160 x 1045 x 74, the tray with its ribs, felt, fill bays, clips and catches; returns 1163 x 1048 (PR #32)", 2, 19, "LINING"),
     Piece("2-21", "510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung)", "C2", [("CC", 1)], S(1163, 1048, 74),
           "as 2-20", 2, 19, "LINING"),
-    Piece("2-22", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(300, 150, 80),
-          "carton (assumption)", 2, 1, "KIT", carton=True, extra_kg=0.5,
-          extra_note="not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, this guide, the label map (assumption)"),
+    Piece("2-22", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(900, 150, 80),
+          "carton (assumption), long enough for the 2 collapsed glass stays", 2, 1, "KIT", carton=True, extra_kg=0.5 + 2 * 1.5 + 0.05,
+          extra_note="not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, 2 clamp-on glass stays (step 10), 2 setting packers (step 11), this guide, the label map (assumption)"),
     # ---------------- allowances: roll-up mass that rides inside the pieces above, with no label of its own
     Piece("A-1", "-", "40 x 40 corner edge tubes in L2, R2, C1, C2 (D-63)", "", "-", [("TUBES", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
     Piece("A-2", "-", "Bond beyond L1 and R1 (D-71)", "", "-", [("BOND", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
@@ -614,17 +631,24 @@ STEPS = [
          ops=[carry("2-09"), op("stand DL on the band", 2, lay("t_place_s"), 1, "t_place_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=10, title="Fixed glass, then the right decor block DR", tags=["2-01", "2-03"],
-         A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.",
-         B="Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.",
-         check="Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
-         ops=[carry("2-01"), op("set the fixed glass in the sill's channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
-              carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s")],
+         A="Opens the crate. With B, tilts the fixed glass up on its padded long edge, both suction lifters at its top edge, onto the padded glass rest; then both carry it upright and drop its bottom edge into the U-channel already fitted on the sill, onto its setting blocks. A clamps the 2 glass stays from the kit on its top edge and sets their props on the base band, so the glass stands on its own.",
+         B="With A, carries DR (2.3 m, 18 kg) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.",
+         caution="Nobody carries DR alone and nobody holds the glass by hand while DR comes in: the stays hold the glass, both people carry DR (2.3 m; the 2-person rule).",
+         check="Glass seated in all three channels so far, its free edge plumb; DR on its stops; both stays back in the kit. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
+         ops=[op("tilt the fixed glass up onto the glass rest", 2, TIME["t_tilt_s"].value, 1, "t_tilt_s"),
+              carry("2-01"), op("set the fixed glass in the sill's channel", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
+              op("clamp a glass stay on", 1, TIME["t_stay_on_s"].value, 2, "t_stay_on_s"),
+              carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s"),
+              op("take a glass stay off", 1, TIME["t_stay_off_s"].value, 2, "t_stay_off_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=11, title="Door (before DT)", tags=["2-02"],
-         A="With B, lifts the door unit out of the crate on 2 suction lifters (about 25 kg each), carries it upright and lowers its hinge halves onto DL's.",
-         B="Secures the hinges as the named set requires (HOLD), then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold. The hinges hold the door at its closed position; there is no lock (D-83).",
+         A="Lays the 2 setting packers from the kit (7 mm) on the threshold where the door's bottom corners land. With B, tilts the door unit up in the crate on its padded long edge, both suction lifters at its top edge (each lifts about 12 kg at the start), onto the padded glass rest; then both carry it upright (about 25 kg each) and stand it on the packers, so its hinge halves meet DL's at their height, and lower them on.",
+         B="Secures the hinges as the named set requires (HOLD), slides the packers out, then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold. The hinges hold the door at its closed position; there is no lock (D-83).",
          check="The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.",
-         ops=[carry("2-02"), op("hang the door and adjust", 2, lay("t_door_prehung_min") * 60, 1, "t_door_prehung_min")],
+         ops=[op("lay the setting packers", 1, TIME["t_packer_s"].value, 1, "t_packer_s"),
+              op("tilt the door up onto the glass rest", 2, TIME["t_tilt_s"].value, 1, "t_tilt_s"),
+              carry("2-02"), op("hang the door and adjust", 2, lay("t_door_prehung_min") * 60, 1, "t_door_prehung_min"),
+              op("slide the setting packers out", 1, TIME["t_packer_s"].value, 1, "t_packer_s")],
          joints={}),
     dict(n=12, title="Top decor block DT, from above", tags=["2-12"],
          A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.",
@@ -1299,6 +1323,8 @@ def gen_tables(m):
     T["HEAVIEST"] = f"{heaviest.name} ({heaviest.tag}) at {heaviest.kg:.1f} kg"
     T["PN16"], T["PN25"], T["PNW"], T["PNKEY"] = m.pn["M6 x 16"], m.pn["M6 x 25"], m.pn["washer"], m.pn["key"]
     T["KIT_TAG"] = next(p.tag for p in m.shipped() if p.pn == "109000")
+    T["N_STEPS"] = str(len(STEPS))
+    T["ROOM_H_GUIDE"] = f"{sk('pod_h') + max(MINE['roof_work'].value, MINE['spigot_lift'].value):g}"
     T["STEP_POWER"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Power on")))
     T["STEP_FINAL"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Final check")))
     T["STEP_LEDGE"] = str(next(s["n"] for s in STEPS if s["title"].startswith("Work-wall ledge")))
@@ -1656,10 +1682,44 @@ def crate_mass(self):
 Model.crate_mass = crate_mass
 
 
+def install_tables(m, T):
+    """The install sheet's numbers (IF-17): room height, floor, power, air, getting the pallets in."""
+    I = dict(T)
+    pod_h = sk("pod_h")
+    I["POD_W"], I["POD_D"], I["POD_H"] = f"{sk('pod_w'):g}", f"{sk('pod_d'):g}", f"{pod_h:g}"
+    I["ROOF_WORK"] = f"{MINE['roof_work'].value:g}"
+    I["SPIGOT_LIFT"] = f"{MINE['spigot_lift'].value:g}"
+    I["H_SPIGOTS"] = f"{pod_h + MINE['spigot_lift'].value:g}"
+    I["ROOM_H"] = f"{pod_h + max(MINE['roof_work'].value, MINE['spigot_lift'].value):g}"
+    I["GLIDE_MIN"], I["GLIDE_MAX"] = f"{MINE['glide_min'].value:g}", f"{MINE['glide_max'].value:g}"
+    I["FLOOR_PV"] = f"{MINE['glide_max'].value - MINE['glide_min'].value:g}"
+    I["LAY_OUT"] = f"{MINE['lay_out'].value / 1000:g}"
+    I["LAY_W"] = f"{sk('pod_w') + 2 * MINE['lay_out'].value:g}"
+    I["LAY_D"] = f"{sk('pod_d') + 2 * MINE['lay_out'].value:g}"
+    with open(REPO / "v2/05-Engineering/electrical/710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv", encoding="utf-8") as f:
+        loads = [r for r in csv.DictReader(f) if r["id"].startswith("LD")]
+    I["LOAD_W"] = f"{sum(float(r['w_total_max'] or 0) for r in loads):.0f}"
+    try:
+        sleeve = box_of(cad_solids(dict(step=AIR_STEP, sub="611601"))[0])
+        I["SLOT"] = f"X {sleeve[0]:.0f} to {sleeve[3]:.0f}, Y {sleeve[1]:.0f} to {sleeve[4]:.0f} (AIR 610000 P01 STEP, the roof sleeve)"
+    except (FileNotFoundError, ValueError):
+        I["SLOT"] = "behind DR, near the front right corner (AIR's CAD not found)"
+    longest = max(m.shipped(), key=lambda p: p.dims[0])
+    I["LONGEST"] = f"{longest.name} ({longest.tag}), {longest.dims[0]:g} mm"
+    return I
+
+
+def box_of(solids):
+    """The box of some solids in pod mm: (x0, y0, z0, x1, y1, z1)."""
+    return (tuple(min(sl["box"][k] for sl in solids) for k in range(3))
+            + tuple(max(sl["box"][k + 3] for sl in solids) for k in range(3)))
+
+
 def outputs(m):
     T = gen_tables(m)
     G = guide_tables(m, T)
     return {
+        OUT_INSTALL: fill(TPL_INSTALL.read_text(encoding="utf-8"), install_tables(m, T)),
         OUT_LIST: packing_csv(m),
         OUT_PLAN: fill(TPL_PLAN.read_text(encoding="utf-8"), T),
         OUT_SVG[1]: svg_pallet1(m),
