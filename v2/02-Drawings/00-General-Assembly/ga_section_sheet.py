@@ -169,12 +169,17 @@ def run(_context):
     design_name, orientation, center, axis, (sx, sy) = SECTIONS[sec]
     doc = adsk.drawing.DrawingDocument.cast(app.activeDocument)
     sheet = doc.drawing.sheets.item(0)
-    if sheet.views.count == 0:
+    # --arg hatch_first=1: the hatch is drawn on the empty sheet and the view placed after it, at the place
+    # predicted from the design's box (2026-11-01: with the view there first, Fusion pulled every hatch end
+    # that lay on or beside a view edge onto the edge and moved it to the edge's corner)
+    hatch_first = ARGS.get("hatch_first") == "1"
+    if hatch_first and sheet.views.count:
+        raise RuntimeError("hatch_first needs a sheet with no view yet; this one has %d" % sheet.views.count)
+    if sheet.views.count == 0 and not hatch_first:
         # the shared helper sets the style (visible edges) and scale again and checks them
         v = base_view(sheet, orientation, SCALE, center)
         print("placed the %s view at %s, 1:%g" % (sec, center, 1 / v.scaleValue))
-    view = sheet.views.item(0)
-    ex = extent(view)
+    view = None if hatch_first else sheet.views.item(0)
     old = [sheet.sketches.item(i) for i in range(sheet.sketches.count)]
     print("sketches on the sheet: %s" % ([(k.name, k.lines.count) for k in old] or "none"))
     if any(k.name.startswith("HATCH - SECTION") for k in old):
@@ -210,6 +215,19 @@ def run(_context):
     if opened:
         sdoc.close(False)
     doc.activate()
+    ex = predicted_extent(center, lo, hi, sx, sy) if hatch_first else extent(view)
+    if hatch_first:
+        print("hatch first: the view will sit at %s (sheet mm)" % (tuple(round(v, 2) for v in ex),))
+
+    def place_view():
+        """hatch_first: the view, placed after the hatch, must land where the hatch was drawn for."""
+        v = base_view(sheet, orientation, SCALE, center)
+        got = extent(v)
+        off = max(abs(a - b) for a, b in zip(got, ex))
+        print("placed the %s view at %s, 1:%g, after the hatch: extent %s, %.3f mm from the prediction"
+              % (sec, center, 1 / v.scaleValue, tuple(round(x, 2) for x in got), off))
+        if off > 0.05:
+            raise RuntimeError("the view landed %.2f mm from where the hatch was drawn for; nothing is kept" % off)
 
     def to_sheet(p):
         def coord(spec):
@@ -228,12 +246,12 @@ def run(_context):
     plan, single = [], []
     polys = [[[to_sheet(p) for p in lp] for lp in body_loops] for _body, body_loops in loops]
     corners = [p for poly in polys for lp in poly for p in lp]   # the view draws every face's corners
-    placed = list(corners) + view_points(view)                   # points already on the sheet, for snapping
+    placed = list(corners) + (view_points(view) if view else [])  # points already on the sheet, for snapping
     # every hatch end kept this far inside its face (sheet mm): an end ON a view edge was moved along the
     # edge to its corner, or the line was dropped (GA B-B, 2026-11-01); the inset probe sets the value
     gap = float(ARGS.get("inset_mm", "0"))
     if probing:
-        probe_insets(doc, sheet, polys, placed)
+        probe_insets(doc, sheet, polys, placed, place_view if hatch_first else None)
         return
     n_short = n_drop = n_inset_drop = 0
     for i, poly in enumerate(polys):
@@ -280,6 +298,8 @@ def run(_context):
               tuple(round(v, 1) for v in ex)))
     if failed:
         raise RuntimeError("%d hatch sketch line(s) weren't made; nothing kept" % failed)
+    if hatch_first:
+        place_view()
     # what was asked, per sketch, for the line-by-line check of the export (ga_pdf_check.py
     # hatch reads NAME.hatch.json next to NAME.pdf)
     out = os.path.join(ARGS.get("repo_root", "."), "v2", "02-Drawings", "00-General-Assembly",
@@ -295,7 +315,16 @@ def run(_context):
                                                                      NOTES_WIDTH, scale))
 
 
-def probe_insets(doc, sheet, polys, placed):
+def predicted_extent(center, lo, hi, sx, sy):
+    """Where a base view of the design will sit (sheet mm: x0, y0, x1, y1): Fusion centres the view's box
+    on its point (B-B, 2026-11-01: placed at (230, 230), extent (167.5, 170, 292.5, 290), the 2500 x 2400
+    box at 1:20). sx and sy name the model axis along the sheet's x and y ("x", "-y", "z")."""
+    w = (hi["xyz".index(sx[-1])] - lo["xyz".index(sx[-1])]) * SCALE
+    h = (hi["xyz".index(sy[-1])] - lo["xyz".index(sy[-1])]) * SCALE
+    return (center[0] - w / 2.0, center[1] - h / 2.0, center[0] + w / 2.0, center[1] + h / 2.0)
+
+
+def probe_insets(doc, sheet, polys, placed, place_view=None):
     """The inset probe (--arg probe_insets=0,0.1,0.3 --arg probe_pdf=OUT.pdf): the real hatch lines of the
     wider faces, shared round-robin between the gaps asked, each end moved that far inside its face, each line
     in its own sketch "PROBE INSET <gap> <n>"; the sheet is exported to OUT.pdf and the cases written to
@@ -326,6 +355,8 @@ def probe_insets(doc, sheet, polys, placed):
         report.append({"case": label, "asked": len(lines), "made": made, "count": 1})
         print("probe case %s: %d line(s) asked, %d made (%d shortened, %d left out by the 3 mm rule)"
               % (label, len(lines), made, short, drop))
+    if place_view is not None:
+        place_view()                                            # hatch first: the view after the lines
     opts = doc.drawing.exportManager.createPDFExportOptions(ARGS["probe_pdf"])
     opts.openPDF = False
     ok = doc.drawing.exportManager.execute(opts)

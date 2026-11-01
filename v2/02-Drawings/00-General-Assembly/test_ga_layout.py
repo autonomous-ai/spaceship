@@ -159,6 +159,35 @@ class LayoutTests(unittest.TestCase):
         ns["step_notes"](None)
         self.assertEqual(len(placed), 1)
 
+    def test_the_section_view_lands_where_the_hatch_first_mode_predicts(self):
+        # live B-B, 2026-11-01: placed at (230, 230), its extent was (167.5, 170, 292.5, 290) for the
+        # design's 2500 x 2400 box (x by z) at 1:20; the hatch-first mode draws for this place before the view
+        vo = types.SimpleNamespace(FrontViewOrientationType="F", LeftViewOrientationType="L")
+        adsk = types.ModuleType("adsk")
+        adsk.core = types.ModuleType("adsk.core")
+        adsk.drawing = types.ModuleType("adsk.drawing")
+        adsk.drawing.ViewOrientationTypes = vo
+        adsk.fusion = types.ModuleType("adsk.fusion")
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing", "adsk.fusion")}
+        sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing,
+                            "adsk.fusion": adsk.fusion})
+        try:
+            ns = {"__name__": "ga_section_sheet", "SCRIPT_ARGS": {"repo_root": REPO}}
+            with open(os.path.join(HERE, "ga_section_sheet.py"), encoding="utf-8") as fh:
+                exec(compile(fh.read(), "ga_section_sheet.py", "exec"), ns)
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        lo, hi = [-1250.0, 0.0, 0.0], [1250.0, 850.0, 2400.0]
+        _name, _o, center, _axis, (sx, sy) = ns["SECTIONS"]["BB"]
+        self.assertEqual(ns["predicted_extent"](center, lo, hi, sx, sy), (167.5, 170.0, 292.5, 290.0))
+        _name, _o, center, _axis, (sx, sy) = ns["SECTIONS"]["AA"]           # sheet x along -Y: 1700 deep
+        lo, hi = [-200.0, -850.0, 0.0], [1250.0, 850.0, 2400.0]
+        self.assertEqual(ns["predicted_extent"](center, lo, hi, sx, sy), (187.5, 170.0, 272.5, 290.0))
+
     def test_overall_sizes_are_measured_between_the_true_extremes(self):
         # live 2026-10-31: the end point nearest a corner of the extent gave 2390 for 2400
         # and 1602 for 1700 on the faceted front; now the extreme end points, checked
