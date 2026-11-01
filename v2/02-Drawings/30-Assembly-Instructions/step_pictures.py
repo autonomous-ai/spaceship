@@ -1,22 +1,24 @@
-"""Step pictures for the assembly guide, from the Fusion model.
+"""Step pictures for the assembly guide, from the Fusion model, in two parts:
 
     python3 tools/fusion/run_script.py v2/02-Drawings/30-Assembly-Instructions/step_pictures.py \
-        --label "Packing and Assembly Engineer"
-    python3 v2/07-Packaging/pack.py          # puts each picture under its step in the guide
+        --arg out_dir=/some/scratch/folder --label "Packing and Assembly Engineer"
+    python3 v2/02-Drawings/30-Assembly-Instructions/clean_pictures.py /some/scratch/folder   # writes img/
+    python3 v2/07-Packaging/pack.py                     # puts each picture under its step in the guide
 
-A sample first (AGENTS.md: prove a method on a sample before using it at scale): only the steps named, saved to a
-scratch folder instead of over the guide's pictures, with the grid settings Fusion reports printed:
-
-    python3 tools/fusion/run_script.py v2/02-Drawings/30-Assembly-Instructions/step_pictures.py \
-        --arg steps=2,12,14 --arg out_dir=/some/scratch/folder --label "Packing and Assembly Engineer (sample)"
+A sample first (AGENTS.md: prove a method on a sample before using it at scale): add --arg steps=2,12,14 to the run,
+and clean_pictures.py --check-only to look at the result before the full set.
 
 Reads 100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json, which v2/07-Packaging/pack.py writes from its label map.
 Opens the skeleton's cloud design 100000_P04_POD-SKELETON_CAD from "Default Project/FocusPod v2" itself, because a STEP
 import drops the body names (first run, 2026-10-31). It refuses to start when that design is already open in Fusion, so
 it never touches anyone's session; it changes only what shows (light bulbs, opacity, the camera), never saves, and
-closes the design without saving. For each step it shows the bodies fitted so far: the step's new bodies solid, the
-earlier ones faded. It hides the layout grid and its ruler labels (and turns them back on at the end), turns the camera (from behind for
-the shell, from the front for the decor and the glass, from above with the ceiling and front hidden for the linings) and saves img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-NN_IMG.png.
+closes the design without saving. For each step it shows the bodies fitted so far (the step's new bodies solid, the
+earlier ones faded), turns the camera (from behind for the shell, from the front for the decor and the glass, from
+above with the ceiling and front hidden for the linings) and saves two pictures into out_dir: the step itself
+(...-STEP-NN_IMG.png) and, with the same camera and every body hidden, the grid alone (...-STEP-NN_GRID.png).
+clean_pictures.py then turns every pixel the two share white, so the layout grid, the axes and the origin mark go
+without changing any of Fusion's settings: the first sample (2026-11-01) showed the layout grid isn't an on/off switch
+the API can set, and the grid setting is shared by everyone using this Fusion.
 
 Fusion draws pictures only on a live screen, so run it when the screen is unlocked (D-84). The bodies are the
 skeleton's envelopes; pictures of the parts themselves replace these as each part's CAD merges.
@@ -44,6 +46,7 @@ TARGET = (0.0, 0.0, 1100.0)
 FADED = 0.35
 INSIDE_HIDE = ("C1 ENVELOPE", "C2 ENVELOPE", "DL FACETED", "DR FACETED", "DT FACETED", "DOOR GLASS", "FIXED GLASS",
                "KICK ENVELOPE")
+GRID_SUFFIX = "_GRID.png"
 
 
 def bodies_by_name(root):
@@ -111,110 +114,40 @@ def set_opacity(body, value):
         pass
 
 
-def hide_grid(app):
-    """Turn the layout grid and its ruler labels off for the pictures; returns a function that turns them back on.
-    The grid is an application-wide setting, so the run always puts it back for everyone else using Fusion.
-    It prints what it finds, so a run that can't switch it off still tells us where to look."""
-    ui = app.userInterface
-    undo, report = [], []
-    for i in range(ui.commandDefinitions.count):
-        try:
-            cd = ui.commandDefinitions.item(i)
-            name = (cd.name or "").lower()
-            if "grid" not in name and "grid" not in cd.id.lower():
-                continue
-            ctl = cd.controlDefinition
-            checked = getattr(ctl, "isChecked", None)
-            report.append("%s | %s | %s | checked=%r" % (cd.id, cd.name, type(ctl).__name__ if ctl else None, checked))
-            if checked is True and "layout grid" in name and "lock" not in name and "snap" not in name:
-                cd.execute()
-                for _ in range(3):
-                    adsk.doEvents()
-                after = getattr(ctl, "isChecked", None)
-                if after is True:   # the command didn't toggle it: try the check box itself
-                    try:
-                        ctl.isChecked = False
-                        adsk.doEvents()
-                    except Exception:
-                        pass
-                    after = getattr(ctl, "isChecked", None)
-                report.append("  turned off: %r" % (after is False))
-                if after is False:
-                    undo.append(cd)
-        except Exception as e:   # one odd command must not stop the pictures
-            report.append("  (skipped one command: %s)" % type(e).__name__)
-    print("GRID: " + "; ".join(report) if report else "GRID: no grid command found")
-
-    def restore():
-        for cd in undo:
-            try:
-                ctl = cd.controlDefinition
-                cd.execute()
-                for _ in range(3):
-                    adsk.doEvents()
-                if getattr(ctl, "isChecked", None) is not True:   # the command didn't toggle it back: the check box itself
-                    try:
-                        ctl.isChecked = True
-                        adsk.doEvents()
-                    except Exception:
-                        pass
-                print("GRID: %s back on: %r" % (cd.name, getattr(ctl, "isChecked", None) is True))
-            except Exception as e:
-                print("GRID: could not turn %s back on: %s" % (cd.name, e))
-    return restore
-
-
-def report_grid_preferences(app):
-    """Read only: the grid settings Fusion's preferences expose, so a sample run shows every place to look."""
-    prefs = app.preferences
-    for attr in ("gridPreferences", "graphicsPreferences", "generalPreferences"):
-        try:
-            p = getattr(prefs, attr)
-            found = []
-            for n in dir(p):
-                if any(w in n.lower() for w in ("grid", "ruler", "axis", "axes", "origin")):
-                    try:
-                        found.append("%s=%r" % (n, getattr(p, n)))
-                    except Exception as e:
-                        found.append("%s=<%s>" % (n, type(e).__name__))
-            print("PREFERENCES %s: %s" % (attr, "; ".join(found) or "nothing on grids"))
-        except Exception as e:
-            print("PREFERENCES %s: <%s>" % (attr, type(e).__name__))
-
-
 def point_cm(p_mm):
     return adsk.core.Point3D.create(p_mm[0] / 10.0, p_mm[1] / 10.0, p_mm[2] / 10.0)
 
 
+def save(vp, path, step):
+    if not vp.saveAsImageFile(path, WIDTH, HEIGHT):
+        raise RuntimeError("Fusion saved no picture for step %d; is the screen unlocked?" % step)
+
+
 def run(_context):
     app = adsk.core.Application.get()
-    repo = ARGS.get("repo_root") or os.path.abspath(os.path.join(HERE, "..", "..", ".."))
     only = {int(x) for x in str(ARGS.get("steps") or "").split(",") if x.strip()}   # a sample: these steps only
-    out_dir = ARGS.get("out_dir")   # a sample's pictures go here, never over the guide's
+    out_dir = ARGS.get("out_dir")   # the raw pairs go here; clean_pictures.py writes the guide's pictures
     with open(DATA, encoding="utf-8") as f:
         data = json.load(f)
     unknown = sorted(only - {s["step"] for s in data["steps"]})
     if unknown:
         raise RuntimeError("no picture for step(s) %s; the steps with pictures are %s" % (unknown, [s["step"] for s in data["steps"]]))
-    if only and not out_dir:
-        raise RuntimeError("a sample (steps=...) needs out_dir=..., so it never writes over the guide's pictures")
-    if only:
-        report_grid_preferences(app)
+    if not out_dir:
+        raise RuntimeError("out_dir=... is needed: the raw pictures go to a scratch folder, never straight into the guide")
     doc = open_skeleton(app)
-    restore_grid = lambda: None
     try:
-        restore_grid = hide_grid(app)
         design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
         hide_helpers(design.rootComponent)
         named = bodies_by_name(design.rootComponent)
         wanted = {b for s in data["steps"] for b in s["new"]}
         missing = sorted(wanted - set(named))
         if missing:
-            raise RuntimeError("bodies not found in the STEP: %s" % missing)
+            raise RuntimeError("bodies not found in the design: %s" % missing)
         for group in named.values():
             for body in group:
                 body.isLightBulbOn = False
         vp = app.activeViewport
+        os.makedirs(out_dir, exist_ok=True)
         shown, made = [], 0
         for s in data["steps"]:
             for name in shown:
@@ -237,13 +170,16 @@ def run(_context):
             cam.isSmoothTransition = False
             vp.camera = cam
             vp.fit()
-            out = os.path.join(out_dir, os.path.basename(s["image"])) if out_dir else os.path.join(repo, s["image"])
-            os.makedirs(os.path.dirname(out), exist_ok=True)
-            if not vp.saveAsImageFile(out, WIDTH, HEIGHT):
-                raise RuntimeError("Fusion saved no picture for step %d; is the screen unlocked?" % s["step"])
+            out = os.path.join(out_dir, os.path.basename(s["image"]))
+            save(vp, out, s["step"])
+            fitted = vp.camera              # the same camera for the grid alone: no fit with nothing shown
+            for name in shown:
+                for body in named[name]:
+                    body.isLightBulbOn = False
+            vp.camera = fitted
+            save(vp, out[:-len("_IMG.png")] + GRID_SUFFIX if out.endswith("_IMG.png") else out + GRID_SUFFIX, s["step"])
             made += 1
-            print("STEP %d: %s (%d new bodies, %s view)" % (s["step"], out, len(s["new"]), s["view"]))
-        print("PICTURES: %d of %d" % (made, len(only) if only else len(data["steps"])))
+            print("STEP %d: %s and its grid-alone twin (%d new bodies, %s view)" % (s["step"], out, len(s["new"]), s["view"]))
+        print("PICTURES: %d of %d, each with its twin" % (made, len(only) if only else len(data["steps"])))
     finally:
-        restore_grid()
         doc.close(False)
