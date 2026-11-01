@@ -405,9 +405,9 @@ def poly_xy_body(comp, name, pts, z0, z1, ctx):
     return f.bodies.item(0)
 
 
-def hollow_ends(comp, body, axis, name):
+def hollow_ends(comp, body, axis, name, wall="tube_t"):
     """Shell a member into a tube, open at both ends, square or mitred (D-117): the two planar faces
-    whose normal has a part along the member's long axis; wall tube_t inside."""
+    whose normal has a part along the member's long axis; `wall` inside (J-FRAME-01's gauge, M.member_wall)."""
     k = {"x": 0, "y": 1}[axis]
     ends = []
     for f in body.faces:
@@ -422,7 +422,7 @@ def hollow_ends(comp, body, axis, name):
     for f in ends:
         coll.add(f)
     si = comp.features.shellFeatures.createInput(coll, False)
-    si.insideThickness = vi("tube_t")
+    si.insideThickness = vi(wall)
     f = comp.features.shellFeatures.add(si)
     f.name = "SHELL - %s TUBE" % name
     return f
@@ -637,8 +637,8 @@ def cross_member(parent, ctx):
     length = "half_fw - 2 * tube_w"
     body = poly_xy_body(comp, "CROSS MEMBER PLAIN", [("0 mm", "0 mm"), (length, "0 mm"), (length, "tube_w"),
                                                     ("0 mm", "tube_w")], "0 mm", "frame_t", ctx)
-    hollow_ends(comp, body, "x", "CROSS MEMBER PLAIN")
-    set_material(comp, ctx, "al")
+    hollow_ends(comp, body, "x", "CROSS MEMBER PLAIN", M.member_wall("m_cross"))
+    set_material(comp, ctx, "steel_fr")
     shared["m_cross"] = comp
     return occ, comp
 
@@ -665,11 +665,11 @@ def place_turned(parent, occ, key, name, ctx):
 
 def build_frame_members(fcomp, half, ctx):
     """The members of one frame as their own components under fcomp (D-120), each its outline in plan
-    with the mitred corners (D-117) extruded and shelled into a tube; then the site-joint holes
-    (J-CEIL-01, J-CEIL-02, joints register 2.9), the spigot hole and slot, the cross members'
-    cleat slots (D-117) and the 1 x 45 lead-in on the closing face, each cut in its own member.
-    The cleats themselves (831003 to 831006) are placed by reference when the Joints Engineer's
-    models land. The side member and cross member 1 are one part each for both frames (Control's allocation):
+    with the mitred corners (D-117), cut back for the mitre plates (J-FRAME-01), extruded and shelled into a
+    galvanized steel tube at its gauge (D-131); then the site-joint holes (J-CEIL-01, J-CEIL-02, joints register
+    2.9), the spigot hole and slot and the 1 x 45 lead-in on the closing face, each cut in its own member. The
+    frame is welded (D-131): no cleats, no slots. The side member and cross member 1 are one part each for both
+    frames (Control's allocation):
     built in C1, and in C2 placed as C1's turned copy when C1 is in the same design (place_turned); a C2-only
     design builds them in place. A copy carries C1's holes and slots, so none are cut in it here.
     Returns {code: (component, body or None for a copy)}."""
@@ -693,8 +693,8 @@ def build_frame_members(fcomp, half, ctx):
             continue
         _occ, comp = new_comp(fcomp, key, ctx)
         body = poly_xy_body(comp, label, pts, z0, z1, ctx)
-        hollow_ends(comp, body, axis, label)
-        set_material(comp, ctx, "al")
+        hollow_ends(comp, body, axis, label, M.member_wall(key))
+        set_material(comp, ctx, "steel_fr")
         if key in M.TURNED:
             shared[key] = comp
         members[code] = (comp, body)
@@ -731,12 +731,6 @@ def build_frame_members(fcomp, half, ctx):
     for end, sign in (("END 1", "-"), ("END 2", "+")):
         circle_cut(comp, body, "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
                    "%s + 2 * tube_t" % sz, ctx)
-    for name, member, xf, yc, zc, wy, hz in M.cleat_slots(half):
-        comp, body = members[member]
-        if body is None:
-            continue                     # a turned copy: its slots are C1's
-        slot_cut_x(comp, body, "%s %s %s" % (half, member, name), xf, yc, zc, wy, hz, "2 * tube_t",
-                   into[(member, "in")], ctx)
     # the closing face's lead-in runs the seam member's full length now that its corners are mitred
     # (the back member no longer reaches the closing face)
     comp, body = members["SEAM"]

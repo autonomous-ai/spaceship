@@ -10,7 +10,7 @@ Coordinates: the pod system (conventions §4) for the frames and skins; the cass
 
 Status words follow conventions §9. **HOLD** marks a feature whose geometry waits for a named part (guideline §4.3).
 
-## Ceiling frames 411101 (C1) and 411102 (C2): aluminium 6063-T6, 20 × 40 × 1.2 and one 40 × 40 × 1.2
+## Ceiling frames 411101 (C1) and 411102 (C2): welded galvanized steel (D-131), 20 × 40 and one 40 × 40, 1.0 and 0.8 walls
 
 | Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
@@ -30,8 +30,8 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-4111-14 | Soffit lock rivnuts | Ø9.53 in cross member 1's underside at X ∓1100 and ∓950, Y −291, in both frames; only C1's take the two captive M6 screws | Two captive M6 screws lock the soffit, so taking a cassette out can never free it. They moved off C1's front member when DR's new removable panel brought the soffit's door side to about Y −639.6: the front member's rivnuts can't leave its middle (5 mm of flat to the tube's side, HOLD-04), and the door-side rail would have left 4.6 mm to its edge. On the room-side rail the loaded edge is 18 mm away. C2's cross member carries the mirrored rivnuts unused (they sit over the column's fixed underside), so the member stays one part (412105) | PM rulings 2026-11-01 (D-87 hooks; option b for DR's panel face, the Lead). Over the soffit's left inlet plenum, where no cartridge is: the key reaches them through the left hinged underside | confirmed |
 | F-4111-15 | Clearances | every bolt 30 or more from any member meeting its own (side bolts: 148 or more) | Stiles move, never bolts | R-J14 (checked by the offline tests) | calculation |
 | F-4111-16 | Roof slot clearance (C2) | C2's side access holes 24.7 from the slot's edge | The roof sleeve and the soffit come out before any ceiling bolt is turned, and go in after | Joints register 3.5 (D-60 note); assembly order R-J9 | calculation |
-| F-4111-17 | Member joints | internal corner and T cleats inside the tubes, crimped, with structural adhesive; no welds | Join the members into one frame without heat at the bonded skin | D-115 (H11); the cleats are the Joints Engineer's register entries and models, placed by reference when they land | decided; cleat parts HOLD |
-| F-4111-18 | Cleat slots | 8 along × 22 across, through the bay-side 1.2 wall of the side and seam members at each cross member's end, on the cross member's centre line; corners R2 or less (drawing note) | Take the cross member's plug cleat (the Joints Engineer's cleats, 831003 to 831006), so the T joint is cleated without a weld | D-117 (the Joints Engineer's cleat design; PM ruling 2026-11-01: plain rectangle, centred) | confirmed |
+| F-4111-17 | Member joints | welded in a jig: each corner with a 2.0 mitre plate (831007 at the front, 831008 at the back), the T joints direct; beads ground on the skin and closing faces; burnt zones wire-brushed and coated with 2-component zinc-rich epoxy; no vent or drain holes; joint holes made after welding | One stiff frame without glued cleats; the plate carries the corner (the register's corner check) | D-131 (the cleats of D-115 and D-117 cancelled); joints register J-FRAME-01 | confirmed (method); the weld notes follow WALL's L1 sample review |
+| F-4111-18 | Plate cut-backs and gauges | each mitred end cut back square to its mitre by half the plate: 1.41 along the member at 45°, 2.24 off the side and seam members and 1.12 off the back member at the back corners; walls 1.0 (side, seam, front, back, X1) and 0.8 (X2, X3); S280GD+Z or SGC400, Z100 | The plates fit and the outside sizes stay; the gauges carry the site joints (1.0 under every rivnut, bolt, spigot and hanger stud) and the lining's clips (0.8) | J-FRAME-01 (D-131): the joints register's gauge and steel rows | confirmed |
 
 ## Skins 411301 (C1) and 411302 (C2): ACP 3, EV3038 Dark Yellow
 

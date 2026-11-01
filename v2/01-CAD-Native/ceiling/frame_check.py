@@ -8,7 +8,7 @@ For the sample (C1 first, then C2, D-118): every member is its own component wit
 master BOM allocated; each member's box is where ceiling_model.frame_members puts it; each mitre's
 end faces have the corner design's angles (45 deg at the front, the back member 26.57 deg off square
 and the side and seam members 63.43 deg); each joint hole of that half is where the joints register
-puts it, and nothing else is round; each cleat slot is open at its centre and closed just beside it;
+puts it, and nothing else is round (the frame is welded, D-131: no cleat slots);
 the timeline is healthy and every sketch fully constrained. Prints FRAME CHECK: PASS or FAIL.
 """
 
@@ -110,24 +110,6 @@ def run(_context):
     hb = [x for x in h["bad"] if not str(x[0]).startswith(other)]
     print("joint holes of %s: %d checked in both halves, worst %.3f mm, off %s" % (half, h["checked"], h["worst"], hb or "none"))
     bad += hb
-    # cleat slots: open at the centre, the wall closed 6 mm beside it (along the member)
-    for name, member, xf, yc, zc, wy, _hz in M.cleat_slots(half):
-        pn = want_pn[member]
-        body = [b for o in occs if o.component.partNumber == pn for b in o.bRepBodies]
-        if not body:
-            continue
-        x, y, z = M.ev(vals, xf), M.ev(vals, yc), M.ev(vals, zc)
-        s = M.side_sign(half)
-        into = s if member == "SIDE" else -s
-        xw = x + into * vals["tube_t"] / 2                       # the middle of the wall
-        inside = body[0].pointContainment(adsk.core.Point3D.create(xw / 10, y / 10, z / 10))
-        beside = body[0].pointContainment(adsk.core.Point3D.create(xw / 10, (y + M.ev(vals, wy) / 2 + 6) / 10, z / 10))
-        ok = inside == adsk.fusion.PointContainment.PointOutsidePointContainment and \
-            beside == adsk.fusion.PointContainment.PointInsidePointContainment
-        if not ok:
-            bad.append(("cleat slot", name, member))
-    print("cleat slots: %d checked, %s" % (len(M.cleat_slots(half)), "open where they should be" if not
-                                          [b for b in bad if b[0] == "cleat slot"] else "WRONG"))
     tl = design.timeline
     unhealthy = [tl.item(i).name for i in range(tl.count)
                  if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]

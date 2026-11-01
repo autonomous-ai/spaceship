@@ -46,6 +46,10 @@ HW_SPEC = {
                "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", ""),
     "838005": ("elastomer (HOLD-02)", "as supplied (elastomer)", "HOLD-02", "HOLD-02", ""),
     "831002": ("aluminium sheet 1.5, 5000 or 6000 series", "mill finish (punched)", "made (register H-08)", "", ""),
+    "831007": ("galvanized steel 2.0, S280GD+Z or SGC400, Z100 (the frames' own steel)", "welded in; zinc-rich touch-up "
+               "with the frame's welds", "made (register H-40, J-FRAME-01)", "", ""),
+    "831008": ("galvanized steel 2.0, S280GD+Z or SGC400, Z100 (the frames' own steel)", "welded in; zinc-rich touch-up "
+               "with the frame's welds", "made (register H-41, J-FRAME-01)", "", ""),
     "848001": ("PORON 4701-40 Soft polyurethane foam with PSA", "none (foam, PSA liner one side)",
                "Rogers (PORON), PSA laminated and slit by a converter (HOLD-05)", "PORON 4701-40 Soft, 3.97 x 8 strip with PSA", ""),
     "848004": ("EPDM or TPE hollow bulb (HOLD-12)", "as supplied", "HOLD-12", "HOLD-12: hollow bulb, working gap 4 to 7", ""),
@@ -172,7 +176,7 @@ def write_tray_dxf():
 
 MEMBER_ENDS = {   # D-117, the Joints Engineer's corner design
     "SIDE": "front end mitred 45 deg, back end mitred 63.43 deg off square", "SEAM": "front end mitred 45 deg, back end mitred 63.43 deg off square",
-    "FRONT": "both ends mitred 45 deg", "BACK": "both ends mitred 26.57 deg off square",
+    "FRONT": "both ends mitred 45 deg", "BACK": "both ends mitred 26.57 deg off square",  # each cut back for its 2.0 plate (J-FRAME-01)
     "X1": "square cut", "X2": "square cut", "X3": "square cut",
 }
 
@@ -182,14 +186,12 @@ def member_rows(v, half):
     holes = {}
     for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
         holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(M.ev(v, n)))))
-    for name, member, *_r in M.cleat_slots(half):
-        holes.setdefault(member, []).append("cleat slot %.0f x %.0f at %s" % (v["cleat_slot_w"], v["cleat_slot_h"], name.split()[-1]))
     boxes = {c: [M.ev(v, e) for e in b] for c, _n, _a, b in M.frame_members(half)}
     out = []
     for code, key, name, axis, _pts, _z0, _z1 in M.member_shapes(half):
         bb = boxes[code]
         L = (bb[1] - bb[0]) if axis == "x" else (bb[3] - bb[2])
-        sec = "40 x 40 x 1.2" if code == "BACK" else "20 x 40 x 1.2"
+        sec = "%s x 40 x %.1f" % ("40" if code == "BACK" else "20", M.ev(v, M.member_wall(key)))
         extra = list(holes.get(code, []))
         if code == "BACK":
             extra.append("back spigot slot 8.5 x 14 x 1")
@@ -280,9 +282,9 @@ def parts_list(v, mass):
         matname = M.MATERIALS[mat][0] if mat else ""
         size, tol = SIZE_TOL.get(key, (lambda vv: ("", "")))(v)
         src = {
-            "frame_c1": "D-16, D-34, D-54, D-55; D-115, D-117 (cleated, mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
-            "frame_c2": "D-16, D-34, D-54, D-55; D-115, D-117 (cleated, mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
-            **{k: "D-120 (number from the master BOM's allocation); D-117 (the Joints Engineer's corner design); D-34, D-54 (6063-T6 20 x 40 x 1.2, 40 x 40 back R-J3); joints register J-CEIL-01, J-CEIL-02"
+            "frame_c1": "D-16, D-34, D-55; D-131 and J-FRAME-01 (welded galvanized steel, the mitre plates, the gauges); D-117 (mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "frame_c2": "D-16, D-34, D-55; D-131 and J-FRAME-01 (welded galvanized steel, the mitre plates, the gauges); D-117 (mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            **{k: "D-120 (number from the master BOM's allocation); D-117 (mitred corners); D-131 and J-FRAME-01 (galvanized steel 20 x 40 and 40 x 40 R-J3, 1.0 or 0.8 wall, cut back for the 2.0 mitre plates); joints register J-CEIL-01, J-CEIL-02"
                for k in M.PARTS if k.startswith("m_")},
             "skin_c1": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61",
             "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins)",
@@ -326,6 +328,7 @@ def parts_list(v, mass):
     by_key = {k: r for k, r in zip(keys, rows)}
     # joint hardware fitted in the factory (joints register 2.1 numbers, D-63): one row per
     # half, since C1 and C2 carry different sets
+    plates = {"plate45": "H-40", "plate_sb": "H-41"}     # welded into the frames' corners (D-131, J-FRAME-01)
     for hk, (pn, name, vn, kind, unit, n1, n2, kg, mstat) in M.HARDWARE.items():
         for half, expr in (("assy_c1", n1), ("assy_c2", n2)):
             n = M.ev(v, expr)
@@ -333,16 +336,24 @@ def parts_list(v, mass):
                 continue
             qty = round(n, 3) if unit == "m" else int(round(n))
             key = "%s_%s" % (hk, half)
-            q[key] = (qty, half)
+            parent = ("frame_c1" if half == "assy_c1" else "frame_c2") if hk in plates else half
+            q[key] = (qty, parent)
             mat, fin, maker, sku, tq = HW_SPEC[pn]
-            r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": half,
+            if hk in plates:
+                process = "laser cut from the frames' 2.0 galvanized steel, welded into the frame's corner (J-FRAME-01)"
+                source = "joints register %s (%s), J-FRAME-01 (D-131); the joints CAD README's placement; per piece; " \
+                         "mass %s" % (plates[hk], pn, mstat)
+            else:
+                process = "punched (a part we make)" if kind == "MP" else ""
+                source = "joints register V2-ENG-JNT-01 2.1 (%s), 3.5 J-CEIL-01 / 3.6 J-CEIL-02; per %s; mass %s" % (
+                    pn, "metre" if unit == "m" else "piece", mstat)
+            r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": parent,
                  "qty_per_parent": qty, "qty_per_pod": qty, "material": mat, "finish": fin,
-                 "process": "punched (a part we make)" if kind == "MP" else "",
+                 "process": process,
                  "maker": maker, "sku": sku, "torque": tq, "size_mm": "", "tolerance": "",
                  "mass_each_kg": "%.4f" % kg, "mass_status": mstat.split(":")[0],
                  "revision": REV, "status": "HOLD" if kind == "HOLD" else "DRAFT",
-                 "source": "joints register V2-ENG-JNT-01 2.1 (%s), 3.5 J-CEIL-01 / 3.6 J-CEIL-02; per %s; mass %s" % (
-                     pn, "metre" if unit == "m" else "piece", mstat)}
+                 "source": source}
             rows.append(r)
             by_key[key] = r
 
@@ -369,9 +380,9 @@ def cut_list(v):
         for code, key, name, sec, L, ends, extra in member_rows(v, half):
             rows.append({"frame": M.PARTS[fkey][0], "half": half, "member": code, "part_number": M.PARTS[key][0],
                          "name": M.PARTS[key][1],
-                         "section": "aluminium %s (6063-T6; alloy ISS-034)" % sec,
+                         "section": "galvanized steel %s (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)" % sec,
                          "length_mm": "%.2f" % L, "qty": 1,
-                         "ends": "%s; member joints: internal cleats per D-115 and D-117 (crimped, with structural adhesive; no welds)" % ends,
+                         "ends": "%s; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct" % ends,
                          "holes": "; ".join(extra) or "none",
                          "status": "calculation (from the parameters)"})
     return rows

@@ -176,8 +176,9 @@ def frame_spec(key, half):
         "Tolerances (assumption until the factory confirms): tube cut length +/-0.5, mitre angles +/-0.25 deg; holes "
         "and slots +/-0.2 from the round spigot hole (R-J6); spigot positions and round spigot hole to the closing "
         "face +/-0.1 (ST-04); the frame assembled in a jig, diagonals within 1.",
-        "Aluminium 6063-T6 tube (alloy ISS-034): 20 x 40 x 1.2, back member 40 x 40 x 1.2 (R-J3). Mill finish "
-        "with the bond prep (D-79). Frame %s, %.2f wide (skeleton half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
+        "Galvanized steel tube, S280GD+Z or SGC400 (yield 280 MPa or more), Z100 (D-131, J-FRAME-01): 20 x 40 x 1.0, "
+        "back member 40 x 40 x 1.0 (R-J3), cross members 2 and 3 20 x 40 x 0.8. Frame %s, %.2f wide (skeleton "
+        "half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
         "Datums: A = the closing face (the seam member's outer face, %.2f from X 0); B = the front member's front "
         "face (Y %.2f); C = the frame's underside (Z %.2f)." % (v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)),
         "Members, each its own part (D-120; cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side %s (common: "
@@ -188,13 +189,13 @@ def frame_spec(key, half):
             M.PARTS["m_front_" + half.lower()][0], M.PARTS["m_back_" + half.lower()][0], v["half_fw"],
             M.PARTS["m_x1"][0], v["half_fw"] - 2 * v["tube_w"], v["fr_pitch"]),
         "Corners mitred from the outer corner to the inner corner (D-117): 45 deg at the front; at the back the "
-        "back member is cut 26.57 deg off square and the side and seam members 63.43 deg. Member joints: internal "
-        "corner cleats and plug cleats in the T joints (831003 to 831006), crimped, with structural adhesive; "
-        "no welds (D-115, D-117).",
-        "Crimp: one dent per member per joint, on its bay-side 40 face at the middle of the cleat's leg; never on "
-        "the bond face, the room face or a seam face (D-117).",
-        "Cleat slots: 8 along the member x 22 across its 40 face, through the bay-side wall only, centred on each "
-        "cross member's centre line, in the side and seam members; corner radius R2 at most (D-117).",
+        "back member is cut 26.57 deg off square and the side and seam members 63.43 deg. A 2.0 mitre plate is "
+        "welded into every corner (831007 at the front, 831008 at the back), each member cut back square to the "
+        "mitre so the outside sizes stay: 1.41 along it at 45 deg, 2.24 off the side and seam members and 1.12 off "
+        "the back member at the back (J-FRAME-01).",
+        "Welded in a jig (D-131): the corners with their plates, then the T joints; beads ground flush on the skin "
+        "and closing faces; every burnt zone wire-brushed and coated with 2-component zinc-rich epoxy. No vent or "
+        "drain holes. Every joint hole made after welding, from the joint faces (J-FRAME-01).",
         "Joint holes (joints register 2.9; the register owns the bolt lines, PM ruling 2026-10-31):",
     ] + frame_hole_notes(half) + [
         "1 x 45 deg lead-in on the closing face's lower edge, the seam member's full length (R-J9).",

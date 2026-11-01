@@ -129,7 +129,8 @@ class Stack(unittest.TestCase):
             self.assertAlmostEqual(max(xs) if sign < 0 else min(xs), sign * VALS["close_gap"] / 2)
             self.assertAlmostEqual(max(xs) - min(xs), VALS["half_fw"])
             back = dict(ms)["BACK"]
-            self.assertAlmostEqual(back[1] - back[0], VALS["half_fw"], msg="40 x 40 back member over the full width")
+            self.assertAlmostEqual(back[1] - back[0], VALS["half_fw"] - 2 * VALS["cb_bs"],
+                                   msg="40 x 40 back member over the full width, less its cut-backs for the mitre plates")
             self.assertAlmostEqual(back[3] - back[2], 40.0)
 
     def test_skins_overhang_at_the_closing_seam(self):
@@ -379,8 +380,8 @@ class Sprinkler(unittest.TestCase):
 
 
 class Frames(unittest.TestCase):
-    """D-117 and D-120 (the Joints Engineer's corner design, Control's member numbers): mitred outer
-    corners, every member its own part, the cross members' cleat slots."""
+    """D-117, D-120 and D-131 (J-FRAME-01): mitred outer corners with a 2.0 mitre plate welded into each, every member
+    its own part in galvanized steel at its gauge, no cleats."""
 
     def shapes(self, half):
         return {c: (k, [(ev(x), ev(y)) for x, y in pts]) for c, k, _n, _a, pts, _z0, _z1 in M.member_shapes(half)}
@@ -401,10 +402,12 @@ class Frames(unittest.TestCase):
             ys = [y for _k, pts in sh.values() for _x, y in pts]
             self.assertAlmostEqual(max(xs) - min(xs), VALS["half_fw"])
             self.assertAlmostEqual(max(ys) - min(ys), VALS["wall_depth"])
-            # the members tile the frame's outline (no gap or overlap): their areas add up
+            # the members and the four mitre plates tile the frame's outline (no gap or overlap): their areas add up,
+            # each plate mp_t thick along its mitre (J-FRAME-01)
             ring = sum(poly_area(pts) for c, (_k, pts) in sh.items() if c in ("SIDE", "SEAM", "FRONT", "BACK"))
             inner = (VALS["half_fw"] - 2 * VALS["tube_w"]) * (VALS["wall_depth"] - VALS["tube_w"] - VALS["back_w"])
-            self.assertAlmostEqual(ring, VALS["half_fw"] * VALS["wall_depth"] - inner, places=6)
+            mitres = 2 * math.hypot(VALS["tube_w"], VALS["tube_w"]) + 2 * math.hypot(VALS["tube_w"], VALS["back_w"])
+            self.assertAlmostEqual(ring + VALS["mp_t"] * mitres, VALS["half_fw"] * VALS["wall_depth"] - inner, places=6)
 
     def test_every_member_its_own_part(self):
         for half in ("C1", "C2"):
@@ -412,32 +415,34 @@ class Frames(unittest.TestCase):
             for k in keys:
                 pn, name, _vn, kind, mat = M.PARTS[k]
                 self.assertEqual(kind, "MP", k)
-                self.assertEqual(mat, "al", k)
+                self.assertEqual(mat, "steel_fr", k)
+                self.assertEqual(M.member_wall(k), "tube_t_in" if k == "m_cross" else "tube_t", k)
                 self.assertTrue(pn.startswith("412"), k)
             self.assertEqual(keys.count("m_cross"), 2, "X2 and X3 are one common part (412001)")
 
-    def test_cleat_slots(self):
+    def test_welded_with_plates_no_cleats(self):
+        """D-131 cancels the cleats: no slots; a 2.0 plate in every corner, each member's mitred end cut back half the
+        plate's thickness square to the mitre (J-FRAME-01: 1.41, 2.24 and 1.12 along the members)."""
+        import math
+        self.assertFalse(hasattr(M, "cleat_slots"))
+        self.assertAlmostEqual(VALS["cb45"], 1.414, places=3)
+        self.assertAlmostEqual(VALS["cb_sb"], 2.236, places=3)
+        self.assertAlmostEqual(VALS["cb_bs"], 1.118, places=3)
         for half in ("C1", "C2"):
-            mem = dict(M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)]))
-            slots = M.cleat_slots(half)
-            self.assertEqual(len(slots), 6)
-            for name, member, xf, y, z, wy, hz in slots:
-                y, z, wy, hz = ev(y), ev(z), ev(wy), ev(hz)
-                self.assertEqual((wy, hz), (8.0, 22.0))
-                k = name.split()[-1]                     # X1, X2 or X3
-                cm = mem[k]
-                # inside the cross member's footprint on the side or seam member's face
-                self.assertGreaterEqual(y - wy / 2, cm[2] - 1e-9, name)
-                self.assertLessEqual(y + wy / 2, cm[3] + 1e-9, name)
-                self.assertGreaterEqual(z - hz / 2, cm[4] - 1e-9, name)
-                self.assertLessEqual(z + hz / 2, cm[5] + 1e-9, name)
-                # on the bay-side face of its member
-                m = mem[member]
-                self.assertTrue(abs(ev(xf) - m[0]) < 1e-9 or abs(ev(xf) - m[1]) < 1e-9, name)
-                # clear of every joint hole on that face by 30 (D-117: the bolts' clearance covers them)
-                for hn, d, (hx, hy, hz2) in M.hole_positions(VALS, half):
-                    if abs(hx - ev(xf)) < 1e-6:
-                        self.assertGreaterEqual(abs(hy - y), 30.0, "%s vs %s" % (name, hn))
+            sh = self.shapes(half)
+            corners = M.plate_corners(half)
+            self.assertEqual(sorted(k for _n, k, _o, _i in corners), ["mp45", "mp45", "mp_sb", "mp_sb"])
+            for name, key, o, i in corners:
+                (ox, oy), (ix, iy) = (ev(o[0]), ev(o[1])), (ev(i[0]), ev(i[1]))
+                L = math.hypot(ix - ox, iy - oy)
+                self.assertAlmostEqual(L, math.hypot(VALS["tube_w"], VALS["tube_w" if key == "mp45" else "back_w"]))
+                # every member corner point near this corner lies mp_t / 2 off the plate's mid-plane line
+                near = [(x, y) for _k, pts in sh.values() for x, y in pts
+                        if min(math.hypot(x - ox, y - oy), math.hypot(x - ix, y - iy)) < 3.0]
+                self.assertEqual(len(near), 4, (half, name))
+                for x, y in near:
+                    d = abs((ix - ox) * (y - oy) - (iy - oy) * (x - ox)) / L
+                    self.assertAlmostEqual(d, VALS["mp_t"] / 2, places=6, msg="%s %s" % (half, name))
 
     def test_identical_in_both_halves(self):
         """For Control (D-120: identical parts share one number): C2's side member is C1's turned upside
@@ -446,9 +451,6 @@ class Frames(unittest.TestCase):
         the seam end)."""
         zmid = ev(M.ZF0) + VALS["frame_t"] / 2
         for half in ("C1", "C2"):
-            for name, member, _x, _y, z, _w, _h in M.cleat_slots(half):
-                if member == "SIDE":
-                    self.assertAlmostEqual(ev(z), zmid)
             for name, _d, (x, y, z) in M.hole_positions(VALS, half):
                 if name.startswith("SIDE BOLT"):
                     self.assertAlmostEqual(z, zmid, msg=name)
@@ -469,7 +471,7 @@ class TurnedCopies(unittest.TestCase):
     """Control's allocation (2026-11-01): the side member 412101 and cross member 1 412105 are one part each for
     both frames, C2's being C1's turned over (412201 and 412205 cancelled). The build places C2's as C1's part
     turned 180 deg about Y or Z with the pod origin sent to M.turned_origin: every feature of C2's own layout must
-    land on C1's moved that way (outline, joint holes, cleat slots), or the copy would be the wrong part."""
+    land on C1's moved that way (outline with the plate cut-backs, joint holes), or the copy would be the wrong part."""
 
     def move(self, key, p):
         x, y, z = p
@@ -483,7 +485,6 @@ class TurnedCopies(unittest.TestCase):
                 out += [("corner", (ev(x), ev(y), ev(z))) for x, y in pts for z in (z0, z1)]
         names = {n for n, m, *_rest in M.joint_holes(half) if m == code}
         out += [("hole %s %.2f" % (n, d), xyz) for n, d, xyz in M.hole_positions(VALS, half) if n in names]
-        out += [("slot %s" % n, (ev(xf), ev(yc), ev(zc))) for n, m, xf, yc, zc, _w, _h in M.cleat_slots(half) if m == code]
         return out
 
     def test_c2_is_c1_turned(self):
@@ -562,11 +563,13 @@ class Weight(unittest.TestCase):
         v = VALS
         rho = {k: m[1] for k, m in M.MATERIALS.items()}
         # outer panel: 7 tubes + skin
-        tube = (2 * (v["tube_w"] + v["frame_t"]) - 4 * v["tube_t"]) * v["tube_t"] * 1e-6 * rho["al"]   # kg/m
-        tube40 = (2 * (v["back_w"] + v["frame_t"]) - 4 * v["tube_t"]) * v["tube_t"] * 1e-6 * rho["al"]
-        length = 2 * (v["wall_depth"] - v["back_w"]) + 4 * (v["half_fw"] - 2 * v["tube_w"])
-        frame = tube * length * 1e-3 + tube40 * v["half_fw"] * 1e-3
-        self.assertAlmostEqual(tube40, 0.503, places=3)
+        def kg_m(w, t):                    # galvanized steel tube w x 40 x t (D-131), kg/m
+            return (2 * (w + v["frame_t"]) - 4 * t) * t * 1e-6 * rho["steel_fr"]
+        tube, tube_in = kg_m(v["tube_w"], v["tube_t"]), kg_m(v["tube_w"], v["tube_t_in"])
+        tube40 = kg_m(v["back_w"], v["tube_t"])
+        length = 2 * (v["wall_depth"] - v["back_w"]) + 2 * (v["half_fw"] - 2 * v["tube_w"])   # side, seam, front, X1
+        frame = tube * length * 1e-3 + tube_in * 2 * (v["half_fw"] - 2 * v["tube_w"]) * 1e-3 + tube40 * v["half_fw"] * 1e-3
+        self.assertAlmostEqual(tube40, 1.225, places=3)       # 40 x 40 x 1.0 steel
         skin = v["half_pw"] * v["wall_depth"] * 1e-6 * 3.5
         self.assertLess(frame + skin, 20.0)
         # cassette: tray + felt + fill + ribs, plus the layout study's clip allowance
