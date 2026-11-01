@@ -1,15 +1,15 @@
-# Mechanical check run: 23aeade on 2026-11-01
+# Mechanical check run: 6f2bff3 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `23aeade`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `6f2bff3`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 179** (52 severe, 121 major, 6 minor). Register numbers in brackets.
+**Findings in this run: 180** (53 severe, 121 major, 6 minor). Register numbers in brackets.
 
 ## What ran
 
 | Check | Ran on this revision | Findings |
 |---|---|---|
 | C01 clash and minimum gaps (Fusion) | yes | 1 |
-| C02 tolerance stack-ups | yes | 0 |
+| C02 tolerance stack-ups | yes | 1 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 103 |
@@ -27,6 +27,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
 | F-136 | severe | C01 | assembly shell left-base Y 847..850 Z 10..110 | The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes. | BASE |
+| F-342 | severe | C02 | assembly KICK-OVER-FLOOR | KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it | FRONT |
 | F-045 | severe | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step. | Joints Engineer |
 | F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | Joints Engineer |
 | F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | Joints Engineer |

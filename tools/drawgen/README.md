@@ -81,7 +81,10 @@ that isn't a blind hole's drill point (a countersink), any other curved face, ho
 itself hides, a part that fits no ISO scale on its sheet. On a straight member, any flat face that is not its
 profile, an end, a mitre or compound end cut, a slot's own sides, a notch, an even chamfer or a welded end plate's
 inner face (a step, a pocket, a window in a wall, an uneven chamfer): drawgen would draw it without a size, so it
-names the faces and refuses the part. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
+names the faces and refuses the part. A straight member whose section isn't a solid convex outline or a
+rectangular tube (an angle, a channel, a custom extrusion, a tube with a bevel along a corner): drawgen would size
+only its outside, so it refuses it as a profile (D-139 keeps a profile's dimensioned section with Fusion until the
+profile reading lands). An extrusion's open section is judged as a profile, not as a fold. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
 their team's file with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
 make: a Fusion drawing stays.
 
