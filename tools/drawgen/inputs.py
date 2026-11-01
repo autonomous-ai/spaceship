@@ -96,31 +96,46 @@ def parts_row(pn, team):
 def cut_list_rows(team, cfg, pn):
     """A welded frame's cut list from the team CSV its entry names (D-162), as the parts list's level-2 cut rows read,
     and that file: its rows whose frame is pn, one per member number (D-120: one number is one member; a number with
-    two lengths or two ends texts is refused), the quantity their sum, the name the member's number and name (its
-    bodies carry the same). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty,
-    ends (holes when present). Welded-in made parts the entry names (a frame's mitre plates) follow, from their
-    parts-list rows, as having their own drawing."""
+    two lengths, two ends texts or two pairs of end angles is refused), the quantity their sum, the name the member's
+    number and its parts-list name (names exactly as the parts lists: FRONT's cut lists name each tube's place, so a
+    part used in four rings would print one ring's; the cut list's own name only for a member with no parts-list
+    row). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty, ends (holes when
+    present). With FRONT's end_a_deg and end_b_deg, the end angles the model check uses come from them (see
+    column_angles), and an ends text that gives both angles must agree with them. Welded-in made parts the entry names
+    (a frame's mitre plates) follow, from their parts-list rows, as having their own drawing."""
     path = os.path.join(MANUF, team, cfg["file"])
     with open(path, newline="", encoding="utf-8") as fh:
         rows = [r for r in csv.DictReader(fh) if (r.get("frame") or "").strip() == pn]
+    base = os.path.basename(path)
     out, by = [], {}
     for r in rows:
         num = (r.get("member_part") or "").strip()
         if not num:
-            raise ValueError("cut list %s: a row of %s has no member number" % (os.path.basename(path), pn))
+            raise ValueError("cut list %s: a row of %s has no member number" % (base, pn))
         length, ends = (r.get("length_mm") or "").strip(), (r.get("ends") or "").strip()
+        angles = column_angles(r.get("end_a_deg"), r.get("end_b_deg"))
+        if angles is False:
+            raise ValueError("cut list %s: member %s's end angle columns '%s' and '%s' don't give a number each" % (
+                base, num, (r.get("end_a_deg") or "").strip(), (r.get("end_b_deg") or "").strip()))
+        said = ends_angles(ends)
+        if angles and said is not None and any(abs(a - b) > 1e-6 for a, b in zip(said, angles)):
+            raise ValueError("cut list %s: member %s's ends text gives %s, its end angle columns %s" % (
+                base, num, ", ".join("%g°" % a for a in said), ", ".join("%g°" % a for a in angles)))
         q = float((r.get("qty") or "1").strip() or 1)
         if num in by:
             o = by[num]
-            if (o["cut_length_mm"], o["note"]) != (length, ends):
-                raise ValueError("cut list %s: member %s has two lengths or two ends texts (D-120)" % (
-                    os.path.basename(path), num))
+            if (o["cut_length_mm"], o["note"], o.get("angles")) != (length, ends, angles):
+                raise ValueError("cut list %s: member %s has two lengths or two ends texts or two pairs of end "
+                                 "angles (D-120)" % (base, num))
             o["_q"] += q
             continue
-        o = {"kind": "cut", "member_part": num, "name": "%s %s" % (num, (r.get("name") or "").strip()),
+        listed = (parts_row(num, team)[0] or {}).get("name", "").strip()
+        o = {"kind": "cut", "member_part": num, "name": "%s %s" % (num, listed or (r.get("name") or "").strip()),
              "size_mm": (r.get("section") or "").strip(), "material": (r.get("section") or "").strip(),
              "cut_length_mm": length, "tolerance": cfg.get("tolerance", ""), "note": ends,
              "holes": (r.get("holes") or "").strip(), "_q": q}
+        if angles:
+            o["angles"] = angles
         by[num] = o
         out.append(o)
     if not out:
@@ -142,6 +157,23 @@ def cut_list_rows(team, cfg, pn):
 
 
 ANGLE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:°|deg\b)")
+NUMBER = re.compile(r"\d+(?:\.\d+)?")
+
+
+def column_angles(a, b):
+    """A cut list row's two end angles from square, sorted, from its end_a_deg and end_b_deg columns (FRONT's): each
+    cell's steepest cut, as the model check measures each end ('50.9 and 0.0 (two cuts)' is 50.9; that end's other
+    cut is on the tube's own sheet). None when the file has neither column or both cells are blank; False when only
+    one gives a number."""
+    if a is None and b is None:
+        return None
+    cells = [(c or "").strip() for c in (a, b)]
+    if not any(cells):
+        return None
+    got = [[float(x) for x in NUMBER.findall(c)] for c in cells]
+    if not all(got):
+        return False
+    return sorted(max(g) for g in got)
 
 
 def ends_cell(note, tol=""):

@@ -2714,7 +2714,7 @@ def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
         return "its cut length '%s' isn't a number" % row["cut_length_mm"]
     if abs(length - want_l) > tol_mm:
         return "its cut list says %s long, its body is %.2f" % (row["cut_length_mm"], length)
-    want_a = inputs.ends_angles(row.get("note"))
+    want_a = row.get("angles") or inputs.ends_angles(row.get("note"))     # FRONT's angle columns, else the text
     if want_a is None:
         return "its cut list's ends '%s' don't give both ends' angles" % row.get("note", "")
     if any(abs(a - b) > tol_deg for a, b in zip(sorted(want_a), ends)):

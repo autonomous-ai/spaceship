@@ -22,6 +22,9 @@ environment:
    so a length edited into the sheet fails it (Reviewer 9 on #365).
 5. On CEILING's own frames C1 and C2 (411101, 411102: D-131 welded steel, #348), once their members and their tube
    cut list are on this tree: both draw and read back, with the members and the mitre plates in the cut list.
+6. FRONT's cut lists (#313): with the two end angle columns, the model check reads the angles from them (each end's
+   steepest cut), an ends text that gives both angles must agree with them, and each member prints its parts-list
+   name rather than the tube's place.
 """
 
 import csv
@@ -155,8 +158,11 @@ def _weldment(path, bought=False, own=False, holes=False):
 
 
 def _cut_list(path, rows):
-    """A team cut list in the columns CEILING, WALL and FRONT share."""
+    """A team cut list in the columns CEILING, WALL and FRONT share, plus any other column the rows give (FRONT's
+    end_a_deg and end_b_deg)."""
     cols = ["frame", "member", "member_part", "name", "section", "length_mm", "qty", "ends", "holes", "status"]
+    cols += [k for r in rows for k in r if k not in cols]
+    cols = list(dict.fromkeys(cols))
     with open(path, "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, cols)
         w.writeheader()
@@ -328,6 +334,74 @@ def test_the_cut_list_is_checked_against_the_model():
         doc.save(bad)
         fails, _st = readback.check(bad, step)
     assert any("CUT LENGTH: '181' where cut.csv gives '180'" in f for f in fails), fails
+
+
+def _front_rows():
+    """GOOD as FRONT writes its cut lists: each row names the tube's place, and the end angles are in two columns as
+    well as the text. The long members' text has two cuts at one end (a square one and its 45° mitre) and a
+    tolerance note ('to within 0.1 deg'), so it gives no pair the text reader can use; one number keeps one text and
+    one pair of angles (D-120)."""
+    rows = [dict(r) for r in GOOD]
+    two_cuts = ("left end (A) 45.0°; right end (B) two cuts, 45.0° and square (0°) (its own sheet); flat on the "
+                "posts (to within 0.1 deg)")
+    rows[0].update(name="LONG MEMBER AT THE FRONT", end_a_deg="45.0", end_b_deg="45.0 and 0.0 (two cuts)",
+                   ends=two_cuts)
+    rows[1].update(name="LONG MEMBER AT THE BACK", end_a_deg="45.0", end_b_deg="45.0 and 0.0 (two cuts)",
+                   ends=two_cuts)
+    rows[2].update(name="SHORT MEMBER", end_a_deg="0.0", end_b_deg="0.0", ends="square both ends, between the rails")
+    return rows
+
+
+LISTED = {"219981": {"part_number": "219981", "kind": "MP", "name": "TEST - FRAME - MEMBER LONG"},
+          "219982": {"part_number": "219982", "kind": "MP", "name": "TEST - FRAME - MEMBER SHORT"}}
+
+
+def test_front_angle_columns_and_parts_list_names():
+    """FRONT's cut lists (#313, for its D-131 frames): the model check reads each row's end angles from its two angle
+    columns, each end's steepest cut, because a text with two cuts at one end or a tolerance note gives no pair; a
+    text that does give both angles must agree with the columns; and each member prints its parts-list name, not the
+    tube's place (the Lead's ruling, 2026-11-01)."""
+    rows = _front_rows()
+    d, step, spec = _made("front", rows)
+    p = os.path.join(d, "frame.pdf")
+    with _Rows(dict(LISTED, **{"219983": PLATE_ROW})):
+        got, _p = inputs.cut_list_rows("none", spec["cut_list"], "219980")
+        assert [r.get("angles") for r in got[:2]] == [[45.0, 45.0], [0.0, 0.0]], got
+        assert [r["name"] for r in got[:2]] == ["219981 TEST - FRAME - MEMBER LONG",
+                                                "219982 TEST - FRAME - MEMBER SHORT"], got
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
+    assert not fails, fails
+    text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
+    assert "219981 TEST - FRAME - MEMBER LONG" in text and "219982 TEST - FRAME - MEMBER SHORT" in text, text[:600]
+    assert "LONG MEMBER AT THE" not in text and "SHORT MEMBER" not in text
+    assert "two cuts, 45.0° and square (0°)" in text           # the ends as written
+    # a member with no parts-list row keeps the cut list's own name
+    with _Rows({"219983": PLATE_ROW}):
+        got, _p = inputs.cut_list_rows("none", spec["cut_list"], "219980")
+    assert got[0]["name"] == "219981 LONG MEMBER AT THE FRONT", got[0]["name"]
+    # the columns are checked against the model: an angle a degree off is refused
+    rows = _front_rows()
+    for r in rows[:2]:
+        r["end_a_deg"] = "44.0"
+    _refused("front1", "its cut list's ends give 44°, 45°, its body's end cuts 45.00°, 45.00° from square", rows)
+    # the steepest cut at a two-cut end is the one checked: a 30° second cut can't stand in for the 45° mitre
+    rows = _front_rows()
+    for r in rows[:2]:
+        r["end_b_deg"] = "30.0 and 0.0 (two cuts)"
+    _refused("front2", "its cut list's ends give 30°, 45°, its body's end cuts 45.00°, 45.00° from square", rows)
+    # a text that gives both angles must say what the columns say
+    rows = _front_rows()
+    rows[2]["end_b_deg"] = "45.0"
+    _refused("front3", "member 219982's ends text gives 0°, 0°, its end angle columns 0°, 45°", rows)
+    # a row whose columns give one end only
+    rows = _front_rows()
+    rows[2]["end_b_deg"] = "square"
+    _refused("front4", "member 219982's end angle columns '0.0' and 'square' don't give a number each", rows)
+    # one number, two pairs of angles (D-120)
+    rows = _front_rows()
+    rows[1]["end_a_deg"] = "46.0"
+    _refused("front5", "member 219981 has two lengths or two ends texts or two pairs of end angles", rows)
 
 
 def test_a_bought_part_under_the_frame_is_refused():
