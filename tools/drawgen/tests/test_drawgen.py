@@ -279,20 +279,59 @@ def _profile(path, kind):
 
 def test_profiles_and_short_tubes():
     """A tube shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it reads as a tube,
-    not a folded sheet. A member whose section is an angle (an extrusion: its list says so) or a tube with a bevel
-    along a corner is refused as a profile to size, not drawn with only its outer sizes (the sweep found FRONT's
-    kick strip 361002 drawn so)."""
+    not a folded sheet. A member whose section is an angle (an extrusion: its list says so) is refused as a profile to
+    size, not drawn with only its outer sizes (the sweep found FRONT's kick strip 361002 drawn so). A tube with a
+    1 x 45° bevel along an outer corner (CEILING's seam member) is drawn, the bevel called out where a view shows its
+    true angle, and read back against the STEP."""
     d = os.path.join(TMP, "profiles")
     os.makedirs(d, exist_ok=True)
     stub = _profile(os.path.join(d, "219994_P01_TEST-STUB_STEP.step"), "stub")
     compose.Part("219994", "none", step=stub, row=dict(ROW, part_number="219994"))      # not refused as folded
-    for pn, kind, proc in (("219993", "angle", "extruded angle, cut"), ("219992", "bevelled", "cut")):
-        step = _profile(os.path.join(d, "%s_P01_TEST-%s_STEP.step" % (pn, kind.upper())), kind)
-        try:
-            compose.Part(pn, "none", step=step, row=dict(ROW, part_number=pn, process=proc))
-            raise AssertionError("drew a %s as a plain member" % kind)
-        except compose.NotDrawable as e:
-            assert "is a profile" in str(e), (kind, str(e))
+    step = _profile(os.path.join(d, "219993_P01_TEST-ANGLE_STEP.step"), "angle")
+    try:
+        compose.Part("219993", "none", step=step, row=dict(ROW, part_number="219993", process="extruded angle, cut"))
+        raise AssertionError("drew an extruded angle as a plain member")
+    except compose.NotDrawable as e:
+        assert "is a profile" in str(e), str(e)
+    step = _profile(os.path.join(d, "219992_P01_TEST-BEVELLED_STEP.step"), "bevelled")
+    p = os.path.join(d, "bevelled.pdf")
+    compose.make("219992", "none", SPEC, p, step=step, row=dict(ROW, part_number="219992", process="cut"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    assert [c["long"] for c in data["chamfers"]] == [True] and data["chamfers"][0]["text"] == "1 x 45°", data["chamfers"]
+
+
+def test_ceiling_frame_bevels():
+    """CEILING's frame C1 (411101, main's STEP): the back member's 1 x 45° end bevel, which no view looks along, is
+    called out where it shows as a band; the seam member's bevel along its whole length, in the removed section
+    across that member at its true angle. Both read back against the STEP."""
+    d = os.path.join(TMP, "ceiling")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "411101.pdf")
+    compose.make("411101", "ceiling", {"tolerance": "test"}, p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    assert sorted(c["long"] for c in data["chamfers"]) == [False, True], data["chamfers"]
+    assert "showing its bevel along it" in " ".join(doc[0].get_text().split())      # its 2:1 section (Reviewer 6)
+    # Reviewer 6's plant on #331: the seam bevel's callout moved 50 mm, its record moved with it: the read-back
+    # still finds the bevel in the STEP and fails the callout that isn't by it
+    step = os.path.join(readback.REPO, [s_ for s_ in data["sources"] if s_["role"] == "STEP"][0]["path"])
+    planes = [f for f in readback.step_faces(step, data["pn"], data.get("placement"))
+              if f["kind"] == "plane" and "n" in f and f["pts"]]
+    texts = readback.text_boxes(doc[0], data["sheet_h"])
+    assert not readback.flat_feature_fails(data, planes, texts)
+    i = next(j for j, c in enumerate(data["chamfers"]) if c["long"])
+    bx, tip = data["chamfers"][i]["box"], data["chamfers"][i]["tip"]
+    moved = [(t[0] + 50, t[1], t[2] + 50, t[3], t[4], t[5]) if t[4] == "1 x 45°" and abs(t[0] - bx[0]) < 3 and
+             abs(t[1] - bx[1]) < 3 else t for t in texts]
+    assert moved != texts
+    data["chamfers"][i]["box"] = [bx[0] + 50, bx[1], bx[2] + 50, bx[3]]
+    data["chamfers"][i]["tip"] = [tip[0] + 50, tip[1]]
+    f2 = readback.flat_feature_fails(data, planes, moved)
+    assert any("along the member: its size 1 x 45° is not printed by it" in x for x in f2), f2
 
 
 def _cut_tube(path, kind, deg=45.0):

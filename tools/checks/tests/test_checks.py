@@ -209,6 +209,16 @@ def test_the_kick_strip_runs_on_the_bands_bottom_line_over_the_room_floor():
     ok = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 10, 214, -689, 105)),
           _B("AIR - KICK GRILLE", (900, -700, 2, 1100, -690, 100))]                 # not the door's strip
     assert c_geometry.check_gap_rules(ROOT, "assembly", ok, rules) == []
+    # BASE's lip seals are named for the room floor but aren't it: the strip's end 4.5 mm off a lip (D-150's slot,
+    # which FRONT's brush 368008 closes) is no kick-over-floor finding (the Lead, 2026-11-01, BASE's #303)
+    lips = ok + [_B("110000_P01_BASE_CAD:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:1 / LIP ENVELOPE",
+                    (218.5, -810, 0, 220.5, -691.5, 10)),
+                 _B("110000_P01_BASE_CAD:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:2 / LIP ENVELOPE",
+                    (-961, -650, 0, 214, -648, 10))]
+    assert c_geometry.check_gap_rules(ROOT, "assembly", lips, rules) == []
+    low = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))] + lips[2:]
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", low, rules)
+    assert len(fs) == 1 and "ROOM FLOOR (Z 0)" in fs[0].message and "7.0 mm" in fs[0].message
 
 
 def test_alignment_flags_offset_mating_holes_only():
