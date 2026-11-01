@@ -71,7 +71,7 @@ def _ang(a, b, c):
 _PCS = [("bottom", 0, 1), ("right", 1, 2), ("diagonal", 2, 3), ("top", 3, 4)]
 _CUT = [(nm, math.dist(UP[i], UP[j]), math.dist(PV[i], PV[j])) for nm, i, j in _PCS]
 _MIT = {k: _ang(PV[k - 1], PV[k], PV[k + 1]) / 2 for k in (1, 2, 3)}
-_GS = [V_FIX["gs_xl"] + V_FIX["gs_end"] + k * V_FIX["gs_p"] for k in range(4)]
+_GS = [V_FIX["gs_xl"] + V_FIX["gs_end"] + k * V_FIX["gs_p"] for k in range(3)] + [V_FIX["gs_x4"]]   # as the sill's rivnuts
 SPECS["uprof"] = {
     "design": doc("368004", "FRONT - GLAZING U-PROFILE - BOHLE BO5201571", "CAD"),
     "drawing": doc("368004", "FRONT - GLAZING U-PROFILE - BOHLE BO5201571", "DWG"),

@@ -65,7 +65,7 @@ Add `--arg rebuild=1` to rebuild a design this script made (it refuses any other
 
 | Item | What waits | Release |
 |---|---|---|
-| Frame member joints (H11) | butt joints modelled, rails full length; welded, cleated or riveted not decided | the PM's joint decision |
+| Frame member joint cleats (D-115) | the joint is decided: internal corner and T cleats, crimped, with structural adhesive, no welds; the frames are modelled with butt-cut members (rails full length) and the drawings say "member joints: internal cleats per D-115" | the Joints Engineer's cleat register entries and models, placed by reference |
 | Cassette clip (H03, HOLD-08) | 4 reserved zones in the 4 mm gap on the first and last studs | a clip named with its ratings |
 | Captive retainer (HOLD-02) | the bolts each panel drives | a part named, test T-04 |
 | Bolt and rivnut torque (HOLD-01, D-48) | the parts lists say HOLD-01 | test T06 |
