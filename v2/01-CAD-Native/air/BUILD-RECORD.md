@@ -30,7 +30,13 @@ Run 2026-11-01 02:00 UTC on Mac 1 (Fusion 2706.1.17), in one held Fusion session
 | 610201 soffit with the exhaust fan box and its 2 fans fitted | 13.84 kg |
 | 610101 column (without its cartridge) | 8.32 kg |
 | 610301 cartridge (each of 2) | 10.91 kg |
-| 610401 supply fan box with its 2 fans, the riser and transitions (PM ruling 2026-11-01: AIR carries all four fans) | 8.90 kg |
+| 610401 supply fan box with its 2 fans, the riser and transitions (PM ruling 2026-11-01: AIR carries all four fans) | 11.56 kg |
+
+The two transitions are HOLD envelopes until the follow-up designs them; their parts-list masses are sized, not
+placeholders: 618102 1.89 kg (0.35 m2 of 2 mm aluminium, the air report's sizing) and 618103 1.47 kg (a 1 mm steel duct of
+0.187 m2 from the riser's top to the fan box's bottom in FRONT's reserved space). The weight roll-up reads this parts list
+(S51) and adds the changes already ruled that the follow-up builds (fill at 24, layers at 32, 3 mm fan box casings) and
+what the CAD doesn't model yet (D-121's bulkheads and linings, the riser's foot and mesh piece): AIR 57.85 kg there.
 
 ## Exports (`air_exports.py` on this run's log)
 
@@ -45,6 +51,10 @@ Run 2026-11-01 02:00 UTC on Mac 1 (Fusion 2706.1.17), in one held Fusion session
 
 - C08, C09: the soffit's two lock-screw holes in the door-side rail (611205) are Ø6.6 where the register rules 7.0 for an M6 into a rivnut, and 8.5 from the rail's door edge where 2 diameters are asked. The rivnuts are in the ceiling frame's C1 front member, which the D-117 / D-120 frame rework rebuilds; the rail can't grow toward DR's panel, so the follow-up places the holes and the rivnuts together (a local ear on the rail at each screw, or another fixing).
 - C11: the aluminium parts name no alloy and temper yet ("alloy HOLD"); the ACP and felt faces and the cartridge layers give no finish.
+- **Fill density:** the column's and the soffit's fill (611104, 611203) are at 32 kg/m3 in this build; D-81 makes the
+  cavity fill 24 kg/m3 (provisional on T02) for the cassettes, the air column and the soffit, and only the cartridges'
+  50 mm layers stay at 32 (the density their published absorption is for). So 24 is right: the follow-up sets the fill's
+  material to 24 kg/m3 (0.70 to 0.53 kg and 0.91 to 0.68 kg). The roll-up already counts them at 24.
 - C06: under D-120 the corner angles (two shapes under one number), the column fill, the kick grille and the soffit fill (two pieces each), the cartridge (casing and layers in one component, so 611301 and 611302 aren't in the STEP by their own numbers), and the lock screws (head and shank bodies) become their own components; 618101 (hub zone) has no mass line.
 
 ## Not in this build yet
