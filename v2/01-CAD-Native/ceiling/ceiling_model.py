@@ -91,7 +91,9 @@ CEILING_PARAMS = [
     # ---- site joints (joints register V2-ENG-JNT-01; the register owns the bolt lines, PM ruling 2026-10-31)
     ("hole_clr", "7 mm", "mm", "confirmed", "R-J6 (joints register 2.9): bolt clearance hole, positioned to +/-0.2 from the spigot hole"),
     ("hole_acc", "19 mm", "mm", "confirmed", "joints register 2.2, 2.9: access hole, so the 18 mm head washer goes in with the bolt"),
-    ("hole_rvn", "9.53 mm", "mm", "source", "H-03 Sherex CAH2-610-4.2 rivnut (steel, D-131): hole 9.53 +0.10, as the aluminium part's (joints register H-03, SHX)"),
+    ("hole_rvn", "10.0 mm", "mm", "source", "D-163 (pod-wide ruling 2026-11-01): the M6 rivnut 838003 is Sherex CAL2-610-4.2, the "
+     "knurled round body, in a round drilled hole Ø10.00 +0.10 (was CAH2's Ø9.53; T06's spin-out test, 4 N·m or more in the "
+     "real tubes, confirms it; the joints register's H-03)"),
     ("spig_hole", "8.5 mm", "mm", "confirmed", "R-J13: spigot hole 8.5, round at one end of the edge, an 8.5 x 14 slot along it at the other"),
     ("spig_slot", "14 mm", "mm", "confirmed", "R-J13: the spigot slot's length along the edge (+/-2.75 of travel for the 8 mm spigot)"),
     ("lead_in", "1 mm", "mm", "confirmed", "R-J9 (joints register 2.10): 1 x 45 deg lead-in on the lower edges of the C1-C2 faces, so C2 drops past C1 without catching the seal"),
@@ -162,10 +164,11 @@ CEILING_PARAMS = [
      "PM ruling 2026-11-01: the panel hole ELECTRICAL's cable bushing needs, in the front and back returns: the voice cockpit route from the back wall to the front (REQ-VCK-03, D-41) and the spare path (ISS-069)"),
     ("sprk_d", "150 mm", "mm", "assumption", "reserved round zone for a later sprinkler drop (REQ-US-01)"),
     # the roof sleeve's flange lies on C2's skin round the slot with the roof grille's 4 rivnuts 838003 (J-AIR-03): the
-    # skin takes a Ø9.53 hole under each (CEILING's layout 2026-11-01, HOLD-04's rule: each rivnut 2 hole diameters from
+    # skin takes a hole_rvn hole under each (CEILING's layout 2026-11-01, HOLD-04's rule: each rivnut 2 hole diameters from
     # every free edge, the skin's slot edge too): 2 on the slot's left side, 2 on its back side BEHIND cross member 1,
     # whose front face is too near the slot for a set rivnut's bulge. AIR's model carries the same names (AIR's sleeve)
-    ("slv_rn_e", "19.2 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the 9.53 hole (19.06), rounded up (HOLD-04)"),
+    ("slv_rn_e", "20.0 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the Ø10.00 hole (D-163; HOLD-04's rule; "
+     "was 19.2 for the Ø9.53)"),
     ("slv_rn_in", "20 mm", "mm", "assumption", "the rivnuts this far in from the slot's corners along their sides"),
     ("slv_bulge", "14 mm", "mm", "assumption", "a set rivnut's blind-side bulge, about 14 across (the hole FRONT clears for body and "
      "bulge, DR model fr_hole_jf; Sherex gives no size)"),
