@@ -176,8 +176,8 @@ FINISH = {
     "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
 }
 PROCESS = {
-    "frame_c1": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)",
-    "frame_c2": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)",
+    "frame_c1": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), frame joint HOLD (H11)",
+    "frame_c2": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), frame joint HOLD (H11)",
     "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
     "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
 }

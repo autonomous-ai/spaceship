@@ -333,7 +333,7 @@ def cut_list(v):
             rows.append({"frame": pn, "half": half, "member": code, "name": name,
                          "section": "aluminium %s (6063-T6; alloy ISS-034)" % sec,
                          "length_mm": "%.2f" % L, "qty": 1,
-                         "ends": "square cut; member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)",
+                         "ends": "square cut; frame joint HOLD (H11)",
                          "holes": "; ".join(extra) or "none",
                          "status": "calculation (from the parameters)"})
     return rows

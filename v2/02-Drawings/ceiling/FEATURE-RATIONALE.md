@@ -30,7 +30,7 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-4111-14 | Soffit lock rivnuts (C1 only) | Ø9.53 in C1's front member at X −1100 and −950, Y −635 | Two captive M6 screws lock the soffit, so taking a cassette out can never free it | PM ruling 2026-11-01. Over the soffit's left inlet plenum, where no cartridge is: the key reaches them through the left hinged underside | confirmed (rule); assumption (X) |
 | F-4111-15 | Clearances | every bolt 30 or more from any member meeting its own (side bolts: 148 or more) | Stiles move, never bolts | R-J14 (checked by the offline tests) | calculation |
 | F-4111-16 | Roof slot clearance (C2) | C2's side access holes 24.7 from the slot's edge | The roof sleeve and the soffit come out before any ceiling bolt is turned, and go in after | Joints register 3.5 (D-60 note); assembly order R-J9 | calculation |
-| F-4111-17 | Member joints | internal corner and T cleats inside the tubes, crimped, with structural adhesive; no welds | Join the members into one frame without heat at the bonded skin | D-115 (H11); the cleats are the Joints Engineer's register entries and models, placed by reference when they land | decided; cleat parts HOLD |
+| F-4111-17 | Member joints | — | Join the members into one frame | Not decided: H11 | HOLD |
 
 ## Skins 411301 (C1) and 411302 (C2): ACP 3, EV3038 Dark Yellow
 

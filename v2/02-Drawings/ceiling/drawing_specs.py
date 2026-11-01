@@ -236,7 +236,7 @@ def frame_spec(key, half):
         "Datums: A = the closing face (the seam member's outer face, %.2f from X 0); B = the front member's front "
         "face (Y %.2f); C = the frame's underside (Z %.2f)." % (v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)),
         "Members (cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side and seam %.2f, front and cross members "
-        "X1-X3 %.2f, back %.2f; cross members at %.2f pitch from B. Frame member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)." % (
+        "X1-X3 %.2f, back %.2f; cross members at %.2f pitch from B. Frame joints HOLD (H11)." % (
             v["wall_depth"] - v["back_w"], v["half_fw"] - 2 * v["tube_w"], v["half_fw"], v["fr_pitch"]),
         "Joint holes (joints register 2.9; the register owns the bolt lines, PM ruling 2026-10-31):",
     ] + frame_hole_notes(half) + [
