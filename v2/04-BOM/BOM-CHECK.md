@@ -21,6 +21,7 @@ Read from: this working tree.
 - `v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv` @ working tree
+- `v2/04-BOM/number-allocation.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
 
@@ -161,7 +162,65 @@ Read from: this working tree.
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
+## Numbers given out by the master BOM (D-120)
+
+From `v2/04-BOM/number-allocation.csv`: 51 numbers, 51 not in a team's list yet, 0 in use, 0 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+
+| Number | Name | Part of | Qty per pod | Status |
+|---|---|---|---:|---|
+| 412101 | CEILING - FRAME SIDE MEMBER - C1 | 411101 | 1 | ALLOCATED |
+| 412102 | CEILING - FRAME SEAM MEMBER - C1 | 411101 | 1 | ALLOCATED |
+| 412103 | CEILING - FRAME FRONT MEMBER - C1 | 411101 | 1 | ALLOCATED |
+| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | 411101 | 1 | ALLOCATED |
+| 412105 | CEILING - FRAME CROSS MEMBER 1 - C1 | 411101 | 1 | ALLOCATED |
+| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | 411101 411102 | 4 | ALLOCATED |
+| 412201 | CEILING - FRAME SIDE MEMBER - C2 | 411102 | 1 | ALLOCATED |
+| 412202 | CEILING - FRAME SEAM MEMBER - C2 | 411102 | 1 | ALLOCATED |
+| 412203 | CEILING - FRAME FRONT MEMBER - C2 | 411102 | 1 | ALLOCATED |
+| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | 411102 | 1 | ALLOCATED |
+| 412205 | CEILING - FRAME CROSS MEMBER 1 - C2 | 411102 | 1 | ALLOCATED |
+| 212101 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
+| 212102 | WALL - FRAME RAIL TOP - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
+| 212103 | WALL - FRAME STILE FRONT - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
+| 212104 | WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
+| 212105 | WALL - FRAME STILE MID - SIDE LOWER - LH | 211101 | 3 | ALLOCATED |
+| 211511 | WALL - CAVITY FILL PIECE 1102.7 X 344.9 - SIDE LOWER - LH | 210101 | 3 | ALLOCATED |
+| 211512 | WALL - CAVITY FILL PIECE 1102.7 X 334.9 - SIDE LOWER - LH | 210101 | 1 | ALLOCATED |
+| 212201 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
+| 212202 | WALL - FRAME RAIL TOP - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
+| 212203 | WALL - FRAME STILE FRONT - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
+| 212204 | WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
+| 212205 | WALL - FRAME STILE MID - SIDE LOWER - RH | 211102 | 3 | ALLOCATED |
+| 211521 | WALL - CAVITY FILL PIECE 1102.7 X 344.9 - SIDE LOWER - RH | 210102 | 3 | ALLOCATED |
+| 211522 | WALL - CAVITY FILL PIECE 1102.7 X 334.9 - SIDE LOWER - RH | 210102 | 1 | ALLOCATED |
+| 212301 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
+| 212302 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
+| 212303 | WALL - FRAME STILE FRONT - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
+| 212304 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
+| 212305 | WALL - FRAME STILE MID - SIDE UPPER - LH | 211103 | 3 | ALLOCATED |
+| 211531 | WALL - CAVITY FILL PIECE 1082.7 X 344.9 - SIDE UPPER - LH | 210103 | 3 | ALLOCATED |
+| 211532 | WALL - CAVITY FILL PIECE 1082.7 X 334.9 - SIDE UPPER - LH | 210103 | 1 | ALLOCATED |
+| 212401 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
+| 212402 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
+| 212403 | WALL - FRAME STILE FRONT - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
+| 212404 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
+| 212405 | WALL - FRAME STILE MID - SIDE UPPER - RH | 211104 | 3 | ALLOCATED |
+| 211541 | WALL - CAVITY FILL PIECE 1082.7 X 344.9 - SIDE UPPER - RH | 210104 | 3 | ALLOCATED |
+| 211542 | WALL - CAVITY FILL PIECE 1082.7 X 334.9 - SIDE UPPER - RH | 210104 | 1 | ALLOCATED |
+| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
+| 212502 | WALL - FRAME RAIL TOP - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
+| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
+| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
+| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 | 2 | ALLOCATED |
+| 211611 | WALL - CAVITY FILL PIECE 1078.6 X 373 - BACK LOWER - B1 | 210201 | 3 | ALLOCATED |
+| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 | 2 | ALLOCATED |
+| 211621 | WALL - CAVITY FILL PIECE 1078.6 X 373 - BACK LOWER - B2 | 210202 | 3 | ALLOCATED |
+
 ## Rules
 
-Fails: no part number; one number for two different items; no mass; a hardware item (any bought item except AIR 61, ELECTRICAL 71 and PACKAGING 91) with no joints-register row (D-63); a reserved old number (D-28).
+Fails: no part number; one number for two different items; no mass; a hardware item (any bought item except AIR 61, ELECTRICAL 71 and PACKAGING 91) with no joints-register row (D-63); a reserved old number (D-28); an allocated number that is badly formed, outside its band, allocated twice, used for a different item, or used after it was cancelled (D-120).
 Listed as missing, without failing: no parts list yet, no quantity, make or buy not stated, a metal part with no finish (D-79, D-67), a made part with no process, a HOLD item, a register item with no part number.
