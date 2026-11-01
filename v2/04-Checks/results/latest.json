@@ -1,5 +1,5 @@
 {
- "rev": "7309f94",
+ "rev": "0c41d06",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -451,18 +451,6 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C05|no-drawing|110103"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111101",
-   "severity": "severe",
-   "message": "111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|111101"
   },
   {
    "check": "C05",

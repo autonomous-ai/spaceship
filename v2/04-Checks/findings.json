@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1432,7 +1432,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111101",
    "id": "F-043",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1441,9 +1441,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "0c41d06",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 7309f94",
+   "closed": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -1499,7 +1505,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3082,7 +3088,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3107,7 +3113,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -3137,7 +3143,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -3203,7 +3209,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3228,7 +3234,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3253,7 +3259,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C01",
@@ -3377,7 +3383,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3402,7 +3408,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3427,7 +3433,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3452,7 +3458,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3477,7 +3483,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3502,7 +3508,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3527,7 +3533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3552,7 +3558,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3577,7 +3583,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3602,7 +3608,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3627,7 +3633,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3652,7 +3658,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3677,7 +3683,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3702,7 +3708,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3727,7 +3733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3752,7 +3758,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3777,7 +3783,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3802,7 +3808,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3827,7 +3833,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -3852,7 +3858,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C01",
@@ -4293,7 +4299,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C01",
@@ -4352,7 +4358,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4377,7 +4383,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4402,7 +4408,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4427,7 +4433,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4452,7 +4458,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4477,7 +4483,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4502,7 +4508,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4527,7 +4533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4552,7 +4558,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4577,7 +4583,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4602,7 +4608,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4627,7 +4633,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -4682,7 +4688,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4707,7 +4713,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4732,7 +4738,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4757,7 +4763,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4782,7 +4788,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4807,7 +4813,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4832,7 +4838,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -4867,7 +4873,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 0c41d06",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4893,7 +4899,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -4922,7 +4928,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -4951,7 +4957,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -4980,7 +4986,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5009,7 +5015,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5038,7 +5044,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5067,7 +5073,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5096,7 +5102,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5125,7 +5131,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5154,7 +5160,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5183,7 +5189,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5212,7 +5218,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5241,7 +5247,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5270,7 +5276,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5299,7 +5305,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5328,7 +5334,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5357,7 +5363,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C06",
@@ -5386,7 +5392,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5411,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5436,7 +5442,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5461,7 +5467,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5486,7 +5492,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5511,7 +5517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5536,7 +5542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5561,7 +5567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5586,7 +5592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5611,7 +5617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5636,7 +5642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C05",
@@ -5661,7 +5667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 7309f94"
+   "last_seen": "2026-11-01 0c41d06"
   },
   {
    "check": "C01",

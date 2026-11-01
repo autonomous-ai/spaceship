@@ -1,8 +1,8 @@
-# Mechanical check run: 7309f94 on 2026-11-01
+# Mechanical check run: 0c41d06 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `7309f94`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `0c41d06`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 90** (36 severe, 54 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 89** (35 severe, 54 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `7309f94`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 70 |
+| C05 drawing completeness | yes | 69 |
 | C06 BOM completeness | yes | 19 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
@@ -27,7 +27,6 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
 | F-136 | severe | C01 | assembly shell left-base Y 847..850 Z 10..110 | The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes. | BASE |
-| F-043 | severe | C05 | 111101 | 111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step. | BASE |
 | F-045 | severe | C05 | 111211 | 111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step. | Joints Engineer |
 | F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | Joints Engineer |
 | F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | Joints Engineer |
