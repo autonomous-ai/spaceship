@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 16 failure(s) on the five rules; 383 part lines (172 made, 211 bought, 143 on HOLD) and 53 sub-assembly lines from 19 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 415.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 388 part lines (172 made, 216 bought, 148 on HOLD) and 53 sub-assembly lines from 19 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 416.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -36,22 +36,7 @@ Read from: this working tree.
 
 ## Failures
 
-- hardware with no joints-register row: 848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8 in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv @ working tree
-- hardware with no joints-register row: 848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
-- hardware with no joints-register row: 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8 in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_BOM.csv @ working tree
+- none
 
 ## Missing or on HOLD, per team
 
@@ -118,7 +103,8 @@ Read from: this working tree.
 
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
-- 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
+- 518002: the list still names it 'LINING - CEILING SAFETY CATCH'; the joints register's H-11 now names it 'LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 518002 LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3: HOLD (HOLD)
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
@@ -144,7 +130,10 @@ Read from: this working tree.
 - 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data))
 - 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133))
 - 718001 ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718002 ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718081 ELECTRICAL - 24 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718002 ELECTRICAL - LED CONTROLLER - 24 V PWM - DMX512 - ISOLATED INPUT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718004 ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718005 ELECTRICAL - INLET SEALING CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -169,10 +158,10 @@ Read from: this working tree.
 - 718020 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718021 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718022 ELECTRICAL - WIRE - UL 1015 14 AWG GREEN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718073 ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718073 ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718026 ELECTRICAL - CABLE - 4 X 20 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718027 ELECTRICAL - CABLE - 4 X 24 AWG SCREENED: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718051 ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718051 ELECTRICAL - LED STRIP - 24 V 3.0 W/M - 3000 K - 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718052 ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718044 ELECTRICAL - DRAW CORD - NYLON 3 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718048 ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -192,6 +181,7 @@ Read from: this working tree.
 - 718072 ELECTRICAL - MAINS PLUG - NEMA 5-15P: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718023 ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718024 ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718055 ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718029 ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718025 ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718028 ELECTRICAL - CABLE - CAT6 U/UTP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -208,10 +198,12 @@ Read from: this working tree.
 - 718038 ELECTRICAL - RJ45 PLUG - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718039 ELECTRICAL - RJ45 INLINE COUPLER - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718040 ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718056 ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718057 ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718041 ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718050 ELECTRICAL - LED STRIP - 24 V 6.0 W/M - 3000 K - 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718053 ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718102 ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -220,6 +212,9 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+**Joints register**
+- H-50 HARDWARE - BLIND RIVET - CLOSED END - CLIP MALE - HOLD: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
@@ -233,7 +228,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 180 numbers, 111 not in a team's list yet, 46 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 184 numbers, 115 not in a team's list yet, 46 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -417,6 +412,10 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 111 not in a team's list ye
 | 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
 | 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
 | 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
+| 212606 | WALL - FRAME STUD BELOW THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212607 | WALL - FRAME STUB ABOVE THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212608 | WALL - FRAME CROSS MEMBER LOWER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212609 | WALL - FRAME CROSS MEMBER UPPER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
 
 ## Rules
 
