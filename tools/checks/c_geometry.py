@@ -322,7 +322,9 @@ def check_gap_rules(root, mdl, bodies, rules):
         A = [b for b in bodies if ra.search(b.label)]
         B = [b for b in bodies if rb.search(b.label)]
         if rb.search(ROOM_FLOOR.label):
-            B.append(ROOM_FLOOR)            # D-132, D-151: no floor in the pod; the room floor is the plane Z 0
+            # D-132, D-151: no floor in the pod; the room floor is the plane Z 0 and nothing else, whatever a part is
+            # called (BASE's lip seal 'BASE SEAL - LIP - ROOM FLOOR' took its place by name: the Lead, 2026-11-01)
+            B = [ROOM_FLOOR]
         if not A or not B:
             continue
         lo, hi = num(r.get("min_gap_mm")), num(r.get("max_gap_mm"))
