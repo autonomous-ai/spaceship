@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 291 part lines (114 made, 177 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.4 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 291 part lines (114 made, 177 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -95,7 +95,6 @@ Read from: this working tree.
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -109,7 +108,6 @@ Read from: this working tree.
 - 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
 - 618102 AIR - SUPPLY TRANSITION - HOLD: HOLD (HOLD)
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
