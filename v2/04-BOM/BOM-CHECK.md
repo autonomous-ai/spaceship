@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 320 part lines (118 made, 202 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 321 part lines (118 made, 203 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -132,7 +132,7 @@ Read from: this working tree.
 - 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT - MEAN WELL CLG-100-24: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
 - 718049 ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK: HOLD (HOLD (no maker sheet found for a black nylon 6/6 spacer 4.3 x 8 x 2 mm (the closest, RAF M0591-4-N, states no colour or grade); no order, no supplier contact))
 - 718054 ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK: HOLD (HOLD (no maker sheet found for a black 6-32 x 1/2 in oval head wallplate screw (packs are stainless or brown); black matters on the black front plate; no order, no supplier contact))
-- 718073 ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A: HOLD (HOLD (its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet; no order, no supplier contact))
+- 718073 ELECTRICAL - ISOLATED SENSE MODULE - 24 V RAILS AND LIGHT CURRENT: HOLD (HOLD (its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet; no order, no supplier contact))
 - 718048 ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK: HOLD (HOLD (its length waits on what it screws into (CEILING's column), and no maker sheet was found for a black A2 M4 pan head (plain A2: Fabory 51340.040.012); no order, no supplier contact))
 - 718060 ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE): HOLD (HOLD (in-house module: interface data ISS-060))
 - 711005 ELECTRICAL - HUB ZONE COVER PLATE: HOLD (DRAFT; HOLD features: the hub window, button and knob holes (ISS-060) and the fixing holes (CEILING's column))
