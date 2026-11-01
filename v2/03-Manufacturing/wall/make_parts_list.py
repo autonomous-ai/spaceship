@@ -246,9 +246,11 @@ def panel_rows(rep):
     rows.append(row(level=1, part_number=skin["part_number"], name=en_name(skin), name_vi=vi_name(skin["description"], skin["part_number"]),
                     kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
                     finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
-                    process="CNC router: cut flat" if back else "CNC router: cut, V-groove and fold the back return (H16)",
+                    process=("CNC router: cut flat from the DXF, outline and holes; no drawing (D-89 part 4)" if back else
+                             "CNC router: cut, V-groove and fold the back return (H16)"),
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
-                    tolerance="per the tabulated skin drawing (D-89)", mass_each_kg=sm, mass_total_kg=sm,
+                    tolerance=("ISO 2768-m general tolerance (router cut; assumption until the ACP maker's own)" if back
+                               else "per the tabulated skin drawing (D-89)"), mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
                     source="CAD" + ("; holes ELECTRICAL P01 (PR #64)" if "el_inlet_x" in prm else ""),
                     note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
