@@ -550,6 +550,87 @@ def test_bent_sheet_p3s():
     assert lens.count(1.26) + lens.count(1.27) >= 2 and lens.count(2.53) >= 1, sorted(set(lens))[:40]
 
 
+def test_flat_pattern_on_its_own_sheet():
+    """The Lead (CEILING's tray 513101: at 1:10 its eight bend lines sit 1 to 5 mm apart, no room for their tags): a
+    big bent part's flat pattern goes on a sheet of its own when sheet 1 can't hold it legibly. The test tray drawn
+    that way: three sheets (1/3 views and tables, 2/3 the flat pattern at the largest scale the sheet holds, 3/3 the
+    notes), and the read-back checks the flat on its own sheet: its size, its tags, the bend lines on the DXF's."""
+    d = os.path.join(TMP, "flat_sheet")
+    os.makedirs(d, exist_ok=True)
+    step = _tray(os.path.join(d, "219984_P01_TEST-TRAY-SHEET2_STEP.step"))
+    good, _b = _tray_dxf(os.path.join(d, "219984_DXF.dxf"))
+    row = dict(ROW, part_number="219984", name="TEST - TRAY SHEET 2", process="laser cut, brake bend")
+    p = os.path.join(d, "219984.pdf")
+    compose.make("219984", "none", dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": good}, _flat_sheet=True),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    assert doc.page_count == 3 and data["flat"]["view"]["page"] == 1, (doc.page_count, data["flat"]["view"])
+    assert data["flat"]["view"]["scale"] == 1.0, data["flat"]["view"]          # the whole sheet: 1:1 for this tray
+    t2 = " ".join(doc[1].get_text().split())
+    assert "FLAT PATTERN 1:1" in t2 and "2/3" in t2 and "B1" in t2, t2[:300]
+    assert "sheet 2: the flat pattern; sheet 3: these general notes" in " ".join(doc[2].get_text().split())
+    assert not any("FLAT PATTERN" in pg.get_text() for pg in (doc[0],))
+
+
+def test_flat_goes_to_its_own_sheet_only_when_crowded():
+    """Reviewer 10 on #389: make() moved a bent part's flat to a sheet of its own whenever either of two error
+    messages' wording came up, untested. It is now an error of its own, raised where sheet 1 can't hold the flat (no
+    clear place for a bend's tag, or no room at any scale). Only that error moves the flat, and only once; any other
+    refusal stands, whatever its wording."""
+    d = os.path.join(TMP, "crowded")
+    os.makedirs(d, exist_ok=True)
+    step = _tray(os.path.join(d, "219983_P01_TEST-TRAY-CROWDED_STEP.step"))
+    good, _b = _tray_dxf(os.path.join(d, "219983_DXF.dxf"))
+    row = dict(ROW, part_number="219983", name="TEST - TRAY CROWDED", process="laser cut, brake bend")
+    spec = dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": good})
+    real, scales, seen = compose._make, compose.ISO_SCALES, []
+
+    def rec(pn, team, sp, *a, **k):
+        seen.append(bool(sp.get("_flat_sheet")))
+        try:
+            return real(pn, team, sp, *a, **k)
+        except compose.NotDrawable as e:
+            seen.append(type(e).__name__)
+            raise
+    compose._make = rec
+    try:
+        # 2:1 only: sheet 1 has no room for the tray's views, sections and flat, so the flat goes to a sheet of its
+        # own; with no room there either, that refusal stands, with no third try
+        compose.ISO_SCALES = [2.0]
+        try:
+            compose.make("219983", "none", spec, os.path.join(d, "x.pdf"), step=step, row=row)
+            raise AssertionError("drew the tray at 2:1")
+        except compose.NotDrawable as e:
+            assert not isinstance(e, compose.FlatCrowded) and "no room on the sheet" in str(e), e
+        assert seen == [False, "FlatCrowded", True, "NotDrawable"], seen
+    finally:
+        compose._make, compose.ISO_SCALES = real, scales
+    # the error decides, not its words: a plain refusal worded like the old match stands; a crowded flat moves once
+    first, calls = [], []
+
+    def fake(pn, team, sp, *a, **k):
+        calls.append(bool(sp.get("_flat_sheet")))
+        if not sp.get("_flat_sheet"):
+            raise first[0]
+        return "the flat on a sheet of its own"
+    compose._make = fake
+    try:
+        first.append(compose.NotDrawable("219983: no clear place for bend B1's tag in the flat pattern"))
+        try:
+            compose.make("219983", "none", spec, os.path.join(d, "y.pdf"), step=step, row=row)
+            raise AssertionError("moved the flat on a plain refusal")
+        except compose.NotDrawable as e:
+            assert e is first[0] and calls == [False], (e, calls)
+        first[0], calls[:] = compose.FlatCrowded("219983: crowded"), []
+        assert compose.make("219983", "none", spec, os.path.join(d, "y.pdf"), step=step, row=row) == \
+            "the flat on a sheet of its own" and calls == [False, True], calls
+    finally:
+        compose._make = real
+
+
 def test_a_sheet_drawn_again_keeps_its_sections():
     """Reviewer 10 on #380: make() draws a sheet again when its flat runs off (the flat a step smaller) or its
     sections do (a scale smaller), and the second draw took the first attempt's sections across the bends as drawn

@@ -64,6 +64,12 @@ class NotDrawable(Exception):
     """The part has something this tool can't dimension properly: it goes back to Fusion (D-112, D-113)."""
 
 
+class FlatCrowded(NotDrawable):
+    """Sheet 1 can't hold a bent part's flat pattern legibly: no clear place for a bend's tag, or no room for its
+    sections and flat at any scale. make() then puts the flat on a sheet of its own (the Lead: CEILING's tray 513101);
+    no other refusal does (Reviewer 10 on #389: the fallback was matched on two messages' wording)."""
+
+
 # ------------------------------------------------------------------ geometry helpers
 
 def ray_blocked(shape, p, d, skip=0.02):
@@ -511,7 +517,23 @@ def profile_section(part, r, v, kept, letters):
 FLAT_W, FLAT_H = 480.0, 300.0       # the most a flat pattern takes on the sheet
 
 
-def flat_view(part, cap=None):
+def _draw_flat(sh, vd):
+    """A flat pattern's lines as the views draw them: the cut outline thick, bend lines thin chain, zone edges thin."""
+    for p in vd.prims:
+        w, d = W_VIS, None
+        if p.src == "bend":
+            w, d = W_THIN, (12.0, 1.5, 1.0, 1.5, 1.0, 1.5)
+        elif p.src == "zone":
+            w, d = W_THIN, None
+        if p.kind == "line":
+            sh.line(vd.S(p.p), vd.S(p.q), w, d)
+        elif p.kind == "arc":
+            sh.arc(vd.S(p.c), p.r * vd.scale, p.a0, p.a1, w, d)
+        else:
+            sh.bezier([vd.S(q) for q in p.pts], w, d)
+
+
+def flat_view(part, cap=None, box=None):
     """The flat pattern as the team's DXF draws it, in its own x and y: the cut outline thick, the bend lines thin
     chain (ISO 128-20 type 05), the bend zones' edges thin; at the largest ISO scale (1:1 down) at which it fits
     FLAT_W x FLAT_H and the cap (the layout lowers it where the flat's row would run off the sheet; Reviewer 12:
@@ -549,7 +571,8 @@ def flat_view(part, cap=None):
             pr.src = "sharp"
             prims.append(pr)
     e = project.extent(prims)
-    fs = next((s_ for s_ in (1.0, 0.5, 0.2, 0.1, 0.05) if (e[2] - e[0]) * s_ <= FLAT_W and (e[3] - e[1]) * s_ <= FLAT_H
+    bw, bh = box or (FLAT_W, FLAT_H)
+    fs = next((s_ for s_ in (1.0, 0.5, 0.2, 0.1, 0.05) if (e[2] - e[0]) * s_ <= bw and (e[3] - e[1]) * s_ <= bh
                and (cap is None or s_ <= cap + 1e-9)), 0.05)
     vd = VD(View("flat", (0.0, 0.0, 1.0), (1.0, 0.0, 0.0)), prims, fs, "flat")
     vd.name = "flat"
@@ -610,7 +633,7 @@ def flat_dims(sh, part, fv):
                                   an))
         pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), None)
         if pick is None:
-            raise NotDrawable("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
+            raise FlatCrowded("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
         sh.text(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
         row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
 
@@ -640,7 +663,8 @@ def flat_data(part, pl, removed=()):
             "rows": [{"tag": r_["tag"], "axis": r_["axis"], "at": r_["at"], "dir": r_["dir"], "angle": r_["angle"],
                       "r": r_["r"], "printed_at": r_.get("printed_at")} for r_ in fl.rows],
             "map": fl.map.record(), "readings": fl.readings,
-            "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None, "profiles": profiles}
+            "view": dict({"off": fv.off, "scale": fv.scale, "box": fv.box()}, **({"page": fv.page} if getattr(fv, "page", 0)
+                                                                              else {})) if fv else None, "profiles": profiles}
 
 
 def bent_flat(part, team, bent):
@@ -1155,7 +1179,9 @@ def plan_views(part, spec):
         pl.sections.append(g)
     # removed sections through two-wall holes (D-113), one per body and pattern
     seen = set()
-    for st in two_wall_sets(part):
+    # (a bent part's holes on one line sit in two of its flanges, each shown in its own face's view: no section, which
+    # would cut the whole part; CEILING's tray 513101: its two Ø19.1 bushing holes across the tray)
+    for st in ([] if getattr(part, "flat", None) else two_wall_sets(part)):
         ft = sorted(st, key=lambda f: (f.f.dia))[0]
         body = ft.body
         sz = body.size
@@ -1556,7 +1582,8 @@ def draw(part, spec, out_path, today=None):
     if any(id(nt) not in sized for nt in part.notches):
         raise NotDrawable("%s: a notch no drawn view sizes" % part.pn)
     pl.details = details
-    flats = [flat_view(part, spec.get("_flat_cap"))] if getattr(part, "flat", None) else []
+    flats = [flat_view(part, spec.get("_flat_cap"))] if getattr(part, "flat", None) and not spec.get("_flat_sheet") \
+        else []
     place = removed + auxs + details + flats
     # removed sections and details: a column between the views and the tables when it is wide enough, else a row
     # under the views
@@ -2989,8 +3016,9 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     P = pl.principal
     notes = []
     notes.append("UNITS: mm. Do not scale the drawing. ISO first-angle projection (ISO 5456-2), symbol in the "
-                 "title block. Dimensions to ISO 129-1. Sheet 1: views, sections and hole tables; sheet 2: these "
-                 "general notes%s." % (", the cut list" if cut_list(part) else "") + "")
+                 "title block. Dimensions to ISO 129-1. Sheet 1: views, sections and hole tables; %s: these "
+                 "general notes%s." % ("sheet 2: the flat pattern; sheet 3" if spec.get("_flat_sheet") else "sheet 2",
+                                       ", the cut list" if cut_list(part) else "") + "")
     if getattr(part, "qty_words", None):
         notes.append("QUANTITY: %s." % part.qty_words)
     vw = "the room side" if part.pod_system and pl.principal.pod_name in ("right", "front", "top") else "its side"
@@ -3144,7 +3172,18 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 
 
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
-    """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
+    """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests). A big bent
+    part whose flat pattern sheet 1 can't hold legibly (no room for it, or no clear place for its bend tags: CEILING's
+    tray 513101, the Lead) gets the flat pattern on a sheet of its own."""
+    try:
+        return _make(pn, team, spec, out_path, today, step, row)
+    except FlatCrowded:
+        if spec.get("_flat_sheet"):
+            raise                       # on a sheet of its own already: the refusal stands
+        return _make(pn, team, dict(spec, _flat_sheet=True), out_path, today, step, row)
+
+
+def _make(pn, team, spec, out_path, today=None, step=None, row=None):
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"),
                 frame_members=bool(spec.get("cut_list")))      # a D-162 frame: its own file read as its members
     if spec.get("cut_list"):        # a welded frame's cut list in its team's CSV (D-162)
@@ -3208,7 +3247,10 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
                 continue
             smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
             if not smaller:
-                raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
+                # a bent part with its flat on sheet 1 may still fit with the flat on a sheet of its own (make())
+                crowded = getattr(part, "flat", None) is not None and not spec.get("_flat_sheet")
+                raise (FlatCrowded if crowded else NotDrawable)(
+                    "%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
             spec = dict(spec, _max_scale=smaller[0])
     spec = dict(spec)
     spec["_scale"] = scale
@@ -3221,11 +3263,34 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
         spec["_scale_more"] = spec.get("_scale_more", "") + " (flat pattern %s)" % scale_text(flats_[0].scale)
     annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
     ty, _members = tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
-    tb_top = title_block(sh, part, spec, scale, removed, today, 1, 2)
+    sheets = 3 if spec.get("_flat_sheet") else 2
+    tb_top = title_block(sh, part, spec, scale, removed, today, 1, sheets)
     if ty < tb_top + 4:
         report["warning"] = "the tables run into the title block"
     sh.border()
     sh.flush()
+    if spec.get("_flat_sheet"):
+        # ---- sheet 2: the flat pattern on its own, at the largest scale the sheet holds with room for its tags
+        sh.new_page()
+        aw, ah = sh.W - 20 - 10 - 60, sh.H - 20 - TB_ROOM - 50
+        fv = flat_view(part, box=(aw, ah))
+        w_, h_ = fv.size()
+        fv.place_ll(20 + 30 + (aw - w_) / 2, sh.H - 10 - 30 - h_)
+        _draw_flat(sh, fv)
+        sh.add_obstacles(outline_segments(fv))
+        sh.flush()
+        flat_dims(sh, part, fv)
+        bx = fv.box()
+        sh.text((bx[0] + bx[2]) / 2, bx[1] - 22.0, "FLAT PATTERN  %s" % scale_text(fv.scale), 3.5, "center", bold=True)
+        sh.text((bx[0] + bx[2]) / 2, bx[1] - 27.0, "from %s, as its x and y draw it: the side it shows faces you; bend "
+                "lines thin chain, B1 to B%d (the bend table on sheet 1)" % (os.path.basename(part.flat.path),
+                                                                         len(part.flat.rows)), 2.5, "center")
+        sh.text((bx[0] + bx[2]) / 2, bx[1] - 31.0, "UP: the flange folds toward you", 2.5, "center")
+        fv.page = 1
+        pl.flats = [fv]
+        title_block(sh, part, spec, scale, removed, today, 2, sheets)
+        sh.border()
+        sh.flush()
     # ---- sheet 2: GENERAL NOTES, the cut list and a small isometric (guideline 6.1: general rules on their own
     # sheet, specific notes near their feature on sheet 1)
     sh.new_page()
@@ -3274,7 +3339,7 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
             bx = ivd.box()
             sh.text((bx[0] + bx[2]) / 2, bx[1] - 9.0, "ISOMETRIC VIEW  %s" % scale_text(si), 3.5, "center", bold=True)
             sh.text((bx[0] + bx[2]) / 2, bx[1] - 14.0, "for identification only", 2.5, "center")
-    title_block(sh, part, spec, scale, removed, today, 2, 2)
+    title_block(sh, part, spec, scale, removed, today, sheets, sheets)
     sh.border()
     report["dwg"] = part.dwg_name
     report["tags"] = {ft.tag: {"x3": ft.f.entry, "dia": ft.f.dia, "kind": ft.kind} for ft in part.features}

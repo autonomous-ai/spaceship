@@ -1342,8 +1342,12 @@ def check(pdf_path, step_path=None, verbose=False):
     fails += cut_list_fails(doc, data)
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
         fails.append("a bent part's sheet has no record of its flat pattern")
-    fails += flat_fails(data, tb, page.get_text())
-    fails += profile_fails(data, tb, page.get_text())
+    fpage = ((data.get("flat") or {}).get("view") or {}).get("page", 0)
+    if fpage:       # the flat pattern on a sheet of its own (a big bent part)
+        fails += flat_fails(data, text_boxes(doc[fpage], data["sheet_h"]), page.get_text() + " " + doc[fpage].get_text())
+    else:
+        fails += flat_fails(data, tb, page.get_text())
+    fails += profile_fails(data, tb, page.get_text())   # the sections stay on sheet 1
     fails += flat_hole_fails(data, holes, faces)
     fails += csk_fails(data, faces, holes, page)
     fails += vgroove_radius_fails(data, faces)
