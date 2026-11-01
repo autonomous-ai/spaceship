@@ -620,6 +620,14 @@ def sleeve_flange():
     return ("slot_x0 - slv_fl_l", "slot_x0 + slot_w + slv_fl_f", "slot_y0 - slv_fl_f", "slot_y0 + slot_d + slv_fl_b")
 
 
+def sleeve_opening():
+    """(x0, x1, y0, y1) of the opening through the sleeve's top flange: the walls' inside (slv_t in from the slot's
+    outline), so the flange sits on the walls' top edges and the sleeve is one solid. Cut at the slot's outline, the
+    opening took the flange off the wall tops and left it touching them on an edge only: two solids in the STEP (the
+    mechanical checks' C06 on the follow-up's first saved build, 2026-11-01)."""
+    return ("slot_x0 + slv_t", "slot_x0 + slot_w - slv_t", "slot_y0 + slv_t", "slot_y0 + slot_d - slv_t")
+
+
 def sleeve_rivnuts():
     """[(name, x, y)] of the grille's 4 rivnuts in the sleeve's flange: 2 on the left side, 2 on the back side behind
     cross member 1 (J-AIR-03)."""

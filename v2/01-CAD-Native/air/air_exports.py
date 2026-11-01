@@ -96,10 +96,12 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "lin_s": "as supplied (the maker's facing)", "lip": "mill finish (hidden, D-79)"}
 PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
            "sof_rail_d": "laser cut flat bar, forks and holes", "sof_rail_r": "laser cut flat bar, forks", "sof_end": "laser cut",
+           "sof_door": "laser cut: the outline, the two head pockets and B08's three reliefs (its DXF)",
            "col_front": "CNC routed ACP, felt laminated", "col_left": "CNC routed ACP, felt laminated",
            "sof_under": "CNC routed ACP, felt laminated", "sof_under_r": "CNC routed ACP, felt laminated",
            "sof_under_f": "CNC routed ACP, felt laminated", "sof_front": "CNC routed ACP, felt laminated",
-           "kick": "perforated sheet, cut", "egrille": "perforated sheet, cut", "rgrille": "perforated sheet, cut",
+           "kick": "perforated sheet, laser cut", "egrille": "perforated sheet, laser cut",
+           "rgrille": "perforated sheet, laser cut: the outline and the 4 bolt holes (its DXF)",
            "casing": "sheet metal: cut, folded into a tube (blank HOLD: the factory's bend table)",
            "box": "sheet metal: cut, folded, riveted (blank HOLD)", "box_s": "sheet metal: cut, folded, riveted (blank HOLD)",
            "riser": "sheet metal: cut, folded into a tube (blank HOLD); one rivnut hole for the buffer",

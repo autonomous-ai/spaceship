@@ -355,7 +355,7 @@ PIECES = [
     Piece("1-11", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 8, "CEILING"),
     Piece("1-12", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(sk("wall_depth"), sk("half_pw"), 70), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame) and the grille 611602 over it (AIR 610000 P01 STEP): 70 thick", 1, 8, "CEILING",
+          S(sk("wall_depth"), sk("half_pw"), 71), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame), its top flange on the roof, and the grille 611602 over it (AIR 610000 P01 STEP, the AIR follow-up's sleeve flange): 71 thick", 1, 8, "CEILING",
           note="the roof sleeve and grille ride loose with C2 (#263), the grille's 4 bolts and washers (J-AIR-03) in a bag taped to the grille: the sleeve seated in C2's roof slot and taped, the grille taped flat over it; both come off at unpacking and go on after the soffit hangs (guide step 18)"),
     Piece("1-13", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
           S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
@@ -864,11 +864,15 @@ CAD = {
     "2-12": dict(step="front/350002_P01_*_STEP.step"),
     "2-14": dict(parts=[dict(step=INT_STEP, sub="810201")]),
     "2-16": dict(parts=[dict(step=INT_STEP, sub="810101"), dict(step=INT_STEP, sub="818102")]),
-    "2-10": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-19)"}),
-    "2-11": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-18)"}),
+    "2-10": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-19)",
+                                                    "611301": "its casing (the AIR follow-up models the cartridge's parts)",
+                                                    "611302": "its layers"}),
+    "2-11": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-18)",
+                                                    "611301": "its casing (the AIR follow-up models the cartridge's parts)",
+                                                    "611302": "its layers"}),
     "2-17": dict(step=AIR_STEP, sub="610401"),
-    "2-18": dict(step=AIR_STEP, sub="610101", keep={"610301"}),
-    "2-19": dict(step=AIR_STEP, sub="610201", keep={"610301"}),
+    "2-18": dict(step=AIR_STEP, sub="610101", keep={"610301", "611301", "611302"}),     # the cartridge, its casing and layers
+    "2-19": dict(step=AIR_STEP, sub="610201", keep={"610301", "611301", "611302"}),
     "2-20": dict(step=CEIL_STEP, sub="510301", occ=1), "2-21": dict(step=CEIL_STEP, sub="510301", occ=2),
 }
 _STEP_CACHE = {}

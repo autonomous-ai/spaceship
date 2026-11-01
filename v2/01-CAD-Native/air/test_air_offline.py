@@ -352,6 +352,21 @@ class PocketsHold(unittest.TestCase):
             self.assertLess(gap(p, plate), 0.0, n)                          # the cut finds the plate
 
 
+class SleeveOneSolid(unittest.TestCase):
+    """The flange's opening is the sleeve walls' inside, so the flange covers the walls' top edges all round (one solid:
+    cut at the slot's outline it left the flange on an edge only, two solids in the first saved build's STEP)."""
+
+    def test_flange_on_the_wall_tops(self):
+        ox0, ox1, oy0, oy1 = (A.ev(V, e) for e in A.sleeve_opening())
+        fx0, fx1, fy0, fy1 = (A.ev(V, e) for e in A.sleeve_flange())
+        sx0, sw, sy0, sd, t = (V[k] for k in ("slot_x0", "slot_w", "slot_y0", "slot_d", "slv_t"))
+        self.assertAlmostEqual(ox0 - sx0, t)
+        self.assertAlmostEqual(sx0 + sw - ox1, t)
+        self.assertAlmostEqual(oy0 - sy0, t)
+        self.assertAlmostEqual(sy0 + sd - oy1, t)
+        self.assertTrue(fx0 < sx0 and fx1 > sx0 + sw and fy0 < sy0 and fy1 > sy0 + sd)   # the flange reaches past the walls
+
+
 class FrontScrews(unittest.TestCase):
     """FRONT's panel screws that stand 7.6 into AIR's space (DR rebuild, 2026-11-01): every AIR body keeps
     fr_scr_clr off each washer and head, except where AIR relieves them, and the reliefs hold them: B08's three

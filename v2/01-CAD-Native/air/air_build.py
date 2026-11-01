@@ -827,8 +827,9 @@ def run(_context):
         jf = CB.box_body(slc, "ROOF SLEEVE FLANGE", (fx0, fx1, fy0, fy1, "pod_h", "pod_h + slv_t"), ctx, op=JOIN,
                          bodies=[sw])
         jf.name = "JOIN - ROOF SLEEVE FLANGE"
-        CB.box_body(slc, "ROOF SLEEVE FLANGE OPENING", ("slot_x0", "slot_x0 + slot_w", "slot_y0", "slot_y0 + slot_d",
-                                                        "pod_h", "pod_h + slv_t"), ctx, op=CUT, bodies=[sw])
+        ox0, ox1, oy0, oy1 = A.sleeve_opening()     # the walls' inside: the flange stays on the wall tops (one solid)
+        CB.box_body(slc, "ROOF SLEEVE FLANGE OPENING", (ox0, ox1, oy0, oy1, "pod_h", "pod_h + slv_t"), ctx, op=CUT,
+                    bodies=[sw])
         made["ROOF SLEEVE"] = (slc, sw)
         set_material(design, slc, "sleeve")
         comp_with(root, "rgrille", names_of("rgrille"))
