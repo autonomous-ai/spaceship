@@ -119,6 +119,38 @@ class MadeParts(unittest.TestCase):
         made, _ = run([self.frame()], file_map)
         self.assertEqual(made[0]["gaps"], ["DXF or cut list"])
 
+    # D-131's steel members, word for word: CEILING's 412101 (#348 at 3d7c6ae) and WALL's 212101 (#343 at 5afde8e)
+    CEILING_TUBE = ("Galvanized steel S280GD+Z or SGC400 (yield 280 MPa or more), Z100",
+                    "tube cut to length (mitred ends where it meets the corners, cut back for the 2.0 mitre plate), welded into "
+                    "the frame; holes CNC or jig drilled after welding (+/-0.2 from the spigot hole, R-J6)")
+    WALL_TUBE = ("steel box tube 20 x 40 x 1.2, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, "
+                 "zinc Z100 (J-FRAME-01, D-131)")
+
+    def test_a_galvanized_steel_tube_is_read_as_a_tube_not_sheet(self):
+        # the CEILING Drawings Engineer's catch on #362: 'galvanized' alone reads as sheet, so D-131's steel tubes wanted
+        # a DXF even with their cut list rows; the tube words now come first (and FRONT's 'GLASS EDGE' tubes too)
+        ceiling = row("412101", "make", "CEILING - FRAME SIDE MEMBER - COMMON", self.CEILING_TUBE[0], team="CEILING")
+        ceiling["process"] = self.CEILING_TUBE[1]
+        wall = row("212101", "make", "WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH", self.WALL_TUBE)
+        glass_edge = row("352306", "make", "FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE",
+                         "aluminium EN AW-6063-T6 tube 20 x 20 x 1.0", team="FRONT")
+        for r in (ceiling, wall, glass_edge):
+            r["cut_rows"] = True
+        made, _ = run([ceiling, wall, glass_edge], {})
+        self.assertEqual([m["flat"] for m in made], ["yes", "yes", "yes"])
+        # with no cut list row, a steel tube still wants one
+        bare = dict(ceiling)
+        del bare["cut_rows"]
+        made, _ = run([bare], {})
+        self.assertEqual(made[0]["flat"], "no")
+        self.assertIn("DXF or cut list", made[0]["gaps"])
+
+    def test_galvanized_sheet_with_no_tube_words_still_needs_its_dxf(self):
+        tray = row("513101", "make", "LINING - TRAY - CEILING", "galvanised steel DX51D+Z, 0.5 sheet", team="CEILING")
+        tray["cut_rows"] = True     # a cut list row doesn't stand in for a sheet part's DXF
+        made, _ = run([tray], {})
+        self.assertEqual(made[0]["flat"], "no")
+
     def test_a_sheet_part_needs_its_own_dxf(self):
         skin = row("211301", "make", "WALL - SKIN", "ACP 3 mm EV3038")
         file_map = files("210101_P01_WALL-PANEL_CAD.f3d", "210101_P01_WALL-PANEL_STEP.step", "211301_P01_WALL-SKIN_DWG.pdf")
