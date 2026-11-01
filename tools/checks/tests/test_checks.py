@@ -500,6 +500,42 @@ def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
     assert c_drawings.body_shape(_profile(sf.Frame(), length=500.0, holes=((300.0, 9.53),))) != same[0]
 
 
+def test_every_part_is_its_own_component_not_a_body(tmp_path):
+    # D-120 (build plan rule 2, BP-04): a component that holds several bodies is reported, as ruled
+    class FakeStep:
+        def __init__(self, rows, solids):
+            self.rows, self.solids = rows, solids
+        def instances(self):
+            return [{"pd": pd, "solid": sid, "part_number": pn, "name": name} for pd, sid, pn, name in self.rows]
+        def solid(self, sid):
+            return self.solids[sid]
+    def body(sid, name, d):
+        so = sf.Solid(sid, name)
+        so.holes = [sf.Hole(sid, (0, 0, 0), (0, 0, 1), d, 2.0, [])]
+        return so
+    names = ["RAIL - TOP", "STILE - FRONT", "STILE - MID 1", "STOP WASHER", "STOP WASHER - 2", "SPIGOT",
+             "HOLD PULL SPACE - OUTSIDE", "HOLD PULL SPACE - POD SIDE", "L1 ROUTE", "G GROMMET PAIR", "RIVNUT",
+             "RIVET NUT M6 - ENVELOPE"]
+    dias = [6.6, 9.53, 9.53, 10.5, 10.5, 8.0, 1.0, 1.0, 1.0, 2.0, 9.5, 9.5]
+    solids = {i + 1: body(i + 1, n, d) for i, (n, d) in enumerate(zip(names, dias))}
+    frame, washer = "211101 WALL - PANEL FRAME - SIDE LOWER - LH", "831002 HARDWARE - STOP WASHER"
+    rows = [(10, 1, "211101", frame), (10, 2, "211101", frame), (10, 3, "211101", frame),   # a frame: 3 bodies
+            (20, 4, "831002", washer), (20, 5, "831002", washer),                           # 2 copies as bodies
+            (30, 6, "831001", "831001 SPIGOT"), (30, 6, "831001", "831001 SPIGOT"),       # one component placed twice
+            (40, 7, "368103", "368103 FRONT - DOOR PULL PAIR - HOLD"), (40, 8, "368103", "x - HOLD"),   # HOLD space
+            (50, 9, "710011", "710011 ELECTRICAL - HARNESS"), (50, 10, "710011", "y"),     # route bodies (D-92)
+            (60, 11, "838003", "838003 RIVET NUT"), (60, 12, "838003", "838003 RIVET NUT"),   # a rivnut, its ENVELOPE
+            (70, 7, "NO-PN-HOLD-H03", "HOLD - CLIP ZONES"), (70, 8, "NO-PN-HOLD-H03", "HOLD - CLIP ZONES")]
+    path = str(tmp_path / "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    fake = FakeStep(rows, solids)
+    got = {f.subject: f for f in c_parts.check_components(str(tmp_path), [path], lambda p: fake)}
+    assert set(got) == {"211101", "831002"}
+    assert "3 bodies of 2 different shapes" in got["211101"].message and got["211101"].owner == "WALL"
+    assert got["211101"].severity == "major" and "assembly" in got["211101"].fix
+    assert "copies of one part" in got["831002"].message and "place it 2 times" in got["831002"].fix
+    assert got["831002"].owner == "WALL"           # WALL placed the Joints Engineer's washer: WALL fixes its model
+
+
 def test_run_with_ref_leaves_no_export_behind():
     import glob
     import subprocess

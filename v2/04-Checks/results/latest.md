@@ -1,8 +1,8 @@
-# Mechanical check run: 5cf7aef on 2026-11-01
+# Mechanical check run: 4969faf on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `5cf7aef`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `4969faf`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 63** (32 severe, 30 major, 1 minor). Register numbers in brackets.
+**Findings in this run: 76** (32 severe, 43 major, 1 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,7 +13,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `5cf7aef`. The Fusion 
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 59 |
-| C06 BOM completeness | yes | 3 |
+| C06 BOM completeness | yes | 16 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 0 |
@@ -88,6 +88,19 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-152 | major | C05 | 810201 | 810201 INTERIOR - LIGHT SHELF ASSY has no drawing PDF (810201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-098 | major | C06 | 111211 | Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95). | BASE |
 | F-159 | major | C06 | 810000 | 810000_P01_INTERIOR_STEP.step's top component carries part number '2026-11-01-02-34-22-890', not 810000 from its file name (conventions section 6); until it does, the assembled checks leave this file out. | CEILING |
+| F-160 | major | C06 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-161 | major | C06 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (7 bodies); 211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-162 | major | C06 | 211103 | 211103 WALL - PANEL FRAME - SIDE UPPER - LH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-163 | major | C06 | 211104 | 211104 WALL - PANEL FRAME - SIDE UPPER - RH is one component holding 7 bodies of 5 different shapes (RAIL - BOTTOM, RAIL - TOP, STILE - BACK, STILE - FRONT, STILE - MID 1, STILE - MID 2, STILE - MID 3) in 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-164 | major | C06 | 211501 | 211501 WALL - CAVITY FILL - SIDE LOWER - LH is one component holding 4 bodies of 3 different shapes (FILL - BAY 1, FILL - BAY 2, FILL - BAY 3, FILL - BAY 4) in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (4 bodies); 211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-165 | major | C06 | 211502 | 211502 WALL - CAVITY FILL - SIDE LOWER - RH is one component holding 4 bodies of 3 different shapes (FILL - BAY 1, FILL - BAY 2, FILL - BAY 3, FILL - BAY 4) in 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-166 | major | C06 | 211503 | 211503 WALL - CAVITY FILL - SIDE UPPER - LH is one component holding 4 bodies of 3 different shapes (FILL - BAY 1, FILL - BAY 2, FILL - BAY 3, FILL - BAY 4) in 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-167 | major | C06 | 211504 | 211504 WALL - CAVITY FILL - SIDE UPPER - RH is one component holding 4 bodies of 3 different shapes (FILL - BAY 1, FILL - BAY 2, FILL - BAY 3, FILL - BAY 4) in 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | WALL |
+| F-168 | major | C06 | 411101 | 411101 CEILING - PANEL FRAME - C1 is one component holding 7 bodies of 6 different shapes (C1 BACK MEMBER 40X40, C1 CROSS MEMBER 1, C1 CROSS MEMBER 2, C1 CROSS MEMBER 3, C1 FRONT MEMBER, C1 SEAM MEMBER, C1 SIDE MEMBER) in 410000_P01_CEILING_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | CEILING |
+| F-169 | major | C06 | 411102 | 411102 CEILING - PANEL FRAME - C2 is one component holding 7 bodies of 5 different shapes (C2 BACK MEMBER 40X40, C2 CROSS MEMBER 1, C2 CROSS MEMBER 2, C2 CROSS MEMBER 3, C2 FRONT MEMBER, C2 SEAM MEMBER, C2 SIDE MEMBER) in 410000_P01_CEILING_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body. | CEILING |
+| F-170 | major | C06 | 831001 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS is one component holding 2 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (2 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
+| F-171 | major | C06 | 831002 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL is one component holding 7 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (7 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (7 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
+| F-172 | major | C06 | 838003 | 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times. | WALL |
 | F-104 | minor | C06 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv is missing: Vietnamese name. | WALL |
 
 ## Tolerance stacks (C02)
@@ -134,16 +147,16 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.117 | 729 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK - DL | 9.976 | 2290 x 278 x 205 | long | calculation |
-| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.873 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
+| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.705 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
 | 2-11 AIR - AIR COLUMN | 9.735 | 2105 x 360 x 217 | long | calculation; fill provisional |
 | 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |
 | 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.282 | 600 x 250 x 200 | long | calculation (CAD) |
 | 2-14 INTERIOR - LIGHT SHELF ASSY | 1.564 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-15 BASE - SMALL PARTS CARTON | 1.968 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-16 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
-| 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.895 | 1845 x 460 x 155 | long | assumption; calculation |
-| 2-18 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
-| 2-19 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
+| 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.655 | 1845 x 460 x 155 | long | assumption; calculation |
+| 2-18 AIR - CARTRIDGE - SUPPLY | 10.8 | 1750 x 314 x 173 | long | calculation |
+| 2-19 AIR - CARTRIDGE - EXHAUST | 10.8 | 1750 x 314 x 173 | long | calculation |
 | 2-20 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
 | 2-21 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
 | 2-22 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |
