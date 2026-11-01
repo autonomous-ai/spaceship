@@ -580,6 +580,30 @@ def test_rivet_holes_pass_the_tapped_guard():
         assert "its parts list says so" in str(e), e
 
 
+def test_text_width_matches_the_printed_text():
+    """The free-space boxes are as wide as the printed text, Ø and µ included (fitz.get_text_length under-measured
+    them: 'Ø9.53' 7.55 against 9.48 printed; the Air Engineer's read-back found it): each width within 0.05 mm of the
+    PDF's own span box, regular and bold."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "widths")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    samples = ["Ø9.53", "µm", "45°", "1 x 45°", "H01  Ø13 THRU 1 WALL"]
+    for i, t in enumerate(samples):
+        sh.text(30, 250 - 10 * i, t, 2.5)
+        sh.text(200, 250 - 10 * i, t, 2.5, bold=True)
+    sh.save(os.path.join(d, "w.pdf"))
+    spans = {}
+    for b in fitz.open(os.path.join(d, "w.pdf"))[0].get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln["spans"]:
+                spans[(sp["text"], "Bold" in sp["font"])] = (sp["bbox"][2] - sp["bbox"][0]) / (72 / 25.4)
+    for t in samples:
+        for bold in (False, True):
+            assert abs(spans[(t, bold)] - sh.text_width(t, 2.5, bold)) < 0.05, (t, bold, spans[(t, bold)],
+                                                                             sh.text_width(t, 2.5, bold))
+
+
 def test_long_words_break_at_separators():
     """A word wider than its cell (a long drawing number in the title block, FRONT's 352211) breaks after its '_'
     or '-', each line inside the cell, and nothing is lost."""
