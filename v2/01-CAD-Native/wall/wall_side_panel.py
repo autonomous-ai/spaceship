@@ -301,6 +301,7 @@ WALL_PARAMS = [
 # the cassette returns, felt-only holes, and the inlet holes and fill cut-outs in panel B2. Same names as
 # ELECTRICAL's model with an el_ prefix, same expressions, so a skeleton edit moves them as it moves ELECTRICAL's.
 _EL = "ELECTRICAL P01 (electrical_model.py, PR #64)"
+_ELB2 = "ELECTRICAL's B2 inputs (WALL group, 2026-11-01)"
 EL_PARAMS = [
     ("el_trunk_z", "1100 mm", "mm", "assumption", _EL + " trunk_z: the cable trunk height in B2-CASS and R1-CASS, "
                                                          "above the ledge (about Z 1000), below the R1/R2 joint"),
@@ -327,8 +328,8 @@ EL_PARAMS = [
     ("el_shelf_d", "16 mm", "mm", "assumption", _EL + " FX-SHELF: felt hole for the light shelf feed"),
     ("el_pu_x0", "95 mm", "mm", "assumption", _EL + " pu_x0: the power unit's left side, clear of the closing seam "
                                                     "member and its pin-bolt pocket"),
-    ("el_pu_w", "296 mm", "mm", "source", "ELECTRICAL's final unit size 296 x 260 x 72 (PM 2026-10-31 20:38 UTC): "
-                                          "X 95 to 391, 4.75 clear of B2's first stud"),
+    ("el_pu_w", "296 mm", "mm", "source", "ELECTRICAL's final unit size 296 x 260 x 72 (PM 2026-10-31 20:38 UTC; "
+                                          "unchanged in its B2 inputs of 2026-11-01): X 95 to 391, on B2's cross members"),
     ("el_pu_h", "260 mm", "mm", "source", "ELECTRICAL's final unit size (PM 2026-10-31 20:38 UTC): Z 870 to 1130"),
     ("el_pu_zc", "1000 mm", "mm", "confirmed", _EL + " pu_zc: the socket and LAN at the ledge height (D-70)"),
     ("el_pu_clr", "4 mm", "mm", "assumption", _EL + " pu_clr: the gap round the frame-mounted unit, so the cassette "
@@ -365,6 +366,30 @@ EL_PARAMS = [
     ("el_inlet_d", "24 mm", "mm", "source", _EL + " inlet_d: powerCON TRUE1 TOP cut-out 23.8, etherCON NE8FDP 24"),
     ("el_sl_x", "el_inlet_x + 30 mm", "mm", "calculation", _EL + " sl_x: the mains and LAN sleeve's centre (X 150)"),
     ("el_sl_w", "20 mm", "mm", "assumption", _EL + " SLEEVE: the sleeve's 20 x 20 envelope"),
+    # B2 under D-131 (the Lead's approval of WALL's B2 frame, 2026-11-01): the unit sits on two welded cross members
+    # (from the centre stile to the second stud) and fixes into them with 4 M6 rivnuts 838003 in Ø10.00 +0.10 holes
+    # (D-163) at the tubes' mid-depth; the mains and LAN cross the lower one through passages (ELECTRICAL's inputs
+    # in WALL's group, 2026-11-01)
+    ("el_rn_xu1", "110 mm", "mm", "source", _ELB2 + ": the upper cross member's first unit rivnut, in its underside"),
+    ("el_rn_xu2", "376 mm", "mm", "source", _ELB2 + ": the upper cross member's second unit rivnut, in its underside"),
+    ("el_rn_xl1", "160 mm", "mm", "source",
+     _ELB2 + ": the lower cross member's first unit rivnut, in its top (not 110: that clashed with the mains passage)"),
+    ("el_rn_xl2", "376 mm", "mm", "source", _ELB2 + ": the lower cross member's second unit rivnut, in its top"),
+    ("el_ps_mains_x", "113 mm", "mm", "source", _ELB2 + ": the mains cord's passage through the lower cross member"),
+    ("el_ps_mains_db", "15.9 mm", "mm", "source",
+     _ELB2 + ": the mains passage in the member's bottom wall, for the Heyco SB 625-7 bushing snapped in from below"),
+    ("el_ps_mains_dt", "20 mm", "mm", "source",
+     _ELB2 + ": the mains passage in the member's top wall, lined by the unit's own bushing from above"),
+    ("el_ps_lan_x", "207 mm", "mm", "source", _ELB2 + ": the LAN cable's passage through the lower cross member"),
+    ("el_ps_lan_db", "11.1 mm", "mm", "source",
+     _ELB2 + ": the LAN passage in the member's bottom wall, for the Heyco SB 437-5 bushing snapped in from below"),
+    ("el_ps_lan_dt", "14 mm", "mm", "source",
+     _ELB2 + ": the LAN passage in the member's top wall, lined by the unit's own bushing from above"),
+    ("el_scr_d", "3.2 mm", "mm", "source",
+     _ELB2 + ": each connector's two screw holes for M3 screws with nuts (Neutrik's own drawings: powerCON TRUE1 "
+             "TOP NAC3MPX-TOP, etherCON NE8FDY-C6-B; D-133)"),
+    ("el_scr_dx", "9.5 mm", "mm", "source", _ELB2 + ": the screw holes on the diagonal, X +9.5 and -9.5 from the centre"),
+    ("el_scr_dz", "12 mm", "mm", "source", _ELB2 + ": the screw holes on the diagonal, Z +12 and -12 from the centre"),
     # ELECTRICAL's cable-tie holes in the trays (the Lead's relay of 2026-11-01 11:37 UTC)
     ("el_tie_d", "6.4 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): a Heyco 3904 push-mount cable tie in a Ø6.4 hole through the tray's back sheet; its wings sit behind the sheet, so never in front of a frame member"),
     ("el_tie_r1_y1", "767 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 1 along the trunk (Z el_trunk_z)"),
@@ -389,6 +414,8 @@ EL_PARAMS = [
     ("el_tie_b2_x3", "1143.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 3 along the trunk (Z el_trunk_z)"),
 ]
 # what each design needs, by position and kind (the el_ names these refer to come with them)
+B2_FRAME_EL = ("el_rn_xu1", "el_rn_xu2", "el_rn_xl1", "el_rn_xl2", "el_ps_mains_x", "el_ps_mains_db", "el_ps_mains_dt",
+               "el_ps_lan_x", "el_ps_lan_db", "el_ps_lan_dt")
 EL_USE = {
     ("R1", "cass"): ("el_fs_y0", "el_fs_y1", "el_fs_dz", "el_trunk_z", "el_kit_d", "el_kit_dz", "el_y_kit",
                      "el_grm_d", "el_y_cx", "el_tie_d") + tuple("el_tie_r1_y%d" % i for i in range(1, 8)),
@@ -399,7 +426,10 @@ EL_USE = {
                      "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z", "el_tie_d")
                     + tuple("el_tie_b2_x%d" % i for i in range(1, 4)),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
-                      "el_sl_x", "el_sl_w"),
+                      "el_sl_x", "el_sl_w", "el_pu_zc", "el_pu_h", "el_scr_d", "el_scr_dx", "el_scr_dz")
+                     + B2_FRAME_EL,
+    # B2's frame carries the unit: its cross members' heights, rivnuts and cable passages (ELECTRICAL, 2026-11-01)
+    ("B2", "frame"): ("el_pu_zc", "el_pu_h") + B2_FRAME_EL,
     ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_ceil_z", "el_grm_s",
                      "el_tie_d") + tuple("el_tie_b4_z%d" % i for i in range(1, 6)),
 }
@@ -418,7 +448,7 @@ def el_params(code, kind):
     return [p for p in EL_PARAMS if p[0] in want]
 
 
-EL_KIND = "frame" if PART == "frame" else ("panel" if PANEL_SIDE else "cass")    # a frame has none of them
+EL_KIND = "frame" if PART == "frame" else ("panel" if PANEL_SIDE else "cass")    # only B2's frame has any
 WALL_PARAMS = WALL_PARAMS + el_params(CODE, EL_KIND)
 # the cassette ledge (the Lead's ruling of 2026-11-01, WALL's sizes accepted the same day): lower panels only
 _LG = "the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted)"
@@ -1103,7 +1133,10 @@ Z_CASS1 = Z1 if ROW == 1 else "pod_h - outer_t - lin_gap"
 _ALLOC = []
 MEMBER_WORDS = {"RAIL - BOTTOM": "RAIL BOTTOM", "RAIL - TOP": "RAIL TOP", "STILE - FRONT": "STILE FRONT",
                 "STILE - BACK": "STILE BACK", "STILE - MID": "STILE MID", "STILE - OUTER": "STILE OUTER",
-                "STILE - CENTRE": "STILE CENTRE"}
+                "STILE - CENTRE": "STILE CENTRE",
+                # B2's members round the power unit (the Lead's approval of WALL's B2 frame, 2026-11-01)
+                "CROSS - LOWER": "CROSS MEMBER LOWER", "CROSS - UPPER": "CROSS MEMBER UPPER",
+                "STUD - BELOW UNIT": "STILE MID BELOW UNIT", "STUD - STUB": "STILE MID STUB"}
 
 
 def allocation(repo_root):
@@ -1122,9 +1155,10 @@ def member_numbers(repo_root, frame_pn):
     out = {}
     for r in allocation(repo_root):
         if frame_pn in r["parent"].split() and r["part_number"].startswith("212"):
-            for key, word in MEMBER_WORDS.items():
-                if " FRAME %s" % word in r["name"]:
-                    out[key] = (r["part_number"], r["name"], r["name_vi"])
+            # the longest member word the name holds, so "STILE MID BELOW UNIT" isn't read as "STILE MID"
+            hits = [(len(word), key) for key, word in MEMBER_WORDS.items() if " FRAME %s" % word in r["name"]]
+            if hits:
+                out[max(hits)[1]] = (r["part_number"], r["name"], r["name_vi"])
     return out
 
 

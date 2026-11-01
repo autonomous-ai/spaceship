@@ -419,17 +419,59 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
                 self.assertAlmostEqual(v[k], x, places=3, msg="%s %s %s" % (pos, part, k))
 
     def test_only_b2_and_b4_carry_them(self):
-        for pos, part in (("B1", "cassette"), ("B3", "cassette"), ("B1", "panel"), ("B4", "panel"), ("B2", "frame")):
+        for pos, part in (("B1", "cassette"), ("B3", "cassette"), ("B1", "panel"), ("B4", "panel"), ("B1", "frame")):
             ns = load_back(pos, part)
             self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (pos, part))
+        # B2's frame carries the unit (the Lead's approval of WALL's B2 frame, 2026-11-01): only its fixings' names
+        ns = load_back("B2", "frame")
+        self.assertEqual(sorted(q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")),
+                         sorted(("el_pu_zc", "el_pu_h") + ns["B2_FRAME_EL"]))
 
-    @unittest.skip("B2's layout waits (PM 2026-11-01: the unit's 373 bay with cross members; D-133 changes the unit)")
-    def test_unit_clears_the_first_stud_by_4_75(self):
-        """PM ruling 2026-10-31 20:35 UTC: 0.75 is too tight; the unit stands 4.75 clear of B2's first stud (the
-        stud's face is at X 395.747, which the messages round to 395.75)."""
-        cass, panel = self.resolved("B2", "cassette"), self.resolved("B2", "panel")
-        stud = panel["close_gap"] / 2 + panel["stile_pitch"]
-        self.assertAlmostEqual(stud - (cass["el_pu_x0"] + cass["el_pu_w"]), 4.75, delta=0.005)
+    def test_b2_unit_sits_on_its_cross_members(self):
+        """D-131's first stud is behind the unit, so two cross members from the centre stile to the second stud carry
+        it, a rivnut head (0.76) off its bottom and top (ELECTRICAL: the unit sits on the heads); the unit, its 4 rivnuts
+        and both passages lie on the members, clear of their welded ends; the top-front clip zone lies on the stub."""
+        v = self.resolved("B2", "panel")
+        x_lo, x_hi = v["close_gap"] / 2 + v["tube_w"], v["close_gap"] / 2 + 2 * v["stile_pitch"]
+        self.assertAlmostEqual(x_hi - x_lo, 569.5, delta=0.01)
+        u0, u1 = v["el_pu_zc"] - v["el_pu_h"] / 2, v["el_pu_zc"] + v["el_pu_h"] / 2
+        self.assertAlmostEqual(v["xm_z0"] + v["tube_w"] + v["rivnut_head_t"], u0, places=6)
+        self.assertAlmostEqual(v["xm_z1"] - v["tube_w"] - v["rivnut_head_t"], u1, places=6)
+        self.assertAlmostEqual(v["xm_z0"], 849.24, delta=0.005)
+        self.assertAlmostEqual(v["xm_z1"], 1150.76, delta=0.005)
+        c = self.resolved("B2", "cassette")                               # the unit's X lives in the cassette's list
+        self.assertGreater(c["el_pu_x0"] - x_lo, 50)                       # the closing seam's pin bolt access
+        self.assertGreater(x_hi - (c["el_pu_x0"] + c["el_pu_w"]), 150)
+        holes = [(v["el_rn_xl1"], v["rivnut_d"]), (v["el_rn_xl2"], v["rivnut_d"]),
+                 (v["el_ps_mains_x"], v["el_ps_mains_dt"]), (v["el_ps_lan_x"], v["el_ps_lan_dt"])]
+        for x, d in holes + [(v["el_rn_xu1"], v["rivnut_d"]), (v["el_rn_xu2"], v["rivnut_d"])]:
+            self.assertGreater(x - d / 2 - x_lo, 10)
+            self.assertGreater(x_hi - x - d / 2, 10)
+        holes.sort()
+        for (xa, da), (xb, db) in zip(holes, holes[1:]):                   # the lower member's top wall
+            self.assertGreater(xb - db / 2 - (xa + da / 2), 20, (xa, xb))
+        # the first stud (below the unit) stays clear of the passages under the lower member
+        stud = (v["close_gap"] / 2 + v["stile_pitch"], v["close_gap"] / 2 + v["stile_pitch"] + v["tube_w"])
+        for x, d in ((v["el_ps_mains_x"], v["el_ps_mains_db"]), (v["el_ps_lan_x"], v["el_ps_lan_db"])):
+            self.assertGreater(stud[0] - (x + d / 2), 50)
+        z_top = c["panel_z0"] + c["back_ph"]
+        zone = (z_top - c["clip_top_dz"] - c["clip_zone_h"] / 2, z_top - c["clip_top_dz"] + c["clip_zone_h"] / 2)
+        stub = (c["xm_z1"], z_top - c["top_h"])
+        self.assertGreaterEqual(zone[0], stub[0] - 1e-6)
+        self.assertLessEqual(zone[1], stub[1] + 1e-6)
+        self.assertGreater(zone[0] - c["el_cut_z1"], 15)                   # clear of the tray's unit cut-out
+
+    def test_b2_frame_members_and_bays(self):
+        """B2's frame: the perimeter, studs 2 and 3, and the four members round the unit, each with a number key the
+        allocation's names reach; its fill: bays 1 and 2 split below and above the unit, then bays 3 and 4."""
+        ns = load_back("B2", "panel")
+        for key in ("CROSS - LOWER", "CROSS - UPPER", "STUD - BELOW UNIT", "STUD - STUB"):
+            self.assertIn(key, ns["MEMBER_WORDS"])
+        words = sorted(ns["MEMBER_WORDS"].values(), key=len)
+        for i, w in enumerate(words):        # a longer word that holds a shorter one is matched first (longest wins)
+            for w2 in words[i + 1:]:
+                if w in w2:
+                    self.assertGreater(len(w2), len(w))
 
     def test_openings_stay_inside_through_the_edit_test(self):
         """As built and under the back edit (pod_w 2300, back_ph 1080): the cut-out lies 30 inside B2-CASS and
