@@ -16,6 +16,10 @@ Checks, each against drawing_specs.py:
 - hidden lines only inside the views the spec draws with hidden lines (needs the log; without
   it, none at all when the spec has no such view);
 - every text at least 2.5 mm high (font size), the title block's own labels at least 1.8;
+- on a drawing with a hole table: the table has at least one row under its header (the tray's second drawing
+  printed an empty table, which the eye can take for a part with no holes);
+- every size the spec lists (drawing_specs.spec sizes) printed as a dimension exactly once (ISO 129-1), outside the
+  title block and the hole table (the rib's crown went missing when the sizes moved to the outer faces);
 - no account name in the text or the metadata ("Created by" is cleared by pdf_clear_field.py).
 Warns (look by eye) when a dimension value is printed more than once: either two features of
 the same size or a size given twice (ISO 129-1: each size once).
@@ -157,6 +161,67 @@ def hidden_problems(page, height, sp, ext):
     return bad, "hidden-line pieces per view: %s" % dict(where)
 
 
+def spans_mm(page, height):
+    """[(text, font size mm, x0, y0, x1, y1)] in sheet mm, origin bottom left."""
+    out = []
+    for b in page.get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln["spans"]:
+                t = sp["text"].strip()
+                if t:
+                    x0, y0, x1, y1 = sp["bbox"]
+                    out.append((t, sp["size"] * MM, x0 * MM, height - y1 * MM, x1 * MM, height - y0 * MM))
+    return out
+
+
+def hole_table_box(spans, width):
+    """(x0, y0, x1, y1) of the hole table, from its header row ('Hole', 'X Dim', 'Y Dim', 'Description') down to
+    its last row, or None when there is no header. Rows are the spans under the header, inside its width and inside
+    the frame (the border's zone letters stand just outside it, at the same height)."""
+    head = [s for s in spans if s[0] == "Hole"]
+    for h in head:
+        row = [s for s in spans if abs(s[3] - h[3]) < 1.5 and s[0] in ("X Dim", "Y Dim", "Description")]
+        if len(row) == 3:
+            x0, x1 = h[2] - 3.0, min(max(s[4] for s in row) + 30.0, width - 10.0)
+            under = [s for s in spans if x0 <= s[2] <= x1 and h[3] - 60.0 < s[3] < h[3] - 1.0]
+            y0 = min([s[3] for s in under] + [h[3]]) - 1.0
+            return (x0, y0, x1, h[5] + 12.0), under
+    return None, []
+
+
+def table_problems(spans, sp, width):
+    if not sp.get("holes"):
+        return []
+    box, rows = hole_table_box(spans, width)
+    if box is None:
+        return ["the spec has holes but the sheet has no hole table header"]
+    if not rows:
+        return ["the hole table has no rows under its header (Fusion had not filled it when the PDF was made?)"]
+    return []
+
+
+def size_problems(spans, sp, width):
+    """Each listed size printed once as a dimension: a span of that text at dimension size (over 4 mm), outside the
+    title block (180 x 47 in the frame's corner) and the hole table."""
+    want = sp.get("sizes") or []
+    if not want:
+        return []
+    box, _rows = hole_table_box(spans, width)
+    tb = (width - 10.0 - 180.0, 10.0)
+
+    def counted(s):
+        if s[1] <= 4.0:
+            return False
+        if s[2] >= tb[0] and s[3] <= tb[1] + 47.0:
+            return False
+        if box and box[0] <= s[2] <= box[2] and box[1] <= s[3] <= box[3]:
+            return False
+        return True
+    got = Counter(s[0] for s in spans if counted(s))
+    return ["size %s is printed %d times (the spec wants it once)" % (v, got.get(v, 0)) for v in want
+            if got.get(v, 0) != 1]
+
+
 def text_problems(page, doc):
     bad, warn = [], []
     spans = [(sp["text"].strip(), sp["size"] * MM) for b in page.get_text("dict")["blocks"]
@@ -214,6 +279,9 @@ def check(key, pdf=None, log_text=None, notes_dir=None):
         info.append(hinfo)
     tb, warn = text_problems(page, doc)
     bad += tb
+    spans = spans_mm(page, h)
+    bad += table_problems(spans, sp, w)
+    bad += size_problems(spans, sp, w)
     return bad, warn, info
 
 

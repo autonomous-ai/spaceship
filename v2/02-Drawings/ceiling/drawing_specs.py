@@ -95,10 +95,13 @@ def doc_name(key, doctype):
     return "%s_%s_%s_%s" % (pn, M.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"), doctype)
 
 
-def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None):
+def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None, faces=None, sizes=None):
     """A1 layout: the front view top left, the view from above below it, the view from the
     left to its right (first angle), the isometric view below that; notes top right, title
-    data above the title block."""
+    data above the title block. faces: {view: ["bottom"]} adds the width of that face of the view where it is a
+    size of its own (the rib's crown; the overall width is measured face to face, so a crown narrower than the
+    flanges needs its own). sizes: every dimension value the drawing must print, once each (check_drawing_pdf.py
+    reads them back), taken from the model's values and the notes."""
     pn, name, vn, kind, mat = M.PARTS[key]
     mname = M.MATERIALS[mat][0] if mat else "see the parts list"
     v = dict(front=(200, 480), top=(200, 290), left=(480, 480), iso=(500, 260)) if sheet == "A1" else \
@@ -107,6 +110,7 @@ def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", 
     return {
         "key": key, "design": doc_name(key, "CAD"), "drawing": doc_name(key, "DWG"),
         "scale": scale, "scales": scales or {}, "views": v, "holes": holes, "sheet": sheet,
+        "faces": faces or {}, "sizes": list(sizes or []),
         "styles": STYLES.get(key, {}),
         "images": image_places(sheet, bool(holes)),
         "title": [("PART NO.", pn), ("NAME", name), ("TÊN", vn), ("REV / STATUS", "%s / DRAFT" % M.REV),
@@ -130,7 +134,7 @@ SPECS = {
         "Two holes Ø19.1 for ELECTRICAL's cable bushings in the front and back returns, centre 12.5 below datum A (PM ruling 2026-11-01).",
         "Clip and catch fixing zones on the base: no holes until a clip and a catch are named (HOLD-08).",
         "Symmetric about datum C: one part for both ceiling halves.",
-    ], holes="front"),
+    ], holes="front", sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
     "rib": spec("rib", 0.2, [
         "Tolerances (assumption): cut length +/-1; bent sizes +/-0.5.",
         "Galvanised steel DX51D+Z, 0.5 thick, hat section: crown 20, height 24, flanges 2 x 12 (assumptions).",
@@ -138,7 +142,8 @@ SPECS = {
         "Fixing to the tray and to the felt: HOLD (H09), drawn as touching only.",
         "Two per cassette, at X' = +/- cs_w/6 (three equal felt spans).",
         "The front view (the hat section) is drawn at 2:1 so the bends read; the other views at 1:5.",
-    ], sheet="A2", scales={"front": 2.0}, views={"front": (110, 360), "top": (110, 200), "left": (260, 360), "iso": (300, 180)}),
+    ], sheet="A2", scales={"front": 2.0}, views={"front": (110, 360), "top": (110, 200), "left": (260, 360), "iso": (300, 180)},
+        faces={"front": ["bottom"]}, sizes=["44", "1034", "20", "24"]),
     "felt": spec("felt", 0.2, [
         "Tolerances (assumption): knife-cut outline +/-1.",
         "PET felt 9, Dark Gray (D-79); the factory's felt (D-31), its emission certificate on HOLD.",
@@ -165,14 +170,16 @@ SPECS = {
         "Fixing to the tray's back: HOLD (H10).",
     ]),
     "cassette": spec("cassette", 0.2, [
-        "Tolerances: see the part drawings; the assembled outline 1160 x 1045 x 34 +/-1 (assumption).",
+        "Tolerances: see the part drawings; the assembled outline 1160 x 1045 x 74 +/-1: the tray 34 deep and the "
+        "fill 40 on its back (assumption).",
         "Ceiling lining cassette, one part for both halves (C1-CASS, C2-CASS). Drawing D06 of the wall-and-door sample.",
         "Parts: 513101 tray 1, 513102 rib 2, 513201 felt 1, 513301 / 513302 / 513303 fill 1 each, "
         "518001 clip 6 (HOLD), 518002 safety catch 2 (HOLD).",
         "Clips on the back faces of ceiling cross members X1, X2, X3, over the ribs; catches on X2's front face (D-47).",
         "Hangs 4 below the ceiling frame and never touches it except through the clips and catches (D-17).",
         "Cables run in the 24 gap and clip to the tray only (D-26, D-41).",
-    ], holes="front"),
+        "The two cable bushing holes are the tray's, sized and placed on its drawing 513101.",
+    ], sizes=["1160", "1045", "74"]),
 }
 
 

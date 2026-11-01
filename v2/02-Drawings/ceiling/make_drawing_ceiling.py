@@ -33,6 +33,7 @@ The 2D mapping (guideline 3.3), each view in its own X/Y:
 import importlib
 import os
 import sys
+import time
 
 import adsk.core
 import adsk.drawing
@@ -192,6 +193,30 @@ def overall_dims(sheet, view, key, done, below=True, left=True, gap=10.0):
     return out
 
 
+def face_dims(sheet, view, key, done, faces, gap=16.0):
+    """The width of a named face of the view (only "bottom" so far: the vertices on the view's lowest line, end to
+    end), placed below the view, gap clear of it and so below a scale label; skipped when that size is printed
+    already (S.new_size). The rib's crown is the case: its overall 44 is measured flange tip to flange tip on
+    the outer faces, so the 20 crown needs its own dimension (the first rib sample printed it from the corner
+    vertices, before the sizes moved to the outer faces)."""
+    out = []
+    for face in faces:
+        if face != "bottom":
+            raise RuntimeError("face %r: only bottom is known" % face)
+        lines, _ = view_curves(view)
+        pts = [p for ln in lines for p in (ln.startPoint, ln.endPoint)]
+        y0 = min(xy(p)[1] for p in pts)
+        on = [p for p in pts if abs(xy(p)[1] - y0) < 1e-4]
+        a, b = min(on, key=lambda p: xy(p)[0]), max(on, key=lambda p: xy(p)[0])
+        w = round((xy(b)[0] - xy(a)[0]) / view.scaleValue, 2)
+        hx = S.AXES[key][0]
+        if S.new_size(done, hx, w):
+            out.append(dim(sheet, a, b, ((xy(a)[0] + xy(b)[0]) / 2, y0 - gap)))
+        else:
+            print("  %s view: its %s face, %s %.2f, is on another view already, left off" % (key, face, hx, w))
+    return out
+
+
 def hole_dims(sheet, view, gap=8.0):
     """Each hole: its diameter, and its centre from the view's left and top edges."""
     e = extent(view)
@@ -313,6 +338,8 @@ def annotate(part):
     overall_dims(sheet, views["top"], "top", done, below=True, left=True)
     overall_dims(sheet, views["front"], "front", done, below=False, left=True)
     overall_dims(sheet, views["left"], "left", done, below=False, left=False)
+    for key, faces in sorted(sp.get("faces", {}).items()):
+        face_dims(sheet, views[key], key, done, faces)
     print("overall sizes dimensioned: %s" % ", ".join("%s %g" % d for d in done))
     holes = []
     if sp["holes"]:
@@ -342,6 +369,11 @@ def annotate(part):
             print("WARNING: %s not added: %s" % (what, e))
     print("dimensions %d, holes dimensioned %d, hole tables %d" % (
         sheet.drawingDimensions.count, len(holes), sheet.holeTables.count))
+    # let Fusion fill the hole table before the export: the tray's second drawing printed its table with no rows
+    # when the export came straight after it (the first, with the slower sketch symbol between, had its row)
+    for _i in range(20):
+        adsk.doEvents()
+        time.sleep(0.25)
     raw = os.path.join(HERE, ".raw", "%s.pdf" % sp["drawing"])
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)

@@ -144,5 +144,75 @@ class Images(unittest.TestCase):
                                                    "top": (105.6, 96.6, 114.4, 303.4)})
 
 
+def text_pdf(path, texts, size_mm=4.89, width=841, height=594):
+    """An A1 page with plain texts: [(text, x, y)] in sheet mm (y of the text's baseline, origin bottom left)."""
+    doc = fitz.open()
+    page = doc.new_page(width=width * PT, height=height * PT)
+    for t, x, y in texts:
+        page.insert_text(fitz.Point(x * PT, (height - y) * PT), t, fontsize=size_mm * PT)
+    doc.save(path)
+    return fitz.open(path)[0]
+
+
+HEADER = [("HOLES - FRONT VIEW", 730.0, 578.0), ("Hole", 686.0, 570.0), ("X Dim", 707.0, 570.0),
+          ("Y Dim", 732.0, 570.0), ("Description", 779.0, 570.0)]
+
+
+class HoleTable(unittest.TestCase):
+    """The tray's second drawing printed its hole table with a header and no rows; the PDF check passed it."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def spans(self, texts):
+        page = text_pdf(os.path.join(self.tmp, "t.pdf"), texts, size_mm=3.49)
+        return C.spans_mm(page, 594.0)
+
+    def test_empty_table_fails(self):
+        """Only the header, and the border's zone letters A and B just outside the frame at the same height."""
+        sp = self.spans(HEADER + [("A", 832.3, 563.0), ("B", 832.3, 514.0)])
+        self.assertEqual(len(C.table_problems(sp, {"holes": "front"}, 841.0)), 1)
+
+    def test_table_with_a_row_passes(self):
+        sp = self.spans(HEADER + [("A1", 686.0, 563.0), ("580.00", 707.0, 563.0), ("-12.50", 732.0, 563.0),
+                                  ("Ø19.10 THRU", 779.0, 563.0)])
+        self.assertEqual(C.table_problems(sp, {"holes": "front"}, 841.0), [])
+
+    def test_no_table_when_the_spec_has_holes_fails(self):
+        self.assertEqual(len(C.table_problems(self.spans([("NOTES", 660.0, 500.0)]), {"holes": "front"}, 841.0)), 1)
+
+    def test_no_holes_no_check(self):
+        self.assertEqual(C.table_problems([], {"holes": None}, 841.0), [])
+
+
+class SizesOnce(unittest.TestCase):
+    """Each listed size printed once: the rib's crown 20 went missing when the sizes moved to the outer faces."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def problems(self, texts, sizes):
+        page = text_pdf(os.path.join(self.tmp, "s.pdf"), texts)
+        return C.size_problems(C.spans_mm(page, 594.0), {"sizes": sizes, "holes": None}, 841.0)
+
+    def test_missing_crown_fails(self):
+        got = self.problems([("44", 107.0, 86.0), ("1034", 90.0, 194.0), ("24", 50.0, 357.0)], ["44", "1034", "20", "24"])
+        self.assertEqual(got, ["size 20 is printed 0 times (the spec wants it once)"])
+
+    def test_twice_fails_and_title_block_text_is_not_counted(self):
+        got = self.problems([("1160", 194.0, 175.0), ("1160", 194.0, 480.0), ("1045", 68.0, 284.0),
+                             ("1045", 700.0, 30.0)], ["1160", "1045"])
+        self.assertEqual(got, ["size 1160 is printed 2 times (the spec wants it once)"])
+
+    def test_all_once_passes(self):
+        self.assertEqual(self.problems([("1160", 194.0, 175.0), ("1045", 68.0, 284.0), ("34", 68.0, 491.0)],
+                                       ["1160", "1045", "34"]), [])
+
+    def test_specs_list_their_sizes(self):
+        self.assertEqual(S.SPECS["rib"]["sizes"], ["44", "1034", "20", "24"])
+        self.assertEqual(S.SPECS["rib"]["faces"], {"front": ["bottom"]})
+        self.assertIsNone(S.SPECS["cassette"]["holes"])
+
+
 if __name__ == "__main__":
     unittest.main()

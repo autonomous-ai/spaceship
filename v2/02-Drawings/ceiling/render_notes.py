@@ -14,7 +14,6 @@ Output: v2/02-Drawings/ceiling/.notes/ (git-ignored; regenerate any time).
 
 import os
 import sys
-import textwrap
 
 from PIL import Image, ImageDraw, ImageFont
 
