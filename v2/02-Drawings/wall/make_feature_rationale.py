@@ -301,6 +301,8 @@ FAMILIES[(LEDGE_BODY, 3.3, "x")] = (
     "centre 9.0 from the upright's top edge (2.2 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
     "bend (calculation)", "±0.2 (assumption); countersink Ø per its rivet", "laser cut in the flat blank (DXF), "
     "countersunk by machining", "assumption")
+FAMILIES[(LEDGE_BODY, 3.3, "y")] = FAMILIES[(LEDGE_BODY, 3.3, "x")]       # the back ledge's (211801), facing -Y
+FAMILIES_BACK[("RAIL - BOTTOM", 3.3, "y")] = FAMILIES[("RAIL - BOTTOM", 3.3, "x")]   # the back rail's rivet holes
 
 OTHER = [
     ("F10", "{frame}", "Five studs (0.8 wall, D-131 start; perimeter 1.0), set from the bolts: 50 past the 1st, "
