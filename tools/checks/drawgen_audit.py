@@ -75,8 +75,18 @@ def audit(sheets, kind_of, readback, redraw, stale_of, rel=os.path.basename):
     return results
 
 
-def bad(r):
+# The GA (100000) reads every team's STEP and the master BOM, so nearly any CAD or list PR makes it stale: it only
+# warns, and Fusion Engineer 2 redraws it on purpose at checkpoints; the release checklist shows it current at release
+# (the Lead's ruling, 2026-11-01). Every other sheet stays a hard fail.
+WARN_ONLY = {"pod"}
+
+
+def off(r):
     return bool(r["readback"]) or r["redraw"] != "same"
+
+
+def bad(r):
+    return off(r) and r["kind"] not in WARN_ONLY
 
 
 def report(results):
@@ -86,18 +96,24 @@ def report(results):
         rb = "PASS" if not r["readback"] else "FAIL (%d)" % len(r["readback"])
         if r["redraw"] == "no entry":
             rb = "not read back"
-        lines.append("%s: read-back %s; redraw %s%s" % (r["sheet"], rb, r["redraw"],
-                                                        (": " + "; ".join(r["why"])) if r["why"] else ""))
+        warn = r["kind"] in WARN_ONLY and off(r)
+        lines.append("%s%s: read-back %s; redraw %s%s" % ("warning (the GA is redrawn at checkpoints): " if warn else "",
+                                                          r["sheet"], rb, r["redraw"],
+                                                          (": " + "; ".join(r["why"])) if r["why"] else ""))
         lines.extend("  - " + f for f in r["readback"])
-    n = len(results)
-    failing = sum(1 for r in results if r["readback"])
-    differ = [r for r in results if r["redraw"] == "differs"]
+    warned = [r for r in results if r["kind"] in WARN_ONLY and off(r)]
+    hard = [r for r in results if r["kind"] not in WARN_ONLY]
+    n = len(hard)
+    failing = sum(1 for r in hard if r["readback"])
+    differ = [r for r in hard if r["redraw"] == "differs"]
     code = sum(1 for r in differ if r["why"] and r["why"][0].startswith("its sources are as they were"))
-    other = sum(1 for r in results if r["redraw"] in ("no entry", "not drawn"))
+    other = sum(1 for r in hard if r["redraw"] in ("no entry", "not drawn"))
     summary = ("%d generator sheet%s: %d read back and redraw the same; %d fail the read-back; %d no longer redraw "
                "byte for byte (%d by the generator's code, %d with changed sources); %d can't be drawn again" % (
-                   n, "" if n == 1 else "s", sum(1 for r in results if not bad(r)), failing, len(differ), code,
+                   n, "" if n == 1 else "s", sum(1 for r in hard if not off(r)), failing, len(differ), code,
                    len(differ) - code, other))
+    if warned:
+        summary += "; the GA is out of date (a warning: it is redrawn at checkpoints)"
     return lines, summary
 
 

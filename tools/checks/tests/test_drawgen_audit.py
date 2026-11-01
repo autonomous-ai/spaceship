@@ -33,9 +33,11 @@ def test_only_the_generators_sheets_are_audited(tmp_path):
 
 def test_each_sheet_is_read_back_and_redrawn_and_the_reason_is_given(tmp_path):
     names = ["110101_P01_SAME_DWG.pdf", "111101_P01_FAILS_DWG.pdf", "111103_P01_SOURCES_DWG.pdf",
-             "111106_P01_CODE_DWG.pdf", "111301_P01_REFUSED_DWG.pdf", "111999_P01_GONE_DWG.pdf"]
+             "111106_P01_CODE_DWG.pdf", "111301_P01_REFUSED_DWG.pdf", "111999_P01_GONE_DWG.pdf",
+             "100000_P04_POD_DWG.pdf"]
     paths = _sheets(tmp_path, names)
-    kinds = {"110101": "assembly", "111101": "part", "111103": "part", "111106": "part", "111301": "part"}
+    kinds = {"110101": "assembly", "111101": "part", "111103": "part", "111106": "part", "111301": "part",
+             "100000": "pod"}
 
     def readback(path, kind):
         return ["hole H03 is 0.20 mm off its STEP position"] if "FAILS" in path else []
@@ -51,7 +53,7 @@ def test_each_sheet_is_read_back_and_redrawn_and_the_reason_is_given(tmp_path):
         return new
 
     def stale_of(path):
-        return ["v2/03-Manufacturing/base/111103_P01_X_STEP.step changed"] if "SOURCES" in path else []
+        return ["v2/03-Manufacturing/base/111103_P01_X_STEP.step changed"] if ("SOURCES" in path or "POD" in path) else []
 
     res = {r["pn"]: r for r in da.audit(paths, kinds.get, readback, redraw, stale_of)}
     assert res["110101"]["redraw"] == "same" and not res["110101"]["readback"] and not da.bad(res["110101"])
@@ -61,10 +63,13 @@ def test_each_sheet_is_read_back_and_redrawn_and_the_reason_is_given(tmp_path):
     assert res["111106"]["redraw"] == "differs" and "generator's code" in res["111106"]["why"][0]
     assert res["111301"]["redraw"] == "not drawn" and "material" in res["111301"]["why"][0]
     assert res["111999"]["redraw"] == "no entry" and res["111999"]["kind"] is None
+    # the GA only warns (the Lead's ruling): out of date, but not a failure
+    assert res["100000"]["redraw"] == "differs" and da.off(res["100000"]) and not da.bad(res["100000"])
     lines, summary = da.report(list(res.values()))
     assert summary == ("6 generator sheets: 1 read back and redraw the same; 1 fail the read-back; 2 no longer "
                        "redraw byte for byte (1 by the generator's code, 1 with changed sources); 2 can't be drawn "
-                       "again")
+                       "again; the GA is out of date (a warning: it is redrawn at checkpoints)")
+    assert any(l.startswith("warning (the GA is redrawn at checkpoints): ") for l in lines)
     assert any(l.startswith("  - hole H03") for l in lines)
     # the committed sheets are left as they were: every redraw went to a folder of its own, since removed
     assert all(open(p, "rb").read() == ("drawn %s" % os.path.basename(p)).encode() for p in paths)
