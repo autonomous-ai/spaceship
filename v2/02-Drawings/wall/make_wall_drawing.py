@@ -392,14 +392,9 @@ def open_drawing(app, name):
     proj = [app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
             if app.data.dataProjects.item(i).name == "Default Project"][0]
     fold = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-    files = []
-    for _attempt in range(3):            # the list can change while others save
-        try:
-            files = [fold.dataFiles.item(i) for i in range(fold.dataFiles.count)]
-            break
-        except RuntimeError:
-            adsk.doEvents()
-    files = [f for f in files if f.name == name]
+    from fusion_folder import read_folder     # the shared reader (#213): one fetch of the folder per pass
+    found, _unknown, _others = read_folder(fold, stop_when=lambda f, u, o: name in f)
+    files = found.get(name, [])
     if len(files) != 1:
         raise RuntimeError("%d saved drawings are called %r" % (len(files), name))
     app.data.activeProject = proj

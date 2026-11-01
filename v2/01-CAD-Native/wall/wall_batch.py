@@ -43,23 +43,13 @@ def folder(app):
     return proj, f
 
 
-def find_file(fold, name, tries=12, wait=2.5):
-    """The folder's files called `name`. The list can fail while others save (2026-10-31 20:55: three quick tries
-    failed and the batch lost a design), so retry for about half a minute, letting Fusion catch up."""
-    import time
-    last = None
-    for _attempt in range(tries):
-        try:
-            n = fold.dataFiles.count
-            files = [fold.dataFiles.item(i) for i in range(n)]
-            if n and all(f is not None for f in files):
-                return [f for f in files if f.name == name]
-        except RuntimeError as exc:
-            last = exc
-        adsk.doEvents()
-        time.sleep(wait)
-        adsk.doEvents()
-    raise RuntimeError("could not list the files in %s after %d tries (%s)" % (FOLDER[1], tries, last))
+def find_file(fold, name):
+    """The folder's files called `name`, through the shared folder reader (tools/fusion/fusion_folder.py, #213:
+    one fetch of the folder per pass; it reads again while an entry can't be read, and stops once `name` is
+    found). The old per-entry reads took minutes per scan (Fusion Engineer 2's log study, 2026-11-01)."""
+    from fusion_folder import read_folder     # run_script.py makes it importable and loads it fresh every run
+    files, _unknown, _others = read_folder(fold, stop_when=lambda f, u, o: name in f)
+    return files.get(name, [])
 
 
 def builder_args(builder, part, position):
