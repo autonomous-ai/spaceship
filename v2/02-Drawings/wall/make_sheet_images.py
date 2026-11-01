@@ -185,7 +185,8 @@ def frame_blocks(pn, src=None):
                      "Centre stile: 3 plain Ø7.0 that the next panel's pins pass through." if not pos["right"] else
                      "Centre stile: 3 Ø9.53 pin rivnuts (no stop washer) with Ø19 access behind them.",
                      rep["document"].split("_")[0].replace("2112", "2102")))
-        extra = "1 × 45° lead-in on the top edge of the closing-seam face (R-J9). "
+        extra = ("1 × 45° lead-in on the top edge of the closing-seam face, ground into the corner weld (R-J9, "
+                 "FR-13). " if members else "1 × 45° lead-in on the top edge of the closing-seam face (R-J9). ")
     else:
         datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = front face of the front "
                   "stile (pod Y %.2f, 2.26 seam to the decor block), the drawing's %s edge. C = outer face (pod X %.0f, "

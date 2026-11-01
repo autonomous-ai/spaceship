@@ -2131,8 +2131,22 @@ def run(_context):
             continue
         msg = (it.errorOrWarningMessage or "").replace("\n", " ")[:300]
         print("HEALTH|%s|%s|%s" % (it.name, "warning" if it.healthState == warning else "error", msg))
-        if not (it.healthState == warning and it.isGroup and re.match(r"Group\d+$", it.name)):
-            bad_items.append(it.name)
+        if it.isGroup:
+            # a group is only a container: it is judged by its own items, each printed with Fusion's message (dry
+            # runs 5 and 6 met every STEP import's group in error with no message of its own)
+            g = adsk.fusion.TimelineGroup.cast(it)
+            kids = [g.item(j) for j in range(g.count)]
+            sick = [k for k in kids if k.healthState != healthy]
+            for k in kids:
+                print("HEALTH|  in %s: %s|%s|%s" % (it.name, k.name, k.healthState,
+                                                    (k.errorOrWarningMessage or "").replace("\n", " ")[:200]))
+            for k in sick:
+                if not (k.healthState == warning and re.match(r"Group\d+$", it.name)):
+                    bad_items.append("%s / %s" % (it.name, k.name))
+            if not sick:
+                print("HEALTH|  %s: all %d of its items are healthy, so it counts as healthy" % (it.name, len(kids)))
+            continue
+        bad_items.append(it.name)
     loose = [s.name for c in design.allComponents for s in c.sketches if not s.isFullyConstrained]
     print("timeline %d items, unhealthy %d, sketches %d, loose %d" % (
         tl.count, len(bad_items), sum(c.sketches.count for c in design.allComponents), len(loose)))

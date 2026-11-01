@@ -404,9 +404,21 @@ def build_fill_back(design, parent, out, yf, zs, members):
 
 
 def lead_in_d117(design, members):
-    """1 x 45 degree lead-in on the top edge of the closing-seam face (register 2.10, R-J9), so the panel beside it
-    drops in past it without catching the bulb seal. With D-117's mitre that corner is half top rail, half centre
-    stile: the same triangle is cut from each, through the frame's depth."""
+    """1 x 45 degree lead-in on the top edge of the closing-seam face (register 2.10, R-J9, FR-13), so the panel
+    beside it drops in past it without catching the bulb seal. With D-117's mitre that corner is half top rail, half
+    centre stile: the same triangle is cut from each, through the frame's depth. With D-131's mitre plate the two
+    members stop short of the outer corner by their cut-backs (plated_mitre_triangles: 1.41 each here), so a lead-in
+    no longer than both lies wholly in the corner's weld: it is ground there after welding (a step in the frame's
+    process, J-FRAME-01) and there is no member material to cut (dry runs 5 and 6, 2026-11-01: "No target body")."""
+    import math
+    w_r, w_s, t, li = (ev(design, n) for n in ("top_h", "tube_w", "plate_t", "lead_in"))
+    hyp = math.hypot(w_r, w_s)
+    c_r, c_s = t / 2 * hyp / w_r, t / 2 * hyp / w_s
+    if li <= min(c_r, c_s) + 1e-6:
+        print("step 6b: the closing seam's %.2f lead-in lies in the corner weld (the top rail and the centre stile stop "
+              "%.2f and %.2f short of the corner for the mitre plate): ground into the weld, no cut in the members"
+              % (li, c_r, c_s))
+        return
     xc = _centre_x()
     tc = "-" if COL == "L" else "+"          # from the centre end into the panel
     oc = "+" if COL == "L" else "-"          # out of the panel, past the seam face

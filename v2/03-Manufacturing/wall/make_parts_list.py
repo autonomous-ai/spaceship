@@ -431,7 +431,9 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                             "grind the beads flush on the skin-side and seam faces; wire-brush and touch up every burnt "
                             "zone; check flatness and diagonals; then make every joint hole (spigot hole and slot, "
                             "clearance, access and rivnut holes) by CNC or a drill jig located on the joint faces and "
-                            "the spigot hole; set the rivnuts and stop washers after the touch-up (J-FRAME-01)",
+                            "the spigot hole; set the rivnuts and stop washers after the touch-up (J-FRAME-01)" + (
+                                "; the closing seam's top corner weld ground to a 1 x 45 lead-in (R-J9, FR-13)"
+                                if back else ""),
                     qty=1, unit="pc",
                     size_mm=size_of(box_of([m["bodies"][0] for m in members])),
                     tolerance="seam faces flat within 0.5, skin-side faces within ±0.5 of one plane, diagonals equal "

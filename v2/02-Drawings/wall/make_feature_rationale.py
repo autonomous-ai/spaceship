@@ -185,8 +185,16 @@ D117_ROW = ("F12", "{frame}", "The 4 perimeter members run to the frame's outer 
             "outer to the inner corner: 45 degrees where the two are the same size, 26.57 on a 40 x 40 meeting a 20 x 40 and "
             "63.43 on the 20 x 40); the studs fit square between the rails", "welded in the factory: the 4 corners and every "
             "stud's T joints (D-131, galvanized steel box tube in the same sections; D-117's cleats cancelled)",
-            "D-117 (the corner geometry), D-131 (welds); weld sizes and the zinc coat per the Joints spec (HOLD)",
-            "follows the frame (edit test)", "mitre angle per the frame drawing", "DECIDED (D-117, D-131)")
+            "D-117 (the corner geometry), D-131 (welds); J-FRAME-01 (joints register): a 2 mm mitre plate welded "
+            "into each mitre (831007 to 831009, each member cut back for it), the zinc-rich touch-up, every joint hole "
+            "made after welding", "follows the frame (edit test)", "mitre angle per the frame drawing",
+            "DECIDED (D-117, D-131)")
+# D-131: the closing seam's lead-in lies in the corner weld (the members stop 1.41 short of the corner for the plate)
+D131_LEAD_IN = ("F32", "{frame}", "1 x 45 lead-in on the top edge of the closing-seam face, ground into the corner "
+                "weld after welding", "the next panel drops in past it without catching the bulb seal (R-J9); with "
+                "D-131's mitre plate the top rail and the centre stile stop 1.41 short of that corner, so the lead-in "
+                "lies wholly in the weld and is not a cut in the members", "%s 2.10, FR-13; D-131, J-FRAME-01" % REG,
+                "", "1 x 45, as ground", "DECIDED")
 D120_ROW = ("F49", "{frame}", "Every member is its own part with its own number, the studs copies of one; the frame is "
             "their assembly and keeps its number; the fill pieces, each numbered, go straight into the panel (D-123 cancels "
             "the panel's own fill number) and are cut from their DXFs (D-128); the hardware copies of one part each", "the build plan's rule 2: every part a component, never a body", "D-120, D-123; numbers from the "
@@ -368,7 +376,7 @@ def main(argv):
               "|---|---|---|---|---|---|---|---|"]
     other = (OTHER_BACK if back else OTHER) + OTHER_EL.get(code, [])
     if d117:                             # the frame rebuilt as D-117 and D-120 ask: mitred, every member a part
-        other = [D117_ROW if r[0] == "F12" else r for r in other] + [D120_ROW]
+        other = [D117_ROW if r[0] == "F12" else D131_LEAD_IN if r[0] == "F32" else r for r in other] + [D120_ROW]
     for row in other:
         lines.append("| %s |" % " | ".join(f.format(**pns) for f in row))
     lines += ["", "Joint hardware modelled in the panel (bodies at every rivnut hole, joints register 2.1): rivnut "
