@@ -11,8 +11,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 ## Result
 
-1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **224 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **321 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 545 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 409.0 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 413.0 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 409.5 kg of pod: the roll-up plus 0.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **224 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **325 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 548 kg gross in all.
+2. **Masses are the layout study's P04 roll-up**, 409.0 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 413.0 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 412.5 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: floor, back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 10; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
@@ -23,8 +23,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 197.5 | 224 (493) | 1,641 (64.6) | 71.8 | 6.9 |
-| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 212.0 | 321 (709) | 1,563 (61.5) | 164.1 | 4.3 |
-| **Both** |  | 42 | **409.5** | **545** (1,201) |  |  |  |
+| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 215.0 | 325 (715) | 1,563 (61.5) | 164.1 | 4.4 |
+| **Both** |  | 42 | **412.5** | **548** (1,208) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -94,7 +94,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 4: air parts, light shelf, threshold and cartons | 23 | **2-08** | BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1185 × 23 × 70 | 3 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-20** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 19 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-21** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 19 |
-| Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 150 | **2-22** | POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 × 150 × 80 | 1 |
+| Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 150 | **2-22** | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 900 × 150 × 80 | 1 |
 
 **Glass crate (911001), tier 1.** Outside 2200 x 1219 x 238 mm; inside 2,110 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 10). Door 2096 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
 
@@ -176,7 +176,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-19** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 2 | 17 |
 | **2-20** | 510301 | C1 | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1 | 19 |
 | **2-21** | 510301 | C2 | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1 | 19 |
-| **2-22** | 109000 | - | POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 1 | 1 |
+| **2-22** | 109000 | - | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 1 | 1 |
 
 ## 6. Packing lists
 
@@ -237,7 +237,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-19** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 17 |
 | **2-20** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C1 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 19 |
 | **2-21** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C2 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 19 |
-| **2-22** | 109000 | POD - INSTALLATION KIT (OPEN FIRST) | Bộ phụ kiện lắp (mở trước) | - | 0.50 | assumption | 300 × 150 × 80 | 1 |
+| **2-22** | 109000 | POD - INSTALLATION KIT (OPEN FIRST) | Bộ phụ kiện lắp (mở trước) | - | 3.55 | assumption | 900 × 150 × 80 | 1 |
 | - | - | Base seal and cable grommets, fitted on the band and the panels (the door edge seals are in FRONT's parts) |  | - | 0.60 | source | inside the pieces | - |
 | - | - | Ceiling clips and catches: 12 clips and 4 lanyards, with the ceiling cassettes |  | - | 0.88 | assumption | inside the pieces | - |
 | - | 918002 (PROPOSED) | PACKAGING - PALLET - 96 X 48 IN, NEW WOOD, 4-WAY |  | - | 48.50 | source | - | - |
@@ -245,7 +245,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR (BATTENS ON POSTS) |  | - | 16.00 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **321.5** |  |  |  |
+|  |  | **Gross** |  |  | **324.5** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -311,7 +311,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1563 mm; widest tier 1219 mm; longest lane 2430 mm; failing tiers none | yes |
 | K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
 | K7 | The guide's bolts match the joints register, joint by joint | guide 88 (76 × M6 × 16, 12 × M6 × 25); register 88; differences none | yes |
-| K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 22) | 130 min for 2 people (4.3 person-hours); target about 60 min; limit 240 min | yes |
+| K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 22) | 135 min for 2 people (4.5 person-hours); target about 60 min; limit 240 min | yes |
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 42 labelled pieces; without a place: none; unknown tags: none | yes |
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
@@ -366,7 +366,7 @@ Each piece's planned size (sorted, mm) against the box of its own CAD as it ship
 | **2-19** | AIR - SPLITTER CARTRIDGE - COMMON | 1750 × 314 × 173 | 1750 × 314 × 173 | `610000_P01_AIR_STEP.step` |
 | **2-20** | LINING - CASSETTE - CEILING - COMMON | 1163 × 1048 × 74 | 1160 × 1045 × 74 | `410000_P01_CEILING_STEP.step` |
 | **2-21** | LINING - CASSETTE - CEILING - COMMON | 1163 × 1048 × 74 | 1160 × 1045 × 74 | `410000_P01_CEILING_STEP.step` |
-| **2-22** | POD - INSTALLATION KIT (OPEN FIRST) | 300 × 150 × 80 | no CAD yet | - |
+| **2-22** | POD - INSTALLATION KIT (OPEN FIRST) | 900 × 150 × 80 | no CAD yet | - |
 
 The bolt check reads `v2/05-Engineering/joints/joints-register.md` section 3.9. When PR #23 merges, the script reads the file on main instead, by itself.
 
@@ -393,7 +393,7 @@ Numbers in the 91 band follow conventions §6 (PACKAGING; 1000–7999 made, 8000
 The controlling numbers are metric (guideline §3.1; conventions §2). For US LTL quotes:
 
 - Pallet 1: 48 × 40 in, 1,641 mm loaded, 224 kg gross (section 1 gives inches, pounds, cubic feet and lb/ft³).
-- Pallet 2: 96 × 48 in, 1,563 mm loaded, 321 kg gross.
+- Pallet 2: 96 × 48 in, 1,563 mm loaded, 325 kg gross.
 - No piece over 96 in; no piece over 20 kg except the glass; nothing stackable on top of either pallet.
 
 ## 11. Open items
@@ -446,6 +446,15 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | `wrap` | 5 mm | assumption | this plan | per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box |
 | `dr_bed` | 10 mm | assumption | this plan | foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01) |
 | `cad_tol` | 0.5 mm | assumption | this plan | check K14: how far a CAD box may pass the planned size (rounding) |
+| `stay_kg` | 1.5 kg | assumption | this plan | one clamp-on glass stay: a padded clamp on the fixed glass's top edge with a telescopic prop to the base band, so the glass stands while both people bring DR (step 10) |
+| `packer_h` | 7 mm | source | step 11 (FRONT's door: the 7 mm running gap over the threshold) | the setting packers the door stands on at hinge height while it is hung |
+| `packer_kg` | 0.05 kg | assumption | this plan | a pair of plastic setting packers |
+| `kit_aids_l` | 900 mm | assumption | this plan | the kit carton's length, for the collapsed glass stays |
+| `roof_work` | 150 mm | assumption | this plan | clear above the roof at its slot: room to drop the 68 mm roof sleeve in and for hands and a short driver at the grille's screws (step 18) |
+| `spigot_lift` | 20 mm | assumption | this plan | DT and the ceiling halves are lifted over their 8 mm locating spigots and lowered on (J-FRONT-03, J-CEIL-01) |
+| `glide_min` | 8.5 mm | confirmed | PM ruling on F-018 (joints register) | the lowest glide setting: the band's bottom 8.5 mm above the floor |
+| `glide_max` | 15 mm | assumption | ISS-054 (PROPOSED): the glides take the floor's 10 ± 5 mm | the highest glide setting |
+| `lay_out` | 1000 mm | assumption | this plan | clear round the footprint while the pod goes together: the parts set down at their places (step 1) and the step stools |
 | `pal_std_l_exact` | 1219.2 mm | calculation | requirements C1 | 48 in exactly; the controlling number for 'fits the pallet' |
 | `pal_std_w_exact` | 1016 mm | calculation | requirements C1 | 40 in exactly |
 | `pal_long_l_exact` | 2438.4 mm | calculation | requirements C1 | 96 in exactly |
