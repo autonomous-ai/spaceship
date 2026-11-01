@@ -277,7 +277,10 @@ def harnesses(v):
         conductors="RS-485 A, B, 0 V, light current, PS1 and PS2 rail senses", cable="6 x 24 AWG screened",
         area_mm2=AWG24, length_mm=LOOP + hub_rise + 150, end_a="shares W20d's 10-way plug",
         end_b="hub I/O (HOLD H-ELE-05)", grommets="", amps_max=0.01,
-        note="the hub sets the three light channels over RS-485, reads PS2's current and the 24 V rails PS1 and PS2 for the self-test (D-87)")
+        note="the hub sets the three light channels over RS-485, reads PS2's current and the 24 V rails PS1 and PS2 for the self-test (D-87); "
+             "every core is isolated from PS1 and PS2 (the Lead's ruling, 2026-11-01): the RS-485 pair through an isolated "
+             "transceiver, the rail senses through optocouplers, PS2's current through an isolated sensor, so no two Class 2 "
+             "supplies share a 0 V")
     add(id="W40", harness_pn="710023", segment="COLUMN", function="supply fan pair", frm="F3a 2 A + hub PWM 1, tach 1",
         to="supply fan box, high in DR", route="CHASE, TO-DR", circuit="PS3 fan S",
         conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG", area_mm2=AWG20,
@@ -308,10 +311,10 @@ def harnesses(v):
         note="boost by hand (D-33); TEST runs the self-test (D-87)")
     add(id="W12", harness_pn="710024", segment="R2-CASS", function="call light drop",
         frm="the shelf's call branch at FX-CALL0 (behind the shelf, Y -209.5)", to="call light bar (Y -209.5, Z 1450)",
-        route="FX-CALL0, P7, CALL-R2, FX-CALL2", circuit="PS2 lights", conductors="+12 V, CALL-",
+        route="FX-CALL0, P7, CALL-R2, FX-CALL2", circuit="PS2 lights", conductors="+24 V, CALL-",
         cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=TAIL + LOOP + L("CALL-R2", "FX-CALL2") + 300,
         end_a="Mini-Fit Jr 2-way plug (mates W11c's call branch in P7)", end_b="strip feed of the call bar",
-        grommets="FX-CALL0, FX-CALL2 (felt only)", amps_max=CALL_W / 12.0, note="")
+        grommets="FX-CALL0, FX-CALL2 (felt only)", amps_max=CALL_W / BUS_V["PS2"], note="")
     # ---- draw wires (REQ-VCK-03): a cord in each cassette or column segment, tied off at its holes
     add(id="W32", harness_pn="710031", segment="R1-CASS + COLUMN", function="draw wire: kit zone to the soffit (mic, status light)",
         frm="kit drop P3-KIT", to="soffit right end", route="T1-R1B, FX-COL, CHASE, TO-SOFFIT", circuit="reserve",
@@ -388,11 +391,12 @@ part("ps_kit", "718082", "ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT", 
      note="PS1, the voice kit's one 24 V feed (D-168). 24 V 4 A, 96 W; 90-295 VAC, active PFC; 88.5 %; 'Class 2 power "
           "unit', UL1310 for the 24 V model; full load to 50 °C, 60 % at 70 °C; its FG lead goes to the earth stud; "
           "inrush 40 A 1030 us at 230 VAC")
-part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485", "Điện - bộ điều khiển đèn 3 kênh",
+part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 24 V PWM - DMX512 - ISOLATED INPUT", "Điện - bộ điều khiển đèn 24 V",
      "PI", "710001", 1, "", "", 0.10, "assumption", sku="maker HOLD (H-ELE-14)", status=HOLD_BUY,
-     source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W)",
-     note="constant-voltage PWM dimmer for 12 V strips, 3 channels (uplight, down-light, call), at least 3 A per channel, "
-          "common +12 V, set by the hub over RS-485 (DMX or Modbus); on a lost link it holds its level or goes dark, never brighter")
+     source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W); D-168",
+     note="constant-voltage PWM dimmer for the 24 V strips (D-168): at least 3 channels (uplight, down-light, call) at 3 A "
+          "or more, common +24 V, set by the hub with DMX512 over RS-485 into an isolated input, so PS2's 0 V never meets "
+          "the hub's (PS3); on a lost link it holds its level or goes dark, never brighter")
 part("rcbo", "718003", "ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489", "Điện - CB 1 cực 15 A (UL 489)", "PI", "710001", 1,
      "", "", 0.12, "assumption", maker="Eaton", sku="FAZ-C15/1-NA-L (UL 489, 1 pole, 15 A, C curve; or equal)",
      size="17.7 W x 70.5 D, DIN rail", status=HOLD_BUY, source=EATON_FAZ,

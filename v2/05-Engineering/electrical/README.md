@@ -128,7 +128,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 - **Self-test (D-87), what the wiring gives the hub to check:** all three rails (PS1's and PS2's 24 V sensed in the power unit over W24; PS3's 12 V is the hub's own supply), both fan pairs (PWM out, tach in: each pair at 30 % and 100 %, rpm within the maker's band), each light channel in turn (the current change on PS2's output), the inlet temperature sensor against the hub's own (within 2 K at start), and CO2, presence and sound in plausible ranges. It shows PASS, or the item that failed, on the hub's display in about 2 minutes (assumption). The test logic is the in-house team's (ISS-060); P01 wires every signal it needs.
 - **Fans:** two 4-core leads (W40, W41): 12 V through F3a and F3b, a PWM signal each from the hub, and a tach each back to it. Two signals keep the two pairs balanced (D-61). The fans' PWM input is pulled up inside the fan, so an open PWM line means full speed (fail-safe; the fan sample confirms the iPPC's behaviour, H-ELE-07).
 - **Inlet temperature sensor (D-50):** in the supply fan box inlet, on W42 to the hub's sensor port. The sensor part is on HOLD until the hub's sensor interface is known (H-ELE-06, ISS-060).
-- **Interface the hub must give (for the in-house team; nothing about its insides goes here):** 12 V input (5 W assumed); 2 × PWM out (25 kHz, open drain); 2 × tach in (open collector); 1 × RS-485 out (the light controller); 4 × analog in (light knob, PS2's current, and the PS1 and PS2 rails: 24 V each, so each sense input needs a divider on the hub side, D-168); 3 × button in (BOOST, TEST, CALL); 1 × temperature sensor port; a display for PASS or FAIL. If the hub lacks some of these, a small I/O board in the hub zone adds them and talks to the hub over one link (H-ELE-05).
+- **Interface the hub must give (for the in-house team; nothing about its insides goes here):** 12 V input (5 W assumed); 2 × PWM out (25 kHz, open drain); 2 × tach in (open collector); 1 × RS-485 out to the light controller, through an isolated transceiver (the hub's 0 V is PS3's and must never meet PS2's: the Lead's ruling, 2026-11-01); 4 × analog in (light knob, PS2's current, and the PS1 and PS2 rails: 24 V each, read through optocouplers, and PS2's current through an isolated sensor, so no sense joins two supplies' 0 V); 3 × button in (BOOST, TEST, CALL); 1 × temperature sensor port; a display for PASS or FAIL. If the hub lacks some of these, a small I/O board in the hub zone adds them and talks to the hub over one link (H-ELE-05).
 
 ## 8. Voice cockpit hooks (REQ-VCK-01 to 06)
 
@@ -165,7 +165,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 | H-ELE-11 | ATO blade fuse holders (unit and column) | Part to name | Datasheet on file |
 | H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Part to name | Datasheet on file |
 | H-ELE-13 | Current sense module on PS2's output | Part to name, output to suit the hub's input | ISS-060 data |
-| H-ELE-14 | 3-channel 24 V PWM light controller, RS-485 | Part to name: at least 3 A per channel, common +24 V (D-168), holds or goes dark on a lost link | Datasheet on file; bench test with the strips |
+| H-ELE-14 | 24 V PWM light controller, DMX512 | Part to name: at least 3 channels at 3 A, common +24 V (D-168), an isolated DMX512/RS-485 input (no shared 0 V with the hub), holds or goes dark on a lost link | Datasheet on file; bench test with the strips |
 
 ## 11. Tests (planned, not run: PLANNED / NOT TESTED)
 

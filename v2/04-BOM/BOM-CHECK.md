@@ -133,7 +133,7 @@ Read from: this working tree.
 - 718081 ELECTRICAL - 24 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
 - 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718002 ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718002 ELECTRICAL - LED CONTROLLER - 24 V PWM - DMX512 - ISOLATED INPUT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718004 ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718005 ELECTRICAL - INLET SEALING CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
