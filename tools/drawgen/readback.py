@@ -212,18 +212,23 @@ def all_strokes(page, sheet_h):
     return segs
 
 
-MAKER = re.compile(r"\b(made|created|drawn|designed|generated|produced|prepared)\s+by\s+([^\s,;]+)", re.I)
+def _c_drawings():
+    _stepfile()                 # puts tools/checks on the path
+    import c_drawings
+    return c_drawings
 
 
 def note_makers(doc):
-    """[(sheet, phrase)] for each 'made by X' and the like on the sheets, other than the title block's CREATED BY
-    Autonomous: the Lead's ruling (2026-11-01) is that a note names the source, never an agent, a role or a script as
-    the maker."""
+    """[(sheet, phrase)] for each note that names a maker other than Autonomous: an agent, a role, a script or tool, a
+    team or a person. A process is no maker ("holes made by drilling after welding", "made by bending the flange").
+    The Lead's ruling on #302; the rule is the mechanical check's own (tools/checks/c_drawings.py: its reading of
+    'made by ...' lines and names_a_maker), so the two can't differ."""
+    cd = _c_drawings()
     out = []
     for n, page in enumerate(doc, start=1):
-        for m in MAKER.finditer(page.get_text()):
-            if m.group(2).strip(":.") != "Autonomous":
-                out.append((n, " ".join(m.group(0).split())))
+        for phrase, maker in cd._note_makers(page):
+            if maker.strip().lower() != "autonomous" and cd.names_a_maker(maker):
+                out.append((n, "%s %s" % (phrase, maker)))
     return out
 
 
