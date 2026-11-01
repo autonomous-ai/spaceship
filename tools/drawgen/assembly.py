@@ -493,7 +493,9 @@ class Assy:
             if it.ref or not it.occs:
                 continue
             q = _num(qty_of(it.row))
-            if q is None or abs(q - round(q)) > 1e-9 or unit_of(it.row) not in ("", "pc", "pcs"):
+            # a count in sets is counted as pieces are (the Lead, 2026-11-01): WALL's clips 518003, '4 set' (a
+            # female and a male part each, #343), are its four clip zones; a cavity fill's '1 set' is one placement
+            if q is None or abs(q - round(q)) > 1e-9 or unit_of(it.row).lower() not in ("", "pc", "pcs", "set", "sets"):
                 continue
             n_occ, n_sol = len(it.occs), sum(len(o.solids) for o in it.occs)
             # a count matches the STEP's placements of the part, or (one placement holding them all as bodies, as
