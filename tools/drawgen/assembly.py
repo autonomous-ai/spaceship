@@ -10,8 +10,7 @@ One sheet per assembly, drawn from the team's assembly STEP of the same revision
 - a parts table (ISO 7573) from the team parts list's rows whose parent is this assembly: item, part number, name,
   quantity in this assembly, material and finish, word for word as the list has them;
 - the overall sizes, and the interface sizes the entry names;
-- for a weldment, the weld notes and a cut list of its members; for a panel, the layer build-up as a section detail
-  at 1:2 or 1:5 (D-147 (2)).
+- for a panel, the layer build-up as a section detail at 1:2 or 1:5 (D-147 (2)).
 
 It reuses drawgen's exact hidden-line projection (project.py), its sheet (sheet.py), its title block and finish (CREATED
 BY and the PDF's author Autonomous, no maker line), and its read-back checks; `check` reads every balloon back against
@@ -38,6 +37,8 @@ entry} (D-139). An entry holds only what the STEP and the list can't give:
   section across the parts that hide it is added;
 - interfaces: [{view, of: [part numbers], along: 'x' or 'y', origin: {pn, pick: '-Y'...}, at: 'centre', 'min' or
   'max', side, words}]: ordinates of those parts from the origin part (guideline 5.1's interface sizes);
+- unhatched: part numbers a section leaves whole (ISO 128-50: shafts, pins, studs and the like cut along their
+  axis are drawn uncut), such as a spigot or a glide's stem;
 - hidden: part numbers whose hidden lines are drawn;
 - notes: the fixing method and order, each with its source; tolerance: the sheet's tolerance note;
 - sheet, scale: only when the default choice is wrong.
@@ -59,9 +60,11 @@ from OCP.STEPCAFControl import STEPCAFControl_Reader
 from OCP.TCollection import TCollection_ExtendedString
 from OCP.TDF import TDF_Label, TDF_LabelSequence
 from OCP.TDocStd import TDocStd_Document
-from OCP.TopAbs import TopAbs_FACE
+from OCP.TDataStd import TDataStd_Name
+from OCP.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_SOLID
 from OCP.TopExp import TopExp_Explorer
 from OCP.TopLoc import TopLoc_Location
+from OCP.TopoDS import TopoDS
 from OCP.XCAFDoc import XCAFDoc_DocumentTool
 from OCP.gp import gp_Ax2, gp_Dir, gp_Lin, gp_Pnt
 
@@ -75,6 +78,95 @@ from project import POD_VIEWS, View
 from sheet import DASH_HID, SIZES, Sheet, W_HID, W_THIN, W_VIS
 
 PN_RE = re.compile(r"^(\d{6})(?!\d)")
+
+
+# ------------------------------------------------------------------ small helpers of our own (no core internals)
+
+
+def _label_name(lab):
+    """A STEP product's name as XCAF holds it."""
+    n = TDataStd_Name()
+    if lab.FindAttribute(TDataStd_Name.GetID_s(), n):
+        return n.Get().ToExtString()
+    return ""
+
+
+def _solids_of(shape):
+    out = []
+    e = TopExp_Explorer(shape, TopAbs_SOLID)
+    while e.More():
+        out.append(TopoDS.Solid_s(e.Current()))
+        e.Next()
+    return out
+
+
+def _latin(s):
+    """True when s prints in the built-in Helvetica (Windows-1252), as sheet.text writes it."""
+    try:
+        s.encode("cp1252")
+        return True
+    except UnicodeEncodeError:
+        return False
+
+
+def _seg_box(p, q, box, gap=0.4):
+    """True when segment p-q comes within gap of the box (Liang-Barsky clip against the grown box)."""
+    x0, y0, x1, y1 = box[0] - gap, box[1] - gap, box[2] + gap, box[3] + gap
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    t0, t1 = 0.0, 1.0
+    for pp, qq in ((-dx, p[0] - x0), (dx, x1 - p[0]), (-dy, p[1] - y0), (dy, y1 - p[1])):
+        if abs(pp) < 1e-12:
+            if qq < 0:
+                return False
+        else:
+            r = qq / pp
+            if pp < 0:
+                t0 = max(t0, r)
+            else:
+                t1 = min(t1, r)
+            if t0 > t1:
+                return False
+    return True
+
+
+def _plane_trace(view, point, normal, ext):
+    """A cutting plane's line on a view that sees it edge on, spanning ext (x0, y0, x1, y1), or None."""
+    c = view.to2d(point)
+    if abs(abs(vdot(normal, view.x)) - 1) < 1e-6:
+        return (c[0], ext[1]), (c[0], ext[3])
+    if abs(abs(vdot(normal, view.y)) - 1) < 1e-6:
+        return (ext[0], c[1]), (ext[2], c[1])
+    return None
+
+
+def _narrowest(loop):
+    """A cut face's narrowest width (true mm): the least distance between two parallel lines of its outline."""
+    lines = [p for p in loop if p.kind == "line"]
+    best = 1e9
+    for i, a in enumerate(lines):
+        ax, ay = a.q[0] - a.p[0], a.q[1] - a.p[1]
+        la = math.hypot(ax, ay)
+        if la < 1e-9:
+            continue
+        for b in lines[i + 1:]:
+            bx, by = b.q[0] - b.p[0], b.q[1] - b.p[1]
+            lb = math.hypot(bx, by)
+            if lb < 1e-9 or abs(ax * by - ay * bx) / (la * lb) > 1e-6:
+                continue
+            d = abs((b.p[0] - a.p[0]) * ay - (b.p[1] - a.p[1]) * ax) / la
+            if d > 1e-6:
+                best = min(best, d)
+    return best if best < 1e9 else 10.0
+
+
+def _stepfile():
+    """The repo's own STEP reader (tools/checks/stepfile.py, no OCC), for the read-back."""
+    import sys as _sys
+    p = os.path.join(inputs.REPO, "tools", "checks")
+    if p not in _sys.path:
+        _sys.path.insert(0, p)
+    import stepfile
+    return stepfile
 
 
 # ------------------------------------------------------------------ the assembly in its STEP
@@ -130,7 +222,7 @@ def read_assembly(path, pn):
         shape = st.GetShape_s(lab)
         if not loc.IsIdentity():
             shape = shape.Moved(loc)
-        return geom._solids(shape)
+        return _solids_of(shape)
 
     def children(lab, loc):
         out = []
@@ -141,7 +233,7 @@ def read_assembly(path, pn):
             ref = TDF_Label()
             st.GetReferredShape_s(c, ref)
             cloc = loc.Multiplied(st.GetLocation_s(c))
-            name = geom._name(ref) or geom._name(c)
+            name = _label_name(ref) or _label_name(c)
             cpn = _pn(name)
             if cpn is None and st.IsAssembly_s(ref):
                 out += children(ref, cloc)          # a grouping without a part number: look through it
@@ -162,11 +254,11 @@ def read_assembly(path, pn):
                 c = comps.Value(i)
                 ref = TDF_Label()
                 st.GetReferredShape_s(c, ref)
-                walk(ref, loc.Multiplied(st.GetLocation_s(c)), geom._name(ref) or geom._name(c))
+                walk(ref, loc.Multiplied(st.GetLocation_s(c)), _label_name(ref) or _label_name(c))
 
     for i in range(1, tops.Length() + 1):
         lab = tops.Value(i)
-        walk(lab, TopLoc_Location(), geom._name(lab))
+        walk(lab, TopLoc_Location(), _label_name(lab))
     if not found:
         raise LookupError("no assembly %s in %s" % (pn, inputs.rel(path)))
     return found[0]
@@ -354,10 +446,20 @@ def hlr(shapes, view, hidden=()):
             comps += [(h.HCompound(s), False, "sharp"), (h.OutLineHCompound(s), False, "outline")]
         prims = []
         for comp, vis, src in comps:
-            for e in project._edges(comp):
+            for e in _edges_of(comp):
                 prims.extend(project.edge_prims(e, vis, src))
         out.append(project.clean(prims))
     return out
+
+
+def _edges_of(comp):
+    """The edges of an HLR result compound."""
+    if comp is None or comp.IsNull():
+        return
+    e = TopExp_Explorer(comp, TopAbs_EDGE)
+    while e.More():
+        yield TopoDS.Edge_s(e.Current())
+        e.Next()
 
 
 def prim_len(p):
@@ -564,10 +666,19 @@ def section_view(assy, spec, views):
             raise NotDrawable("%s: section %s's plane is square to no axis of the principal view" % (assy.pn, letter))
     view = View("section_" + letter, base.n, base.x, base.y)
     kept = []
-    for shp in assy.shapes:
-        k = geom.half_space_keep(shp, point, normal)
-        if spec.get("slice"):
-            k = geom.half_space_keep(k, vsub(point, vmul(normal, float(spec["slice"]))), vmul(normal, -1.0))
+    whole = set(assy.entry.get("unhatched", ()))
+    off = vdot(point, normal)
+    cut_whole = set()
+    for i, (o, shp) in enumerate(zip(assy.occs, assy.shapes)):
+        b = box_of([shp])
+        ds = [vdot((b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]), normal) for j in range(8)]
+        if o.item.pn in whole and min(ds) < off < max(ds):
+            k = shp                     # ISO 128-50: a shaft or pin the plane cuts along is drawn whole, not hatched
+            cut_whole.add(i)
+        else:
+            k = geom.half_space_keep(shp, point, normal)
+            if spec.get("slice"):
+                k = geom.half_space_keep(k, vsub(point, vmul(normal, float(spec["slice"]))), vmul(normal, -1.0))
         if spec.get("window"):
             x0, x1, y0, y1 = spec["window"]
             k = geom.window_keep(k, view, x0, x1, y0, y1) if _has_faces(k) else k
@@ -585,6 +696,8 @@ def section_view(assy, spec, views):
     av.own_scale = spec.get("scale")
     av.on = spec.get("on")
     for i in live:
+        if i in cut_whole:
+            continue
         for f in compose.cut_faces(kept[i], point, normal):
             av.hatch.append((i, compose.face_loops(f, view)))
     if not av.hatch:
@@ -769,7 +882,7 @@ def draw_prims(sh, av, occs):
             style[it] = HATCH[len(style) % len(HATCH)]
         ang, sp = style[it]
         sl = _sheet_loop(av, loop)
-        narrow = compose._narrowest(loop) * av.scale
+        narrow = _narrowest(loop) * av.scale
         if narrow < 1.6:
             sh.fill_loops([sl])
         else:
@@ -797,7 +910,7 @@ def cutting_planes(sh, views):
                 ys = [vdot(c, v.view.y) for c in corners]
                 x0, x1 = max(x0, min(xs)), min(x1, max(xs))
                 y0, y1 = max(y0, min(ys)), min(y1, max(ys))
-            tr = compose._trace(v.view, point, normal, (x0, y0, x1, y1))
+            tr = _plane_trace(v.view, point, normal, (x0, y0, x1, y1))
             if tr is None:
                 continue
             p0, q0 = v.S(tr[0]), v.S(tr[1])
@@ -1098,7 +1211,7 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                         dl = math.hypot(*d)
                         if dl > 1e-12 and abs(u[0] * d[0] / dl + u[1] * d[1] / dl) > math.cos(math.radians(25)):
                             continue        # nearly along the edge it lands on: it would read as that edge
-                    if any(sh._seg_box(a, S, b, 0.6) for b in sh.boxes):
+                    if any(_seg_box(a, S, b, 0.6) for b in sh.boxes):
                         continue
                     if any(_cross(a, S, p, q) for p, q in leaders):
                         continue
@@ -1292,7 +1405,7 @@ def make(pn, team, entry, out_path, today=None, step=None):
             "sources": [{"role": "STEP", "path": inputs.rel(assy.step), "sha256_12": inputs.sha12(assy.step)},
                         {"role": "parts list", "path": inputs.rel(assy.list_file),
                          "sha256_12": inputs.sha12(assy.list_file)}],
-            "parent_keys": list(entry.get("parent_keys", ())),
+            "parent_keys": list(entry.get("parent_keys", ())), "unhatched": list(entry.get("unhatched", ())),
             "views": [{"name": nm, "kind": v.kind, "n": v.view.n, "x": v.view.x, "y": v.view.y, "scale": v.scale,
                        "off": v.off, "box": v.box(), "letter": v.letter,
                        "cut": ({"point": v.cut[0], "normal": v.cut[1], "slice": v.spec.get("slice")} if v.cut else None)}
@@ -1597,7 +1710,7 @@ def check(pdf_path):
             if " ".join(w.split()) != g:
                 fails.append("table item %d %s: '%s' where the list has '%s'" % (n, COLS[k][0], g[:60], w[:60]))
     # 2. balloons
-    s_f = readback._stepfile().StepFile(step)
+    s_f = _stepfile().StepFile(step)
     prods = {p_["pd"]: p_ for p_ in s_f.products()}
     occ = s_f.occurrences()
     kids = {}
@@ -1634,7 +1747,7 @@ def check(pdf_path):
             fails.append("balloon %d: no %s drawn at its tip" % (n, "arrowhead" if b["end"] == "arrow" else "dot"))
         if not _in_or_on(solids.get(bpn, []), t3):
             fails.append("balloon %d: its point (%.2f, %.2f, %.2f) is not on %s in the STEP" % ((n,) + t3 + (bpn,)))
-        if v["kind"] == "section" and v.get("cut"):
+        if v["kind"] == "section" and v.get("cut") and bpn not in data.get("unhatched", ()):
             pt, nr = v["cut"]["point"], v["cut"]["normal"]
             if vdot(vsub(t3, pt), nr) > TOL_ON:
                 fails.append("balloon %d: its point lies in front of section %s's plane" % (n, v.get("letter")))
@@ -1699,7 +1812,7 @@ def tw(sh, s, size, bold=False):
     """The printed width (sheet mm) of s at letter height size: fitz.Font's measure, which matches the PDF's own
     span boxes (fitz.get_text_length under-measures Ø and µ in the built-in Helvetica)."""
     from sheet import CAP, MM
-    if sh._latin(s) or not sh.fonts["bold" if bold else "reg"]:
+    if _latin(s) or not sh.fonts["bold" if bold else "reg"]:
         key = "hebo" if bold else "helv"
         import fitz
         f = _FONT.get(key) or _FONT.setdefault(key, fitz.Font(key))

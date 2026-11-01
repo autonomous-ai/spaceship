@@ -16,6 +16,7 @@
 5. Quantities by length are in metres (family 84); wrapped cells join back word for word; a cell with Ø wraps to
    its printed width.
 6. A sheet never goes over a PDF drawgen didn't make (a Fusion drawing).
+7. Spigots and glide stems a section cuts along are drawn whole (ISO 128-50); one the plane misses isn't drawn.
 """
 
 import json
@@ -179,6 +180,23 @@ def test_units_join_and_printed_widths():
             for sp in ln["spans"]:
                 assert (sp["bbox"][2] - sp["bbox"][0]) / mm <= 72.0 + 0.05, (sp["text"], sp["bbox"])
     assert assembly._join(lines) == t
+
+
+def test_shafts_cut_along_their_axis_are_drawn_whole():
+    """ISO 128-50: the entry's spigots and glide stems are drawn whole where a section cuts them, not hatched; a
+    spigot the plane doesn't cut (in front of section C) is not drawn in it at all."""
+    team, entry = assembly.assemblies()["110101"]
+    assert set(entry["unhatched"]) == {"831001", "118002"}
+    assy = assembly.Assy("110101", team, entry)
+    views = assembly.plan_views(assy)
+    secs = {v.letter: v for v in views.values() if v.kind == "section"}
+    for letter, v in secs.items():
+        hatched = {assy.occs[i].item.pn for i, _l in v.hatch}
+        assert not hatched & {"831001", "118002"}, (letter, hatched)
+    drawn = lambda v, pn: any(ps for o, ps in zip(assy.occs, v.prims) if o.item.pn == pn)
+    assert drawn(secs["A"], "118002") and drawn(secs["B"], "831001")
+    assert not drawn(secs["C"], "831001"), "a spigot in front of section C is drawn in it"
+    assert {assy.occs[i].item.pn for i, _l in secs["A"].hatch} >= {"111101", "111601"}
 
 
 def test_never_goes_over_a_fusion_drawing():
