@@ -4,17 +4,18 @@ import math
 
 T, R, K = 1.0, 1.0, 0.44
 BASE = [(0.0, 0.0), (300.0, 0.0), (260.0, 200.0), (40.0, 200.0)]
+ANGLES = (90.0, 60.0, 30.0)     # the three folds' angles; a test may set two alike (one section typical of both)
 # edge index, angle (deg), s0, s1 (along the edge from its start), the tab's outer edge from its u=0 side to u=W side,
 # holes in tab coordinates (u along the edge from s0, v out from the bend), diameter
 def tabs():
     L = lambda i: math.dist(BASE[i], BASE[(i + 1) % 4])
     out = []
     w0 = 260.0
-    out.append((0, 90.0, 20.0, 280.0, [(0.0, 40.0), (w0, 40.0)], [((60.0, 20.0), 8.0)]))
+    out.append((0, ANGLES[0], 20.0, 280.0, [(0.0, 40.0), (w0, 40.0)], [((60.0, 20.0), 8.0)]))
     l1 = L(1)
-    out.append((1, 60.0, 15.0, l1 - 15.0, [(10.0, 30.0), (l1 - 30.0 - 10.0, 30.0)], []))
+    out.append((1, ANGLES[1], 15.0, l1 - 15.0, [(10.0, 30.0), (l1 - 30.0 - 10.0, 30.0)], []))
     l3 = L(3)
-    out.append((3, 30.0, 15.0, l3 - 15.0, [(0.0, 25.0), (l3 - 30.0, 25.0)], []))
+    out.append((3, ANGLES[2], 15.0, l3 - 15.0, [(0.0, 25.0), (l3 - 30.0, 25.0)], []))
     return out
 
 

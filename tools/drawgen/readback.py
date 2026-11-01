@@ -841,8 +841,13 @@ def fold_section_fails(data, page_text, tol=0.01):
             if o is None or abs(o["angle"] - own["angle"]) > tol or abs(o["r"] - own["r"]) > tol:
                 fails.append("section %s-%s is said to be typical of fold %s, but its angle or radius differs" % (L, L,
                                                                                                                 tag))
-        if sc["typical"] and "typical for" not in words:
-            fails.append("section %s-%s stands for other folds, but no title says typical" % (L, L))
+        # the title's clauses print as lines of their own (the ';' between them isn't printed)
+        m = re.search(r"across %s's fold at its middle: [\d.]+°, inside R[\d.]+;? typical for ((?:B\d+, )*B\d+)" %
+                      re.escape(sc["fold"]), words)
+        named = set(m.group(1).split(", ")) if m else set()
+        if named != set(sc["typical"]):
+            fails.append("section %s-%s stands for %s, but its title names %s" % (
+                L, L, ", ".join(sc["typical"]) or "no other fold", ", ".join(sorted(named)) or "none"))
     for tag in sorted(set(rec) - set(seen)):
         fails.append("fold %s is shown by no section" % tag)
     return fails

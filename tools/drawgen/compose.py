@@ -78,24 +78,12 @@ def fold_window(v, rows):
     return {"box": box, "w": box[1] - box[0], "h": box[3] - box[2]}
 
 
-def tag_runs(tags):
-    """Bend tags as a short list: a run of three or more numbers as 'B7 to B11'."""
-    nums = sorted(int(t[1:]) for t in tags)
-    out, start = [], None
-    for a_, b_ in zip(nums, nums[1:] + [None]):
-        start = a_ if start is None else start
-        if b_ != a_ + 1:
-            out += ["B%d to B%d" % (start, a_)] if a_ >= start + 2 else ["B%d" % x for x in range(start, a_ + 1)]
-            start = None
-    return ", ".join(out)
-
-
 def fold_section_words(r):
-    """A fold section's title words: the fold it cuts, its angle and inside radius, and the folds of the same angle
-    and radius it is typical of."""
+    """A fold section's title words: the fold it cuts, its angle and inside radius, and every fold of the same angle
+    and radius it stands for, each named (the Lead on #369)."""
     w = "across %s's fold at its middle: %s°, inside R%s" % (r.fold["tag"], fmt(r.fold["angle"]), fmt(r.fold["r"]))
     typ = getattr(r, "typical", None) or []
-    return w + ("; typical for %s" % tag_runs([x["tag"] for x in typ]) if typ else "")
+    return w + ("; typical for %s" % ", ".join(x["tag"] for x in typ) if typ else "")
 
 
 class Letters:
