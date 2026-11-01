@@ -221,7 +221,8 @@ def sheet1(doc, rows, harness, v):
         "3. Plug pairs: supply side receptacle (female), load side plug (male); Molex Mini-Fit Jr, keyed by way count.",
         "4. Every cable through sheet steel runs in a grommet; cables clip to the cassette tray only (D-26).",
         "5. Wire sizes and lengths: harness list (sheet 2 and the _SPEC.csv). Voltage drop under 3 %: calc-results.md.",
-        "6. Bought parts are on HOLD: no order, no supplier contact. The in-house hub is cited by name only.",
+        "6. Bought parts are named from their datasheets in the parts list 710000 (some still HOLD, each with its "
+        "reason); no order, no supplier contact. The in-house hub is cited by name only.",
         "7. Mains: US 120 V 60 Hz, 15 A, UL-listed parts (D-133); the prototype is tested in Vietnam through a 220-to-110 V step-down transformer.",
         "8. Joints: X1 unit/B2-CASS  X2 corner (R1-CASS)  X3 column entry  X4 B2/B4  X5 shelf  X6 call  X7 kit.",
     ]

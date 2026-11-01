@@ -78,7 +78,7 @@ LAN ─ etherCON (B2 skin) ─ keystone jack 1 (unit face); keystone jack 2 ─ 
 | Cassette | B2-CASS has a plain cut-out through its tray base and felt, 4 mm clear all round the unit (304 × 268), so the lining never touches the frame-mounted unit (D-17, D-26). No returns: WALL found they can't be folded from a flat blank (corner tabs overlap). The front plate covers the cut felt edge. | PROPOSED; WALL draws the cut-out |
 | Mass | see calc-results §5 | calculation |
 
-The inlet and the etherCON sit in B2's skin at X 120 (Z 313 and 375), with a 20 × 20 mm sleeve up the same bay to the unit's bottom. All of it is fitted in B2 at the factory, so B2 ships with the unit wired and tested.
+The inlet and the etherCON sit in B2's skin at X 120 (Z 313 and 375), the inlet's rear in a rear box (711003, modelled with the inlet in the next rebuild: Neutrik makes no rear cover), with the 1/2 in conduit from that box up the same bay to the unit's bottom. All of it is fitted in B2 at the factory, so B2 ships with the unit wired and tested.
 
 ## 4. 24 V and 12 V circuits and the load table
 
@@ -152,20 +152,21 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 
 | ID | Item | Question or check | Release condition |
 |---|---|---|---|
-| H-ELE-01 | Bushings and edge strip: Heyco 2836 in Ø19.1 holes through 0.5 mm steel (6), DR's back plate (G-DR, 1.0–2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT); an edge strip on the two slots | The 2836 is listed for panels up to 1.6 mm with no minimum given; G-DR and G-SOFFIT need a thicker-panel bushing if the plate is over 1.6 mm | Sample fit in a cassette return; FRONT and CEILING name their plate thickness |
+| H-ELE-01 | Bushings and edge strip | Named: Heyco 2836N thin panel bushing (locks in 0.5 to 1.6 mm sheet; the plain 2836 locks only at 1.6 mm), Heyco 12431 grommet channel (0.5 to 3.2 mm). Still open: DR's back plate (G-DR, 1.0-2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT) over 1.6 mm need a thicker-panel bushing | Sample fit in a cassette return; FRONT and CEILING give the plate thicknesses |
 | H-ELE-02 | The supplies (24 V and 12 V) and the dimmable driver | Data confirmed; Class 2 marking checked for the US phase | Datasheets on file (parts list) |
-| H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | Panel-thickness range and depth behind the panel | Datasheet check; sample in a B2 skin |
-| H-ELE-04 | The US outlets' exact parts (D-133): the GFCI receptacle and the keystone jacks | Their drawings set the plate's openings (decorator 33.6 × 67, keystone 14.9 × 19.4) | The picked parts' drawings (no supplier contact) |
+| H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | The inlet NAC3MPX-TOP reaches 31.2 mm behind its flange (38.2 overall; Neutrik ST-NAC3MPX-TOP), about 28 behind the skin's inside face; Neutrik gives no panel-thickness range. It is a UL 498 Recognized component, so its rear goes in the rear box 711003, where the conduit's second NMLT-11 ends. Straight disconnects and the 14 AWG bends need about 60 mm behind the skin, over the 43 mm bay: flag disconnects or a flatter lead dress, settled when 711003 is modelled. The etherCON NE8FDY-C6-B reaches 39.85 mm behind its flange, and its 3 mm panel limit is the skin's thickness | Model 711003 with the inlet; sample in a B2 skin |
+| H-ELE-04 | The US outlets' parts (D-133) | Named: Pass & Seymour 1597TRW GFCI (1595TRW is no longer listed; the same decorator body) and Panduit NK688MWH keystone jacks. Their sheets give no panel cut-out: prove the decorator 33.6 x 67 and keystone 14.9 x 19.4 openings in the 1.5 mm plate | A sample of the front plate with both parts fitted |
 | H-ELE-05 | The hub's fan outputs | PWM or 0–10 V; current; connector | ISS-060 data |
 | H-ELE-06 | Inlet temperature sensor | Type set by the hub's sensor port; accuracy for the 4 K limit | ISS-060 data |
 | H-ELE-07 | Fan connectors at the fan boxes; the fans' 0 % PWM behaviour | Y-cable and harness end housing | Fan sample (ISS-077) |
 | H-ELE-08 | The hub's supply voltage | 12 V direct, or a 12-to-5 V converter in the hub zone | ISS-060 data |
-| H-ELE-09 | LED strips, call light bar, the shelf channel | Final strip by lumen check; the shelf's profile is INTERIOR's | Light-level test on the prototype (ISS-004) |
-| H-ELE-10 | Cable clips on 0.5 mm galvanised steel | Adhesive mount or clip, with its hold on the tray | Pull test on a cassette tray |
-| H-ELE-11 | ATO blade fuse holders (unit and column) | Part to name | Datasheet on file |
-| H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Part to name | Datasheet on file |
+| H-ELE-09 | LED strips, call light bar, the shelf's profile | Named from Häfele America's 24 V range (D-168; it sells no 12 V lighting from 2026): LED 3145 833.76.226 (the 2168's twin) and LED 3142 833.76.216 (the 2165's twin), 3000 K, the same light per metre, cut every 50 mm; feed lead 833.75.763; call light profile 2191 with a milk lens 833.72.861 and end caps 833.72.853. Still open: the shelf's profile and satin cover (718101-718104): no maker sheet read gives a 23 x 12.5 surface profile with a satin cover of 86 % or more (D-127) | A profile family with its sheet, or the PM's call on a taller one (the look); light-level test on the prototype (ISS-004) |
+| H-ELE-10 | Cable clips on 0.5 mm galvanised steel | Named: Heyco 3904 (PMT 150) push-mount tie: it needs a Ø6.4 mm hole at each clip point in the cassette trays | WALL and CEILING add the holes to their trays (an interface); pull test on a cassette tray |
+| H-ELE-11 | ATO blade fuse holders (unit and column) | Named: Littelfuse FHAC0001ZXJ, with cover, 16 AWG leads, 20 A at 32 V DC; fuses Littelfuse 0287 ATOF 5, 2 and 1 A | Closed: datasheets on file |
+| H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Named: Panduit SP688E-C plugs, CC688IW couplers (Panduit allows two per channel: X1 and X2), NK688MWH jacks with a PSL-DCJB block-out at X7 (it comes out only with Panduit's tool, one per pack), Belden 3612 cable. The etherCON is now the CAT6 IDC jack NE8FDY-C6-B, so it adds no coupler to the kit's channel (the CAT5e feedthrough NE8FDP did) | The 3612's insulated core size isn't published: a sample must measure 0.91 to 1.07 mm for the plug (Panduit PN649A) |
 | H-ELE-13 | Current sense module on PS2's output | Part to name, output to suit the hub's input | ISS-060 data |
-| H-ELE-14 | 24 V PWM light controller, DMX512 | Part to name: at least 3 channels at 3 A, common +24 V (D-168), an isolated DMX512/RS-485 input (no shared 0 V with the hub), holds or goes dark on a lost link | Datasheet on file; bench test with the strips |
+| H-ELE-14 | Light controller, 5-channel 12-24 V PWM, DMX512 | Named: LTECH LT-995, 5 channels at 6 A (3 used), 12-24 V, common +V, DMX512 on its opto-isolated screw terminal (no Modbus, no shared 0 V with the hub); rated -30 to 65 °C; cURus E500585. Its sheet doesn't say what it does when the data stops | Bench test with the 24 V strips: on a lost DMX link it holds its level or goes dark, never brighter |
+| H-ELE-15 | The body's holes for the named parts | Closed by #353 (merged): H05-H08 Ø5.94 +0.08 for the CLA-M4-1 nuts (10 mm from the lip's fold, 12 from its free edge, over PEM's 7.1), H09 Ø5.0 +0.08 for the FHA-M5-12 earth stud, H04 Ø22.2 for the NMLT-11 | Closed |
 
 ## 11. Tests (planned, not run: PLANNED / NOT TESTED)
 

@@ -10,8 +10,8 @@ The pod is sold in the US, so its mains side is US 120 V, 60 Hz, on the prototyp
 
 1. **Every low-voltage circuit is Class 2.** Each supply's own sheet says "Class 2 power unit" (UL 1310): the kit's Mean Well CLG-100-24 (96 W at 24 V), the lights' LPV-60-24 and the air's LPV-60-12 (60 W each), each within the Class 2 limit at its voltage (D-168). So every cable inside the walls, ceiling and air column carries a power-limited circuit, safe for two non-electricians to plug together, and no two Class 2 sources share a 0 V.
 2. **Mains stays in one place.** The only mains parts are in the earthed power unit in panel B2: the inlet, the breaker, the GFCI receptacle and the three supplies' inputs. They're wired and tested in the factory, so no mains connection is made on site.
-3. **US 120 V by design, with UL-listed parts on the mains side (D-133):** the powerCON TRUE1 TOP inlet (UL 498), a 15 A one-pole UL 489 breaker, a tamper-resistant GFCI duplex NEMA 5-15R receptacle (UL 943 Class A, UL 498) as the user outlets, UL 1015 14 AWG wiring sized for 15 A, and a NEMA 5-15P SJT 14/3 cord set. The three supplies take 100 to 240 V and carry a UL Class 2 listing, so the 12 V side doesn't change: harnesses, connectors, routes, lights, fans and hub.
-4. **Open for the US rules phase (HOLD, ISS-083):** read the current UL 962 and UL 962A editions and list their clauses for the pod; settle whether the power unit is evaluated to UL 962A on its own or within the pod's UL 962 evaluation; confirm each mains part's UL file (the breaker's interrupting rating at 120 V, the inlet's US rating) and each 12 V supply's Class 2 marking under UL 1310 or UL 62368-1, or a listed Class 2 LED driver marking under UL 8750.
+3. **US 120 V by design, with UL-listed parts on the mains side (D-133):** the powerCON TRUE1 TOP inlet (UL 498), a 15 A one-pole UL 489 breaker, a tamper-resistant GFCI duplex NEMA 5-15R receptacle (UL 943 Class A, UL 498) as the user outlets, UL 1015 14 AWG wiring sized for 15 A, and a NEMA 5-15P SJOOW 14/3 cord set. The three supplies take 100 to 240 V and carry a UL Class 2 listing, so the 12 V side doesn't change: harnesses, connectors, routes, lights, fans and hub.
+4. **Open for the US rules phase (HOLD, ISS-083):** read the current UL 962 and UL 962A editions and list their clauses for the pod; settle whether the power unit is evaluated to UL 962A on its own or within the pod's UL 962 evaluation; confirm each mains part's UL file (each is named from its own datasheet in the parts list, 2026-11-01; the breaker's own sheet is still to read, and its interrupting rating at 120 V with it) and each 12 V supply's Class 2 marking under UL 1310 or UL 62368-1, or a listed Class 2 LED driver marking under UL 8750.
 
 ## 1. NEC Class 2 at 24 V and 12 V
 
@@ -52,12 +52,12 @@ What Class 2 lets the design do (NEC Article 725 in the 2020 edition, Article 72
 
 | Item | P01 (US 120 V 60 Hz) | Was (220 V, before D-133) |
 |---|---|---|
-| Cord set | 3 m, NEMA 5-15P (UL 498), SJT 14/3 (UL 62), powerCON TRUE1 cord connector; UL 817 as a set (HOLD) | H05VV-F 3G1.5, VN plug |
-| Inlet | Neutrik powerCON TRUE1 TOP, UL 498, 20 A in the US (rating to confirm on the certificate) | the same part |
-| Protection | breaker 1P 15 A, C curve, UL 489, on the DIN rail; GFCI Class A at the outlets | RCBO 1P+N, C10, 30 mA |
-| User outlets | tamper-resistant GFCI duplex NEMA 5-15R (UL 943, UL 498), on the unit face behind a decorator opening | UTEN S300 universal socket, 86 × 86 |
-| LAN outlet | two Cat6 keystone jacks snapped into the front plate | UTEN S300 two-port LAN socket |
-| Mains wiring | UL 1015 14 AWG, 600 V, 105 °C (black, white, green); the bond 14 AWG green | H07V-K 1.5 mm², bond 2.5 mm² |
+| Cord set | 3 m: Leviton 5266-C NEMA 5-15P (UL 498, E13399), Carol 01360 SJOOW 14/3 (UL 62), Neutrik NAC3F-TRUE1-S cord connector (UL 498 20 A, E343813; Neutrik certifies it with SJOOW 14/3, not SJT); UL 817 as a set (HOLD) | H05VV-F 3G1.5, VN plug |
+| Inlet | Neutrik NAC3MPX-TOP (powerCON TRUE1 TOP), UL 498 20 A 250 V, Recognized, E343813; three Panduit DNF14-250FIB-C disconnects (UL 310) on its 1/4 in tabs | the same part |
+| Protection | breaker 1P 15 A, C curve, UL 489 (Eaton FAZ-C15/1-NA-L: its own sheet still to read, HOLD), on the DIN rail; GFCI Class A at the outlets | RCBO 1P+N, C10, 30 mA |
+| User outlets | Pass & Seymour 1597TRW: tamper-resistant self-test GFCI duplex NEMA 5-15R, 15 A 125 V, cULus E42190, on the unit face behind a decorator opening | UTEN S300 universal socket, 86 × 86 |
+| LAN outlet | two Panduit NK688MWH Cat6 keystone jacks (UL 1863) snapped into the front plate | UTEN S300 two-port LAN socket |
+| Mains wiring | Alpha Wire 461419, UL 1015 14 AWG, 600 V, 105 °C (black, white, green); the bond 14 AWG green; Panduit PV14 insulated rings (cULus) | H07V-K 1.5 mm², bond 2.5 mm² |
 | Low-voltage supplies | Mean Well CLG-100-24 (kit, 24 V) and LPV-60-24 (lights, 24 V), LPV-60-12 (air and hub, 12 V): Class 2 power units (UL 1310) on their own sheets (D-168) | three units |
 | Harnesses, connectors, routes, lights, fans, hub | unchanged | — |
 

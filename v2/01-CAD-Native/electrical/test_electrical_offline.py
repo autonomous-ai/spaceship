@@ -176,7 +176,7 @@ class Parts(unittest.TestCase):
         self.assertEqual((ps1[1], ps1[2]), ("ps_kit", "24 V DC"))
         self.assertLessEqual(EP.KIT_PEAK_W, EP.KIT_CAP_W)
         self.assertAlmostEqual(EP.KIT_CAP_W, 0.8 * ps1[3])
-        self.assertEqual(EP.P["ps_kit"]["sku"], "CLG-100-24")
+        self.assertTrue(EP.P["ps_kit"]["sku"].startswith("CLG-100-24"), EP.P["ps_kit"]["sku"])
         self.assertEqual([s[0] for s in EP.SUPPLIES], ["PS1", "PS2", "PS3"])     # PS4 is gone (D-168)
         w30 = [h for h in EP.harnesses(M.values()) if h["id"].startswith("W30")]
         self.assertTrue(w30 and all(h.get("parallel", 1) == 2 and "16 AWG" in h["cable"] for h in w30))
@@ -212,13 +212,40 @@ class Parts(unittest.TestCase):
         self.assertEqual(EP.P["plug6"]["qty_per_parent"], ends.count("Mini-Fit Jr 6-way plug"))
         self.assertEqual(EP.P["rec10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way receptacle"))
         self.assertEqual(EP.P["plug10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way plug"))
-        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 10 * EP.P["rec10"]["qty_per_parent"]
-        m = 2 * EP.P["plug2"]["qty_per_parent"] + 6 * EP.P["plug6"]["qty_per_parent"] + 10 * EP.P["plug10"]["qty_per_parent"]
+        # the 10-way housings carry the air feed's 4 cores (18 AWG) and the hub link's 6 (24 AWG, the 22-28 AWG terminal)
+        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 4 * EP.P["rec10"]["qty_per_parent"]
+        m = 2 * EP.P["plug2"]["qty_per_parent"] + 6 * EP.P["plug6"]["qty_per_parent"] + 4 * EP.P["plug10"]["qty_per_parent"]
         self.assertEqual(EP.P["term_f"]["qty_per_parent"], f)
         self.assertEqual(EP.P["term_m"]["qty_per_parent"], m)
+        self.assertEqual(EP.P["term_f24"]["qty_per_parent"], 6 * EP.P["rec10"]["qty_per_parent"])
+        self.assertEqual(EP.P["term_m24"]["qty_per_parent"], 6 * EP.P["plug10"]["qty_per_parent"])
         # the 4-way housings carry the kit's 16 AWG feeds: their own terminals (the cap housing has none)
         self.assertEqual(EP.P["term_f16"]["qty_per_parent"], 4 * EP.P["rec4"]["qty_per_parent"])
         self.assertEqual(EP.P["term_m16"]["qty_per_parent"], 4 * (EP.P["plug4"]["qty_per_parent"] - 1))
+
+
+class Bought(unittest.TestCase):
+    def test_every_bought_line_named_or_held_with_its_reason(self):
+        """The Lead's task of 2026-11-01: each bought line names its product from its own datasheet (maker, part
+        number, a link), or stays HOLD with its own reason, never the bare HOLD; the joints register's hardware
+        (83xxxx) is the register's to name (D-63)."""
+        import re
+        for p in EP.P.values():
+            pn = p["part_number"]
+            if p["kind"] != "PI" or pn.startswith("83"):
+                continue
+            if p["status"] == EP.NAMED_BUY:
+                tag = EP.PRODUCTS[pn][0]
+                self.assertTrue(p["maker"] and p["sku"] and "http" in p["source"], pn)
+                self.assertTrue(p["name"].endswith(" - " + tag), pn)
+                self.assertIsNone(re.search(r"\bHOLD\b", p["name"] + " " + p["status"]), pn)
+            else:
+                self.assertTrue(p["status"].startswith("HOLD (") and p["status"] != EP.HOLD_BUY, (pn, p["status"]))
+
+    def test_no_bought_number_both_named_and_held(self):
+        self.assertEqual(set(EP.PRODUCTS) & set(EP.HOLDS), set())
+        self.assertEqual(set(EP.PRODUCTS) | set(EP.HOLDS), {p["part_number"] for p in EP.P.values()} & (
+            set(EP.PRODUCTS) | set(EP.HOLDS)), "a product or hold names a number the parts list doesn't have")
 
 
 class Ties(unittest.TestCase):
