@@ -40,10 +40,14 @@ def test_every_source_label_and_input_name_written_once():
     assert repeated_keys(here, "P") == []
 
 
-def test_a_repeated_label_is_found(tmp_path):
-    f = tmp_path / "x.py"
-    f.write_text('SOURCES = {\n    "S51": ("a", "b"),\n    "S50": ("c", "d"),\n    "S51": ("e", "f"),\n}\n')
-    assert repeated_keys(str(f), "SOURCES") == ["S51"]
+def test_a_repeated_label_is_found():
+    """No pytest fixture: the README runs this file as a script, which calls each test with no arguments."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        f = os.path.join(tmp, "x.py")
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write('SOURCES = {\n    "S51": ("a", "b"),\n    "S50": ("c", "d"),\n    "S51": ("e", "f"),\n}\n')
+        assert repeated_keys(f, "SOURCES") == ["S51"]
 
 
 def test_nested_override_keeps_outer_values():
