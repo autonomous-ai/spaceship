@@ -132,6 +132,33 @@ class LayoutTests(unittest.TestCase):
         symbol = (560.0, 35.0, 589.0, 45.0)                    # step_dims draws it there
         self.assertGreater(gap(notes, symbol), 0)
 
+    def test_a_notes_picture_taller_than_its_box_is_refused(self):
+        # 2026-11-01: the D-132 note made the picture 115.7 mm tall, past the 110 the layout
+        # test had kept for it, and nothing checked; step_notes now measures the PNG first
+        import struct
+        import tempfile
+        ns = load_layout(full=True)
+
+        def png(w, h):
+            fd, path = tempfile.mkstemp(suffix=".png")
+            with os.fdopen(fd, "wb") as fh:
+                fh.write(b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", w, h))
+            self.addCleanup(os.remove, path)
+            return path
+
+        self.assertAlmostEqual(ns["png_height_mm"](png(3308, 1367), 280.0), 115.7, places=1)
+        placed = []
+        ns["insert_image"] = lambda *a: placed.append(a) or 1.0
+        x, y = ns["NOTES_AT"]
+        ns["ARGS"].update(notes_px=str(x), notes_py=str(y))
+        ns["ARGS"]["notes_png"] = png(1000, 600)                  # 168 mm tall at 280 wide
+        with self.assertRaises(RuntimeError):
+            ns["step_notes"](None)
+        self.assertEqual(placed, [])
+        ns["ARGS"]["notes_png"] = png(3308, 1367)                 # 115.7 mm: fits
+        ns["step_notes"](None)
+        self.assertEqual(len(placed), 1)
+
     def test_overall_sizes_are_measured_between_the_true_extremes(self):
         # live 2026-10-31: the end point nearest a corner of the extent gave 2390 for 2400
         # and 1602 for 1700 on the faceted front; now the extreme end points, checked

@@ -39,6 +39,7 @@ block fields can't be set by script (a person fills them: DWG No.
 100000-GA, Rev. P04, DRAFT, scale 1:20, units mm).
 """
 
+import struct
 import time
 
 import adsk
@@ -69,11 +70,13 @@ LAYOUT = [
 
 # General notes (sheet_notes.py, PR #67): the text file next to this script,
 # rendered at 3.5 mm capitals (ISO 3098 for A1) and 280 mm wide; its lower-left
-# corner here, in sheet mm. 102.6 mm tall as rendered on 2026-10-31.
+# corner here, in sheet mm. 115.7 mm tall as rendered on 2026-11-01 (with the D-132 note;
+# 102.6 on 2026-10-31); step_notes refuses a picture taller than NOTES_MAX_HEIGHT, the box
+# the layout test keeps clear of the views, the title block and the symbol.
 NOTES_AT = (340.0, 90.0)
 NOTES_WIDTH = 280.0
 NOTES_TEXT_MM = 3.5
-NOTES_MAX_HEIGHT = 110.0     # assumption: room kept for the text to grow a little
+NOTES_MAX_HEIGHT = 130.0     # assumption: room kept for the text to grow a little
 
 # ISO first-angle symbol (ISO 128-30 / ISO 5456-2), left of the title block, in sheet mm:
 # the truncated cone seen from the side (small end 5, big end 10, 10 long), then the
@@ -253,9 +256,24 @@ def step_symbol(sheet: "adsk.drawing.Sheet"):
     print("projection symbol: outline and circles in two sketches, at %s" % (SYMBOL_SIDES[0][0],))
 
 
+def png_height_mm(path, width_mm):
+    """Height in mm of a PNG placed width_mm wide (its IHDR width and height in pixels)."""
+    with open(path, "rb") as fh:
+        head = fh.read(24)
+    if head[:8] != b"\x89PNG\r\n\x1a\n":
+        raise RuntimeError("%s is not a PNG" % path)
+    w, h = struct.unpack(">II", head[16:24])
+    return width_mm * h / w
+
+
 def step_notes(sheet: "adsk.drawing.Sheet"):
     """The general notes, rendered outside Fusion from the text file next to this
     drawing (tools/fusion/sheet_notes.py --render-only) and placed as an image."""
+    # the picture's height at NOTES_WIDTH, from its PNG header, must fit the box the layout test checks
+    tall = png_height_mm(ARGS["notes_png"], NOTES_WIDTH)
+    if tall > NOTES_MAX_HEIGHT:
+        raise RuntimeError("the notes would be %.1f mm tall, more than the %g mm kept for them; nothing placed"
+                           % (tall, NOTES_MAX_HEIGHT))
     # the shared helper scales the picture to its real width (it comes in 58.02 mm wide)
     scale = insert_image(sheet, ARGS["notes_png"], float(ARGS["notes_px"]), float(ARGS["notes_py"]), NOTES_WIDTH)
     asked = ARGS.get("notes_scale")

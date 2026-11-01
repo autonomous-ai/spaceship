@@ -3,8 +3,8 @@
 
 2. Shown: skeleton 100000 P04 (DRAFT), envelope bodies only. Panel, lining, band and front sizes are the skeleton's named parameters; parts take them by Derive. Hardware, frames and seals are on the assembly and part drawings.
 
-3. Overall 2500 x 1700 x 2400 (D-01, D-21: 2400 = room floor to roof skin top). Walls and ceiling 84 deep (ACP 3 + bond 3 + frame 40 + gap 4 + cassette 34). Seams 2.26 (metal stop), closing seams B1-B2, B3-B4, C1-C2 frame gap 5.5. Floor: 3 mm mat under the 9 mm ply (D-72), floor top Z 12; threshold 13.
+3. Overall 2500 x 1700 x 2400 (D-01, D-21: 2400 = room floor to roof skin top). Walls and ceiling 84 deep (ACP 3 + bond 3 + frame 40 + gap 4 + cassette 34). Seams 2.26 (metal stop), closing seams B1-B2, B3-B4, C1-C2 frame gap 5.5. No floor and no threshold (D-132): people stand on the room floor, Z 0; the door's kick strip runs from the band's bottom line, Z 10, to the door's bottom edge, Z 105.
 
 4. Sections A-A (through the door, seen from the left) and B-B (mid depth, seen from the front) are GA sheets 2 and 3, drawn from cut copies of the skeleton.
 
-5. Status: DRAFT, not for production. Title block fields are filled by hand (DWG No. 100000-GA, Rev. P04, scale 1:20).
+5. Status: DRAFT, not for production. Scale 1:20 (the isometric view smaller, for orientation only). The title block is filled from the drawing's file name and the master BOM; Created by: Autonomous (D-140).
