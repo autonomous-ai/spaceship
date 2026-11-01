@@ -285,6 +285,22 @@ def test_clash_check_catches_a_line_through_text():
     assert not any("H09" in w for w in found), found
 
 
+def test_notes_name_no_maker():
+    """The Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as its maker; the
+    title block's CREATED BY Autonomous is the one place a maker is named. The read-back fails any other."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "maker")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.text(300, 280, "CREATED BY", 2.0)
+    sh.text(300, 276, "Autonomous", 2.5)
+    sh.text(30, 100, "Source: the STEP. Made by tools/drawgen (D-112) from that STEP.", 2.5)
+    sh.text(30, 90, "From that STEP: regenerate it, never edit the PDF.", 2.5)
+    sh.save(os.path.join(d, "m.pdf"))
+    found = readback.note_makers(fitz.open(os.path.join(d, "m.pdf")))
+    assert found == [(1, "Made by tools/drawgen")], found
+
+
 def test_long_tube_keeps_its_scale():
     """111103 is 2420 long: beside the default table column only 1:10 fits (the 40 mm tube 4 mm on paper); a
     narrower column keeps 1:5, the tables still end above the title block, and it reads back with B where the
