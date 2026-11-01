@@ -618,8 +618,13 @@ def prim_point(p, t):
     if p.kind == "arc":
         a = p.a0 + t * (p.a1 - p.a0)
         return (p.c[0] + p.r * math.cos(a), p.c[1] + p.r * math.sin(a)), (-math.sin(a), math.cos(a))
-    q0, q1 = bez(p.pts, max(0.0, t - 0.01)), bez(p.pts, min(1.0, t + 0.01))
-    return bez(p.pts, t), (q1[0] - q0[0], q1[1] - q0[1])
+    # a chain of cubic pieces (project._bezier_pieces), as the sheet draws it, piece by piece: t runs along the
+    # pieces (one curve of high degree through all their control points isn't the drawn line: BASE's 110104)
+    n = max(1, (len(p.pts) - 1) // 3)
+    k = min(n - 1, int(t * n))
+    seg, u = p.pts[3 * k:3 * k + 4], t * n - k
+    q0, q1 = bez(seg, max(0.0, u - 0.01)), bez(seg, min(1.0, u + 0.01))
+    return bez(seg, u), (q1[0] - q0[0], q1[1] - q0[1])
 
 
 def seg_dist(p, a, b):
@@ -643,7 +648,7 @@ def prim_dist(pt, p):
             return abs(math.dist(pt, p.c) - p.r)
         ends = [(p.c[0] + p.r * math.cos(x), p.c[1] + p.r * math.sin(x)) for x in (p.a0, p.a1)]
         return min(math.dist(pt, e) for e in ends)
-    pts = [bez(p.pts, k / 16.0) for k in range(17)]
+    pts = [bez(p.pts[3 * j:3 * j + 4], k / 16.0) for j in range(max(1, (len(p.pts) - 1) // 3)) for k in range(17)]
     return min(seg_dist(pt, a, b) for a, b in zip(pts, pts[1:]))
 
 
@@ -1107,7 +1112,7 @@ class Side:
 
 def _prim_points(p):
     """Points on a primitive (view mm): a line's ends, an arc's ends and the quadrant points it passes, points along
-    a curve."""
+    a curve, piece by piece as the sheet draws it (BASE's fix for 110104)."""
     if p.kind == "line":
         return [p.p, p.q]
     if p.kind == "arc":
@@ -1117,7 +1122,7 @@ def _prim_points(p):
             angs.append(k * math.pi / 2)
             k += 1
         return [(p.c[0] + p.r * math.cos(a), p.c[1] + p.r * math.sin(a)) for a in angs]
-    return [bez(p.pts, i / 16.0) for i in range(17)]
+    return [bez(p.pts[3 * j:3 * j + 4], i / 16.0) for j in range(max(1, (len(p.pts) - 1) // 3)) for i in range(17)]
 
 
 def pod_axis(d):
