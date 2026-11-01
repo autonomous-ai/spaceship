@@ -422,10 +422,39 @@ def test_what_decisions_cancelled_is_gone_and_what_they_added_is_there(tmp_path)
     assert got[("cancelled-by-decision", "111401")].owner == "BASE" and "D-132" in got[("cancelled-by-decision", "111401")].message
     assert got[("cancelled-by-decision", "118003")].owner == "FRONT"                 # the skeleton's cleat isn't a part
     req = [f for f in got.values() if f.rule == "required-by-decision"]
-    assert len(req) == 1 and req[0].owner == "BASE" and "seal lip" in req[0].message
-    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT")])
+    assert all(f.owner == "BASE" for f in req) and any("seal lip" in f.message for f in req)
+    made = [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT"),
+            dict(row, part_number="111602", name="BASE - LEVELLING GLIDE - M10 - D40"),
+            dict(row, part_number="111111", name="BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + made)
     got = c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
-    assert got == []                                                       # floor parts gone, the lip there
+    assert got == []                                       # floor parts gone; the lip, the made glide and cap there
+
+
+def test_d164_d165_cancel_the_bought_glide_and_cap_not_the_made_ones(tmp_path):
+    import shutil
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    for n in ("cancelled-items.csv", "required-items.csv"):
+        shutil.copy(os.path.join(ROOT, "v2/04-Checks/config", n), cfg / n)
+    d = tmp_path / "v2/03-Manufacturing/base"
+    d.mkdir(parents=True)
+    row = {"part_number": "118101", "name": "BASE - SEAL LIP - SOFT", "name_vi": "x", "material": "EPDM",
+           "finish": "black", "qty": "1", "mass_kg": "1", "status": "DRAFT", "source": "CAD"}
+    bought = [row, dict(row, part_number="118002", name="BASE - LEVELLING GLIDE - M10 - HOLD"),
+              dict(row, part_number="118003", name="BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", bought)
+    got = {(f.rule, f.subject): f for f in c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})}
+    assert {k for k in got if k[0] == "cancelled-by-decision"} == {("cancelled-by-decision", "118002"),
+                                                                   ("cancelled-by-decision", "118003")}
+    assert "D-164" in got[("cancelled-by-decision", "118002")].message and \
+        "D-165" in got[("cancelled-by-decision", "118003")].message
+    assert sorted(f.message.split(" requires")[0] for f in got.values() if f.rule == "required-by-decision") == \
+        ["D-164", "D-165"]
+    made = [row, dict(row, part_number="111602", name="BASE - LEVELLING GLIDE - M10 - D40"),
+            dict(row, part_number="111111", name="BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", made)
+    assert c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {}) == []
 
 
 def test_repo_pod_mass_from_the_newest_list_without_double_counting():

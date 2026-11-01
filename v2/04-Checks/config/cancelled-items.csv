@@ -2,3 +2,5 @@ pattern,decision,what
 "\bCLEATS?\b",D-131,"cleats: the wall, ceiling and decor-core frames are welded galvanized steel, and D-117's cleats are cancelled"
 "\bFLOOR\W+(?:PANEL|FOAM|UNDERLAY|PAD)\b",D-132,"floor parts: the pod has no floor, people stand on the room floor"
 "\bTHRESHOLD\b",D-132,"the 13 mm threshold: there is no step at the door"
+"\bLEVELLING GLIDE\W+M10\W+HOLD\b",D-164,"the bought levelling glide 118002: BASE's glide is made, 111602, BASE - LEVELLING GLIDE - M10 - D40"
+"\bTUBE END CAP\W+100 X 40\b",D-165,"the bought tube end cap 118003: BASE's cap is made, 111111, BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK"
