@@ -197,7 +197,7 @@ POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right"
 class Part:
     """Everything one drawing needs, read from the sources."""
 
-    def __init__(self, pn, team, step=None, pod_system=True, row=None):
+    def __init__(self, pn, team, step=None, pod_system=True, row=None, bent=None):
         self.pn = pn
         self.team = team
         self.step = step or inputs.own_step(pn)
@@ -245,7 +245,7 @@ class Part:
         self.features = []
         for b in self.bodies:
             hs, ss = geom.features(b)
-            bad = geom.unexplained_curved_faces(b, hs, ss)
+            bad = [] if bent else geom.unexplained_curved_faces(b, hs, ss)
             if bad:
                 raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (
                     pn, b.name, ", ".join(sorted({"%s r%s" % (k, fmt(r)) if r else k for k, r in bad}))))
@@ -257,13 +257,20 @@ class Part:
                 ft = Feature(s, s.kind)
                 ft.body = b
                 self.features.append(ft)
-        why = folded_or_bent(self)
-        if why:
-            raise NotDrawable("%s is %s: bent and folded parts stay with Fusion (D-113)" % (pn, why))
+        self.flat = None
+        if bent:
+            # bent or folded sheet drawn from its STEP and its team's DXF (the Lead's ruling, 2026-11-01): the folds
+            # read from the model, the flat pattern from the DXF, matched bend for bend (sheetmetal)
+            self.flat = bent_flat(self, team, bent)
+        else:
+            why = folded_or_bent(self)
+            if why:
+                raise NotDrawable("%s is %s: bent and folded parts stay with Fusion (D-113); an entry marked bent draws "
+                                  "them from the STEP and the DXF" % (pn, why))
         # flat faces: a straight member's notches, chamfers and welded end plates; any other flat feature (a step, a
         # pocket, an uneven chamfer) would be drawn without a size, so the part is refused
         self.notches, self.chamfers, self.plates = [], [], []
-        for b in self.bodies:
+        for b in ([] if self.flat else self.bodies):
             lax = geom.member_axis(b)
             if lax is not None and not plain_section(b, lax):
                 raise NotDrawable("%s body %s is a profile whose section isn't a plain rectangle or rectangular tube: its "
@@ -355,6 +362,204 @@ class Part:
 
 EXTRUDED_WORDS = re.compile(r"\bextru(?:ded|sion|sions)\b", re.I)
 BENT_WORDS = re.compile(r"\b(?:bend|bends|bent|fold|folds|folded|brake|v-groove|groove and fold|press brake)\b", re.I)
+
+
+def profile_section(part, r, v, kept, letters):
+    """A bent part's profile: the section across one run of bends, at the largest ISO scale (5:1 down) at which it
+    fits 120 mm with its shortest flange 8 or more on paper; a long run (a tray's base) is windowed to its start end,
+    up to 20 into its longest flange, and the title says the other end is the same when the run is symmetric. A
+    window the same as one already drawn adds nothing (that section reads typical)."""
+    ch = r.chain
+    P3 = lambda q: vadd(vadd(vmul(ch.u, q[0]), vmul(ch.v, q[1])), vmul(ch.axis, vdot(r.point, ch.axis)))
+    marks = [ch.start] + [f.outer_pt for f in ch.folds]
+    shortest = min(L for L, _d in ch.flanges)
+    longest = max(range(len(ch.flanges)), key=lambda i: ch.flanges[i][0])
+    loops = [face_loops(f, v) for f in cut_faces(kept, r.point, r.n)]
+    prims = [p for lp in loops for p in lp]
+    e = project.extent(prims)
+    size = max(e[2] - e[0], e[3] - e[1])
+    scales = (5.0, 2.0, 1.0, 0.5, 0.2, 0.1)
+    s_full = next((s_ for s_ in scales if size * s_ <= 120.0 and shortest * s_ >= 8.0), None)
+    window = None
+    shown = list(range(len(ch.flanges)))
+    if s_full is None:
+        # its start end: the flanges before the longest, and 20 into the longest
+        d = ch.flanges[longest][1]
+        stop = marks[longest]
+        stop = (stop[0] + d[0] * 20.0, stop[1] + d[1] * 20.0)
+        pts = [v.to2d(P3(q)) for q in ch.skins["A"][:1] + ch.skins["B"][:1] + marks[1:longest + 1] + [stop]]
+        pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds[:longest]]
+        window = (min(q[0] for q in pts) - 3.0, max(q[0] for q in pts) + 3.0,
+                  min(q[1] for q in pts) - 3.0, max(q[1] for q in pts) + 3.0)
+        shown = list(range(longest))
+        sym = [round(L, 3) for L, _d in ch.flanges] == [round(L, 3) for L, _d in ch.flanges][::-1] and \
+            [round(f.angle, 3) for f in ch.folds] == [round(f.angle, 3) for f in ch.folds][::-1]
+        if not sym:
+            raise NotDrawable("%s: a long run of bends whose two ends differ isn't drawn yet" % part.pn)
+        key = tuple(round(ch.flanges[i][0], 3) for i in shown) + tuple(round(f.angle, 3) for f in ch.folds[:longest])
+        prev = getattr(part, "_profile_keys", {})
+        if key in prev:
+            prev[key].typical = True
+            return None
+        kept = geom.window_keep(kept, v, *window)
+        loops = [face_loops(f, v) for f in cut_faces(kept, r.point, r.n)]
+        prims = [p for lp in loops for p in lp]
+        for p_ in prims:
+            if p_.kind == "line" and all(min(abs(q[0] - window[0]), abs(q[0] - window[1])) < 1e-4 or
+                                         min(abs(q[1] - window[2]), abs(q[1] - window[3])) < 1e-4 for q in (p_.p, p_.q)):
+                p_.src = "boundary"
+        e = project.extent(prims)
+        size = max(e[2] - e[0], e[3] - e[1])
+        s_full = next((s_ for s_ in scales if size * s_ <= 120.0 and min(ch.flanges[i][0] for i in shown) * s_ >= 8.0),
+                      None) or next((s_ for s_ in scales if size * s_ <= 120.0), 1.0)
+    for i in shown:
+        d = ch.flanges[i][1]
+        d2 = v.to2d(vsub(P3((d[0], d[1])), P3((0.0, 0.0))))
+        if abs(d2[0]) > 1e-6 and abs(d2[1]) > 1e-6:
+            raise NotDrawable("%s: a flange at an angle to the views isn't sized yet" % part.pn)
+    vd = VD(v, prims, s_full, "removed")
+    vd.hatch = loops
+    vd.letter = next(letters)
+    vd.name = "removed"
+    vd.r = r
+    vd.profile = {"chain": ch, "shown": shown, "window": window, "P3": P3, "marks": marks + [None], "typical": False}
+    vd.typical = False
+    r.vd = vd
+    r.letter = vd.letter
+    if window:
+        part.__dict__.setdefault("_profile_keys", {})[tuple(round(ch.flanges[i][0], 3) for i in shown) +
+                                                     tuple(round(f.angle, 3) for f in ch.folds[:longest])] = vd
+    return vd
+
+
+def flat_view(part):
+    """The flat pattern as the team's DXF draws it, in its own x and y: the cut outline thick, the bend lines thin
+    chain (ISO 128-20 type 05), the bend zones' edges thin; at the largest ISO scale (1:1 down) that fits 200 mm."""
+    import sheetmetal
+    dx = part.flat.dxf
+    prims = []
+    for lay, a, b in dx.lines:
+        role = dx.role(lay)
+        if role in ("cut", "bend", "zone"):
+            pr = project.Prim("line", True, p=a, q=b)
+            pr.src = {"cut": "sharp", "bend": "bend", "zone": "zone"}[role]
+            prims.append(pr)
+    for lay, c, rad, a0, a1 in dx.arcs:
+        if dx.role(lay) == "cut":
+            a0r, a1r = math.radians(a0), math.radians(a1)
+            if a1r <= a0r:
+                a1r += 2 * math.pi
+            pr = project.Prim("arc", True, c=c, r=rad, a0=a0r, a1=a1r)
+            pr.src = "sharp"
+            prims.append(pr)
+    for lay, c, rad in dx.circles:
+        if dx.role(lay) == "cut":
+            pr = project.Prim("arc", True, c=c, r=rad, a0=0.0, a1=2 * math.pi)
+            pr.src = "sharp"
+            prims.append(pr)
+    for lay, deg, kn, ctrl in dx.splines:
+        if dx.role(lay) != "cut":
+            continue
+        segs = sheetmetal.spline_beziers(deg, kn, ctrl)
+        if segs is None:
+            raise NotDrawable("%s: its DXF has a spline of degree %d, which isn't drawn yet" % (part.pn, deg))
+        for sg in segs:
+            pr = project.Prim("bezier", True, pts=list(sg))
+            pr.src = "sharp"
+            prims.append(pr)
+    e = project.extent(prims)
+    size = max(e[2] - e[0], e[3] - e[1])
+    fs = next((s_ for s_ in (1.0, 0.5, 0.2, 0.1, 0.05) if size * s_ <= 200.0), 0.05)
+    vd = VD(View("flat", (0.0, 0.0, 1.0), (1.0, 0.0, 0.0)), prims, fs, "flat")
+    vd.name = "flat"
+    return vd
+
+
+def profile_dims(sh, vd):
+    """A bent part's profile: each flange shown whole sized outside (from the free edge or a fold's outside sharp to
+    the next), on its outer side, horizontal or vertical as it runs in the view (ISO 129-1)."""
+    pr = vd.profile
+    ch, P3 = pr["chain"], pr["P3"]
+    marks = [ch.start] + [f.outer_pt for f in ch.folds]
+    end = ((ch.skins["A"][-1][0] + ch.skins["B"][-1][0]) / 2, (ch.skins["A"][-1][1] + ch.skins["B"][-1][1]) / 2)
+    marks.append(end)
+    bx = vd.box()
+    cx, cy = (bx[0] + bx[2]) / 2, (bx[1] + bx[3]) / 2
+    used = {}
+    for i in pr["shown"]:
+        a, b = vd.S(vd.view.to2d(P3(marks[i]))), vd.S(vd.view.to2d(P3(marks[i + 1])))
+        d = ch.flanges[i][1]
+        d2 = vd.view.to2d(vsub(P3((d[0], d[1])), P3((0.0, 0.0))))
+        if abs(d2[0]) > abs(d2[1]):         # the flange runs across the view: sized along x, beside it
+            side = "down" if (a[1] + b[1]) / 2 <= cy else "up"
+        else:
+            side = "left" if (a[0] + b[0]) / 2 <= cx else "right"
+        gap = 6.0 + 8.0 * used.get(side, 0)
+        used[side] = used.get(side, 0) + 1
+        sh.dim_linear(a, b, side, gap, fmt(ch.flanges[i][0]), 2.5)
+
+
+def flat_dims(sh, part, fv):
+    """The flat pattern's overall size, and each bend line's tag by its end (outside the outline where clear)."""
+    x0, y0, x1, y1 = fv.box()
+    box = part.flat.dxf.cut_box()
+    sh.dim_linear((x0, y0), (x1, y0), "down", 8.0, fmt(box[2] - box[0]), 2.5)
+    sh.dim_linear((x0, y0), (x0, y1), "left", 8.0, fmt(box[3] - box[1]), 2.5)
+    for row in part.flat.rows:
+        a, b = row["line"]
+        pa, pb = fv.S(a), fv.S(b)
+        d = (pb[0] - pa[0], pb[1] - pa[1])
+        L = math.hypot(*d) or 1.0
+        u = (d[0] / L, d[1] / L)
+        cands = []
+        for end, sg in ((pb, 1.0), (pa, -1.0)):
+            for k in (2.0, 4.0, 7.0):
+                q = (end[0] + u[0] * sg * k, end[1] + u[1] * sg * k)
+                an = "left" if u[0] * sg > 0.5 else ("right" if u[0] * sg < -0.5 else "center")
+                cands.append((q[0], q[1] - 1.25, an))
+        pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), cands[0])
+        sh.text(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
+        row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
+
+
+def flat_data(part, pl):
+    """A bent part's flat pattern as the sheet gives it, for the read-back: its DXF, the K-factor and radius, the
+    chains' outside flange lengths, fold angles and thickness, each bend's row, and where the flat view sits."""
+    fl = getattr(part, "flat", None)
+    if not fl:
+        return None
+    fv = (getattr(pl, "flats", None) or [None])[0]
+    return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
+            "chains": [{"t": ch.t, "flanges": [L for L, _d in ch.flanges], "angles": [f.angle for f in ch.folds],
+                        "radii": [f.r for f in ch.folds], "dxf_axis": m["dxf_axis"], "reversed": m["reversed"]}
+                       for ch, m in zip(fl.chains, fl.matches)],
+            "rows": [{"tag": r_["tag"], "axis": r_["axis"], "at": r_["at"], "dir": r_["dir"], "angle": r_["angle"],
+                      "r": r_["r"], "printed_at": r_.get("printed_at")} for r_ in fl.rows],
+            "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None}
+
+
+def bent_flat(part, team, bent):
+    """A bent part's fold chains matched to its team's DXF (sheetmetal.analyse), or NotDrawable with the reason."""
+    import glob as _glob
+    import sheetmetal
+    if len(part.bodies) != 1:
+        raise NotDrawable("%s: a bent part of %d bodies isn't drawn yet" % (part.pn, len(part.bodies)))
+    b = part.bodies[0]
+    dxfs = sorted(_glob.glob(os.path.join(inputs.MANUF, team, "%s_*_DXF.dxf" % part.pn)))
+    if not dxfs:
+        raise NotDrawable("%s: a bent part needs its flat pattern's DXF in v2/03-Manufacturing/%s" % (part.pn, team))
+    cfg = bent if isinstance(bent, dict) else {}
+    holes = [ft.f for ft in part.features if ft.body is b and ft.kind == "hole"]
+    slots = [ft.f for ft in part.features if ft.body is b and ft.kind != "hole"]
+    try:
+        fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes)
+    except ValueError as e:
+        raise NotDrawable("%s: %s" % (part.pn, e))
+    odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots)
+    if odd:
+        raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (part.pn, b.name, ", ".join(odd[:3])))
+    fl.path = dxfs[0]
+    return fl
 
 
 def folded_or_bent(part):
@@ -839,6 +1044,19 @@ def plan_views(part, spec):
         r.n = n
         r.y = y
         pl.removed.append(r)
+    # a bent part: a section across each run of bends (its profile), seen as the related view along the bend lines
+    # sees it, so each flange's outside length is sized where it shows true
+    for ch in (part.flat.chains if getattr(part, "flat", None) else []):
+        vn = next((v for v in rel.values() if abs(abs(vdot(v.n, ch.axis)) - 1) < 1e-6), None)
+        if vn is None:
+            raise NotDrawable("%s: no related view looks along its bend lines (%s)" % (part.pn, ch.axis))
+        b = part.bodies[0]
+        sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(q))), ch.axis) for q in geom._vertices_of(b.shape)]
+        r = Plan()
+        r.feats, r.all, r.body, r.chain = [], [], b, ch
+        r.n, r.y = vn.n, vn.y
+        r.point = vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 - vdot(b.centroid, ch.axis)))
+        pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
     if not pl.removed and part.size[k] < 6.0 and len(part.bodies) == 1:
@@ -1023,6 +1241,12 @@ def draw(part, spec, out_path, today=None):
         x = vcross(r.y, r.n)
         v = View("removed", r.n, x, r.y)
         kept = geom.half_space_keep(r.body.shape, r.point, r.n)
+        if getattr(r, "chain", None) is not None:
+            vd = profile_section(part, r, v, kept, letters)
+            if vd is None:
+                continue                # the same as a section already drawn: its title says typical
+            removed.append(vd)
+            continue
         loops = [face_loops(f, v) for f in cut_faces(kept, r.point, r.n)]
         prims = [p for lp in loops for p in lp]
         rs = None
@@ -1173,7 +1397,8 @@ def draw(part, spec, out_path, today=None):
     if any(id(nt) not in sized for nt in part.notches):
         raise NotDrawable("%s: a notch no drawn view sizes" % part.pn)
     pl.details = details
-    place = removed + auxs + details
+    flats = [flat_view(part)] if getattr(part, "flat", None) else []
+    place = removed + auxs + details + flats
     # removed sections and details: a column between the views and the tables when it is wide enough, else a row
     # under the views
     mid_x0 = main_right + GAP + 18
@@ -1219,6 +1444,10 @@ def draw(part, spec, out_path, today=None):
             d = None if p.vis else DASH_HID
             if p.src == "boundary":
                 w = W_THIN
+            elif p.src == "bend":       # ISO 128-20 type 05, thin: a bend line in a flat pattern
+                w, d = W_THIN, (12.0, 1.5, 1.0, 1.5, 1.0, 1.5)
+            elif p.src == "zone":       # a bend zone's edge, thin
+                w, d = W_THIN, None
             if p.kind == "line":
                 sh.line(vd.S(p.p), vd.S(p.q), w, d)
             elif p.kind == "arc":
@@ -1248,9 +1477,10 @@ def draw(part, spec, out_path, today=None):
                         sh.line(vd.S(p.p), vd.S(p.q), W_VIS)
                     elif p.kind == "arc":
                         sh.arc(vd.S(p.c), p.r * vd.scale, p.a0, p.a1, W_VIS)
-    for vd in list(vds.values()) + secs + removed + details:
+    for vd in list(vds.values()) + secs + removed + details + flats:
         draw_prims(vd)
         sh.add_obstacles(outline_segments(vd))
+    pl.flats = flats
     sh.flush()
 
     # ---- marks, tags, origins: placed after the dimensions and titles (annotate calls pl.place_marks), lines
@@ -1759,6 +1989,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     # ---- removed sections: the hole axis and the profile size (each wall's hole is sized after, clear of these)
     for vd in removed:
         r = vd.r
+        if getattr(vd, "profile", None):
+            profile_dims(sh, vd)
+            continue
         c = vd.S(vd.view.to2d(r.point))
         x0, y0, x1, y1 = vd.box()
         sh.centre_line((c[0], y0 - 4), (c[0], y1 + 4))
@@ -1774,7 +2007,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
     angle_texts = []
-    for b in part.bodies:
+    # a bent part's cut edges (its corner reliefs' 45° ends) come from its flat pattern, which the DXF defines
+    for b in ([] if getattr(part, "flat", None) else part.bodies):
         lk = max(range(3), key=lambda i: b.size[i])
         lax = geom.member_axis(b) or tuple(1.0 if i == lk else 0.0 for i in range(3))
         top_corners = {}        # view -> (view, extent, the mitre corners on its top edge)
@@ -2013,6 +2247,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     for nm, (nts, shown, enlarged) in getattr(pl, "notch_views", {}).items():
         vd = vds[nm].detail if enlarged else vds[nm]
         shown.drawn = {"view": vd, "texts": notch_dims(sh, vd, shown), "alike": [nt for nt in nts if nt is not shown]}
+    for fv in getattr(pl, "flats", []):
+        flat_dims(sh, part, fv)
     sh.flush()
     aux_arrows()
     chamfer_callouts(sh, part, pl, vds)
@@ -2111,9 +2347,23 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         title(dv, "DETAIL %s  %s" % (dv.letter, scale_text(dv.scale)),
               "of the %s%s; %s; origin %s" % (VIEW_WORDS.get(dv.parent_name, "view").lower(), where,
                                               mapping_words(dv.view, part.pod_system), dv.origin_name))
+    for fv in getattr(pl, "flats", []):
+        fv.title_drop = 14.0
+        title(fv, "FLAT PATTERN  %s" % scale_text(fv.scale),
+              "from %s, as its x and y draw it: the side it shows faces you; bend lines thin chain, B1 to B%d" % (
+                  os.path.basename(part.flat.path), len(part.flat.rows)),
+              extra="UP: the flange folds toward you")
     for vd in removed:
         tags = sorted({f.tag for s_ in vd.r.all for f in s_})
         vd.title_drop = 14.0
+        if getattr(vd, "profile", None):
+            pr = vd.profile
+            words = "across the bends, at the middle" + (
+                "; one end, the other end the same" if pr["window"] else "") + (
+                "; typical at every side" if getattr(vd, "typical", False) else "")
+            title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)), words,
+                  extra=mapping_words(vd.view, part.pod_system))
+            continue
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
               if vd.r.feats else "across the middle, showing the thickness",
@@ -2332,6 +2582,13 @@ def tables_height(sh, part, groups, tw):
                 "far wall, coaxial with H00-H00: hidden in the view from below, shown in section D-D, E-E; origin O0; "
                 "+X right, +Y up; drilled from this face"]
         total += sh.table_height(hole_cols(tw), rows, size=2.5, title=head, title_size=2.5) + 5.0
+    fl = getattr(part, "flat", None)
+    if fl:      # the bend table under the hole tables
+        cols = [("TAG", 14, "c"), ("L", 60, "l"), ("D", 24, "c"), ("A", 20, "r"), ("R", 30, "r"), ("B", tw - 148, "l")]
+        rows = [["B00", "x 0000.00 from the lower edge", "DOWN", "180°", "R00.00", "0000.000"] for _r in fl.rows]
+        total += sh.table_height(cols, rows, size=2.5, title=["BENDS", "UP: the flange folds toward the viewer of the "
+                                                                   "flat pattern as drawn; K-factor 0.000, inside radius from its entry"],
+                                 title_size=2.5) + 5.0
     return total
 
 
@@ -2416,6 +2673,23 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
         head = ["%s: %s" % (table_name(g), face_title(part, g)),
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
         y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
+    fl = getattr(part, "flat", None)
+    if fl:
+        bcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
+                 ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 148, "l")]
+        brows = []
+        for row in fl.rows:
+            ch = next(c for c in fl.chains if any(row["line"] is ln for m in fl.matches for ln in m["lines"]))
+            f = next(f for c, m in zip(fl.chains, fl.matches) for f, ln in zip(c.folds, m["lines"]) if ln is row["line"])
+            import sheetmetal
+            brows.append([row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
+                                                                    "left" if row["axis"] == "x" else "lower"),
+                          row["dir"], "%s°" % fmt(row["angle"]), "R%s" % fmt(row["r"]),
+                          fmt(sheetmetal.bend_allowance(f, row["r"], ch.t, fl.k), 3)])
+        head = ["BENDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
+                "UP: the flange folds toward the viewer of the flat pattern as drawn; K-factor %s, inside radius from %s"
+                % (fmt(fl.k, 3), fl.radius_from)]
+        y = sh.table(right_x0, y, bcols, brows, size=2.5, title=head, title_size=2.5) - 5.0
     return y, members
 
 
@@ -2476,6 +2750,16 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
             "THRU 1 WALL of the member" if hollow else "THRU the part",
             "Coaxial holes in two walls of one member are shown in section%s %s." % (
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
+    fl = getattr(part, "flat", None)
+    if fl:
+        import sheetmetal
+        rad = "R%s from %s" % (fmt(fl.radius), fl.radius_from)
+        notes.append("Bent from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the bend centre lines%s. "
+                     "Inside radius %s; K-factor %s (calculation: the DXF's bend lines and flat size against the "
+                     "model's flanges at that radius, every bend within 0.05). Flange lengths are outside sizes, to "
+                     "each fold's outside sharp; the bend table gives each bend's direction, angle and allowance." % (
+                         inputs.rel(fl.path), inputs.sha12(fl.path),
+                         ", its MARK lines the bend zones' edges" if fl.dxf.zone_lines() else "", rad, fmt(fl.k, 3)))
     if spec.get("tolerance"):
         notes.append("TOLERANCES (PROPOSED until the shop confirms; not ISO 2768): " + spec["tolerance"])
     src = "Source: %s (sha256 %s; declared unit %s, read in mm and checked against tools/checks/stepfile.py, " \
@@ -2567,7 +2851,7 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
-    part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row)
+    part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"))
     # rivet holes: an entry lists its rivet hole sizes with the rivet (BASE's D-130 boot: blind rivets in 3.3, 4.2
     # and about 5.0 holes, the tap drills' sizes too; the PM's ruling): those holes are no tap drills, and their
     # table rows name the rivet
@@ -2605,6 +2889,9 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
     if other:
         spec["_scale_more"] = " (view%s %s %s)" % ("s" if len(other) > 1 else "", ", ".join(vd.letter for vd in other),
                                                  scale_text(other[0].scale))
+    flats_ = [vd for vd in getattr(pl, "flats", []) if abs(vd.scale - scale) > 1e-9]
+    if flats_:
+        spec["_scale_more"] = spec.get("_scale_more", "") + " (flat pattern %s)" % scale_text(flats_[0].scale)
     annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
     ty, _members = tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
     tb_top = title_block(sh, part, spec, scale, removed, today, 1, 2)
@@ -2686,6 +2973,8 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
              "unit": part.unit}]
     if part.list_file:
         srcs.append({"role": "parts list", "path": inputs.rel(part.list_file), "sha256_12": inputs.sha12(part.list_file)})
+    if getattr(part, "flat", None):
+        srcs.append({"role": "flat pattern", "path": inputs.rel(part.flat.path), "sha256_12": inputs.sha12(part.flat.path)})
     for f in sorted({ft.reg["file"] for ft in part.features if ft.reg}):
         srcs.append({"role": "feature rationale", "path": f, "sha256_12": inputs.sha12(os.path.join(geom.REPO, f))})
     if spec.get("key_notes") and inputs.key_rows(part.pn):
@@ -2734,4 +3023,5 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                        if dat.get("C_plane") else None},
             "views": views, "features": feats, "notches": notches, "chamfers": chamfers,
             "angles": getattr(pl, "angle_marks", []),
-            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
+            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])],
+            "flat": flat_data(part, pl)}

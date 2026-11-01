@@ -468,6 +468,71 @@ def end_cut_fails(data, faces, texts, near=30.0):
     return [x for f in per_solid for x in f]
 
 
+def flat_fails(data, texts, page_text, tol=TOL):
+    """A bent part's flat pattern, against its DXF read again here (no OCC) and the model's flanges as the sheet
+    records them: every bend row on one of the DXF's BEND lines, as many rows as lines; each chain's bend lines where
+    its outside flange lengths, fold angles, the inside radius and the printed K-factor put them, and its flat as long
+    as the DXF's (so a DXF that doesn't fit the model, or a wrong K-factor, fails: the Lead's ruling); the flat's
+    overall size, the K-factor and every bend's tag printed."""
+    fl = data.get("flat")
+    if not fl:
+        return []
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    box = d.cut_box()
+    bends = d.bend_lines()
+    fails = []
+    if len(bends) != len(fl["rows"]):
+        fails.append("the bend table has %d rows, the DXF %d bend lines" % (len(fl["rows"]), len(bends)))
+    for row in fl["rows"]:
+        ax = 0 if row["axis"] == "x" else 1
+        at = box[ax] + row["at"]
+        if not any(abs(a[ax] - b[ax]) < 1e-6 and abs(a[ax] - at) < 0.01 for a, b in bends):
+            fails.append("bend %s (%s %s) is on no BEND line of the DXF" % (row["tag"], row["axis"], _fmtv(row["at"])))
+    k = fl["k"]
+    for ci, ch in enumerate(fl["chains"]):
+        t, fls, angs = ch["t"], ch["flanges"], ch["angles"]
+        radii = [r if r is not None else fl["r"] for r in ch["radii"]]
+        ossb = [(radii[i] + t) * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
+        ba = [math.radians(angs[i]) * (radii[i] + k * t) for i in range(len(angs))]
+        x, pos = 0.0, []
+        for i, L in enumerate(fls):
+            x += L - (ossb[i - 1] if i > 0 else 0.0) - (ossb[i] if i < len(angs) else 0.0)
+            if i < len(angs):
+                pos.append(x + ba[i] / 2)
+                x += ba[i]
+        ax = ch["dxf_axis"]
+        lines = [a[ax] for a, b in bends if abs(a[ax] - b[ax]) < 1e-6]
+        for p_ in pos:
+            want = (box[2 + ax] - p_) if ch["reversed"] else (box[ax] + p_)
+            if not any(abs(l_ - want) <= tol for l_ in lines):
+                fails.append("chain %d: the model's flanges at K %s and R%s put a bend line at %s %s; the DXF has none "
+                             "there" % (ci + 1, _fmtv(k), _fmtv(fl["r"]), "xy"[ax], _fmtv(want - box[ax])))
+        if abs(x - (box[2 + ax] - box[ax])) > tol:
+            fails.append("chain %d: the model's flat is %s long, the DXF's %s" % (ci + 1, _fmtv(x), _fmtv(box[2 + ax] - box[ax])))
+    v = fl.get("view")
+    if v:
+        for want in (_fmtv(box[2] - box[0]), _fmtv(box[3] - box[1])):
+            if not _text_near(texts, want, v["box"], pad=20.0):
+                fails.append("the flat's size %s is not printed by it" % want)
+    for row in fl["rows"]:
+        if row.get("printed_at") and not _text_near(texts, row["tag"], row["printed_at"], pad=2.5):
+            fails.append("bend %s's tag is not printed on its line" % row["tag"])
+    if ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
+        fails.append("the K-factor %s is not printed" % _fmt3(k))
+    return fails
+
+
+def _fmtv(v):
+    t = ("%.2f" % v).rstrip("0").rstrip(".")
+    return "0" if t in ("-0", "") else t
+
+
+def _fmt3(v):
+    t = ("%.3f" % v).rstrip("0").rstrip(".")
+    return t or "0"
+
+
 def _line_dist(p, a, d):
     v = sub(p, a)
     L = math.sqrt(dot(d, d)) or 1.0
@@ -720,6 +785,7 @@ def check(pdf_path, step_path=None, verbose=False):
         fails += open_slot_fails(data, faces, rows, tb)
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
     fails += end_cut_fails(data, faces, tb)
+    fails += flat_fails(data, tb, page.get_text())
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")

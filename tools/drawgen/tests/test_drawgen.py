@@ -369,6 +369,53 @@ def test_end_cuts_print_their_angles():
     assert words.count("300") == 1 and "30°" in words, words[:80]
 
 
+def test_bent_sheet_from_step_and_dxf():
+    """The Lead's ruling (2026-11-01): bent parts come from the generator. WALL's tray 511101 (radiused bends, two runs
+    of them) and INTERIOR's ledge 811101 (sharp folds, its inside radius from its entry) draw from main's STEP and DXF:
+    a profile section per run of bends, the flat pattern from the DXF, a bend table. The DXF's bend lines sit where the
+    model's flanges put them at one K-factor (0.44); the read-back fails the same sheet against a DXF whose bend line
+    moved 0.5 mm, and a DXF with a hole the model hasn't is refused."""
+    import sheetmetal
+    d = os.path.join(TMP, "bent")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "511101.pdf")
+    compose.make("511101", "wall", {"tolerance": "test", "bent": True}, p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    assert len(data["flat"]["rows"]) == 8 and abs(data["flat"]["k"] - 0.44) < 0.001, data["flat"]
+    assert all(r["dir"] == "UP" for r in data["flat"]["rows"]) and data["flat"]["r"] == 0.5, data["flat"]["rows"]
+    p2 = os.path.join(d, "811101.pdf")
+    compose.make("811101", "interior", {"tolerance": "test", "bent": {"radius": 1.5, "radius_why": "test"}}, p2)
+    doc = fitz.open(p2)
+    fails, _st = readback.check(p2)
+    assert not fails, fails
+    text = " ".join(doc[0].get_text().split())
+    assert "FLAT PATTERN" in text and "BENDS B1-B2" in text and "K-factor 0.44" in text, text[:400]
+    data2 = readback.read_data(doc)
+    src = os.path.join(readback.REPO, data2["flat"]["dxf"])
+    moved = os.path.join(d, "811101_moved_DXF.dxf")
+    with open(src) as fh:
+        dtext = fh.read()
+    assert dtext.count("271.0894") == 2
+    with open(moved, "w") as fh:
+        fh.write(dtext.replace("271.0894", "271.5894"))
+    data2["flat"]["dxf"] = moved
+    f2 = readback.flat_fails(data2, readback.text_boxes(doc[0], data2["sheet_h"]), doc[0].get_text())
+    assert any("on no BEND line" in x for x in f2) and any("put a bend line" in x for x in f2), f2
+    holed = os.path.join(d, "811101_holed_DXF.dxf")
+    with open(holed, "w") as fh:
+        assert dtext.count("ENTITIES\n") == 1
+        fh.write(dtext.replace("ENTITIES\n", "ENTITIES\n0\nCIRCLE\n8\nCUT\n10\n500.0\n20\n140.0\n40\n5.0\n", 1))
+    import geom
+    bodies, _u = geom.load_part(compose.find_step("811101", "interior"), "811101")
+    try:
+        sheetmetal.analyse(bodies[0], holed, radius=1.5, holes=[])
+        raise AssertionError("drew a flat with a hole the model hasn't")
+    except ValueError as e:
+        assert "its DXF has 1 holes, its model none" in str(e), str(e)
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
