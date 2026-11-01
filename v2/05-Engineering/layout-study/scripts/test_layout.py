@@ -168,6 +168,7 @@ def test_cad_masses_from_main():
     assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
     hw = next(r for k, r in rows.items() if k.startswith("M6 bolts, rivnuts"))
     assert rollup.basis(hw) == "CAD, main (part)", hw
+    assert "D-115" in hw[5] and "cleats assumption" in hw[4], hw                 # the cleat allowance rides on this line
     fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
     f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}
     assert abs(fx[3] - f["360002"]) < 1e-9 and rollup.basis(fx) == "CAD, main", fx
