@@ -157,6 +157,26 @@ def text_block(pn):
     return lines
 
 
+# the owner's rule (Mechanical Checker's C05, 2026-11-01): a drawing's Created by field and its PDF author read this
+AUTHOR = "Autonomous"
+
+
+def fill_created_by(page):
+    """Write AUTHOR in the title block's Created by cell, where pdf_clear_field took the account holder's name out:
+    on the line under the label, at its left edge, as large as the date left on that line."""
+    labs = page.search_for("Created by")
+    if not labs:
+        raise SystemExit("no Created by field on the sheet")
+    lab = labs[0]
+    lh = lab.y1 - lab.y0
+    row = [w for w in page.get_text("words")
+           if lab.y1 - 0.5 < w[1] < lab.y1 + 3 * lh and lab.x0 - 1 <= w[0] < lab.x0 + 200]
+    ref = min(row, key=lambda w: w[1]) if row else None
+    hgt = (ref[3] - ref[1]) if ref else 2 * lh
+    base = (ref[3] if ref else lab.y1 + hgt) - 0.22 * hgt
+    page.insert_text((lab.x0, base), AUTHOR, fontsize=max(hgt / 1.15, 3.5 * 72.0 / 25.4), fontname="helv")
+
+
 def finish(pn):
     if pn in GENERATOR:
         raise SystemExit("%s is drawn by the drawing generator (D-112); not finished here" % pn)
@@ -167,6 +187,7 @@ def finish(pn):
     subprocess.run([sys.executable, CLEAR, raw, tmp], check=True)
     doc = fitz.open(tmp)
     page = doc[0]
+    fill_created_by(page)
     w, h = page.rect.width, page.rect.height
     lines = text_block(pn)
     mm = 72.0 / 25.4
@@ -189,6 +210,9 @@ def finish(pn):
         rc = page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
     if rc < 0:                # PyMuPDF writes nothing when the text doesn't fit
         raise SystemExit("%s: the notes need %.1f mm more height than the box" % (pn, -rc / mm))
+    meta = {k: v for k, v in (doc.metadata or {}).items() if k not in ("format", "encryption")}
+    meta["author"] = AUTHOR
+    doc.set_metadata(meta)
     doc.subset_fonts()        # embed only the letters used: the whole Arial Unicode made each sheet 15 MB
     doc.save(out, garbage=3, deflate=True)
     doc.close()
@@ -198,7 +222,7 @@ def finish(pn):
     d2[0].get_pixmap(dpi=110).save(png)
     text = d2[0].get_text()
     d2.close()
-    missing = [k for k in ("mm", "first angle", "Material", "Finish", "Tolerances") if k not in text]
+    missing = [k for k in ("mm", "first angle", "Material", "Finish", "Tolerances", AUTHOR) if k not in text]
     print("%s: %s, %s%s" % (pn, os.path.relpath(out, REPO), os.path.relpath(png, REPO),
                             ("; MISSING TEXT %s" % missing) if missing else "; text check OK"))
 
