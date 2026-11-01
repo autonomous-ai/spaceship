@@ -544,9 +544,25 @@ class D125PlainStrip(unittest.TestCase):
         c_geometry, c_drawings = rc.load_checks()
         here = Path(c_drawings.__file__).resolve()
         self.assertEqual(here, (rc.ROOT / "tools/checks/c_drawings.py").resolve())
-        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape"):
+        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape", "strip_sides"):
             self.assertTrue(callable(getattr(c_drawings, name)), name)
         self.assertTrue(callable(c_geometry.load_step))
+
+    def test_the_strip_list_is_c05s_shared_function(self):
+        # the checklist builds no list of its own: it gives c_drawings.strip_sides the per-part STEP files (PR #210)
+        seen = {}
+        _geometry, c_drawings = rc.load_checks()
+        old = c_drawings.strip_sides, c_drawings.strip_row_lacks
+        c_drawings.strip_sides = lambda paths, load=None: seen.setdefault("call", (list(paths), load)) and {"211199": (1.5, 28.0, 991.0)}
+        c_drawings.strip_row_lacks = lambda root, pn, sides: ([], "list.csv")
+        try:
+            got = rc.d125_strips()
+        finally:
+            c_drawings.strip_sides, c_drawings.strip_row_lacks = old
+        self.assertEqual(got, {"211199": ([], "list.csv")})
+        paths, load = seen["call"]
+        self.assertTrue(all(str(x).endswith((".step", ".stp")) for x in paths), paths[:3])
+        self.assertIs(load, _geometry.load_step)
 
     def test_a_full_row_counts_as_drawn(self):
         line = self.strip_line({"811299": ([], self.LIST)})

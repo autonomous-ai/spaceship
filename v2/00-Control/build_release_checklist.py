@@ -388,24 +388,14 @@ def load_checks():
 
 def d125_strips(root=None):
     """D-125 as C05 reads it: {number: (what its best parts-list row lacks, that row's file), or None when no list
-    has a row} for every part whose one shape in the per-part STEP files is a plain strip or sheet. Built the way
-    the mechanical check builds it (tools/checks/run_checks.py): each different body of a number once, across the
-    files; a number counts when it has one shape, that shape is a plain rectangular block (cuboid_sides) and thin
-    enough to be a strip (is_strip); its row is read by strip_row_lacks. Read from the working tree, as C05 does."""
+    has a row} for every part whose one shape in the per-part STEP files is a plain strip or sheet. The strip list is
+    the mechanical check's own shared function (c_drawings.strip_sides, PR #210) over the per-part STEP files that
+    c_geometry.models finds; each row is read by strip_row_lacks. Read from the working tree, as C05 does."""
     root = str(root or ROOT)
     c_geometry, c_drawings = load_checks()
     _models, per_part = c_geometry.models(root)
-    shapes, cuboids = {}, {}
-    for path in per_part:
-        step = c_geometry.load_step(path)
-        for inst in step.instances():
-            solid, pn = step.solid(inst["solid"]), inst["part_number"]
-            shape = c_drawings.body_shape(solid)
-            if shape not in shapes.setdefault(pn, set()):
-                shapes[pn].add(shape)
-                cuboids.setdefault(pn, []).append(c_drawings.cuboid_sides(solid))
-    one = {pn: v[0] for pn, v in cuboids.items() if len(v) == 1 and v[0]}
-    return {pn: c_drawings.strip_row_lacks(root, pn, sides) for pn, sides in one.items() if c_drawings.is_strip(sides)}
+    return {pn: c_drawings.strip_row_lacks(root, pn, sides)
+            for pn, sides in c_drawings.strip_sides(per_part, c_geometry.load_step).items()}
 
 
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
