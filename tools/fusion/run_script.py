@@ -1141,7 +1141,8 @@ def _note_new_files(_cls):
 # Each save notes, by the document's name, the version it made: the version before the save plus one when the
 # design had changes, or the version the document gives after it, whichever is higher (PM ruling 2026-11-01, CEILING:
 # v11 saved at 14:30 and its report step opened v10 a few seconds later, because the cloud didn't list v11 yet). For
-# a minute after, an open of that name waits for that version (_await_saved_version).
+# a minute after, an open of that name waits for that version (_await_saved_version). Every save also notes its time,
+# so no folder is listed within 10 s of any save, a new version as a new file (PM ruling 2026-11-01).
 def _note_saves(_cls):
     if _cls is None or not hasattr(_cls, "save") or getattr(_cls.save, "_spaceship_saved", False):
         return
@@ -1153,6 +1154,10 @@ def _note_saves(_cls):
         except Exception:
             _nm, _v0, _mod = None, None, False
         _ok = _orig_save(self, *a, **k)
+        if _ok:
+            import time as _t
+            _ac._spaceship_saved_mono = _t.monotonic()      # fusion_folder's pause reads it
+            _ac._spaceship_saved_name = _nm or "?"
         if _ok and _nm:
             import time as _t
             try:
@@ -1194,7 +1199,9 @@ def _newest_listed(dataFile):
 def _await_saved_version(dataFile, log=None, when=None):
     """dataFile, or the newer version this Fusion saved in the last minute, once its folder lists it: an open of an
     older version than that save waits (Fusion working) and reads the folder again every few seconds, for up to
-    _spaceship_version_wait_s; past that it raises rather than open the older one. Any other open goes through."""
+    _spaceship_version_wait_s; past that it raises rather than open the older one. Its first reading of the folder
+    comes 10 s after the save, as fusion_folder's pause after a new cloud file (PM ruling 2026-11-01: both crashes
+    followed a folder fetch a few seconds after a save). Any other open goes through."""
     import time as _t
     try:
         _nm, _v = dataFile.name, dataFile.versionNumber
@@ -1209,21 +1216,27 @@ def _await_saved_version(dataFile, log=None, when=None):
         _nm, _want, _v, _t.monotonic() - _rec["at"]))
     _t_end = _t.monotonic() + float(getattr(_ac, "_spaceship_version_wait_s", 60.0))
     _step = float(getattr(_ac, "_spaceship_version_step_s", 3.0))
+    _first = _rec["at"] + float(getattr(_ac, "_spaceship_list_pause_s", 10.0))
     _seen = _v
     try:
         import adsk as _adsk
         _events = getattr(_adsk, "doEvents", None) or (lambda: None)
     except ImportError:                 # offline tests
         _events = lambda: None
-    while _t.monotonic() < _t_end:
+    while _t.monotonic() < _first:      # no folder listed within 10 s of the save
         _events()
-        _t.sleep(_step)
+        _t.sleep(min(0.5, max(0.0, _first - _t.monotonic())))
+    while True:
         _fresh = _newest_listed(dataFile)
         if _fresh is not None:
             _seen = _fresh.versionNumber
             if _seen >= _want:
                 _say("found %%s v%%d" %% (_nm, _seen))
                 return _fresh
+        if _t.monotonic() + _step > _t_end:
+            break
+        _events()
+        _t.sleep(_step)
     _say("gave up waiting for %%s v%%d: the cloud still lists v%%d" %% (_nm, _want, _seen))
     raise RuntimeError("%%s: version %%d was saved by this Fusion a moment ago, but its folder still lists version "
                        "%%d; not opening the older one (open it again in a minute)" %% (_nm, _want, _seen))

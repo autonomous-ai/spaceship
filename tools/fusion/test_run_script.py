@@ -940,7 +940,8 @@ class OpenLogTests(unittest.TestCase):
         log = os.path.join(tempfile.mkdtemp(), "opens.log")
         core = self.version_core()
         self.run_wrapped(core, log, "X_P01_CAD", True)
-        self.assertIs(core.Document.save, self._installed_once(core, log))
+        first = self._installed_once(core, log)
+        self.assertIs(core.Document.save, first)                      # read after the second run (Reviewer 5, P3)
         core.Document("A_CAD", 10).save("d")                          # changes: v11
         core.Document("B_CAD", 4, modified=False).save("d")           # no changes: it stays v4
         core.Document("C_CAD", 7, ok=False).save("d")                 # refused: nothing noted
@@ -948,17 +949,52 @@ class OpenLogTests(unittest.TestCase):
         saved = core._spaceship_saved
         self.assertEqual({k: v["version"] for k, v in saved.items()}, {"A_CAD": 11, "B_CAD": 4, "D_CAD": 21})
         self.assertLessEqual(saved["A_CAD"]["at"], time.monotonic())
+        self.assertEqual(core._spaceship_saved_name, "D_CAD")          # every save's time, for the folder pause
+        self.assertLessEqual(core._spaceship_saved_mono, time.monotonic())
+        self.assertGreaterEqual(core._spaceship_saved_mono, saved["A_CAD"]["at"])
 
     def _installed_once(self, core, log):
         first = core.Document.save
         self.run_wrapped(core, log, "Y_P01_CAD", True)
         return first
 
+    def test_the_first_folder_listing_comes_10_s_after_the_save(self):
+        # PM ruling 2026-11-01 on #386: no folder listed within 10 s of any save (as #379 for new files)
+        from unittest import mock
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        clock = {"t": 5000.0}
+        listed_at = []
+
+        def now():
+            return clock["t"]
+
+        def sleep(s):
+            clock["t"] += s
+        folder = self.listing(core, [10, 11])
+        real = folder.dataFiles.asArray
+
+        def seen():
+            listed_at.append(clock["t"])
+            return real()
+        folder.dataFiles.asArray = seen
+        with mock.patch("time.monotonic", now), mock.patch("time.sleep", sleep):
+            core.Document("NAME_CAD", 10).save("v11")                   # at 5000.0, the default pause
+            clock["t"] += 2.0                                           # the report step opens 2 s later
+            got = core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True)
+        self.assertEqual(got, ("NAME_CAD", 11))
+        self.assertGreaterEqual(listed_at[0], 5010.0)                   # not before 10 s after the save
+        self.assertLess(listed_at[0], 5010.6)
+        self.assertEqual(len(listed_at), 2)                             # then every 3 s: v11 on the second look
+        self.assertAlmostEqual(listed_at[1] - listed_at[0], 3.0)
+
     def test_an_open_soon_after_a_save_waits_for_the_saved_version(self):
         log = os.path.join(tempfile.mkdtemp(), "opens.log")
         core = self.version_core()
         self.run_wrapped(core, log, "X_P01_CAD", True)
         core._spaceship_version_wait_s, core._spaceship_version_step_s = 2.0, 0.01
+        core._spaceship_list_pause_s = 0.0
         doc = core.Document("NAME_CAD", 10)
         self.assertTrue(doc.save("v11"))
         folder = self.listing(core, [10, 10, 11])                     # the cloud lists v11 on the third look
@@ -973,6 +1009,7 @@ class OpenLogTests(unittest.TestCase):
         core = self.version_core()
         self.run_wrapped(core, log, "X_P01_CAD", True)
         core._spaceship_version_wait_s, core._spaceship_version_step_s = 0.1, 0.01
+        core._spaceship_list_pause_s = 0.0
         core.Document("NAME_CAD", 10).save("v11")
         folder = self.listing(core, [10])
         with self.assertRaises(RuntimeError) as cm:

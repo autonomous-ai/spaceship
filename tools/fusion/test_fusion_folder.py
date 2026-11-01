@@ -155,6 +155,31 @@ class NewFilePauseTests(unittest.TestCase):
         self.core._spaceship_new_file_mono = 989.0                   # a monotonic note wins over the old one
         self.assertEqual(self.pause()[0], 0.0)
 
+    def test_a_new_version_saved_3_s_ago_waits_too_and_the_newer_save_wins(self):
+        # PM ruling 2026-11-01 on #386: no folder is listed within 10 s of any save, a new version as a new file
+        self.core._spaceship_saved_mono = 997.0
+        self.core._spaceship_saved_name = "410000_P01_CEILING_CAD"
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.assertIn("waiting 7.0 s after saving 410000_P01_CEILING_CAD before reading the folder", said)
+        self.clock.sleeps.clear()
+        self.clock.t = 1000.0
+        self.core._spaceship_new_file_mono = 995.0                    # an older new file: the save still sets it
+        self.core._spaceship_new_file = "OLDER_CAD"
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 7.0)
+        self.assertIn("after saving 410000_P01_CEILING_CAD", said)
+        self.clock.sleeps.clear()
+        self.clock.t = 1000.0
+        self.core._spaceship_new_file_mono = 999.0                    # a newer new file sets it
+        waited, said = self.pause()
+        self.assertAlmostEqual(waited, 9.0)
+        self.assertIn("after the new cloud file OLDER_CAD", said)
+        self.clock.sleeps.clear()
+        self.clock.t = 1000.0
+        self.core._spaceship_new_file_mono, self.core._spaceship_saved_mono = 980.0, 1000.0 + 3600.0
+        self.assertEqual(self.pause()[0], 10.0)                       # capped, whatever the note says
+
     def test_read_folder_waits_before_its_first_listing(self):
         self.core._spaceship_new_file_mono = 995.0
         listed_at = []
