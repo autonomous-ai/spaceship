@@ -52,10 +52,10 @@ LOADS = [
      "light controller CH1", 1, UP_W, UP_TYP, "calculation (strip length from the model x 6.0 W/m; maker data)",
      "REQ-AIR-06, D-70; Häfele 25L1-18",
      "26.6 W and 4300 lm at full; in the work scene the hub runs it at 9.7 W, about 1570 lm"),
-    ("LD08", "Down-light under the right-wall shelf, 2 rows x 0.975 m of Loox5 2168 side by side in the shelf's LED profile 718101 behind its opal cover, aimed at the ledge", "PS2",
+    ("LD08", "Down-light under the right-wall shelf, 2 rows x 0.975 m of Loox5 2168 side by side in the shelf's LED profile 718101 behind its satin cover, aimed at the ledge", "PS2",
      "light controller CH2", 1, DOWN_W, DOWN_W, "calculation (2 x 0.975 m x 6.0 W/m; maker data)",
      "PM ruling 2026-11-01 (down-light, about 22 W in all, about 300 lx on the ledge); Häfele 25L1-18",
-     "about 1890 lm; about 333 lx on the ledge at full with no cover, about 233 lx through the opal cover at 70 % (calculation, Lambertian strip 1.2 m above it, no reflections; cover figure from the maker's catalogue for opal covers, unverified for its C15)"),
+     "about 1890 lm; about 333 lx on the ledge at full with no cover, about 286 to 300 lx through the satin cover at 86 to 90 % (D-127; calculation, Lambertian strip 1.2 m above it, no reflections)"),
     ("LD06", "Voice cockpit hook, 12 V 5 A reserved outlet", "PS1", "F1 5 A", 1,
      60.0, 0.0, "DECIDED (D-11 peak; D-88 average)", "REQ-VCK-04; D-88",
      "60 W peak on the hook, 40 W average budget (D-88); kit not fitted in v2, so 0 W typical"),
@@ -540,11 +540,16 @@ part("led_prof", "718101", "ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 
      "assumption (about 0.16 kg/m for a 23 x 12.5 surface profile; maker figure HOLD)", maker="Tech-Light (type)",
      sku="P13-2 type, cut to 991 mm", size="23 x 12.5 outside, 20 inside at the strip base, 991 long", status=HOLD_BUY, source=TECHLIGHT,
      note="takes the down-light's two 8 mm strips side by side (2 x 0.975 m) with 4 mm to spare; heat 12 W/m at full: about 20 K above the room (calculation, 9 W/m2K on about 66 mm of outer surface), maker's rating HOLD; replaces CEILING's channel 811204 (D-126)")
-part("led_cover", "718102", "ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN", "Điện - nắp mờ (opal) gài cho thanh LED",
-     "PI", "810201", 1, "polycarbonate (opal, as supplied; grade HOLD)", "opal, as supplied", 0.04,
-     "assumption (about 0.04 kg/m)", maker="Tech-Light (type)", sku="C15 opal type, cut to 991 mm", size="20 wide, 991 long",
-     status=HOLD_BUY, source=TECHLIGHT,
-     note="clip-in, held along its whole length, unclipped to change a strip; light transmission 70 % for the maker's opal covers (not stated for C15: unverified; a matt opal at 63 % would leave the ledge at about 275 lx); replaces the cut diffuser 811205 (D-126)")
+part("led_cover", "718102", "ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN", "Điện - nắp mờ nhẹ (satin) gài cho thanh LED",
+     "PI", "810201", 1, "polycarbonate, satin (grade HOLD)", "satin, as supplied: at least 86 % light transmission (ASTM D1003)", 0.04,
+     "assumption (about 0.04 kg/m)", maker="HOLD (no supplier contact)",
+     sku="satin clip-in cover for the P13-2 type profile, cut to 991 mm; no public product verified yet (HOLD)", size="20 wide, 991 long",
+     status=HOLD_BUY, source=TECHLIGHT + "; D-127: a satin cover passing at least 86 %, no clear cover",
+     note="D-127 (PM, 2026-11-01): satin, at least 86 % light transmission, so the ledge gets 350 to 364 lx when new at the "
+          "same 22 W (calculation); no clear cover, because the shelves are open underneath and the LED dots would show from "
+          "the seat. Tech-Light lists only 98 / 70 / 63 % covers for the P13-2; satin or frosted polycarbonate covers of "
+          "85 to 90 % are offered by diffuser makers, but none is verified for this profile yet (HOLD). Clip-in, held along its "
+          "whole length, unclipped to change a strip; replaces the cut diffuser 811205 (D-126).")
 part("led_cap", "718103", "ELECTRICAL - LED PROFILE END CAP", "Điện - nắp bịt đầu thanh LED", "PI", "810201", 2,
      "plastic, as supplied", "as supplied", 0.002, "assumption", maker="Tech-Light (type)", sku="P13-2 end cap type, one with a cable hole",
      size="for 23 x 12.5", status=HOLD_BUY, source=TECHLIGHT, note="one at each end; the feed lead enters through one (HOLD with the profile)")
