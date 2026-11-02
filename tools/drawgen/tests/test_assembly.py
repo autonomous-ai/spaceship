@@ -311,6 +311,13 @@ def test_overall_sizes_are_the_assemblys_own_parts():
         fails, st = assembly.check(both)
         assert not fails and st["overall"] == 4, (fails, st)
         assert "(52.5)" in fitz.open(both)[0].get_text()
+        # the bracketed size sits on the side where the profile sets it, the right (Reviewer 16; Reviewer 19 on #412)
+        assert [d.get("side") for d in data2["dims"] if d.get("reference")] == ["right"], data2["dims"]
+        av = next(v for v in data2["views"] if v["name"] == "above")
+        page = fitz.open(both)[0]
+        mm = 72.0 / 25.4
+        hit = page.search_for("(52.5)")[0]
+        assert hit.x0 / mm > av["box"][2], (hit.x0 / mm, av["box"])     # beyond the front view's right edge
 
         # the height drawn over the reference outline: the read-back fails it
         def over_the_reference(d):
