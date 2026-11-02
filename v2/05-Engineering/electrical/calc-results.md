@@ -41,17 +41,17 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 | W11c SHELF | PS2 lights | 1220 | 0.823 x 1 | 0.85 | 0.052 |
 | W20a PU | PS3 air | 170 | 0.823 x 2 | 2.62 | 0.011 |
 | W20b B2-CASS | PS3 air | 1050 | 0.823 x 2 | 2.62 | 0.069 |
-| W20c R1-CASS | PS3 air | 1260 | 0.823 x 2 | 2.62 | 0.083 |
+| W20c R1-CASS | PS3 air | 1060 | 0.823 x 2 | 2.62 | 0.069 |
 | W30a PU | PS1 kit | 170 | 0.823 x 2 | 2.5 | 0.011 |
 | W30b B2-CASS | PS1 kit | 1050 | 1.31 x 2 | 2.5 | 0.041 |
 | W30c R1-CASS | PS1 kit | 1050 | 1.31 x 2 | 2.5 | 0.041 |
 | W24a PU | hub I/O | 170 | 0.823 x 1 | 0.01 | 0 |
 | W24b B2-CASS | hub I/O | 1050 | 0.205 x 1 | 0.01 | 0.002 |
-| W24c R1-CASS | hub I/O | 1260 | 0.205 x 1 | 0.01 | 0.003 |
-| W20d COLUMN | PS3 air | 420 | 0.823 x 2 | 2.62 | 0.028 |
-| W24d COLUMN | hub I/O | 420 | 0.205 x 1 | 0.01 | 0.001 |
-| W40 COLUMN | PS3 fan S | 1550 | 0.519 x 1 | 1.1 | 0.135 |
-| W41 COLUMN | PS3 fan E | 1260 | 0.519 x 1 | 1.1 | 0.11 |
+| W24c R1-CASS | hub I/O | 1060 | 0.205 x 1 | 0.01 | 0.002 |
+| W20d COLUMN | PS3 air | 380 | 0.823 x 2 | 2.62 | 0.025 |
+| W24d COLUMN | hub I/O | 380 | 0.205 x 1 | 0.01 | 0.001 |
+| W40 COLUMN | PS3 fan S | 1910 | 0.519 x 1 | 1.1 | 0.167 |
+| W41 COLUMN | PS3 fan E | 1550 | 0.519 x 1 | 1.1 | 0.135 |
 | W43 COLUMN | PS3 hub | 300 | 0.823 x 1 | 0.42 | 0.006 |
 | W12 R2-CASS | PS2 lights | 1250 | 0.823 x 1 | 0.11 | 0.007 |
 
@@ -60,9 +60,9 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 | PS1 to the voice kit outlet (W30a + W30b + W30c) | 0.09 | 0.4 | within |
 | PS2 to the left wall uplight (W10a + W10b + W10c + W11a + W11b) | 0.12 | 0.5 | within |
 | PS2 to the call light (W10a + W10b + W10c + W11a + W11c + W12) | 0.16 | 0.7 | within |
-| PS3 to the supply fans (W20a + W20b + W20c + W20d + W40) | 0.33 | 2.7 | within |
-| PS3 to the exhaust fans (W20a + W20b + W20c + W20d + W41) | 0.30 | 2.5 | within |
-| PS3 to the sensor hub (W20a + W20b + W20c + W20d + W43) | 0.20 | 1.6 | within |
+| PS3 to the supply fans (W20a + W20b + W20c + W20d + W40) | 0.34 | 2.8 | within |
+| PS3 to the exhaust fans (W20a + W20b + W20c + W20d + W41) | 0.31 | 2.6 | within |
+| PS3 to the sensor hub (W20a + W20b + W20c + W20d + W43) | 0.18 | 1.5 | within |
 
 Mains conductors are left out: 0.92 m of 14 AWG (2.08 mm², 8.28 Ω/km at 20 °C) at the breaker's full 15 A drops about 0.23 V of 120 V (0.2 %).
 
@@ -88,8 +88,8 @@ At the 53 l/s normal flow that adds **0.25 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 | 710041 hub and controls zone | 0.36 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.59 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.25 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| **710000 ELECTRICAL** | **6.33** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
+| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.27 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| **710000 ELECTRICAL** | **6.35** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
 
 **B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.84 kg = **12.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
 

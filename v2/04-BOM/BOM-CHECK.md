@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 322 part lines (118 made, 204 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 325 part lines (118 made, 207 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 

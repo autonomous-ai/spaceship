@@ -356,8 +356,21 @@ def harness_material(s, rows, x, y, w, bottom):
         raise ValueError("the material list needs another sheet")
     y += 2.0 + K.BODY * K.CAP
     if holes:
-        y = s.para(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836N / edge strip Heyco 12431, parts "
-                   "list 718041, 718042)." % ", ".join(sorted(holes)), w)
+        # each hole names the part that goes in it (the column's own since the route agreed with CEILING, 2026-11-01)
+        kinds = [("G-COL", "Heyco SB 437-5 snap bushings, 718084"), ("G-SOFFIT", "Heyco RLTCG M12 cordgrips, 718085"),
+                 ("G-FBOX", "Heyco RLTCG M12 cordgrips, 718085"), ("S-", "edge strip Heyco 12431, 718042"),
+                 ("G-", "Heyco 2836N bushings, 718041")]
+        groups = {}
+        for hole in sorted(holes):
+            label = next(t for k, t in kinds if hole.startswith(k))
+            groups.setdefault(label, []).append(hole)
+        y = s.para(x, y, "Bushings, cordgrips and edge-protected slots it passes: %s." % "; ".join(
+            "%s (%s)" % (", ".join(hs), t) for t, hs in groups.items()), w)
+    hpn = rows[0]["harness_pn"] if rows else ""
+    own = [(q["part_number"], q["qty_per_parent"], q["name"]) for q in EP.P.values()
+           if q["parent"] == hpn and q["kind"] == "PI" and q["part_number"] in ("718086",)]
+    for opn, oq, oname in own:
+        y = s.para(x, y, "Ties on AIR's tie points: %s x %s (%s)." % (oq, opn, oname), w)
     if any("Mini-Fit" in h["end_a"] + h["end_b"] for h in rows):
         cables_here = " ".join(h["cable"] for h in rows)
         y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037) on 18 AWG, one per "

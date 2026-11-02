@@ -31,6 +31,35 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 | STEP export | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step`: AP214, length unit cm declared in the file (D-13), 8 products (710000 and the 7 components), 40 solids (`tools/fusion/step_check.py`; its box reads vertices only, so it misses the cylinders' round extents by up to 5.6 mm: the Fusion re-read below is the exact check); no personal names |
 | STEP re-read in Fusion | 40 bodies, box equal to the design's, max difference 0.000 mm |
 
+## Route rebuild for the column route agreed with CEILING (2026-11-01)
+
+Run 2026-11-01 at about 17:34 UTC on Mac 1, Fusion 2706.1.17, through the late-binding loader with the edit test as the second step (PASS, `EDIT-TEST-RECORD.md`), from a checkout with main's runner files (#386, #402) in its working tree:
+
+```
+python3 tools/fusion/run_script.py late_ele.py --doc 710000_P01_ELECTRICAL_CAD \
+    --arg targets=v2/01-CAD-Native/electrical/electrical_build.py,v2/01-CAD-Native/electrical/edit_test_electrical.py \
+    --arg rebuild=1 --arg save=1 --arg export=1 --close --discard
+```
+
+Opened Default Project / FocusPod v2 / `710000_P01_ELECTRICAL_CAD` at version 6 and saved it as the next version (the link to the skeleton kept). The column's route now follows AIR's points as CEILING built them on its combined AIR branch: the hub zone in AIR's zone, two bushed entries in the FR angle, the fill channel, the run along the high plenum plate to DR's opening, the exhaust lead up the FR angle through two cordgrips into the fan box, and the trunk's joint in pocket P8 behind the column; the chase, the run into DR and DR's bushed hole are gone.
+
+| Check | Result |
+|---|---|
+| Bodies, components | 52 bodies in 7 components |
+| Timeline | 112 items, 0 unhealthy |
+| Sketches | 0 not fully constrained |
+| User parameters | 128 |
+| Skeleton values | live derived values equal the repo's P04 CSV for all used (none differ) |
+| Body boxes against the offline model | 0 mismatches over 0.01 mm |
+| Overlap between its own bodies | none over 0.1 mm3 |
+| Overlap with skeleton P04's 31 bodies | only the intended pairs, each listed with its reason; none with DR now; every listed pair occurs |
+| Design box | X 82.98 ... 1195.53, Y -640.67 ... 850.02, Z 300.98 ... 2347.08 mm |
+| Saved | yes (new version of the cloud design) |
+| `.f3d` export | 64 entries read decompressed (zstd) as bytes and as UTF-16: no personal name (the design's own text found as the control) |
+| STEP export | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step`: AP214, cm declared (D-13), 52 solids (`tools/fusion/step_check.py`) |
+| STEP re-read in Fusion | 52 bodies, box equal to the design's, max difference 0.000 mm |
+| Against AIR's model (offline, CEILING's combined branch) | 0 overlaps over 0.1 mm3 with AIR's cut-outs and holes taken out; the points test passes against it |
+
 ## Front plate 711002 rebuilt for the vents and the heat check (2026-11-01)
 
 Run 2026-11-01 at about 16:33 UTC on Mac 1, Fusion 2706.1.17, from a checkout with main's runner (#386: it waited 4.8 s after another team's save before reading the folder): only the front plate, with the devices on the left (the GFCI receptacle at 50 and the breaker window at 95 from the unit's left side, all bare mains parts left of 105), the two keystone openings in the middle (150), and the vent grille on the right only, 8 rows of 3 slots 44 x 4 (4 rows low, 4 high), so no slot lies within 15 mm of a bare mains part or above one (UL 62368-1: side openings in a PIS's 5 degree drop zone; foreign objects) and 4 mm keeps every probe out (the Lead's two conditions; the heat check in calc-results section 6).
