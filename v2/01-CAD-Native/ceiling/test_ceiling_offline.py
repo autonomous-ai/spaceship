@@ -732,7 +732,7 @@ class SleeveFlangeHoles(unittest.TestCase):
         import ceiling_exports as E
         with open(os.path.join(here, "ceiling_exports.py"), encoding="utf-8") as f:
             self.assertIn('v["hole_slv"] / 2)', f.read())
-        self.assertIn("4 clearance holes Ø17", E.SIZE_TOL["skin_c2"](VALS)[0])
+        self.assertIn("4 pass-through openings Ø17", E.SIZE_TOL["skin_c2"](VALS)[0])
 
 
 class Numbers(unittest.TestCase):

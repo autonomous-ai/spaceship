@@ -238,10 +238,10 @@ def _sizes():
                               "cut length +/-0.5 (assumption)"),
         "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
                               "ISO 2768-m; no drawing (D-89 part 4): its DXF is the outline"),
-        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f, 4 clearance holes Ø%.0f under the roof sleeve's rivnuts"
+        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f, 4 pass-through openings Ø%.0f under the roof sleeve's rivnuts"
                               % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"], v["hole_slv"]),
                               "ISO 2768-m; roof slot from the closing-seam edge and the front edge +/-0.5 (critical: the roof sleeve, "
-                              "1.0 smaller a side, passes through it, D-61, D-177); the 4 holes +/-0.2 from the slot (D-177); no "
+                              "1.0 smaller a side, passes through it, D-61, D-177); the 4 openings +/-0.2 from the slot (assumption); no "
                               "drawing (D-89 part 4)"),
         "cassette": lambda v: ("%.0f x %.0f x %.0f (%.0f with the fill)" % (v["cs_w"], v["cs_d"], v["tray_h"], v["tray_h"] + v["fill_t"]),
                                "+/-1 assembled (assumption)"),

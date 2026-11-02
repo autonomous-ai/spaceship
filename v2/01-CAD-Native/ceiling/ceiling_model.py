@@ -271,7 +271,7 @@ PROCESS = {
                 "holes; every joint hole made after welding, from the joint faces",
     "frame_c2": "welded in a jig (D-131, J-FRAME-01): the corners with their mitre plates, then the T joints; no vent or drain "
                 "holes; every joint hole made after welding, from the joint faces",
-    "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
+    "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot and four Ø17 pass-through openings routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
     "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
     # the members (D-120): cut from galvanized steel tube (D-131); mitred where they meet the corners (D-117), cut back
     #      for the mitre plates; holes CNC or jig drilled after welding
