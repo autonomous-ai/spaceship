@@ -58,7 +58,7 @@ PARAMS = [
     ("ut_skirt_z", 1932.0, "mm", "calculation", "the front and left skirts' bottom edge: 8.5 mm from the cross tube over the box (352322, top Z 1923.86, back face Y -824), the 6 mm rule"),
     ("ut_roof_z", 2112.0, "mm", "calculation", "the roof's outer face: an 8 mm gasket face above the window's top (2102) on the back wall, and 8 mm under DR's band tube (352316, Z 2120), the 6 mm rule"),
     ("ut_back_y", -646.5, "mm", "source", "the back wall's outer face on DR's frame face (FRONT's DR STEP, #313, 541fe7f; the same at c65a3fa): the gasket 848013 (4.0) squeezes to the panel's 2.36 mm"),
-    ("ut_right_x", 1158.0, "mm", "calculation", "the right wall's outer face: 6 mm from DR's bolt-line tube (352308, X 1164)"),
+    ("ut_right_x", 1156.0, "mm", "confirmed", "the Lead's ruling 2026-11-01 on Reviewer 5's pass of #395: the right wall's outer face at X 1156 (was 1158), 8 mm from DR's bolt-line tube (352308, X 1164), and 10 mm of gasket land right of the window"),
     ("bolt_tube_x0", 1164.0, "mm", "source", "FRONT's DR STEP (#313, 541fe7f; the same at c65a3fa): DR's bolt-line tube 352308's left face (its front face on the back ring's, Y -666.5)"),
     ("ut_floor_z", 1881.0, "mm", "calculation", "the floor's outer face: 14 mm under the window (Z 1895), room for the gasket face"),
     ("win_x0", 961.0, "mm", "confirmed", "the Lead's ruling 2026-11-01: DR's panel opening X 961 to 1146, Z 1895 to 2102 (FRONT's next DR run); the duct's outlet window the same"),

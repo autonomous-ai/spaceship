@@ -22,7 +22,7 @@ import check_flat  # noqa: E402
 import clearance  # noqa: E402
 import lower  # noqa: E402
 import rivets  # noqa: E402
-import sheetmetal as S  # noqa: E402
+import tr_sheetmetal as S  # noqa: E402
 import tr_params  # noqa: E402
 from tr_params import P  # noqa: E402
 

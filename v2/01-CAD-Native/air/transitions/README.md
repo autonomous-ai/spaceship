@@ -41,12 +41,23 @@ set at the factory. The box back flange's four rivets are set from inside the du
 skirt and the floor's edges by the box's right wall sit on the box's lined end walls and are sealed only, and so are
 the collars' flanges inside the riser and the box.
 
+## Assembly notes
+
+- **Setting the unit in X on DR's shelf** (the Lead's ruling on Reviewer 5's pass of #395; calculation): the supply
+  fan box unit (the box, the riser and both transitions, riveted at the factory) slides in X on its pads on F08. Set it
+  with an 8.0 mm gauge between the shell's right wall (X 1156) and DR's bolt-line tube 352308 (X 1164). Moving the unit
+  +d in X takes d off that gap and adds 0.76 d to the box's bottom-left corner's 6.3 mm to B06 (352312), so both keep
+  6 mm while the gap reads 6.3 to 8.3 (d from +1.7 to -0.3).
+- **The outlet gasket 848013** on DR's panel round the window: 8 wide on the sides and the bottom (10 mm of flat land
+  right of the window, 14 below), but slit to 6 wide on the top run, laid flush to the window's top edge, so it sits on
+  the back wall's flat land (Z 2102 to 2108) and not on the roof fold (the Lead's ruling; for 848013's AIR line).
+
 ## Files
 
 | File | What |
 |---|---|
 | `tr_params.py` | every number with its status and source; the part numbers once Control allocates them |
-| `sheetmetal.py` | the folded sheet kernel: walls (outer skins) and folds give the exact folded solid (OCC) and its developed flat (each fold's zone its bend allowance at K), STEP and DXF |
+| `tr_sheetmetal.py` | the folded sheet kernel: walls (outer skins) and folds give the exact folded solid (OCC) and its developed flat (each fold's zone its bend allowance at K), STEP and DXF |
 | `geom3.py` | planes, corner reliefs, rivet rows |
 | `lower.py`, `upper.py` | the two transitions' parts |
 | `check_flat.py` | develops a part's flat from its STEP alone (skins across tangent edges, folds as coaxial cylinder pairs) and checks its DXF: outline, bend lines, zone edges (the K they imply), holes, cut-outs, within 0.01 mm |

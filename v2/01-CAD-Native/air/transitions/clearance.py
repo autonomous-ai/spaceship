@@ -10,7 +10,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))
-sys.path.insert(0, os.path.join(REPO, "tools", "drawgen"))
+# the generator goes last on the path, so its modules (its own sheetmetal.py among them) never shadow this folder's
+sys.path.append(os.path.join(REPO, "tools", "drawgen"))
 
 import geom  # noqa: E402  (the drawing generator's STEP reader, read only: product names and solids)
 from OCP.BRepExtrema import BRepExtrema_DistShapeShape  # noqa: E402

@@ -12,12 +12,12 @@ DR.step and GLASS.step are FRONT's 350003 and 360002 STEPs on #313 at c65a3fa (F
 | 611701 riser transition - left wrapper | 1 | 0.586 kg | 437.8 x 189.0 | 17 | 24 | PASS |
 | 611702 riser transition - right wrapper | 1 | 0.477 kg | 343.5 x 200.0 | 8 | 22 | PASS |
 | 611703 riser transition - cheek | 2 | 0.491 kg | 252.6 x 506.1 | 2 | 19 | PASS |
-| 611801 supply transition - shell | 1 | 1.609 kg | 935.6 x 579.1 | 10 | 32 + the window | PASS |
-| 611802 supply transition - floor | 1 | 0.218 kg | 503.6 x 221.0 | 8 | 13 | PASS |
+| 611801 supply transition - shell | 1 | 1.603 kg | 933.6 x 579.1 | 10 | 32 + the window | PASS |
+| 611802 supply transition - floor | 1 | 0.217 kg | 501.6 x 221.0 | 8 | 13 | PASS |
 | 611803 supply transition - vane over the box | 3 | 0.046 kg | 97.0 x 201.5 | 3 | 1 | PASS |
 | 611804 supply transition - vane beside the box | 2 | 0.051 kg | 82.0 x 257.5 | 3 | 2 | PASS |
 
-610403 is 2.046 kg and 610404 2.067 kg (calculation, the sum of their parts; the HOLD rows they replace had 1.47
+610403 is 2.046 kg and 610404 2.059 kg (calculation, the sum of their parts; the HOLD rows they replace had 1.47
 and 1.89), plus 80 rivets and the sealant. The riser loses 0.27 kg with its top cut to Z 1386 (calculation: 59 mm of
 its 578 mm of 1 mm steel wall).
 
@@ -29,9 +29,10 @@ its 578 mm of 1 mm steel wall).
   (the Joints Engineer's pick) in the README; the 5.0 stacks' heads sit on a 1.0 washer, and the checks count it.
 - Overlaps over 0.001 mm3, among the placed pieces, the 80 set rivets (heads 12 x 2.5, tails 7 x 8), the fan box
   with its linings and bulkhead, and the riser with its 8 x 8 chamfer: 0.
-- Clearance on FRONT's DR and the glass unit: the nearest DR tube is 6.00 mm (the shell's right wall to the bolt-line
-  tube 352308, as designed), the nearest set rivet 6.25 (to the facet side tube 352302); the glass and its U-profile
-  are 350 mm or more away. B06 (352312) is 9.0 mm from the duct's top-left corner where it enters the box (the box is
+- Clearance on FRONT's DR and the glass unit: the nearest DR tube is 6.01 mm (the shell's facet corner to the facet
+  side tube 352302); the shell's right wall is 8.0 from the bolt-line tube 352308 (the Lead's ruling moved it to X
+  1156); the nearest set rivet is 6.25 (to 352302). The glazing U-profile 368004 is 20.1 mm from the left wrapper's
+  box collar (X 684, Z 1650) and 18.1 from a set rivet's head there; the U-seal 21.6; the glass 23.6. B06 (352312) is 9.0 mm from the duct's top-left corner where it enters the box (the box is
   6.3 there) and 25 mm or more along the slant. DR's skin is 5.81 mm or more from every piece and 10.5 from every set
   rivet (the 4 mm rule).
 - The collars slip 0.5 inside the riser and the box all round (0.7 at the riser's chamfer); the right wrapper's slant
@@ -47,7 +48,9 @@ its 578 mm of 1 mm steel wall).
 
 - The shop build: two wrappers and two cheeks for the lower duct, a shell and a floor with turning vanes for the
   upper; we design for the factory, not for the drawing tool.
-- The supply fan box at X 680 to 980; the upper duct's right wall to X 1158; folds at R = t, K 0.44.
+- The supply fan box at X 680 to 980; the upper duct's right wall to X 1156 (was 1158; the ruling on Reviewer 5's
+  pass), set in X on DR's shelf with an 8 mm gauge to the bolt-line tube (README); folds at R = t, K 0.44.
+- The outlet gasket's top run slit to 6 wide, flush to the window's top edge, on the flat land (README).
 - DR's panel opening, and the duct's window, X 961 to 1146, Z 1895 to 2102.
 - The riser kink rounded (R 100), and the lower duct's loss at 3.1 Pa or less in the Air Engineer's model: the riser
   cut 60 mm shorter (its top at Z 1386), so the turn eases to 52 degrees and the walls widen at 19.9.

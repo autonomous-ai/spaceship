@@ -26,7 +26,7 @@ import numpy as np
 
 import geom3 as G
 import rivets as R
-import sheetmetal as S
+import tr_sheetmetal as S
 from tr_params import P
 
 STEEL = "Galvanised steel DX51D+Z, 1.0 mm"

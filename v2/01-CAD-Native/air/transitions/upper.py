@@ -17,7 +17,7 @@ import numpy as np
 
 import geom3 as G
 import rivets as R
-import sheetmetal as S
+import tr_sheetmetal as S
 from tr_params import P
 
 AL = "Aluminium 5052-H32, 2.0 mm (alloy HOLD)"

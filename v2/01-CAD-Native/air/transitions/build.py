@@ -28,7 +28,7 @@ import check_flat  # noqa: E402
 import clearance  # noqa: E402
 import lower  # noqa: E402
 import rivets as R  # noqa: E402
-import sheetmetal as S  # noqa: E402
+import tr_sheetmetal as S  # noqa: E402
 import upper  # noqa: E402
 from tr_params import NUMBERS, P  # noqa: E402
 
@@ -156,6 +156,8 @@ def build(out, dr=None, glass=None, summary_path=None):
                 store["the nearest set rivet (%s)" % k] = rv[k]
         summary["clearance"] = near
         summary["skin"] = skin
+        glass = [(round(v, 2), pname, oname[:60]) for pname, oname, kind, v, _a, _b in rows if kind == "glass"]
+        summary["glass"] = min(glass) if glass else None
         summary["faults"] += ["%s is %.2f mm from %s" % (p, v[0], v[1]) for p, v in near.items()
                               if v[0] < clearance.RULE and not p.startswith("the nearest set rivet")]
     if summary_path:
@@ -176,7 +178,7 @@ LIST_ROWS = [
      "the Lead's rulings 2026-11-01; transitions/lower.py: one part, front and back"),
     ("UT", "Ống chuyển cấp (cụm)", "HS", None, 1,
      "the Lead's rulings 2026-11-01: the shop build (a shell and a floor) with turning vanes, the box at X 680, the "
-     "right wall to X 1158 and DR's opening X 961 to 1146, Z 1895 to 2102; in place of 618102"),
+     "right wall to X 1156 and DR's opening X 961 to 1146, Z 1895 to 2102; in place of 618102"),
     ("UT-S", "Ống chuyển cấp - vỏ", "MP", "UT", 1, "the Lead's rulings 2026-11-01; transitions/upper.py"),
     ("UT-F", "Ống chuyển cấp - tấm đáy", "MP", "UT", 1, "the Lead's rulings 2026-11-01; transitions/upper.py"),
     ("UT-VA", "Ống chuyển cấp - cánh hướng gió trên hộp quạt", "MP", "UT", 3,
@@ -351,6 +353,8 @@ def main(argv):
         print("rivets %s x%d  grip %.1f  %s: %s" % (r["duct"], r["count"], r["grip_mm"], r["stack"], r["rivet"]))
     for p, v in (s.get("clearance") or {}).items():
         print("nearest DR tube or glass to %s: %.2f mm (%s)" % (p[:60], v[0], v[1]))
+    if s.get("glass"):
+        print("nearest glass or its U-profile: %.2f mm (%s to %s)" % tuple(s["glass"]))
     for p, v in (s.get("skin") or {}).items():
         print("DR's skin to %s: %.2f mm" % (p[:60], v[0]))
     print("overlaps: %d" % len(s["overlaps"]))

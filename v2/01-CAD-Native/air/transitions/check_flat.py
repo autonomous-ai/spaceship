@@ -1,6 +1,6 @@
 """Develop a folded part's flat from its STEP alone, and check its DXF against it.
 
-Independent of sheetmetal.py (which builds both the STEP and the DXF from one definition): this reads only the
+Independent of tr_sheetmetal.py (which builds both the STEP and the DXF from one definition): this reads only the
 STEP's faces. One skin is the faces reached from the largest plane across tangent edges (planes and the fold
 cylinders); the other skin is the rest of the large faces, and the thin faces are the sheet's edges. Each fold
 is a pair of coaxial cylinders whose radii differ by the thickness: the smaller is the inside radius r. The skin
