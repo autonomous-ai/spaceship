@@ -460,6 +460,23 @@ def write_step(shapes, path, title):
     h.SetDescriptionValue(1, TCollection_HAsciiString(title))
     if w.Write(path) != IFSelect_RetDone:
         raise RuntimeError("STEP write failed: %s" % path)
+    product_numbers(path)
+
+
+def product_numbers(path):
+    """Conventions section 6, as Fusion writes it: each numbered product's id is its 6 digits alone, its name the
+    number and the name ("611801", "611801 AIR - SUPPLY TRANSITION - SHELL"); a placed copy's index ("... 2") is
+    left off the product, so every copy of one part carries one name."""
+    import re
+    with open(path, encoding="latin-1") as fh:
+        text = fh.read()
+
+    def fix(m):
+        num, name = m.group(1), re.sub(r"\s+\d+$", "", m.group(2).strip())
+        return "PRODUCT('%s','%s %s'" % (num, num, name)
+    text = re.sub(r"PRODUCT\(\s*'(\d{6}) ([^']*)'\s*,\s*'[^']*'", fix, text)
+    with open(path, "w", encoding="latin-1") as fh:
+        fh.write(text)
 
 
 def flat_outline(regions):
