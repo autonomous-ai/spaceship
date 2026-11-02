@@ -340,6 +340,49 @@ def test_a_bought_part_under_the_frame_is_refused():
             assert "219984" in str(e) and "bought part" in str(e), e
 
 
+def test_a_welded_in_part_counts_under_its_own_frame():
+    """The WALL Drawings Engineer on #365: a welded-in part's count came from its fullest parts-list row in any of the
+    team's lists, so every frame got one frame's count (WALL's mitre plate 831007: 2 under L1, 1 under L2, 4 under
+    each back frame). It now comes from its row under this frame in the frame's own list. Two lists: the plate 2
+    under 219980, 4 under 219990 (that row the fuller one). 219980 takes 2, 219990 takes 4; a nested frame with no
+    row of the plate under it is refused; a list that doesn't nest the frame still gives the part's own row."""
+    d = os.path.join(TMP, "welded_counts")
+    os.makedirs(d, exist_ok=True)
+    cols = ["level", "part_number", "name", "kind", "material", "finish", "qty"]
+
+    def lst(name, rows):
+        path = os.path.join(d, name)
+        with open(path, "w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, cols)
+            w.writeheader()
+            for r in rows:
+                w.writerow(r)
+        return path
+    a = lst("a.csv", [{"level": "1", "part_number": "219980", "name": "TEST FRAME A", "qty": "1"},
+                      {"level": "2", "part_number": "219983", "name": "TEST PLATE", "kind": "MP", "qty": "2"},
+                      {"level": "1", "part_number": "219991", "name": "TEST FRAME WITHOUT PLATES", "qty": "1"},
+                      {"level": "2", "part_number": "219981", "name": "TEST MEMBER LONG", "qty": "2"}])
+    b = lst("b.csv", [{"level": "1", "part_number": "219990", "name": "TEST FRAME B", "qty": "1"},
+                      {"level": "2", "part_number": "219983", "name": "TEST PLATE", "kind": "MP",
+                       "material": "steel plate 2", "finish": "zinc", "qty": "4"}])
+    cut = _cut_list(os.path.join(d, "cut.csv"), GOOD + [dict(g, frame=f) for f in ("219990", "219991") for g in GOOD])
+    real = inputs.team_lists
+    inputs.team_lists = lambda team: [a, b]
+    try:
+        cfg = {"file": cut, "welded_in": ["219983"]}
+        qty = lambda pn: next(r["qty"] for r in inputs.cut_list_rows("none", cfg, pn)[0] if r["member_part"] == "219983")
+        assert qty("219980") == "2" and qty("219990") == "4", (qty("219980"), qty("219990"))
+        try:
+            inputs.cut_list_rows("none", cfg, "219991")
+            raise AssertionError("counted a plate the frame's list doesn't put under it")
+        except ValueError as e:
+            assert "has no row under frame 219991 in the frame's own list" in str(e), e
+        inputs.team_lists = lambda team: [b]           # 219980 nested in no list: the plate's own row, as before
+        assert qty("219980") == "4", qty("219980")
+    finally:
+        inputs.team_lists = real
+
+
 def test_ceilings_frames_when_they_are_on_this_tree():
     """CEILING's C1 and C2 frames (#348) with their tube cut list and the mitre plates welded in: they draw and read
     back. Until #348's members and cut list are on this tree, this says so and passes."""
