@@ -117,7 +117,7 @@ def build(out, dr=None, glass=None, summary_path=None):
             placed.append((key, "%s %d" % (product_name(key, part), i + 1), moved(shapes[key], c)))
     for akey, title in (("LT", "AIR - RISER TRANSITION"), ("UT", "AIR - SUPPLY TRANSITION")):
         S.write_step([(nm, sh) for k, nm, sh in placed if k.startswith(akey + "-")],
-                     os.path.join(out, fname(akey, "STEP", "step")), title)
+                     os.path.join(out, fname(akey, "STEP", "step")), "%s %s" % (NUMBERS[akey], title))
     # the rivets: every hole's mate and stack, and each set rivet's head and tail (for the checks only)
     sts, rfaults = R.stacks(pieces(), inside_out=INSIDE_OUT)
     summary["faults"] += rfaults
