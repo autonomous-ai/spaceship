@@ -212,7 +212,7 @@ def run(root, rev):
         findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn,
                                               bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn,
                                               cuboid_by_pn=cuboid_by_pn, prism_by_pn=prism_by_pn, made_why=made_why,
-                                              ends_by_pn=ends_by_pn)
+                                              ends_by_pn=ends_by_pn, materials=materials)
         ran.add("C05")
     people_fs, people_ran = c_drawings.check_drawing_people(root)    # the owner's rule: Autonomous, no person's name
     findings += people_fs
