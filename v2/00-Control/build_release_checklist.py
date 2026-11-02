@@ -242,10 +242,11 @@ def head_noun(name):
     return checks_common().head_noun(name)
 
 
-def soft_kind(name):
+def soft_kind(name, material=""):
     """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89), with the mechanical
-    check's own list of soft heads."""
-    h = head_noun(name)
+    check's own list of soft heads. The head is the one C05 reads (common.soft_head): a LINING whose material is foam
+    reads as a foam, one of felt or fibre as a felt (D-180)."""
+    h = checks_common().soft_head(name, material)
     if not checks_common().SOFT_HEADS.fullmatch(h):
         return ""
     return "felt or fill" if h.rstrip("S").endswith(("FELT", "FILL")) else "soft"
@@ -474,7 +475,7 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             frames = member_frame.get(pn, set())
             cad = cad or any("CAD" in frame_kinds.get(f, set()) for f in frames)  # a D-120 member: its frame's files
             step = step or any("STEP" in frame_kinds.get(f, set()) for f in frames)
-            soft = soft_kind(r["name"]) if r["make_buy"] != "assembly" else ""
+            soft = soft_kind(r["name"], r["material"]) if r["make_buy"] != "assembly" else ""
             by_cut = bool(soft) and cut_list_lacks(by_cut_row.get(pn, []), thickness=soft == "soft") == []
             strip = ((d125 or {}).get(pn) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part" else None)
             strip_ok = strip is not None and not strip[0]
@@ -939,7 +940,7 @@ def main(argv=None):
     except Exception as e:  # the checklist still runs; drawgen's parts then count as Fusion's (D-84)
         print(f"tools/drawgen's parts not read ({type(e).__name__}: {e}); a locked screen blocks them as Fusion's")
         drawgen = set()
-    felts = {r["part_number"] for r in parts if r["make_buy"] == "make" and soft_kind(r["name"]) == "felt or fill"}
+    felts = {r["part_number"] for r in parts if r["make_buy"] == "make" and soft_kind(r["name"], r["material"]) == "felt or fill"}
     try:
         d128 = d128_pieces(felts)
     except Exception as e:  # the checklist still runs; the drawing column then waits on D-128's drawings

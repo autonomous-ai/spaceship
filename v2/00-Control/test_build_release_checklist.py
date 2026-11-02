@@ -567,6 +567,18 @@ class D89SoftGoods(unittest.TestCase):
         self.assertEqual(rc.soft_kind("BASE - SEAL HOLDER - LH"), "")
         self.assertEqual(rc.soft_kind("WALL - CAVITY FILL - SIDE LOWER - LH"), "felt or fill")
 
+    def test_a_lining_reads_by_its_material(self):
+        """D-180: a LINING of foam is a soft good, one of felt or fibre a felt; a steel lining, or one with no material,
+        keeps its drawing. The checklist reads it with C05's own common.soft_head, so the two can't drift."""
+        n = "AIR - FAN BOX LINING - SUPPLY - SIDE"
+        self.assertEqual(rc.soft_kind(n, "PET fibre 32 kg/m3, 50 mm"), "felt or fill")
+        self.assertEqual(rc.soft_kind(n, "melamine foam, 50 mm"), "soft")
+        self.assertEqual(rc.soft_kind(n, "galvanized steel 0.8"), "")
+        self.assertEqual(rc.soft_kind(n), "")
+        import common
+        for m in ("PET fibre 32 kg/m3", "melamine foam", "galvanized steel 0.8", ""):
+            self.assertEqual(bool(rc.soft_kind(n, m)), common.is_soft(n, material=m), m)
+
     FILL_PIECES = ("WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
                    "WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1")
 
