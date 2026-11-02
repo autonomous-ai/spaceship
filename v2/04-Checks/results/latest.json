@@ -1,5 +1,5 @@
 {
- "rev": "eaea775c",
+ "rev": "7489dd41",
  "date": "2026-11-02",
  "inputs": {
   "bodies_skeleton": 31,
@@ -12,7 +12,7 @@
    "right-base",
    "top"
   ],
-  "bodies_assembly": 544,
+  "bodies_assembly": 549,
   "shell_faces_assembly": [
    "back-base",
    "left",
@@ -22,7 +22,7 @@
    "top"
   ],
   "seal_line_cuts": 91,
-  "seal_line_open_mm2": 47029.4,
+  "seal_line_open_mm2": 46436.1,
   "parts_lists": [
    "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
@@ -31,6 +31,9 @@
    "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv",
    "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv",
    "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+   "v2/03-Manufacturing/front/351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv",
+   "v2/03-Manufacturing/front/351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv",
+   "v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR_BOM.csv",
    "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv",
    "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv",
    "v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv",
@@ -248,32 +251,16 @@
   {
    "check": "C02",
    "rule": "bond-line",
-   "subject": "assembly 351101 FRONT - DECOR SKIN - DL:1",
-   "severity": "severe",
-   "message": "351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 ....",
-   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
-   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
-   "owner": "FRONT",
-   "evidence": {
-    "model": "assembly",
-    "bond_t": 3.0,
-    "members": 17
-   },
-   "key": "C02|bond-line|assembly 351101 FRONT - DECOR SKIN - DL:1"
-  },
-  {
-   "check": "C02",
-   "rule": "bond-line",
    "subject": "assembly 351201 FRONT - DECOR SKIN - DT:1",
    "severity": "severe",
-   "message": "351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 ....",
+   "message": "351201 FRONT - DECOR SKIN - DT:1: 1 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 368005 FRONT - FRAME-STOP SEAL:1 at 0.",
    "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
    "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
    "owner": "FRONT",
    "evidence": {
     "model": "assembly",
     "bond_t": 3.0,
-    "members": 11
+    "members": 1
    },
    "key": "C02|bond-line|assembly 351201 FRONT - DECOR SKIN - DT:1"
   },
@@ -282,65 +269,23 @@
    "rule": "bond-line",
    "subject": "assembly 351301 FRONT - DECOR SKIN - DR:1",
    "severity": "severe",
-   "message": "351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 ....",
+   "message": "351301 FRONT - DECOR SKIN - DR:1: 3 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 352307 FRONT - DECOR FRAME DR - BACK RING BOTTOM:1 at 0; 352308 FRONT - DECOR FRAME DR - BACK RING BOLT LINE:1 at 0; 352313 FRONT - DECOR FRAME DR - BACK RING GLASS EDGE:1 at 0.",
    "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
    "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
    "owner": "FRONT",
    "evidence": {
     "model": "assembly",
     "bond_t": 3.0,
-    "members": 11
+    "members": 3
    },
    "key": "C02|bond-line|assembly 351301 FRONT - DECOR SKIN - DR:1"
   },
   {
    "check": "C01",
    "rule": "seal-gap",
-   "subject": "floor seal line 118001",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) and 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3): a gap 320.1 mm wide at X 1057.5, Y -727.1, from the floor to Z 10.0, open area 3201 mm² (calculation: width times height, summed over 4 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-   "owner": "BASE",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     1057.5,
-     -727.1
-    ],
-    "z": [
-     0.0,
-     10.0
-    ],
-    "width_mm": [
-     320.14,
-     320.14
-    ],
-    "area_mm2": 3201.4,
-    "parts": [
-     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
-     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE"
-    ],
-    "widest_cut": {
-     "z": 3.35,
-     "a": [
-      915.0,
-      -800.0
-     ],
-     "b": [
-      1200.0,
-      -654.17
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 118001"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
    "subject": "floor seal line 111101 | 361002",
    "severity": "severe",
-   "message": "The pod's floor seal line is open between 111101 BASE - BAND TUBE - SIDE - LH and 361002 FRONT - DOOR KICK STRIP: a gap 238.7 to 251.7 mm wide at X -1085.5, Y -670.5, from the floor to Z 110.0, open area 27393 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD, 351103 FRONT - DOOR HINGE-SIDE STOP - DL, 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112). A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "message": "The pod's floor seal line is open between 111101 BASE - BAND TUBE - SIDE - LH and 361002 FRONT - DOOR KICK STRIP: a gap 238.7 to 251.7 mm wide at X -1085.5, Y -670.5, from the floor to Z 110.0, open area 27393 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD, 351105 FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1, 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112). A gap this wide is a part not modelled yet, or missing. All openings on this run: 10, 46436 mm² in all.",
    "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
    "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
    "owner": "BASE; FRONT",
@@ -362,7 +307,7 @@
     "parts": [
      "110000_P01_BASE_CAD / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / BASE - BAND TUBE - SIDE - LH - TUBE",
      "110000_P01_BASE_CAD / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
-     "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / HINGE-SIDE STOP 1 (ANGLE, BONDED)",
+     "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD / 351105 FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1:1 / HINGE-SIDE STOP 1 (ANGLE, BONDED)",
      "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
      "360001_P01_FRONT-DOOR-UNIT_CAD / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / DROP SEAL ENVELOPE (CATALOGUE SECTION)"
     ],
@@ -383,9 +328,96 @@
   {
    "check": "C01",
    "rule": "seal-gap",
+   "subject": "floor seal line 111102 | 611107",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111102 BASE - BAND TUBE - SIDE - RH and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 39.0 to 49.0 mm wide at X 1185.5, Y -641.1, from the floor to Z 110.0, open area 5140 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2), 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 10, 46436 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1185.5,
+     -641.1
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width_mm": [
+     39.0,
+     49.0
+    ],
+    "area_mm2": 5140.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 111102 BASE - BAND TUBE - SIDE - RH:1 / BASE - BAND TUBE - SIDE - RH - TUBE",
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
+    ],
+    "widest_cut": {
+     "z": 25.45,
+     "a": [
+      1161.0,
+      -641.12
+     ],
+     "b": [
+      1210.0,
+      -641.12
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111102 | 611107"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 118001 | 611109",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3) and 611109 AIR - COLUMN CORNER ANGLE - BACK: a gap 162.5 to 165.4 mm wide at X 938.0, Y -720.6, from the floor to Z 10.0, open area 1648 mm² (calculation: width times height, summed over 5 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 611106 AIR - COLUMN FOOT PLATE). A gap this wide is a part not modelled yet, or missing. All openings on this run: 10, 46436 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     938.0,
+     -720.6
+    ],
+    "z": [
+     0.0,
+     10.0
+    ],
+    "width_mm": [
+     162.46,
+     165.39
+    ],
+    "area_mm2": 1648.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611109 AIR - COLUMN CORNER ANGLE - BACK:1 / COLUMN ANGLE BL"
+    ],
+    "widest_cut": {
+     "z": 4.35,
+     "a": [
+      915.0,
+      -800.0
+     ],
+     "b": [
+      961.0,
+      -641.14
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 118001 | 611109"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
    "subject": "floor seal line 111301 | 361002",
    "severity": "severe",
-   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 to 4.5 mm wide at X 216.2, Y -704.4, from the floor to Z 110.0, open area 478 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (4), 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112, 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735, 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571, 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD). All openings on this run: 12, 47029 mm² in all.",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 to 4.5 mm wide at X 216.2, Y -704.4, from the floor to Z 110.0, open area 478 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (4), 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112, 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735, 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571, 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD). All openings on this run: 10, 46436 mm² in all.",
    "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
    "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
    "owner": "BASE; FRONT",
@@ -414,7 +446,7 @@
      "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)"
     ],
     "widest_cut": {
-     "z": 3.35,
+     "z": 1.0,
      "a": [
       214.0,
       -704.38
@@ -430,138 +462,9 @@
   {
    "check": "C01",
    "rule": "seal-gap",
-   "subject": "floor seal line 111301 | 118001",
+   "subject": "floor seal line 611107 | 611109",
    "severity": "severe",
-   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) and 111301 BASE - SILL - FIXED GLASS: a gap 237.6 mm wide at X 1082.5, Y -671.8, from Z 10.0 to Z 12.0, open area 475 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-   "owner": "BASE",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     1082.5,
-     -671.8
-    ],
-    "z": [
-     10.0,
-     12.0
-    ],
-    "width_mm": [
-     237.64,
-     237.64
-    ],
-    "area_mm2": 475.3,
-    "parts": [
-     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
-     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS"
-    ],
-    "widest_cut": {
-     "z": 10.5,
-     "a": [
-      965.0,
-      -689.5
-     ],
-     "b": [
-      1200.0,
-      -654.17
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 111301 | 118001"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
-   "subject": "floor seal line 111102 | 611107",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 111102 BASE - BAND TUBE - SIDE - RH and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 39.0 to 49.0 mm wide at X 1185.5, Y -643.4, from Z 12.0 to Z 110.0, open area 4672 mm² (calculation: width times height, summed over 84 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2), 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-   "owner": "BASE; CEILING",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     1185.5,
-     -643.4
-    ],
-    "z": [
-     12.0,
-     110.0
-    ],
-    "width_mm": [
-     39.0,
-     49.0
-    ],
-    "area_mm2": 4672.0,
-    "parts": [
-     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 111102 BASE - BAND TUBE - SIDE - RH:1 / BASE - BAND TUBE - SIDE - RH - TUBE",
-     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
-    ],
-    "widest_cut": {
-     "z": 25.45,
-     "a": [
-      1161.0,
-      -643.38
-     ],
-     "b": [
-      1210.0,
-      -643.38
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 111102 | 611107"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
-   "subject": "floor seal line 111301 | 611103",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611103 AIR - COLUMN CORNER ANGLE: a gap 46.0 mm wide at X 964.8, Y -666.5, from Z 12.0 to Z 24.0, open area 552 mm² (calculation: width times height, summed over 9 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-   "owner": "BASE; CEILING",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     964.8,
-     -666.5
-    ],
-    "z": [
-     12.0,
-     24.0
-    ],
-    "width_mm": [
-     46.0,
-     46.0
-    ],
-    "area_mm2": 552.0,
-    "parts": [
-     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE BL",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE"
-    ],
-    "widest_cut": {
-     "z": 13.0,
-     "a": [
-      964.75,
-      -689.5
-     ],
-     "b": [
-      964.75,
-      -643.5
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 111301 | 611103"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
-   "subject": "floor seal line 611103 | 611107",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 179.0 mm wide at X 1070.5, Y -643.4, from Z 14.0 to Z 24.0, open area 1790 mm² (calculation: width times height, summed over 8 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "message": "The pod's floor seal line is open between 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW and 611109 AIR - COLUMN CORNER ANGLE - BACK: a gap 179.0 mm wide at X 1070.5, Y -641.1, from Z 2.0 to Z 12.0, open area 1790 mm² (calculation: width times height, summed over 7 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 10, 46436 mm² in all.",
    "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
    "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
    "owner": "CEILING",
@@ -569,11 +472,11 @@
     "model": "seal-line",
     "at": [
      1070.5,
-     -643.4
+     -641.1
     ],
     "z": [
-     14.0,
-     24.0
+     2.0,
+     12.0
     ],
     "width_mm": [
      179.0,
@@ -581,29 +484,156 @@
     ],
     "area_mm2": 1790.0,
     "parts": [
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE BL",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611109 AIR - COLUMN CORNER ANGLE - BACK:1 / COLUMN ANGLE BL"
     ],
     "widest_cut": {
-     "z": 15.0,
+     "z": 4.35,
      "a": [
       981.0,
-      -643.38
+      -641.12
      ],
      "b": [
       1160.0,
-      -643.38
+      -641.12
      ]
     }
    },
-   "key": "C01|seal-gap|floor seal line 611103 | 611107"
+   "key": "C01|seal-gap|floor seal line 611107 | 611109"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 611109",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611109 AIR - COLUMN CORNER ANGLE - BACK: a gap 48.4 mm wide at X 964.8, Y -665.3, from Z 10.0 to Z 12.0, open area 97 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 10, 46436 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     964.8,
+     -665.3
+    ],
+    "z": [
+     10.0,
+     12.0
+    ],
+    "width_mm": [
+     48.36,
+     48.36
+    ],
+    "area_mm2": 96.7,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611109 AIR - COLUMN CORNER ANGLE - BACK:1 / COLUMN ANGLE BL"
+    ],
+    "widest_cut": {
+     "z": 10.5,
+     "a": [
+      964.75,
+      -689.5
+     ],
+     "b": [
+      964.75,
+      -641.14
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 611109"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611103 | 611105",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE - FRONT and 611105 AIR - KICK GRILLE - FRONT: a gap 10.0 mm wide at X 1160.8, Y -292.0, from Z 12.0 to Z 110.0, open area 980 mm² (calculation: width times height, summed over 83 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 10, 46436 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1160.8,
+     -292.0
+    ],
+    "z": [
+     12.0,
+     110.0
+    ],
+    "width_mm": [
+     10.0,
+     10.0
+    ],
+    "area_mm2": 980.0,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE - FRONT:2 / COLUMN ANGLE FRONT",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE - FRONT:1 / KICK GRILLE FRONT"
+    ],
+    "widest_cut": {
+     "z": 14.0,
+     "a": [
+      1160.75,
+      -297.0
+     ],
+     "b": [
+      1160.75,
+      -287.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611103 | 611105"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 611111",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611111 AIR - KICK GRILLE - LEFT: a gap 90.5 to 92.5 mm wide at X 950.8, Y -645.2, from Z 12.0 to Z 110.0, open area 8899 mm² (calculation: width times height, summed over 83 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571). A gap this wide is a part not modelled yet, or missing. All openings on this run: 10, 46436 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     950.8,
+     -645.2
+    ],
+    "z": [
+     12.0,
+     110.0
+    ],
+    "width_mm": [
+     90.5,
+     92.5
+    ],
+    "area_mm2": 8899.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611111 AIR - KICK GRILLE - LEFT:1 / KICK GRILLE LEFT"
+    ],
+    "widest_cut": {
+     "z": 95.75,
+     "a": [
+      950.75,
+      -691.5
+     ],
+     "b": [
+      950.75,
+      -599.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 611111"
   },
   {
    "check": "C01",
    "rule": "seal-gap",
    "subject": "floor seal line 361002 at X 214 Y -707 Z 21",
    "severity": "severe",
-   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 21.0 to Z 25.0, open area 8 mm² (calculation: width times height, summed over 5 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 21.0 to Z 25.0, open area 8 mm² (calculation: width times height, summed over 5 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 10, 46436 mm² in all.",
    "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
    "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "owner": "FRONT",
@@ -644,7 +674,7 @@
    "rule": "seal-gap",
    "subject": "floor seal line 361002 at X 214 Y -707 Z 102",
    "severity": "severe",
-   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 102.1 to Z 104.0, open area 4 mm² (calculation: width times height, summed over 2 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 102.1 to Z 104.0, open area 4 mm² (calculation: width times height, summed over 2 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 10, 46436 mm² in all.",
    "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
    "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "owner": "FRONT",
@@ -679,149 +709,6 @@
     }
    },
    "key": "C01|seal-gap|floor seal line 361002 at X 214 Y -707 Z 102"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
-   "subject": "floor seal line 611103 | 611105",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE and 611105 AIR - KICK GRILLE: a gap 10.0 mm wide at X 1160.8, Y -292.0, from Z 24.0 to Z 110.0, open area 860 mm² (calculation: width times height, summed over 75 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     1160.8,
-     -292.0
-    ],
-    "z": [
-     24.0,
-     110.0
-    ],
-    "width_mm": [
-     10.0,
-     10.0
-    ],
-    "area_mm2": 860.0,
-    "parts": [
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE FR",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE FRONT"
-    ],
-    "widest_cut": {
-     "z": 24.5,
-     "a": [
-      1160.75,
-      -297.0
-     ],
-     "b": [
-      1160.75,
-      -287.0
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 611103 | 611105"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
-   "subject": "floor seal line 111301 | 611105",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611105 AIR - KICK GRILLE: a gap 90.5 to 92.5 mm wide at X 950.8, Y -645.2, from Z 24.0 to Z 105.0, open area 7350 mm² (calculation: width times height, summed over 72 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571). A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-   "owner": "BASE; CEILING",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     950.8,
-     -645.2
-    ],
-    "z": [
-     24.0,
-     105.0
-    ],
-    "width_mm": [
-     90.5,
-     92.5
-    ],
-    "area_mm2": 7350.5,
-    "parts": [
-     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
-     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)",
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE LEFT"
-    ],
-    "widest_cut": {
-     "z": 95.75,
-     "a": [
-      950.75,
-      -691.5
-     ],
-     "b": [
-      950.75,
-      -599.0
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 111301 | 611105"
-  },
-  {
-   "check": "C01",
-   "rule": "seal-gap",
-   "subject": "floor seal line 611105 | 611501",
-   "severity": "severe",
-   "message": "The pod's floor seal line is open between 611105 AIR - KICK GRILLE and 611501 AIR - INTAKE RISER: a gap 49.2 mm wide at X 953.0, Y -623.5, from Z 105.0 to Z 110.0, open area 246 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
-   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "model": "seal-line",
-    "at": [
-     953.0,
-     -623.5
-    ],
-    "z": [
-     105.0,
-     110.0
-    ],
-    "width_mm": [
-     49.16,
-     49.16
-    ],
-    "area_mm2": 245.8,
-    "parts": [
-     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE LEFT",
-     "610000_P01_AIR_CAD / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / INTAKE RISER"
-    ],
-    "widest_cut": {
-     "z": 106.5,
-     "a": [
-      955.0,
-      -648.0
-     ],
-     "b": [
-      951.0,
-      -599.0
-     ]
-    }
-   },
-   "key": "C01|seal-gap|floor seal line 611105 | 611501"
-  },
-  {
-   "check": "C08",
-   "rule": "hole-size-M6-CLEARANCE-7",
-   "subject": "assembly SOFFIT RAIL DOOR holes Ø6.60",
-   "severity": "major",
-   "message": "610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig.",
-   "fix": "Make it Ø7.0 (+0.1/0) and give its position Ø0.4 from the spigot hole on the drawing; if this is a factory joint, not a site joint, say so in the feature rationale",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "model": "assembly",
-    "dia_mm": 6.6,
-    "count": 2
-   },
-   "key": "C08|hole-size-M6-CLEARANCE-7|assembly SOFFIT RAIL DOOR holes Ø6.60"
   },
   {
    "check": "C11",
@@ -948,7 +835,7 @@
    "rule": "frame-steel",
    "subject": "351104",
    "severity": "major",
-   "message": "351104 FRONT - DECOR FRAME - DL: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DL; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5 mill finish (hidden'); 26 member rows not galvanized steel: BACK RING BOTTOM B01 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 2), BACK RING DOOR SIDE B02 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 3), BACK RING SLOPE UNDER DT B03 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 4), BACK RING BOLT LINE B04 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 5), RING BOTTOM - DOOR SIDE R1D (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 6), RING BOTTOM - BACK R1K (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 7).",
+   "message": "351104 FRONT - DECOR FRAME - DL: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DL; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5 mill finish (hidden'); its row (351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv line 2) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5 mill finish (hidden'); 26 member rows not galvanized steel: BACK RING BOTTOM B01 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 2), BACK RING DOOR SIDE B02 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 3), BACK RING SLOPE UNDER DT B03 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 4), BACK RING BOLT LINE B04 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 5), RING BOTTOM - DOOR SIDE R1D (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 6), RING BOTTOM - BACK R1K (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 7).",
    "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
    "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv",
    "owner": "FRONT",
@@ -962,7 +849,7 @@
    "rule": "frame-steel",
    "subject": "351204",
    "severity": "major",
-   "message": "351204 FRONT - DECOR FRAME - DT: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DT; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 (the back ring's to'); 13 member rows not galvanized steel: BACK RING BOTTOM B01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 2), BACK RING DR JOINT B02 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 3), BACK RING TOP B03 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 4), BACK RING SLOPE OVER DL B04 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 5), BACK RING POST B05 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 6), FRONT FACET TUBE F01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 7).",
+   "message": "351204 FRONT - DECOR FRAME - DT: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DT; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 mill finish (hidden'); its row (351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv line 2) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 mill finish (hidden'); 13 member rows not galvanized steel: BACK RING BOTTOM B01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 2), BACK RING DR JOINT B02 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 3), BACK RING TOP B03 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 4), BACK RING SLOPE OVER DL B04 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 5), BACK RING POST B05 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 6), FRONT FACET TUBE F01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 7).",
    "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
    "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv",
    "owner": "FRONT",
@@ -976,7 +863,7 @@
    "rule": "frame-steel",
    "subject": "351306",
    "severity": "major",
-   "message": "351306 FRONT - DECOR FRAME - DR: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DR; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.'); 24 member rows not galvanized steel: FRONT RING BOTTOM F01 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 2), FRONT RING FACET SIDE F02 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 3), FRONT RING TOP F03 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 4), FRONT RING DT JOINT F04 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 5), FRONT RING DIAGONAL F05 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 6), FRONT RING GLASS EDGE F06 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 7).",
+   "message": "351306 FRONT - DECOR FRAME - DR: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DR; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.'); its row (351306_P01_FRONT-DECOR-FRAME-DR_BOM.csv line 2) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.'); 24 member rows not galvanized steel: FRONT RING BOTTOM F01 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 2), FRONT RING FACET SIDE F02 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 3), FRONT RING TOP F03 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 4), FRONT RING DT JOINT F04 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 5), FRONT RING DIAGONAL F05 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 6), FRONT RING GLASS EDGE F06 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 7).",
    "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
    "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
    "owner": "FRONT",
@@ -984,228 +871,6 @@
     "model": "frames"
    },
    "key": "C11|frame-steel|351306"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611106",
-   "severity": "major",
-   "message": "611106 AIR - COLUMN FOOT PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611106"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611103",
-   "severity": "major",
-   "message": "611103 AIR - COLUMN CORNER ANGLE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611103"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611107",
-   "severity": "major",
-   "message": "611107 AIR - COLUMN PLENUM SIDE PLATE - LOW in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611107"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611108",
-   "severity": "major",
-   "message": "611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611108"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611301",
-   "severity": "major",
-   "message": "611301 AIR - CARTRIDGE CASING in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611301"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611302",
-   "severity": "major",
-   "message": "611302 AIR - CARTRIDGE LAYER 50 in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'Pyrotek Sorberpoly 2D 40 kg/m3'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611302"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611201",
-   "severity": "major",
-   "message": "611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611201"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611207",
-   "severity": "major",
-   "message": "611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611207"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611208",
-   "severity": "major",
-   "message": "611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611208"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611205",
-   "severity": "major",
-   "message": "611205 AIR - SOFFIT TOP RAIL - DOOR SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611205"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611209",
-   "severity": "major",
-   "message": "611209 AIR - SOFFIT TOP RAIL - ROOM SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611209"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611206",
-   "severity": "major",
-   "message": "611206 AIR - SOFFIT END PLATE - LEFT in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611206"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611210",
-   "severity": "major",
-   "message": "611210 AIR - SOFFIT DOOR-SIDE PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611210"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611401",
-   "severity": "major",
-   "message": "611401 AIR - FAN BOX CASING - EXHAUST in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611401"
-  },
-  {
-   "check": "C11",
-   "rule": "material-finish",
-   "subject": "611402",
-   "severity": "major",
-   "message": "611402 AIR - FAN BOX CASING - SUPPLY in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
-   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C11|material-finish|611402"
-  },
-  {
-   "check": "C06",
-   "rule": "row-incomplete",
-   "subject": "618101",
-   "severity": "minor",
-   "message": "618101 AIR - SENSOR HUB ZONE - HOLD in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv is missing: mass.",
-   "fix": "Fill them in, each number with its status and source.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C06|row-incomplete|618101"
-  },
-  {
-   "check": "C09",
-   "rule": "edge-distance",
-   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348",
-   "severity": "severe",
-   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates.",
-   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "edge_mm": 8.5,
-    "dia_mm": 6.6
-   },
-   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348"
-  },
-  {
-   "check": "C09",
-   "rule": "edge-distance",
-   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348",
-   "severity": "severe",
-   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates.",
-   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "edge_mm": 8.5,
-    "dia_mm": 6.6
-   },
-   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348"
   },
   {
    "check": "C09",
@@ -1462,86 +1127,6 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
-   "subject": "351103",
-   "severity": "major",
-   "message": "351103 FRONT - DOOR HINGE-SIDE STOP - DL is one component holding 4 bodies of 3 different shapes (HINGE-SIDE STOP 1 (ANGLE, BONDED), HINGE-SIDE STOP 2 (ANGLE, BONDED), HINGE-SIDE STOP 3 (ANGLE, BONDED), HINGE-SIDE STOP 4 (ANGLE, BONDED)) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
-   "owner": "FRONT",
-   "evidence": {
-    "bodies": 4,
-    "shapes": 3,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|351103"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "351104",
-   "severity": "major",
-   "message": "351104 FRONT - DECOR FRAME - DL is one component holding 26 bodies of 16 different shapes (B01 BACK RING BOTTOM 20 x 20 x 1.5, B02 BACK RING DOOR SIDE 20 x 20 x 1.5, B03 BACK RING SLOPE UNDER DT 20 x 20 x 1.5, B04 BACK RING BOLT LINE 60 x 20 x 1.5, H1 HINGE POST 1 (HINGE H1) 60 x 20 x 1.5, H2 HINGE POST 2 (HINGE H2) 60 x 20 x 1.5, H3 HINGE POST 3 (HINGE H3) 60 x 20 x 1.5, P1 DOOR-SIDE FRO) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (26 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
-   "owner": "FRONT",
-   "evidence": {
-    "bodies": 26,
-    "shapes": 16,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|351104"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "351204",
-   "severity": "major",
-   "message": "351204 FRONT - DECOR FRAME - DT is one component holding 13 bodies of 11 different shapes (B01 BACK RING BOTTOM 20 x 20 x 1.5, B02 BACK RING DR JOINT 20 x 20 x 1.5, B03 BACK RING TOP 20 x 20 x 1.5, B04 BACK RING SLOPE OVER DL 20 x 20 x 1.5, B05 BACK RING POST 20 x 20 x 1.5, C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5, C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5, C03 CHAMFER CROSS TUBE RIGHT) in 350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step (13 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
-   "owner": "FRONT",
-   "evidence": {
-    "bodies": 13,
-    "shapes": 11,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|351204"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "351306",
-   "severity": "major",
-   "message": "351306 FRONT - DECOR FRAME - DR is one component holding 24 bodies of 21 different shapes (B01 BACK RING BOTTOM 40 x 20 x 1.2, B02 BACK RING BOLT LINE 80 x 20 x 1.2, B03 BACK RING TOP 20 x 20 x 1.0, B04 BACK RING DT JOINT 20 x 20 x 1.0, B05 BACK RING DT LEDGE 20 x 20 x 1.2, B06 BACK RING DIAGONAL 20 x 20 x 1.0, B07 BACK RING GLASS EDGE 20 x 20 x 1.0, B08 BACK RING BAND 60 x 20 x 1.2, C01 ) in 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step (24 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
-   "owner": "FRONT",
-   "evidence": {
-    "bodies": 24,
-    "shapes": 21,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|351306"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "368005",
-   "severity": "major",
-   "message": "368005 FRONT - FRAME-STOP SEAL is one component holding 4 bodies of 3 different shapes (FRAME-STOP SEAL PS 1515 - HINGE SIDE 1, FRAME-STOP SEAL PS 1515 - HINGE SIDE 2, FRAME-STOP SEAL PS 1515 - HINGE SIDE 3, FRAME-STOP SEAL PS 1515 - HINGE SIDE 4) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
-   "owner": "FRONT",
-   "evidence": {
-    "bodies": 4,
-    "shapes": 3,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|368005"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
    "subject": "411101",
    "severity": "major",
    "message": "411101 CEILING - PANEL FRAME - C1 is one component holding 7 bodies of 6 different shapes (C1 BACK MEMBER 40X40, C1 CROSS MEMBER 1, C1 CROSS MEMBER 2, C1 CROSS MEMBER 3, C1 FRONT MEMBER, C1 SEAM MEMBER, C1 SIDE MEMBER) in 410000_P01_CEILING_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
@@ -1574,86 +1159,6 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
-   "subject": "610301",
-   "severity": "major",
-   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY) is one component holding 4 bodies of 2 different shapes (CARTRIDGE EXHAUST, CARTRIDGE SUPPLY, LAYER 1 EXHAUST, LAYER 1 SUPPLY, LAYER 2 EXHAUST, LAYER 2 SUPPLY, LAYER 3 EXHAUST, LAYER 3 SUPPLY) in 610000_P01_AIR_STEP.step (4 bodies); 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "bodies": 4,
-    "shapes": 2,
-    "files": 2
-   },
-   "key": "C06|bodies-not-components|610301"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "611103",
-   "severity": "major",
-   "message": "611103 AIR - COLUMN CORNER ANGLE is one component holding 3 bodies of 2 different shapes (COLUMN ANGLE BL, COLUMN ANGLE FL, COLUMN ANGLE FR) in 610000_P01_AIR_STEP.step (3 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "bodies": 3,
-    "shapes": 2,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|611103"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "611104",
-   "severity": "major",
-   "message": "611104 AIR - COLUMN FILL is one component holding 2 bodies of 2 different shapes (COLUMN FILL FRONT, COLUMN FILL LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "bodies": 2,
-    "shapes": 2,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|611104"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "611105",
-   "severity": "major",
-   "message": "611105 AIR - KICK GRILLE is one component holding 2 bodies of 2 different shapes (KICK GRILLE FRONT, KICK GRILLE LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "bodies": 2,
-    "shapes": 2,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|611105"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "611203",
-   "severity": "major",
-   "message": "611203 AIR - SOFFIT FILL is one component holding 2 bodies of 2 different shapes (SOFFIT FILL FRONT, SOFFIT FILL UNDER) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "bodies": 2,
-    "shapes": 2,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|611203"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
    "subject": "831001",
    "severity": "major",
    "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS is one component holding 2 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (2 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (2 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (2 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
@@ -1682,22 +1187,6 @@
     "files": 6
    },
    "key": "C06|bodies-not-components|831002"
-  },
-  {
-   "check": "C06",
-   "rule": "bodies-not-components",
-   "subject": "838002",
-   "severity": "major",
-   "message": "838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC is one component holding 4 bodies of 2 different shapes (LOCK SCREW 1 HEAD, LOCK SCREW 1 SHANK, LOCK SCREW 2 HEAD, LOCK SCREW 2 SHANK) in 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
-   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
-   "owner": "CEILING",
-   "evidence": {
-    "bodies": 4,
-    "shapes": 2,
-    "files": 1
-   },
-   "key": "C06|bodies-not-components|838002"
   },
   {
    "check": "C06",
@@ -1742,6 +1231,18 @@
     "files": 4
    },
    "key": "C06|copy-differs|831001"
+  },
+  {
+   "check": "C06",
+   "rule": "cad-not-in-bom",
+   "subject": "618101",
+   "severity": "major",
+   "message": "618101 618101 AIR - SENSOR HUB ZONE - HOLD is in the CAD (v2/03-Manufacturing/air/610000_P01_AIR_STEP.step) but in no parts list.",
+   "fix": "Add it to the parts list, or remove it from the CAD.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|cad-not-in-bom|618101"
   },
   {
    "check": "C06",
@@ -1791,13 +1292,12 @@
    "rule": "name-mismatch",
    "subject": "838003",
    "severity": "major",
-   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' and 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH2-610-4.2 (gone), CAH3-610-4.2 (gone), CAL2-610-4.2 (new), so they name a different part.",
-   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 10 parts lists).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' and 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH2-610-4.2 (gone), CAH3-610-4.2 (gone), CAL2-610-4.2 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 9 parts lists).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
    "owner": "BASE; CEILING; ELECTRICAL; WALL",
    "evidence": {
     "files": [
-     "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
      "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
      "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
@@ -1858,30 +1358,6 @@
     "register": "HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9"
    },
    "key": "C06|name-mismatch|838006"
-  },
-  {
-   "check": "C06",
-   "rule": "bom-not-in-cad",
-   "subject": "611301",
-   "severity": "major",
-   "message": "611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
-   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C06|bom-not-in-cad|611301"
-  },
-  {
-   "check": "C06",
-   "rule": "bom-not-in-cad",
-   "subject": "611302",
-   "severity": "major",
-   "message": "611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
-   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C06|bom-not-in-cad|611302"
   },
   {
    "check": "C05",
@@ -2306,26 +1782,50 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "351103",
-   "severity": "severe",
-   "message": "351103 FRONT - DOOR HINGE-SIDE STOP - DL has no drawing PDF (351103_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "FRONT",
-   "evidence": {},
-   "key": "C05|no-drawing|351103"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "351104",
    "severity": "severe",
-   "message": "351104 FRONT - DECOR FRAME - DL has no drawing PDF (351104_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "message": "351104 FRONT - DECOR FRAME - DL has no drawing PDF (351104_REV_NAME_DWG.pdf under v2/02-Drawings). Its drawing is also its members' drawing: it carries their cut list (D-162), 16 members (352101, 352102, 352103, 352104, 352105, 352106, ...).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; with its members' cut list on it (D-162).",
    "file": "",
    "owner": "FRONT",
    "evidence": {},
    "key": "C05|no-drawing|351104"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351105",
+   "severity": "severe",
+   "message": "351105 FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 has no drawing PDF (351105_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351105"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351106",
+   "severity": "severe",
+   "message": "351106 FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 has no drawing PDF (351106_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351106"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351107",
+   "severity": "severe",
+   "message": "351107 FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 has no drawing PDF (351107_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351107"
   },
   {
    "check": "C05",
@@ -2356,8 +1856,8 @@
    "rule": "no-drawing",
    "subject": "351204",
    "severity": "severe",
-   "message": "351204 FRONT - DECOR FRAME - DT has no drawing PDF (351204_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "message": "351204 FRONT - DECOR FRAME - DT has no drawing PDF (351204_REV_NAME_DWG.pdf under v2/02-Drawings). Its drawing is also its members' drawing: it carries their cut list (D-162), 11 members (352201, 352202, 352203, 352204, 352205, 352206, ...).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; with its members' cut list on it (D-162).",
    "file": "",
    "owner": "FRONT",
    "evidence": {},
@@ -2380,8 +1880,8 @@
    "rule": "no-drawing",
    "subject": "351306",
    "severity": "severe",
-   "message": "351306 FRONT - DECOR FRAME - DR has no drawing PDF (351306_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "message": "351306 FRONT - DECOR FRAME - DR has no drawing PDF (351306_REV_NAME_DWG.pdf under v2/02-Drawings). Its drawing is also its members' drawing: it carries their cut list (D-162), 21 members (352301, 352302, 352303, 352304, 352305, 352306, ...).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; with its members' cut list on it (D-162).",
    "file": "",
    "owner": "FRONT",
    "evidence": {},
@@ -2434,6 +1934,54 @@
    "owner": "AIR",
    "evidence": {},
    "key": "C05|reserved-space|351405"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "352207",
+   "severity": "severe",
+   "message": "352207 FRONT - DECOR FRAME DT - CATCH AND STOP RAIL has no drawing PDF (352207_REV_NAME_DWG.pdf under v2/02-Drawings). As a member of a welded frame its row in the frame's cut list, on the frame's drawing, would do, but its STEP shows an end cut by 2 planes (a notch, a cope or a double cut), which a cut list can't state.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; or, for a member of a welded frame, give its section, cut length, both end angles and quantity in its row of the frame's cut list, on the frame's drawing (a sheet of its own only for work done before welding or an end cut a cut list can't state).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|352207"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "352317",
+   "severity": "severe",
+   "message": "352317 FRONT - DECOR FRAME DR - FACET TUBE - 3 OFF has no drawing PDF (352317_REV_NAME_DWG.pdf under v2/02-Drawings). As a member of a welded frame its row in the frame's cut list, on the frame's drawing, would do, but its STEP shows an end cut by 2 planes (a notch, a cope or a double cut), which a cut list can't state.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; or, for a member of a welded frame, give its section, cut length, both end angles and quantity in its row of the frame's cut list, on the frame's drawing (a sheet of its own only for work done before welding or an end cut a cut list can't state).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|352317"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "352318",
+   "severity": "severe",
+   "message": "352318 FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF has no drawing PDF (352318_REV_NAME_DWG.pdf under v2/02-Drawings). As a member of a welded frame its row in the frame's cut list, on the frame's drawing, would do, but its STEP shows an end cut by 2 planes (a notch, a cope or a double cut), which a cut list can't state.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; or, for a member of a welded frame, give its section, cut length, both end angles and quantity in its row of the frame's cut list, on the frame's drawing (a sheet of its own only for work done before welding or an end cut a cut list can't state).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|352318"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "352319",
+   "severity": "severe",
+   "message": "352319 FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF has no drawing PDF (352319_REV_NAME_DWG.pdf under v2/02-Drawings). As a member of a welded frame its row in the frame's cut list, on the frame's drawing, would do, but its STEP shows an end cut by 2 planes (a notch, a cope or a double cut), which a cut list can't state.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it; or, for a member of a welded frame, give its section, cut length, both end angles and quantity in its row of the frame's cut list, on the frame's drawing (a sheet of its own only for work done before welding or an end cut a cut list can't state).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|352319"
   },
   {
    "check": "C05",
@@ -2692,7 +2240,7 @@
    "rule": "no-drawing",
    "subject": "611103",
    "severity": "severe",
-   "message": "611103 AIR - COLUMN CORNER ANGLE has no drawing PDF (611103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "message": "611103 AIR - COLUMN CORNER ANGLE - FRONT has no drawing PDF (611103_REV_NAME_DWG.pdf under v2/02-Drawings).",
    "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
    "file": "",
    "owner": "CEILING",
@@ -2704,7 +2252,7 @@
    "rule": "no-drawing",
    "subject": "611104",
    "severity": "major",
-   "message": "611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
+   "message": "611104 AIR - COLUMN FILL - FRONT has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
    "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "CEILING",
@@ -2714,14 +2262,38 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "611105",
+   "subject": "611109",
    "severity": "severe",
-   "message": "611105 AIR - KICK GRILLE has no drawing PDF (611105_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "message": "611109 AIR - COLUMN CORNER ANGLE - BACK has no drawing PDF (611109_REV_NAME_DWG.pdf under v2/02-Drawings).",
    "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
    "file": "",
    "owner": "CEILING",
    "evidence": {},
-   "key": "C05|no-drawing|611105"
+   "key": "C05|no-drawing|611109"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611203",
+   "severity": "major",
+   "message": "611203 AIR - SOFFIT FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 21 faces, a block has 6: pockets or notches).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611203"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611210",
+   "severity": "severe",
+   "message": "611210 AIR - SOFFIT DOOR-SIDE PLATE has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row's process names pocket.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611210"
   },
   {
    "check": "C05",
@@ -2734,18 +2306,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|611301"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "611302",
-   "severity": "severe",
-   "message": "611302 AIR - CARTRIDGE LAYER 50 has no drawing PDF (611302_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|611302"
   },
   {
    "check": "C05",
@@ -2770,6 +2330,54 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|611402"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611405",
+   "severity": "severe",
+   "message": "611405 AIR - FAN BOX LINING - EXHAUST SIDE has no drawing PDF (611405_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611405"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611406",
+   "severity": "severe",
+   "message": "611406 AIR - FAN BOX LINING - EXHAUST FAR END has no drawing PDF (611406_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611406"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611407",
+   "severity": "severe",
+   "message": "611407 AIR - FAN BOX LINING - SUPPLY END has no drawing PDF (611407_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611407"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611408",
+   "severity": "severe",
+   "message": "611408 AIR - FAN BOX LIP ANGLE - SUPPLY has no drawing PDF (611408_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611408"
   },
   {
    "check": "C05",
@@ -3061,11 +2669,11 @@
   {
    "id": "1-10",
    "name": "CEILING - PANEL ASSY - C2",
-   "kg": 10.922,
+   "kg": 11.381,
    "dims": [
     1495.0,
     1200.61,
-    70.0
+    71.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -3193,11 +2801,11 @@
   {
    "id": "2-03",
    "name": "FRONT - DECOR BLOCK ASSY - DR",
-   "kg": 18.864,
+   "kg": 13.543,
    "dims": [
     2290.0,
     1020.0,
-    216.0
+    206.0
    ],
    "ships_as": "long",
    "status": "calculation (CAD); calculation (CAD); magnetic seal HOLD"
@@ -3253,7 +2861,7 @@
   {
    "id": "2-08",
    "name": "FRONT - DECOR BLOCK ASSY - DL",
-   "kg": 12.3,
+   "kg": 12.32,
    "dims": [
     2292.0,
     308.0,
@@ -3265,21 +2873,21 @@
   {
    "id": "2-09",
    "name": "AIR - SOFFIT",
-   "kg": 14.756,
+   "kg": 14.598,
    "dims": [
     2322.0,
     359.0,
     233.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional"
+   "status": "assumption; calculation (CAD); calculation (CAD); hinges, latches and studs HOLD; fill provisional"
   },
   {
    "id": "2-10",
    "name": "AIR - AIR COLUMN",
-   "kg": 8.147,
+   "kg": 8.151,
    "dims": [
-    2108.0,
+    2120.0,
     359.0,
     212.0
    ],
@@ -3289,7 +2897,7 @@
   {
    "id": "2-11",
    "name": "FRONT - DECOR BLOCK ASSY - DT",
-   "kg": 7.913,
+   "kg": 7.903,
    "dims": [
     1699.0,
     306.0,
@@ -3349,19 +2957,19 @@
   {
    "id": "2-16",
    "name": "AIR - SUPPLY FAN BOX",
-   "kg": 13.45,
+   "kg": 12.74,
    "dims": [
     2005.0,
     516.0,
     203.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption"
+   "status": "assumption; calculation (CAD); foot, mesh and boot assumption; calculation (CAD); transitions HOLD at their sized masses"
   },
   {
    "id": "2-17",
    "name": "AIR - SPLITTER CARTRIDGE - COMMON",
-   "kg": 10.55,
+   "kg": 10.548,
    "dims": [
     1750.0,
     314.0,
@@ -3373,7 +2981,7 @@
   {
    "id": "2-18",
    "name": "AIR - SPLITTER CARTRIDGE - COMMON",
-   "kg": 10.55,
+   "kg": 10.548,
    "dims": [
     1750.0,
     314.0,
@@ -3417,10 +3025,39 @@
    ],
    "ships_as": "long",
    "status": "assumption"
+  },
+  {
+   "id": "2-22",
+   "name": "FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE",
+   "kg": 8.101,
+   "dims": [
+    2042.0,
+    971.0,
+    12.0
+   ],
+   "ships_as": "long",
+   "status": "calculation (CAD)"
   }
  ],
  "shipping_source": "v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv",
  "fastener_schedule": [
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "snug only, into the ceiling's rivnuts (HOLD-01 for the rivnut)",
+   "qty_parts_list": "4",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
+   "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+   "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
   {
    "part_number": "838002",
    "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
@@ -3430,8 +3067,8 @@
    "finish": "zinc plated",
    "torque_nm": "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
    "qty_parts_list": "2",
-   "qty_cad": 4,
-   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "qty_cad": 2,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1; 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:2",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -3447,8 +3084,8 @@
    "finish": "zinc plated",
    "torque_nm": "snug only, into the sleeve's rivnuts (HOLD-01 for the rivnut)",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -3474,7 +3111,7 @@
   },
   {
    "part_number": "838003",
-   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2",
    "size": "",
    "length_mm": "",
    "grade": "steel 1008/1010",
@@ -3484,7 +3121,24 @@
    "qty_cad": 71,
    "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE ",
    "maker": "Sherex (PEM)",
-   "sku": "CAH2-610-4.2",
+   "sku": "CAL2-610-4.2",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
+   "torque_nm": "HOLD-01 (D-48)",
+   "qty_parts_list": "1",
+   "qty_cad": 71,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE ",
+   "maker": "Sherex (PEM)",
+   "sku": "CAL2-610-4.2",
    "status": "DRAFT",
    "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
@@ -3532,8 +3186,8 @@
    "finish": "zinc plated (ISO 4042)",
    "torque_nm": "HOLD: into the corner key's M6 threads, from the joint test J-T6 (joints register)",
    "qty_parts_list": "2",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "standard part, any maker (catalogue number at RFQ)",
    "sku": "ISO 4762 M6 x 16 - 8.8, zinc plated",
    "status": "DRAFT",
@@ -3634,8 +3288,8 @@
    "finish": "zinc plated (ISO 4042)",
    "torque_nm": "HOLD: into the corner key's M6 threads, from the joint test J-T6 (joints register)",
    "qty_parts_list": "2",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "standard part, any maker (catalogue number at RFQ)",
    "sku": "ISO 4762 M6 x 16 - 8.8, zinc plated",
    "status": "DRAFT",
@@ -3821,8 +3475,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -3838,8 +3492,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -3855,8 +3509,8 @@
    "finish": "zinc plated",
    "torque_nm": "snug only: a pin, not a clamp (joints register 2.10)",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "qty_cad": 2,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1; 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:2",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -4008,8 +3662,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD (D-48: set by the rivnut spin-out test T06)",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: standard part, maker picked with the joints register",
    "sku": "ISO 4762 M6 x 16, 8.8, zinc plated",
    "status": "HOLD (bought part: no order, no supplier contact; guideline 4.3)",
@@ -4161,8 +3815,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -4263,8 +3917,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -4348,8 +4002,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -4433,8 +4087,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -4535,8 +4189,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -4637,8 +4291,8 @@
    "finish": "zinc plated",
    "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -4654,8 +4308,8 @@
    "finish": "zinc plated",
    "torque_nm": "snugged, not torqued: a pin (register 2.10)",
    "qty_parts_list": "3",
-   "qty_cad": 4,
-   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "qty_cad": 2,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1; 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:2",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -5011,8 +4665,25 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation (joints register sizes)",
@@ -5028,8 +4699,8 @@
    "finish": "zinc plated (ISO 4042)",
    "torque_nm": "",
    "qty_parts_list": "2",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5045,8 +4716,8 @@
    "finish": "zinc plated (ISO 4042)",
    "torque_nm": "",
    "qty_parts_list": "2",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5062,8 +4733,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5079,8 +4750,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5096,8 +4767,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "assumption",
@@ -5113,8 +4784,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
@@ -5130,8 +4801,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
@@ -5147,8 +4818,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
@@ -5164,8 +4835,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
@@ -5181,8 +4852,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
@@ -5198,8 +4869,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "7",
-   "qty_cad": 4,
-   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "qty_cad": 8,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110102 BASE - BAND ASSY - SIDE - RH:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5; 610201 AIR - SOFFIT:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3",
@@ -5215,8 +4886,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "2",
-   "qty_cad": 4,
-   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "qty_cad": 2,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1; 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:2",
    "maker": "",
    "sku": "",
    "status": "calculation (joints register sizes)",
@@ -5232,8 +4903,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": 4,
-   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "qty_cad": 2,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1; 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:2",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5249,8 +4920,8 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "3",
-   "qty_cad": 4,
-   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "qty_cad": 2,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1; 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:2",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3",
@@ -5266,6 +4937,23 @@
    "finish": "zinc plated, trivalent passivation",
    "torque_nm": "",
    "qty_parts_list": "4",
+   "qty_cad": 71,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE ",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel 1008/1010",
+   "finish": "zinc plated, trivalent passivation",
+   "torque_nm": "",
+   "qty_parts_list": "1",
    "qty_cad": 71,
    "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE ",
    "maker": "",
@@ -6024,21 +5712,21 @@
     "owner": "BASE; FRONT"
    },
    {
-    "subject": "floor seal line 111301 | 611105",
-    "between": "111301 BASE - SILL - FIXED GLASS | 611105 AIR - KICK GRILLE",
+    "subject": "floor seal line 111301 | 611111",
+    "between": "111301 BASE - SILL - FIXED GLASS | 611111 AIR - KICK GRILLE - LEFT",
     "at": [
      950.8,
      -645.2
     ],
     "z": [
-     24.0,
-     105.0
+     12.0,
+     110.0
     ],
     "width": [
      90.5,
      92.5
     ],
-    "area": 7350.5,
+    "area": 8899.0,
     "owner": "BASE; CEILING"
    },
    {
@@ -6046,47 +5734,29 @@
     "between": "111102 BASE - BAND TUBE - SIDE - RH | 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW",
     "at": [
      1185.5,
-     -643.4
+     -641.1
     ],
     "z": [
-     12.0,
+     0.0,
      110.0
     ],
     "width": [
      39.0,
      49.0
     ],
-    "area": 4672.0,
+    "area": 5140.0,
     "owner": "BASE; CEILING"
    },
    {
-    "subject": "floor seal line 118001",
-    "between": "118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) | 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3)",
-    "at": [
-     1057.5,
-     -727.1
-    ],
-    "z": [
-     0.0,
-     10.0
-    ],
-    "width": [
-     320.14,
-     320.14
-    ],
-    "area": 3201.4,
-    "owner": "BASE"
-   },
-   {
-    "subject": "floor seal line 611103 | 611107",
-    "between": "611103 AIR - COLUMN CORNER ANGLE | 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW",
+    "subject": "floor seal line 611107 | 611109",
+    "between": "611107 AIR - COLUMN PLENUM SIDE PLATE - LOW | 611109 AIR - COLUMN CORNER ANGLE - BACK",
     "at": [
      1070.5,
-     -643.4
+     -641.1
     ],
     "z": [
-     14.0,
-     24.0
+     2.0,
+     12.0
     ],
     "width": [
      179.0,
@@ -6096,40 +5766,40 @@
     "owner": "CEILING"
    },
    {
+    "subject": "floor seal line 118001 | 611109",
+    "between": "118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3) | 611109 AIR - COLUMN CORNER ANGLE - BACK",
+    "at": [
+     938.0,
+     -720.6
+    ],
+    "z": [
+     0.0,
+     10.0
+    ],
+    "width": [
+     162.46,
+     165.39
+    ],
+    "area": 1648.0,
+    "owner": "BASE; CEILING"
+   },
+   {
     "subject": "floor seal line 611103 | 611105",
-    "between": "611103 AIR - COLUMN CORNER ANGLE | 611105 AIR - KICK GRILLE",
+    "between": "611103 AIR - COLUMN CORNER ANGLE - FRONT | 611105 AIR - KICK GRILLE - FRONT",
     "at": [
      1160.8,
      -292.0
     ],
     "z": [
-     24.0,
+     12.0,
      110.0
     ],
     "width": [
      10.0,
      10.0
     ],
-    "area": 860.0,
+    "area": 980.0,
     "owner": "CEILING"
-   },
-   {
-    "subject": "floor seal line 111301 | 611103",
-    "between": "111301 BASE - SILL - FIXED GLASS | 611103 AIR - COLUMN CORNER ANGLE",
-    "at": [
-     964.8,
-     -666.5
-    ],
-    "z": [
-     12.0,
-     24.0
-    ],
-    "width": [
-     46.0,
-     46.0
-    ],
-    "area": 552.0,
-    "owner": "BASE; CEILING"
    },
    {
     "subject": "floor seal line 111301 | 361002",
@@ -6150,40 +5820,22 @@
     "owner": "BASE; FRONT"
    },
    {
-    "subject": "floor seal line 111301 | 118001",
-    "between": "118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) | 111301 BASE - SILL - FIXED GLASS",
+    "subject": "floor seal line 111301 | 611109",
+    "between": "111301 BASE - SILL - FIXED GLASS | 611109 AIR - COLUMN CORNER ANGLE - BACK",
     "at": [
-     1082.5,
-     -671.8
+     964.8,
+     -665.3
     ],
     "z": [
      10.0,
      12.0
     ],
     "width": [
-     237.64,
-     237.64
+     48.36,
+     48.36
     ],
-    "area": 475.3,
-    "owner": "BASE"
-   },
-   {
-    "subject": "floor seal line 611105 | 611501",
-    "between": "611105 AIR - KICK GRILLE | 611501 AIR - INTAKE RISER",
-    "at": [
-     953.0,
-     -623.5
-    ],
-    "z": [
-     105.0,
-     110.0
-    ],
-    "width": [
-     49.16,
-     49.16
-    ],
-    "area": 245.8,
-    "owner": "CEILING"
+    "area": 96.7,
+    "owner": "BASE; CEILING"
    },
    {
     "subject": "floor seal line 361002 at X 214 Y -707 Z 21",
@@ -6222,6 +5874,6 @@
     "owner": "FRONT"
    }
   ],
-  "total_mm2": 47029.4
+  "total_mm2": 46436.1
  }
 }
