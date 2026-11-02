@@ -6,6 +6,8 @@ T, R, K = 1.0, 1.0, 0.44
 BASE = [(0.0, 0.0), (300.0, 0.0), (260.0, 200.0), (40.0, 200.0)]
 ANGLES = (90.0, 60.0, 30.0)     # the three folds' angles; a test may set two alike (one section typical of both)
 TABS = None                     # a test's own tabs (same layout as tabs() gives) for its own BASE
+CUTS = {}                       # rectangular cut-outs: {edge index: [((u0, v0), (u1, v1)), ...]} in tab coordinates
+CUT_MOVE = 0.0                  # the DXF's cut-outs moved this far along the edge (a test's planted error)
 # edge index, angle (deg), s0, s1 (along the edge from its start), the tab's outer edge from its u=0 side to u=W side,
 # holes in tab coordinates (u along the edge from s0, v out from the bend), diameter
 def tabs():
@@ -83,6 +85,10 @@ def build_step(path):
         for (u, v), dia in hs:
             c = tuple(ax0[k] + u * X3[k] + (R - T) * rho[k] + v * d[k] for k in range(3))
             holes.append(BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*c), gp_Dir(*rho)), dia / 2, 3 * T).Shape())
+        for (u0, v0), (u1, v1) in CUTS.get(i, []):
+            corner = lambda u, v: tuple(ax0[k] + u * X3[k] + (R - T) * rho[k] + v * d[k] for k in range(3))
+            holes.append(prism([corner(u0, v0), corner(u1, v0), corner(u1, v1), corner(u0, v1)],
+                               tuple(3 * T * c for c in rho)))
     for h in holes:
         shape = cut(shape, h)
     u = ShapeUpgrade_UnifySameDomain(shape, True, True, True)
@@ -98,6 +104,7 @@ def build_step(path):
 def flat():
     """The flat by hand: outline, bend lines, holes (the base's top face's x, y)."""
     outline, bends, holes = [], [], []
+    cuts = flat.cuts = []
     tb = {i: (i, ang, s0, s1, outer, hs) for i, ang, s0, s1, outer, hs in tabs()}
     for i in range(len(BASE)):
         P, X, W, L = edge_frame(i)
@@ -115,6 +122,10 @@ def flat():
             bends.append((q(s0, BA / 2), q(s1, BA / 2), ang))
             for (u, v), dia in hs:
                 holes.append((q(s0 + u, BA + v), dia))
+            for (u0, v0), (u1, v1) in CUTS.get(i, []):
+                m = CUT_MOVE
+                cuts.append([q(s0 + u0 + m, BA + v0), q(s0 + u1 + m, BA + v0), q(s0 + u1 + m, BA + v1),
+                             q(s0 + u0 + m, BA + v1)])
     return outline, bends, holes
 
 
@@ -124,6 +135,10 @@ def write_dxf(path, move=None):
     for i, p in enumerate(outline):
         q = outline[(i + 1) % len(outline)]
         out += ["0", "LINE", "8", "CUT", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
+    for c in flat.cuts:
+        for i, p in enumerate(c):
+            q = c[(i + 1) % len(c)]
+            out += ["0", "LINE", "8", "CUT", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
     for p, q, _a in bends:
         out += ["0", "LINE", "8", "BEND", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
     for (c, dia) in holes:

@@ -691,6 +691,45 @@ class _WordBeside:
         return getattr(self.page, name)
 
 
+def test_any_line_folds_with_a_cut_out():
+    """AIR's 611801 (its outlet window): cut-outs that aren't round holes in a part with folds along any line, each
+    one's edge unfolded through the flange it is in onto one of the DXF's cut shapes, point for point both ways and
+    counted, as in the one-way mode; the read-back finds the cut-out in the STEP's own faces and checks it the same
+    way through the sheet's record. The test duct with a 30 x 12 window in its 90° tab draws and reads back; its DXF
+    with the window 1 mm along is refused, and the good sheet's read-back fails against that DXF."""
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct_cut")
+    os.makedirs(d, exist_ok=True)
+    cuts = duct_piece.CUTS
+    duct_piece.CUTS = {0: [((100.0, 15.0), (130.0, 27.0))]}
+    try:
+        step = duct_piece.build_step(os.path.join(d, "219964_P01_TEST-DUCT_STEP.step"))
+        good = duct_piece.write_dxf(os.path.join(d, "219964_DXF.dxf"))
+        duct_piece.CUT_MOVE = 1.0
+        moved = duct_piece.write_dxf(os.path.join(d, "219964_moved_DXF.dxf"))
+    finally:
+        duct_piece.CUTS, duct_piece.CUT_MOVE = cuts, 0.0
+    row = dict(ROW, part_number="219964", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    spec = lambda dxf: dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": dxf})
+    p = os.path.join(d, "219964.pdf")
+    compose.make("219964", "none", spec(good), p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    assert [f_["kind"] for f_ in data["features"]].count("cutout") == 1, data["features"]
+    assert "30 x 12" in " ".join(fitz.open(p)[0].get_text().split())
+    try:
+        compose.make("219964", "none", spec(moved), os.path.join(d, "x.pdf"), step=step, row=row)
+        raise AssertionError("drew against a DXF with the window moved")
+    except compose.NotDrawable as e:
+        assert "cut-outs aren't where the model unfolds to" in str(e), e
+    data["flat"]["dxf"] = moved
+    f2 = readback.flat_cutout_fails(data, readback.step_faces(step, "219964"))[0]
+    assert any("the DXF has no cut-out of its shape there" in x for x in f2), f2
+
+
 class _RowSays:
     """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
 

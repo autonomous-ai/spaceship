@@ -634,6 +634,26 @@ def flanges_holding(flanges, P, t):
     return hits
 
 
+def unfold_placer(uf):
+    """Folds along any line: a point of the STEP in the flat's DXF, by the sheet's record (the flange whose material
+    holds it, that flange's map, the DXF's placement); None off the flanges or on two."""
+    mirror, c, s_, tx, ty = uf["T"]
+
+    def T(p):
+        x, y = p
+        if mirror:
+            y = -y
+        return (c * x - s_ * y + tx, s_ * x + c * y + ty)
+
+    def where(P):
+        hits = flanges_holding(uf["flanges"], P, uf["t"])
+        if len(hits) != 1:
+            return None
+        fr = hits[0]
+        return T((fr["c"][0] + dot(sub(P, fr["p0"]), fr["ex"]), fr["c"][1] + dot(sub(P, fr["p0"]), fr["ey"])))
+    return where
+
+
 def unfold_fails(data, holes, faces, tol=TOL):
     """Folds along any line (AIR's ducts), against the STEP (the repo's reader) and the DXF read again: each flange the
     sheet records is a face of the STEP; each bend's strip in the flat is its allowance a (r + K t) at the printed K,
@@ -1036,18 +1056,23 @@ def flat_hole_fails(data, holes, faces, tol=TOL):
 
 
 def _cutout_loops(mp, faces):
+    """_cutout_loops_in over the flanges of a one-way bent part's record (its chains)."""
+    fls = []
+    for c in mp["chains"]:
+        for f in c["flanges"]:
+            fls.append((f["N"], c["t"], lambda p, f=f, t=c["t"]: abs(dot(p, f["N"]) - f["o0"]) <= t + 0.01 and
+                        f["lo"] - 0.01 <= dot(p, f["D"]) - f["m0"] <= f["hi"] + 0.01))
+    return _cutout_loops_in(fls, faces)
+
+
+def _cutout_loops_in(fls, faces):
     """The cut-outs of a bent part that aren't round holes, from the STEP's own faces (the repo's reader): in each
     flange the sheet records, the faces through the sheet (planes square to it, cylinders along its normal) that join
     into closed shapes whose outward normals point into the shape (a void in the flange), round holes aside. Each:
     its edge on one skin as points (3D), its centre (3D) and its points."""
     out = []
-    for c in mp["chains"]:
-        for f in c["flanges"]:
-            N, D, t = f["N"], f["D"], c["t"]
-
-            def inside(p):
-                q = dot(p, D) - f["m0"]
-                return abs(dot(p, N) - f["o0"]) <= t + 0.01 and f["lo"] - 0.01 <= q <= f["hi"] + 0.01
+    for N, t, inside in fls:
+        if True:
             side = []
             for fc in faces:
                 if not fc["pts"] or not all(inside(p) for p in fc["pts"]):
@@ -1144,13 +1169,20 @@ def flat_cutout_fails(data, faces, tol=TOL):
     its flanges, onto one of the DXF's cut shapes inside the outline, point for point within tol both ways; each of
     the DXF's on one of the STEP's; and each one's table row gives its centre and its size as the STEP has them."""
     fl = data.get("flat")
-    if not fl or not fl.get("map"):
+    if not fl or not (fl.get("map") or fl.get("mode") == "unfold"):
         return []
     import dxf as dxfmod
     d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
-    mp = fl["map"]
     loops = d.cut_components()[1:]
-    cuts = _cutout_loops(mp, faces)
+    if fl.get("mode") == "unfold":      # folds along any line (AIR's 611801): each recorded flange, its material
+        uf = fl["unfold"]
+        cuts = _cutout_loops_in([(fr["N"], uf["t"], lambda p, fr=fr: len(flanges_holding([fr], p, uf["t"])) == 1)
+                                 for fr in uf["flanges"]], faces)
+        place = unfold_placer(uf)
+    else:
+        mp = fl["map"]
+        cuts = _cutout_loops(mp, faces)
+        place = lambda p: _flat_where(mp, p)
     fails = []
     if len(cuts) != len(loops):
         fails.append("the flat's DXF cuts %d shapes inside its outline besides round holes, the STEP has %d cut-outs" % (
@@ -1161,7 +1193,7 @@ def flat_cutout_fails(data, faces, tol=TOL):
             fails.append("a cut-out of the STEP round (%s) has an edge this check can't follow" % ", ".join(
                 _fmtv(x) for x in c["centre"]))
             continue
-        flat = [[_flat_where(mp, p) for p in e] for e in c["edge"]]
+        flat = [[place(p) for p in e] for e in c["edge"]]
         if any(q is None for e in flat for q in e):
             fails.append("the STEP's cut-out round (%s) isn't on one flange's straight part" % ", ".join(
                 _fmtv(x) for x in c["centre"]))
@@ -1178,7 +1210,7 @@ def flat_cutout_fails(data, faces, tol=TOL):
                 hit = i
                 break
         if hit is None:
-            q = _flat_where(mp, c["centre"])
+            q = place(c["centre"])
             fails.append("the STEP's cut-out unfolds round (%s) in the flat; the DXF has no cut-out of its shape there" % (
                 ", ".join(_fmtv(x) for x in q) if q else "?"))
         else:

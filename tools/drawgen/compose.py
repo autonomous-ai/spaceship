@@ -1204,7 +1204,9 @@ def plan_views(part, spec):
         pl.sections.append(g)
     # removed sections through two-wall holes (D-113), one per body and pattern
     seen = set()
-    for st in two_wall_sets(part):
+    # (a bent part's holes on one line sit in two of its flanges, each shown in its own face's view: no section, which
+    # would cut the whole part; CEILING's tray 513101: its two Ø19.1 bushing holes across the tray)
+    for st in ([] if getattr(part, "flat", None) else two_wall_sets(part)):
         ft = sorted(st, key=lambda f: (f.f.dia))[0]
         body = ft.body
         sz = body.size
