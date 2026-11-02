@@ -239,7 +239,7 @@ def sheet2(doc, rows, harness, v):
         "1. Lengths: route model (calculation) + 150 mm loops and tails (assumption). The kit drop has a 500 mm service loop.",
         "2. Plug pairs: supply side receptacle (female), load side plug (male). W20 and W24 share one 10-way at X1, X2, X3.",
         "3. Every segment is tested in the factory before it ships (D-87): continuity, polarity, no shorts, latch pull.",
-        "4. Cables: Class 2 circuits on 300 V PVC cable (CL2 or CL3 listed for the US phase); mains only inside B2 and the unit.",
+        "4. Cables: Class 2 circuits on 300 V PVC cable (CL2 or CL3 listed for the US phase); inside the unit UL 1015 single cores, 105 °C (D-173).",
         "5. W33 is a draw cord, tied off at each hole, for the voice kit's later cables to the mic zone (REQ-VCK-03).",
     ]
     bottom = s.frame_and_title("ELECTRICAL - HARNESS LIST", "710000  ELECTRICAL", 2, SHEETS, "table, not to scale", DATE,

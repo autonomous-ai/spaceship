@@ -34,7 +34,7 @@ CD = 0.6                        # orifice discharge coefficient of a punched slo
 K_AIR = 0.026                   # W/(m K), still air (source: standard value)
 
 # ---- the case (statuses in the notes)
-ROOM_C = 28.0       # assumption: a warm US office (ASHRAE 55's summer comfort band tops out near 27-28 °C)
+ROOM_C = 32.0       # DECIDED (D-173): the pod is designed for a room up to 32 °C (90 °F), occupants and lights on
 POD_OVER_ROOM = 4.0  # DECIDED: the pod holds at most 4 K over the room (D-50)
 KIT_AVG_W = 40.0    # DECIDED: the voice kit's average (D-88), the PM's case for this check
 LIGHTS_W = 22.0     # DECIDED: the hub holds the three light channels at about 22 W (PM ruling 2026-11-01)
@@ -184,9 +184,8 @@ DEVICES = (   # name, limit °C, source
     ("Mean Well supplies, the units themselves", 70.0, "LPV-60 and CLG-100 sheets: -30 to +70 °C, by their derating curves"),
     ("LAN keystone jacks Panduit NK688MWH", 75.0, "Panduit COSP588: -10 to +75 °C"),
     ("Cat6 cable Belden 3612", 75.0, "Belden 3612 sheet: 75 °C"),
-    ("12 and 24 V leads in the unit: Belden 5302UE and 5304UE (CMR), Southwire 94664 (CL3)", 75.0,
-     "Belden's sheets and Southwire spec 13090: 75 °C"),
-    ("hub link Belden 9536 in the unit", 80.0, "Belden 9536 sheet: 80 °C as UL AWM 2464, the rating for wiring inside equipment"),
+    ("12 and 24 V and signal leads in the unit: Alpha Wire 3075 single cores (UL 1015)", 105.0,
+     "UL AWM 1015: 105 °C (D-173); they may lie on the supplies' cases, see below"),
     ("lever connectors WAGO 221-415", 85.0, "WAGO: T85, surrounding air 85 °C at most"),
     ("fuse holders Littelfuse FHAC0001ZXJ", 105.0, "Littelfuse OL-FHAC0001ZXJ: 105 °C"),
     ("bushings Heyco 2836N", 105.0, "Heyco: -18 to +105 °C"),
@@ -278,7 +277,7 @@ def section_md(EP):
       "part's temperature. A steady heat balance (`unit_heat.py`): the supplies sit flat on the shell's back wall; heat "
       "leaves through the front plate to the pod, through the vent slots by stack flow, and through the shell into "
       "B2's skin and members to the room. The last path carries most of it and is the least certain, so the worst case "
-      "takes it at half (assumption). Case: room %.0f °C (assumption: a warm office), the pod %.0f K over it (D-50); "
+      "takes it at half (assumption). Case: room %.0f °C (D-173: the room the pod is designed for), the pod %.0f K over it (D-50); "
       "the voice kit at its %.0f W average (D-88), the lights at the hub's %.0f W (PM ruling), the fans at the 65 l/s "
       "boost with the hub, %.1f W (calculation)." % (ROOM_C, POD_OVER_ROOM, KIT_AVG_W, LIGHTS_W, FANS_HUB_W))
     A("")
@@ -319,7 +318,12 @@ def section_md(EP):
         A("| %s %s at its peak load, %.1f W | %.0f W at %.0f °C (%.0f %% of %.0f W, its maker's derating) | %.0f W |" % (
             sid, MODEL[key], peak, frac * rated, t_dev, 100 * frac, rated, frac * rated - peak))
     A("")
-    A("Room temperature (the case above takes %.0f °C, a warm office): with the same worst loads, each room gives "
+    case_t = results(EP, 12.0, SHELL_PATH_WORST)[3]["case"]
+    A("The supplies' cases reach %.1f °C; a lead lying on one is a 105 °C single core (D-173), %.0f K under its rating. "
+      "No part falls under 3 K." % (case_t, 105.0 - case_t) if min(lim - t_dev for _n, lim, _s in DEVICES) >= 3.0
+      else "The supplies' cases reach %.1f °C. A PART FALLS UNDER 3 K." % case_t)
+    A("")
+    A("Room temperature (the case above takes %.0f °C, the room the pod is designed for, D-173): with the same worst loads, each room gives "
       "these upper-air temperatures and the tightest part's margin:" % ROOM_C)
     A("")
     A("| Room | Upper air | Tightest part | Its margin |")

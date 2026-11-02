@@ -122,6 +122,10 @@ part("cord", "719001", "ELECTRICAL - CORD SET - 120 V US - 3 M (KIT)", "Điện 
 # with female contacts; load side = plug with male contacts. Lengths: the
 # modelled route (calculation) plus the pocket loops and tails (assumption).
 PU_IN = 150.0          # mm of lead inside the power unit to its terminal (assumption)
+A_OUT = 20.0           # mm of the unit's lead past its exit bushing to its receptacle (assumption): D-173 keeps every lead
+                       # inside the unit a 105 C single core up to the exits, so the joint sits just outside them and the
+                       # lining's segment brings the slack loop
+UNIT_LEAD = "UL 1015 18 AWG single cores, 105 °C (D-173)"   # the cable text of every lead inside the power unit
 TAIL = 150.0           # mm of tail beyond a grommet or slot, to mate the plugs before hanging (assumption)
 LOOP = 150.0           # mm of slack loop in a pocket (= pk_l, assumption)
 KIT_LOOP = 500.0       # mm service loop at the voice kit drop (assumption)
@@ -195,13 +199,15 @@ def harnesses(v):
     # ---- light feed (PS2) to the light shelf: PU -> B2-CASS -> B4-CASS -> shelf
     add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="light controller outputs (PS2) via F2 5 A",
         to="pocket P5 in B2-CASS", route="out of the unit's top (bushed hole H03) straight up into B2-CASS's cable gap: the cut-out is plain, no steel on the path", circuit="PS2 lights",
-        conductors="+24 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x 18 AWG, Class 2 (CL2 or equivalent)", area_mm2=AWG18,
-        length_mm=PU_IN + cross_top + LOOP, end_a="light controller terminals", end_b="Mini-Fit Jr 6-way receptacle",
+        conductors="+24 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x %s" % UNIT_LEAD, area_mm2=AWG18,
+        length_mm=PU_IN + cross_top + A_OUT, end_a="light controller terminals",
+        end_b="Mini-Fit Jr 6-way receptacle, just outside H03 (W10b's plug mates it in P5)",
         grommets="the unit's H03", amps_max=LIGHT_A,
-        note="through the shelf's current sense (self-test, D-87); slack to the first clip: it crosses the 4 mm floating gap")
+        note="through the shelf's current sense (self-test, D-87); in the unit the leads may lie on the supplies' cases (about "
+             "73 C at a 32 C room), so they are 105 C single cores up to the exit (D-173)")
     add(id="W10b", harness_pn="710011", segment="B2-CASS", function="light feed", frm="P5", to="B2/B4 joint",
         route="P5, L1-B2, G-B2-B4", circuit="PS2 lights", conductors="+24 V x 2, UP-, DOWN-, CALL-, spare",
-        cable="6 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=80 + L("L1-B2", "G-B2-B4") + TAIL,
+        cable="6 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=80 + (LOOP - A_OUT) + L("L1-B2", "G-B2-B4") + TAIL,
         end_a="Mini-Fit Jr 6-way plug (mates W10a)", end_b="Mini-Fit Jr 6-way receptacle (tail out of the top grommet)",
         grommets="G-B2-B4", amps_max=LIGHT_A, note="clipped to the cassette tray only (D-26)")
     add(id="W10c", harness_pn="710011", segment="B4-CASS", function="light feed", frm="P4 (above the joint)",
@@ -244,16 +250,23 @@ def harnesses(v):
                 return "RJ45 inline coupler"
             return "%s %s%s" % ({"W20": "Mini-Fit Jr 10-way", "W30": "Mini-Fit Jr 4-way"}[wid], kind,
                                 " (with W24)" if wid == "W20" else "")
+        unit_lead = wid != "W31"         # D-173: the unit's power and signal leads are 105 C single cores up to the exits
         add(id=wid + "a", harness_pn="710001", segment="PU", function=fn, frm="power unit",
             to="pocket P1 in B2-CASS", route="out of the unit's right side (bushed holes H01, H02) straight into B2-CASS's cable gap: the cut-out is plain", circuit=circ,
-            conductors=cond, cable=cable, area_mm2=area, parallel=par, length_mm=PU_IN + cross_side + LOOP,
+            conductors=cond, cable=("%d x %s" % ({"W20": 4, "W30": 4, "W24": 6}[wid], UNIT_LEAD)) if unit_lead else cable,
+            area_mm2=AWG18 if unit_lead else area, parallel=par,
+            length_mm=PU_IN + cross_side + (A_OUT if unit_lead else LOOP),
             end_a={"W20": "PS3 output", "W30": "F1, 5 A (PS1, the kit's 24 V feed)", "W24": "light controller link, PS2 current sense, PS1 and PS2 rail taps",
                    "W31": "punched down at keystone jack 2 (unit face)"}[wid],
-            end_b=end("receptacle"), grommets="the unit's H01/H02", amps_max=amps,
-            note="slack to the first clip: it crosses the 4 mm floating gap, so no clip within 150 mm of the cut-out")
+            end_b=end("receptacle") + (", just outside the unit's exit" if unit_lead else ""), grommets="the unit's H01/H02",
+            amps_max=amps,
+            note=("in the unit the leads may lie on the supplies' cases (about 73 C at a 32 C room), so they are 105 C single "
+                  "cores up to the exit (D-173); the lining's segment brings the slack across the 4 mm floating gap")
+            if unit_lead else "kept along the front plate, off the supplies; slack to the first clip: it crosses the 4 mm "
+                              "floating gap, so no clip within 150 mm of the cut-out")
         add(id=wid + "b", harness_pn="710021", segment="B2-CASS", function=fn, frm="P1", to="back-right corner",
             route="P1, T1-B2, S-CNR", circuit=circ, conductors=cond, cable=cable, area_mm2=area, parallel=par,
-            length_mm=LOOP + L("T1-B2") + TAIL, end_a=end("plug"),
+            length_mm=LOOP + (LOOP - A_OUT if wid != "W31" else 0) + L("T1-B2") + TAIL, end_a=end("plug"),
             end_b=end("receptacle") + ", tail through the corner slot S-CNR",
             grommets="S-CNR (edge-protected slot)", amps_max=amps,
             note="the four cables pass the corner slot side by side")
@@ -546,21 +559,28 @@ cable("w10", "718021", "ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE)", "Đi
       1.5, 0.025, "maker HOLD: as 718020", "W02 inside the unit (assumption; D-133: sized for 15 A)")
 cable("w25", "718022", "ELECTRICAL - WIRE - UL 1015 14 AWG GREEN", "Điện - dây tiếp địa UL 1015 14 AWG", "710001", 0.3, 0.025,
       "maker HOLD: as 718020", "W03 bond lead (D-133: 14 AWG, the equipment ground for a 15 A circuit, NEC 250.122)")
+cable("w18u", "718087", "ELECTRICAL - WIRE - UL 1015 18 AWG - LEADS IN THE POWER UNIT", "Điện - dây đơn UL 1015 18 AWG trong hộp nguồn",
+      "710001", sum(n * _m([i]) for i, n in (("W10a", 6), ("W20a", 4), ("W24a", 6), ("W30a", 4))), 0.0097,
+      "maker HOLD", "D-173: every 12 and 24 V and signal lead inside the power unit, from its terminal to its receptacle just "
+      "outside the unit's exit (W10a 6 cores, W20a 4, W24a 6, W30a 4): they may lie on the supplies' cases (about 73 C at a "
+      "32 C room), so 105 C single cores like the mains wiring; 2.82 mm over the insulation, inside the 18 AWG terminal's "
+      "1.30-3.10 grip; the kit feed's 2.5 A on two cores per pole and the hub link's signals both suit 18 AWG",
+      kgm_status="assumption (copper 18 AWG plus a 0.8 mm PVC wall: about 9.7 g per m)")
 cable("c218", "718023", "ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2", "Điện - cáp 2 x 18 AWG", "710000",
       _m(["W11b", "W12", "W43"]), 0.022,  # W43's row said 2 x 22 AWG, which had no line (Reviewer 7): it is this cable
       "maker HOLD: 300 V PVC, CL2 or CL3 listed for the US phase", "12 V feeds",
       kgm_status="source (Belden 5300UE: 15 lb per 1000 ft)")
 cable("c418", "718024", "ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2", "Điện - cáp 4 x 18 AWG", "710000",
-      _m(["W20a", "W20b", "W20c", "W20d", "W11c"]), 0.052, "maker HOLD: as 718023",
+      _m(["W20b", "W20c", "W20d", "W11c"]), 0.052, "maker HOLD: as 718023",
       "the air feed (2 cores per pole), the right-wall light jumper", kgm_status="source (Belden 5302UE: 35 lb per 1000 ft)")
 cable("c416", "718055", "ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2", "Điện - cáp 4 x 16 AWG", "710000",
-      _m(["W30a", "W30b", "W30c"]), 0.065, "maker HOLD: 300 V PVC, CL2 or CL3 listed",
+      _m(["W30b", "W30c"]), 0.065, "maker HOLD: 300 V PVC, CL2 or CL3 listed",
       "the voice kit's 24 V feed, two cores per pole: the drop at its 2.5 A stays far inside 3 % (calc-results)")
 cable("c618", "718029", "ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2", "Điện - cáp 6 x 18 AWG", "710000",
-      _m(["W10a", "W10b", "W10c", "W11a"]), 0.064, "maker HOLD: as 718023", "the light feed: +24 V x 2 and the three channel returns",
+      _m(["W10b", "W10c", "W11a"]), 0.064, "maker HOLD: as 718023", "the light feed: +24 V x 2 and the three channel returns",
       kgm_status="source (Belden 5304UE: 43 lb per 1000 ft)")
 cable("c624", "718025", "ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2", "Điện - cáp tín hiệu 6 x 24 AWG", "710000",
-      _m(["W24a", "W24b", "W24c", "W24d", "W44"]), 0.035, "maker HOLD", "the hub's link to the power unit, and the controls loom")
+      _m(["W24b", "W24c", "W24d", "W44"]), 0.035, "maker HOLD", "the hub's link to the power unit, and the controls loom")
 cable("c420", "718026", "ELECTRICAL - CABLE - 4 X 20 AWG SCREENED - PLENUM", "Điện - cáp quạt 4 x 20 AWG chống cháy",
       "710023", _m(["W40", "W41", "W42"]), 0.035, "maker HOLD",
       "fan leads (12 V, 0 V, PWM, tach) and the inlet sensor lead: they run in the air path, so plenum-rated (CMP)")
@@ -586,9 +606,10 @@ for key, pn, name, vi, parent, qty, sku, mass, note in (
          "air feed (2 + 2) and the hub link (6) in one housing at X1, X2, X3"),
         ("plug10", "718035", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0", "Điện - giắc đực 10 chân", "710000", 3,
          "39-01-3109", 0.005, "the same joints"),
-        ("term_f", "718036", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN", "Điện - chân giắc cái", "710000", 32,
-         "39-00-0039", 0.0003, "1 x 2 + 3 x 6 + 3 x 4, the 18 AWG cores (the 4-way housings take 718056, the hub link's "
-         "24 AWG cores 718077)"),
+        ("term_f", "718036", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN", "Điện - chân giắc cái", "710000", 42,
+         "39-00-0039", 0.0003, "1 x 2 + 3 x 6 + 3 x 4, the 18 AWG cores, and 10 more at X1, where the unit's UL 1015 18 AWG "
+         "leads land in its 10-way and 4-way receptacles (D-173; the other 4-way housings take 718056, the hub link's 24 AWG "
+         "cores 718077)"),
         ("term_m", "718037", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN", "Điện - chân giắc đực", "710000", 32,
          "39-00-0041", 0.0003, "1 x 2 + 3 x 6 + 3 x 4, the 18 AWG cores (the 4-way housings take 718057, the hub link's "
          "24 AWG cores 718078)")):
@@ -605,9 +626,10 @@ for key, pn, name, vi, qty, note in (
          status=HOLD_BUY, source="", note=note)
 
 part("term_f16", "718056", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN", "Điện - chân giắc cái 16 AWG", "PI",
-     "710000", 12, "tin-plated brass", "", 0.0003, "assumption", maker="Molex", sku="39-00-0078 (16 AWG, bag; 39-00-0077 on reel)",
+     "710000", 8, "tin-plated brass", "", 0.0003, "assumption", maker="Molex", sku="39-00-0078 (16 AWG, bag; 39-00-0077 on reel)",
      status=HOLD_BUY, source=MOLEX + "; RS listing of 39-00-0078 (16 AWG min and max), read 2026-11-01",
-     note="3 x 4: the voice kit feed's receptacles at X1, X2 and the kit outlet X7 (4 x 16 AWG, 718055); 16 AWG: 8 A per "
+     note="2 x 4: the voice kit feed's receptacles at X2 and the kit outlet X7 (4 x 16 AWG, 718055; X1's takes the unit's "
+          "18 AWG leads, D-173); 16 AWG: 8 A per "
           "circuit in a 4-way housing (Molex PS-5556-001, table 3)")
 part("term_m16", "718057", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN", "Điện - chân giắc đực 16 AWG", "PI",
      "710000", 8, "tin-plated brass", "", 0.0003, "assumption", maker="Molex",
@@ -615,8 +637,8 @@ part("term_m16", "718057", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN"
      status=HOLD_BUY, source=MOLEX, note="2 x 4: the voice kit feed's plugs at X1 and X2 (the cap housing has none); 16 AWG: "
                                          "8 A per circuit in a 4-way housing (Molex PS-5556-001, table 3)")
 part("term_f24", "718077", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 22-28 AWG TIN", "Điện - chân giắc cái 22-28 AWG", "PI",
-     "710000", 18, "tin-plated brass", "", 0.0003, "assumption", status=HOLD_BUY,
-     note="3 x 6: the hub link's 24 AWG cores in the 10-way receptacles at X1, X2, X3 (their 1.1 mm insulation is under "
+     "710000", 12, "tin-plated brass", "", 0.0003, "assumption", status=HOLD_BUY,
+     note="2 x 6: the hub link's 24 AWG cores in the 10-way receptacles at X2, X3 (X1's takes the unit's 18 AWG leads, D-173) (their 1.1 mm insulation is under "
           "718036's 1.30 mm grip)")
 part("term_m24", "718078", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 22-28 AWG TIN", "Điện - chân giắc đực 22-28 AWG", "PI",
      "710000", 18, "tin-plated brass", "", 0.0003, "assumption", status=HOLD_BUY,
@@ -905,6 +927,12 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'black, 94V-2, -40 to 85 C; UL certified E54523',
             'https://www.heyco.com/wp-content/uploads/2024/09/Nylon-Cable-Ties.pdf',
             'through a pair of 6.4 holes: the 4.8 mm strap passes each'),
+ '718087': ('ALPHA WIRE 3075',
+            'Alpha Wire',
+            '3075: hook-up wire 18 AWG (16/30) tinned copper, PVC 0.032 in wall, 0.111 in (2.82 mm) over the insulation; UL AWM '
+            'style 1015, 105 C, 600 V, VW-1 (UL E163872); CSA AWM I A/B, FT1; -40 to 105 C',
+            'https://www.alphawire.com/products/wire/hook-up-wire/premium/3075',
+            'colours to the wiring diagram (BK, RD, WH, GN, ...): one 105 C single core per lead inside the power unit (D-173)'),
  '718080': ('WAGO 221-415',
             'WAGO',
             '221-415: COMPACT splicing connector, 5 conductors, levers, 24-12 AWG (0.14-4 mm2), strip 11 mm; UL 486C '
@@ -1042,13 +1070,13 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             '5300UE: 2 x 18 AWG stranded (7x26) bare copper, polyolefin cores 1.6 mm, PVC jacket, CMR (UL 1666), 300 V, 75 C, '
             'OD 4.01 mm, 5 A per conductor',
             'https://catalog.belden.com/techdata/EN/5300UE_techdata.pdf',
-            "75 C, so the unit's heat leaves it a wide margin (Southwire's 60 C R40018-1 left 2 K at a 30 C room); its 1.6 mm "
-            "cores sit in the Mini-Fit terminal's 1.30-3.10 grip; " + "the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
+            "75 C; its 1.6 mm cores sit mid-grip in the Mini-Fit terminal's 1.30-3.10 (Southwire's 1.3-1.45 mm sat at its "
+            "bottom); " + "the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
  '718024': ('BELDEN 5302UE',
             'Belden',
             '5302UE: 4 x 18 AWG stranded (7x26) bare copper, polypropylene cores 1.6 mm, PVC jacket, CMR (UL 1666), 300 V, 75 C, OD 4.67 mm, 4 A per conductor',
             'https://catalog.belden.com/techdata/EN/5302UE_techdata.pdf',
-            "75 C (the power unit's leads: Southwire's 60 C R40049-1 left 2 K at a 30 C room); 1.6 mm cores in the terminal's grip; the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
+            "75 C; its 1.6 mm cores sit mid-grip in the Mini-Fit terminal (Southwire's 1.3-1.45 mm sat at its bottom); the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
  '718025': ('BELDEN 9536',
             'Belden',
             '9536 060100: 6 x 24 AWG stranded, overall foil and drain, PVC, CMG, 300 V (UL AWM 2464)',
@@ -1072,7 +1100,7 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'Belden',
             '5304UE: 6 x 18 AWG stranded (7x26) bare copper, polyolefin cores 1.6 mm, PVC jacket, CMR (UL 1666), 300 V, 75 C, OD 5.59 mm',
             'https://catalog.belden.com/techdata/EN/5304UE_techdata.pdf',
-            "75 C (the light feed's segment in the power unit: Southwire's 60 C R40015-1 left 2 K at a 30 C room); 1.6 mm cores in the terminal's grip; the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
+            "75 C; its 1.6 mm cores sit mid-grip in the Mini-Fit terminal (Southwire's 1.3-1.45 mm sat at its bottom); the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
  '718030': ('MOLEX 39-01-2025 (5557-02R)',
             'Molex',
             '39-01-2025 (5557-02R-210): Mini-Fit Jr receptacle housing, dual row, 2 circuits, UL 94V-0; 9 A per '
