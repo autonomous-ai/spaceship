@@ -767,7 +767,7 @@ part("bush_col", "718084", "ELECTRICAL - BUSHING - SNAP 11.1 HOLE - NYLON", "Đi
 part("bush_mains", "718088", "ELECTRICAL - BUSHING - SNAP 15.9 HOLE - NYLON", "Điện - vòng đệm luồn dây lỗ 15.9", "PI",
      "710001", 2, "nylon 6/6 UL94 V-2", "black, as supplied", 0.0012, "assumption", maker="Heyco", sku="SB 625-7 (2070, black)",
      status=HOLD_BUY, source=HEYCO,
-     note="the mains cord W01 (9.27 mm, bore 11.1) through the lower cross member's bottom wall (snapped in from below) and "
+     note="the mains cord W01 (9.22 mm, Southwire 550433; bore 11.1) through the lower cross member's bottom wall (snapped in from below) and "
           "the unit's H04 (1.0 mm aluminium, head inside): a bushing at every metal edge it passes (the Lead, 2026-11-01)")
 part("cordgrip", "718085", "ELECTRICAL - CORDGRIP - M12 - LIQUID TIGHT - NYLON", "Điện - ốc siết cáp M12", "PI", "710023", 2,
      "nylon 6/6 UL94 V-2, Buna N gland", "black, as supplied", 0.005, "assumption", maker="Heyco",
