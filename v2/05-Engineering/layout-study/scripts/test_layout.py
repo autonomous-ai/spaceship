@@ -231,7 +231,7 @@ def test_cad_masses_from_main():
     it, el = rollup.INTERIOR, rollup.ELEC                     # S53: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
     assert [pn for pn, _q, _m in el["hosted"].get("810201", [])] == it["shelf_elec"] and it["shelf_elec_kg"] > 0, it
     assert set(it["shelf_gone"]) <= set(rollup.SHELF_REPLACED), it
-    assert abs(it["shelf"] - (it["shelf_listed"] - it["shelf_gone_kg"] + it["shelf_elec_kg"])) < 1e-12, it
+    assert abs(it["shelf"] - (it["shelf_listed"] - it["shelf_gone_kg"] + it["shelf_elec_added"])) < 1e-12, it
     assert all(pn not in el["hosted"] for pn in ("710000",)) and set(el["hosted"]) <= {"810201"}, el["hosted"]
     assert abs(ld[3] - rollup.INTERIOR["ledge"] - rollup.INTERIOR["rail"]) < 1e-9 and rollup.basis(ld) == "CAD, main", ld
     bb = rows["B1 to B4, back outer panels"]                                      # B1 and B2 from CAD (PR #152)
@@ -304,6 +304,21 @@ def test_rollup_items_the_packing_plan_reads():
 
 
 P_DEFAULT_CEIL = p("ceil_t")
+
+def test_light_shelf_counts_electricals_rows_once():
+    """INTERIOR's 810201 row holds ELECTRICAL's four down-light rows since #437 (its mass status names them), so the
+    roll-up must not add them again (Reviewer 21 on #437): the shelf's mass equals its child rows totalled on their own,
+    INTERIOR's three runs plus ELECTRICAL's rows under 810201."""
+    import csv
+    import rollup as R
+    base = os.path.join(os.path.dirname(os.path.abspath(R.__file__)), "..", "..", "..", "03-Manufacturing")
+    kids = 0.0
+    for team, name in (("interior", "810000_P01_INTERIOR-PARTS-LIST_BOM.csv"), ("electrical", "710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv")):
+        with open(os.path.join(base, team, name), encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if r["parent"] == "810201":
+                    kids += float(r["qty_per_parent"]) * float(r["mass_each_kg"])
+    assert abs(R.INTERIOR["shelf"] - kids) < 0.002, (R.INTERIOR["shelf"], kids)
 
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]

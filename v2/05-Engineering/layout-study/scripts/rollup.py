@@ -9,6 +9,7 @@ from here, and its --check proves they reproduce. The mechanical check sums the 
 line, which is outside the cap (PR #40).
 """
 import os
+import re
 import sys
 
 from inputs import override, p
@@ -336,10 +337,15 @@ def interior_cad(path=INTERIOR_LIST, hosted=None):
     gone = [pn for pn in SHELF_REPLACED if pn in rows and rows[pn]["parent"] == "810201"]
     gone_kg = sum(float(rows[pn]["qty_per_parent"]) * kg(pn) for pn in gone)
     elec = (hosted or {}).get("810201", [])
+    # since #437 INTERIOR's exporter counts other teams' rows under its assemblies itself and names them in the row's
+    # mass status ("with 718101, ... from other teams' lists"): add only the hosted rows it doesn't already hold
+    held = set(re.findall(r"\b\d{6}\b", rows["810201"].get("mass_status", "").split("with", 1)[1])) \
+        if "from other teams' lists" in rows["810201"].get("mass_status", "") else set()
     elec_kg = sum(q * m for _pn, q, m in elec)
-    return dict(ledge=kg("810101"), shelf=kg("810201") - gone_kg + elec_kg, rail=kg("818102"),
-                total=kg("810000") - gone_kg + elec_kg, shelf_listed=kg("810201"), shelf_gone=gone, shelf_gone_kg=gone_kg,
-                shelf_elec=[pn for pn, _q, _m in elec], shelf_elec_kg=elec_kg)
+    added = sum(q * m for pn, q, m in elec if pn not in held)
+    return dict(ledge=kg("810101"), shelf=kg("810201") - gone_kg + added, rail=kg("818102"),
+                total=kg("810000") - gone_kg + added, shelf_listed=kg("810201"), shelf_gone=gone, shelf_gone_kg=gone_kg,
+                shelf_elec=[pn for pn, _q, _m in elec], shelf_elec_kg=elec_kg, shelf_elec_added=added)
 
 
 def shelf_note():
