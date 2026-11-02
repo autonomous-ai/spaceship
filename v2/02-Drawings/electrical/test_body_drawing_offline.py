@@ -155,9 +155,13 @@ def model_size():
 class Fake:
     """The part as Fusion shows it, at the model's size: sizes per orientation (sheet mm at the view's scale), and
     each view's holes from its lower left corner in part mm (hand-entered from the build: H01/H02 Ø19.1 in the
-    right side at Y 175 and 215, 50.5 from the back; H03 Ø19.1 in the top at X 251, 50.5 from the back; H04 Ø22.2 in
-    the bottom at X 55, 18 from the back; H05-H08 Ø5.94 in the lips (PEM CLA-M4-1), 30 from the sides and 10 from top
-    and bottom; H09 Ø5.0 in the bottom at X 110, 36 from the back (PEM FHA-M5-12 earth stud))."""
+    right side at Y 175 and 215, 50.5 from the back; H03 Ø19.1 in the top at X 251, 50.5 from the back; H05-H08 Ø5.94
+    in the lips (PEM CLA-M4-1), 30 from the sides and 10 from top and bottom; H09 Ø5.0 in the bottom at X 90, 36 from the
+    back (PEM FHA-M5-12 earth stud); B2's interface, 14 from the back: in the bottom H04 Ø15.9 at X 32 (the mains cord),
+    H10 Ø11.1 at X 112 (the LAN cable), H11 and H12 Ø6.6 at X 65 and 281 (fixing), in the top H13 and H14 Ø6.6 at X 15
+    and 281; H15 Ø5.0 in the back at X 47, Y 45 (the cord clamp's PEM stud))."""
+    BOTTOM = [(32, 14, 15.9), (90, 36, 5.0), (112, 14, 11.1), (65, 14, 6.6), (281, 14, 6.6)]   # (x, from the back, Ø)
+    TOP = [(251, 50.5, 19.1), (15, 14, 6.6), (281, 14, 6.6)]
     W, H, D = model_size()
     LIP = 22.0
     wrong_front = False
@@ -167,15 +171,15 @@ class Fake:
     def holes(cls, o):
         """[(x, y, diameter, hidden)] from the view's lower left corner, part mm."""
         W, H, D = cls.W, cls.H, cls.D
-        if o == VOT.FrontViewOrientationType:
+        if o == VOT.FrontViewOrientationType:           # the lips' holes, and the back's H15 seen through the opening
             return [(30, 10, 5.94, False), (W - 30, 10, 5.94, False), (30, H - 10, 5.94, False),
-                    (W - 30, H - 10, 5.94, False)]
+                    (W - 30, H - 10, 5.94, False), (47, 45, 5.0, False)]
         if o == VOT.BottomViewOrientationType and cls.bottom_unturned:
-            return [(55, 18, 22.2, False), (110, 36, 5.0, False), (251, 50.5, 19.1, True)]
-        if o == VOT.BottomViewOrientationType:          # Fusion's Bottom: turned 180; H03 behind the bottom wall
-            return [(W - 55, D - 18, 22.2, False), (W - 110, D - 36, 5.0, False), (W - 251, D - 50.5, 19.1, True)]
+            return [(x, c, d, False) for x, c, d in cls.BOTTOM] + [(x, c, d, True) for x, c, d in cls.TOP]
+        if o == VOT.BottomViewOrientationType:          # Fusion's Bottom: turned 180; the top's holes behind the bottom wall
+            return [(W - x, D - c, d, False) for x, c, d in cls.BOTTOM] + [(W - x, D - c, d, True) for x, c, d in cls.TOP]
         if o == VOT.TopViewOrientationType:             # the open side at the bottom, the back (C) at the top
-            return [(251, D - 50.5, 19.1, False), (55, D - 18, 22.2, True), (110, D - 36, 5.0, True)]
+            return [(x, D - c, d, False) for x, c, d in cls.TOP] + [(x, D - c, d, True) for x, c, d in cls.BOTTOM]
         if o == VOT.RightViewOrientationType:           # the open side on the left, the back on the right
             return [(D - 50.5, 175, 19.1, False), (D - 50.5, 215, 19.1, False)]
         if o == VOT.LeftViewOrientationType:            # the back on the left: the right side's holes behind a wall
@@ -584,6 +588,9 @@ def main():
                   "the views file names every view and the scale")
             # the finished PDF
             bt_mod = load("body_drawing_text")
+            bv_mod = load("body_views")
+            check(bv_mod.FRONT_LIP == bt_mod.params()["v"]["lip"],
+                  "the views' lip width (the back's holes show inside it) is the build's lip, %.1f" % bv_mod.FRONT_LIP)
             out = os.path.join(tmp, md.DWG + ".pdf")
             bt_mod.finish_pdf(raw, out)
             import fitz
@@ -605,13 +612,13 @@ def main():
             outside = [t[4] for t in texts if not overlap(t[:4], TEXT)]
             check(outside.count("(236)") == 1 and outside.count("(240)") == 1 and "236" not in outside and
                   "240" not in outside, "the pitch is printed once each as (236) and (240), for reference")
-            tags = [t for t in texts if re.fullmatch(r"H0[1-9]", t[4]) and not overlap(t[:4], TEXT)]
-            check(sorted(t[4] for t in tags) == ["H%02d" % i for i in range(1, 10)], "a tag H01-H09 beside each hole on the views")
+            tags = [t for t in texts if re.fullmatch(r"H(0[1-9]|1[0-5])", t[4]) and not overlap(t[:4], TEXT)]
+            check(sorted(t[4] for t in tags) == ["H%02d" % i for i in range(1, 16)], "a tag H01-H15 beside each hole on the views")
             crossing = [t[4] for t in tags if any(bt_mod._seg_hits_box(s, t[:4]) for s in segs)]
             check(not crossing, "no tag crosses a line %s" % crossing)
             heads = [t[4] for t in texts if overlap(t[:4], TEXT)]
             check(all(h in heads for h in ("TAG", "FACE", "FROM B", "FROM A", "FROM C", "Ø THRU", "NOTE")) and
-                  all(("H%02d" % i) in heads for i in range(1, 10)), "the hole table: its heading row and a row per hole")
+                  all(("H%02d" % i) in heads for i in range(1, 16)), "the hole table: its heading row and a row per hole")
             check(os.path.getsize(out) < 300_000, "fonts subset: the PDF is %.0f kB (was 15.3 MB)" % (os.path.getsize(out) / 1e3))
             sp = [(s["text"], s["size"] / PT, s["bbox"]) for blk in page.get_text("dict")["blocks"]
                   for ln in blk.get("lines", []) for s in ln["spans"] if s["text"].strip()]
@@ -623,13 +630,13 @@ def main():
             check(all(TEXT[0] - 0.5 <= bb[0] / PT and bb[2] / PT <= TEXT[2] + 0.5 and
                       TEXT[1] - 0.5 <= 420.0 - bb[3] / PT and 420.0 - bb[1] / PT <= TEXT[3] + 0.5 for _t, _s, bb in block),
                   "the text block and the hole table stay inside their space")
-            # a raw PDF whose view D isn't turned (H04 55 from its left, 18 from its bottom) stops the finish step
+            # a raw PDF whose view D isn't turned (H04 32 from its left, 14 from its bottom) stops the finish step
             ex = vj["views"]["d"]["extent"]
             fz = fitz.open(raw)
             pg = fz[0]
             pg.add_redact_annot(fitz.Rect((ex[0] - 2) * PT, (420 - ex[3] - 2) * PT, (ex[2] + 2) * PT, (420 - ex[1] + 2) * PT))
             pg.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED)
-            pg.draw_circle(fitz.Point((ex[0] + 55 * md.SCALE) * PT, (420 - (ex[1] + 18 * md.SCALE)) * PT), 11.1 * md.SCALE * PT,
+            pg.draw_circle(fitz.Point((ex[0] + 32 * md.SCALE) * PT, (420 - (ex[1] + 14 * md.SCALE)) * PT), 7.95 * md.SCALE * PT,
                            oc=[x for x, o in fz.get_ocgs().items() if o["name"] == "Visible"][0])
             turned_raw = os.path.join(tmp, "turned.pdf")
             fz.save(turned_raw)

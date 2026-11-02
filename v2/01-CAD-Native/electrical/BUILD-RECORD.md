@@ -31,6 +31,26 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 | STEP export | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step`: AP214, length unit cm declared in the file (D-13), 8 products (710000 and the 7 components), 40 solids (`tools/fusion/step_check.py`; its box reads vertices only, so it misses the cylinders' round extents by up to 5.6 mm: the Fusion re-read below is the exact check); no personal names |
 | STEP re-read in Fusion | 40 bodies, box equal to the design's, max difference 0.000 mm |
 
+## B2 interface: 711001 rebuilt and redrawn, 710000 rebuilt (2026-11-02)
+
+On Mac 1 in the shared lock, from a checkout with main's runner files in its working tree only:
+
+- 02:32 UTC: `electrical_parts_cad.py --arg parts=body --arg export=1` opened `711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD` at version 6 and saved version 7: the B2 interface's holes. In the bottom H04 Ø15.9 at X 32 (the mains cord, Heyco SB 625-7; it was the conduit's Ø22.2), H10 Ø11.1 at X 112 (the LAN cable, SB 437-5), H11 and H12 Ø6.6 at X 65 and 281 (fixing), all 14 from the back (Y 824); in the top H13 and H14 Ø6.6 at X 15 and 281; the earth stud H09 moved to X 90; H15 Ø5.0 in the back at X 47, Y 45 (the cord clamp's PEM FHA-M5-12 stud). Box 296 x 260 x 72, volume 173,340 mm3, 0.465 kg; timeline 45, 0 unhealthy, 0 loose sketches, 30 parameters; f3d, STEP (cm, D-13) and DXF exported. The STEP holds the 15 holes exactly (the hole table's check reads every one in its own wall). An earlier 18:22 build (version 6) is the same geometry; version 7 only corrects one parameter's source text (the cord is SJEOOW, 9.22 mm).
+- The drawing: renamed `..._DWG_SUPERSEDED-2026-11-01-5` and `..._DWG_SUPERSEDED-2026-11-02` (kept, D-141) and started fresh from design version 7. The first two opens of a freshly started drawing hung (2026-11-01 18:23 and 2026-11-02 02:34: Fusion's upload of the new file was put off, Fusion Engineer 2) and the runner flagged Fusion; after the Lead's safe restart, a hold with only the open and a 30 s wait first worked at 03:41. `make_body_drawing.py` placed the 6 views, matched every view's circles to the STEP's 15 holes (the back's H15 seen through the open front), and added the pitch, the overall sizes, datums and centre marks; `body_drawing_text.py` finished the PDF (0.12 MB): Autonomous in Created by, author and creator; the 15-row hole table; tags H01-H15; read back clean.
+- 03:59 UTC: the route model through the late-binding loader with the edit test (PASS, `EDIT-TEST-RECORD.md`): `710000_P01_ELECTRICAL_CAD` opened at version 7 and saved as the next version (the skeleton link kept).
+
+| Check | Result |
+|---|---|
+| Bodies, components | 57 bodies in 7 components (B2's SLEEVE gone; MN-UP, MN-JOG, MN-MBR, LN-BAND, LN-UP, LN-MBR new) |
+| Timeline | 122 items, 0 unhealthy, 0 loose sketches |
+| User parameters | 143 |
+| Body boxes against the offline model | 0 mismatches over 0.01 mm |
+| Overlap between its own bodies | none over 0.1 mm3 |
+| Overlap with skeleton P04 | only the intended pairs, each listed with its reason; every listed pair occurs |
+| Design box | X 74.98 ... 1195.53, Y -640.67 ... 850.02, Z 300.98 ... 2347.08 mm (the cord's channel reaches X 75) |
+| `.f3d` exports | 710000 and 711001 read decompressed, as text and UTF-16: no personal name (one 3-letter match inside 710000's binary geometry stream, not text) |
+| STEP re-read in Fusion | 57 bodies, box equal to the design's, max difference 0.000 mm |
+
 ## Route rebuild for the column route agreed with CEILING (2026-11-01)
 
 Run 2026-11-01 at about 17:34 UTC on Mac 1, Fusion 2706.1.17, through the late-binding loader with the edit test as the second step (PASS, `EDIT-TEST-RECORD.md`), from a checkout with main's runner files (#386, #402) in its working tree:

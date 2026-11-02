@@ -271,8 +271,8 @@ def check_holes(views):
     probs = []
     for name, _o, _w in VIEWS:
         got = [(x, y, r) for x, y, r, _c in circles_of(views[name])]
-        want = BV.expected(name, box, holes, extent(views[name]), SCALE, zs)
-        may = BV.expected(name, box, holes, extent(views[name]), SCALE, zs, hidden=True)
+        want = BV.expected(name, box, holes, extent(views[name]), SCALE, zs, opening=True)
+        may = BV.expected(name, box, holes, extent(views[name]), SCALE, zs, hidden=True, opening=True)
         print("HOLES|%s|want %s|got %s" % (name, [tuple(round(v, 2) for v in c) for c in want],
                                            [tuple(round(v, 2) for v in c) for c in got]))
         probs += BV.compare(name, want, got, may)

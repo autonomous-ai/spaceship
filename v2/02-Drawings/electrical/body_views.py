@@ -24,6 +24,8 @@ import importlib.util
 import os
 
 SIZE_TOL = 0.1          # mm on the sheet: a hole circle's radius against the STEP's
+FRONT_LIP = 22.0        # mm, the body's front lips (electrical_parts_cad.py "lip"): the FRONT view looks through the
+                        # opening inside them, so a hole in the back shows there (H15, the cord clamp's stud)
 POS_TOL = 0.3           # mm on the sheet: a hole circle's centre against the STEP's
 
 
@@ -90,13 +92,24 @@ def along(view, holes, zs):
     return [h for h in holes if abs(abs(dot(h[1], toward)) - 1.0) < 1e-6]
 
 
-def seen(view, box, holes, zs, wall=3.0):
+def seen(view, box, holes, zs, wall=3.0, opening=False):
     """The holes a visible-edges view shows as circles: axis along its looking direction, in the outermost wall on
     the viewer's side (within `wall` mm of the box's face there; a hole in a wall further back is behind that wall
-    on this closed-sided body)."""
-    toward = views(zs)[view][0]
+    on this closed-sided body). With `opening`, the FRONT view also shows the back's holes that lie inside the opening
+    within the lips (FRONT_LIP), whole: the body is open on that side."""
+    toward, ax, ay = views(zs)[view]
     top = highest(box, toward)
-    return [h for h in holes if abs(abs(dot(h[1], toward)) - 1.0) < 1e-6 and top - dot(h[0], toward) <= wall]
+    out = [h for h in holes if abs(abs(dot(h[1], toward)) - 1.0) < 1e-6 and top - dot(h[0], toward) <= wall]
+    if opening and view == "front":
+        low = lowest(box, toward)
+        w, ht = highest(box, ax) - lowest(box, ax), highest(box, ay) - lowest(box, ay)
+        for h in holes:
+            if abs(abs(dot(h[1], toward)) - 1.0) > 1e-6 or dot(h[0], toward) - low > wall:
+                continue
+            u, v, r = dot(h[0], ax) - lowest(box, ax), dot(h[0], ay) - lowest(box, ay), h[2] / 2.0
+            if FRONT_LIP + r <= u <= w - FRONT_LIP - r and FRONT_LIP + r <= v <= ht - FRONT_LIP - r:
+                out.append(h)
+    return out
 
 
 def on_sheet(view, box, point, extent, scale, zs):
@@ -106,9 +119,10 @@ def on_sheet(view, box, point, extent, scale, zs):
             extent[1] + (dot(point, ay) - lowest(box, ay)) * scale)
 
 
-def expected(view, box, holes, extent, scale, zs, hidden=False):
-    """[(x, y, r)] sheet mm of the circles the view shows; with hidden, those of the holes behind a wall instead."""
-    pick = seen(view, box, holes, zs)
+def expected(view, box, holes, extent, scale, zs, hidden=False, opening=False):
+    """[(x, y, r)] sheet mm of the circles the view shows; with hidden, those of the holes behind a wall instead;
+    `opening` as in seen()."""
+    pick = seen(view, box, holes, zs, opening=opening)
     if hidden:
         pick = [h for h in along(view, holes, zs) if h not in pick]
     return [on_sheet(view, box, c, extent, scale, zs) + (d / 2.0 * scale,) for c, _a, d in pick]
@@ -142,7 +156,7 @@ def compare(view, want, got, may=(), pos_tol=POS_TOL, size_tol=SIZE_TOL):
     return probs
 
 
-def check_view(view, box, holes, extent, scale, zs, got, hidden_ok=False):
+def check_view(view, box, holes, extent, scale, zs, got, hidden_ok=False, opening=True):
     """compare() for one view, against the STEP's holes; hidden_ok lets a hidden hole's circle be there (the API)."""
-    may = expected(view, box, holes, extent, scale, zs, hidden=True) if hidden_ok else ()
-    return compare(view, expected(view, box, holes, extent, scale, zs), got, may)
+    may = expected(view, box, holes, extent, scale, zs, hidden=True, opening=opening) if hidden_ok else ()
+    return compare(view, expected(view, box, holes, extent, scale, zs, opening=opening), got, may)

@@ -279,8 +279,8 @@ def sheet_power_unit(doc, v):
     down = [(0.0, 4.6 * i) for i in range(8)]
     for lab, d in layers:                                 # each under its line, stepped down where they'd meet
         s.label(sx + d * 2 + 0.6, sy + 65, lab, K.BODY, GREY, around=down)
-    s.para(sx, sy + 108, "Unit fixed to B2's frame (fixing HOLD, WALL IF-12); cassette cut-out 4 mm clear all round "
-           "(floating lining).", 230.0)
+    s.para(sx, sy + 108, "Unit fixed by 4 M6 screws into the rivnuts of B2's two cross members (WALL); cassette "
+           "cut-out 4 mm clear all round (floating lining).", 230.0)
     parts_table(s, pn, 24, 160, 546, bottom, shares=(0.44, 0.30, 0.26))   # the bought names carry maker and number
     # a face view and a section (Reviewer 7): the symbol sits under the section, since the parts list (longer with the
     # named products and D-168's supplies) now reaches the title block

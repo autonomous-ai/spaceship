@@ -79,15 +79,27 @@ PARTS = {
                  ("lead_y", "%.1f mm" % (V["y_bg"] - V["y_bf"]), "mm", "calculation",
                   "lead exits in the cassette's cable gap: 21.5 mm behind the unit's front"),
                  ("top_x", "%.1f mm" % (V["lt_x"] - V["pu_x0"]), "mm", "calculation", "light feed exit in the top: route model lt_x (X 346) less the unit's left side X 95"),
-                 ("sleeve_x", "%.1f mm" % (V["sl_x"] - V["pu_x0"]), "mm", "calculation", "mains and LAN sleeve entry in the bottom: route model sl_x (X 150) less the unit's left side X 95"),
-                 ("sleeve_d", "22.2 mm", "mm", "assumption", "entry for the conduit connector Electri-Flex NMLT-11 (718075): its sheet gives a 1/2 in trade-size knockout, 7/8 in (22.2) by common practice"),
-                 ("sleeve_y", "%.1f mm" % (V["sl_y"] - V["y_bf"]), "mm", "calculation", "sleeve centre 58 mm behind the unit's front"),
+                 ("mn_x", "%.1f mm" % (V["mn_x"] - V["pu_x0"]), "mm", "calculation",
+                  "mains cord entry in the bottom (H04): route model mn_x (X 127) less the unit's left side X 95; 2 diameters from the bottom's free end (C09), over WALL's passage in the lower cross member"),
+                 ("mn_d", "15.9 mm", "mm", "source", "mains entry: Heyco SB 625-7 snap bushing (718088), a 0.625 in mounting hole (Heyco's sheet); the SJEOOW cord (9.22, Southwire 550433) in its 11.1 bore"),
+                 ("ln_x", "%.1f mm" % (V["ln_x"] - V["pu_x0"]), "mm", "calculation",
+                  "LAN cable entry in the bottom (H10): route model ln_x (X 207), 80 from the mains entry; over WALL's LAN passage"),
+                 ("ln_d", "11.1 mm", "mm", "source", "LAN entry: Heyco SB 437-5 snap bushing (718084), a 0.437 in mounting hole (Heyco's sheet); the Cat6 cable (5.87) in its 7.9 bore"),
+                 ("fr_y", "%.1f mm" % (V["y_fr"] - V["y_bf"]), "mm", "calculation",
+                  "the two entries and the four fixing holes 58 behind the unit's front: Y 824, the middle of B2's frame depth, where WALL's cross members' rivnuts and passages are"),
+                 ("fix_d", "6.6 mm", "mm", "source", "M6 clearance hole, ISO 273 medium: an 838001 screw with an 838004 washer into an 838003 rivnut in WALL's cross member"),
+                 ("fixb_x1", "65 mm", "mm", "calculation", "bottom fixing hole 1 (H11): over the lower cross member's rivnut at X 160 (WALL)"),
+                 ("fixt_x1", "15 mm", "mm", "calculation", "top fixing hole 1 (H13): over the upper cross member's rivnut at X 110 (WALL); 2.3 diameters from the top's free end (C09)"),
+                 ("fix_x2", "w - 15 mm", "mm", "calculation", "bottom and top fixing holes 2 (H12, H14): over the cross members' rivnuts at X 376 (WALL)"),
                  ("clinch_d", "5.94 mm", "mm", "source", "M4 clinch nut hole in each lip: PEM CLA-M4-1 (718047), mounting hole 5.94 +0.08 (PEM bulletin CL)"),
                  ("clinch_x", "30 mm", "mm", "assumption", "clinch nut centre from each side edge, along the top and bottom lips: 2 diameters clear of the lips' mitred corners (C09)"),
                  ("clinch_y", "lip / 2 - 1 mm", "mm", "calculation", "clinch nut centre 10 from the unit's top and bottom: 12 from the lip's free edge (2.02 x the hole, C09) and 8 past the bend's start (PEM CLA-M4-1: 7.1 min)"),
                  ("estud_d", "5.0 mm", "mm", "source", "earth stud hole: PEM FHA-M5-12 (718014), mounting hole 5.0 +0.08 (PEM bulletin FH)"),
-                 ("estud_x", "110 mm", "mm", "assumption", "earth stud in the bottom near the mains entry H04 (55 apart, 2.5 x H04): the PE leads stay short; the unit's inside layout (the factory's) keeps it clear"),
+                 ("estud_x", "90 mm", "mm", "assumption", "earth stud in the bottom between the entries: 62 from the mains entry H04, 31 from the LAN entry H10 and 33 from the fixing hole H11 (each over 2 x the larger hole, C09); the PE leads stay short"),
                  ("estud_y", "36 mm", "mm", "assumption", "earth stud at the bottom's mid-depth"),
+                 ("clamp_x", "mn_x + 15 mm", "mm", "assumption",
+                  "the mains cord's clamp stud (H15) in the back wall, 15 to the right of the cord's entry H04: the clamp's loop holds the cord where it rises from H04, its tab on the stud"),
+                 ("clamp_y", "45 mm", "mm", "assumption", "the clamp 45 above the bottom: the cord held straight up from its entry, below the unit's devices"),
              ]),
     "front": ("711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước",
               "711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE", [
@@ -607,12 +619,18 @@ def build_part(app: "adsk.core.Application", key):
                 raise RuntimeError("body: the back's outer face is at Z %.3f, not 0 or +-t" % back_z)
             z = lambda e: "(%s) + (%s) * (%d)" % (back[0], e, zs)  # noqa: E731
             print("body: back face Z %s, returns toward %sZ" % (back[0], "+" if zs > 0 else "-"))
-            # holes: right side (two lead exits), top (light feed), bottom (sleeve), lips (4 clinch nuts)
+            # holes: right side (two lead exits), top (light feed), bottom (mains and LAN entries), lips (4 clinch nuts),
+            # bottom and top (2 fixing holes each, to WALL's cross members)
             cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z1", z("d - lead_y"), "hole_b", "LEAD EXIT 1 RIGHT SIDE", ("y", "z"))
             cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z2", z("d - lead_y"), "hole_b", "LEAD EXIT 2 RIGHT SIDE", ("y", "z"))
             cut_hole(design, comp, body, "xZConstructionPlane", "h", "top_x", z("d - lead_y"), "hole_b", "LIGHT FEED EXIT TOP", ("x", "z"))
-            cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "sleeve_x", z("d - sleeve_y"), "sleeve_d", "SLEEVE ENTRY BOTTOM", ("x", "z"))
+            cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "mn_x", z("d - fr_y"), "mn_d", "MAINS ENTRY BOTTOM", ("x", "z"))
+            cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "ln_x", z("d - fr_y"), "ln_d", "LAN ENTRY BOTTOM", ("x", "z"))
+            for cx, off, nm in (("fixb_x1", "0 mm", "FIXING HOLE 1 BOTTOM"), ("fix_x2", "0 mm", "FIXING HOLE 2 BOTTOM"),
+                                ("fixt_x1", "h", "FIXING HOLE 1 TOP"), ("fix_x2", "h", "FIXING HOLE 2 TOP")):
+                cut_hole(design, comp, body, "xZConstructionPlane", off, cx, z("d - fr_y"), "fix_d", nm, ("x", "z"))
             cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "estud_x", z("d - estud_y"), "estud_d", "EARTH STUD HOLE BOTTOM", ("x", "z"))
+            cut_hole(design, comp, body, "xYConstructionPlane", z("t / 2"), "clamp_x", "clamp_y", "estud_d", "CORD CLAMP STUD HOLE BACK", ("x", "y"))
             for i, (cx, cy) in enumerate((("clinch_x", "clinch_y"), ("w - clinch_x", "clinch_y"),
                                           ("clinch_x", "h - clinch_y"), ("w - clinch_x", "h - clinch_y")), start=1):
                 cut_hole(design, comp, body, "xYConstructionPlane", z("d - t / 2"), cx, cy, "clinch_d",

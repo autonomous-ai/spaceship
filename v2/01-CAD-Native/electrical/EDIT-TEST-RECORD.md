@@ -10,6 +10,18 @@ Guideline section 4.4: the native file must follow its parameters. `edit_test_el
 python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/edit_test_electrical.py --label "ELECTRICAL Engineer"
 ```
 
+## Run 2026-11-02 about 04:00 UTC (export of the B2 interface rebuild, the same Fusion run): PASS
+
+| Edit | Timeline | Bodies against the model | Reverted |
+|---|---|---|---|
+| as exported | 0 unhealthy | 0.0000 mm | - |
+| power unit down 50 mm (`pu_zc` 950) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+| trunk up 50 mm (`trunk_z` 1150) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+| pod 20 mm deeper (skeleton `pod_d` 1720) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+| bigger pockets and grommets (`pk_l` 180, `grm_d` 22) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+
+All 57 bodies, B2's six new ones included (the mains cord's and the LAN cable's channels and passages, agreed with WALL 2026-11-01), follow every edit to 0.0000 mm and come back on every revert. When the unit moves down 50 mm, the passages and the jog move with its bottom (`pu_z0`).
+
 ## Run 2026-11-01 about 17:36 UTC (export of the column route's rebuild, the same Fusion run): PASS
 
 | Edit | Timeline | Bodies against the model | Reverted |
