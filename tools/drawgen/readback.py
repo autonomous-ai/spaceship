@@ -561,6 +561,13 @@ def flat_fails(data, texts, page_text, tol=TOL):
     if len(bends) != len(fl["rows"]):
         fails.append("the bend table has %d rows, the DXF %d bend lines" % (len(fl["rows"]), len(bends)))
     for row in fl["rows"]:
+        if "p" in row:          # folds along any line: the row's two ends on one BEND line
+            p = (box[0] + row["p"][0], box[1] + row["p"][1])
+            q = (box[0] + row["q"][0], box[1] + row["q"][1])
+            if not any((math.dist(p, a) < 0.01 and math.dist(q, b) < 0.01) or (math.dist(p, b) < 0.01 and
+                                                                             math.dist(q, a) < 0.01) for a, b in bends):
+                fails.append("bend %s is on no BEND line of the DXF" % row["tag"])
+            continue
         ax = 0 if row["axis"] == "x" else 1
         at = box[ax] + row["at"]
         if not any(abs(a[ax] - b[ax]) < 1e-6 and abs(a[ax] - at) < 0.01 for a, b in bends):
@@ -603,6 +610,258 @@ def flat_fails(data, texts, page_text, tol=TOL):
             fails.append("bend %s's tag is not printed on its line" % row["tag"])
     if not vg and ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
         fails.append("the K-factor %s is not printed" % _fmt3(k))
+    return fails
+
+
+def flanges_holding(flanges, P, t):
+    """The recorded flanges (folds along any line) whose material holds point P: between the face and t behind it
+    against its outward normal, inside its outline (Reviewer 15 on #369: a wall 0.2 inside another flange's plane, on
+    its other side, claimed that flange's holes when either side counted)."""
+    hits = []
+    for fr in flanges:
+        if not -t - 0.01 <= dot(P, fr["N"]) - fr["o"] <= 0.01:
+            continue
+        loc = lambda q: (dot(sub(q, fr["p0"]), fr["ex"]), dot(sub(q, fr["p0"]), fr["ey"]))
+        poly = [loc(q) for q in fr["poly"]]
+        x, y = loc(P)
+        inside = False
+        for j in range(len(poly)):
+            (x1, y1), (x2, y2) = poly[j], poly[(j + 1) % len(poly)]
+            if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+                inside = not inside
+        if inside:
+            hits.append(fr)
+    return hits
+
+
+def unfold_fails(data, holes, faces, tol=TOL):
+    """Folds along any line (AIR's ducts), against the STEP (the repo's reader) and the DXF read again: each flange the
+    sheet records is a face of the STEP; each bend's strip in the flat is its allowance a (r + K t) at the printed K,
+    the DXF's bend line along its middle; every STEP hole, placed by the recorded flange it lies in and the DXF's
+    isometry, on a DXF circle of its size within tol, and every circle on a hole."""
+    fl = data.get("flat")
+    if not fl or fl.get("mode") != "unfold":
+        return []
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    uf = fl["unfold"]
+    mirror, c, s_, tx, ty = uf["T"]
+
+    def T(p):
+        x, y = p
+        if mirror:
+            y = -y
+        return (c * x - s_ * y + tx, s_ * x + c * y + ty)
+    t, k = uf["t"], fl["k"]
+    fails = []
+    planes = [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]]
+    for i, fr in enumerate(uf["flanges"]):
+        if not any(abs(abs(dot(pf["n"], fr["N"])) - 1) < 1e-6 and all(abs(dot(p, fr["N"]) - fr["o"]) < 0.01
+                                                                       for p in pf["pts"]) for pf in planes):
+            fails.append("flange %d, as the sheet records it, is no face of the STEP" % (i + 1))
+        # its material side, read from the STEP: the other skin's face, parallel, t behind the recorded one
+        elif not any(abs(abs(dot(pf["n"], fr["N"])) - 1) < 1e-6 and all(abs(dot(p, fr["N"]) - fr["o"] + t) < 0.01
+                                                                         for p in pf["pts"]) for pf in planes):
+            fails.append("flange %d: the STEP has no face t behind it, so its material isn't on the side the sheet "
+                         "records" % (i + 1))
+    lines = d.bend_lines()
+    for b in uf["bends"]:
+        ba = math.radians(b["angle"]) * (b["r"] + k * t)
+        (a0, a1), (b0, b1) = b["zone"]
+        L = math.dist(a0, a1) or 1.0
+        width = abs((b0[0] - a0[0]) * (a1[1] - a0[1]) - (b0[1] - a0[1]) * (a1[0] - a0[0])) / L
+        if abs(width - ba) > 0.01 or abs(b["ba"] - ba) > 0.01:
+            fails.append("bend %s's strip is %s wide; its allowance at K %s and R%s is %s" % (
+                b["tag"], _fmtv(width), _fmt3(k), _fmtv(b["r"]), _fmtv(ba)))
+        m0 = ((a0[0] + b0[0]) / 2, (a0[1] + b0[1]) / 2)
+        m1 = ((a1[0] + b1[0]) / 2, (a1[1] + b1[1]) / 2)
+        if not any((math.dist(m0, u) <= tol and math.dist(m1, v) <= tol) or (math.dist(m0, v) <= tol and
+                                                                             math.dist(m1, u) <= tol) for u, v in lines):
+            fails.append("bend %s: the DXF has no BEND line along the middle of its strip" % b["tag"])
+
+    def where(P):
+        hits = flanges_holding(uf["flanges"], P, t)
+        if len(hits) != 1:
+            return None
+        fr = hits[0]
+        return T((fr["c"][0] + dot(sub(P, fr["p0"]), fr["ex"]), fr["c"][1] + dot(sub(P, fr["p0"]), fr["ey"])))
+    circles = [(cc, rr) for lay, cc, rr in d.circles if d.role(lay) == "cut"]
+    if len(circles) != len(holes):
+        fails.append("the flat's DXF has %d round holes, the STEP %d" % (len(circles), len(holes)))
+    used = set()
+    for h in holes:
+        q = where(h["c"])
+        if q is None:
+            fails.append("STEP hole Ø%s at (%s) is in no recorded flange" % (_fmtv(h["dia"]), ", ".join(_fmtv(x) for x in h["c"])))
+            continue
+        hit = next((i for i, (cc, rr) in enumerate(circles) if i not in used and abs(2 * rr - h["dia"]) < 0.011 and
+                    math.dist(cc, q) <= tol), None)
+        if hit is None:
+            fails.append("STEP hole Ø%s unfolds to (%s, %s); the DXF has no hole of its size there" % (
+                _fmtv(h["dia"]), _fmtv(q[0]), _fmtv(q[1])))
+        else:
+            used.add(hit)
+    for i, (cc, rr) in enumerate(circles):
+        if i not in used:
+            fails.append("the flat's DXF has a Ø%s hole at (%s, %s) that is on no STEP hole" % (
+                _fmtv(2 * rr), _fmtv(cc[0]), _fmtv(cc[1])))
+    return fails
+
+
+def bend_table_rows(page):
+    """{tag: {p, q, dir, angle, r, ba}} from the bend table of folds along any line, as printed: within the table only
+    (from its TAG column rightwards, the words of one row from its tag to its allowance), so a word level with a row
+    elsewhere on the sheet (a border's zone letter) can't spoil it (Reviewer 18 on #369)."""
+    words = page.get_text("words")
+    lines, cy = [], None
+    for w in sorted(words, key=lambda w: ((w[1] + w[3]) / 2, w[0])):
+        y = (w[1] + w[3]) / 2
+        if cy is None or abs(y - cy) > 0.6:
+            lines.append([])
+            cy = y
+        lines[-1].append(w)
+    heads = [ws for ws in lines if {"TAG", "DIRECTION", "ANGLE"} <= {w[4] for w in ws}]
+    if not heads:
+        return {}
+    left = min(w[0] for w in heads[0] if w[4] == "TAG") - 15.0      # the TAG column's cell, with its margin
+    num = r"(-?[\d.]+)"
+    pat = re.compile(r"(?:^| )(B\d+) \(%s, %s\) - \(%s, %s\) (UP|DOWN) %s° R%s %s(?= |$)" % ((num,) * 4 + (num,) * 3))
+    rows = {}
+    for ws in lines:
+        text = " ".join(w[4] for w in sorted(ws, key=lambda w: w[0]) if w[0] >= left)
+        m = pat.search(text)
+        if m:
+            g = m.groups()
+            rows[g[0]] = {"p": (float(g[1]), float(g[2])), "q": (float(g[3]), float(g[4])), "dir": g[5],
+                          "angle": float(g[6]), "r": float(g[7]), "ba": float(g[8])}
+    return rows
+
+
+def _line_dist(o, p, d):
+    """Distance from point o to the line through p along unit d (3D)."""
+    v = sub(o, p)
+    w = sub(v, tuple(dot(v, d) * x for x in d))
+    return math.sqrt(dot(w, w))
+
+
+def _sweep(pts, p, d):
+    """The angle (degrees) a set of points spans about the line through p along unit d, or None (fewer than two)."""
+    vs = [sub(sub(q, p), tuple(dot(sub(q, p), d) * x for x in d)) for q in pts]
+    vs = [v for v in vs if dot(v, v) > 1e-12]
+    if len(vs) < 2:
+        return None
+    u = tuple(x / math.sqrt(dot(vs[0], vs[0])) for x in vs[0])
+    w = (d[1] * u[2] - d[2] * u[1], d[2] * u[0] - d[0] * u[2], d[0] * u[1] - d[1] * u[0])
+    th = [math.degrees(math.atan2(dot(v, w), dot(v, u))) for v in vs]
+    return max(th) - min(th)
+
+
+def unfold_table_fails(data, page, faces, tol=0.01):
+    """Folds along any line: the bend table read back (Reviewer 15 on #369: a sheet printing every UP as DOWN, 150° for
+    30° or R2 for R1 read back PASS). Each printed row must be the sheet's record of that bend (its line in the flat,
+    direction, angle, inside radius and allowance), every recorded bend printed; and each recorded bend must be one of
+    the STEP's (the repo's reader): a fold on its axis, the angle its inside cylinder sweeps, and its direction, from
+    which skin's recorded flange the inside radius touches and whether the DXF is mirrored (UP: toward the viewer of
+    the flat as drawn)."""
+    fl = data.get("flat")
+    if not fl or fl.get("mode") != "unfold":
+        return []
+    fails = []
+    printed = bend_table_rows(page)
+    rec = {r["tag"]: r for r in fl["rows"]}
+    for tag, r in sorted(rec.items()):
+        pr = printed.get(tag)
+        if pr is None:
+            fails.append("bend %s has no row in the bend table" % tag)
+            continue
+        for name, got, want, eps in (("line's start x", pr["p"][0], r["p"][0], 0.006),
+                                     ("line's start y", pr["p"][1], r["p"][1], 0.006),
+                                     ("line's end x", pr["q"][0], r["q"][0], 0.006),
+                                     ("line's end y", pr["q"][1], r["q"][1], 0.006),
+                                     ("angle", pr["angle"], r["angle"], 0.006), ("inside radius", pr["r"], r["r"], 0.006),
+                                     ("allowance", pr["ba"], r["ba"], 0.0006)):
+            if abs(got - want) > eps:
+                fails.append("bend %s's row prints its %s %s; the sheet's record is %s" % (tag, name, _fmtv(got),
+                                                                                           _fmtv(want)))
+        if pr["dir"] != r["dir"]:
+            fails.append("bend %s's row prints %s; the sheet's record is %s" % (tag, pr["dir"], r["dir"]))
+    for tag in sorted(set(printed) - set(rec)):
+        fails.append("the bend table prints a row %s the sheet doesn't record" % tag)
+    uf = fl["unfold"]
+    t, mirror = uf["t"], bool(uf["T"][0])
+    cyls = [f for f in faces if f["kind"] == "cylinder" and "d" in f and "o" in f]
+    for b in uf["bends"]:
+        tag, ax, ap = b["tag"], b["axis"], b["axis_p"]
+        on = [f for f in cyls if abs(abs(dot(f["d"], ax)) - 1) < 1e-6 and _line_dist(f["o"], ap, ax) < tol]
+        if not on:
+            fails.append("bend %s: the STEP has no fold on its recorded axis" % tag)
+            continue
+        inner = min(on, key=lambda f: f["r"])
+        sw = _sweep(inner["pts"], ap, ax)
+        if sw is None or abs(sw - b["angle"]) > 0.05:
+            fails.append("bend %s: the sheet records %s°; its fold in the STEP sweeps %s°" % (
+                tag, _fmtv(b["angle"]), "?" if sw is None else _fmtv(sw)))
+        # the first skin's flange the fold meets: the axis r in front of it when that skin is the fold's inside,
+        # r + t behind it when it is the outside; a point of its outline on the tangent line
+        def touches(fr, sd):
+            if abs(dot(fr["N"], ax)) > 1e-6 or abs(dot(ap, fr["N"]) - fr["o"] - sd) > tol:
+                return False
+            foot = sub(ap, tuple(sd * x for x in fr["N"]))
+            return any(_line_dist(q, foot, ax) < 0.05 for q in fr["poly"])
+        ins = any(touches(fr, b["r"]) for fr in uf["flanges"])
+        out = any(touches(fr, -(b["r"] + t)) for fr in uf["flanges"])
+        if ins == out:
+            fails.append("bend %s: no flange the sheet records meets its fold, so its direction can't be read" % tag)
+            continue
+        want = "UP" if ins == (not mirror) else "DOWN"
+        if rec.get(tag) and rec[tag]["dir"] != want:
+            fails.append("bend %s: the sheet records %s; the STEP's fold and the DXF give %s" % (tag, rec[tag]["dir"],
+                                                                                             want))
+    return fails
+
+
+def fold_section_fails(data, page_text, tol=0.01):
+    """Folds along any line: every fold the sheet records is shown by one section, its own or one it is typical of
+    (the same angle and inside radius as the fold that section cuts, by the sheet's record), and each section is on
+    the sheet, titled with its fold and, when it stands for others, 'typical for' them (Reviewer 15 on #369: one
+    section per fold ran out of letters on 611701's 17 folds)."""
+    fl = data.get("flat")
+    if not fl or fl.get("mode") != "unfold":
+        return []
+    rec = {r["tag"]: r for r in fl["rows"]}
+    secs = fl.get("sections")
+    if secs is None:
+        return ["the sheet doesn't record which section shows each fold"]
+    fails, seen = [], {}
+    words = " ".join(page_text.split())
+    names = {v["name"] for v in data["views"]}
+    for sc in secs:
+        L, own = sc["letter"], rec.get(sc["fold"])
+        if own is None:
+            fails.append("section %s-%s cuts a fold the sheet doesn't record (%s)" % (L, L, sc["fold"]))
+            continue
+        if ("section %s-%s" % (L, L)) not in names or ("SECTION %s-%s" % (L, L)) not in words:
+            fails.append("section %s-%s (fold %s) is not on the sheet" % (L, L, sc["fold"]))
+        if ("across %s's fold at its middle" % sc["fold"]) not in words:
+            fails.append("section %s-%s's title doesn't name its fold %s" % (L, L, sc["fold"]))
+        for tag in [sc["fold"]] + sc["typical"]:
+            if tag in seen:
+                fails.append("fold %s is shown by two sections, %s-%s and %s-%s" % (tag, seen[tag], seen[tag], L, L))
+            seen[tag] = L
+        for tag in sc["typical"]:
+            o = rec.get(tag)
+            if o is None or abs(o["angle"] - own["angle"]) > tol or abs(o["r"] - own["r"]) > tol:
+                fails.append("section %s-%s is said to be typical of fold %s, but its angle or radius differs" % (L, L,
+                                                                                                                tag))
+        # the title's clauses print as lines of their own (the ';' between them isn't printed)
+        m = re.search(r"across %s's fold at its middle: [\d.]+°, inside R[\d.]+;? typical for ((?:B\d+, )*B\d+)" %
+                      re.escape(sc["fold"]), words)
+        named = set(m.group(1).split(", ")) if m else set()
+        if named != set(sc["typical"]):
+            fails.append("section %s-%s stands for %s, but its title names %s" % (
+                L, L, ", ".join(sc["typical"]) or "no other fold", ", ".join(sorted(named)) or "none"))
+    for tag in sorted(set(rec) - set(seen)):
+        fails.append("fold %s is shown by no section" % tag)
     return fails
 
 
@@ -722,8 +981,8 @@ def flat_hole_fails(data, holes, faces, tol=TOL):
     of its normal, within the sheet's thickness of the flange's line, along at least half its straight part), so the
     record can't place the holes on a sheet the model doesn't have."""
     fl = data.get("flat")
-    if not fl:
-        return []
+    if not fl or fl.get("mode") == "unfold":
+        return []               # folds along any line: unfold_fails
     mp = fl.get("map")
     if not mp:
         return ["the sheet doesn't record how its flanges unfold, so the flat's holes can't be checked"]
@@ -1290,12 +1549,16 @@ def check(pdf_path, step_path=None, verbose=False):
     if data.get("notches") or data.get("chamfers") or any(f["kind"] == "open_slot" for f in data["features"]):
         fails += open_slot_fails(data, faces, rows, tb)
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
-    fails += end_cut_fails(data, faces, tb)
+    if not data.get("flat"):        # a bent part's slanted edges are its outline, checked against its DXF
+        fails += end_cut_fails(data, faces, tb)
     fails += cut_list_fails(doc, data)
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
+    fails += unfold_fails(data, holes, faces)
+    fails += unfold_table_fails(data, page, faces)
+    fails += fold_section_fails(data, page.get_text())
     fails += csk_fails(data, faces, holes, page)
     fails += vgroove_radius_fails(data, faces)
     if data.get("flat"):

@@ -98,6 +98,24 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   line at the arc's middle (the model's outside radius, WALL's 2 mm by the maker's guide). A V-groove fold the model
   leaves sharp is refused (the outer skin always bends round a radius, D-161), and an entry that states the outside
   radius has every fold checked against it; its folds table gives each fold's outside radius and the groove.
+- Folds along any line (an entry marked `bent: {"unfold": True, "k": ...}`; AIR's duct transitions): each fold is
+  read from the model's own bend (a cylinder of one skin and its partner on the other, t apart; its angle from the
+  cylinder), and the part unfolds face by face from its largest flange, each bend leaving a strip of its allowance
+  a (r + K t) at the entry's K. The DXF must take the unfolded model by one plane isometry: every bend line on a
+  BEND line, every hole on a circle, the outline on its outline, each within 0.05 both ways (the outline pins K).
+  Each fold's side is taken from its own cylinder, never from a flange's middle (an L-shaped flange's middle can
+  lie across the fold: AIR's 611802), and a hole belongs to the flange whose material it is in (between its face and
+  t behind it). The sheet has a section across each kind of fold (its angle and inside radius) at the middle of the
+  first of its kind, round the whole arc and 10 of each leg (25 either way at least), titled typical for the others of
+  its kind (Reviewer 15 on #369: one section per fold ran past the letters on 611701's 17 folds; a sheet that needs
+  more sections and lettered views than the letters D to Z is refused, never crashes), and a bend table giving each
+  line from end to end in the flat, its direction, angle, inside radius and allowance. Cut-outs and slots aren't read
+  in this mode yet. The read-back checks each recorded flange against the STEP's faces (and its material side
+  against the other skin, t behind it), each strip's width against its allowance at the printed K with the DXF's line
+  in its middle, the STEP's holes through the recorded flanges onto the DXF's circles, both ways; every printed bend
+  row against the record and every recorded bend against the STEP (a fold on its axis, the angle it sweeps, its
+  direction from the skin inside it and the DXF's mirror); and every fold shown by a section, its own or one of its
+  kind that says typical.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
   Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.

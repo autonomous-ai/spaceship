@@ -62,6 +62,44 @@ class NotDrawable(Exception):
     """The part has something this tool can't dimension properly: it goes back to Fusion (D-112, D-113)."""
 
 
+def fold_window(v, rows):
+    """The window of a section round folds, in view v: each fold's whole arc (outside radius r + t about its axis) and
+    10 of each leg past it, 25 either way at least; {"box": (x0, x1, y0, y1), "w", "h"}. A fold's axis runs along v's
+    line of sight, so where the cut is along it doesn't move it on paper."""
+    box = None
+    for row_ in rows:
+        bd_ = row_["bend"]
+        c2 = v.to2d(bd_.axis_p)
+        h_ = max(25.0, bd_.r + bd_.t + 10.0)
+        b_ = (c2[0] - h_, c2[0] + h_, c2[1] - h_, c2[1] + h_)
+        box = b_ if box is None else (min(box[0], b_[0]), max(box[1], b_[1]), min(box[2], b_[2]), max(box[3], b_[3]))
+    return {"box": box, "w": box[1] - box[0], "h": box[3] - box[2]}
+
+
+def fold_section_words(r):
+    """A fold section's title words: the fold it cuts, its angle and inside radius, and every fold of the same angle
+    and radius it stands for, each named (the Lead on #369)."""
+    w = "across %s's fold at its middle: %s°, inside R%s" % (r.fold["tag"], fmt(r.fold["angle"]), fmt(r.fold["r"]))
+    typ = getattr(r, "typical", None) or []
+    return w + ("; typical for %s" % ", ".join(x["tag"] for x in typ) if typ else "")
+
+
+class Letters:
+    """The letters that name a sheet's sections and lettered views, in order; one more than there are is a refusal,
+    never a crash (Reviewer 15 on #369: 611701 stopped generate's whole run on a StopIteration)."""
+
+    def __init__(self, letters, pn):
+        self.left, self.pn = list(letters), pn
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if not self.left:
+            raise NotDrawable("%s needs more sections and lettered views than the letters D to Z give" % self.pn)
+        return self.left.pop(0)
+
+
 # ------------------------------------------------------------------ geometry helpers
 
 def ray_blocked(shape, p, d, skip=0.02):
@@ -616,6 +654,15 @@ def flat_data(part, pl):
     if not fl:
         return None
     fv = (getattr(pl, "flats", None) or [None])[0]
+    if getattr(fl, "mode", None) == "unfold":
+        import unfold
+        return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
+                "mode": "unfold", "chains": [],
+                "rows": [{"tag": r_["tag"], "p": list(r_["p"]), "q": list(r_["q"]), "dir": r_["dir"],
+                          "angle": r_["angle"], "r": r_["r"], "ba": r_["ba"], "printed_at": r_.get("printed_at")}
+                         for r_ in fl.rows],
+                "unfold": unfold.record(fl), "readings": fl.readings,
+                "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None}
     return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
             "vgroove": bool(fl.vgroove),
             "chains": [{"t": ch.t, "flanges": [L for L, _d in ch.flanges], "angles": [f.angle for f in ch.folds],
@@ -646,6 +693,23 @@ def bent_flat(part, team, bent):
     if others:
         # a keyhole or an open slot: the flat's check doesn't read them yet
         raise NotDrawable("%s: a bent part's %s isn't matched to its DXF yet" % (part.pn, others[0].kind.replace("_", " ")))
+    if cfg.get("unfold"):
+        # folds along any line (AIR's ducts): read fold by fold from the model's bend cylinders, unfolded face by face
+        import unfold
+        if cfg.get("k") is None:
+            raise NotDrawable("%s: folds along any line need the entry's K-factor (bent: {'unfold': True, 'k': ...})"
+                              % part.pn)
+        if slots:
+            raise NotDrawable("%s: a slot isn't read with folds along any line yet" % part.pn)
+        try:
+            fl = unfold.analyse(b, dxfs[0], float(cfg["k"]), holes=holes, radius_from=cfg.get("radius_why"))
+        except ValueError as e:
+            raise NotDrawable("%s: %s" % (part.pn, e))
+        odd = unfold.unexplained(fl.sheet, holes)
+        if odd:
+            raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (part.pn, b.name, ", ".join(odd[:3])))
+        fl.path = dxfs[0]
+        return fl
     try:
         fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes,
                                 vgroove=cfg.get("vgroove"), outside_radius=cfg.get("outside_radius"))
@@ -1085,7 +1149,7 @@ def plan_views(part, spec):
     # every end cut (a mitre, a compound cut's faces) shown in profile by a drawn view: edge on, the member's axis
     # across the view, where its angle from square prints at its end. A view is added where none does (FRONT's #320:
     # 8 tubes whose only view saw their mitres face on, as bands); a cut no plain view shows in profile is refused
-    for b in part.bodies:
+    for b in ([] if getattr(part, "flat", None) else part.bodies):     # a bent part's faces are flanges, not cuts
         lax_ = geom.member_axis(b)
         if lax_ is None:
             continue
@@ -1195,6 +1259,29 @@ def plan_views(part, spec):
         r.point = getattr(ch, "point", None) or vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 -
                                                                        vdot(b.centroid, ch.axis)))
         pl.removed.append(r)
+    # folds along any line: a section across each kind of fold (its angle and inside radius), at the middle of the
+    # first of that kind, square to its bend line, round the fold; the others of its kind are typical of it (its title
+    # says so). AIR's 611701 took a section for each of its 17 folds and ran out of letters (Reviewer 15 on #369); its
+    # parallel folds sit too far apart for one cut, but it has 6 kinds of fold
+    if getattr(getattr(part, "flat", None), "mode", None) == "unfold":
+        import unfold
+        kinds = {}
+        for row in part.flat.rows:
+            key = (round(row["angle"], 2), round(row["r"], 3))
+            if key in kinds:
+                kinds[key].typical.append(row)
+                continue
+            bd = row["bend"]
+            (F, eF), _g = bd.flanges
+            pa, pb = unfold._edge_ends(eF)
+            mid = vmul(vadd(pa, pb), 0.5)
+            r = Plan()
+            r.feats, r.all, r.body = [], [], part.bodies[0]
+            r.fold, r.typical = row, []
+            r.n, r.y = bd.axis_d, F.normal
+            r.point = vadd(bd.axis_p, vmul(bd.axis_d, vdot(vsub(mid, bd.axis_p), bd.axis_d)))
+            kinds[key] = r
+            pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
     if not pl.removed and part.size[k] < 6.0 and len(part.bodies) == 1:
@@ -1242,6 +1329,22 @@ def _trace(view, point, normal, ext):
         return (c[0], ext[1]), (c[0], ext[3])
     if abs(abs(vdot(normal, view.y)) - 1) < 1e-6:
         return (ext[0], c[1]), (ext[2], c[1])
+    if abs(vdot(normal, view.n)) < 1e-6:
+        # edge on at an angle (a fold along any line): the plane's line through c, across the box
+        n2 = (vdot(normal, view.x), vdot(normal, view.y))
+        L = math.hypot(*n2)
+        d = (-n2[1] / L, n2[0] / L)
+        lo, hi = -1e9, 1e9
+        for k, (a, b) in enumerate(((ext[0], ext[2]), (ext[1], ext[3]))):
+            if abs(d[k]) < 1e-12:
+                if not a <= c[k] <= b:
+                    return None
+                continue
+            s0, s1 = (a - c[k]) / d[k], (b - c[k]) / d[k]
+            lo, hi = max(lo, min(s0, s1)), min(hi, max(s0, s1))
+        if hi <= lo:
+            return None
+        return (c[0] + d[0] * lo, c[1] + d[1] * lo), (c[0] + d[0] * hi, c[1] + d[1] * hi)
     return None
 
 
@@ -1355,7 +1458,7 @@ def draw(part, spec, out_path, today=None):
         vd = VD(v, view_prims(part.shape, v, scale, bodies=shapes, hidden_from=hid), scale)
         vd.name = nm
         vds[nm] = vd
-    letters = iter("DEFGHJKLMNPRSTUVWXYZ")       # A, B and C name the datums
+    letters = Letters("DEFGHJKLMNPRSTUVWXYZ", part.pn)       # A, B and C name the datums
     secs = []
     for g in pl.sections:
         v = g.sview
@@ -1387,6 +1490,11 @@ def draw(part, spec, out_path, today=None):
                 continue                # the same as a section already drawn: its title says typical
             removed.append(vd)
             continue
+        if getattr(r, "fold", None):
+            # round every fold the cut crosses: each one's whole arc (outside radius r + t about its axis) and 10 of
+            # each leg past it, 25 either way at least (Reviewer 15 on #369: a window 25 round the axis showed only
+            # a sliver of an R32 fold)
+            kept = geom.window_keep(kept, v, *fold_window(v, [r.fold])["box"])
         loops = [face_loops(f, v) for f in cut_faces(kept, r.point, r.n)]
         prims = [p for lp in loops for p in lp]
         rs = None
@@ -2156,6 +2264,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         if getattr(vd, "profile", None):
             profile_dims(sh, vd)
             continue
+        if getattr(r, "fold", None):
+            continue                # its angle and radius are in its title and the bend table
         c = vd.S(vd.view.to2d(r.point))
         x0, y0, x1, y1 = vd.box()
         sh.centre_line((c[0], y0 - 4), (c[0], y1 + 4))
@@ -2533,6 +2643,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                   extra=mapping_words(vd.view, part.pod_system))
             continue
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
+              fold_section_words(vd.r) if getattr(vd.r, "fold", None) else
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
               if vd.r.feats else ("across %s, showing its bevel along it" % (vd.r.body.name or "the member"))
               if getattr(vd.r, "bevel", None) else "across the middle, showing the thickness",
@@ -2903,7 +3014,17 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
         y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
     fl = getattr(part, "flat", None)
-    if fl and fl.vgroove:
+    if fl and getattr(fl, "mode", None) == "unfold":
+        ucols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm), FROM - TO", 70, "l"), ("DIRECTION", 24, "c"),
+                 ("ANGLE", 20, "r"), ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 158, "l")]
+        urows = [[row["tag"], "(%s, %s) - (%s, %s)" % (fmt(row["p"][0]), fmt(row["p"][1]), fmt(row["q"][0]),
+                                                       fmt(row["q"][1])),
+                  row["dir"], "%s°" % fmt(row["angle"]), "R%s" % fmt(row["r"]), fmt(row["ba"], 3)] for row in fl.rows]
+        head = ["BENDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
+                "from the flat's lower left corner; UP: the flange folds toward the viewer of the flat pattern as drawn; "
+                "K-factor %s (its entry), inside radius from %s" % (fmt(fl.k, 3), fl.radius_from)]
+        y = sh.table(right_x0, y, ucols, urows, size=2.5, title=head, title_size=2.5) - 5.0
+    elif fl and fl.vgroove:
         gcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
                  ("OUTSIDE RADIUS", 30, "r"), ("GROOVE", tw - 148, "l")]
         grows = [[row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
@@ -2997,7 +3118,14 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
             "Coaxial holes in two walls of one member are shown in section%s %s." % (
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     fl = getattr(part, "flat", None)
-    if fl and fl.vgroove:
+    if fl and getattr(fl, "mode", None) == "unfold":
+        notes.append("Bent from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the bend centre lines, "
+                     "at any angle. Each fold read from the model's own bend (its two cylinders, the inside radius "
+                     "R%s, its angle), the part unfolded face by face at K-factor %s (its entry): every bend line, hole "
+                     "and outline edge of the DXF within 0.05 of the unfolded model, both ways. A section across each "
+                     "fold shows it at its middle; the bend table gives each bend's line, direction, angle and "
+                     "allowance." % (inputs.rel(fl.path), inputs.sha12(fl.path), fmt(fl.radius), fmt(fl.k, 3)))
+    elif fl and fl.vgroove:
         rounded = sorted({fmt(f.r_out) for ch in fl.chains for f in ch.folds if f.r_out})
         notes.append("V-grooved and folded from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the "
                      "folds' lines. The outer skin runs round each fold unstretched, so the flat develops along the outer "
@@ -3318,6 +3446,10 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
     if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
         out["flat"] = flat_data(part, pl)
+        if out["flat"].get("mode") == "unfold":     # which section shows each fold (its own, or one it is typical of)
+            out["flat"]["sections"] = [{"letter": vd.letter, "fold": vd.r.fold["tag"],
+                                        "typical": [x["tag"] for x in vd.r.typical]}
+                                       for vd in removed if getattr(vd.r, "fold", None)]
     if getattr(part, "cut_list_file", None):     # only a frame drawn from a team cut list (D-162)
         out["sources"].append({"role": "cut list", "path": inputs.rel(part.cut_list_file),
                                "sha256_12": inputs.sha12(part.cut_list_file)})

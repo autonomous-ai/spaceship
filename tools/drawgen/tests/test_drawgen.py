@@ -481,6 +481,287 @@ def test_bent_sheet_from_step_and_dxf():
     assert doc1 is not None
 
 
+def test_folds_along_any_line():
+    """AIR's duct transitions (the Lead's queue): folds in several directions, read fold by fold from the model's bend
+    cylinders and unfolded face by face. A test duct piece (a tapered base, a 90° fold with a hole, a 60° fold with a
+    tapering flange and a 30° kink, all R1 = t) draws against its flat worked by hand at K 0.44 and reads back: its
+    bend table gives each line from end to end at its own angle, UP, with its allowance; a section across each fold.
+    A DXF with the hole 1 mm off, or the right DXF at K 0.40, is refused; the good sheet's read-back fails against
+    the moved hole."""
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct")
+    os.makedirs(d, exist_ok=True)
+    step = duct_piece.build_step(os.path.join(d, "219991_P01_TEST-DUCT_STEP.step"))
+    good = duct_piece.write_dxf(os.path.join(d, "219991_DXF.dxf"))
+    moved = duct_piece.write_dxf(os.path.join(d, "219991_moved_DXF.dxf"), move=1.0)
+    row = dict(ROW, part_number="219991", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219991.pdf")
+    spec = dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good})
+    compose.make("219991", "none", spec, p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    rows = data["flat"]["rows"]
+    assert sorted(round(r_["angle"]) for r_ in rows) == [30, 60, 90] and all(r_["dir"] == "UP" for r_ in rows), rows
+    for r_ in rows:
+        assert abs(r_["ba"] - math.radians(r_["angle"]) * (1.0 + 0.44)) < 1e-6, r_
+    text = " ".join(doc[0].get_text().split())
+    assert text.count("fold at its middle") == 3 and "K-factor 0.44" in text, text[:600]
+    for dxf_path, k, want in ((moved, 0.44, "don't sit where the model unfolds to"),
+                              (good, 0.40, "outline isn't where the model unfolds to")):
+        try:
+            compose.make("219991", "none", dict(SPEC, bent={"unfold": True, "k": k, "dxf": dxf_path}),
+                         os.path.join(d, "x.pdf"), step=step, row=row)
+            raise AssertionError("drew against %s at K %s" % (dxf_path, k))
+        except compose.NotDrawable as e:
+            assert want in str(e), e
+    data["flat"]["dxf"] = moved
+    f2 = readback.unfold_fails(data, readback.step_holes(step, "219991"), readback.step_faces(step, "219991"))
+    assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
+
+
+def test_a_fold_section_stands_for_the_folds_of_its_kind():
+    """Reviewer 15 on #369 and the Lead: one section per kind of fold (its angle and inside radius), the others of its
+    kind typical of it, each named in its title, and every fold still in the bend table with its own angle, radius
+    and direction. The test duct with two 60° folds draws two sections, one typical for the other fold, and reads
+    back; planted, a section said typical of a fold of another kind, a fold no section shows, and a title naming the
+    wrong fold each fail."""
+    import copy
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct_kinds")
+    os.makedirs(d, exist_ok=True)
+    angles = duct_piece.ANGLES
+    duct_piece.ANGLES = (90.0, 60.0, 60.0)
+    try:
+        step = duct_piece.build_step(os.path.join(d, "219968_P01_TEST-DUCT_STEP.step"))
+        good = duct_piece.write_dxf(os.path.join(d, "219968_DXF.dxf"))
+    finally:
+        duct_piece.ANGLES = angles
+    row = dict(ROW, part_number="219968", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219968.pdf")
+    compose.make("219968", "none", dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good}),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    data = readback.read_data(fitz.open(p))
+    rows = {r_["tag"]: r_ for r_ in data["flat"]["rows"]}
+    secs = data["flat"]["sections"]
+    assert len(rows) == 3 and len(secs) == 2, (rows, secs)
+    typ = next(sc for sc in secs if sc["typical"])
+    (other,) = typ["typical"]
+    assert round(rows[typ["fold"]]["angle"]) == round(rows[other]["angle"]) == 60, (typ, rows)
+    words = " ".join(page.get_text().split())
+    assert ("across %s's fold at its middle: 60°, inside R1 typical for %s" % (typ["fold"], other)) in words, words
+    assert all(("%s (" % t_) in words for t_ in rows), words      # every fold still a row of the bend table
+    plain = next(sc for sc in secs if not sc["typical"])
+    dd = copy.deepcopy(data)
+    next(sc for sc in dd["flat"]["sections"] if sc["typical"])["typical"].append(plain["fold"])
+    f = readback.fold_section_fails(dd, page.get_text())
+    assert any("is said to be typical of fold %s, but its angle or radius differs" % plain["fold"] in x for x in f), f
+    dd = copy.deepcopy(data)
+    next(sc for sc in dd["flat"]["sections"] if sc["typical"])["typical"] = []
+    f = readback.fold_section_fails(dd, page.get_text())
+    assert any("fold %s is shown by no section" % other in x for x in f), f
+    f = readback.fold_section_fails(data, " ".join(page.get_text().split()).replace("typical for %s" % other,
+                                                                                   "typical for %s" % plain["fold"]))
+    assert any("stands for %s, but its title names %s" % (other, plain["fold"]) in x for x in f), f
+
+
+def _duct_variant(d, tag, pn, base=None, tabs=None, r=None):
+    """The test duct built and its flat worked by hand with another base, tabs or inside radius; (step, dxf)."""
+    sys.path.insert(0, HERE)
+    import duct_piece
+    keep = (duct_piece.BASE, duct_piece.TABS, duct_piece.R)
+    duct_piece.BASE = base or duct_piece.BASE
+    duct_piece.TABS = tabs if tabs is not None else duct_piece.TABS
+    duct_piece.R = r or duct_piece.R
+    try:
+        return (duct_piece.build_step(os.path.join(d, "%s_P01_TEST-%s_STEP.step" % (pn, tag))),
+                duct_piece.write_dxf(os.path.join(d, "%s_%s_DXF.dxf" % (pn, tag))))
+    finally:
+        duct_piece.BASE, duct_piece.TABS, duct_piece.R = keep
+
+
+def test_any_line_folds_stand_ins():
+    """Reviewer 18 on #369: the fixes for AIR's parts had no tests that fail without them. Stand-ins on the test duct:
+    (1) an L-shaped base whose middle lies across its fold (AIR's floor 611802) unfolds onto its flat and reads back,
+    where a fold's side taken from a flange's middle put that line a whole allowance off; (2) folds of R30 are cut
+    with windows that hold their whole arc and 10 of each leg, not 25 round the axis; (3) a sheet that needs more
+    letters than it has is refused, never stops on a StopIteration; (4) a point is in a flange only on its material
+    side, so a wall 0.2 inside another flange's plane, facing the other way, doesn't claim its holes (611801), here
+    and in the read-back."""
+    d = os.path.join(TMP, "duct_stand_ins")
+    os.makedirs(d, exist_ok=True)
+    row = dict(ROW, part_number="219967", name="TEST - DUCT", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    spec = lambda dxf: dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": dxf})
+    # (1) the L: its middle (93, 77) lies across the fold on its inner edge (y 40)
+    step, dxf = _duct_variant(d, "L", "219967", base=[(0, 0), (300, 0), (300, 40), (100, 40), (100, 200), (0, 200)],
+                              tabs=[(2, 90.0, 20.0, 180.0, [(0.0, 40.0), (160.0, 40.0)], [])])
+    p = os.path.join(d, "L.pdf")
+    compose.make("219967", "none", spec(dxf), p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    # (2) R30 folds: each fold section's window holds the arc (outside radius 31) and 10 of each leg
+    step, dxf = _duct_variant(d, "R30", "219966", r=30.0)
+    real_keep, boxes = compose.geom.window_keep, []
+
+    def keep(shape, v, x0, x1, y0, y1):
+        boxes.append((x1 - x0, y1 - y0))
+        return real_keep(shape, v, x0, x1, y0, y1)
+    compose.geom.window_keep = keep
+    try:
+        p = os.path.join(d, "R30.pdf")
+        compose.make("219966", "none", spec(dxf), p, step=step, row=dict(row, part_number="219966"))
+    finally:
+        compose.geom.window_keep = real_keep
+    # three fold sections each time the sheet is drawn (it is drawn again while its scale is chosen)
+    assert len(boxes) >= 3 and len(boxes) % 3 == 0 and all(min(b) >= 2 * (30.0 + 1.0 + 10.0) - 1e-6 for b in boxes), boxes
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    # (3) two letters for three fold sections: a refusal
+    sys.path.insert(0, HERE)
+    import duct_piece
+    step = duct_piece.build_step(os.path.join(d, "219965_P01_TEST-DUCT_STEP.step"))
+    dxf = duct_piece.write_dxf(os.path.join(d, "219965_DXF.dxf"))
+    real_letters = compose.Letters
+
+    class Two(real_letters):
+        def __init__(self, letters, pn):
+            real_letters.__init__(self, letters[:2], pn)
+    compose.Letters = Two
+    try:
+        compose.make("219965", "none", spec(dxf), os.path.join(d, "x.pdf"), step=step, row=dict(row, part_number="219965"))
+        raise AssertionError("drew three fold sections with two letters")
+    except compose.NotDrawable as e:
+        assert "needs more sections and lettered views than the letters" in str(e), e
+    finally:
+        compose.Letters = real_letters
+    # (4) a flange facing +Z at Z 0 (material down to -1) and a wall facing -Z at Z -0.2 (material up to 0.8) over the
+    # same square: a hole's middle at Z -0.5 is in the first only
+    from types import SimpleNamespace as NS
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.gp import gp_Pnt
+    import unfold
+
+    def square(z, flip):
+        poly = BRepBuilderAPI_MakePolygon()
+        corners = [(0, 0), (100, 0), (100, 100), (0, 100)]
+        for x, y in (corners[::-1] if flip else corners):
+            poly.Add(gp_Pnt(x, y, z))
+        poly.Close()
+        return BRepBuilderAPI_MakeFace(poly.Wire()).Face()
+    A = NS(i=0, f=square(0.0, False), centre=(50.0, 50.0, 0.0), normal=(0.0, 0.0, 1.0))
+    B = NS(i=1, f=square(-0.2, True), centre=(50.0, 50.0, -0.2), normal=(0.0, 0.0, -1.0))
+    maps = {0: unfold.Map2D((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0)),
+            1: unfold.Map2D((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, -1.0, 0.0), (500.0, 0.0))}
+    unfold._OUTER.clear()
+    q = unfold.where(NS(flanges=[A, B], t=1.0), NS(maps=maps), (40.0, 60.0, -0.5))
+    unfold._OUTER.clear()
+    assert q is not None and abs(q[0] - 40.0) < 1e-9 and abs(q[1] - 60.0) < 1e-9, q
+    rec = lambda f: {"N": f.normal, "o": sum(a * b for a, b in zip(f.centre, f.normal)), "p0": (0.0, 0.0, 0.0),
+                     "ex": (1.0, 0.0, 0.0), "ey": (0.0, 1.0, 0.0),
+                     "poly": [(0.0, 0.0, f.centre[2]), (100.0, 0.0, f.centre[2]), (100.0, 100.0, f.centre[2]),
+                              (0.0, 100.0, f.centre[2])]}
+    hits = readback.flanges_holding([rec(A), rec(B)], (40.0, 60.0, -0.5), 1.0)
+    assert len(hits) == 1 and hits[0]["N"] == (0.0, 0.0, 1.0), hits
+
+
+class _WordBeside:
+    """A page with one more word, level with bend row `tag`'s words, at x (a border's zone letter, say)."""
+
+    def __init__(self, page, tag, x, word):
+        self.page, self.tag, self.x, self.word = page, tag, x, word
+
+    def get_text(self, *a, **k):
+        out = self.page.get_text(*a, **k)
+        if a != ("words",):
+            return out
+        w = next(w for w in out if w[4] == self.tag and any(abs((v[1] + v[3]) / 2 - (w[1] + w[3]) / 2) < 0.6 and
+                                                             v[4] in ("UP", "DOWN") for v in out))
+        return list(out) + [(self.x, w[1], self.x + 3.0, w[3], self.word, 0, 0, 0)]
+
+    def __getattr__(self, name):
+        return getattr(self.page, name)
+
+
+class _RowSays:
+    """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
+
+    def __init__(self, page, tag, old, new):
+        self.page, self.tag, self.old, self.new = page, tag, old, new
+
+    def get_text(self, *a, **k):
+        out = self.page.get_text(*a, **k)
+        if a != ("words",):
+            return out
+        rows = [w for w in out if w[4] == self.tag and any(abs((v[1] + v[3]) / 2 - (w[1] + w[3]) / 2) < 0.6 and
+                                                            v[4] in ("UP", "DOWN") for v in out)]
+        assert len(rows) == 1, rows
+        y = (rows[0][1] + rows[0][3]) / 2
+        hit = [w for w in out if abs((w[1] + w[3]) / 2 - y) < 0.6 and w[4] == self.old]
+        assert len(hit) == 1, (self.old, [w[4] for w in out if abs((w[1] + w[3]) / 2 - y) < 0.6])
+        return [w if w is not hit[0] else w[:4] + (self.new,) + w[5:] for w in out]
+
+    def __getattr__(self, name):
+        return getattr(self.page, name)
+
+
+def test_any_line_bend_table_is_read_back():
+    """Reviewer 15 on #369: the read-back never read the bend table of folds along any line, so a sheet printing every
+    UP as DOWN, 150° for 30° or R2 for R1 read back PASS. Each printed row is now read against the sheet's record, and
+    each recorded bend against the STEP: a fold on its axis, the angle it sweeps, and its direction (which skin is the
+    fold's inside, and whether the DXF is mirrored). On the test duct, each plant fails."""
+    import copy
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct_table")
+    os.makedirs(d, exist_ok=True)
+    step = duct_piece.build_step(os.path.join(d, "219970_P01_TEST-DUCT_STEP.step"))
+    good = duct_piece.write_dxf(os.path.join(d, "219970_DXF.dxf"))
+    row = dict(ROW, part_number="219970", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219970.pdf")
+    compose.make("219970", "none", dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good}),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    data = readback.read_data(fitz.open(p))
+    faces = readback.step_faces(step, "219970")
+    printed = readback.bend_table_rows(page)
+    assert sorted(printed) == sorted(r_["tag"] for r_ in data["flat"]["rows"]), printed
+    assert readback.unfold_table_fails(data, page, faces) == []
+    # Reviewer 18: a word level with a row elsewhere on the sheet (a border's zone letter) leaves the row as it is
+    for r_ in data["flat"]["rows"]:
+        for x in (20.0, page.rect.width - 20.0):
+            f = readback.unfold_table_fails(data, _WordBeside(page, r_["tag"], x, "B"), faces)
+            assert f == [], (r_["tag"], x, f)
+    b30 = next(r_ for r_ in data["flat"]["rows"] if round(r_["angle"]) == 30)
+    tag = b30["tag"]
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "UP", "DOWN"), faces)
+    assert f == ["bend %s's row prints DOWN; the sheet's record is UP" % tag], f
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "30°", "150°"), faces)
+    assert f == ["bend %s's row prints its angle 150; the sheet's record is 30" % tag], f
+    f = readback.unfold_table_fails(data, _RowSays(page, tag, "R1", "R2"), faces)
+    assert f == ["bend %s's row prints its inside radius 2; the sheet's record is 1" % tag], f
+    # the record against the STEP: an angle the fold doesn't sweep, a direction the fold and the DXF don't give
+    dd = copy.deepcopy(data)
+    next(b_ for b_ in dd["flat"]["unfold"]["bends"] if b_["tag"] == tag)["angle"] = 150.0
+    f = readback.unfold_table_fails(dd, page, faces)
+    assert any("bend %s: the sheet records 150°; its fold in the STEP sweeps 30°" % tag in x for x in f), f
+    dd = copy.deepcopy(data)
+    dd["flat"]["unfold"]["T"][0] = not dd["flat"]["unfold"]["T"][0]
+    f = readback.unfold_table_fails(dd, page, faces)
+    assert len([x for x in f if "the STEP's fold and the DXF give DOWN" in x]) == len(dd["flat"]["rows"]), f
+
+
 def test_a_sharp_v_groove_is_refused():
     """D-161 (Reviewer 6 on #341): a V-grooved ACP fold bends its outer skin round a radius (2 mm minimum), so a model
     that leaves the fold sharp would develop as the plain sum of the outside lengths, 0.86 too long. A test skin
