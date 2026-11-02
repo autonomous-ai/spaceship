@@ -1,6 +1,12 @@
 """CEILING's entries for drawgen (D-139: each team keeps its own entries here, in its own PRs; tools/drawgen's owner
 reviews the code and a team's first entries). See tools/drawgen/teams/README.md for what an entry holds."""
 
+# A ceiling frame's members get no sheets of their own (D-162): each member's drawing is its row in its frame's cut list
+# on the frame's weldment sheet (411101, 411102), which also carries the holes made after welding. No ceiling member has
+# a before-weld feature: its length and end cuts (the mitre plates' cut-backs too) are the cut list's, every joint hole
+# is made after welding (J-FRAME-01), and the seam's 1 x 45 lead-in is ground with the closing face's beads after
+# welding.
+# The frames' weldment sheets wait for the generator's weldment hooks.
 PARTS = {}
 
 NO_DRAWING = {}

@@ -213,7 +213,13 @@ POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right"
 class Part:
     """Everything one drawing needs, read from the sources."""
 
-    def __init__(self, pn, team, step=None, pod_system=True, row=None, bent=None):
+    def _member_pns(self):
+        """A frame of members' member numbers (D-120); none for any other part."""
+        if not self.unit.get("members"):
+            return []
+        return sorted({geom.part_number_of(b.name) for b in self.bodies} - {None})
+
+    def __init__(self, pn, team, step=None, pod_system=True, row=None, bent=None, frame_members=False):
         self.pn = pn
         self.team = team
         self.step = step or inputs.own_step(pn)
@@ -237,7 +243,14 @@ class Part:
             self.file_name = nm["name"]
         self.name = self.row.get("name", "").strip()
         self.name_vi = (self.row.get("name_vi") or "").strip()
-        self.bodies, self.unit = geom.load_part(self.step, pn)
+        self.bodies, self.unit = geom.load_part(self.step, pn, frame_members=frame_members)
+        if self.unit.get("members"):
+            for mpn in sorted({geom.part_number_of(b.name) for b in self.bodies} - {None}):
+                mrow = inputs.parts_row(mpn, team)[0] or {}
+                kind = (mrow.get("kind") or mrow.get("type") or "").strip().upper()
+                if kind in ("PI", "HOLD"):
+                    raise NotDrawable("%s: %s %s under the frame is a bought part (%s in its parts list), not frame "
+                                      "material" % (pn, mpn, mrow.get("name", ""), kind))
         self.occurrences = self.unit.get("occurrences", 1)
         self.qty_words = None
         if self.occurrences > 1:
@@ -300,24 +313,39 @@ class Part:
             self.notches += nt
             self.chamfers += ch
             self.plates += plt
-        self.reg = inputs.feature_rows(pn, team)
+        # a frame of members (D-120): a hole is matched in its own member's register rows first (CEILING lists each
+        # hole under its member), then in the frame's own rows (WALL lists the after-weld holes there), never in
+        # another member's (pooled, a member's Ø7 bolt hole could fit another member's row)
+        members = self._member_pns()
+        own = (lambda body: geom.part_number_of(body.name)) if members else (lambda body: None)
+        frame_rows = inputs.feature_rows(pn, team)
+        rows1 = {m: inputs.feature_rows(m, team) for m in members}
+        self.reg = frame_rows + [r for m in members for r in rows1[m]]
+
+        def match1(body, dia, axl, c):
+            m = own(body)
+            tries = [(rows1.get(m, []), ""), (frame_rows, "")] if m else [(self.reg, body.name)]
+            return next((r for r in (inputs.match_feature(rg, bn, dia, axl, c) for rg, bn in tries) if r), None)
         for ft in self.features:
             ax = axis_name(ft.f.axis)
             if ax and ft.kind == "hole":
                 ctr = vadd(ft.f.entry, vmul(ft.f.axis, ft.f.depth / 2))
-                ft.reg = inputs.match_feature(self.reg, ft.body.name, ft.f.dia, ax[1], ctr)
+                ft.reg = match1(ft.body, ft.f.dia, ax[1], ctr)
             elif ax and ft.kind == "slot":
                 # the register lists a slot as the two arcs of its ends
                 half = (ft.f.length - ft.f.width) / 2
                 for sgn in (1, -1):
                     c = vadd(vadd(ft.f.entry, vmul(ft.f.along, sgn * half)), vmul(ft.f.axis, ft.f.depth / 2))
-                    ft.reg = ft.reg or inputs.match_feature(self.reg, ft.body.name, ft.f.width, ax[1], c)
+                    ft.reg = ft.reg or match1(ft.body, ft.f.width, ax[1], c)
         b = [bb.box for bb in self.bodies]
         self.box = tuple(min(x[k] for x in b) for k in range(3)) + tuple(max(x[3 + k] for x in b) for k in range(3))
         # the second register layout (BASE): matched by size, wall and a named pod coordinate
         if not any(ft.reg for ft in self.features):
-            rows_b = inputs.feature_rows_b(team, pn)
+            rows_b0 = inputs.feature_rows_b(team, pn)
+            rows_bm = {m: inputs.feature_rows_b(team, m) for m in members}     # a member's own rows, then the frame's
             for ft in self.features:
+                m = own(ft.body)
+                tries_b = [rows_bm.get(m, []), rows_b0] if m else [rows_b0]
                 nrm = ft.f.normal
                 k = max(range(3), key=lambda i: abs(nrm[i]))
                 if k == 2:
@@ -327,11 +355,13 @@ class Part:
                 dia = ft.f.entry_dia if ft.kind == "keyhole" else ft.f.dia
                 along = max(range(3), key=lambda i: ft.body.size[i])
                 if ft.kind == "open_slot":
-                    r = inputs.match_open_slot_b(inputs.feature_rows_b(team, pn, sizeless=True), ft.f.width,
-                                                 ft.f.mouth)
+                    r = next((x for x in (inputs.match_open_slot_b(inputs.feature_rows_b(team, q, sizeless=True),
+                                                                   ft.f.width, ft.f.mouth)
+                                          for q in ([m, pn] if m else [pn])) if x), None)
                 else:
-                    r = inputs.match_feature_b(rows_b, dia, wall, ft.f.entry, keyhole=(ft.kind == "keyhole"),
-                                               along=along)
+                    kh = ft.kind == "keyhole"
+                    r = next((x for x in (inputs.match_feature_b(rb, dia, wall, ft.f.entry, keyhole=kh, along=along)
+                                          for rb in tries_b) if x), None)
                 if r:
                     ft.reg = {"id": r["id"], "function": r["title"], "mating": r["function"], "file": r["file"]}
         # a bent part's cut-outs that aren't round holes, matched to its DXF (sheetmetal): in the hole tables too; a
@@ -825,8 +855,9 @@ def find_step(pn, team):
         if not nm or nm["doc"] != "STEP":
             continue
         try:
-            for name, solids in geom.read_step(os.path.join(folder, f)):
-                if geom.part_number_of(name) == pn and solids:
+            for name, solids, anc in geom.read_step(os.path.join(folder, f), paths=True):
+                # the part itself, or a welded frame that holds its members (D-120)
+                if solids and (geom.part_number_of(name) == pn or any(geom.part_number_of(nm) == pn for _k, nm in anc)):
                     return os.path.join(folder, f)
         except RuntimeError:
             continue
@@ -2677,6 +2708,108 @@ def member_key(name):
     return _re.sub(r"\s+\d+$", "", s).strip()
 
 
+def member_ends(body):
+    """A straight member's length along its axis and its two end cuts' angles from square, sorted (0 for a square
+    end): its mitres are the flat faces 1.1° to 88.9° from square to the axis and 6 mm or more across the member the
+    way they slope, as the read-back finds them. None when the body isn't a straight member."""
+    ax = geom.member_axis(body)
+    if ax is None:
+        return None
+    pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(body.shape)]
+    lo, hi = min(vdot(q, ax) for q in pts), max(vdot(q, ax) for q in pts)
+    mid = (lo + hi) / 2
+    ends = [0.0, 0.0]
+    for n, _off, _area, f in geom.planes(body):
+        c = abs(vdot(n, ax))
+        if not (0.019 < c < 0.9998):
+            continue
+        fp = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(f)]
+        if not fp:
+            continue
+        u = vnorm(vcross(ax, n))
+        w = vnorm(vcross(u, ax))
+        if max(vdot(q, w) for q in fp) - min(vdot(q, w) for q in fp) < 6.0:
+            continue
+        k = 0 if sum(vdot(q, ax) for q in fp) / len(fp) < mid else 1
+        ends[k] = max(ends[k], math.degrees(math.acos(c)))
+    return hi - lo, sorted(ends)
+
+
+def member_end_cuts(body):
+    """Each end's cuts on a straight member, for a cut list that gives each end's angles (FRONT's two columns):
+    [(the steepest cut, as member_ends finds it, [every cut face's angle from square])] for its low and its high end
+    along its axis. Every flat face counts here whatever its size (DR's second cuts at the back ring are 2.1 mm across
+    the way they slope): a sloped one by the half it sits in, a square one only where it is the end itself (not a
+    notch's wall). None when the body isn't a straight member."""
+    ax = geom.member_axis(body)
+    if ax is None:
+        return None
+    pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(body.shape)]
+    lo, hi = min(vdot(q, ax) for q in pts), max(vdot(q, ax) for q in pts)
+    mid = (lo + hi) / 2
+    steep, faces = [0.0, 0.0], [[], []]
+    for n, _off, _area, f in geom.planes(body):
+        c = abs(vdot(n, ax))
+        if c < 0.019:
+            continue
+        fp = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(f)]
+        if not fp:
+            continue
+        s = [vdot(q, ax) for q in fp]
+        if c >= 0.9998:
+            k = 0 if abs(min(s) - lo) <= 0.05 else 1 if abs(max(s) - hi) <= 0.05 else None
+            if k is not None:
+                faces[k].append(0.0)
+            continue
+        a = math.degrees(math.acos(c))
+        k = 0 if sum(s) / len(s) < mid else 1
+        faces[k].append(a)
+        u = vnorm(vcross(ax, n))
+        w = vnorm(vcross(u, ax))
+        if max(vdot(q, w) for q in fp) - min(vdot(q, w) for q in fp) >= 6.0:
+            steep[k] = max(steep[k], a)
+    return [(steep[k], sorted(faces[k])) for k in (0, 1)]
+
+
+def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
+    """Why a member's body and its cut list row disagree (length within 0.05 mm, end angles within 0.05°), or
+    None. With each end's angles from the row's two columns (FRONT's), an end that gives two cuts has both checked
+    (the generator's owner on #404): its steepest is the body's steepest at that end, every angle it gives is one of
+    that end's cut faces, and every cut face there is one it gives."""
+    got = member_ends(body)
+    if got is None:
+        return "its body isn't a straight member, so its cut length can't be checked"
+    length, ends = got
+    try:
+        want_l = float(row["cut_length_mm"])
+    except ValueError:
+        return "its cut length '%s' isn't a number" % row["cut_length_mm"]
+    if abs(length - want_l) > tol_mm:
+        return "its cut list says %s long, its body is %.2f" % (row["cut_length_mm"], length)
+    cuts = row.get("cuts")
+    if cuts:
+        model = member_end_cuts(body)
+
+        def near(a, xs):
+            return any(abs(a - x) <= tol_deg for x in xs)
+
+        def fits(end, cell):
+            return (abs(end[0] - max(cell)) <= tol_deg and all(near(a, end[1]) for a in cell)
+                    and all(near(f, cell) for f in end[1]))
+        if not any(fits(model[i], cuts[0]) and fits(model[1 - i], cuts[1]) for i in (0, 1)):
+            return "its cut list's ends give %s, its body's end cuts %s from square" % (
+                "; ".join(" and ".join("%g°" % a for a in cell) for cell in cuts),
+                "; ".join(" and ".join("%.2f°" % a for a in end[1]) or "none" for end in model))
+        return None
+    want_a = row.get("angles") or inputs.ends_angles(row.get("note"))     # FRONT's angle columns, else the text
+    if want_a is None:
+        return "its cut list's ends '%s' don't give both ends' angles" % row.get("note", "")
+    if any(abs(a - b) > tol_deg for a, b in zip(sorted(want_a), ends)):
+        return "its cut list's ends give %s, its body's end cuts %s from square" % (
+            ", ".join("%g°" % a for a in sorted(want_a)), ", ".join("%.2f°" % a for a in ends))
+    return None
+
+
 def cut_list(part):
     """Frame members from the parts list's level-2 cut rows, matched to the bodies by name."""
     rows = []
@@ -2684,8 +2817,12 @@ def cut_list(part):
         if (r.get("kind") or "").strip().lower() != "cut":
             continue
         key = member_key(r.get("name"))
-        bodies = [b for b in part.bodies if member_key(b.name) == key]
-        rows.append({"item": len(rows) + 1, "member": key, "profile": (r.get("size_mm") or "").strip(),
+        if r.get("member_part"):    # a team cut list (D-162): by member number
+            bodies = [b for b in part.bodies if geom.part_number_of(b.name) == r["member_part"]]
+        else:
+            bodies = [b for b in part.bodies if member_key(b.name) == key]
+        rows.append({"item": len(rows) + 1, "member": (r.get("name") or "").strip() if r.get("member_part") else key,
+                     "profile": (r.get("size_mm") or "").strip(),
                      "material": (r.get("material") or "").strip(), "length": (r.get("cut_length_mm") or "").strip(),
                      "qty": (r.get("qty") or "").strip(), "tol": (r.get("tolerance") or "").strip(),
                      "note": (r.get("note") or "").strip(), "bodies": bodies})
@@ -2857,12 +2994,15 @@ def cut_list_table(sh, part, members, x, y, width):
              ("QTY", 14, "c"), ("ENDS, TOLERANCE", width - 154, "l")]
     crow = []
     for m in members:
-        crow.append([str(m["item"]), m["member"], m["profile"], m["length"], m["qty"],
-                     ("%s; %s" % ("square-cut ends" if "square" in (m["note"] + m["tol"]).lower() else m["note"],
-                                  m["tol"].split(",")[0])).strip("; ")])
+        crow.append([str(m["item"]), m["member"], m["profile"], m["length"], m["qty"], inputs.ends_cell(m["note"], m["tol"])])
     mat = part.row.get("material", "")
+    src = getattr(part, "cut_list_file", None)
+    if src:     # a team cut list (D-162): the read-back reads the printed table against the file
+        part.cut_table = {"page": len(sh.pages) - 1, "x": x, "top": y, "widths": [c[1] for c in ccols],
+                          "rows": [[c for c in r] for r in crow]}
     return sh.table(x, y, ccols, crow, size=2.5,
-                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""), mat], title_size=2.5)
+                    title=["CUT LIST (%s %s)" % ("cut list" if src else "parts list",
+                                                 os.path.basename(src or part.list_file or "")), mat], title_size=2.5)
 
 
 def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
@@ -3020,7 +3160,29 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
-    part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"))
+    part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row, bent=spec.get("bent"),
+                frame_members=bool(spec.get("cut_list")))      # a D-162 frame: its own file read as its members
+    if spec.get("cut_list"):        # a welded frame's cut list in its team's CSV (D-162)
+        try:
+            part.cut_rows, part.cut_list_file = inputs.cut_list_rows(team, spec["cut_list"], pn)
+        except ValueError as e:
+            raise NotDrawable("%s: %s" % (pn, e))
+        have = {}
+        for b in part.bodies:
+            have[geom.part_number_of(b.name)] = have.get(geom.part_number_of(b.name), 0) + 1
+        want = {r["member_part"]: int(float(r["qty"])) for r in part.cut_rows}
+        for num in sorted(set(have) | set(want), key=str):
+            if have.get(num, 0) != want.get(num, 0):
+                raise NotDrawable("%s: member %s has %d bodies under the frame, its cut list %d (D-120)" % (
+                    pn, num, have.get(num, 0), want.get(num, 0)))
+        for r in part.cut_rows:         # the cut list is the members' drawing (D-162): it must be the model's
+            if r["cut_length_mm"] in ("", "-"):
+                continue                # a welded-in plate, defined by its parts-list row
+            for b in part.bodies:
+                if geom.part_number_of(b.name) == r["member_part"]:
+                    why = member_vs_row(b, r)
+                    if why:
+                        raise NotDrawable("%s: member %s: %s" % (pn, r["member_part"], why))
     # rivet holes: an entry lists its rivet hole sizes with the rivet (BASE's D-130 boot: blind rivets in 3.3, 4.2
     # and about 5.0 holes, the tap drills' sizes too; the PM's ruling): those holes are no tap drills, and their
     # table rows name the rivet
@@ -3209,4 +3371,10 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
     if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
         out["flat"] = flat_data(part, pl)
+    if getattr(part, "cut_list_file", None):     # only a frame drawn from a team cut list (D-162)
+        out["sources"].append({"role": "cut list", "path": inputs.rel(part.cut_list_file),
+                               "sha256_12": inputs.sha12(part.cut_list_file)})
+        out["cut_list"] = dict(getattr(part, "cut_table", {}), team=part.team,
+                               welded_in=list((spec.get("cut_list") or {}).get("welded_in", ())),
+                               tolerance=(spec.get("cut_list") or {}).get("tolerance", ""))
     return out

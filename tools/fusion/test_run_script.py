@@ -670,6 +670,52 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(events, ["lock taken", "nudger start", "nudger stopped", "lock given back"])
 
+    def test_the_checks_stop_before_the_timeout_paths_own_checks(self):
+        # Reviewer 5, P3 on #402: after a call times out, the run's own busy wait and open guard come only once the
+        # nudger has stopped, and the lock goes back last
+        events = []
+        keep = (rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release,
+                rs.wait_for_fusion, rs.guard_opens)
+
+        def start(self_):
+            events.append("nudger start")
+            return keep[0](self_)
+
+        def stop(self_):
+            keep[1](self_)
+            events.append("nudger stopped")
+
+        def acquire(self_, *a, **k):
+            r = keep[2](self_, *a, **k)
+            events.append("lock taken")
+            return r
+
+        def release(self_):
+            events.append("lock given back")
+            return keep[3](self_)
+
+        def busy(*_a, **_k):
+            events.append("busy wait")
+            return True
+
+        def guard(*_a, **_k):
+            events.append("open guard")
+            return []
+        rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release = \
+            start, stop, acquire, release
+        rs.wait_for_fusion, rs.guard_opens = busy, guard
+        try:
+            self.fake.delay, self.fake.slow_delay = 0.05, 2.0
+            slow = self.write("slow.py", "SLOW_IN_FUSION")
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                rc = rs.main([slow, "--url", self.fake.url, "--lock", self.lockdir, "--timeout", "0.3"])
+        finally:
+            (rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release,
+             rs.wait_for_fusion, rs.guard_opens) = keep
+        self.assertEqual(rc, 2)                                   # the call timed out
+        self.assertEqual(events, ["lock taken", "nudger start", "nudger stopped", "busy wait", "open guard",
+                                  "lock given back"])
+
     def test_without_the_check_the_idle_open_runs_into_the_timeout(self):
         code, _out, err = self.idle_run("--timeout", "3", "--nudge-after", "0", "--busy-poll", "0.5",
                                         "--busy-wait", "30", "--open-limit", "20")
@@ -1186,6 +1232,31 @@ class NudgeTests(unittest.TestCase):
         self.assertTrue(all("hadn't ended" in s for s in self.said), self.said)
         time.sleep(0.8)
         self.assertEqual(len(self.calls), sent)                    # nothing once the run's call is back
+
+    def test_stop_waits_for_a_check_in_flight_through_both_its_calls(self):
+        # Reviewer 5, P3 on #402: one check makes two calls of up to NUDGE_CALL_S each, then a look at the log,
+        # so stop() waits that long for it (70 s): no check outlives the run's lock
+        n = self.nudger(watch_s=rs.NUDGE_WATCH_S)
+        waits = []
+
+        class Thread:
+            def join(self, timeout=None):
+                waits.append(timeout)
+
+            def is_alive(self):
+                return False
+        n.thread = Thread()
+        n.stop()
+        self.assertEqual(waits, [2 * rs.NUDGE_CALL_S + rs.NUDGE_WATCH_S])
+        self.assertEqual(waits[0], 70.0)
+        self.assertEqual(self.said, [])
+
+        class Stuck(Thread):
+            def is_alive(self):
+                return True
+        n.thread = Stuck()
+        n.stop()
+        self.assertIn("still hadn't ended", self.said[-1])        # never silent
 
     def test_zero_turns_it_off_and_no_answer_is_logged(self):
         self.line("start open A_P01_X_DWG v1 visible; run: TEST: x.py", ago=5.0)

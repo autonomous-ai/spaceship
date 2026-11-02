@@ -93,6 +93,114 @@ def parts_row(pn, team):
     return best[1], best[2], best[3]
 
 
+def cut_list_rows(team, cfg, pn):
+    """A welded frame's cut list from the team CSV its entry names (D-162), as the parts list's level-2 cut rows read,
+    and that file: its rows whose frame is pn, one per member number (D-120: one number is one member; a number with
+    two lengths, two ends texts or two pairs of end angles is refused), the quantity their sum, the name the member's
+    number and its parts-list name (names exactly as the parts lists: FRONT's cut lists name each tube's place, so a
+    part used in four rings would print one ring's; the cut list's own name only for a member with no parts-list
+    row). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty, ends (holes when
+    present). With FRONT's end_a_deg and end_b_deg, the end angles the model check uses come from them (see
+    column_cuts), and an ends text that gives both angles must agree with them. Welded-in made parts the entry names
+    (a frame's mitre plates) follow, from their parts-list rows, as having their own drawing."""
+    path = os.path.join(MANUF, team, cfg["file"])
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh) if (r.get("frame") or "").strip() == pn]
+    base = os.path.basename(path)
+    out, by = [], {}
+    for r in rows:
+        num = (r.get("member_part") or "").strip()
+        if not num:
+            raise ValueError("cut list %s: a row of %s has no member number" % (base, pn))
+        length, ends = (r.get("length_mm") or "").strip(), (r.get("ends") or "").strip()
+        cuts = column_cuts(r.get("end_a_deg"), r.get("end_b_deg"))
+        if cuts is False:
+            raise ValueError("cut list %s: member %s's end angle columns '%s' and '%s' don't give a number each" % (
+                base, num, (r.get("end_a_deg") or "").strip(), (r.get("end_b_deg") or "").strip()))
+        angles = sorted(max(c) for c in cuts) if cuts else None
+        said = ends_angles(ends)
+        if angles and said is not None and any(abs(a - b) > 1e-6 for a, b in zip(said, angles)):
+            raise ValueError("cut list %s: member %s's ends text gives %s, its end angle columns %s" % (
+                base, num, ", ".join("%g°" % a for a in said), ", ".join("%g°" % a for a in angles)))
+        q = float((r.get("qty") or "1").strip() or 1)
+        if num in by:
+            o = by[num]
+            if (o["cut_length_mm"], o["note"], o.get("cuts")) != (length, ends, cuts):
+                raise ValueError("cut list %s: member %s has two lengths or two ends texts or two pairs of end "
+                                 "angles (D-120)" % (base, num))
+            o["_q"] += q
+            continue
+        listed = (parts_row(num, team)[0] or {}).get("name", "").strip()
+        o = {"kind": "cut", "member_part": num, "name": "%s %s" % (num, listed or (r.get("name") or "").strip()),
+             "size_mm": (r.get("section") or "").strip(), "material": (r.get("section") or "").strip(),
+             "cut_length_mm": length, "tolerance": cfg.get("tolerance", ""), "note": ends,
+             "holes": (r.get("holes") or "").strip(), "_q": q}
+        if cuts:
+            o["angles"], o["cuts"] = angles, cuts
+        by[num] = o
+        out.append(o)
+    if not out:
+        raise ValueError("cut list %s has no row for %s" % (os.path.basename(path), pn))
+    for wpn in cfg.get("welded_in", ()):
+        row = parts_row(wpn, team)[0]
+        if not row:
+            raise ValueError("welded-in part %s has no parts-list row" % wpn)
+        q = (row.get("qty_per_parent") or row.get("qty") or "").strip()
+        out.append({"kind": "cut", "member_part": wpn, "name": "%s %s" % (wpn, (row.get("name") or "").strip()),
+                    "size_mm": (row.get("material") or "").strip(), "material": (row.get("material") or "").strip(),
+                    "cut_length_mm": "-", "tolerance": "",
+                    "note": "welded in; no drawing of its own, its parts-list row defines it (D-125)",
+                    "_q": float(q or 0)})
+    for o in out:
+        q = o.pop("_q")
+        o["qty"] = ("%d" % q) if q == int(q) else ("%g" % q)
+    return out, path
+
+
+ANGLE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:°|deg\b)")
+NUMBER = re.compile(r"\d+(?:\.\d+)?")
+
+
+def column_cuts(a, b):
+    """A cut list row's end cuts from its end_a_deg and end_b_deg columns (FRONT's): [end A's angles from square,
+    end B's], each sorted ('50.9 and 0.0 (two cuts)' is a 50.9° cut and a square one at that end). The model check
+    takes each end's steepest as the body's steepest there and finds every angle among that end's cut faces. None
+    when the file has neither column or both cells are blank; False when only one gives a number."""
+    if a is None and b is None:
+        return None
+    cells = [(c or "").strip() for c in (a, b)]
+    if not any(cells):
+        return None
+    got = [sorted(float(x) for x in NUMBER.findall(c)) for c in cells]
+    if not all(got):
+        return False
+    return got
+
+
+def ends_cell(note, tol=""):
+    """A cut list row's ends as the sheet prints them: the text as written, shortened to 'square-cut ends' only when
+    it says square and gives no angle (agreed with the generator's owner: 'mitred 63.43 deg off square' keeps its
+    angle)."""
+    words = (note or "") + " " + (tol or "")
+    square = "square" in words.lower() and not ANGLE.search(words)
+    return ("%s; %s" % ("square-cut ends" if square else (note or ""), (tol or "").split(",")[0])).strip("; ")
+
+
+def ends_angles(text):
+    """The two end cuts' angles from square a cut list's ends text gives, sorted, or None when it gives none it can
+    be read for: 'square ...' with no angle is 0 and 0; one angle with 'both' is that angle twice; two angles are
+    those."""
+    t = text or ""
+    found = [float(x) for x in ANGLE.findall(t)]
+    if not found:
+        return [0.0, 0.0] if "square" in t.lower() else None
+    if len(found) == 1:
+        return [found[0], found[0]] if re.search(r"\bboth\b", t, re.I) else None
+    if len(found) == 2:
+        return sorted(found)
+    return None
+
+
 # ------------------------------------------------------------------ feature rationale
 
 FR_ROW = re.compile(r"^\|\s*(F\d+[A-Z]?)\s*\|\s*(\d{6})\s+([^|]*?)\s*\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)\|"
