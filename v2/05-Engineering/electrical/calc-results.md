@@ -33,20 +33,20 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 
 | Segment | Circuit | Length mm | Area mm² x pairs | Max A | Drop V |
 |---|---|---:|---:|---:|---:|
-| W10a PU | PS2 lights | 300 | 0.823 x 1 | 0.92 | 0.014 |
-| W10b B2-CASS | PS2 lights | 270 | 0.823 x 1 | 0.92 | 0.012 |
+| W10a PU | PS2 lights | 170 | 0.823 x 1 | 0.92 | 0.008 |
+| W10b B2-CASS | PS2 lights | 400 | 0.823 x 1 | 0.92 | 0.018 |
 | W10c B4-CASS | PS2 lights | 1360 | 0.823 x 1 | 0.92 | 0.062 |
 | W11a SHELF | PS2 lights | 300 | 0.823 x 1 | 0.92 | 0.014 |
 | W11b SHELF | PS2 lights | 1610 | 0.823 x 1 | 0.26 | 0.021 |
 | W11c SHELF | PS2 lights | 1220 | 0.823 x 1 | 0.85 | 0.052 |
-| W20a PU | PS3 air | 300 | 0.823 x 2 | 2.62 | 0.02 |
-| W20b B2-CASS | PS3 air | 920 | 0.823 x 2 | 2.62 | 0.06 |
+| W20a PU | PS3 air | 170 | 0.823 x 2 | 2.62 | 0.011 |
+| W20b B2-CASS | PS3 air | 1050 | 0.823 x 2 | 2.62 | 0.069 |
 | W20c R1-CASS | PS3 air | 1060 | 0.823 x 2 | 2.62 | 0.069 |
-| W30a PU | PS1 kit | 300 | 1.31 x 2 | 2.5 | 0.012 |
-| W30b B2-CASS | PS1 kit | 920 | 1.31 x 2 | 2.5 | 0.036 |
+| W30a PU | PS1 kit | 170 | 0.823 x 2 | 2.5 | 0.011 |
+| W30b B2-CASS | PS1 kit | 1050 | 1.31 x 2 | 2.5 | 0.041 |
 | W30c R1-CASS | PS1 kit | 1050 | 1.31 x 2 | 2.5 | 0.041 |
-| W24a PU | hub I/O | 300 | 0.205 x 1 | 0.01 | 0.001 |
-| W24b B2-CASS | hub I/O | 920 | 0.205 x 1 | 0.01 | 0.002 |
+| W24a PU | hub I/O | 170 | 0.823 x 1 | 0.01 | 0 |
+| W24b B2-CASS | hub I/O | 1050 | 0.205 x 1 | 0.01 | 0.002 |
 | W24c R1-CASS | hub I/O | 1060 | 0.205 x 1 | 0.01 | 0.002 |
 | W20d COLUMN | PS3 air | 380 | 0.823 x 2 | 2.62 | 0.025 |
 | W24d COLUMN | hub I/O | 380 | 0.205 x 1 | 0.01 | 0.001 |
@@ -84,18 +84,18 @@ At the 53 l/s normal flow that adds **0.25 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 
 | Group | kg | Status |
 |---|---:|---|
-| 710001 power unit (with its mains wiring and fixings) | 3.78 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| 710001 power unit (with its mains wiring and fixings) | 3.81 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 710041 hub and controls zone | 0.36 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.59 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.27 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | **710000 ELECTRICAL** | **6.32** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
 
-**B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.78 kg = **12.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
+**B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.81 kg = **12.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
 
 ## 6. Heat inside the power unit (711001)
 
-The supplies, the breaker, the GFCI receptacle and the light controller share the closed box; its air sets each part's temperature. A steady heat balance (`unit_heat.py`): the supplies sit flat on the shell's back wall; heat leaves through the front plate to the pod, through the vent slots by stack flow, and through the shell into B2's skin and members to the room. The last path carries most of it and is the least certain, so the worst case takes it at half (assumption). Case: room 28 °C (assumption: a warm office), the pod 4 K over it (D-50); the voice kit at its 40 W average (D-88), the lights at the hub's 22 W (PM ruling), the fans at the 65 l/s boost with the hub, 19.2 W (calculation).
+The supplies, the breaker, the GFCI receptacle and the light controller share the closed box; its air sets each part's temperature. A steady heat balance (`unit_heat.py`): the supplies sit flat on the shell's back wall; heat leaves through the front plate to the pod, through the vent slots by stack flow, and through the shell into B2's skin and members to the room. The last path carries most of it and is the least certain, so the worst case takes it at half (assumption). Case: room 32 °C (D-173: the room the pod is designed for), the pod 4 K over it (D-50); the voice kit at its 40 W average (D-88), the lights at the hub's 22 W (PM ruling), the fans at the 65 l/s boost with the hub, 19.2 W (calculation).
 
 | Supply | Model | Load W | Efficiency at 115 V | Loss W | Basis |
 |---|---|---:|---:|---:|---|
@@ -107,30 +107,31 @@ Other heat in the box: the light controller 2.0 W (assumption), the breaker 2.0 
 
 | Inside air, °C | the plate before (2 rows of 5 slots) | this plate (8 rows of 3 slots, right side) |
 |---|---:|---:|
-| outlets at 3 A, shell path as estimated | 52.6 | 46.1 |
-| outlets at 3 A, shell path at half | 59.1 | 49.5 |
-| **worst:** outlets at 12 A, shell path at half | 64.9 | 52.9 |
+| outlets at 3 A, shell path as estimated | 56.6 | 50.1 |
+| outlets at 3 A, shell path at half | 63.0 | 53.4 |
+| **worst:** outlets at 12 A, shell path at half | 68.8 | 56.8 |
 
-**Worst case, each part against its own limit:** the box's air at 52.9 °C, 3 K more for the upper part (no fan inside, assumption): **55.9 °C**.
+**Worst case, each part against its own limit:** the box's air at 56.8 °C, 3 K more for the upper part (no fan inside, assumption): **59.8 °C**.
 
-| Part | Its limit | Margin at 56 °C |
+| Part | Its limit | Margin at 60 °C |
 |---|---|---:|
-| light controller LTECH LT-995 | 65 °C (LTECH LT-995 sheet: -30 to +65 °C) | 9 K |
-| GFCI receptacle P&S 1597TRW | 66 °C (Legrand CS3339: -35 to +66 °C) | 10 K |
-| Mean Well supplies, the units themselves | 70 °C (LPV-60 and CLG-100 sheets: -30 to +70 °C, by their derating curves) | 14 K |
-| LAN keystone jacks Panduit NK688MWH | 75 °C (Panduit COSP588: -10 to +75 °C) | 19 K |
-| Cat6 cable Belden 3612 | 75 °C (Belden 3612 sheet: 75 °C) | 19 K |
-| 12 and 24 V leads in the unit: Belden 5302UE and 5304UE (CMR), Southwire 94664 (CL3) | 75 °C (Belden's sheets and Southwire spec 13090: 75 °C) | 19 K |
-| hub link Belden 9536 in the unit | 80 °C (Belden 9536 sheet: 80 °C as UL AWM 2464, the rating for wiring inside equipment) | 24 K |
-| lever connectors WAGO 221-415 | 85 °C (WAGO: T85, surrounding air 85 °C at most) | 29 K |
-| fuse holders Littelfuse FHAC0001ZXJ | 105 °C (Littelfuse OL-FHAC0001ZXJ: 105 °C) | 49 K |
-| bushings Heyco 2836N | 105 °C (Heyco: -18 to +105 °C) | 49 K |
-| mains wire Alpha Wire 461419 (UL 1015) | 105 °C (Alpha Wire: UL 1015 AWM 105 °C) | 49 K |
-| PS1 CLG-100-24 at its peak load, 60.0 W | 85 W at 56 °C (88 % of 96 W, its maker's derating) | 25 W |
-| PS2 LPV-60-24 at its peak load, 40.5 W | 50 W at 56 °C (83 % of 60 W, its maker's derating) | 9 W |
-| PS3 LPV-60-12 at its peak load, 31.4 W | 50 W at 56 °C (83 % of 60 W, its maker's derating) | 18 W |
+| light controller LTECH LT-995 | 65 °C (LTECH LT-995 sheet: -30 to +65 °C) | 5 K |
+| GFCI receptacle P&S 1597TRW | 66 °C (Legrand CS3339: -35 to +66 °C) | 6 K |
+| Mean Well supplies, the units themselves | 70 °C (LPV-60 and CLG-100 sheets: -30 to +70 °C, by their derating curves) | 10 K |
+| LAN keystone jacks Panduit NK688MWH | 75 °C (Panduit COSP588: -10 to +75 °C) | 15 K |
+| Cat6 cable Belden 3612 | 75 °C (Belden 3612 sheet: 75 °C) | 15 K |
+| 12 and 24 V and signal leads in the unit: Alpha Wire 3075 single cores (UL 1015) | 105 °C (UL AWM 1015: 105 °C (D-173); they may lie on the supplies' cases, see below) | 45 K |
+| lever connectors WAGO 221-415 | 85 °C (WAGO: T85, surrounding air 85 °C at most) | 25 K |
+| fuse holders Littelfuse FHAC0001ZXJ | 105 °C (Littelfuse OL-FHAC0001ZXJ: 105 °C) | 45 K |
+| bushings Heyco 2836N | 105 °C (Heyco: -18 to +105 °C) | 45 K |
+| mains wire Alpha Wire 461419 (UL 1015) | 105 °C (Alpha Wire: UL 1015 AWM 105 °C) | 45 K |
+| PS1 CLG-100-24 at its peak load, 60.0 W | 77 W at 60 °C (80 % of 96 W, its maker's derating) | 17 W |
+| PS2 LPV-60-24 at its peak load, 40.5 W | 46 W at 60 °C (76 % of 60 W, its maker's derating) | 5 W |
+| PS3 LPV-60-12 at its peak load, 31.4 W | 46 W at 60 °C (76 % of 60 W, its maker's derating) | 14 W |
 
-Room temperature (the case above takes 28 °C, a warm office): with the same worst loads, each room gives these upper-air temperatures and the tightest part's margin:
+The supplies' cases reach 72.7 °C; a lead lying on one is a 105 °C single core (D-173), 32 K under its rating. No part falls under 3 K.
+
+Room temperature (the case above takes 32 °C, the room the pod is designed for, D-173): with the same worst loads, each room gives these upper-air temperatures and the tightest part's margin:
 
 | Room | Upper air | Tightest part | Its margin |
 |---:|---:|---|---:|
@@ -138,5 +139,5 @@ Room temperature (the case above takes 28 °C, a warm office): with the same wor
 | 30 °C | 57.9 °C | light controller LTECH LT-995 (65 °C) | 7 K |
 | 32 °C | 59.8 °C | light controller LTECH LT-995 (65 °C) | 5 K |
 
-The breaker is calibrated at 40 °C and carries 0.5 % less per K above (Eaton): 13.8 A at 56 °C, over the outlets' 12 A continuous limit. These figures are a calculation; the prototype's test measures the box's air with the kit at 40 W (a dummy load) and the outlets loaded.
+The breaker is calibrated at 40 °C and carries 0.5 % less per K above (Eaton): 13.5 A at 60 °C, over the outlets' 12 A continuous limit. These figures are a calculation; the prototype's test measures the box's air with the kit at 40 W (a dummy load) and the outlets loaded.
 

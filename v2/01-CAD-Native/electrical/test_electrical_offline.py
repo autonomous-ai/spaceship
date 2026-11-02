@@ -179,7 +179,9 @@ class Parts(unittest.TestCase):
         self.assertTrue(EP.P["ps_kit"]["sku"].startswith("CLG-100-24"), EP.P["ps_kit"]["sku"])
         self.assertEqual([s[0] for s in EP.SUPPLIES], ["PS1", "PS2", "PS3"])     # PS4 is gone (D-168)
         w30 = [h for h in EP.harnesses(M.values()) if h["id"].startswith("W30")]
-        self.assertTrue(w30 and all(h.get("parallel", 1) == 2 and "16 AWG" in h["cable"] for h in w30))
+        self.assertTrue(w30 and all(h.get("parallel", 1) == 2 for h in w30))
+        # in the lining 4 x 16 AWG cable; inside the unit 105 °C single cores, two 18 AWG per pole (D-173)
+        self.assertTrue(all(("UL 1015 18 AWG" if h["id"] == "W30a" else "16 AWG") in h["cable"] for h in w30), [h["cable"] for h in w30])
 
     def test_each_lead_at_its_supplys_voltage(self):
         """Reviewer 7's P3 on #319 (the Lead, 2026-11-01): every lead that names a positive rail ("+24 V", "+12 V")
@@ -233,14 +235,15 @@ class Parts(unittest.TestCase):
         self.assertEqual(EP.P["rec10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way receptacle"))
         self.assertEqual(EP.P["plug10"]["qty_per_parent"], ends.count("Mini-Fit Jr 10-way plug"))
         # the 10-way housings carry the air feed's 4 cores (18 AWG) and the hub link's 6 (24 AWG, the 22-28 AWG terminal)
-        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 4 * EP.P["rec10"]["qty_per_parent"]
+        # D-173: X1's 10-way and 4-way receptacles take the unit's UL 1015 18 AWG leads (6 hub link + 4 kit feed cores)
+        f = 2 * EP.P["rec2"]["qty_per_parent"] + 6 * EP.P["rec6"]["qty_per_parent"] + 4 * EP.P["rec10"]["qty_per_parent"] + 10
         m = 2 * EP.P["plug2"]["qty_per_parent"] + 6 * EP.P["plug6"]["qty_per_parent"] + 4 * EP.P["plug10"]["qty_per_parent"]
         self.assertEqual(EP.P["term_f"]["qty_per_parent"], f)
         self.assertEqual(EP.P["term_m"]["qty_per_parent"], m)
-        self.assertEqual(EP.P["term_f24"]["qty_per_parent"], 6 * EP.P["rec10"]["qty_per_parent"])
+        self.assertEqual(EP.P["term_f24"]["qty_per_parent"], 6 * (EP.P["rec10"]["qty_per_parent"] - 1))
         self.assertEqual(EP.P["term_m24"]["qty_per_parent"], 6 * EP.P["plug10"]["qty_per_parent"])
         # the 4-way housings carry the kit's 16 AWG feeds: their own terminals (the cap housing has none)
-        self.assertEqual(EP.P["term_f16"]["qty_per_parent"], 4 * EP.P["rec4"]["qty_per_parent"])
+        self.assertEqual(EP.P["term_f16"]["qty_per_parent"], 4 * (EP.P["rec4"]["qty_per_parent"] - 1))
         self.assertEqual(EP.P["term_m16"]["qty_per_parent"], 4 * (EP.P["plug4"]["qty_per_parent"] - 1))
 
 
@@ -580,18 +583,22 @@ class Inside(unittest.TestCase):
             self.assertLess(peak, U.derated(knee, air) * rated, sid)
 
 
-    def test_heat_margin_at_a_30c_room(self):
-        """The Lead (2026-11-01): Reviewer 7 checks a 30 °C room too. With the same worst loads, every part in the box
-        keeps at least 5 K under its own limit (the 60 °C leads left only 2 K, so the unit's leads are 75 °C cables)."""
+    def test_heat_at_the_design_room_keeps_3k(self):
+        """D-173 (the Lead, 2026-11-01): the pod is designed for a room up to 32 °C; every part in the unit keeps its
+        rating there with at least 3 K, and a lead lying on a supply's case is a 105 °C single core (the 60 °C leads
+        before kept 0.2 K at 32 °C)."""
         import unit_heat as U
-        room0 = U.ROOM_C
-        try:
-            U.ROOM_C = 30.0
-            air = U.results(EP, 12.0, U.SHELL_PATH_WORST)[0] + U.STRAT_K
-        finally:
-            U.ROOM_C = room0
+        self.assertEqual(U.ROOM_C, 32.0)
+        air, _l, _o, r = U.results(EP, 12.0, U.SHELL_PATH_WORST)
+        top = air + U.STRAT_K
         for name, lim, _src in U.DEVICES:
-            self.assertGreaterEqual(lim - air, 5.0, name)
+            self.assertGreaterEqual(lim - top, 3.0, name)
+        leads = [d for d in U.DEVICES if "leads in the unit" in d[0]]
+        self.assertEqual(len(leads), 1)
+        self.assertGreaterEqual(leads[0][1] - r["case"], 3.0)          # resting on a supply's case
+        rows = {h["id"]: h for h in EP.harnesses(M.values())}
+        for i in ("W10a", "W20a", "W24a", "W30a"):
+            self.assertIn("UL 1015", rows[i]["cable"], i)
 
 class Sheets(unittest.TestCase):
     """The PM's drawing check, item 1 (2026-11-01), and the guideline's "never shrink the font to fit a page",
