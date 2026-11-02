@@ -55,11 +55,35 @@ def latch_x(z, v=V_DOOR):
     return -v["pod_w"] / 2 + v["door_xbr"] - (v["door_xbr"] - v["door_xtr"]) * (z - v["door_zb"]) / (v["door_zt"] - v["door_zb"])
 
 
+def proj_note(views):
+    """The projection note for the views a sheet has (Reviewer 8 on #339: no note about a view the sheet lacks)."""
+    parts = ["The front view looks toward +Y, at the door from outside the pod"]
+    axes = ["front X(2D)=X, Y(2D)=Z"]
+    if "top" in views:
+        parts.append("the view from above is below it")
+        axes.append("above X(2D)=X, Y(2D)=Y")
+    if "left" in views:
+        parts.append("the view from the left is to its right")
+        axes.append("left X(2D)=-Y, Y(2D)=Z")
+    if "iso" in views:
+        parts.append("the iso view is for reading only")
+    return ("Projection: first angle (ISO 5456-2). %s. 2D axes: %s (guideline 3.3). Coordinates are the pod's "
+            "(conventions 4)." % ("; ".join(parts), "; ".join(axes)))
+
+
+def bom_mass(pn):
+    """The unit mass on a FRONT parts list's own row, kg."""
+    import csv
+    import glob
+    path = glob.glob(os.path.join(REPO, "v2", "03-Manufacturing", "front", "%s_%s_*_BOM.csv" % (pn, REV)))[0]
+    with open(path, encoding="utf-8", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    return float([r for r in rows if r["part_number"] == pn][0]["unit_mass_kg"])
+
+
 COMMON_NOTES = [
     "UNITS: mm. Angles in degrees. Mass in kg.",
-    "Projection: first angle (ISO 5456-2). The front view looks toward +Y, at the door from outside the pod; the view "
-    "from above is below it; the view from the left is to its right. 2D axes: front X(2D)=X, Y(2D)=Z; above "
-    "X(2D)=X, Y(2D)=Y; left X(2D)=-Y, Y(2D)=Z (guideline 3.3). Coordinates are the pod's (conventions 4).",
+    None,       # the projection note: proj_note(), for the views each sheet has
     "No ISO 2768 class on glass, seals or sandwich parts (conventions 3). Tolerances given here are PROPOSED from "
     "function until the maker confirms what it holds.",
     "Status DRAFT P01: for the prototype and the factory's door sample only, not released (conventions 8).",
@@ -102,7 +126,6 @@ SPECS = {
         "dims": [
             ("front", (X0, ZLB), (X1, ZLB), "below", 12), ("front", (X0, ZLB), (X0, ZT), "left", 12),
             ("front", (X0, ZT), (XT, ZT), "above", 10), ("front", (X1, ZLB), (X1, ZB), "right", 8),
-            ("front", (X0, ZLB), (XT, ZT), "right", 30),
         ],
         "notes": [
             "Glass: 4+4 laminated safety glass, two toughened, heat-soaked panes (EN 12150, EN 14179) with 0.76 mm "
@@ -114,7 +137,8 @@ SPECS = {
             "catch positions on the unit drawing are reserved spaces only.",
             "Edges: ground and arrised before toughening. Tolerances (PROPOSED, the glass supplier confirms): sizes "
             "+/-1, diagonals +/-1, thickness to the supplier's standard.",
-            "Datums: A = the hinge edge (X %.0f), B = the bottom edge (Z %.0f). The top is %.0f mm below DT's "
+            "Sizes are measured from the hinge edge (X %.0f) and the bottom edge (Z %.0f), the DXF's origin. The top "
+            "is %.0f mm below DT's "
             "underside for the magnetic catch (PM ruling)." % (X0, ZLB, v["dt_zb"] - ZT),
         ],
         "title": title("361001", "FRONT - DOOR LEAF - 4+4 LAMINATED", "Tấm kính cửa 4+4",
@@ -127,9 +151,15 @@ SPECS = {
         "sheet": "A2", "scale": 0.2, "scales": {"left": 2.0}, "views": {"front": (170, 300), "top": (170, 250),
                                                                          "left": (345, 230), "iso": (170, 120)},
         "box": {"front": (X0, KZB, X1, ZB), "top": (X0, KY0, X1, KY1), "left": (-KY1, KZB, -KY0, ZB)},
+        # the profile (the view from the left, at 2:1) named under it (Reviewer 8 on #339)
+        "labels": [("PROFILE (VIEW FROM THE LEFT) 2:1", 345, 110)],      # under its 20 dimension (at Z 125)
         "dims": [
-            ("front", (X0, KZB), (X1, KZB), "below", 10), ("front", (X0, KZB), (X0, ZB), "left", 10),
-            ("left", (-KY1, KZB), (-KY0, KZB), "below", 10), ("left", (-KY1, KZB), (-KY1, ZB), "left", 12),
+            ("front", (X0, KZB), (X1, KZB), "below", 10),
+            ("left", (-KY1, KZB), (-KY0, KZB), "below", 10),
+            # the pod-side face stops under the push-side taper (US door rule): the taper's rise there, and the strip's
+            # full height on the square outside face (the pod-side face's own height follows; no closed chain)
+            ("left", (-KY1, ZB - v["kick_bev_h"]), (-UY1, ZB), "left", 12),
+            ("left", (-KY0, KZB), (-KY0, ZB), "right", 34),
             ("left", (-UY1, ZB), (-UY0, ZB), "above", 8),
             ("left", (-UY0, ZB - v["kick_pocket_d"]), (-UY0, ZB), "right", 10),
             ("left", (-UY0, KZB), (-UY0, KZB + v["kick_cav_h"]), "right", 22),
@@ -141,34 +171,57 @@ SPECS = {
             "Top pocket %.0f wide x %.0f deep takes the Bohle BO5201735 silicone U-seal and the leaf's bottom %.0f mm; "
             "bottom cavity %.0f wide x %.0f tall takes the athmer Schall-Ex GSA drop seal, bonded to the pod-side wall "
             "(bond to anodised aluminium HOLD)." % (v["gu_w"], v["kick_pocket_d"], v["door_glass_engage"], v["gu_w"], v["kick_cav_h"]),
-            "Floor gap: the strip's bottom stands %.0f over the threshold top (the drop seal's rated gap). How the strip "
-            "is held on the glass is HOLD J-FRONT-02 (structural silicone or a clamp)." % v["kick_gap"],
-            "Tolerances (PROPOSED): pocket and cavity widths 12 +0.3/0; height %.0f +/-0.2; skins 1.0 +/-0.1." % (ZB - KZB),
+            "Floor gap: the strip's bottom sits on the base band's bottom line, %.0f over the room floor (D-132: no "
+            "floor, no threshold); the drop seal closes it, its travel 20 covering an uneven floor. How the strip "
+            "is held on the glass is HOLD J-FRONT-02 (structural silicone or a clamp)." % v["kick_zb"],
+            "Push side (pod side, the door opens outward): the wall's top edge tapered 60 deg from the horizontal, "
+            "%.1f high (US door rule, PM ruling 2026-11-01); the outside face stays square." % v["kick_bev_h"],
+            "Tolerances (PROPOSED): pocket and cavity widths 12 +0.3/0; height %.0f +/-0.2; skins 1.0 +/-0.1; taper "
+            "60 +0/-5 deg." % (ZB - KZB),
         ],
         "title": title("361002", "FRONT - DOOR KICK STRIP", "Thanh chân cửa nhôm", "aluminium EN AW-6063-T6",
-                       "black anodised matte 20 um (AA20)", "1:5, section 2:1", "A2", [("MASS", "1.1 kg (calculation)")]),
+                       "black anodised matte 20 um (AA20)", "1:5, section 2:1", "A2", [("MASS", "1.35 kg (calculation, CAD)")]),
     },
     "door_unit": {
         "design": doc("360001", "FRONT - DOOR UNIT", "CAD"),
         "drawing": doc("360001", "FRONT - DOOR UNIT", "DWG"),
         "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (150, 250), "top": (150, 120),
                                                                          "left": (290, 250), "iso": (340, 95)},
-        "box": {"front": (v["hinge_x0"], KZB, X1, ZT + v["st_top"])},
+        # the front view's model box: from the hinge spaces to the brush seal 368008 on the strip's end, and from the
+        # room floor (the brush reaches it, D-150) to the strike over the leaf
+        "box": {"front": (v["hinge_x0"], 0.0, X1 + v["kbrush_gap"], ZT + v["st_top"])},
         "dims": [
-            ("front", (X0, KZB), (X1, KZB), "below", 12), ("front", (X0, KZB), (X0, ZT), "left", 30),
-            ("front", (X0, ZB), (X0, ZT), "left", 18), ("front", (X1, KZB), (X1, ZB), "right", 10),
+            ("front", (X0, KZB), (X1, KZB), "below", 12), ("front", (X0, KZB), (X0, ZT), "left", 18),
+            ("front", (X1, KZB), (X1, ZB), "right", 10),
+            # the brush below the strip on its own line further out, so its 10 doesn't run into the strip's 95
+            ("front", (X1, 0.0), (X1, KZB), "right", 24),
         ],
         "notes": [
             "Door unit (D-56): leaf 361001, kick strip 361002 with the drop seal 368001 in its cavity and the U-seal "
-            "368002 in its pocket; the strike 368102 of the magnetic catch in DT; the door's half 368006 of the 180 deg "
-            "magnetic seal; three hinges 368101 and the pull 368103 as reserved spaces (red), HOLD.",
+            "368002 in its pocket; the strike 368102 (Sugatsune HT-MSG62-U10) of the magnetic catch in DT, packed to "
+            "the 8.76 laminate by the 1.2 stainless shim 361004 behind its liner; the door's half 368006 of the 180 deg "
+            "magnetic seal, from Z 105; three hinges 368101 (HOLD) and the pull 368103 as reserved spaces (red).",
             "No latch on the glass (PM ruling): the 35 N magnetic door-stop catch (Sugatsune HT-MSG62) in DT's underside "
             "holds the door at its top latch corner; the hinges hold it at its closed position; the 180 deg magnetic "
             "seal pulls edge to edge in the glass plane, so the fixed pane's free edge carries no closing load.",
-            "Hinges (HOLD): rated for the 8.76 laminate, at least 60 kg and the 1176 width; two-part lift-off, frame "
-            "halves shipped fitted in DL; hung on site with the 5 mm key. No holes in the glass until named.",
-            "Mass of the unit as it hangs: about 48.5 kg (calculation; parts list).",
-            "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the threshold." % v["kick_gap"],
+            "Hinges (HOLD): rated for the 8.76 laminate, at least 60 kg and the 1176 width; two-part lift-off, set in "
+            "the factory (frame halves fitted in DL, leaf halves on the door), so on site the door lifts on with no "
+            "adjustment (D-138); the 5 mm key only where the named set has a locking screw. Pivot on or outside the "
+            "kick strip's outer face (Y -709 over the glass, further out in the gap or in DL), so the strip's hinge "
+            "end and its brush only move away from BASE's plate. No holes in the glass until named; the hinge is a "
+            "question in the owner's quote request, dormakaba first (D-46).",
+            "Brush seal 368008 (D-150) on the kick strip's end, from the floor to Z 105: it closes the slot to BASE's "
+            "sill end plate (X 218.5). Ultrafab ULTRA PLUG pile on 3M VHB LSE-110WF tape, 6.0 overall; fitted on site "
+            "at 10 deg C or warmer after an IPA wipe (3M's sheet), once the glides are set and the door hangs, pressed "
+            "down onto the real floor; it ships in the door's kit bag (PM rulings 2026-11-01).",
+            "Brush seal 368009 (D-154) on the kick strip's hinge end, the same pile and tape 13.0 overall on the 11 mm "
+            "slot to BASE's FL2 end plate (X -972), from the floor to Z 105, open over the drop seal's cavity end so its "
+            "release button reaches the plate; fitted on site as 368008.",
+            "Pull pair 368103: Häfele 903.10.390 with fixing set 909.00.900 (PM ruling 2026-11-01), centred %.1f above "
+            "the floor, its bar %.1f to %.1f, inside the US band 865 to 1220. US supply, overall length, projection "
+            "and the laminate are questions in the owner's quote request; no holes in the glass until they are answered." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
+            "Mass of the unit as it hangs: %.2f kg (calculation; parts list)." % bom_mass("360001"),
+            "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the room floor (D-132)." % v["kick_zb"],
         ],
         "title": title("360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "see the parts list", "see the parts list",
                        "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
@@ -184,4 +237,4 @@ ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof
 
 for _k, _sp in SPECS.items():
     _sp["images"] = image_places(_sp["sheet"])
-    _sp["notes"] = list(_sp["notes"]) + COMMON_NOTES
+    _sp["notes"] = list(_sp["notes"]) + [proj_note(_sp["views"]) if _n is None else _n for _n in COMMON_NOTES]

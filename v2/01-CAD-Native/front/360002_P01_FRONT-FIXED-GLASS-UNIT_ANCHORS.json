@@ -75,7 +75,7 @@
   {
    "component": "368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD",
    "index": 2,
-   "expression": "fg_vis_zb"
+   "expression": "door_zb"
   },
   {
    "component": "368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD",

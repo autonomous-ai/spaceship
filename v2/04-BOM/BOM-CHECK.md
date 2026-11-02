@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 314 part lines (118 made, 196 bought, 150 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 353.8 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 317 part lines (119 made, 198 bought, 151 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 353.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -95,12 +95,15 @@ Read from: this working tree.
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
 - 361001 FRONT - DOOR LEAF - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
 - 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112: HOLD (source (product); bond to aluminium HOLD)
-- 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002))
-- 368102 FRONT - DOOR STRIKE: HOLD (source (product); on the 8.76 laminate with a 1.2 mm shim: HOLD)
-- 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
-- 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (HOLD)
+- 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002): a question in the owner's quote request, dormakaba first (D-46): no published hinge meets the 8.76 laminate, 1176 wide, 60 kg, lift-off and holding the door closed (sourcing, PM ruling 2026-11-01))
+- 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD: HOLD (HOLD: a question in the owner's quote request: no published pair fits the 8.76 laminate with a 4 mm edge gap (Häfele, FHC or REHAU; sourcing, PM ruling 2026-11-01))
+- 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (source (product kept, PM ruling 2026-11-01); US supply, the overall length (355 at most), the projection (70 at most) and the laminated glass: questions in the owner's quote request)
+- 368008: the list still names it 'FRONT - DOOR KICK STRIP END SEAL - BRUSH'; the joints register's H-43 now names it 'FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 368008 FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD: HOLD (source (products named, PM ruling 2026-11-01: closes HOLD-23))
+- 368009: the list still names it 'FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH'; the joints register's H-46 now names it 'FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 368009 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD: HOLD (source (products named, PM ruling 2026-11-01: closes HOLD-25))
 - 361003 FRONT - FIXED GLASS - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
-- 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
+- 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD: HOLD (HOLD: a question in the owner's quote request: no published pair fits the 8.76 laminate with a 4 mm edge gap (Häfele, FHC or REHAU; sourcing, PM ruling 2026-11-01))
 
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
@@ -229,7 +232,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 184 numbers, 157 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 184 numbers, 156 not in a team's list yet, 5 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -392,7 +395,7 @@ From `v2/04-BOM/number-allocation.csv`: 184 numbers, 157 not in a team's list ye
 | 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
 | 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
 | 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | ALLOCATED |
-| 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | ALLOCATED |
+| 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | in use |
 | 412002 | CEILING - FRAME CLIP TAB | 411101 411102 | 12 | ALLOCATED |
 | 513103 | LINING - CATCH EYE BRACKET - CEILING | 510301 | 4 | ALLOCATED |
 | 611212 | AIR - SOFFIT UNDERSIDE HINGE - RIVETED PIN | 610201 | 4 | ALLOCATED |

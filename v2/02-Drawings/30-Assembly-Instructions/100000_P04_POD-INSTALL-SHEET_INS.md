@@ -25,7 +25,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 - A pallet jack and a route for a 2438 mm long pallet to the room, or unpacking at the door: every piece passes an 810 mm wide, 2032 mm high doorway (REQ-ASM-06). The longest piece is BASE - BAND ASSY - BACK (2-04), 2420 mm, so corridors need room to turn it.
 - An elevator: a door at least 1070 × 2134 mm and a car at least 2032 × 1295 mm inside and 2286 mm tall, or a freight elevator (check K15: each piece as carried, in its wrap, leaned into the car with its lower end sliding on the floor; the panes out of the crate on their lifters). A typical passenger car with a 914 mm door can't take DR (2-03, 2300 × 1030 × 226 mm as carried).
 - The pallets' wood is heat-treated and ISPM 15 stamped (the packing plan), so they clear US ports.
-- The glass travels in a crate at the bottom of pallet 2: the door unit 48.6 kg and the fixed glass 28.7 kg, each moved by two people with two suction lifters. Every other piece is 20 kg or less (D-03).
+- The glass travels in a crate at the bottom of pallet 2: the door unit 48.8 kg and the fixed glass 28.7 kg, each moved by two people with two suction lifters. Every other piece is 20 kg or less (D-03).
 - Both pallets are marked DO NOT STACK.
 
 ## 2. The room

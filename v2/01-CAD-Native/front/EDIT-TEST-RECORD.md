@@ -4,6 +4,48 @@ Engineering guideline section 4.4. Each test opens the exported .f3d as a new un
 
 ## 360001 FRONT - DOOR UNIT, P01
 
+Rerun 2026-11-01 14:49 UTC after the sourcing rebuild (the strike's shim 361004 and its three anchors), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1360.5 x 148.8 x 2120.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS, 46 anchors.
+
+Rerun 2026-11-01 12:24 UTC after the D-154 rebuild (the hinge-end brush 368009), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1360.5 x 148.8 x 2120.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS, 43 anchors (the hinge-end brush's six among them).
+
+Rerun 2026-11-01 10:27 UTC after the D-150 rebuild (the brush seal 368008 on the kick strip's end, from the floor to Z 105), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1360.5 x 148.8 x 2120.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS, 37 anchors (the brush's six among them).
+
+Rerun 2026-11-01 05:59 UTC after the D-132 rebuild (the kick strip on the band's bottom line, its 60° push-side taper, the pull in the US band), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1348.1 x 148.8 x 2105.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1358.1 x 148.8 x 2110.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1348.1 x 148.8 x 2105.5 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS, 31 anchors.
+
+Earlier run (before D-132):
+
 In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
 
 | State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
@@ -15,6 +57,16 @@ In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a 
 RESULT: PASS. 31 anchors (leaf, kick strip, seals, hinge, strike and pull spaces against their expressions) follow the three skeleton edits at once and return exactly. An earlier run of this test caught a real fault (a dimension that flipped side across the centre line); every FRONT sketch now measures from a far reference point.
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01
+
+Rerun 2026-11-01 15:32 UTC after the seal half moved to start at Z 105 (door_zb), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+| pod_w 2600 mm; fr_dz 12 mm; fix_xk 511 mm; door_xtr 1192 mm | 1121.5 x 15.0 x 2045.0 | 0 | 0 | none | 0.010 |
+| Reverted | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+
+RESULT: PASS, 16 anchors. Its first run at 14:50 UTC failed here: the half's bottom anchor read −105.01 against door_zb 105 (a missing bracket in the start's expression), fixed before this run.
 
 In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
 

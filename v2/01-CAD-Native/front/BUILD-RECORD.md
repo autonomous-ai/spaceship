@@ -2,6 +2,41 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-11-01 14:49 UTC in one lock hold, through the late-bound loader, for the PM's sourcing rulings of 2026-11-01: the strike named (Sugatsune HT-MSG62-U10) with our own shim 361004 (Control's number: 60 × 19 × 1.2 stainless 1.4301 inside the strike's pod-side leg, behind its liner, so the glass sits on rubber; 8.76 + 1.2 = 9.96 in the 10 mm slot), the brushes 368008 and 368009 named (Ultrafab ULTRA PLUG pile on 3M VHB LSE-110WF, 6.0 and 13.0 overall, fitted at 10 to 38 °C after an IPA wipe; their names drop "- HOLD"), and the hinge, the pull's open points and the door's seal half as questions in the owner's quote request.
+
+- bodies 14, timeline 47 items, unhealthy 0, loose sketches 0, parameters 160; clash pairs 5, all listed (new: the shim inside the strike's envelope, 1368 mm³, its whole volume)
+- unit box unchanged (X −1132.02 to 218.52, Y −773.40 to −624.59, Z −0.02 to 2115.52); STEP re-read in Fusion, box equal (0.000 mm)
+- the shim's DXF `361004_P01_FRONT-DOOR-STRIKE-SHIM-1-2-STAINLESS_DXF.dxf`: 60.00 × 19.00, its drawing (D-89 part 4)
+- parts list: 12 rows, the unit 48.76 kg (the shim 0.011, CAD)
+- edit test PASS, 46 anchors (`EDIT-TEST-RECORD.md`)
+- FRONT combined check (door, fixed glass, and #313's DR, DT and DL), after the fixed glass's run below: 0 overlaps between sub-assemblies; the gaps as ruled (door leaf to the fixed pane 4.00, leaf top to DT 6.00, catch to the strike 0, seals 0 on the leaf). The check now reads the kick strip by its own body's name, so the strip to the fixed glass channel shows its true 4.00 (since D-150 the brushes' bodies, named "KICK STRIP END ... BRUSH", had been read as the strip and gave 0.00)
+
+Rebuilt 2026-11-01 12:24 UTC in one lock hold with its sheet and the FRONT combined check, for D-154: the second brush seal 368009 on the kick strip's hinge end, X −972 to −961 (the 11 mm slot to BASE's FL2 end plate, flush with DL's door face), Y −709 to −689, from the room floor to Z 105, 13 mm on the slot (2 mm overlap), open over the drop seal's cavity end (Y −705 to −693, Z 10 to 75) so the release button reaches the plate, where BASE adds a strike pad (HOLD-sized, at most 8). Modelled as fitted; fitted on site like 368008 (PM rulings 2026-11-01).
+
+- bodies 13, timeline 44 items, unhealthy 0, loose sketches 0, parameters 157; clash pairs 4, all listed
+- unit box unchanged (X −1132.02 to 218.52, Y −773.40 to −624.59, Z −0.02 to 2115.52); STEP re-read in Fusion, box equal (0.000 mm)
+- parts list: 11 rows, the unit 48.75 kg (368009 0.02, assumption)
+- edit test PASS, 43 anchors (`EDIT-TEST-RECORD.md`)
+- swing: with the hinge pivot on or outside the kick strip's outer face, the strip's hinge end and this brush only move away from BASE's plate as the door opens, and the pile lets go within 3° to 32° (`door_swing.py`, 0 to 110°); the rule is in the hinge HOLD
+- FRONT combined check: 0 overlaps between sub-assemblies
+
+Rebuilt 2026-11-01 10:27 UTC in one lock hold with the door unit sheet and the FRONT combined check after it, through the late-bound loader, for D-150: the brush seal 368008 on the kick strip's end, X 214 to 218.5 (the 4.5 mm slot to BASE's sill end plate), Y −709 to −689, from the room floor to Z 105, its outer edge following the fixed pane's free edge near the top. It is modelled as fitted; it ships in the door's kit bag and is fitted on site, pressed onto the real floor (PM ruling 2026-11-01, D-150 changed), so the packing piece leaves it out.
+
+- bodies 12, timeline 39 items, unhealthy 0, loose sketches 0, parameters 156; clash pairs 4, all listed (H1 to H3 and the strike on the leaf, as below)
+- unit box X −1132.02 to 218.52, Y −773.40 to −624.59, Z −0.02 to 2115.52 (the brush reaches the floor); STEP re-read in Fusion, box equal (0.000 mm)
+- parts list: 10 rows, the unit 48.73 kg (the brush 0.01, assumption)
+- edit test PASS, 37 anchors (`EDIT-TEST-RECORD.md`); no names in the exports
+- FRONT combined check (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies; the kick strip with its brush to the fixed glass channel 0.00 (the brush's top corner runs up to the channel along the pane's free edge, touching by design, no overlap; the strip itself stays 4.00 clear); the other gaps unchanged
+
+Rebuilt 2026-11-01 05:59 UTC in one lock hold with the FRONT combined check after it, through the late-bound loader (the newest `door_unit.py` read when the lock was granted), for D-132 and the US door rules (PM rulings 2026-11-01): no floor and no threshold, so the kick strip's bottom sits on the base band's bottom line, the skeleton's `glide_h` (Z 10), and the drop seal closes the 10 mm gap to the room floor; the strip is 95 tall (it was 85 over the 13 mm threshold), its seal cavity 65; its push-side (pod-side) top edge is tapered 60° from the horizontal, 6.93 high across the 4 mm wall, the pod-side chamber stopping a skin under it, the outside face square; the pull is centred 1042.5 above the room floor, its 350 bar from 867.5 to 1217.5 inside the 865 to 1220 band, and the build now fails if it leaves the band. The version's description in Fusion still names the first D-132 values (strip from Z 7, pull 1050): the description file was written before the follow-up rulings; the model and every export carry the values above.
+
+- bodies 11, timeline 36 items, unhealthy 0, loose sketches 0, parameters 155; clash pairs 4, all listed (as below)
+- unit box X -1132.02 to 216.04, Y -773.40 to -624.59, Z 9.98 to 2115.52; `step_check.py` box MATCH against the parameters' box (X -1132 to 216.02, Y -773.38 to -624.62, Z 10 to 2115.5, largest difference 0.0000 mm); re-read in Fusion, box equal (0.000 mm)
+- kick strip section (DXF): 20 × 95, the push-side top corner cut from (20, 88.07) to (16, 95), the 60° taper
+- parts list: 9 rows, the unit 48.72 kg (the kick strip 1.345 kg, was 1.218)
+- edit test PASS (`EDIT-TEST-RECORD.md`); no names in the exports (f3d entries read through zstd, STEP, CSV, DXF)
+- FRONT combined check (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies; the gaps unchanged (door to the fixed pane 4.00, leaf top to DT 6.00, catch to the strike 0, seals 0 on the leaf); the pull spaces 781.45 from DR's skin
+
 Rebuilt 2026-10-31 21:17 UTC in one lock hold (the cloud copy is the version this run saved) with the glass rebuild and the four part-only designs: the hardware's CAD names are the joints register's (D-99), and the strike is named FRONT - DOOR STRIKE - ENVELOPE, a stand-in for the product (D-104), so its expected overlap with the leaf is no clash (F-103). Same geometry and results as the run below: clash pairs 4, all expected; leaf 43.854 kg, unit 48.59 kg; STEP re-read 0.000 mm; edit test PASS (31 anchors). The parts list is in the process and finish columns, same values.
 
 Run 2026-10-31 18:5x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
@@ -53,7 +88,7 @@ DXF: leaf (front view, X from the hinge edge, Y from the leaf's bottom) (0, 0), 
 | 368102 strike | 0.02 | source (Sugatsune datasheet, 22.9 g) |
 | 368006 magnetic seal, the door's half | 0.15 | assumption, HOLD product |
 | 368103 pull pair | 0.80 | assumption (D-56) |
-| **Door unit** | **48.59** | calculation |
+| **Door unit** | **48.72** | calculation (D-132 rebuild: the kick strip 95 tall) |
 
 The hinge set's rating stays at least 60 kg (PM ruling 2026-10-31: the unit plus a margin).
 
@@ -69,6 +104,14 @@ The hinge set's rating stays at least 60 kg (PM ruling 2026-10-31: the unit plus
 | Fixed glass unit | The magnetic seal pair: 368006 on this leaf, 368003 on the pane | HOLD product |
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01 (DRAFT)
+
+Rebuilt 2026-11-01 15:32 UTC for the Mechanical Checker's seal line and the PM's ruling on the latch-side corner: the pane's half 368003 of the 180° magnetic seal now starts at Z 105 with the door's half 368006 (it started at the pane's visible bottom, Z 110), so the pair meets all the way down and the 2 × 5 mm opening closes. Below Z 110 it runs beside the bottom channel's end, which is cut flush with the free edge. 368003 is a question in the owner's quote request (no published pair fits the 8.76 laminate with a 4 mm edge gap).
+
+- bodies 4, timeline 18 items, unhealthy 0, loose sketches 0, parameters 120; clash pairs 0
+- unit box X −66.65 to 964.15, Y −706.52 to −691.48, Z 94.98 to 2135.02; STEP re-read in Fusion, box equal (0.000 mm)
+- parts list: 5 rows, the unit 29.54 kg (368003's length now from Z 105)
+- edit test PASS, 16 anchors (`EDIT-TEST-RECORD.md`)
+- The first run of this change, at 14:50 UTC, failed its edit test: the seal half's start, written without brackets inside a helper's `(fg_vis_zb - d)`, came out as Z −105, and the half ran below the floor (the combined check also found it in the brush, 249 mm³). That run had already saved a cloud version and written the exports; this run replaced both.
 
 Rebuilt 2026-10-31 21:18 UTC in the same lock hold: the magnetic seal half's CAD name is the joints register's, FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD (D-99). Same geometry and results as the run below: clash pairs 0; gap to the door 4.00 mm square to the edge; unit 29.54 kg; STEP re-read 0.000 mm; edit test PASS (16 anchors). Parts list in the process and finish columns, same values.
 

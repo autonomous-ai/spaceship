@@ -400,7 +400,11 @@ REGISTER_ITEMS = {
     "368007": ("FRONT - DOOR CATCH - IN DT", "Nam châm hít cửa (trong khối DT)", "Sugatsune", "HT-MSG62"),
     "368101": ("FRONT - DOOR HINGE - HOLD", "Bản lề cửa kính", "", ""),
     "368102": ("FRONT - DOOR STRIKE", "Đế hít cửa", "Sugatsune", "HT-MSG62-U10"),
-    "368103": ("FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (cặp)", "", ""),
+    "368103": ("FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (cặp)", "Häfele", "903.10.390 with 909.00.900"),
+    "368008": ("FRONT - DOOR KICK STRIP END SEAL - BRUSH", "Chổi chặn khe đầu thanh chắn chân cửa", "Ultrafab; 3M",
+               "ULTRA PLUG on VHB LSE-110WF"),
+    "368009": ("FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH", "Chổi chặn khe đầu bản lề thanh chắn chân cửa",
+               "Ultrafab; 3M", "ULTRA PLUG on VHB LSE-110WF"),
     "618401": ("AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", "Noctua", "NF-A14 industrialPPC-3000 PWM"),
 }
 
