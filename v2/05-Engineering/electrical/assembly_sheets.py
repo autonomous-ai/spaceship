@@ -172,7 +172,7 @@ def sheet_power_unit(doc, v):
     bottom = frame(s, pn, "ELECTRICAL - POWER UNIT - B2: ASSEMBLY", [
         "Wiring inside the unit: wiring diagram sheet 1 (710000). Leads out: W10a top (6-way), W20a/W24a/W30a/W31a right side.",
         "Factory test of the unit before B2 ships (US 120 V, D-133): ground continuity <= 0.1 ohm; dielectric withstand 1240 V AC "
-        "for 1 min, mains to ground (1000 V + 2 x 120 V); the GFCI's TEST button trips it; rails 12 V +/-3 %.",
+        "for 1 min, mains to ground (1000 V + 2 x 120 V); the GFCI's TEST button trips it; rails 24 V (PS1, PS2) and 12 V (PS3) +/-3 %.",
     ], scale="1:3 face, 2:1 section (schematic)")
     k = 1.0 / 3.0
     ox, oy = 24.0, 128.0
@@ -263,7 +263,7 @@ CONNECTOR_PN = [  # text in the harness ends -> part number
     ("Mini-Fit Jr 10-way receptacle", "718034"), ("Mini-Fit Jr 10-way plug", "718035"),
     ("RJ45 inline coupler", "718039"), ("RJ45 keystone jack", "718040"),
 ]
-CABLE_PN = [("6 x 18 AWG", "718029"), ("4 x 18 AWG", "718024"), ("2 x 18 AWG", "718023"), ("6 x 24 AWG", "718025"),
+CABLE_PN = [("4 x 16 AWG", "718055"), ("6 x 18 AWG", "718029"), ("4 x 18 AWG", "718024"), ("2 x 18 AWG", "718023"), ("6 x 24 AWG", "718025"),
             ("4 x 20 AWG", "718026"), ("4 x 24 AWG", "718027"), ("Cat6", "718028"), ("draw cord", "718044")]
 
 
@@ -302,7 +302,9 @@ def harness_material(s, rows, x, y, w, bottom):
         y = s.para(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836 / edge strip, parts list 718041, "
                    "718042)." % ", ".join(sorted(holes)), w)
     if any("Mini-Fit" in h["end_a"] + h["end_b"] for h in rows):
-        y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way.", w)
+        y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way" +
+                   ("; the kit feed's 16 AWG: female 39-00-0078 (718056) and male 39-00-0082 (718057)." if any(
+                       "16 AWG" in h["cable"] for h in rows) else "."), w)
     return y
 
 
