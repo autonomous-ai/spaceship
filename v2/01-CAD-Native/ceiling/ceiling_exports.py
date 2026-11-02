@@ -41,11 +41,15 @@ HW_SPEC = {
                "ISO 4762 M6 x 16 - 8.8 - zinc plated", TQ_RIVNUT),
     "838002": ("steel, property class 8.8 (ISO 898-1)", "zinc plated", "HOLD: any maker to ISO 4762, picked at the RFQ",
                "ISO 4762 M6 x 25 - 8.8 - zinc plated", "snug only: a pin, not a clamp (joints register 2.10)"),
-    "838003": ("steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2", TQ_RIVNUT),
+    "838003": ("steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAL2-610-4.2", TQ_RIVNUT),
     "838004": ("stainless steel A2", "none (plain stainless)", "HOLD: any maker to ISO 7093-1, picked at the RFQ",
                "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", ""),
     "838005": ("elastomer (HOLD-02)", "as supplied (elastomer)", "HOLD-02", "HOLD-02", ""),
     "831002": ("aluminium sheet 1.5, 5000 or 6000 series", "mill finish (punched)", "made (register H-08)", "", ""),
+    "831007": ("galvanized steel 2.0, S280GD+Z or SGC400, Z100 (the frames' own steel)", "welded in; zinc-rich touch-up "
+               "with the frame's welds", "made (register H-40, J-FRAME-01)", "", ""),
+    "831008": ("galvanized steel 2.0, S280GD+Z or SGC400, Z100 (the frames' own steel)", "welded in; zinc-rich touch-up "
+               "with the frame's welds", "made (register H-41, J-FRAME-01)", "", ""),
     "848001": ("PORON 4701-40 Soft polyurethane foam with PSA", "none (foam, PSA liner one side)",
                "Rogers (PORON), PSA laminated and slit by a converter (HOLD-05)", "PORON 4701-40 Soft, 3.97 x 8 strip with PSA", ""),
     "848004": ("EPDM or TPE hollow bulb (HOLD-12)", "as supplied", "HOLD-12", "HOLD-12: hollow bulb, working gap 4 to 7", ""),
@@ -111,8 +115,10 @@ def write_flat_parts(v):
     yw = M.ev(v, M.YW)
     sx0, sy0 = v["slot_x0"] - seam, v["slot_y0"] - yw
     p = os.path.join(OUT, fname("skin_c2", "DXF", "dxf"))
+    holes = [("CIRCLE", "CUT", (M.ev(v, x) - M.ev(v, "slot_x0") + sx0, M.ev(v, y) - yw), v["hole_slv"] / 2)
+             for _n, x, y in M.sleeve_rivnuts()]          # clearance under the sleeve flange's 4 rivnuts (J-AIR-03, D-177)
     D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["half_pw"], v["wall_depth"])),
-                    ("POLY", "CUT", rect(sx0, sy0, sx0 + v["slot_w"], sy0 + v["slot_d"]))])
+                    ("POLY", "CUT", rect(sx0, sy0, sx0 + v["slot_w"], sy0 + v["slot_d"]))] + holes)
     out["skin_c2"] = p
     # rib blank: developed width across the hat, length along the rib; bend lines on BEND
     rb = rib_blank(v)
@@ -144,12 +150,17 @@ def notched_outline(x0, x1, y0, y1, cuts):
 
 
 def rib_blank(v, k=0.44):
-    """Hat rib 0.5 mm: flange, web, crown, web, flange with four 90 degree bends (r = t)."""
+    """Hat rib 0.5 mm: flange, web, crown, web, flange with four 90 degree bends (r = t). The hat's bends alternate:
+    a flange's bend has its outside on the flange's top face, which runs on over the web's thickness to the web's
+    inside face, so the flange's outside length is f + t; the webs' and the crown's outsides are the webs' outer
+    faces and the crown's underside (h and c). Each straight is its outside length less r + t at each bent end. (The
+    flange was once taken as f, so the blank came out 1 mm short, 88.52 for 89.52, folding to 43 wide for 44: the
+    D-114 pass on #306 found it.)"""
     t, r = v["tray_t"], v["tray_t"]
     ba = math.pi / 2 * (r + k * t)
     c, f, h = v["rib_crown"], v["rib_fl"], v["gap_h"]
-    # outside dimensions -> flats between bends
-    fl = f - (r + t)
+    # outside lengths -> straights between bends
+    fl = (f + t) - (r + t)
     web = h - 2 * (r + t)
     crown = c - 2 * (r + t)
     segs = [fl, ba, web, ba, crown, ba, web, ba, fl]
@@ -168,6 +179,33 @@ def write_tray_dxf():
     return dst, seen
 
 
+MEMBER_ENDS = {   # D-117, the Joints Engineer's corner design
+    "SIDE": "front end mitred 45 deg, back end mitred 63.43 deg off square", "SEAM": "front end mitred 45 deg, back end mitred 63.43 deg off square",
+    "FRONT": "both ends mitred 45 deg", "BACK": "both ends mitred 26.57 deg off square",  # each cut back for its 2.0 plate (J-FRAME-01)
+    "X1": "square cut", "X2": "square cut", "X3": "square cut",
+}
+
+
+def member_rows(v, half):
+    """[(code, part key, name, section, outer length, ends, features)] of one frame's members."""
+    holes = {}
+    for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
+        holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(M.ev(v, n)))))
+    boxes = {c: [M.ev(v, e) for e in b] for c, _n, _a, b in M.frame_members(half)}
+    out = []
+    for code, key, name, axis, _pts, _z0, _z1 in M.member_shapes(half):
+        bb = boxes[code]
+        L = (bb[1] - bb[0]) if axis == "x" else (bb[3] - bb[2])
+        sec = "%s x 40 x %.1f" % ("40" if code == "BACK" else "20", M.ev(v, M.member_wall(key)))
+        extra = list(holes.get(code, []))
+        if code == "BACK":
+            extra.append("back spigot slot 8.5 x 14 x 1")
+        if code == "SEAM":
+            extra.append("1 x 45 lead-in on the closing face's lower edge, full length")
+        out.append((code, key, name, sec, L, MEMBER_ENDS[code], extra))
+    return out
+
+
 def _sizes():
     """(size, tolerance) per made part and assembly: a parts-list row is the cut list for soft
     goods and plain parts (PM ruling 2026-11-01 on the Checker's pre-check)."""
@@ -176,7 +214,9 @@ def _sizes():
             for k, _bay, box, _n in M.fill_strips(v):
                 if k == key:
                     b = [M.ev(v, e) for e in box]
-                    return "%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]), "cut +/-2 (assumption); notches per the tabulated drawing"
+                    return ("%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]),
+                            "cut +/-2 (assumption); no drawing (D-128): %s gives the full outline with every notch"
+                            % fname(key, "DXF", "dxf"))
             return "", ""
         return f
     return {
@@ -184,13 +224,25 @@ def _sizes():
         "assy_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
         "assy_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
         "frame_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
-                               "cut length +/-0.5; holes +/-0.2 from the round spigot hole (R-J6); spigot to closing face +/-0.1 (ST-04)"),
+                               "welded in a jig (J-FRAME-01): diagonals equal within 1.5 and the skin-side faces within +/-0.5 of one plane, measured after welding (J-FRAME-01); outer size +/-0.5 (assumption); spigot to closing face +/-0.1 (ST-04)"),
         "frame_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
-                               "cut length +/-0.5; holes +/-0.2 from the round spigot hole (R-J6); spigot to closing face +/-0.1 (ST-04)"),
+                               "welded in a jig (J-FRAME-01): diagonals equal within 1.5 and the skin-side faces within +/-0.5 of one plane, measured after welding (J-FRAME-01); outer size +/-0.5 (assumption); spigot to closing face +/-0.1 (ST-04)"),
+        **{key: (lambda code, h: (lambda v: next(("%s tube, %.2f long at the outer face, %s" % (sec, L, ends),
+                                                  "cut length +/-0.5, mitre angles +/-0.25 deg (assumption); holes and slots +/-0.2 "
+                                                  "from the round spigot hole (R-J6)")
+                                                 for c, _k, _n, sec, L, ends, _x in member_rows(v, h) if c == code)))(code, h)
+           for h, code, key in [("C1", "SIDE", "m_side"), ("C1", "X1", "m_x1")]
+           + [(h, code, "m_%s_%s" % (code.lower(), h.lower())) for h in ("C1", "C2") for code in ("SEAM", "FRONT", "BACK")]},
+        "m_cross": lambda v: ("20 x 40 x %.1f tube, %.2f long, square cut, no holes"
+                              % (M.ev(v, M.member_wall("m_cross")), v["half_fw"] - 2 * v["tube_w"]),
+                              "cut length +/-0.5 (assumption)"),
         "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
                               "ISO 2768-m; no drawing (D-89 part 4): its DXF is the outline"),
-        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"]),
-                              "ISO 2768-m; roof slot from the closing-seam edge and the front edge +/-0.5 (critical: the roof sleeve passes through it, D-61); no drawing (D-89 part 4)"),
+        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f, 4 pass-through openings Ø%.0f under the roof sleeve's rivnuts"
+                              % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"], v["hole_slv"]),
+                              "ISO 2768-m; roof slot from the closing-seam edge and the front edge +/-0.5 (critical: the roof sleeve, "
+                              "1.0 smaller a side, passes through it, D-61, D-177); the 4 openings +/-0.2 from the slot (assumption); no "
+                              "drawing (D-89 part 4)"),
         "cassette": lambda v: ("%.0f x %.0f x %.0f (%.0f with the fill)" % (v["cs_w"], v["cs_d"], v["tray_h"], v["tray_h"] + v["fill_t"]),
                                "+/-1 assembled (assumption)"),
         "tray": lambda v: ("%.0f x %.0f x %.0f, 0.5 sheet" % (v["cs_w"], v["cs_d"], v["tray_h"]), "cut +/-0.2, bent +/-0.5 (assumption)"),
@@ -210,13 +262,17 @@ def parts_list(v, mass):
     q = {  # quantity per parent, parent
         "ceiling": (1, None), "assy_c1": (1, "ceiling"), "assy_c2": (1, "ceiling"),
         "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin_c1": (1, "assy_c1"), "skin_c2": (1, "assy_c2"),
+        **{"m_%s_%s" % (m, h): (1, "frame_" + h) for h in ("c1", "c2") for m in ("seam", "front", "back")},
+        "m_side": (1, "frame_c1|frame_c2"), "m_x1": (1, "frame_c1|frame_c2"),     # one part each for both frames
+        "m_cross": (2, "frame_c1|frame_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
         "clip": (6, "cassette"), "catch": (2, "cassette"),
     }
     for key, _bay, _b, _n in M.fill_strips():
         q[key] = (q.get(key, (0, "cassette"))[0] + 1, "cassette")
     per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin_c1": 1, "skin_c2": 1,
-               "cassette": 2}
+               "cassette": 2, "m_cross": 4, "m_side": 2, "m_x1": 2,
+               **{"m_%s_%s" % (m, h): 1 for h in ("c1", "c2") for m in ("seam", "front", "back")}}
     for k in [k for k in q if k not in per_pod]:
         per_pod[k] = q[k][0] * 2
     rows = []
@@ -233,12 +289,17 @@ def parts_list(v, mass):
         else:
             mass_txt, status = ("%.3f" % each) if each is not None else "", "calculation (Fusion, CAD geometry x density)"
         matname = M.MATERIALS[mat][0] if mat else ""
+        if key in ("frame_c1", "frame_c2"):
+            # the welded frame's own row names its steel (D-131, J-FRAME-01); its members' rows carry the gauges
+            matname = "%s: the members below, welded" % M.MATERIALS["steel_fr"][0]
         size, tol = SIZE_TOL.get(key, (lambda vv: ("", "")))(v)
         src = {
-            "frame_c1": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
-            "frame_c2": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "frame_c1": "D-16, D-34, D-55; D-131 and J-FRAME-01 (welded galvanized steel, the mitre plates, the gauges); D-117 (mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "frame_c2": "D-16, D-34, D-55; D-131 and J-FRAME-01 (welded galvanized steel, the mitre plates, the gauges); D-117 (mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            **{k: "D-120 (number from the master BOM's allocation); D-117 (mitred corners); D-131 and J-FRAME-01 (galvanized steel 20 x 40 and 40 x 40 R-J3, 1.0 or 0.8 wall, cut back for the 2.0 mitre plates); joints register J-CEIL-01, J-CEIL-02"
+               for k in M.PARTS if k.startswith("m_")},
             "skin_c1": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61",
-            "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins)",
+            "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins); D-177 (the sleeve rivnuts' clearance holes)",
             "tray": "D-17, D-37; PM ruling 2026-10-31 (12 mm lip)",
             "rib": "PM ruling 2026-10-31 (2 ribs); rib joint HOLD",
             "felt": "D-17, D-31; felt fixing HOLD H09",
@@ -259,19 +320,19 @@ def parts_list(v, mass):
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,
         })
-    # the ACP bond set, shared with WALL (joints register H-12, number 108002): one bonded
-    # skin per ceiling outer panel, mass from the bond spec's 0.28 kg/m2
+    # the ACP bond set, shared with WALL (joints register H-12, number 108002): one bonded skin per ceiling outer
+    # panel, mass from the bond spec's 0.28 kg/m2 (section 8 keeps the 12 x 3 joint for D-131's steel frames)
     bond_each = v["half_pw"] * v["wall_depth"] * 1e-6 * 0.28
     rows.append({
         "part_number": "108002",
-        "name": "POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
+        "name": "POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE",
         "name_vi": "Bộ keo dán ACP", "kind": "PI", "parent": "assy_c1|assy_c2", "qty_per_parent": 1,
-        "qty_per_pod": 2, "material": "SikaTack Panel-50 system (bond spec)", "finish": "", "process": "",
-        "maker": "Sika", "sku": "SikaTack Panel-50 system (bond spec V2-ENG-BND): SikaTack Panel-50 (ETA 19/0511), Sika Aktivator-205, Sika Panel Primer, SikaTack Panel Fixing Tape",
+        "qty_per_pod": 2, "material": "Sikaflex-252 system (bond spec section 8, D-131)", "finish": "", "process": "",
+        "maker": "Sika", "sku": "Sikaflex-252 system (bond spec V2-ENG-BND section 8): Sikaflex-252, Sika Aktivator-205 and Sika Primer-210 on both faces, SikaTack Panel Fixing Tape 3 x 12",
         "torque": "", "size_mm": "", "tolerance": "",
         "mass_each_kg": "%.3f" % bond_each,
         "mass_status": "calculation", "revision": REV, "status": "DRAFT",
-        "source": "joints register H-12 (108002); bond spec: 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
+        "source": "joints register H-12 (108002); bond spec section 8 (D-131): 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
             v["half_pw"] * v["wall_depth"] * 1e-6),
     })
     q["bond"] = (1, "assy_c1|assy_c2")
@@ -279,6 +340,7 @@ def parts_list(v, mass):
     by_key = {k: r for k, r in zip(keys, rows)}
     # joint hardware fitted in the factory (joints register 2.1 numbers, D-63): one row per
     # half, since C1 and C2 carry different sets
+    plates = {"plate45": "H-40", "plate_sb": "H-41"}     # welded into the frames' corners (D-131, J-FRAME-01)
     for hk, (pn, name, vn, kind, unit, n1, n2, kg, mstat) in M.HARDWARE.items():
         for half, expr in (("assy_c1", n1), ("assy_c2", n2)):
             n = M.ev(v, expr)
@@ -286,16 +348,24 @@ def parts_list(v, mass):
                 continue
             qty = round(n, 3) if unit == "m" else int(round(n))
             key = "%s_%s" % (hk, half)
-            q[key] = (qty, half)
+            parent = ("frame_c1" if half == "assy_c1" else "frame_c2") if hk in plates else half
+            q[key] = (qty, parent)
             mat, fin, maker, sku, tq = HW_SPEC[pn]
-            r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": half,
+            if hk in plates:
+                process = "laser cut from the frames' 2.0 galvanized steel, welded into the frame's corner (J-FRAME-01)"
+                source = "joints register %s (%s), J-FRAME-01 (D-131); the joints CAD README's placement; per piece; " \
+                         "mass %s" % (plates[hk], pn, mstat)
+            else:
+                process = "punched (a part we make)" if kind == "MP" else ""
+                source = "joints register V2-ENG-JNT-01 2.1 (%s), 3.5 J-CEIL-01 / 3.6 J-CEIL-02; per %s; mass %s" % (
+                    pn, "metre" if unit == "m" else "piece", mstat)
+            r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": parent,
                  "qty_per_parent": qty, "qty_per_pod": qty, "material": mat, "finish": fin,
-                 "process": "punched (a part we make)" if kind == "MP" else "",
+                 "process": process,
                  "maker": maker, "sku": sku, "torque": tq, "size_mm": "", "tolerance": "",
                  "mass_each_kg": "%.4f" % kg, "mass_status": mstat.split(":")[0],
                  "revision": REV, "status": "HOLD" if kind == "HOLD" else "DRAFT",
-                 "source": "joints register V2-ENG-JNT-01 2.1 (%s), 3.5 J-CEIL-01 / 3.6 J-CEIL-02; per %s; mass %s" % (
-                     pn, "metre" if unit == "m" else "piece", mstat)}
+                 "source": source}
             rows.append(r)
             by_key[key] = r
 
@@ -315,25 +385,18 @@ def parts_list(v, mass):
 
 
 def cut_list(v):
+    """The tube cut list: one row per member of each frame (D-120's member parts), with the outer
+    length, the end cuts (D-117) and the holes and slots. The member's number goes in member_part, as FRONT's cut
+    lists key it: a part_number column with a qty makes the checks read the file as a parts list (C06, C11), and the
+    parts list already carries each member's row."""
     rows = []
-    for half, key in (("C1", "frame_c1"), ("C2", "frame_c2")):
-        pn = M.PARTS[key][0]
-        holes = {}
-        for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
-            holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(M.ev(v, n)))))
-        for code, name, axis, b in M.frame_members(half):
-            bb = [M.ev(v, e) for e in b]
-            L = (bb[1] - bb[0]) if axis == "x" else (bb[3] - bb[2])
-            sec = "40 x 40 x 1.2" if code == "BACK" else "20 x 40 x 1.2"
-            extra = list(holes.get(code, []))
-            if code == "BACK":
-                extra.append("back spigot slot 8.5 x 14 x 1")
-            if code in ("SEAM", "BACK"):
-                extra.append("1 x 45 lead-in on the closing face's lower edge")
-            rows.append({"frame": pn, "half": half, "member": code, "name": name,
-                         "section": "aluminium %s (6063-T6; alloy ISS-034)" % sec,
+    for half, fkey in (("C1", "frame_c1"), ("C2", "frame_c2")):
+        for code, key, name, sec, L, ends, extra in member_rows(v, half):
+            rows.append({"frame": M.PARTS[fkey][0], "half": half, "member": code, "member_part": M.PARTS[key][0],
+                         "name": M.PARTS[key][1],
+                         "section": "galvanized steel %s (S280GD+Z or SGC400, yield 280 MPa or more, Z100; D-131)" % sec,
                          "length_mm": "%.2f" % L, "qty": 1,
-                         "ends": "square cut; frame joint HOLD (H11)",
+                         "ends": "%s; welded into the frame (D-131, J-FRAME-01): corners with the 2.0 mitre plates, T joints direct" % ends,
                          "holes": "; ".join(extra) or "none",
                          "status": "calculation (from the parameters)"})
     return rows
@@ -342,7 +405,8 @@ def cut_list(v):
 def flat_cut_list(v):
     """Felt and fill pieces with size, material, tolerance and part number: D-89 (PM ruling
     2026-11-01) lets a plain knife-cut felt or fill rectangle go without a drawing when this
-    list gives them; the notched fill strips also have their tabulated drawing."""
+    list gives them, and D-128 (PM ruling 2026-11-01) the notched fill strips too: their DXF gives the full outline
+    with every notch, and this row the material, density, thickness, tolerance and part number."""
     rows = []
     fw = v["cs_w"] - 2 * (v["tray_t"] + v["felt_c"])
     fd = v["cs_d"] - 2 * (v["tray_t"] + v["felt_c"])
@@ -362,7 +426,8 @@ def flat_cut_list(v):
         n = sum(1 for _n, nb in notches if M.overlap(tuple(b), tuple(M.ev(v, e) for e in nb)))
         rows.append({"part_number": pn, "name": name, "name_vi": vn, "material": M.MATERIALS[mat][0],
                      "size_mm": "%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]), "qty_per_pod": 2,
-                     "tolerance": "cut +/-2 (assumption)", "drawing": "513301_P01_LINING-FILL-CEILING-BAYS-A-B-C_DWG (tabulated, D-89)",
+                     "tolerance": "cut +/-2 (assumption)",
+                     "drawing": "none (D-128: its DXF gives the full outline with every notch)",
                      "cut_file": fname(key, "DXF", "dxf"), "note": "%d notches clearing clips and catches by fill_c" % n})
     return rows
 

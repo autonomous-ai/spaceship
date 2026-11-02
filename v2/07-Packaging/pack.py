@@ -115,7 +115,7 @@ MINE = {
     "sep_kg": N(4.0, "kg", "assumption", "this plan", "one separator: 5 battens 22 x 95 x 1219 and 4 posts"),
     "cass_foam": N(10, "mm", "assumption", "this plan", "foam sheet under the ceiling cassettes' fill strips on the top tier"),
     "wrap": N(5, "mm", "assumption", "this plan", "per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box"),
-    "dr_bed": N(10, "mm", "assumption", "this plan", "foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01)"),
+    "dr_bed": N(10, "mm", "assumption", "this plan", "foam sheet under DR's flat front face: DR lies face down, its open back up, nothing on it (PM, 2026-11-01); its inner face panel ships loose (2-22, D-130)"),
     "cad_tol": N(0.5, "mm", "assumption", "this plan", "check K14: how far a CAD box may pass the planned size (rounding)"),
     # installation kit aids (design review 2026-11-01)
     "stay_kg": N(1.5, "kg", "assumption", "this plan", "one clamp-on glass stay: a padded clamp on the fixed glass's top edge with a telescopic prop to the base band, so the glass stands while both people bring DR (step 9)"),
@@ -159,6 +159,7 @@ TIME = {
     "t_dr_slide_s": N(120, "s", "assumption", "this plan", "slide DR in from the side onto the fixed glass's right and diagonal edges and onto its stops"),
     "t_slide_long_s": N(120, "s", "assumption", "this plan", "slide one long air part (riser or cartridge) into its housing, 2 people"),
     "t_face_s": N(60, "s", "assumption", "this plan", "lift one felt-covered face or section off, or back on"),
+    "t_plug_s": N(5, "s", "assumption", "this plan", "push one felt plug into its hole over a panel screw head (DR's inner face panel, D-130)"),
     "t_catch_s": N(60, "s", "assumption", "this plan", "hook one ceiling cassette safety catch (HOLD, D-47)"),
     "t_light_shelf_s": N(600, "s", "assumption", "this plan", "fit and plug the light shelf along the wall tops (D-70; INTERIOR 810201, its fixings not listed yet)"),
     "t_ledge_two_s": N(120, "s", "assumption", "this plan", "hold the 1000 mm ledge in place while it is fixed (D-70; INTERIOR 810101)"),
@@ -197,6 +198,11 @@ OTHER_FIXINGS = [
          text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
     dict(step=13, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
          status="HOLD in the register", note="time is in the step", text="their fixings in DR (AIR and FRONT design, on hold)"),
+    dict(step=13, where="DR's inner face panel on DR's frame", owner="FRONT", count=21,
+         size="M6 x 16 socket heads (ISO 4762) on plain 12 mm washers (ISO 7089), into the frame's rivnuts",
+         status="not in the register's count yet: Joints adds it (D-130; the washer by PM ruling 2026-11-01)",
+         note="the panel ships loose (2-22) and goes on after the air unit; one felt plug over each of the 10 heads under the felt",
+         text="21 M6 x 16 socket heads with their washers into DR's frame (5 mm key), then the felt plugs"),
     dict(step=15, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
          status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
          text="the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02)"),
@@ -243,6 +249,7 @@ R = {
     "BLOCKS": "Glide load blocks",
     "DL": "Decor block - left",
     "DR": "Decor block - right",
+    "DR_PANEL": "DR inner face panel",
     "DT": "Decor block - top",
     "DOOR": "Door unit 360001",
     "FIX": "Fixed glass unit 360002",
@@ -368,7 +375,7 @@ PIECES = [
     Piece("1-09", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 7, "CEILING"),
     Piece("1-10", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(sk("wall_depth"), sk("half_pw"), 70), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame) and the grille 611602 over it (AIR 610000 P01 STEP): 70 thick", 1, 7, "CEILING",
+          S(sk("wall_depth"), sk("half_pw"), 71), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame), its top flange on the roof, and the grille 611602 over it (AIR 610000 P01 STEP, the AIR follow-up's sleeve flange): 71 thick", 1, 7, "CEILING",
           note="the roof sleeve and grille ride loose with C2 (#263), the grille's 4 bolts and washers (J-AIR-03) in a bag taped to the grille: the sleeve seated in C2's roof slot and taped, the grille taped flat over it; both come off at unpacking and go on after the soffit hangs (guide step 17)"),
     Piece("1-11", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
           S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
@@ -393,9 +400,9 @@ PIECES = [
     Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2096, 1177, 149),
           "FRONT 360001 P01 STEP without its hinges: 2095.5 x 1177 x 148.8 (the magnetic seal half 2 mm past the glass, the pulls 70 a side); the hinge halves that sit in DL ship in DL (PM ruling)",
           2, 10, "FRONT", glass=True),
-    Piece("2-03", "350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1020, 216),
-          "FRONT 350003 P01 STEP: 2290 x 1020 x 215.5, the inner felt panel 10.5 mm proud of the back plate; AIR's reserved spaces in it are empty when it ships", 2, 9, "FRONT",
-          note="lies on its flat front face on a foam sheet, felt panel up, nothing on it (PM, 2026-11-01)"),
+    Piece("2-03", "350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1020, 206),
+          "FRONT 350003 P01 STEP less its loose inner face panel and felt: 2290 x 1020 x 205.9, to the seal on the frame's back ring (Y -644.14); AIR's reserved spaces in it are empty when it ships", 2, 9, "FRONT",
+          note="lies on its flat front face on a foam sheet, its open back up, nothing on it (PM, 2026-11-01); its inner face panel ships loose as 2-22 (D-130)"),
     Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-",
           [("BAND_B", 1), ("GLIDE", GLIDES["110103"]), ("BLOCKS", BLOCK_SHARE["110103"]), ("LIP", LIP_M["110103"])],
           S(2420, 118, 50), "BASE 110000 P01 STEP (P02 batch 1, S54): the back band 110103, 2420 x 118 x 50: tube 40 with the soft lip 10 on its inner face, glides 10 below, spigots 8 above; no keys (D-129: the side bands carry them)", 2, 2, "BASE",
@@ -419,8 +426,10 @@ PIECES = [
           [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2322, 359, 233),
           "AIR 610000 P01 STEP: the soffit 610201 with its exhaust fan box and fans (the roof sleeve ships with C2, #263)", 2, 16, "AIR",
           note="exhaust fan box 610402 with its 2 fans fitted inside the soffit's right end at the factory (D-87), the roof sleeve's gasket on its top; the exhaust cartridge ships on its own (2-18)"),
-    Piece("2-10", "610101", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2108, 359, 212),
-          "AIR 610000 P01 STEP: the column 610101 with its faces, angles, plates, fill and kick grille, without the supply cartridge", 2, 15, "AIR"),
+    Piece("2-10", "610101", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2120, 359, 212),
+          "AIR 610000 P01 STEP: the column 610101 with its faces, angles, plates, fill and kick grille, without the supply cartridge; "
+          "2120 tall since D-132 (its foot at Z 0, no mat), 14 mm under the install sheet's 2134 elevator door (the Lead's OK, "
+          "2026-11-01)", 2, 15, "AIR"),
     Piece("2-11", "350002", "FRONT - DECOR BLOCK ASSY - DT", "Khối trang trí trên (cụm)", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1699, 306, 203),
           "FRONT 350002 P01 STEP: the door's top stop and catch stand 26 mm below the skin", 2, 11, "FRONT"),
     Piece("2-12", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS", "Bộ điện: dây, dây nguồn, hub, đèn", "-", [("ELEC", 1 - POWER_UNIT_SHARE)],
@@ -451,6 +460,9 @@ PIECES = [
     Piece("2-21", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(900, 150, 80),
           "carton (assumption), long enough for the 2 collapsed glass stays", 2, 1, "KIT", carton=True, extra_kg=0.5 + 2 * 1.5 + 0.05,
           extra_note=f"not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, 2 clamp-on glass stays (step 9), setting packers 1 to 5 mm for 2 stacks up to {MINE['glide_max'].value:g} mm (step 10), this guide, the label map (assumption)"),
+    Piece("2-22", "351305", "FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE", "Tấm mặt trong tháo được khối phải", "DR", [("DR_PANEL", 1)],
+          S(2042, 971, 12), "FRONT 350003 P01 STEP: the panel 2042 x 969.5 x 3 with its felt 351304 (9) glued on: 12 thick", 2, 13, "FRONT",
+          note="ships loose (D-130): flat, felt face up and protected, nothing on it; its 21 M6 x 16 screws and washers bagged and labelled with it (their mass is in the fixings line); fitted after the air unit (step 13)"),
     # ---------------- allowances: roll-up mass that rides inside the pieces above, with no label of its own
     Piece("A-1", "-", "40 x 40 corner edge tubes in L2, R2, C1, C2 (D-63)", "", "-", [("TUBES", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
     Piece("A-2", "-", "Bond beyond L1 and R1 (D-71)", "", "-", [("BOND", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
@@ -542,7 +554,7 @@ STACK1 = ["1-%02d" % i for i in range(1, 19)]
 # widths, so a part that grows in CAD can't hide behind an old lane size.
 TIERS2 = [
     dict(name="Tier 1: glass crate", crate=True),
-    dict(name="Tier 2: DR face down, felt up, and the base band", lanes=[
+    dict(name="Tier 2: DR face down, back up, and the base band", lanes=[
         dict(tags=["2-03"], lie="flat", bed="dr_bed"),
         dict(tags=["2-04"], lie="edge"),
         dict(tags=["2-05"], lie="edge"),
@@ -561,7 +573,12 @@ TIERS2 = [
     dict(name="Tier 5: ceiling cassettes (felt up, nothing on them) and the kit", lanes=[
         dict(tags=["2-19", "2-20"], lie="flat", bed="cass_foam"),
         dict(tags=["2-21"], lie="flat")]),
+    # DR's inner face panel ships loose (D-130, PM ruling 2026-11-01): flat on its own tier, felt up, nothing on it;
+    # the Packing Engineer settles its final place
+    dict(name="Tier 6: DR's inner face panel, felt up (nothing on it)", lanes=[
+        dict(tags=["2-22"], lie="flat")]),
 ]
+NUM_WORDS = {4: "four", 5: "five", 6: "six", 7: "seven"}
 CRATE_TAGS = ["2-02", "2-01"]   # inside the crate, bottom to top: door, then the fixed glass (fitted first)
 
 GROUP_COLOUR = {"BASE": "#8d6e63", "WALL": "#c9a227", "CEILING": "#d9b44a", "LINING": "#7f8c8d", "FRONT": "#2f6f8f",
@@ -648,7 +665,7 @@ STEPS = [
          joints={"J-FRONT-01": 6}),
     dict(n=9, title="Fixed glass, then the right decor block DR", tags=["2-01", "2-03"],
          A="Opens the crate. With B, tilts the fixed glass up on its padded long edge, both suction lifters at its top edge, onto the padded glass rest; then both carry it upright and drop its bottom edge into the U-channel already fitted on the sill, onto its setting blocks. A clamps the 2 glass stays from the kit on its top edge and sets their props on the base band, so the glass stands on its own.",
-         B="With A, carries DR (2.3 m, 18 kg) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.",
+         B="With A, carries DR (2.3 m, about 14 kg; its inner face panel comes later, in step 13) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.",
          caution="Nobody carries DR alone and nobody holds the glass by hand while DR comes in: the stays hold the glass, both people carry DR (2.3 m; the 2-person rule).",
          check="Glass seated in all three channels so far, its free edge plumb; DR on its stops; both stays back in the kit. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
          ops=[op("tilt the fixed glass up onto the glass rest", 2, TIME["t_tilt_s"].value, 1, "t_tilt_s"),
@@ -678,16 +695,17 @@ STEPS = [
          check="Every seam connector latched before any cassette closes its bay.",
          ops=[carry("2-12"), op("plug one connector", 1, lay("t_connector_s"), 6, "t_connector_s")],
          joints={}),
-    dict(n=13, title="Air parts in DR: the intake riser with its supply fan box", tags=["2-16"],
-         A="Before the wall linings (DR's inner face can't come off past R1's and R2's cassettes), lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).",
-         B="Mates the fan box's plug-in connector; refits the inner face.",
-         check="Riser foot sits over the opening; fan box connector latched; inner face back on all round.",
-         ops=[op("DR inner face off and on", 1, TIME["t_face_s"].value, 2, "t_face_s"),
-              carry("2-16"), op("slide the riser and fan box in", 2, TIME["t_slide_long_s"].value, 1, "t_slide_long_s"),
-              op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s")],
+    dict(n=13, title="Air parts in DR: the intake riser with its supply fan box, then DR's inner face panel", tags=["2-16", "2-22"],
+         A="Before the wall linings (DR's inner face panel can't go on past R1's and R2's cassettes), with B, slides the intake riser, its supply fan box (2 fans) joined at its top in the factory, in through DR's open back, down to its foot over the mesh space (D-87).",
+         B="Mates the fan box's plug-in connector. Then, with A, offers DR's inner face panel (2-22, shipped loose, D-130) up onto its stops and drives its 21 M6 x 16 socket heads with their washers into the frame's rivnuts (5 mm key), and pushes a felt plug into each of the 10 holes in its felt.",
+         check="Riser foot sits over the opening; fan box connector latched; the panel's seal squeezed all round, all 21 screws in, every felt plug flush.",
+         ops=[carry("2-16"), op("slide the riser and fan box in", 2, TIME["t_slide_long_s"].value, 1, "t_slide_long_s"),
+              op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s"),
+              carry("2-22"), op("offer the inner face panel up onto its stops", 2, TIME["t_face_s"].value, 1, "t_face_s"),
+              op("push a felt plug in", 1, TIME["t_plug_s"].value, 10, "t_plug_s")],
          joints={}),
     dict(n=14, title="Wall linings: 8 cassettes", tags=["1-11", "1-12", "1-13", "1-14", "1-15", "1-16", "1-17", "1-18"],
-         A="Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).",
+         A="Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face panel is already on: it can't come off past R1's and R2's cassettes (the PM's ruling).",
          B="Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.",
          check="Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.",
          ops=[*[carry(t) for t in ["1-11", "1-12", "1-13", "1-14", "1-15", "1-16", "1-17", "1-18"]],
@@ -859,7 +877,10 @@ CAD = {
                        "368002": "the U-seals ship in those channels"}),
     "2-02": dict(step="front/360001_P01_*_STEP.step",
                  drop={"368101": "the hinges: their halves that sit in DL ship in DL (PM ruling); FRONT's hinge is one HOLD envelope"}),
-    "2-03": dict(step=DR_STEP, drop={"RESERVED AIR SPACE": "AIR's parts ship on their own (D-59)"}),
+    "2-03": dict(step=DR_STEP, drop={"RESERVED AIR SPACE": "AIR's parts ship on their own (D-59)",
+                                     "351305": "its inner face panel ships loose as 2-22 (D-130)",
+                                     "351304": "the felt glued on that panel ships with it (2-22)"}),
+    "2-22": dict(step=DR_STEP, keep={"351305", "351304"}),
     "2-04": dict(step=BASE_STEP, sub="110103",
                  drop={"111211": "D-129: the side bands carry the back-corner keys", "838001": "the keys' hook studs (D-129)",
                        "838010": "the keys' fixing screws (D-129)"}),
@@ -870,11 +891,15 @@ CAD = {
     "2-11": dict(step="front/350002_P01_*_STEP.step"),
     "2-13": dict(parts=[dict(step=INT_STEP, sub="810201")]),
     "2-15": dict(parts=[dict(step=INT_STEP, sub="810101"), dict(step=INT_STEP, sub="818102")]),
-    "2-09": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-18)"}),
-    "2-10": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-17)"}),
+    "2-09": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-18)",
+                                                    "611301": "its casing (the AIR follow-up models the cartridge's parts)",
+                                                    "611302": "its layers"}),
+    "2-10": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-17)",
+                                                    "611301": "its casing (the AIR follow-up models the cartridge's parts)",
+                                                    "611302": "its layers"}),
     "2-16": dict(step=AIR_STEP, sub="610401"),
-    "2-17": dict(step=AIR_STEP, sub="610101", keep={"610301"}),
-    "2-18": dict(step=AIR_STEP, sub="610201", keep={"610301"}),
+    "2-17": dict(step=AIR_STEP, sub="610101", keep={"610301", "611301", "611302"}),     # the cartridge, its casing and layers
+    "2-18": dict(step=AIR_STEP, sub="610201", keep={"610301", "611301", "611302"}),
     "2-19": dict(step=CEIL_STEP, sub="510301", occ=1), "2-20": dict(step=CEIL_STEP, sub="510301", occ=2),
 }
 _STEP_CACHE = {}
@@ -1428,7 +1453,7 @@ def gen_tables(m):
         [[f"1: 48 x 40 in, upright stack ([diagram]({OUT_SVG[1].name}))", "1219 x 1016 (48 x 40)", T["PIECES_1"], f1(n1),
           f"{f0(g1)} ({f0(g1 / KG_PER_LB)})", f"{f0(h1)} ({h1 / MM_PER_IN:.1f})",
           f"{48 * 40 * h1 / MM_PER_IN / 1728:.1f}", f"{g1 / KG_PER_LB / (48 * 40 * h1 / MM_PER_IN / 1728):.1f}"],
-         [f"2: 96 x 48 in, five tiers ([diagram]({OUT_SVG[2].name}))", "2438 x 1219 (96 x 48)", T["PIECES_2"], f1(n2),
+         [f"2: 96 x 48 in, {NUM_WORDS[len(TIERS2)]} tiers ([diagram]({OUT_SVG[2].name}))", "2438 x 1219 (96 x 48)", T["PIECES_2"], f1(n2),
           f"{f0(g2)} ({f0(g2 / KG_PER_LB)})", f"{f0(h2)} ({h2 / MM_PER_IN:.1f})",
           f"{96 * 48 * h2 / MM_PER_IN / 1728:.1f}", f"{g2 / KG_PER_LB / (96 * 48 * h2 / MM_PER_IN / 1728):.1f}"],
          ["**Both**", "", T["PIECES_N"], f"**{f1(n1 + n2)}**", f"**{f0(g1 + g2)}** ({f0((g1 + g2) / KG_PER_LB)})", "", "", ""]],
@@ -1694,7 +1719,7 @@ def svg_pallet2(m):
     W, H = 1500, 1080
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
            f'<rect width="{W}" height="{H}" fill="#ffffff"/>',
-           svg_text(20, 30, "910002 P01  PALLET LOAD 2 - 96 x 48 in (2438 x 1219 mm) - five tiers", 15, weight="bold"),
+           svg_text(20, 30, f"910002 P01  PALLET LOAD 2 - 96 x 48 in (2438 x 1219 mm) - {NUM_WORDS[len(TIERS2)]} tiers", 15, weight="bold"),
            svg_text(20, 50, f"Gross {m.gross(2):.0f} kg, loaded height {h2:.0f} mm. Left: side elevation along the 96 in side. Right: each tier from above. Units mm. DRAFT.", 12)]
     # side elevation
     ox, oy = 40, 620
