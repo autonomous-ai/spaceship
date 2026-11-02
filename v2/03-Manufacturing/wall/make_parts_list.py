@@ -667,6 +667,10 @@ def hardware_rows(frame, comps, back, lower, prm):
     if rv_bodies and len(rv_bodies) != rivnut_holes:
         raise SystemExit("CAD has %d rivnut bodies for %d rivnut holes" % (len(rv_bodies), rivnut_holes))
     rivnuts = len(rv_bodies) or rivnut_holes
+    if back and rv_bodies and not pins:
+        # B2's and B4's closing-seam pin rivnuts sit in the centre stile, with no stop washer (register 2.10): the
+        # copies aren't named PIN, so count them by their holes (B4's list had them as stopped joints)
+        pins = [None] * len(holes_in([b for b in fb if b["name"] == "STILE - CENTRE"], prm.get("rivnut_d", 9.53)))
     if not rv_bodies:                    # a report from before the hardware was modelled
         spig_rv = [None] * (2 if (lower or back) else 0)
         pins = [None] * (3 if back and len(holes_in([b for b in fb if b["name"] == "STILE - CENTRE"],

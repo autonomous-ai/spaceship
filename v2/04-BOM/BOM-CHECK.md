@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 1 failure(s) on the five rules; 399 part lines (183 made, 216 bought, 148 on HOLD) and 54 sub-assembly lines from 19 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 422.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: FAIL.** 1 failure(s) on the five rules; 400 part lines (182 made, 218 bought, 150 on HOLD) and 54 sub-assembly lines from 19 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 422.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -87,8 +87,10 @@ Read from: this working tree.
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC: HOLD (HOLD)
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
 
 **FRONT**
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
