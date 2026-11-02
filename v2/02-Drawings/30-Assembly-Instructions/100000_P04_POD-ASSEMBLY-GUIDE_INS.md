@@ -109,7 +109,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 6](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-07** WALL - PANEL ASSY - SIDE UPPER - LH (14.7 kg), **1-08** WALL - PANEL ASSY - SIDE UPPER - RH (14.7 kg).
+- **Parts:** **1-07** WALL - PANEL ASSY - SIDE UPPER - LH (18.1 kg), **1-08** WALL - PANEL ASSY - SIDE UPPER - RH (18.1 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.
 - **Person B:** Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.
