@@ -491,10 +491,10 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
         self.assertAlmostEqual(cuts["MAINS CHANNEL"][3], 750.0, places=6)
         self.assertAlmostEqual(band[2], 391.0, places=6)
         self.assertAlmostEqual(band[3], 440.0, places=6)
-        # the mains cord's S-bend (two equal arcs) from its channel's middle up to the passage: about 6 x its 9.3
-        # diameter, 56 (ELECTRICAL's assumption until the maker's sheet), fits in the jog's height
+        # the mains cord's S-bend (two equal arcs) from its channel's middle up to the passage: 4 x its 9.2 diameter,
+        # 37 (Southwire's SJEOOW 14/3 sheet, via ELECTRICAL), fits in the jog's height
         d, h = v["el_ps_mains_x"] - (v["el_ch_m_x1"] - 10.0), cuts["MAINS JOG"][3] - cuts["MAINS JOG"][2]
-        self.assertGreaterEqual(((h / 2) ** 2 + (d / 2) ** 2) / d, 56.0)
+        self.assertGreaterEqual(((h / 2) ** 2 + (d / 2) ** 2) / d, 4 * 9.2)
         # the Cat6's S-bend at 4 x its diameter, 24, from the jack's centre over to its riser's, fits in the band
         d, r = v["el_ps_lan_x"] - v["el_lan_x"], 24.0
         self.assertLessEqual(2 * (r ** 2 - (r - d / 2) ** 2) ** 0.5, band[3] - band[2])

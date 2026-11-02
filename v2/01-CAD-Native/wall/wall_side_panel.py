@@ -454,8 +454,8 @@ EL_PARAMS = [
                                              "clears the fill from the centre stile to X 100 (no strip by its notches)"),
     ("el_ch_jog_z", "750 mm", "mm", "source",
      "ELECTRICAL in WALL's group (2026-11-01 18:05 UTC): the mains cord's jog over to its passage starts at Z 750, not "
-     "809, so its S-bend has about 70 of radius; the 9.3 cord bends no tighter than about 6 x its diameter, 56 "
-     "(ELECTRICAL's assumption until it reads the maker's sheet)"),
+     "809, so its S-bend has about 70 of radius; the cord, Southwire's 105 °C SJEOOW 14/3 at 9.2, bends no tighter "
+     "than 4 x its diameter, 37 (its maker's sheet, ELECTRICAL 18:28 UTC)"),
     ("el_ch_jog_x1", "el_ps_mains_x + 10 mm", "mm", "source",
      "ELECTRICAL in WALL's group (2026-11-01 17:47 UTC): the mains cord's jog ends 10 past its passage, at X 137"),
     ("el_ch_l_w", "16 mm", "mm", "source", _ELB2 + ": the LAN cable's channel 16 wide, up from the jack's top"),

@@ -185,7 +185,7 @@ OTHER_EL = {
             "the unit's space between the cross members",
             "room for ELECTRICAL's connectors and cables, the two kept 50 or more apart everywhere (62 at the band and "
             "at the jog; ELECTRICAL's rule), each with room for its bend (the mains cord's S-bend about 70 of radius "
-            "against its 56, the Cat6's 24 in the band), with no thin bridge of batt left; knife cut (D-128)",
+            "against its 37, the Cat6's 24 in the band), with no thin bridge of batt left; knife cut (D-128)",
             "ELECTRICAL's envelopes and channels (WALL group, 2026-11-01), its passage move (17:47 UTC) and bend check "
             "(18:05 UTC); WALL's cut, agreed the same day",
             "fixed at ELECTRICAL's places", "±2 (knife, assumption)", "source (ELECTRICAL); DECIDED (the cut)"),
@@ -343,7 +343,7 @@ for _d, _what in ((15.9, "the mains passage's bottom wall, for the Heyco SB 625-
                   (11.1, "the LAN passage's bottom wall, for the Heyco SB 437-5 bushing"),
                   (14.0, "the LAN passage's top wall, lined by the unit's own bushing")):
     FAMILIES_BACK[("CROSS - LOWER", _d, "z")] = (
-        "F58", "Cable passages through the lower cross member: the mains cord (SJOOW 14/3) and the LAN cable rise from "
+        "F58", "Cable passages through the lower cross member: the mains cord (SJEOOW 14/3) and the LAN cable rise from "
         "the inlet and the jack into the unit, apart (%s)" % _what, "ELECTRICAL's bushings and the unit's",
         "the mains at X 127 (moved from 113 so the unit's Ø15.9 entry keeps 2 diameters from its bottom wall's free "
         "edge, ELECTRICAL 2026-11-01 17:47 UTC), the LAN at X 207, on the tube's centre line Y 824", B2F,
