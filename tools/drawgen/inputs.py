@@ -68,6 +68,33 @@ def team_lists(team):
     return sorted(glob.glob(os.path.join(MANUF, team, "*.csv")))
 
 
+def pod_qty(pn, path):
+    """pn's count per pod in a parts list: the sum of qty_per_pod over its rows (a part listed once per parent has a
+    row for each), how many rows, and the values that give no whole number (blank, HOLD), the sum None when there are
+    any; None when the list has no qty_per_pod or no row of pn."""
+    total, n, missing = 0.0, 0, []
+    with open(path, newline="", encoding="utf-8") as fh:
+        rd = csv.DictReader(fh)
+        if "qty_per_pod" not in (rd.fieldnames or []):
+            return None
+        for r in rd:
+            if (r.get("part_number") or "").strip() != pn:
+                continue
+            n += 1
+            v = (r.get("qty_per_pod") or "").strip()
+            try:
+                x = float(v)
+            except ValueError:
+                x = None
+            if x is None or abs(x - round(x)) > 1e-9:
+                missing.append(repr(v) if v else "blank")
+                continue
+            total += x
+    if not n:
+        return None
+    return (None if missing else int(round(total))), n, missing
+
+
 def parts_row(pn, team):
     """The richest parts-list row for pn in the team's lists, with the level-2 rows under it (the cut list),
     and the file it came from."""
