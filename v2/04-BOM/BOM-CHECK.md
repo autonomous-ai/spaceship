@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 373 part lines (174 made, 199 bought, 151 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 49 hardware items in the joints register (47 with a part number). Listed parts weigh 357.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 373 part lines (174 made, 199 bought, 151 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 59 hardware items in the joints register (57 with a part number). Listed parts weigh 357.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -233,7 +233,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 184 numbers, 94 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 183 numbers, 93 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -402,7 +402,6 @@ From `v2/04-BOM/number-allocation.csv`: 184 numbers, 94 not in a team's list yet
 | 611212 | AIR - SOFFIT UNDERSIDE HINGE - RIVETED PIN | 610201 | 4 | ALLOCATED |
 | 611213 | AIR - SOFFIT CARTRIDGE STRAP | 610201 | 2 | ALLOCATED |
 | 611214 | AIR - SOFFIT CARTRIDGE STRAP ANGLE | 610201 | 1 | ALLOCATED |
-| 618403 | AIR - FAN BOX MOUNT - EXHAUST - HOLD | 610402 | 4 | ALLOCATED |
 | 610403 | AIR - RISER TRANSITION | 610401 | 1 | ALLOCATED |
 | 610404 | AIR - SUPPLY TRANSITION | 610401 | 1 | ALLOCATED |
 | 611701 | AIR - RISER TRANSITION - LEFT WRAPPER | 610403 | 1 | ALLOCATED |
