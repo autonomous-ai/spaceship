@@ -1130,6 +1130,63 @@ class OpenLogTests(unittest.TestCase):
         self.assertIn("waiting for NAME_CAD v11: the cloud lists v10", text)
         self.assertIn("found NAME_CAD v11", text)
 
+    # PM ruling 2026-11-02: a just-saved drawing opened while Fusion was still uploading it hung (711001, twice)
+    def uploading(self, complete_after, age=12.0):
+        test = self
+
+        class Up:
+            name, versionNumber = "711001_P01_X_DWG", 1
+
+            def __init__(self):
+                self.reads = 0
+                self.dateCreated = time.time() - age
+
+            @property
+            def isComplete(self):
+                self.reads += 1
+                return complete_after is not None and self.reads > complete_after
+        del test
+        return Up()
+
+    def test_an_open_of_a_file_still_uploading_waits_until_it_is_complete(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core._spaceship_upload_wait_s, core._spaceship_upload_step_s = 2.0, 0.01
+        f = self.uploading(complete_after=3)
+        self.assertEqual(core.Documents().open(f, True), ("711001_P01_X_DWG", 1))
+        self.assertEqual(f.reads, 4)                                     # not complete three times, then complete
+        text = "".join(self.lines(log))
+        self.assertIn("waiting for 711001_P01_X_DWG v1 to finish uploading", text)
+        self.assertIn("711001_P01_X_DWG v1 finished uploading", text)
+
+    def test_an_open_gives_up_rather_than_open_a_file_still_uploading(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core._spaceship_upload_wait_s, core._spaceship_upload_step_s = 0.1, 0.01
+        with self.assertRaises(RuntimeError) as cm:
+            core.Documents().open(self.uploading(complete_after=None), True)
+        self.assertIn("still hasn't finished uploading", str(cm.exception))
+        self.assertIn("gave up waiting for 711001_P01_X_DWG v1 to finish uploading", "".join(self.lines(log)))
+
+    def test_a_complete_or_old_file_opens_at_once_and_the_layer_is_installed_once(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        first = core.Documents.open
+        self.run_wrapped(core, log, "Y_P01_CAD", True)
+        self.assertIs(core.Documents.open, first)                        # once per Fusion session
+        core._spaceship_upload_wait_s = 60.0
+        done = self.uploading(complete_after=0)
+        old = self.uploading(complete_after=None, age=3600.0)            # saved an hour ago, never marked complete
+        t0 = time.monotonic()
+        self.assertEqual(core.Documents().open(done, True), ("711001_P01_X_DWG", 1))
+        self.assertEqual(core.Documents().open(old, True), ("711001_P01_X_DWG", 1))
+        self.assertLess(time.monotonic() - t0, 1.0)
+        self.assertEqual((done.reads, old.reads), (1, 1))
+        self.assertNotIn("finish uploading", "".join(self.lines(log)))
+
     def test_an_open_gives_up_rather_than_open_the_older_version(self):
         log = os.path.join(tempfile.mkdtemp(), "opens.log")
         core = self.version_core()

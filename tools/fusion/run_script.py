@@ -1364,7 +1364,69 @@ try:
 
         _checked_open._spaceship_version_check = True
         _checked_open._spaceship_logged = getattr(_prev_open, "_spaceship_logged", False)   # the logger stays once
+        _checked_open._spaceship_upload_check = getattr(_prev_open, "_spaceship_upload_check", False)
         _ac.Documents.open = _checked_open
+except Exception:
+    pass
+
+
+def _await_upload(dataFile, log=None, when=None):
+    """dataFile once Fusion has finished uploading it (DataFile.isComplete): an open of a file saved in the last
+    _spaceship_upload_recent_s (15 min) whose upload is still running waits (Fusion working), looking again every
+    _spaceship_upload_step_s, for up to _spaceship_upload_wait_s; past that it raises rather than open it. Any other
+    open goes through. Why (PM ruling 2026-11-02): twice, 2026-11-01 18:23 and 2026-11-02 02:34 UTC, a drawing the
+    drawing starter had just saved was opened about 10 s later while Fusion had put off its upload to retry it
+    ("publish not finished"); the open used the local copy and never ended, and Fusion crashed after the first."""
+    import time as _t
+    try:
+        if dataFile.isComplete:
+            return dataFile
+        _age = _t.time() - float(dataFile.dateCreated)
+        _nm, _v = dataFile.name, dataFile.versionNumber
+    except Exception:
+        return dataFile
+    if _age > float(getattr(_ac, "_spaceship_upload_recent_s", 900.0)):
+        return dataFile                 # an old file not marked complete: not the case this waits for
+    _say = (lambda m: log("%%s %%s" %% (when(), m))) if log and when else (lambda m: None)
+    _say("waiting for %%s v%%s to finish uploading: saved %%.0f s ago, not complete yet" %% (_nm, _v, _age))
+    _t0 = _t.monotonic()
+    _t_end = _t0 + float(getattr(_ac, "_spaceship_upload_wait_s", 180.0))
+    _step = float(getattr(_ac, "_spaceship_upload_step_s", 2.0))
+    try:
+        import adsk as _adsk
+        _events = getattr(_adsk, "doEvents", None) or (lambda: None)
+    except ImportError:                 # offline tests
+        _events = lambda: None
+    while _t.monotonic() < _t_end:
+        _events()
+        _t.sleep(min(_step, max(0.0, _t_end - _t.monotonic())))
+        try:
+            if dataFile.isComplete:
+                _say("%%s v%%s finished uploading after %%.0f s more" %% (_nm, _v, _t.monotonic() - _t0))
+                return dataFile
+        except Exception:
+            return dataFile
+    _say("gave up waiting for %%s v%%s to finish uploading" %% (_nm, _v))
+    raise RuntimeError("%%s v%%s: Fusion still hasn't finished uploading it %%.0f s after it was saved; not opening it "
+                       "(an open then can hang Fusion; try again in a few minutes)" %% (_nm, _v, _age + _t.monotonic()
+                                                                                            - _t0))
+
+
+# The upload wait is its own thin layer over the session's open, with its own once-per-session guard, so a Fusion
+# session that started under an older runner gets it too.
+try:
+    if not getattr(_ac.Documents.open, "_spaceship_upload_check", False):
+        _prev_open2 = _ac.Documents.open
+
+        def _upload_checked_open(self, dataFile, visible=True, *a, **k):
+            import time as _t
+            _when = lambda: _t.strftime("%%Y-%%m-%%d %%H:%%M:%%S UTC", _t.gmtime())
+            return _prev_open2(self, _await_upload(dataFile, _log_open, _when), visible, *a, **k)
+
+        _upload_checked_open._spaceship_upload_check = True
+        for _flag in ("_spaceship_logged", "_spaceship_version_check"):    # the layers under it stay once
+            setattr(_upload_checked_open, _flag, getattr(_prev_open2, _flag, False))
+        _ac.Documents.open = _upload_checked_open
 except Exception:
     pass
 '''
