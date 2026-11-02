@@ -6,8 +6,9 @@
 Builds one new design, 410000 CEILING (pod coordinates, conventions.md s4):
 
   410101 CEILING - PANEL ASSY - C1 (-X half)
-      411101 CEILING - PANEL FRAME - C1: aluminium 20 x 40 x 1.2 members and a 40 x 40 x 1.2
-             back member, half_fw wide, with the site-joint holes (J-CEIL-01, J-CEIL-02)
+      411101 CEILING - PANEL FRAME - C1: galvanized steel 20 x 40 members (1.0, cross members 2 and 3 0.8)
+             and a 40 x 40 x 1.0 back member, welded with a 2.0 mitre plate in each corner (D-131,
+             J-FRAME-01), half_fw wide, with the site-joint holes (J-CEIL-01, J-CEIL-02)
       411301 CEILING - SKIN - C1: ACP 3 mm, half_pw wide
   410102 CEILING - PANEL ASSY - C2 (+X half): 411102 frame + 411302 skin with the roof slot
   510301 LINING - CASSETTE - CEILING - COMMON, at C1-CASS and at C2-CASS:
@@ -59,6 +60,19 @@ DOC_NAME = "410000_%s_CEILING_CAD" % M.REV
 SCOPES = ("cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c",
           "frame_c1", "frame_c2", "skin_c1", "skin_c2", "assy_c1", "assy_c2")   # part-only designs for drawings
 
+
+
+def keep_part_number(doc, comp, pn, what):
+    """Fusion can put back a new design's own part number (a timestamp) when the run that made
+    the design saves it, so the STEP and the drawing would carry that (INTERIOR's first build
+    did): check after the save and, if so, set the part number again and save once more."""
+    if comp.partNumber != pn:
+        print("part number after the save: %r, set again to %s" % (comp.partNumber, pn))
+        comp.partNumber = pn
+        print("saved:", doc.save("%s: part number %s" % (what, pn)))
+        adsk.doEvents()
+    if comp.partNumber != pn:
+        raise RuntimeError("the root part number won't stay %s (it is %r)" % (pn, comp.partNumber))
 
 def part_doc_name(key):
     pn, name, _vn, _k, _m = M.PARTS[key]
@@ -229,6 +243,40 @@ def circle_cut_x(comp, body, name, xf, cy, cz, dia, depth, into, ctx):
     return f
 
 
+def circle_cut_y(comp, body, name, yf, cx, cz, dia, depth, into, ctx):
+    """A round hole through a face normal to Y: sketch on the XZ plane offset to Y = yf (AIR's circle_cut_y, proven in
+    its saved builds), the centre dimensioned by expressions for model X and Z, cut by depth toward into (+1 or -1
+    along model Y), into one body only."""
+    plane = offset_plane(comp, comp.xZConstructionPlane, yf, "PLANE - %s" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "HOLE - " + name
+    cen = sk.modelToSketchSpace(adsk.core.Point3D.create(ctx.ev(cx) * MM, ctx.ev(yf) * MM, ctx.ev(cz) * MM))
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(cen.x, cen.y, 0), ctx.ev(dia) / 2 * MM)
+    g = c.centerSketchPoint.geometry
+    sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = dia
+    for model_axis, expr in (("x", cx), ("z", cz)):
+        sa, _sign = model_to_sketch_axis(sk, model_axis)
+        if abs(ctx.ev(expr)) < EPS:
+            (sk.geometricConstraints.addVerticalPoints if sa == "x" else sk.geometricConstraints.addHorizontalPoints)(
+                c.centerSketchPoint, sk.originPoint)
+        else:
+            tp = adsk.core.Point3D.create(g.x + 0.6, g.y + 0.6, 0)
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, c.centerSketchPoint, H if sa == "x" else V,
+                                                     tp).parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: HOLE - " + name)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    prof = min(sk.profiles, key=lambda p: p.areaProperties().area)
+    ei = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.y * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def circles_cut(comp, body, name, plane, coord, centres, dia, depth, into, ctx):
     """A row of round holes in one sketch and one cut: plane 'z' (an XY-type plane at Z =
     coord, centres as (x, y) expressions) or 'x' (a YZ-type plane at X = coord, centres as
@@ -340,6 +388,135 @@ def hollow(comp, body, axis, name):
     return f
 
 
+def poly_xy_body(comp, name, pts, z0, z1, ctx):
+    """A prism (D-117's mitred members): a closed polygon on the XY plane offset to z0, extruded to
+    z1 as a new body named `name`. Fully constrained: a line along X or Y is held horizontal or
+    vertical, and each corner's x and y are dimensioned from the origin by their expressions unless
+    such a line already ties it to a corner that is (pts = [(x_expr, y_expr)])."""
+    plane = offset_plane(comp, comp.xYConstructionPlane, z0, "PLANE - %s Z0" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "OUTLINE - " + name
+    vals = [(ctx.ev(x), ctx.ev(y)) for x, y in pts]
+    n = len(vals)
+    lines = sk.sketchCurves.sketchLines
+    verts, edges = [], []
+    for i in range(n):
+        a = verts[-1] if verts else adsk.core.Point3D.create(vals[0][0] * MM, vals[0][1] * MM, 0)
+        b = adsk.core.Point3D.create(vals[i + 1][0] * MM, vals[i + 1][1] * MM, 0) if i < n - 1 else verts[0]
+        ln = lines.addByTwoPoints(a, b)
+        edges.append(ln)
+        if i == 0:
+            verts.append(ln.startSketchPoint)
+        if i < n - 1:
+            verts.append(ln.endSketchPoint)
+    gc, dims = sk.geometricConstraints, sk.sketchDimensions
+    for k, axis in ((0, "x"), (1, "y")):
+        group = list(range(n))
+
+        def root(i):
+            while group[i] != i:
+                i = group[i]
+            return i
+        for i, ln in enumerate(edges):          # edge i runs from corner i to corner i + 1
+            if abs(vals[i][k] - vals[(i + 1) % n][k]) < 1e-7:
+                (gc.addVertical if axis == "x" else gc.addHorizontal)(ln)
+                group[root((i + 1) % n)] = root(i)
+        for i in range(n):
+            if root(i) != i:
+                continue
+            expr, vp = pts[i][k], verts[i]
+            if abs(ctx.ev(expr)) < EPS:
+                (gc.addVerticalPoints if axis == "x" else gc.addHorizontalPoints)(vp, sk.originPoint)
+            else:
+                g = vp.geometry
+                d = dims.addDistanceDimension(sk.originPoint, vp, H if axis == "x" else V,
+                                              adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0))
+                d.parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ei.setDistanceExtent(False, vi("(%s) - (%s)" % (z1, z0)))
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - " + name
+    f.bodies.item(0).name = name
+    return f.bodies.item(0)
+
+
+def hollow_ends(comp, body, axis, name, wall="tube_t"):
+    """Shell a member into a tube, open at both ends, square or mitred (D-117): the two planar faces
+    whose normal has a part along the member's long axis; `wall` inside (J-FRAME-01's gauge, M.member_wall)."""
+    k = {"x": 0, "y": 1}[axis]
+    ends = []
+    for f in body.faces:
+        if f.geometry.objectType != adsk.core.Plane.classType():
+            continue
+        n = adsk.core.Plane.cast(f.geometry).normal
+        if abs((n.x, n.y, n.z)[k]) > 0.1:
+            ends.append(f)
+    if len(ends) != 2:
+        raise RuntimeError("%s: expected 2 end faces, found %d" % (name, len(ends)))
+    coll = adsk.core.ObjectCollection.create()
+    for f in ends:
+        coll.add(f)
+    si = comp.features.shellFeatures.createInput(coll, False)
+    si.insideThickness = vi(wall)
+    f = comp.features.shellFeatures.add(si)
+    f.name = "SHELL - %s TUBE" % name
+    return f
+
+
+def slot_cut_x(comp, body, name, xf, cy, cz, wy, hz, depth, into, ctx):
+    """A rectangular slot through a face normal to X (D-117's cleat slots): wy along model Y by hz
+    along model Z, centred on (cy, cz), sketched on the YZ plane offset to X = xf, cut by depth
+    toward into (+1 or -1 along model X), into one body only."""
+    plane = offset_plane(comp, comp.yZConstructionPlane, xf, "PLANE - %s" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "SLOT - " + name
+    xv, yc, zc, w, h = ctx.ev(xf), ctx.ev(cy), ctx.ev(cz), ctx.ev(wy), ctx.ev(hz)
+    q0 = sk.modelToSketchSpace(adsk.core.Point3D.create(xv * MM, (yc - w / 2) * MM, (zc - h / 2) * MM))
+    q1 = sk.modelToSketchSpace(adsk.core.Point3D.create(xv * MM, (yc + w / 2) * MM, (zc + h / 2) * MM))
+    rect = sk.sketchCurves.sketchLines.addTwoPointRectangle(adsk.core.Point3D.create(q0.x, q0.y, 0),
+                                                            adsk.core.Point3D.create(q1.x, q1.y, 0))
+    gc = sk.geometricConstraints
+    for ln in rect:
+        if not any(c.objectType in (adsk.fusion.HorizontalConstraint.classType(),
+                                    adsk.fusion.VerticalConstraint.classType()) for c in ln.geometricConstraints):
+            a, b = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+            (gc.addHorizontal if abs(a.y - b.y) < 1e-9 else gc.addVertical)(ln)
+    corners = []
+    for ln in rect:
+        for p in (ln.startSketchPoint, ln.endSketchPoint):
+            if all(p != q for q in corners):
+                corners.append(p)
+    c0 = min(corners, key=lambda p: (p.geometry.x, p.geometry.y))
+    cx = [p for p in corners if p != c0 and abs(p.geometry.y - c0.geometry.y) < 1e-9][0]
+    cyp = [p for p in corners if p != c0 and abs(p.geometry.x - c0.geometry.x) < 1e-9][0]
+    sa_y, _sign = model_to_sketch_axis(sk, "y")
+    dims = sk.sketchDimensions
+    tp = adsk.core.Point3D.create((q0.x + q1.x) / 2, (q0.y + q1.y) / 2, 0)
+    dims.addDistanceDimension(c0, cx, H, tp).parameter.expression = wy if sa_y == "x" else hz
+    dims.addDistanceDimension(c0, cyp, V, tp).parameter.expression = hz if sa_y == "x" else wy
+    m0 = sk.sketchToModelSpace(c0.geometry)
+    ey = "(%s) - (%s) / 2" % (cy, wy) if abs(m0.y * 10 - (yc - w / 2)) < 1e-6 else "(%s) + (%s) / 2" % (cy, wy)
+    ez = "(%s) - (%s) / 2" % (cz, hz) if abs(m0.z * 10 - (zc - h / 2)) < 1e-6 else "(%s) + (%s) / 2" % (cz, hz)
+    g = c0.geometry
+    for model_axis, expr in (("y", ey), ("z", ez)):
+        sa, _s = model_to_sketch_axis(sk, model_axis)
+        d = dims.addDistanceDimension(sk.originPoint, c0, H if sa == "x" else V, adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0))
+        d.parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: SLOT - " + name)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def model_to_sketch_axis(sk, model_axis):
     o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
     v = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}[model_axis]
@@ -428,9 +605,8 @@ def new_comp(parent, key, ctx, sheet_metal=False):
     return occ, c
 
 
-def place(parent, occ, xyz, name, ctx):
-    """Rigid joint: the occurrence's origin onto a sketch point at xyz (expressions,
-    in the parent's frame). Returns the joint."""
+def place_point(parent, xyz, name, ctx):
+    """A sketch point at xyz (expressions, in the parent's frame), fully constrained, for a joint."""
     plane = offset_plane(parent, parent.xYConstructionPlane, xyz[2], "PLANE - PLACE %s" % name)
     sk = parent.sketches.add(plane)
     sk.name = "PLACE - " + name
@@ -438,14 +614,33 @@ def place(parent, occ, xyz, name, ctx):
     dim_point(sk, pt, xyz[0], xyz[1], ctx)
     if not sk.isFullyConstrained:
         raise RuntimeError("placement sketch not fully constrained: " + name)
+    return pt
+
+
+def joint_to_point(parent, occ, pt, name, flip=False, angle=None):
+    """Rigid joint: the occurrence's origin onto pt. flip and angle (an expression such as '180 deg') go on the
+    joint's input: Fusion refuses to edit them on a made joint without rolling the timeline back (the turned-copy
+    probe, 2026-11-01)."""
+    if occ.isGroundToParent:        # Fusion grounds a component's first-made occurrence and copies of it, and a joint
+        occ.isGroundToParent = False  # then conflicts ("conflicts with assembly relationships", turned-copy probes 8, 9)
     g_occ = adsk.fusion.JointGeometry.createByPoint(
         occ.component.originConstructionPoint.createForAssemblyContext(occ))
     g_par = adsk.fusion.JointGeometry.createByPoint(pt)
     ji = parent.joints.createInput(g_occ, g_par)
     ji.setAsRigidJointMotion()
+    if flip:
+        ji.isFlipped = True
+    if angle:
+        ji.angle = adsk.core.ValueInput.createByString(angle)
     j = parent.joints.add(ji)
     j.name = "PLACE - " + name
     return j
+
+
+def place(parent, occ, xyz, name, ctx):
+    """Rigid joint: the occurrence's origin onto a sketch point at xyz (expressions,
+    in the parent's frame). Returns the joint."""
+    return joint_to_point(parent, occ, place_point(parent, xyz, name, ctx), name)
 
 
 def material(ctx, key):
@@ -456,7 +651,7 @@ def material(ctx, key):
         lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
         base = lib.materials.itemByName("Steel" if key in ("steel",) else "Aluminum")
         m = d.materials.addByCopy(base, name)
-        m.materialProperties.itemById("structural_Density").value = density
+        adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density
     return m
 
 
@@ -468,55 +663,220 @@ def set_material(comp, ctx, key):
 
 # ---------------------------------------------------------------- the parts
 
-def build_frame_bodies(comp, half, ctx):
-    """The members (tubes), then the site-joint holes as patterned cuts (J-CEIL-01, J-CEIL-02,
-    joints register 2.9), the spigot hole and slot, and the 1 x 45 lead-in on the closing face."""
+def cross_member(parent, ctx):
+    """The plain cross member 412001 (X2 and X3 in both halves, D-120's one common part): built once,
+    in its own frame (its low corner at the origin, along +X), and placed as copies by joints."""
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
+    if "m_cross" in shared:
+        occ = parent.occurrences.addExistingComponent(shared["m_cross"], adsk.core.Matrix3D.create())
+        return occ, shared["m_cross"]
+    occ, comp = new_comp(parent, "m_cross", ctx)
+    length = "half_fw - 2 * tube_w"
+    body = poly_xy_body(comp, "CROSS MEMBER PLAIN", [("0 mm", "0 mm"), (length, "0 mm"), (length, "tube_w"),
+                                                    ("0 mm", "tube_w")], "0 mm", "frame_t", ctx)
+    hollow_ends(comp, body, "x", "CROSS MEMBER PLAIN", M.member_wall("m_cross"))
+    set_material(comp, ctx, "steel_fr")
+    shared["m_cross"] = comp
+    return occ, comp
+
+
+def place_turned(parent, occ, key, name, ctx):
+    """C2's copy of a common member (M.TURNED): its origin to M.turned_origin, turned 180 deg about the pod's Y axis
+    (the side member, upside down) or Z axis (cross member 1, end for end), by place_rotated, read back."""
+    want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[M.TURNED[key]]
+    first = {"y": [(True, "180 deg")], "z": [(False, "180 deg")]}[M.TURNED[key]]     # turned-copy probe 9
+    return place_rotated(parent, occ, M.turned_origin(key), want, name, ctx, first)
+
+
+def build_frame_members(fcomp, half, ctx):
+    """The members of one frame as their own components under fcomp (D-120), each its outline in plan
+    with the mitred corners (D-117), cut back for the mitre plates (J-FRAME-01), extruded and shelled into a
+    galvanized steel tube at its gauge (D-131); then the site-joint holes (J-CEIL-01, J-CEIL-02, joints register
+    2.9), the spigot hole and slot and the 1 x 45 lead-in on the closing face, each cut in its own member. The
+    frame is welded (D-131): no cleats, no slots. The side member and cross member 1 are one part each for both
+    frames (Control's allocation):
+    built in C1, and in C2 placed as C1's turned copy when C1 is in the same design (place_turned); a C2-only
+    design builds them in place. A copy carries C1's holes and slots, so none are cut in it here.
+    Returns {code: (component, body or None for a copy)}."""
     s = M.side_sign(half)
-    bodies = {}
-    for code, name, axis, b in M.frame_members(half):
-        body = box_body(comp, "%s %s" % (half, name), b, ctx)
-        hollow(comp, body, axis, "%s %s" % (half, name))
-        bodies[code] = body
-    into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
+    members = {}
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
+    for code, key, bname, axis, pts, z0, z1 in M.member_shapes(half):
+        # a part shared by both frames (M.TURNED) is named without a half: its body in C2 is the C1 build's, and a
+        # name saying C1 there read as a C1 part in the mechanical checks' seam rule (SEAM-CEILING-CENTRE)
+        label = bname if key in M.TURNED else "%s %s" % (half, bname)
+        if key == "m_cross":
+            occ, comp = cross_member(fcomp, ctx)
+            k = int(code[1:])
+            place(fcomp, occ, (M.xr(half, "tube_w", "half_fw - tube_w")[0], M.cross_y0(k), z0), label, ctx)
+            members[code] = (comp, None)
+            continue
+        if key in M.TURNED and key in shared:
+            occ = fcomp.occurrences.addExistingComponent(shared[key], adsk.core.Matrix3D.create())
+            place_turned(fcomp, occ, key, label, ctx)
+            members[code] = (shared[key], None)
+            continue
+        _occ, comp = new_comp(fcomp, key, ctx)
+        body = poly_xy_body(comp, label, pts, z0, z1, ctx)
+        hollow_ends(comp, body, axis, label, M.member_wall(key))
+        set_material(comp, ctx, "steel_fr")
+        if key in M.TURNED:
+            shared[key] = comp
+        members[code] = (comp, body)
+    # the side cut each face is cut from, into its tube: the side and seam walls face X, the front tube's (DT's bolts,
+    # J-FRONT-03) face Y: its front wall at Y -645 is cut toward +Y, its back wall from the bay toward -Y
+    into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s, ("FRONT", "out"): 1,
+            ("FRONT", "in"): -1}
     for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
+        comp, body = members[member]
+        if body is None:
+            continue                     # a turned copy: its holes are C1's
         label = "%s %s" % (half, name)
-        # one sketch per row: hole k at the row's first centre + k pitches (the start, pitch and
+        # one sketch per hole: hole k at the row's first centre + k pitches (the start, pitch and
         # count are the skeleton's named values, so a rebuild follows them; Fusion's identical
-        # pattern can't paste onto these hollow tubes, and an adjusted one is too slow)
+        # pattern can't paste onto these hollow tubes, and several circles in one sketch came out
+        # over-constrained)
         count = int(round(M.ev(ctx.vals, n)))
+
         def at(e, a):
             return e if a != axis else "(%s) + %d * (%s)" % (e, k, pitch)
         cs = []
         for k in range(count):
-            cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(y, "y"), at(z, "z")))
-        # one sketch per hole: several circles in one sketch came out over-constrained in Fusion
+            if face == "bottom" or member == "FRONT":
+                cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(x, "x"), at(z, "z")))
+            else:
+                cs.append((at(y, "y"), at(z, "z")))
         for k, (u, v) in enumerate(cs):
             lab = label if count == 1 else "%s %d" % (label, k + 1)
             if face == "bottom":
-                circle_cut(comp, bodies[member], lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
+                circle_cut(comp, body, lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
+            elif member == "FRONT":
+                circle_cut_y(comp, body, lab, y, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
             else:
-                circle_cut_x(comp, bodies[member], lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
+                circle_cut_x(comp, body, lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
+    comp, body = members["BACK"]
     sx, sy, sz, sw, sl = M.spigot_slot(half)
     label = "%s BACK SPIGOT SLOT" % half
     half_run = "(%s - %s) / 2" % (sl, sw)
     box_body(comp, label, ("%s - %s" % (sx, half_run), "%s + %s" % (sx, half_run), "%s - %s / 2" % (sy, sw),
                            "%s + %s / 2" % (sy, sw), sz, "%s + 2 * tube_t" % sz), ctx,
-             op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[bodies["BACK"]])
+             op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[body])
     for end, sign in (("END 1", "-"), ("END 2", "+")):
-        circle_cut(comp, bodies["BACK"], "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
+        circle_cut(comp, body, "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
                    "%s + 2 * tube_t" % sz, ctx)
+    # the closing face's lead-in runs the seam member's full length now that its corners are mitred
+    # (the back member no longer reaches the closing face)
+    comp, body = members["SEAM"]
     xs, z0 = ctx.ev(M.xr(half, "0 mm", "tube_w")[1 if s < 0 else 0]), ctx.ev(M.ZF0)
-    for code in ("SEAM", "BACK"):
-        chamfer(comp, [edge_at(bodies[code], "y", {"x": xs, "z": z0})], "lead_in",
-                "%s %s LEAD-IN ON THE CLOSING FACE" % (half, code))
-    return bodies
+    chamfer(comp, [edge_at(body, "y", {"x": xs, "z": z0})], "lead_in", "%s SEAM LEAD-IN ON THE CLOSING FACE" % half)
+    return members
+
+
+# how a copy is turned into place (D-120's copies; the turned-copy probes of 2026-11-01): "joint", a rigid joint to a
+# sketch point with the angle (and flip) on the joint's input, read back and checked; or "asbuilt", the copy set turned
+# in place and held by a rigid as-built joint to a locator placed by a plain joint at the point
+
+
+def rotation(angle_deg, over):
+    """3 x 3: turned over about its own X first (when `over`), then turned about Z by angle_deg."""
+    import math
+    c, s_ = math.cos(math.radians(angle_deg)), math.sin(math.radians(angle_deg))
+    rz = ((c, -s_, 0.0), (s_, c, 0.0), (0.0, 0.0, 1.0))
+    if not over:
+        return rz
+    rx = ((1.0, 0.0, 0.0), (0.0, -1.0, 0.0), (0.0, 0.0, -1.0))
+    return tuple(tuple(sum(rz[r][k] * rx[k][c2] for k in range(3)) for c2 in range(3)) for r in range(3))
+
+
+def _rot(m):
+    return tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
+
+
+def rot_of(occ, parent=None):
+    """occ's turn (3 x 3) relative to its parent component, read in the design: through the parent's one occurrence
+    there (its proxy), as turned-copy probes 9 to 11 read it (an occurrence's own transform inside a sub-component misled
+    probes 6 and 7, and a native occurrence inside one has no entity token: AIR's dry run 3)."""
+    if parent is None:
+        return _rot(occ.transform2)
+    root = parent.parentDesign.rootComponent
+    ps = root.allOccurrencesByComponent(parent)
+    if ps.count == 0:                   # the parent is the root itself
+        return _rot(occ.transform2)
+    if ps.count != 1:
+        raise RuntimeError("%s has %d occurrences; a child's turn can't be read against one" % (parent.name, ps.count))
+    pp = ps.item(0)
+    rp, ro = _rot(pp.transform2), _rot(occ.createForAssemblyContext(pp).transform2)
+    return tuple(tuple(sum(rp[k][r] * ro[k][c] for k in range(3)) for c in range(3)) for r in range(3))
+
+
+def place_rotated(parent, occ, xyz, want, name, ctx, settings):
+    """Place a copy at xyz (expressions, the parent's frame) turned by the rotation `want` (3 x 3) by a rigid joint
+    whose input carries the flip and angle (Fusion won't edit them on a made joint); the turn is read in the design
+    after a full compute, relative to the parent, and a copy that doesn't land turned stops the build. settings: the
+    joint's (flip, angle) to try, in order (turned-copy probe 9: angle 180 turns about Z, flip + angle 180 about Y,
+    flip + angle 0 about X; probe 11 the other angles about Z)."""
+    pt = place_point(parent, xyz, name, ctx)
+    tried = []
+    for flip, angle in settings:
+        j = joint_to_point(parent, occ, pt, name, flip, angle)
+        ctx.design.computeAll()
+        got = rot_of(occ, parent)
+        healthy = j.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+        if healthy and all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
+            return j
+        tried.append((flip, angle, healthy, tuple(tuple(round(v, 4) for v in row) for row in got)))
+        j.deleteMe()
+    raise RuntimeError("no joint setting turns %s as wanted: %s" % (name, tried))
+
+
+def plate_part(fcomp, pkey, ctx):
+    """A mitre plate's occurrence under fcomp (D-131, J-FRAME-01; the register's 831007 or 831008): the part built once
+    in its own frame (its outline plate_local over the frame's depth, centred on Z 0, so a turned-over copy keeps its
+    place), later ones copies of it (D-120)."""
+    shared = getattr(ctx, "shared", None)
+    if shared is None:
+        shared = ctx.shared = {}
+    if pkey in shared:
+        return fcomp.occurrences.addExistingComponent(shared[pkey], adsk.core.Matrix3D.create())
+    pn, name, vn, kind, _u, _n1, _n2, _kg, _st = M.HARDWARE[M.PLATE_HW[pkey]]
+    occ = fcomp.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+    c = occ.component
+    c.name = "%s %s" % (pn, name)
+    c.partNumber = pn
+    c.description = "%s | %s | %s | %s | joints register %s" % (name, vn, kind, M.REV,
+                                                                  "H-40" if pkey == "mp45" else "H-41")
+    poly_xy_body(c, "MITRE PLATE", M.plate_local(pkey), "-frame_t / 2", "frame_t / 2", ctx)
+    set_material(c, ctx, "steel_fr")
+    shared[pkey] = c
+    return occ
+
+
+def build_plates(fcomp, half, ctx):
+    """The four mitre plates welded into this frame's corners (J-FRAME-01), each turned to its mitre, a back seam or a
+    C2 back side plate turned over too (M.plate_places)."""
+    corners = {n: o for n, _k, o, _i in M.plate_corners(half)}
+    for name, pkey, _xyz, angle, over in M.plate_places(ctx.vals, half):
+        occ = plate_part(fcomp, pkey, ctx)
+        want = rotation(angle, over)
+        a = "%.4f deg" % angle
+        b = "%.4f deg" % (angle + 180.0)
+        settings = [(False, a), (True, b), (True, a), (False, b)] if over else [(False, a), (True, b)]
+        # the outer corner's own expressions, so the plate follows an edit; the angle is the sections' (fixed)
+        xyz = (corners[name][0], corners[name][1], "%s + frame_t / 2" % M.ZF0)
+        place_rotated(fcomp, occ, xyz, want, "%s %s" % (half, name), ctx, settings)
 
 
 def build_frame(assy, half, ctx):
+    """The frame of one half: an assembly (D-120) of its member components (build_frame_members) and the mitre plates
+    welded into its corners (build_plates, D-131)."""
     key = "frame_c1" if half == "C1" else "frame_c2"
     occ, comp = new_comp(assy, key, ctx)
-    build_frame_bodies(comp, half, ctx)
-    set_material(comp, ctx, "al")
+    build_frame_members(comp, half, ctx)
+    build_plates(comp, half, ctx)
     return occ, comp
 
 
@@ -525,6 +885,9 @@ def build_skin_bodies(comp, key, ctx):
     if key == "skin_c2":
         box_body(comp, "ROOF SLOT", M.roof_slot_box(), ctx, op=adsk.fusion.FeatureOperations.CutFeatureOperation,
                  bodies=[body])
+        # a clearance hole under each of the roof sleeve flange's 4 rivnuts (J-AIR-03, D-177)
+        for name, x, y in M.skin_c2_holes():
+            circle_cut(comp, body, "SKIN " + name, x, y, "hole_slv", "0 mm", "skin_t", ctx)
     return body
 
 
@@ -630,7 +993,7 @@ def build_tray(cass_occ_root, cass_comp, ctx):
             pl.isLightBulbOn = False
             sk = comp.sketches.add(pl)
             sk.name = "HOLE - CABLE %s RETURN" % tag
-            zc = "-(tray_t + gap_h / 2)"
+            zc = M.CABLE_HOLE_ZC            # the shared height (F-188)
             p3 = sk.modelToSketchSpace(adsk.core.Point3D.create(0, ctx.ev(yexpr) * MM, ctx.ev(zc) * MM))
             c = sk.sketchCurves.sketchCircles.addByCenterRadius(p3, ctx.ev("cable_hole") / 2 * MM)
             g = c.centerSketchPoint.geometry
@@ -654,18 +1017,45 @@ def build_tray(cass_occ_root, cass_comp, ctx):
     return occ, comp
 
 
+def fold_fillets(comp, body, name, sec, folds, ctx):
+    """Real folds on a sheet section extruded along Y (the Lead's ruling 2026-11-01 on #335: the inside radius is the
+    sheet, so the model, its STEP and its DXF agree): fillet the straight edge along Y through each fold's corner of
+    the section, the outside corners by bend_r + the sheet and the inside ones by bend_r (M.rib_fold_radius). The
+    section's sketch stays as it is, fully constrained; each corner must give exactly one edge."""
+    groups = {}
+    for idx, side in folds:
+        x, z = (ctx.ev(e) for e in sec[idx])
+        groups.setdefault(side, []).append((idx, x, z))
+    for side in ("outside", "inside"):
+        coll = adsk.core.ObjectCollection.create()
+        for idx, x, z in groups.get(side, []):
+            hits = []
+            for e in body.edges:
+                if e.geometry.objectType != adsk.core.Line3D.classType():
+                    continue
+                a, b = e.startVertex.geometry, e.endVertex.geometry
+                if abs(a.y - b.y) / MM < 1.0:
+                    continue                         # not along the extrusion
+                if all(abs(p.x / MM - x) < 1e-3 and abs(p.z / MM - z) < 1e-3 for p in (a, b)):
+                    hits.append(e)
+            if len(hits) != 1:
+                raise RuntimeError("%s: %d edges at fold corner %d (%.3f, %.3f), want 1" % (name, len(hits), idx, x, z))
+            coll.add(hits[0])
+        fi = comp.features.filletFeatures.createInput()
+        fi.edgeSetInputs.addConstantRadiusEdgeSet(coll, vi(M.rib_fold_radius(side)), False)
+        f = comp.features.filletFeatures.add(fi)
+        f.name = "BEND %s R - %s" % (side.upper(), name)
+
+
 def build_rib(cass_comp, ctx):
     """Hat-section rib in its own frame: centre line X = 0, from Y = 0 to rib_len,
     top flanges at Z = 0 (against the tray base underside), crown at Z = -gap_h."""
     occ, comp = new_comp(cass_comp, "rib", ctx)
-    c, f, t, h = "rib_crown / 2", "rib_fl", "tray_t", "gap_h"
-    pts = [("-(%s + %s)" % (c, f), "0 mm"), ("-(%s - %s)" % (c, t), "0 mm"), ("-(%s - %s)" % (c, t), "-(%s - %s)" % (h, t)),
-           ("(%s - %s)" % (c, t), "-(%s - %s)" % (h, t)), ("(%s - %s)" % (c, t), "0 mm"), ("(%s + %s)" % (c, f), "0 mm"),
-           ("(%s + %s)" % (c, f), "-%s" % t), ("(%s)" % c, "-%s" % t), ("(%s)" % c, "-(%s)" % h),
-           ("-(%s)" % c, "-(%s)" % h), ("-(%s)" % c, "-%s" % t), ("-(%s + %s)" % (c, f), "-%s" % t)]
+    pts = M.rib_section()
     sk = poly_xz(comp, "SECTION - RIB HAT", pts, ctx)
     fe = extrude_y(comp, sk, "0 mm", "cs_d - 2 * tray_t - 2 * rib_end", "RIB")
     fe.bodies.item(0).name = "RIB"
+    fold_fillets(comp, fe.bodies.item(0), "RIB", pts, M.RIB_FOLDS, ctx)
     set_material(comp, ctx, "steel")
     return occ, comp
 
@@ -875,8 +1265,7 @@ def run_part(app, doc, design, root, scope, ctx):
     elif scope == "felt":
         build_felt(root, ctx)
     elif scope in ("frame_c1", "frame_c2"):
-        build_frame_bodies(root, "C1" if scope == "frame_c1" else "C2", ctx)
-        set_material(root, ctx, "al")
+        build_frame_members(root, "C1" if scope == "frame_c1" else "C2", ctx)
     elif scope in ("skin_c1", "skin_c2"):
         build_skin_bodies(root, scope, ctx)
         set_material(root, ctx, "acp")
@@ -911,6 +1300,7 @@ def run_part(app, doc, design, root, scope, ctx):
     if ARGS.get("save") == "1":
         print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, M.REV, M.SKELETON_REV)))
         adsk.doEvents()
+        keep_part_number(doc, root, pn, "%s drawing source" % pn)
 
 
 FOLDER = "Default Project/FocusPod v2"
@@ -934,28 +1324,20 @@ def open_or_create(app, name):
     folder = proj.rootFolder
     for n in parts[1:]:
         folder = folder.dataFolders.itemByName(n)
-    found, unreadable = [], 0
-    for i in range(folder.dataFiles.count):
-        try:
-            f = folder.dataFiles.item(i)
-            if f.name == name:
-                found.append(f)
-        except RuntimeError:
-            unreadable += 1
+    # the shared folder check (tools/fusion/fusion_folder.py, one copy for every team script):
+    # it reads the folder again while entries can't be read, and refuses to make a design that
+    # an unreadable entry could already be
+    from fusion_folder import read_folder, safe_to_create
+    files, _unknown, _others = read_folder(folder, stop_when=lambda fs, _u, _o: name in fs)
     app.data.activeProject = proj
-    if found:
-        d = app.documents.open(found[0], True)
+    if name in files:
+        d = app.documents.open(files[name][0], True)
         d.activate()
         return d, "opened"
-    if unreadable and ARGS.get("new_name") != "1":
-        # PM ruling 2026-11-01: list the folder first and stop before creating anything if any
-        # entry can't be read (that entry could be this very design), unless the name has never
-        # been used (new_name=1: the author checked it never existed, so no duplicate can arise)
-        raise RuntimeError("%d entries of %s can't be read, so %r isn't made" % (unreadable, FOLDER, name))
     if ARGS.get("create") != "1":
-        # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
-        # entry Fusion can't read could make a second, empty design with a real one's name
-        raise RuntimeError("%r is not in %s; pass create=1 to make it (only once that's allowed)" % (name, FOLDER))
+        raise RuntimeError("%r is not in %s; pass create=1 to make it" % (name, FOLDER))
+    for w in safe_to_create(folder, name):
+        print("warning:", w)
     d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     if not d.saveAs(name, folder, "new, made by ceiling_build.py parts=", ""):
         raise RuntimeError("saveAs %r failed" % name)

@@ -120,7 +120,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 7](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **1-09** CEILING - PANEL ASSY - C1 (10.0 kg), **1-10** CEILING - PANEL ASSY - C2 (11.4 kg).
+- **Parts:** **1-09** CEILING - PANEL ASSY - C1 (14.6 kg), **1-10** CEILING - PANEL ASSY - C2 (16.0 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the 5 mm hex key.
 - **Person A:** With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6.
@@ -232,7 +232,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 18](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png)
 
 - **Time:** about 7 min for 2 people.
-- **Parts:** **2-19** LINING - CASSETTE - CEILING - COMMON (9.5 kg), **2-20** LINING - CASSETTE - CEILING - COMMON (9.5 kg).
+- **Parts:** **2-19** LINING - CASSETTE - CEILING - COMMON (9.4 kg), **2-20** LINING - CASSETTE - CEILING - COMMON (9.4 kg).
 - **Fasteners:** none.
 - **Person A:** With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.
 - **Person B:** Hooks the 2 safety catches of each cassette before A lets go.

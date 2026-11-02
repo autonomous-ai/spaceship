@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 373 part lines (174 made, 199 bought, 151 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 49 hardware items in the joints register (47 with a part number). Listed parts weigh 357.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 384 part lines (185 made, 199 bought, 151 on HOLD) and 52 sub-assembly lines from 20 parts list(s); 49 hardware items in the joints register (47 with a part number). Listed parts weigh 366.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -110,8 +110,6 @@ Read from: this working tree.
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002: the list still names it 'LINING - CEILING SAFETY CATCH'; the joints register's H-11 now names it 'LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 518002 LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3: HOLD (HOLD)
-- 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -233,20 +231,20 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 184 numbers, 94 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 184 numbers, 85 not in a team's list yet, 76 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
-| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | 411101 411102 | 2 | ALLOCATED |
-| 412102 | CEILING - FRAME SEAM MEMBER - C1 | 411101 | 1 | ALLOCATED |
-| 412103 | CEILING - FRAME FRONT MEMBER - C1 | 411101 | 1 | ALLOCATED |
-| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | 411101 | 1 | ALLOCATED |
-| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | 411101 411102 | 2 | ALLOCATED |
-| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | 411101 411102 | 4 | ALLOCATED |
+| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | 411101 411102 | 2 | in use |
+| 412102 | CEILING - FRAME SEAM MEMBER - C1 | 411101 | 1 | in use |
+| 412103 | CEILING - FRAME FRONT MEMBER - C1 | 411101 | 1 | in use |
+| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | 411101 | 1 | in use |
+| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | 411101 411102 | 2 | in use |
+| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | 411101 411102 | 4 | in use |
 | 412201 | CEILING - FRAME SIDE MEMBER - C2 | 411102 | 1 | CANCELLED |
-| 412202 | CEILING - FRAME SEAM MEMBER - C2 | 411102 | 1 | ALLOCATED |
-| 412203 | CEILING - FRAME FRONT MEMBER - C2 | 411102 | 1 | ALLOCATED |
-| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | 411102 | 1 | ALLOCATED |
+| 412202 | CEILING - FRAME SEAM MEMBER - C2 | 411102 | 1 | in use |
+| 412203 | CEILING - FRAME FRONT MEMBER - C2 | 411102 | 1 | in use |
+| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | 411102 | 1 | in use |
 | 412205 | CEILING - FRAME CROSS MEMBER 1 - C2 | 411102 | 1 | CANCELLED |
 | 212101 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
 | 212102 | WALL - FRAME RAIL TOP - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
