@@ -116,7 +116,7 @@ def has_hole(holes, d, axis, within=None, **at):
                for hd, ha, c, sp in holes)
 
 
-EL_SIDE = {"510102": ("el_y_kit", "el_y_cx", "el_trunk_z", "el_kit_dz", "el_kit_d", "el_grm_d"),
+EL_SIDE = {"510102": ("el_y_kit", "el_y_fx", "el_z_fx", "el_fx_d", "el_trunk_z", "el_kit_dz", "el_kit_d"),
            "510104": ("el_call_y", "el_call_z", "el_shelf_z", "el_grm_s", "el_y_kit")}
 
 
@@ -133,9 +133,10 @@ def el_side_checks(design, root_pn, before_p, after_p):
     if root_pn == "510102":
         out += [("FA-KIT %g hole at Y el_y_kit, Z trunk + %g" % (a["el_kit_d"], a["el_kit_dz"]),
                  has_hole(holes, a["el_kit_d"], "x", y=a["el_y_kit"], z=a["el_trunk_z"] + a["el_kit_dz"])),
-                ("FX-COL %g hole follows the column's back face (Y %.2f)" % (a["el_grm_d"], a["el_y_cx"]),
-                 has_hole(holes, a["el_grm_d"], "x", y=a["el_y_cx"], z=a["el_trunk_z"]) and
-                 abs((a["el_y_cx"] - before_p["el_y_cx"]) - dwd) < 0.01)]
+                ("FX-COL %g hole follows the column's back face (Y %.2f, Z %g)" % (a["el_fx_d"], a["el_y_fx"],
+                                                                                 a["el_z_fx"]),
+                 has_hole(holes, a["el_fx_d"], "x", y=a["el_y_fx"], z=a["el_z_fx"]) and
+                 abs((a["el_y_fx"] - before_p["el_y_fx"]) - dwd) < 0.01)]
     else:
         out += [("FX-CALL0 and FX-CALL2 %g holes follow the call light line (Y %.2f)" % (a["el_grm_s"], a["el_call_y"]),
                  has_hole(holes, a["el_grm_s"], "x", y=a["el_call_y"], z=a["el_shelf_z"]) and
@@ -147,7 +148,7 @@ EL_BACK = {"510202": ("panel_z0", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "e
                       "el_cut_z1"),
            "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_shelf_z", "el_shelf_d",
                       "el_ceil_x", "el_ceil_z", "el_grm_s"),
-           "210202": ("close_gap", "tube_w", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
+           "210202": ("close_gap", "tube_w", "el_inlet_x", "el_lan_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
                       "el_cut_z1")}
 
 
@@ -185,7 +186,11 @@ def el_back_checks(design, root_pn, before_p, after_p):
         tray, felt = round_holes(design, "TRAY"), round_holes(design, "FELT")
         out += [("G-B2-B4 %g hole in the bottom return follows the row seam (Z %.2f)" % (a["el_grm_d"], bot),
                  has_hole(tray, a["el_grm_d"], "z", (bot, bot + a["tray_t"]), x=a["el_lt_x"], y=a["el_y_bg"])),
-                ("no cable hole through the top lip", not [h for h in tray if h[1] == "y" and h[0] > 3.0]),
+                # the top lip's band, its 12 turned down from the cassette's top; ELECTRICAL's Ø6.4 tie holes go
+                # through the tray's back further down (the Lead's relay of 2026-11-01), so only this band counts
+                ("no cable hole through the top lip", not [
+                    h for h in tray if h[1] == "y" and h[0] > 3.0 and h[2][2] is not None
+                    and h[2][2] > a["pod_h"] - a["outer_t"] - a["lin_gap"] - a["lip_w"] - a["tray_t"] - 1e-6]),
                 ("FX-CEIL %g felt hole follows the pod width (X (pod_w - 2 stack_t) / 4 = %.2f), 2 under the lip" % (
                     a["el_grm_s"], a["el_ceil_x"]),
                  has_hole(felt, a["el_grm_s"], "y", x=a["el_ceil_x"], z=a["el_ceil_z"]) and
@@ -194,13 +199,14 @@ def el_back_checks(design, root_pn, before_p, after_p):
                  has_hole(felt, a["el_shelf_d"], "y", x=a["el_lt_x"], z=a["el_shelf_z"]))]
     else:
         skin = round_holes(design, "SKIN")
-        stud = a["close_gap"] / 2.0 + a["stile_pitch"]
-        out += [("inlet and LAN %g holes in the skin at X %g" % (a["el_inlet_d"], a["el_inlet_x"]),
+        xm = (a["el_inlet_x"] + a["el_lan_x"]) / 2.0                 # between the connectors, in the unit's column
+        out += [("the inlet's and the LAN jack's %g holes in the skin at X %g and %g" % (
+                    a["el_inlet_d"], a["el_inlet_x"], a["el_lan_x"]),
                  has_hole(skin, a["el_inlet_d"], "y", x=a["el_inlet_x"], z=a["el_inlet_z"]) and
-                 has_hole(skin, a["el_inlet_d"], "y", x=a["el_inlet_x"], z=a["el_lan_z"])),
-                ("the unit's fill cut-out runs to the first stud (X %.2f), fill below it" % stud,
-                 not inside_of(design, "FILL", stud - 0.3, 824.0, (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0) and
-                 inside_of(design, "FILL", stud - 0.3, 824.0, a["el_cut_z0"] - 20.0))]
+                 has_hole(skin, a["el_inlet_d"], "y", x=a["el_lan_x"], z=a["el_lan_z"])),
+                ("no fill in the unit's space between the cross members; fill beside the channels below it",
+                 not inside_of(design, "FILL", 250.0, 824.0, (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0) and
+                 inside_of(design, "FILL", 250.0, 824.0, a["el_cut_z0"] - 100.0) and xm > 0)]
     return out
 
 
@@ -217,6 +223,7 @@ def back_checks(after, p):
     seam, gap = 2.26, 5.5
     pick = (lambda pre: sorted((v for k, v in after.items() if nm(k).startswith(pre)), key=lambda b: b[0]))
     rails, stiles, mids = pick("RAIL"), pick("STILE"), pick("STILE - MID")
+    split = pick("STUD - BELOW UNIT") + pick("STUD - STUB")          # B2's first stud, round the power unit
     perim = pick("STILE - OUTER") + pick("STILE - CENTRE")
     bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
     zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
@@ -247,10 +254,17 @@ def back_checks(after, p):
                 [("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
                                                          for st in stiles))]) + [
                 ("%d studs, evenly spaced (D-135)" % n_mid, len(mids) == n_mid and all(
-                    abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(mids, mids[1:]))),
+                    abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(mids, mids[1:])))
+                if not split else
+                # B2 (the Lead's approval of WALL's B2 frame): its first stud is split round the power unit, below it
+                # and a stub above, at the pitch from the centre stile; the other two stand full height at the pitch
+                ("%d studs at the pitch, the first split round the unit (below it and a stub above)" % n_mid,
+                 len(mids) == n_mid - 1 and len(split) == 2 and all(
+                     abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(split[:1] + mids, mids))),
                 ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
     if bays:
-        out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+        want_bays = n_mid + 1 + (3 if split else 0)      # B2: bays 1 and 2 below and above the unit, and the piece
+        out.append(("fill bays = %d" % want_bays, len(bays) == want_bays))   # between the cable channels (back_bays)
     if skins:
         sk = skins[0]
         out.append(("skin is half_pw wide and the row high", abs((sk[3] - sk[0]) - p["half_pw"]) < 0.01 and
@@ -314,11 +328,16 @@ def record(design, rel):
     back_wall = root_pn[:4] in BACK_PREFIXES
     edits = EDITS_BACK if back_wall else EDITS
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
-             "cass_len", "cass_h", "pnl_h") + EL_BACK.get(root_pn, ()) if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
-                                         "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "cass_len", "cass_h",
+             "cass_len", "cass_h", "pnl_h", "pod_h", "outer_t", "lin_gap", "lip_w") + EL_BACK.get(root_pn, ()) \
+        if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
+                                         # R1 has 7 studs (INTERIOR's two, the Lead's ruling of 2026-11-01)
+                                         "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "stud_c6", "stud_c7",
+                                         "cass_len", "cass_h",
                                          "lin_front_dy",
                                          "top_h", "pod_h", "panel_z0",
                                          "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
+    # R1's two added studs only where the design has them, so the other records stay as they were
+    names = tuple(k for k in names if k not in ("stud_c6", "stud_c7") or design.userParameters.itemByName(k))
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
     if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):

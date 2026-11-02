@@ -79,6 +79,7 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | Clip | A strip of the cassette's 0.5 mm return (P08) with one clip (P11), and its mate on a 150 mm piece of the 0.8 mm stud tube (P02S), the thinnest member a clip fixes to (joints register J-LIN-01) | 10 (assumption: 5 in shear for the wall, 5 in pull-out for the ceiling) | T07 |
 | Weld, corner | Two tube legs 400 long, mitred and welded all round with their 2 mm plate (P28), in the production process: two 20 × 40 at 45° in 1.0 (P02A) and in 1.2 (P02); a 20 × 40 rail on a 40 × 40 (P02C), in 1.0 and in 1.2; two 40 × 40 (joints register J-T7) | 35 (5 of each of the 5 kinds to bend, and 2 more of each to saw) | T16 |
 | Weld, T | A 0.8 mm stud (P02S) welded all round on a 1.0 (P02A) and on a 1.2 (P02) rail, legs 400 long (assumption) | 14 (5 of each kind to bend and pull, and 2 more of each to saw) | T16 |
+| Connector | An offcut of the production ACP (P01), about 200 × 150, with B2's two connector cut-outs cut as its skin is (D-178), and ELECTRICAL's two connectors (D-133) fitted with their M3 screws, Ø6 washers and nuts | 3 (assumption) | T17 |
 
 ## Rigs (not product)
 

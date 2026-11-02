@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 12 failure(s) on the five rules; 322 part lines (128 made, 194 bought, 136 on HOLD) and 45 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 361.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 433 part lines (211 made, 222 bought, 150 on HOLD) and 56 sub-assembly lines from 19 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 437.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -28,24 +28,15 @@ Read from: this working tree.
 - `v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_BOM.csv` @ working tree
 - `v2/04-BOM/number-allocation.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
 
 ## Failures
 
-- hardware with no joints-register row: 848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8 in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv @ working tree
-- hardware with no joints-register row: 518003 LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
-- hardware with no joints-register row: 848016 SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA in v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv @ working tree
+- none
 
 ## Missing or on HOLD, per team
 
@@ -91,6 +82,15 @@ Read from: this working tree.
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
 
 **FRONT**
 - 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
@@ -105,7 +105,8 @@ Read from: this working tree.
 
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
-- 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
+- 518002: the list still names it 'LINING - CEILING SAFETY CATCH'; the joints register's H-11 now names it 'LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
+- 518002 LINING - CEILING SAFETY CATCH - GRIPPLE LOOP NO.3: HOLD (HOLD)
 - 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
@@ -131,7 +132,10 @@ Read from: this working tree.
 - 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data))
 - 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133))
 - 718001 ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718002 ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718081 ELECTRICAL - 24 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718002 ELECTRICAL - LED CONTROLLER - 24 V PWM - DMX512 - ISOLATED INPUT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718004 ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718005 ELECTRICAL - INLET SEALING CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -156,10 +160,10 @@ Read from: this working tree.
 - 718020 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718021 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718022 ELECTRICAL - WIRE - UL 1015 14 AWG GREEN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718073 ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718073 ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718026 ELECTRICAL - CABLE - 4 X 20 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718027 ELECTRICAL - CABLE - 4 X 24 AWG SCREENED: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718051 ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718051 ELECTRICAL - LED STRIP - 24 V 3.0 W/M - 3000 K - 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718052 ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718044 ELECTRICAL - DRAW CORD - NYLON 3 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718048 ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -179,6 +183,7 @@ Read from: this working tree.
 - 718072 ELECTRICAL - MAINS PLUG - NEMA 5-15P: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718023 ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718024 ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718055 ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718029 ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718025 ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718028 ELECTRICAL - CABLE - CAT6 U/UTP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -195,10 +200,12 @@ Read from: this working tree.
 - 718038 ELECTRICAL - RJ45 PLUG - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718039 ELECTRICAL - RJ45 INLINE COUPLER - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718040 ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718056 ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718057 ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718041 ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718050 ELECTRICAL - LED STRIP - 24 V 6.0 W/M - 3000 K - 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718053 ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718102 ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -207,6 +214,9 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+**Joints register**
+- H-50 HARDWARE - BLIND RIVET - CLOSED END - CLIP MALE - HOLD: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
@@ -220,7 +230,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 180 numbers, 143 not in a team's list yet, 14 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 194 numbers, 100 not in a team's list yet, 71 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -242,38 +252,38 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 143 not in a team's list ye
 | 212105 | WALL - FRAME STILE MID - SIDE LOWER - LH | 211101 | 3 | in use |
 | 211511 | WALL - CAVITY FILL PIECE F01 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | CANCELLED |
 | 211512 | WALL - CAVITY FILL PIECE F04 334.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | CANCELLED |
-| 212201 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
-| 212202 | WALL - FRAME RAIL TOP - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
-| 212203 | WALL - FRAME STILE FRONT - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
-| 212204 | WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH | 211102 | 1 | ALLOCATED |
-| 212205 | WALL - FRAME STILE MID - SIDE LOWER - RH | 211102 | 3 | ALLOCATED |
+| 212201 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH | 211102 | 1 | in use |
+| 212202 | WALL - FRAME RAIL TOP - SIDE LOWER - RH | 211102 | 1 | in use |
+| 212203 | WALL - FRAME STILE FRONT - SIDE LOWER - RH | 211102 | 1 | in use |
+| 212204 | WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH | 211102 | 1 | in use |
+| 212205 | WALL - FRAME STILE MID - SIDE LOWER - RH | 211102 | 3 | in use |
 | 211521 | WALL - CAVITY FILL PIECE 1102.7 X 344.9 - SIDE LOWER - RH | 210102 | 3 | CANCELLED |
 | 211522 | WALL - CAVITY FILL PIECE 1102.7 X 334.9 - SIDE LOWER - RH | 210102 | 1 | CANCELLED |
-| 212301 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212302 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212303 | WALL - FRAME STILE FRONT - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212304 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - LH | 211103 | 1 | ALLOCATED |
-| 212305 | WALL - FRAME STILE MID - SIDE UPPER - LH | 211103 | 3 | ALLOCATED |
+| 212301 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212302 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212303 | WALL - FRAME STILE FRONT - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212304 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - LH | 211103 | 1 | in use |
+| 212305 | WALL - FRAME STILE MID - SIDE UPPER - LH | 211103 | 3 | in use |
 | 211531 | WALL - CAVITY FILL PIECE F05 344.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | CANCELLED |
 | 211532 | WALL - CAVITY FILL PIECE F08 334.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | CANCELLED |
-| 212401 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
-| 212402 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
-| 212403 | WALL - FRAME STILE FRONT - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
-| 212404 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - RH | 211104 | 1 | ALLOCATED |
-| 212405 | WALL - FRAME STILE MID - SIDE UPPER - RH | 211104 | 3 | ALLOCATED |
+| 212401 | WALL - FRAME RAIL BOTTOM - SIDE UPPER - RH | 211104 | 1 | in use |
+| 212402 | WALL - FRAME RAIL TOP 40 X 40 - SIDE UPPER - RH | 211104 | 1 | in use |
+| 212403 | WALL - FRAME STILE FRONT - SIDE UPPER - RH | 211104 | 1 | in use |
+| 212404 | WALL - FRAME STILE BACK 40 X 40 - SIDE UPPER - RH | 211104 | 1 | in use |
+| 212405 | WALL - FRAME STILE MID - SIDE UPPER - RH | 211104 | 3 | in use |
 | 211541 | WALL - CAVITY FILL PIECE 1082.7 X 344.9 - SIDE UPPER - RH | 210104 | 3 | CANCELLED |
 | 211542 | WALL - CAVITY FILL PIECE 1082.7 X 334.9 - SIDE UPPER - RH | 210104 | 1 | CANCELLED |
-| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
-| 212502 | WALL - FRAME RAIL TOP - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
-| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
-| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
-| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | ALLOCATED |
+| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 211203 | 2 | in use |
+| 212502 | WALL - FRAME RAIL TOP - BACK LOWER - B1 | 211201 | 1 | in use |
+| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 211203 | 2 | in use |
+| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 211203 | 2 | in use |
+| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | in use |
 | 211611 | WALL - CAVITY FILL PIECE F09 373 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 2 | CANCELLED |
-| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
-| 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
-| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
-| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 211204 | 4 | ALLOCATED |
+| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | in use |
+| 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 211204 | 2 | in use |
+| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 211204 | 2 | in use |
+| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 211204 | 4 | in use |
 | 211621 | WALL - CAVITY FILL PIECE F12 373 X 1078.6 - BACK LOWER - B2 | 210202 | 1 | CANCELLED |
 | 211513 | WALL - CAVITY FILL PIECE F02 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | CANCELLED |
 | 211514 | WALL - CAVITY FILL PIECE F03 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | CANCELLED |
@@ -354,35 +364,35 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 143 not in a team's list ye
 | 611211 | AIR - SOFFIT FILL - FRONT | 610201 | 1 | ALLOCATED |
 | 611502 | AIR - INTAKE BOOT | 610401 | 1 | ALLOCATED |
 | 611303 | AIR - CARTRIDGE INLET GASKET | 610301 | 2 | ALLOCATED |
-| 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | ALLOCATED |
+| 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | in use |
 | 351307 | FRONT - DECOR SEAM BAR - DR - REMOVABLE | 350003 | 1 | CANCELLED |
 | 211515 | WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
 | 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | in use |
 | 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 4 | in use |
-| 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
-| 211535 | WALL - CAVITY FILL PIECE F05 240 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
-| 211536 | WALL - CAVITY FILL PIECE F06 230.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | ALLOCATED |
-| 211537 | WALL - CAVITY FILL PIECE F07 205.5 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | ALLOCATED |
-| 211538 | WALL - CAVITY FILL PIECE F08 214 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | ALLOCATED |
-| 211614 | WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
-| 211615 | WALL - CAVITY FILL PIECE F10 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 2 | ALLOCATED |
-| 211616 | WALL - CAVITY FILL PIECE F11 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | ALLOCATED |
-| 211634 | WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | ALLOCATED |
-| 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | ALLOCATED |
-| 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
+| 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - LH | 210101 | 1 | in use |
+| 211535 | WALL - CAVITY FILL PIECE F05 240 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | in use |
+| 211536 | WALL - CAVITY FILL PIECE F06 230.9 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | in use |
+| 211537 | WALL - CAVITY FILL PIECE F07 205.5 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 4 | in use |
+| 211538 | WALL - CAVITY FILL PIECE F08 214 X 1082.7 - SIDE UPPER - COMMON | 210103 210104 | 2 | in use |
+| 211614 | WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 2 | in use |
+| 211615 | WALL - CAVITY FILL PIECE F10 274.7 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 3 | in use |
+| 211616 | WALL - CAVITY FILL PIECE F11 274.7 X 1078.6 - BACK LOWER - B1 | 210201 | 1 | in use |
+| 211634 | WALL - CAVITY FILL PIECE F12 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | in use |
+| 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | in use |
+| 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | in use |
 | 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
 | 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | ALLOCATED |
 | 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | ALLOCATED |
 | 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | 110101 110102 110106 | 3 | ALLOCATED |
 | 111602 | BASE - LEVELLING GLIDE - M10 - D40 | 110101 110102 110103 110106 | 9 | ALLOCATED |
-| 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | ALLOCATED |
-| 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
-| 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
-| 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
-| 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
-| 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | in use |
+| 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | in use |
+| 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | in use |
+| 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | in use |
+| 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | in use |
+| 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | in use |
 | 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | in use |
-| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | ALLOCATED |
+| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | in use |
 | 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | ALLOCATED |
 | 412002 | CEILING - FRAME CLIP TAB | 411101 411102 | 12 | ALLOCATED |
 | 513103 | LINING - CATCH EYE BRACKET - CEILING | 510301 | 4 | ALLOCATED |
@@ -404,6 +414,20 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 143 not in a team's list ye
 | 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
 | 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
 | 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
+| 212606 | WALL - FRAME STUD BELOW THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212607 | WALL - FRAME STUB ABOVE THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212608 | WALL - FRAME CROSS MEMBER LOWER - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212609 | WALL - FRAME CROSS MEMBER UPPER - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212206 | WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH | 211102 | 4 | in use |
+| 212406 | WALL - FRAME STUD WITH SCREEN RAIL RIVNUTS - SIDE UPPER - RH | 211104 | 2 | in use |
+| 211551 | WALL - CAVITY FILL PIECE F15 112.7 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
+| 211552 | WALL - CAVITY FILL PIECE F16 98.2 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
+| 211553 | WALL - CAVITY FILL PIECE F17 100 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
+| 211554 | WALL - CAVITY FILL PIECE F18 94 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
+| 211641 | WALL - CAVITY FILL PIECE F19 274.7 X 717 - BACK LOWER - B2 | 210202 | 1 | in use |
+| 211642 | WALL - CAVITY FILL PIECE F20 274.7 X 717 - BACK LOWER - B2 | 210202 | 1 | in use |
+| 211643 | WALL - CAVITY FILL PIECE F21 274.7 X 60.1 - BACK LOWER - B2 | 210202 | 2 | in use |
+| 211644 | WALL - CAVITY FILL PIECE F22 99 X 458.2 - BACK LOWER - B2 | 210202 | 1 | in use |
 
 ## Rules
 

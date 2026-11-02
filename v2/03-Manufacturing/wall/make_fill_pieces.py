@@ -1,6 +1,6 @@
 """The distinct WALL cavity-fill pieces for D-120 (each piece its own component and number), from the build
 scripts' own formulas: the bays between the frame members and the pockets left beside every bolt the panel
-drives (FR-10), plus B2's ELECTRICAL cut-outs (F47).
+drives (FR-10), plus B2's ELECTRICAL cut-outs (F47) and its bays round the power unit.
 
     python3 v2/03-Manufacturing/wall/make_fill_pieces.py
 
@@ -17,6 +17,12 @@ DXF here, `<number>_P01_<NAME>_DXF.dxf` (1:1, mm, CUT layer only): the w x h rec
 opening, as seen in the form's first bay (u to the right, v up, origin at the bay's low corner), at the build
 scripts' exact sizes (the lists round to 0.1). The CSV says for each bay how its piece goes in: as cut, or turned
 over (left to right or top to bottom), or end for end.
+
+A form keeps its label, and so its number, while its shape stays: labels come from the list as last
+written (FILL-PIECES.csv), and a new form takes the next free label, so it never shifts the others. (In
+(panel, bay) order, R1's sixth stud put two new forms between L1's and L2's, and every later label then
+found another form's number at the same size.) A live number's DXF never changes here: if it would, the
+run stops before writing anything (`--allow-change` only after a ruling).
 """
 
 import csv
@@ -24,6 +30,7 @@ import glob
 import os
 import re
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", "..", ".."))
@@ -82,8 +89,9 @@ def side_pieces():
 
 def back_pieces():
     out = []
-    for code in ("B1", "B3", "B4"):  # B2 waits for its layout (PM 2026-11-01; D-133)
-        v = t.resolve(t.load_back(code, "panel"))
+    for code in ("B1", "B2", "B3", "B4"):
+        ns = t.load_back(code, "panel")
+        v = t.resolve(ns)
         col, row = ("L" if code in ("B1", "B3") else "R"), (1 if code in ("B1", "B2") else 2)
         xlo = (-v["close_gap"] / 2 - v["half_fw"]) if col == "L" else v["close_gap"] / 2
         xhi = xlo + v["half_fw"]
@@ -91,7 +99,7 @@ def back_pieces():
         z1 = v["panel_z0"] + v["back_ph"] if row == 1 else v["panel_z0"] + v["back_oh"]
         p, n, tw, pw = v["stile_pitch"], int(round(v["stile_n_mid"])), v["tube_w"], v["pocket_w"]
         zs = (z0 + tw, z1 - v["top_h"])
-        bays = [(xlo + tw + k * p, xlo + (k + 1) * p) for k in range(n + 1)]
+        xs = [(xlo + tw + k * p, xlo + (k + 1) * p) for k in range(n + 1)]
         pockets = []
         for i in range(int(round(v["n_len_bolt"]))):
             xc = xlo + v["bolt_edge"] + i * v["len_bolt_pitch"]
@@ -104,17 +112,27 @@ def back_pieces():
             for j in range(3):
                 zc = z0 + v["bolt_edge"] + j * v["side_jnt_pitch"]
                 pockets.append((min(xin, xin + sg * pw), max(xin, xin + sg * pw), zc - pw / 2, zc + pw / 2))
-        if code == "B2":                 # ELECTRICAL's cut-outs in the first bay (EL_PARAMS; rationale F47)
-            pv = t.resolve(t.load_back("B2", "panel"))
-            stud = xlo + p + tw / 2
-            pockets += [(pv["el_cut_x0"], stud, pv["el_cut_z0"], pv["el_cut_z1"]),
-                        (pv["el_sl_x"] - pv["el_sl_w"] / 2, pv["el_sl_x"] + pv["el_sl_w"] / 2,
-                         pv["el_inlet_z"] - pv["el_inlet_d"] / 2, pv["el_cut_z0"]),
-                        (pv["el_inlet_x"] - pv["el_inlet_d"] / 2, pv["el_sl_x"] + pv["el_sl_w"] / 2,
-                         pv["el_inlet_z"] - pv["el_inlet_d"] / 2, pv["el_lan_z"] + pv["el_inlet_d"] / 2)]
-        for k, (b0, b1) in enumerate(bays):
-            out.append(piece(code, k + 1, b0, b1, zs, pockets, "2102%02d" % int(code[1]),
-                             "ELECTRICAL cut-outs (power unit, sleeve, inlet and LAN)" if code == "B2" and k == 0 else ""))
+        # (x range, z range, openings, note) per bay, in the builder's order (back_bays)
+        bays = [(x, zs, pockets, "") for x in xs]
+        if code == "B2":
+            # the builder's own bays and cuts round the power unit (the Lead's approval of WALL's B2 frame and ELECTRICAL's
+            # envelopes, 2026-11-01): bays 1 and 2 below and above the cross members, then 3 and 4, then the piece between
+            # the mains and LAN channels (B2_ISLAND); B2_CUTS through bay 1's piece below the unit
+            def ev(e):
+                return t.evaluate(e, v)
+
+            def rects(cuts):
+                return [(ev(x0), ev(x1), ev(z0_), ev(z1_)) for _l, (x0, x1), (z0_, z1_) in cuts]
+            lo, up = (zs[0], v["xm_z0"]), (v["xm_z1"], zs[1])
+            (ix0, ix1), (iz0, iz1) = ns["B2_ISLAND"]
+            bays = ([(xs[0], lo, pockets + rects(ns["B2_CUTS"]), "ELECTRICAL's cut-outs: the inlet's box, the jack, "
+                                                                 "the mains and LAN channels"),
+                     (xs[1], lo, pockets, ""), (xs[0], up, pockets, ""), (xs[1], up, pockets, "")]
+                    + [(x, zs, pockets, "") for x in xs[2:]]
+                    + [((ev(ix0), ev(ix1)), (ev(iz0), ev(iz1)), rects(ns["B2_ISLAND_NOTCHES"]),
+                        "between the mains and LAN channels")])
+        for k, ((b0, b1), zr, opens, note) in enumerate(bays):
+            out.append(piece(code, k + 1, b0, b1, zr, opens, "2102%02d" % int(code[1]), note))
     return out
 
 
@@ -232,13 +250,59 @@ def form_key(pc):
     return min(keys)
 
 
+def previous_forms(path):
+    """{form: (form key, number, the pockets in its DXF's frame, its bays {(position, bay)})} of the list as last
+    written (FILL-PIECES.csv)."""
+    out = {}
+    if not os.path.exists(path):
+        return out
+    with open(path, encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            if r["form"] in out:
+                out[r["form"]][3].add((r["position"], int(r["bay"])))
+                continue
+            pk = sorted(tuple(float(x) for x in m)
+                        for m in re.findall(r"u ([\d.]+)-([\d.]+), v ([\d.]+)-([\d.]+)", r["pockets"]))
+            out[r["form"]] = (form_key({"w": float(r["w_mm"]), "h": float(r["h_mm"]), "pockets": pk}), r["number"],
+                              tuple(pk), {(r["position"], int(r["bay"]))})
+    return out
+
+
+def label_forms(groups, prev, live):
+    """[(form, key, members)] in label order: a form found in the last list (same key: size and pockets, as made or
+    turned over) keeps its label; so does a form not yet numbered whose pieces are re-cut in the same bays (it has no
+    number and no DXF yet, so nothing was cut to its old shape: its allocation row, once posted, describes the new
+    one); any other new form takes the next label after every label in the last list and in the live allocation
+    (`live`), in (panel, bay) order."""
+    by_key = {v[0]: f for f, v in prev.items()}
+    nxt = max([int(f[1:]) for f in list(prev) + list(live)] + [0]) + 1
+    taken = {by_key[k] for k in groups if k in by_key}
+    out = []
+    for key, members in sorted(groups.items(), key=lambda kv: (kv[1][0]["panel"], kv[1][0]["bay"])):
+        bays = {(m.get("position"), m.get("bay")) for m in members}
+        recut = [f for f, v in prev.items()
+                 if f not in taken and not v[1] and f not in live and len(v) > 3 and v[3] == bays]
+        if key in by_key:
+            form = by_key[key]
+        elif len(recut) == 1:
+            form = recut[0]
+            taken.add(form)
+            print("form %s: re-cut in the same bays before it has a number (%s)" % (
+                form, ", ".join("%s bay %d" % b for b in sorted(bays))))
+        else:
+            form, nxt = "F%02d" % nxt, nxt + 1
+        out.append((form, key, members))
+    return sorted(out, key=lambda x: int(x[0][1:]))
+
+
 def main():
     pieces = side_pieces() + back_pieces()
     groups = {}
     for pc in pieces:
         groups.setdefault(form_key(pc), []).append(pc)
-    forms = sorted(groups.items(), key=lambda kv: (kv[1][0]["panel"], kv[1][0]["bay"]))
     nums = numbers()
+    prev = previous_forms(os.path.join(HERE, "FILL-PIECES.csv"))
+    forms = label_forms(groups, prev, nums)
     md = ["# WALL cavity-fill pieces (D-120, D-123, D-128)", "",
           "Generated by `make_fill_pieces.py` from the build scripts' formulas (bays between the frame members, "
           "60 x 60 pockets beside every bolt the panel drives, B2's ELECTRICAL cut-outs). Sizes in mm, 40 thick, "
@@ -249,15 +313,16 @@ def main():
           "own DXF (the full outline with every notch and opening, CUT layer, 1:1 mm, seen in its first bay: u to "
           "the right, v up) and needs no drawing (D-128); its parts-list rows give material, density, thickness, "
           "tolerance and part number. The fit column of FILL-PIECES.csv says how each bay takes its piece.", "",
-          "%d bays in %d positions, %d distinct forms. B2 waits for its layout (PM 2026-11-01: the unit's 373 mm "
-          "bay framed with welded cross members; the unit changes for D-133)." % (
+          "%d bays in %d positions, %d distinct forms. B2's bays follow its frame round the power unit (the Lead's "
+          "approval of WALL's B2 frame, 2026-11-01) and ELECTRICAL's cut-outs behind its skin." % (
               len(pieces), len({p["position"] for p in pieces}), len(forms)), "",
           "| Form | Number | Size w x h | Notches and openings (u, v ranges) | Bays it fills | DXF |",
           "|---|---|---|---|---|---|"]
-    rows, made, unnumbered = [], [], []
-    for i, (key, members) in enumerate(forms, 1):
-        first = members[0]
-        form = "F%02d" % i
+    rows, made, unnumbered, writes, changed = [], [], [], [], []
+    for form, key, members in forms:
+        # the bay its DXF is seen in: the last list's, so a kept form's DXF stays as it was cut
+        old = prev.get(form)
+        first = next((m for m in members if old and tuple(m["pockets"]) == old[2]), members[0])
         loops = outline(first["w_raw"], first["h_raw"], first["pockets_raw"])
         want = first["w_raw"] * first["h_raw"] - open_area(first["w_raw"], first["h_raw"], first["pockets_raw"])
         if abs(sum(area(lp) for lp in loops) - want) > 0.01:
@@ -273,7 +338,15 @@ def main():
             unnumbered.append("%s %g x %g" % (form, first["w"], first["h"]))
         else:
             dxf = dxf_name(pn, name)
-            dxf_tools.write_dxf(os.path.join(HERE, dxf), [("POLY", "CUT", lp) for lp in loops], layers=("CUT",))
+            ents = [("POLY", "CUT", lp) for lp in loops]
+            path = os.path.join(HERE, dxf)
+            if os.path.exists(path):        # a live number's cut file stays as it is
+                with tempfile.TemporaryDirectory() as td:
+                    dxf_tools.write_dxf(os.path.join(td, "new.dxf"), ents, layers=("CUT",))
+                    with open(os.path.join(td, "new.dxf"), "rb") as a, open(path, "rb") as b:
+                        if a.read() != b.read():
+                            changed.append("%s (%s %g x %g)" % (pn, form, first["w"], first["h"]))
+            writes.append((path, ents))
             made.append((dxf, loops, want))
         pk = "; ".join("u %g-%g, v %g-%g" % r for r in first["pockets"])
         where = ", ".join("%s bay %d" % (m["position"], m["bay"]) for m in members)
@@ -284,6 +357,15 @@ def main():
             rows.append({"form": form, "position": m["position"], "bay": m["bay"], "panel": m["panel"],
                          "w_mm": first["w"], "h_mm": first["h"], "t_mm": 40, "pockets": pk, "note": first["note"],
                          "number": pn, "dxf": dxf, "fit": fit(m, first)})
+    if changed and "--allow-change" not in sys.argv:
+        raise SystemExit("nothing written: the cut file of live number(s) %s would change; a live number keeps its "
+                         "shape (a new shape is a new form, with a new number), so rerun with --allow-change only "
+                         "after a ruling" % ", ".join(changed))
+    for path, ents in writes:
+        dxf_tools.write_dxf(path, ents, layers=("CUT",))
+    gone = sorted(set(prev) - {f for f, _k, _m in forms})
+    for f in gone:
+        print("form %s (%s) is no longer in this layout: Control cancels its number" % (f, prev[f][1] or "no number"))
     with open(os.path.join(HERE, "FILL-PIECES.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(md) + "\n")
     with open(os.path.join(HERE, "FILL-PIECES.csv"), "w", newline="", encoding="utf-8") as fh:

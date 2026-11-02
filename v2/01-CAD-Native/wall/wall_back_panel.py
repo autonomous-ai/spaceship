@@ -38,23 +38,26 @@ _LIB = os.path.join(ARGS["repo_root"], "v2/01-CAD-Native/wall/wall_side_panel.py
 with open(_LIB, "r", encoding="utf-8") as _fh:
     exec(compile(_fh.read(), _LIB, "exec"), globals())       # helpers; tables and builders replaced below
 # the library's names, bound here as well so tools/fusion/check_api.py (which can't follow the exec) sees them
-(HW_PARTS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, ev, hole, hw_site, new_comp,
+(HW_PARTS, LEDGE_PARAMS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, ev, hole, hw_site, new_comp,
  pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi, el_params, el_inside, EL_KIND,
  child, member_numbers, fill_numbers, plated_mitre_triangles, place_hardware, poly_on, fill_fits,
- place_piece_copies, offset_origin, joint_copy, mitre_plates) = [
+ place_piece_copies, offset_origin, joint_copy, mitre_plates, MEMBER_WORDS) = [
     globals()[_n] for _n in (
-        "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "ev",
+        "HW_PARTS", "LEDGE_PARAMS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "ev",
         "hole", "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of",
         "span", "vi", "el_params", "el_inside", "EL_KIND", "child", "member_numbers", "fill_numbers",
         "plated_mitre_triangles", "place_hardware", "poly_on", "fill_fits", "place_piece_copies",
-        "offset_origin", "joint_copy", "mitre_plates")]
+        "offset_origin", "joint_copy", "mitre_plates", "MEMBER_WORDS")]
 
 import adsk.core      # noqa: E402  (already imported by the library; named here for readers)
 import adsk.fusion    # noqa: E402
 
 COL = "L" if POSITION in ("B1", "B3") else "R"
-B2_PENDING = ("B2's frame layout (the unit's 373 mm bay framed with welded cross members, PM 2026-11-01; the unit "
-              "changes for D-133) is not built yet, so B2's frame, panel and cassette are not made from the even rule")
+# B2 under D-131 (the Lead's approval of WALL's B2 frame, 2026-11-01): the power unit (X 95 to 391) is behind the
+# first stud of the even layout, so two welded cross members run from the centre stile to the second stud at the
+# unit's bottom and top, the unit sitting on their rivnut heads; the first stud runs below the unit, with a stub
+# above it that carries the top-front clip zone
+B2_UNIT = POSITION == "B2"
 INSIDE = "-y"                              # the room side of the back wall, for the drawings' Front
 ROW = _ROW
 BPOS = int(POSITION[1])
@@ -72,6 +75,9 @@ PARTS = {
     "clip": ("NO-PN-HOLD-H03", "HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)", "Vùng dành cho kẹp treo cassette (HOLD)"),
 }
 PARTS.update(HW_PARTS)                     # the joint hardware, numbered by the joints register (library)
+if ROW == 1:          # the cassette ledge (the Lead's ruling of 2026-11-01), Control's number; B1 and B2 share it
+    PARTS["ledge"] = ("211801", "WALL - CASSETTE LEDGE - BACK LOWER - COMMON",
+                      "Vách hậu - thanh đỡ cassette dưới (dùng chung)")
 for _k, (_pn, _n, _v) in PARTS.items():
     if _pn in RESERVED:
         raise RuntimeError("reserved part number %s (D-28)" % _pn)
@@ -129,6 +135,18 @@ WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
 # ELECTRICAL's interface features (the library's EL_PARAMS): B2's power unit cut-out, slots and holes in
 # B2-CASS, the light feed holes in B4-CASS, the inlet holes and fill cut-outs in panel B2
 WALL_PARAMS = WALL_PARAMS + el_params(POSITION, EL_KIND)
+if B2_UNIT:
+    _B2 = "the Lead's approval of WALL's B2 frame (2026-11-01)"
+    WALL_PARAMS = WALL_PARAMS + [
+        ("xm_z0", "el_pu_zc - el_pu_h / 2 - rivnut_head_t - tube_w", "mm", "calculation",
+         _B2 + ": the lower cross member's bottom face; its top face a rivnut head under the unit, which sits on the "
+               "rivnut heads (ELECTRICAL, 2026-11-01): Z 849.24"),
+        ("xm_z1", "el_pu_zc + el_pu_h / 2 + rivnut_head_t + tube_w", "mm", "calculation",
+         _B2 + ": the upper cross member's top face, its underside a rivnut head over the unit: Z 1150.76"),
+        ("clip_top_dz", "top_h + (back_ph - top_h - (xm_z1 - panel_z0)) / 2", "mm", "calculation",
+         _B2 + ": the top-front clip zone's centre from the cassette's top, at the middle of the stub above the unit "
+               "(Z 1150.76 to 1210.87): 50.06"),
+    ]
 
 # ---------------------------------------------------------------- geometry expressions (back wall)
 
@@ -157,6 +175,16 @@ XC_LOW, XC_HIGH = (X_CASS_OUT, "-seam_gap / 2") if COL == "L" else ("seam_gap / 
 Z0 = "panel_z0" if ROW == 1 else "panel_z0 + back_ph + seam_gap"
 Z1 = "panel_z0 + back_ph" if ROW == 1 else "panel_z0 + back_oh"
 Z_CASS1 = Z1 if ROW == 1 else "pod_h - outer_t - lin_gap"
+
+# the back cassette ledge (the Lead's ruling of 2026-11-01): the side ledge's sizes (the library's LEDGE_PARAMS), its
+# length the back cassette's width less ledge_end at each end, the same on B1 and B2 (one part, 211801 COMMON)
+if ROW == 1:
+    # in the library's order (a parameter refers only to those before it): its ledge_len replaced, no ledge_front_dy
+    WALL_PARAMS = WALL_PARAMS + [
+        ("ledge_len", "abs((%s) - (%s)) - 2 * ledge_end" % (XC_HIGH, XC_LOW), "mm", "calculation",
+         "the back cassette's width less 5 at each end: 1154.9; B1's and B2's the same, so they share 211801")
+        if q[0] == "ledge_len" else q for q in LEDGE_PARAMS if q[0] != "ledge_front_dy"]
+LEDGE_X0 = "(%s) + ledge_end" % XC_LOW            # the ledge's low-X end (XC_LOW is the lining's low X on B1 and B2)
 
 
 def tube_x(design, comp, label, xr, yr, zr, t="tube_t"):
@@ -220,8 +248,14 @@ def build_frame_back(design, frame, out, yf, zs):
     there, one component placed by a pattern of copies; no cleat slots (D-131 cancels the cleats). Returns
     {member key: (component, body)}."""
     nums = member_numbers(ARGS["repo_root"], frame.partNumber)
-    need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - OUTER", "STILE - CENTRE", "STILE - MID"]
+    need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - OUTER", "STILE - CENTRE", "STILE - MID"] + (
+        ["CROSS - LOWER", "CROSS - UPPER", "STUD - BELOW UNIT", "STUD - STUB"] if B2_UNIT else [])
     missing = [k for k in need if k not in nums]
+    if missing and ARGS.get("dry") == "1":          # a dry run (never saved) labels a member with no number yet
+        for k in missing:
+            nums[k] = ("DRY-%s" % re.sub(r"[^A-Z]+", "-", k).strip("-"),
+                       "WALL - FRAME %s (DRY RUN, NO NUMBER YET)" % MEMBER_WORDS[k], "")
+        missing = []
     if missing:
         raise RuntimeError("no master BOM numbers for %s of frame %s (number-allocation.csv; B3 and B4 get theirs "
                            "when their lists exist, D-123)" % (missing, frame.partNumber))
@@ -253,29 +287,43 @@ def build_frame_back(design, frame, out, yf, zs):
             ev(design, "stile_pitch"), ev(design, "stile_pitch_max")))
     n = int(round(design.userParameters.itemByName("stile_n_mid").value))
     xr = lambda k: ("(%s) + %d * stile_pitch" % (X_LOW, k), "(%s) + %d * stile_pitch + tube_w" % (X_LOW, k))  # noqa: E731
-    make("STILE - MID", xr(1), zs, "z", "stud_t")
+    first = 2 if B2_UNIT else 1                   # B2: the first stud is split round the power unit (below)
+    make("STILE - MID", xr(first), zs, "z", "stud_t")
+    if B2_UNIT:
+        b2_unit_members(make, xr)
     # the other studs: copies of the one part, each held by a rigid joint in the root from the stud's joint origin to
     # one of the frame's, moved along X by whole stud pitches (expressions, so they follow the width; joint_copy)
     sc = members["STILE - MID"][0]
     ref = offset_origin(sc, None, None, None, name="JOINT ORIGIN - STUD")
     ys = sorted(ev(design, e) for e in yf)
-    for k in range(2, n + 1):
-        tgt = offset_origin(frame, "%d * stile_pitch" % (k - 1), None, None, name="JOINT ORIGIN - STUD %d" % k)
+    for k in range(first + 1, n + 1):
+        tgt = offset_origin(frame, "%d * stile_pitch" % (k - first), None, None, name="JOINT ORIGIN - STUD %d" % k)
         joint_copy(design, frame, sc, ref, tgt, (ev(design, xr(k)[0]), ys[0], ev(design, zs[0]), ev(design, xr(k)[1]),
                                                  ys[1], ev(design, zs[1])), "STUD %d" % k)
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
         out[key].name = key
-    print("step 2-3: frame of %d member parts, %d stud copies at pitch %.2f, 4 mitred corners" % (
-        len(members), round(design.userParameters.itemByName("stile_n_mid").value),
-        design.userParameters.itemByName("stile_pitch").value * 10.0))
+    print("step 2-3: frame of %d member parts, %d stud copies at pitch %.2f, 4 mitred corners%s" % (
+        len(members), n - first, design.userParameters.itemByName("stile_pitch").value * 10.0,
+        "; B2: the cross members round the power unit, the first stud below it and its stub above" if B2_UNIT else ""))
     return members
 
 
+def b2_unit_members(make, xr):
+    """B2 (the Lead's approval of WALL's B2 frame, 2026-11-01): two cross members from the centre stile's bay-side
+    face to the second stud, at the power unit's bottom and top (their faces a rivnut head off the unit, which sits on
+    the heads), in the perimeter's gauge since they carry the unit's 4 rivnuts; the first stud from the bottom rail up
+    to the lower cross member, and a stub of it from the upper cross member to the top rail, carrying the top-front
+    clip zone. All square-cut and welded all round at their T joints (D-131), like the studs."""
+    x_lo, x_hi = "(%s) + tube_w" % X_LOW, "(%s) + 2 * stile_pitch" % X_LOW
+    make("CROSS - LOWER", (x_lo, x_hi), ("xm_z0", "xm_z0 + tube_w"), "x", "tube_t")
+    make("CROSS - UPPER", (x_lo, x_hi), ("xm_z1 - tube_w", "xm_z1"), "x", "tube_t")
+    make("STUD - BELOW UNIT", xr(1), ("(%s) + tube_w" % Z0, "xm_z0"), "z", "stud_t")
+    make("STUD - STUB", xr(1), ("xm_z1", "(%s) - top_h" % Z1), "z", "stud_t")
+
+
 def build_panel(design, root):
-    if POSITION == "B2" and PART in ("panel", "frame"):
-        raise RuntimeError(B2_PENDING)
     out = {}
     want = WANT[PART]
     frame, skin = (new_comp(root, k) if k in want else None for k in ("frame", "skin"))
@@ -296,13 +344,110 @@ def build_panel(design, root):
         build_fill_back(design, root, out, yf, zs, members)
     if frame:
         back_joint_features(design, members, out)
+    if PART == "panel" and ROW == 1:
+        build_ledge_back(design, root, out)
     if PART == "panel":
         place_hardware(design, root, members, out)
-    set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
+    set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE", "CROSS", "STUD"))], "frame",
                  "STEEL BOX TUBE GALVANIZED")
     set_material(design, [b for k, b in out.items() if k.startswith("SKIN")], "skin", "ACP 3 MM EV3038")
     set_material(design, [b for k, b in out.items() if k.startswith("FILL")], "fill", "PET FILL 40 MM")
     return out
+
+
+def build_ledge_back(design, root, out):
+    """The back cassette ledge (the Lead's ruling of 2026-11-01; the side's build_ledge, facing the room at -Y): a
+    galvanized steel angle in sheet metal, its upright on the bottom rail's room face (Y_FRAME_IN), riveted through the
+    rail's LEDGE RIVET holes after welding, its leg ledge_pad_t under the frame's bottom reaching ledge_out toward the
+    room under the tray's bottom return, its pad on the leg; one part for B1 and B2 (211801 COMMON)."""
+    ledge = new_comp(root, "ledge", sheet_metal=True)
+    rule = design.designSheetMetalRules.itemByName("GALV STEEL - CASSETTE LEDGE")
+    if rule is None:
+        rule = design.designSheetMetalRules.addByCopy(ledge.activeSheetMetalRule, "GALV STEEL - CASSETTE LEDGE")
+    rule.thickness.expression = "%.4f mm" % ev(design, "ledge_t")
+    rule.bendRadius.expression = "Thickness"
+    rule.kFactor = 0.44
+    ledge.activeSheetMetalRule = rule
+    occ = [o for o in root.occurrences if o.component == ledge][0]
+    occ.activate()
+    xr = (LEDGE_X0, "%s + ledge_len" % LEDGE_X0)
+    zr = ("(%s) - ledge_pad_t - ledge_t" % Z0, "(%s) + ledge_up" % Z0)
+    want_x = sorted(ev(design, e) for e in xr)
+    want_z = sorted(ev(design, e) for e in zr)
+    yf, t = ev(design, Y_FRAME_IN), ev(design, "ledge_t")
+    want_y = sorted((yf, yf - ev(design, "ledge_out")))
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    try:
+        sk = rect_on_y(design, ledge, Y_FRAME_IN, xr, zr, "LEDGE UPRIGHT OUTLINE")
+        ff = ledge.features.flangeFeatures
+        base = None
+        for orient in (adsk.fusion.FlangeOrientations.SideOneFlangeOrientation,
+                       adsk.fusion.FlangeOrientations.SideTwoFlangeOrientation):
+            bfi = ff.createBaseFlangeInput([sk.profiles.item(0)])
+            bfi.orientation = orient
+            f = ff.add(bfi)
+            b = bbox(f.bodies.item(0))
+            if abs(b[4] - yf) < 0.01 and abs(b[1] - (yf - t)) < 0.01:      # the room is toward -Y
+                base = f
+                break
+            f.deleteMe()
+        if base is None:
+            raise RuntimeError("back ledge: no base flange side lies on the room side of the rail's face")
+        base.name = "BASE - LEDGE UPRIGHT ON THE BOTTOM RAIL"
+        body = ledge.bRepBodies.item(0)
+        yr_ = yf - t
+        eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
+               and all(abs(v.geometry.y * 10 - yr_) < 0.01 and abs(v.geometry.z * 10 - want_z[0]) < 0.01
+                       for v in (e.startVertex, e.endVertex))]
+        if len(eds) != 1:
+            raise RuntimeError("back ledge: expected 1 bottom edge on the upright's room face, got %d" % len(eds))
+        leg = None
+        for pos in (adsk.fusion.BendPositionTypes.InsideBendPositionType,
+                    adsk.fusion.BendPositionTypes.OutsideBendPositionType):
+            for flip in (False, True):
+                # outer-faces datum: the height runs from the upright's outer face to the tip (the side probe)
+                efi = ff.createEdgeFlangeInput([], vi("ledge_out"))
+                efi.edgeDefinitions.addFullLengthEdge(eds[0])
+                efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
+                efi.bendPositionType = pos
+                efi.isFlipped = flip
+                f = ff.add(efi)
+                b = bbox(ledge.bRepBodies.item(0))
+                fits = all(abs(g - w) < 0.05 for g, w in zip((b[0], b[3], b[1], b[4], b[2], b[5]),
+                                                             want_x + want_y + want_z))
+                if fits and f.healthState == healthy:
+                    leg = f
+                    break
+                f.deleteMe()
+            if leg:
+                break
+        if leg is None:
+            raise RuntimeError("back ledge: no bend position or side keeps the leg's outer faces on the outline")
+        leg.name = "FLANGE - LEDGE LEG UNDER THE CASSETTE"
+        body = ledge.bRepBodies.item(0)
+        body.name = "LEDGE - STEEL ANGLE UNDER THE CASSETTE"
+        pl = {"x": "%s + ledge_rivet_e" % LEDGE_X0, "z": "(%s) + ledge_rivet_z" % Z0}
+        h = hole(design, ledge, body, "y", "(%s) - ledge_t" % Y_FRAME_IN, +1, pl, "ledge_rivet_d", "ledge_t",
+                 "LEDGE RIVET HOLE 1", csk=("ledge_csk_d", "rivet_csk_angle"))
+        pattern_feat(ledge, [h], "x", "ledge_rivet_n", "ledge_rivet_pitch", "LEDGE RIVET HOLES")
+        body = ledge.bRepBodies.item(0)
+        big = max((fc for fc in body.faces if fc.geometry.objectType == adsk.core.Plane.classType()
+                   and abs(adsk.core.Plane.cast(fc.geometry).normal.y) > 0.99), key=lambda fc: fc.area)
+        fp = ledge.flatPattern or ledge.createFlatPattern(big)
+        print("FLAT|%s|%s" % (ledge.partNumber, size(bbox(fp.flatBody))))
+    finally:
+        design.activateRootComponent()
+    body = ledge.bRepBodies.item(0)
+    set_material(design, [body], "ledge", "GALVANIZED STEEL SHEET")
+    out[body.name] = body
+    pad = new_comp(root, "pad")
+    py = ("(%s) - ledge_t - ledge_r - 0.5 mm - ledge_pad_w" % Y_FRAME_IN, "(%s) - ledge_t - ledge_r - 0.5 mm" % Y_FRAME_IN)
+    pb = box(design, pad, "LEDGE PAD", xr, py, ("(%s) - ledge_pad_t" % Z0, Z0)).bodies.item(0)
+    pb.name = "PAD - ON THE LEDGE UNDER THE CASSETTE (HOLD)"
+    set_material(design, [pb], "pad", "SOFT PAD")
+    out[pb.name] = pb
+    print("step 6b: cassette ledge %s, %.2f long, its leg at Z %.2f, with the pad (%s)" % (
+        ledge.partNumber, want_x[1] - want_x[0], want_z[0] + t, pad.partNumber))
 
 
 def _outer_x():
@@ -343,6 +488,43 @@ def back_notches(design, zs):
     return out
 
 
+def back_bays(design, zs):
+    """[(x range, z range)] of the fill's bays, in FILL-PIECES order: between the studs, rail to rail; on B2 the first
+    two bays are cut by the cross members round the power unit (the Lead's approval of WALL's B2 frame, 2026-11-01),
+    so each gives a piece below the unit and one above it, and the unit's own space between them takes no fill."""
+    n = int(round(design.userParameters.itemByName("stile_n_mid").value))
+    xs = [("(%s) + tube_w + %d * stile_pitch" % (X_LOW, k), "(%s) + %d * stile_pitch" % (X_LOW, k + 1))
+          for k in range(n + 1)]
+    if not B2_UNIT:
+        return [(x, zs) for x in xs]
+    lo, up = (zs[0], "xm_z0"), ("xm_z1", zs[1])
+    # and a 7th: the piece between the mains and LAN channels in bay 1 below the unit (B2_ISLAND)
+    return [(xs[0], lo), (xs[1], lo), (xs[0], up), (xs[1], up)] + [(x, zs) for x in xs[2:]] + [B2_ISLAND]
+
+
+# B2's fill behind the skin (ELECTRICAL's envelopes and channels; WALL's cut, 2026-11-01): in bay 1 below the unit,
+# cut right through the batt (D-128). The mains cord runs up the cleared strip by the centre stile (its channel X 80 to
+# 100) to Z 750, then over to its passage at X 127 in the jog under the lower cross member, an S-bend of about 70
+# radius; the LAN leaves the jack's top along a 49 band (Z 391 to 440, room for its 24 bend radius), over to X 199 to
+# 215 and up to its passage at X 207, so the two stay 50 or more apart everywhere (62 at the band and at the jog;
+# ELECTRICAL's bend check, 2026-11-01 18:05 UTC). The fill between them is a piece of its own (B2_ISLAND, the 7th bay),
+# so neither piece has a thin bridge. Each cut (label, x range, z range), in pod X and Z.
+_XIN = "(%s) + tube_w" % X_LOW                        # the centre stile's bay-side face
+B2_CUTS = [
+    ("INLET REAR BOX", ("el_inlet_x - el_box_l", "el_inlet_x + el_box_r"), ("el_inlet_z - el_box_h", "el_inlet_z + el_box_h")),
+    ("UNDER THE JACK", ("el_ch_m_x1", "el_lan_x + el_jack_h"), ("el_inlet_z + el_box_h", "el_lan_z + el_jack_h")),
+    ("MAINS CHANNEL", (_XIN, "el_ch_m_x1"), ("el_inlet_z - el_box_h", "el_ch_jog_z")),
+    ("MAINS JOG", (_XIN, "el_ch_jog_x1"), ("el_ch_jog_z", "xm_z0")),
+    ("LAN CHANNEL AND THE ISLAND", ("el_ch_m_x1", "el_ps_lan_x + el_ch_l_w / 2"), ("el_lan_z + el_jack_h", "xm_z0")),
+]
+B2_ISLAND = (("el_ch_m_x1", "el_ps_lan_x - el_ch_l_w / 2"), ("el_lan_z + el_jack_h", "xm_z0"))
+B2_ISLAND_NOTCHES = [
+    ("LAN BAND", ("el_lan_x - el_ch_l_w / 2", "el_ps_lan_x - el_ch_l_w / 2"),
+     ("el_lan_z + el_jack_h", "el_lan_z + el_jack_h + el_ch_l_band")),
+    ("MAINS JOG", ("el_ch_m_x1", "el_ch_jog_x1"), ("el_ch_jog_z", "xm_z0")),
+]
+
+
 def build_fill_back(design, parent, out, yf, zs, members):
     """D-120: each bay's piece a numbered part straight in the panel assembly (D-123; WALL's FILL-PIECES list gives
     each bay's form and how it goes in): the box of its bay with the notches beside every bolt this panel drives,
@@ -350,59 +532,64 @@ def build_fill_back(design, parent, out, yf, zs, members):
     part, as cut or turned round (the library's place_piece_copies)."""
     nums = fill_numbers(ARGS["repo_root"], CODE)
     fits = fill_fits(ARGS["repo_root"], CODE)
-    n = int(round(design.userParameters.itemByName("stile_n_mid").value))
-    bays = [("(%s) + tube_w + %d * stile_pitch" % (X_LOW, k), "(%s) + %d * stile_pitch" % (X_LOW, k + 1))
-            for k in range(n + 1)]
+    bays = back_bays(design, zs)
     if sorted(nums) != list(range(1, len(bays) + 1)):
         raise RuntimeError("fill numbers for %s cover bays %s; the frame has %d bays" % (CODE, sorted(nums), len(bays)))
     ys = sorted(yf, key=lambda e: ev(design, e))
     pieces, built = [], {}
-    for k, xr in enumerate(bays):
+    for k, (xr, zr) in enumerate(bays):
         pn = nums[k + 1][0]
         if pn in built:
-            pieces.append((None, xr, pn))
+            pieces.append((None, xr, zr, pn))
             continue
         c = child(parent, *nums[k + 1])[0]
-        b = box(design, c, "FILL PIECE BAY %d" % (k + 1), xr, yf, zs).bodies.item(0)
+        b = box(design, c, "FILL PIECE BAY %d" % (k + 1), xr, yf, zr).bodies.item(0)
         b.name = "FILL - BAY %d" % (k + 1)
-        built[pn] = (c, None, (ys[0], xr[0], zs[0]), "x")
-        pieces.append((c, xr, pn))
+        built[pn] = (c, None, (ys[0], xr[0], zr[0]), "x")
+        pieces.append((c, xr, zr, pn))
 
-    def bay_of(xr):
-        xm = (ev(design, xr[0]) + ev(design, xr[1])) / 2.0
-        hit = [i for i, (_c, (x0, x1), _pn) in enumerate(pieces)
-               if min(ev(design, x0), ev(design, x1)) < xm < max(ev(design, x0), ev(design, x1))]
-        if len(hit) != 1:
-            raise RuntimeError("fill notch at X %.1f falls in %d pieces" % (xm, len(hit)))
-        return hit[0]
+    def mid(r):
+        return (ev(design, r[0]) + ev(design, r[1])) / 2.0
+
+    def inside(v, r):
+        return min(ev(design, r[0]), ev(design, r[1])) < v < max(ev(design, r[0]), ev(design, r[1]))
+
+    def bay_of(xr, zr):
+        hit = [i for i, (_c, bx, bz, _pn) in enumerate(pieces) if inside(mid(xr), bx) and inside(mid(zr), bz)]
+        if len(hit) > 1 or (not hit and not B2_UNIT):
+            raise RuntimeError("fill notch at X %.1f, Z %.1f falls in %d pieces" % (mid(xr), mid(zr), len(hit)))
+        return hit[0] if hit else None
     ym = (ev(design, yf[0]) + ev(design, yf[1])) / 2.0
-    copy_open = {}
+    copy_open, skipped = {}, []
     for label, xr, zr in back_notches(design, zs):
-        i = bay_of(xr)
+        i = bay_of(xr, zr)
+        if i is None:                          # B2: a bolt in the power unit's space, where there is no fill
+            skipped.append(label)
+            continue
         c = pieces[i][0]
         if c is None:                          # a copy: its part already carries this notch, as cut or turned
-            copy_open.setdefault(i, []).append(((ev(design, xr[0]) + ev(design, xr[1])) / 2.0, ym,
-                                                (ev(design, zr[0]) + ev(design, zr[1])) / 2.0))
+            copy_open.setdefault(i, []).append((mid(xr), ym, mid(zr)))
             continue
         box(design, c, "FILL NOTCH " + label, xr, yf, zr, "cut", c.bRepBodies.item(0))
-    el_fill_cutouts(design, pieces[0][0], yf)
+    el_fill_cutouts(design, pieces, yf)
     copies = []
-    for i, (c, xr, pn) in enumerate(pieces):
+    for i, (c, xr, zr, pn) in enumerate(pieces):
         if c is None:
-            want = (ev(design, xr[0]), ev(design, ys[0]), ev(design, zs[0]),
-                    ev(design, xr[1]), ev(design, ys[1]), ev(design, zs[1]))
-            corners = {"low": (ys[0], xr[0], zs[0]), "high_turned": (ys[1], xr[1], zs[0])}
+            want = (ev(design, xr[0]), ev(design, ys[0]), ev(design, zr[0]),
+                    ev(design, xr[1]), ev(design, ys[1]), ev(design, zr[1]))
+            corners = {"low": (ys[0], xr[0], zr[0]), "high_turned": (ys[1], xr[1], zr[0])}
             copies.append((pn, want, corners, fits.get(i + 1, "as cut"), copy_open.get(i, [])))
     place_piece_copies(design, parent, built, copies, "FILL PIECE")
-    for c, _xr, _pn in pieces:
+    for c, _xr, _zr, _pn in pieces:
         if c is None:
             continue
         if c.bRepBodies.count != 1:
             raise RuntimeError("fill piece %s split into %d bodies" % (c.name, c.bRepBodies.count))
         b = c.bRepBodies.item(0)
         out[b.name] = b
-    print("step 5: fill, %d piece parts in %d bays (%d copies), notches at every bolt this panel drives" % (
-        len(built), len(pieces), len(copies)))
+    print("step 5: fill, %d piece parts in %d bays (%d copies), notches at every bolt this panel drives%s" % (
+        len(built), len(pieces), len(copies), (" (in the unit's space, no fill: %s)" % ", ".join(skipped))
+        if skipped else ""))
 
 
 def lead_in_d117(design, members):
@@ -458,6 +645,13 @@ def back_joint_features(design, members, out):
         hole(design, bc, body(bc), "z", zb0, +1, {"x": "(%s) %s %s" % (x_slot, sg, half), "y": YC}, "spigot_d", t,
              "BOTTOM RAIL SPIGOT SLOT END %d" % (i + 1))
     if ROW == 1:
+        # the cassette ledge's rivet holes: through the bottom rail's room-side wall (Y_FRAME_IN), made after welding
+        # (J-FRAME-01); the ledge's own countersunk holes match them (build_ledge_back)
+        pl = {"x": "%s + ledge_rivet_e" % LEDGE_X0, "z": "(%s) + ledge_rivet_z" % Z0}
+        r = hole(design, bc, body(bc), "y", Y_FRAME_IN, +1, pl, "ledge_rivet_d", t, "BOTTOM RAIL LEDGE RIVET 1")
+        pattern_feat(bc, [r], "x", "ledge_rivet_n", "ledge_rivet_pitch", "BOTTOM RAIL LEDGE RIVETS")
+        hw_site("BOTTOM RAIL LEDGE RIVET", "y", Y_FRAME_IN, +1, pl, ("x", "ledge_rivet_n", "ledge_rivet_pitch"),
+                washer=False, member="RAIL - BOTTOM", kind="rivet")
         # top rail, nut side of J-WALL-01 to B3/B4: rivnuts at the 220 rule, 2 spigot rivnuts 100 from the ends
         r = hole(design, tc, body(tc), "z", zt1, -1, {"x": x_b1, "y": YC}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
         pattern_feat(tc, [r], "x", n_b, p_b, "TOP RAIL RIVNUTS")
@@ -500,12 +694,46 @@ def back_joint_features(design, members, out):
         # the pin's rivnut has no stop washer: the closing gap is set by the spigots (register 2.10)
         hw_site("CENTRE STILE PIN", "x", xc, -sgn_c, {"y": YC, "z": z_j1}, ("z", "n_side_jnt", "side_jnt_pitch"),
                 washer=False, member="STILE - CENTRE")
+    if B2_UNIT:
+        b2_unit_features(design, members)
     lead_in_d117(design, members)
     for key, (c, _bb) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
     print("step 6: joint features in the member parts: %d hole features (before patterns)" % sum(
         c.features.holeFeatures.count for c, _bb in members.values()))
+
+
+def b2_unit_features(design, members):
+    """B2's power unit fixings and cable passages (ELECTRICAL's inputs, WALL group, 2026-11-01), each in its cross
+    member's own component (D-120), at the tubes' mid-depth (Y 824): 4 rivnuts 838003 in Ø10.00 +0.10 holes (D-163),
+    2 in the lower member's top (the unit sits on their heads) and 2 in the upper member's underside, no stop washer;
+    the mains and LAN passages through the lower member, a bushing hole in its bottom wall (Heyco SB 625-7 and
+    SB 437-5, snapped in from below) and a larger hole in its top wall, which the unit's own bushings line from
+    above. Made after welding and the zinc touch-up, as every joint hole (J-FRAME-01)."""
+    t = "tube_t"
+    lc, uc = members["CROSS - LOWER"][0], members["CROSS - UPPER"][0]
+    zl_bot, zl_top, zu_bot = "xm_z0", "xm_z0 + tube_w", "xm_z1 - tube_w"
+    for i, x in enumerate(("el_rn_xl1", "el_rn_xl2"), 1):
+        hole(design, lc, lc.bRepBodies.item(0), "z", zl_top, -1, {"x": x, "y": YC}, "rivnut_d", t,
+             "LOWER CROSS MEMBER UNIT RIVNUT %d" % i)
+        hw_site("LOWER CROSS MEMBER UNIT %d" % i, "z", zl_top, -1, {"x": x, "y": YC}, washer=False,
+                member="CROSS - LOWER")
+    for i, x in enumerate(("el_rn_xu1", "el_rn_xu2"), 1):
+        hole(design, uc, uc.bRepBodies.item(0), "z", zu_bot, +1, {"x": x, "y": YC}, "rivnut_d", t,
+             "UPPER CROSS MEMBER UNIT RIVNUT %d" % i)
+        hw_site("UPPER CROSS MEMBER UNIT %d" % i, "z", zu_bot, +1, {"x": x, "y": YC}, washer=False,
+                member="CROSS - UPPER")
+    for name in ("MAINS", "LAN"):
+        x, k = "el_ps_%s_x" % name.lower(), name.lower()
+        hole(design, lc, lc.bRepBodies.item(0), "z", zl_bot, +1, {"x": x, "y": YC}, "el_ps_%s_db" % k, t,
+             "LOWER CROSS MEMBER %s PASSAGE, BOTTOM WALL" % name)
+        hole(design, lc, lc.bRepBodies.item(0), "z", zl_top, -1, {"x": x, "y": YC}, "el_ps_%s_dt" % k, t,
+             "LOWER CROSS MEMBER %s PASSAGE, TOP WALL" % name)
+    for c in (lc, uc):
+        if c.bRepBodies.count != 1:
+            raise RuntimeError("%s split into %d bodies at the unit's holes" % (c.name, c.bRepBodies.count))
+    print("step 6c: B2's cross members: 4 unit rivnut holes, the mains and LAN passages")
 
 
 def rect_on_y(design, comp, y_expr, xr, zr, label):
@@ -608,6 +836,16 @@ def el_tray_features(design, tray):
         return
     body = tray.bRepBodies.item(0)
     outline = (span(design, XC_LOW, XC_HIGH), span(design, Z0, Z_CASS1))
+    # ELECTRICAL's cable-tie holes (Heyco 3904 push-mount, Ø el_tie_d) through the back sheet, cut from the frame
+    # side toward the room; their wings sit behind the sheet (check_tie_holes.py checks them clear of the members)
+    ties = ([("el_tie_b2_x%d" % i, "el_trunk_z") for i in range(1, 4)] if POSITION == "B2" else
+            [("el_lt_x", "el_tie_b4_z%d" % i) for i in range(1, 6)])
+    for k, (x, z) in enumerate(ties, 1):
+        el_inside(design, "TIE %d" % k, [("(%s) - el_tie_d / 2" % x, "(%s) + el_tie_d / 2" % x) + outline[0],
+                                         ("(%s) - el_tie_d / 2" % z, "(%s) + el_tie_d / 2" % z) + outline[1]], 5.0)
+        round_cut(design, tray, tray.bRepBodies.item(0), "y", "(%s) + 1 mm" % Y_TRAY_BACK, -1, {"x": x, "z": z},
+                  "el_tie_d", "tray_t + 2 mm", "TRAY CABLE TIE %d" % k)
+    body = tray.bRepBodies.item(0)
     grm = ("el_lt_x", "el_y_bg")
     if POSITION == "B2":
         el_inside(design, "the power unit cut-out", [("el_cut_x0", "el_cut_x1") + outline[0],
@@ -626,6 +864,7 @@ def el_tray_features(design, tray):
         round_cut(design, tray, body, "z", "(%s) - 1 mm" % Z0, +1, {"x": grm[0], "y": grm[1]}, "el_grm_d",
                   "tray_t + 2 mm", "HOLE G-B2-B4 IN THE BOTTOM RETURN")
         names = "G-B2-B4"
+    names += ", %d cable-tie holes" % len(ties)
     if tray.bRepBodies.count != 1:
         raise RuntimeError("the tray split into %d bodies at ELECTRICAL's features" % tray.bRepBodies.count)
     print("step 2b: ELECTRICAL features in %s's tray: %s" % (POSITION, names))
@@ -665,37 +904,40 @@ def el_skin_holes(design, skin, plate):
     if POSITION != "B2":
         return plate
     sx_, sz_ = span(design, XS_LOW, XS_HIGH), ("(%s) + skin_setback" % Z0, "(%s) - skin_setback" % Z1)
-    for label, z in (("MAINS INLET", "el_inlet_z"), ("LAN FEED-THROUGH", "el_lan_z")):
-        el_inside(design, label, [("el_inlet_x - el_inlet_d / 2", "el_inlet_x + el_inlet_d / 2") + sx_,
+    for label, x, z in (("MAINS INLET", "el_inlet_x", "el_inlet_z"), ("LAN FEED-THROUGH", "el_lan_x", "el_lan_z")):
+        el_inside(design, label, [("%s - el_inlet_d / 2" % x, "%s + el_inlet_d / 2" % x) + sx_,
                                   ("(%s) - el_inlet_d / 2" % z, "(%s) + el_inlet_d / 2" % z) + sz_], 20.0)
-        hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1, {"x": "el_inlet_x", "z": z}, "el_inlet_d",
+        hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1, {"x": x, "z": z}, "el_inlet_d",
              "skin_t + 1 mm", "SKIN %s" % label)
-    print("step 4b: B2 skin: the inlet and LAN holes")
+        # its two M3 screw holes on the diagonal (Neutrik's drawings; ELECTRICAL's B2 inputs, 2026-11-01)
+        for i, sg in enumerate(("+", "-"), 1):
+            hole(design, skin, skin.bRepBodies.item(0), "y", Y_OUT, -1,
+                 {"x": "%s %s el_scr_dx" % (x, sg), "z": "(%s) %s el_scr_dz" % (z, sg)}, "el_scr_d",
+                 "skin_t + 1 mm", "SKIN %s SCREW %d" % (label, i))
+    if skin.bRepBodies.count != 1:
+        raise RuntimeError("the skin split into %d bodies at the connectors' holes" % skin.bRepBodies.count)
+    print("step 4b: B2 skin: the inlet's and the LAN jack's Ø24 holes, each with its two Ø3.2 screw holes")
     return skin.bRepBodies.item(0)
 
 
-def el_fill_cutouts(design, piece, yf):
-    """Panel B2: bay 1's fill piece cut away where ELECTRICAL's parts sit: the power unit (its cut-out size, run on
-    to the first stud so no sliver of fill is left beside it), the mains and LAN sleeve, and the inlet and LAN
-    connectors behind the skin (one cut-out to the sleeve, so no thin strip stays between them). Right through
-    the piece: a knife cut (D-128)."""
+def el_fill_cutouts(design, pieces, yf):
+    """Panel B2: ELECTRICAL's cut-outs behind the skin (B2_CUTS) through bay 1's piece below the unit, and the two notches
+    of the piece between the channels (B2_ISLAND_NOTCHES), each a knife cut right through the batt (D-128). The unit's
+    space between the cross members takes no fill (back_bays)."""
     if POSITION != "B2":
         return
     ys = ("(%s) - 1 mm" % yf[1], "(%s) + 1 mm" % yf[0])
-    cuts = [("FILL CUT-OUT POWER UNIT", ("el_cut_x0", "(%s) + stile_pitch + tube_w / 2" % X_LOW), ("el_cut_z0", "el_cut_z1")),
-            ("FILL CUT-OUT SLEEVE", ("el_sl_x - el_sl_w / 2", "el_sl_x + el_sl_w / 2"),
-             ("el_inlet_z - el_inlet_d / 2", "el_cut_z0")),
-            ("FILL CUT-OUT INLET AND LAN", ("el_inlet_x - el_inlet_d / 2", "el_sl_x + el_sl_w / 2"),
-             ("el_inlet_z - el_inlet_d / 2", "el_lan_z + el_inlet_d / 2"))]
-    pb = bbox(piece.bRepBodies.item(0))
-    for label, xr, zr in cuts:
-        want = [ev(design, e) for e in xr + zr]
-        if not (pb[0] < max(want[:2]) and pb[3] > min(want[:2]) and pb[2] < max(want[2:]) and pb[5] > min(want[2:])):
-            raise RuntimeError("%s misses bay 1's fill piece" % label)
-        box(design, piece, label, xr, ys, zr, "cut", piece.bRepBodies.item(0))
-        if piece.bRepBodies.count != 1:
-            raise RuntimeError("%s split bay 1's fill piece" % label)
-    print("step 5b: B2 fill: bay 1's piece cut for the power unit, the sleeve, the inlet and LAN")
+    for (c, _xr, _zr, _pn), cuts in ((pieces[0], B2_CUTS), (pieces[6], B2_ISLAND_NOTCHES)):
+        pb = bbox(c.bRepBodies.item(0))
+        for label, xr, zr in cuts:
+            want = [ev(design, e) for e in xr + zr]
+            if not (pb[0] < max(want[:2]) and pb[3] > min(want[:2]) and pb[2] < max(want[2:]) and pb[5] > min(want[2:])):
+                raise RuntimeError("FILL CUT-OUT %s misses %s" % (label, c.name))
+            box(design, c, "FILL CUT-OUT " + label, xr, ys, zr, "cut", c.bRepBodies.item(0))
+            if c.bRepBodies.count != 1:
+                raise RuntimeError("FILL CUT-OUT %s split %s" % (label, c.name))
+    print("step 5b: B2 fill: bay 1's piece cut for the inlet's box, the jack, the mains and LAN channels; the piece "
+          "between them notched for the LAN band and the mains jog")
 
 
 def build_tray_y(design, root, tray, xr, zr):
@@ -799,8 +1041,6 @@ def build_tray_y(design, root, tray, xr, zr):
 
 
 def build_cassette(design, root):
-    if POSITION == "B2":
-        raise RuntimeError(B2_PENDING)     # its clip zones sit on the studs
     out = {}
     want = WANT[PART]
     tray = new_comp(root, "tray", sheet_metal=True) if "tray" in want else None
@@ -838,6 +1078,8 @@ def build_cassette(design, root):
     for zi, zz in enumerate(zs):
         for xi, xx in enumerate(xs):
             n += 1
+            if B2_UNIT and zi == 1 and xi == 0:     # B2's top-front zone on the first stud's stub above the unit
+                zz = ("(%s) - clip_top_dz - clip_zone_h / 2" % Z_CASS1, "(%s) - clip_top_dz + clip_zone_h / 2" % Z_CASS1)
             bd = box(design, clip, "CLIP ZONE %d" % n, xx, (Y_TRAY_BACK, Y_FRAME_IN), zz).bodies.item(0)
             bd.name = "HOLD - CLIP ZONE %d (%s %s)" % (n, "BOTTOM" if zi == 0 else "TOP", "LOW X" if xi == 0 else "HIGH X")
             out[bd.name] = bd

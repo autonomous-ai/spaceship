@@ -149,6 +149,55 @@ DOC_NAME = "%s_%s_%s_CAD" % (PARTS[ROOT_KEY][0], REV, re.sub(r"[^A-Z0-9]+", "-",
 
 # name, expression, unit, status, source. A parameter may use any skeleton
 # parameter and the ones above it. Statuses per conventions.md section 9.
+def stud_params(code):
+    """The studs' centres from the frame's front end, in Y order (stud_c1 the front one). Each of the five D-131 studs
+    is set from the bolts it stands between, so every bolt stays 30 or more clear of every stud (R-J14: WALL moves a
+    stile, never a bolt) and no bay is over the skin's 2 mm limit (stile_pitch_max); the rule holds while the bolts
+    move with the panel length (edit test). R1 adds two at fixed Y for INTERIOR's ledge brackets (the Lead's ruling of
+    2026-11-01 on INTERIOR's load check: brackets on Y -240, 103.6, 329.1 and 700), so they stay put when the wall's
+    depth changes."""
+    five = [("bolt_edge + 50 mm", "50 past the 1st bolt: its face 40 clear of it (R-J14)"),
+            ("bolt_edge + len_bolt_pitch - 50 mm", "50 before the 2nd bolt (R-J14)"),
+            ("bolt_edge + 1.5 * len_bolt_pitch", "midway between the 2nd and 3rd bolts"),
+            ("bolt_edge + 2 * len_bolt_pitch + 50 mm", "50 past the 3rd bolt (R-J14)"),
+            ("bolt_edge + 3 * len_bolt_pitch - 50 mm", "50 before the 4th bolt (R-J14)")]
+    extra = []
+    if code == "R1":
+        # Y -240 and 700 at the P04 size (the ledge Y -259.5 to 740.5): the left one held from the frame's front end, so
+        # it moves with the front (and the air column) and keeps 30 clear of the bolts when the wall's depth changes;
+        # the right one from the frame's back end, where it stays
+        _IN = "the Lead's ruling of 2026-11-01 on INTERIOR's load check (WALL group): its ledge bracket stud at Y "
+        extra = [("int_stud_d1", "402.74 mm", "mm", "calculation",
+                  _IN + "-240 (the ledge's left end) at the P04 size: 402.74 behind the frame's front end (Y -642.74)"),
+                 ("int_stud_d2", "144 mm", "mm", "calculation",
+                  _IN + "700 (the ledge's right end) at the P04 size: 144 before the frame's back end (Y 844)")]
+        rows = [five[0], ("int_stud_d1", "INTERIOR's ledge bracket at Y -240")] \
+            + five[1:] + [("frm_len - int_stud_d2", "INTERIOR's ledge bracket at Y 700")]
+    else:
+        rows = five
+    return extra + [("stud_c%d" % k, e, "mm", "calculation", why) for k, (e, why) in enumerate(rows, 1)]
+
+
+# INTERIOR's fixings on the studs (the Lead's rulings of 2026-11-01 on CEILING's load check, WALL group): an M6 into a
+# CAL2 rivnut 838003 on the stud's room face, on INTERIOR's Ø12 steel stand-off from the stud to 5 proud of the felt,
+# through Ø16 clearance holes in the tray and felt, so the floating lining never touches it (D-17). R1: the work wall
+# ledge's 4 brackets; R2: the screen rail. The studs (stud_c numbers, in Y order) and each fixing's two rivnut heights.
+INT_FIX = {"R1": (2, 4, 5, 7), "R2": (2, 5)}
+_INT = "the Lead's ruling of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group)"
+INT_PARAMS = {
+    "R1": [("int_rn_z1", "815 mm", "mm", "confirmed", _INT + ": each ledge bracket's lower rivnut, Z 815"),
+           ("int_rn_z2", "1045 mm", "mm", "confirmed", _INT + ": each ledge bracket's upper rivnut, Z 1045")],
+    "R2": [("int_rn_z1", "1320 mm", "mm", "confirmed",
+            _INT + ": the screen rail's lower rivnut on each of its 2 studs, Z 1320, clear of R2's bottom member"),
+           ("int_rn_z2", "1380 mm", "mm", "confirmed", _INT + ": the screen rail's upper rivnut, Z 1380 (rail centre 1350)")],
+}
+INT_COMMON = [
+    ("int_so_d", "12 mm", "mm", "source", _INT + ": INTERIOR's steel stand-off, Ø12, from the stud to 5 proud of the felt"),
+    ("int_clr_d", "16 mm", "mm", "confirmed",
+     _INT + ": the clearance hole in the tray and the felt, 2 round the stand-off, so the lining floats free of it (D-17)"),
+]
+
+
 WALL_PARAMS = [
     # outer panel
     ("tube_w", "20 mm", "mm", "confirmed",
@@ -189,9 +238,11 @@ WALL_PARAMS = [
     ("corner_w", "40 mm", "mm", "confirmed",
      "the side panel's back member is 40 x 40 x 1.2 (PM ruling on the joints register, item 3, 2026-10-31; "
      "register F2, FR-06): the back corner joint needs a 37+ mm overlap for the rivnut and the bolt"),
-    ("stile_n_mid", "5", "", "calculation",
+    ("stile_n_mid", "7" if CODE == "R1" else "5", "", "calculation",
      "D-131 sample (PM 2026-11-01): 5 studs, placed clear of the bolts (stud_c1 to stud_c5): 4 even studs about 300 "
-     "apart pass the skin's 2 mm limit but stand 14 and 24 mm from two bolts, under R-J14's 30"),
+     "apart pass the skin's 2 mm limit but stand 14 and 24 mm from two bolts, under R-J14's 30"
+     + ("; R1 two more, at Y -240 and 700, for INTERIOR's ledge brackets (the Lead's ruling of 2026-11-01 on "
+        "INTERIOR's load check), numbered in Y order" if CODE == "R1" else "")),
     ("top_h", "tube_w" if ROW == 1 else "corner_w", "mm", "confirmed" if ROW == 2 else "calculation",
      "top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling "
      "R-J3, joints register FR-06)"),
@@ -245,11 +296,7 @@ WALL_PARAMS = [
     # the studs' centres from the frame's front end, each set from the bolts it stands between, so every bolt stays 30
     # or more clear of every stud (R-J14: WALL moves a stile, never a bolt) and no bay is over the skin's 2 mm
     # limit (stile_pitch_max); the rule holds while the bolts move with the panel length (edit test)
-    ("stud_c1", "bolt_edge + 50 mm", "mm", "calculation", "50 past the 1st bolt: its face 40 clear of it (R-J14)"),
-    ("stud_c2", "bolt_edge + len_bolt_pitch - 50 mm", "mm", "calculation", "50 before the 2nd bolt (R-J14)"),
-    ("stud_c3", "bolt_edge + 1.5 * len_bolt_pitch", "mm", "calculation", "midway between the 2nd and 3rd bolts"),
-    ("stud_c4", "bolt_edge + 2 * len_bolt_pitch + 50 mm", "mm", "calculation", "50 past the 3rd bolt (R-J14)"),
-    ("stud_c5", "bolt_edge + 3 * len_bolt_pitch - 50 mm", "mm", "calculation", "50 before the 4th bolt (R-J14)"),
+] + stud_params(CODE) + [
     # lining cassette
     ("felt_t", "9 mm", "mm", "source", "plan VT03-PET 9 mm PET felt; HW-SEL A3; D-31 (the factory's felt)"),
     ("tray_t", "0.5 mm", "mm", "confirmed", "D-37: galvanised steel tray 0.5 mm"),
@@ -301,6 +348,7 @@ WALL_PARAMS = [
 # the cassette returns, felt-only holes, and the inlet holes and fill cut-outs in panel B2. Same names as
 # ELECTRICAL's model with an el_ prefix, same expressions, so a skeleton edit moves them as it moves ELECTRICAL's.
 _EL = "ELECTRICAL P01 (electrical_model.py, PR #64)"
+_ELB2 = "ELECTRICAL's B2 inputs (WALL group, 2026-11-01)"
 EL_PARAMS = [
     ("el_trunk_z", "1100 mm", "mm", "assumption", _EL + " trunk_z: the cable trunk height in B2-CASS and R1-CASS, "
                                                          "above the ledge (about Z 1000), below the R1/R2 joint"),
@@ -311,6 +359,14 @@ EL_PARAMS = [
      _EL + " y_kit: the voice kit drop, halfway between the column's back face and the back lining (Y 240.5, D-70)"),
     ("el_y_cx", "pod_d / 2 - wall_depth + el_col_d - el_col_skin - el_ch_w / 2", "mm", "calculation",
      _EL + " y_cx: where the trunk leaves R1-CASS's felt into the column chase (Y -298)"),
+    # FX-COL (ELECTRICAL in WALL's group, 2026-11-01: the column route agreed with CEILING, AIR's side matching): the
+    # trunk's way from R1-CASS's gap into the air column, felt only, hidden behind the column, passing the trunk's mated
+    # plug pair (its joint and slack in R1-CASS's gap from Y -338 to -118, Z 1085 to 1188.5)
+    ("el_fx_back", "27 mm", "mm", "source", "ELECTRICAL's y_fx: FX-COL's centre 27 in front of the air column's back "
+                                            "face (Y -312 at the P04 size), so it follows the column in an edit"),
+    ("el_y_fx", "pod_d / 2 - wall_depth + el_col_d - el_fx_back", "mm", "calculation", "ELECTRICAL's y_fx: Y -312"),
+    ("el_z_fx", "1162.5 mm", "mm", "source", "ELECTRICAL's z_fx: FX-COL's centre height, Z 1162.5"),
+    ("el_fx_d", "32 mm", "mm", "source", "ELECTRICAL's fx_d: Ø32, to pass the trunk's mated plug pair"),
     ("el_grm_d", "19.1 mm", "mm", "source", _EL + " grm_d: the hole for the Heyco 2836 SB 750-625 bushing (maker "
                                                   "page); PM 2026-10-31: 19.1, not 20"),
     ("el_grm_s", "12 mm", "mm", "assumption", _EL + " grm_s: felt-only hole for a single cable"),
@@ -327,8 +383,8 @@ EL_PARAMS = [
     ("el_shelf_d", "16 mm", "mm", "assumption", _EL + " FX-SHELF: felt hole for the light shelf feed"),
     ("el_pu_x0", "95 mm", "mm", "assumption", _EL + " pu_x0: the power unit's left side, clear of the closing seam "
                                                     "member and its pin-bolt pocket"),
-    ("el_pu_w", "296 mm", "mm", "source", "ELECTRICAL's final unit size 296 x 260 x 72 (PM 2026-10-31 20:38 UTC): "
-                                          "X 95 to 391, 4.75 clear of B2's first stud"),
+    ("el_pu_w", "296 mm", "mm", "source", "ELECTRICAL's final unit size 296 x 260 x 72 (PM 2026-10-31 20:38 UTC; "
+                                          "unchanged in its B2 inputs of 2026-11-01): X 95 to 391, on B2's cross members"),
     ("el_pu_h", "260 mm", "mm", "source", "ELECTRICAL's final unit size (PM 2026-10-31 20:38 UTC): Z 870 to 1130"),
     ("el_pu_zc", "1000 mm", "mm", "confirmed", _EL + " pu_zc: the socket and LAN at the ledge height (D-70)"),
     ("el_pu_clr", "4 mm", "mm", "assumption", _EL + " pu_clr: the gap round the frame-mounted unit, so the cassette "
@@ -365,18 +421,98 @@ EL_PARAMS = [
     ("el_inlet_d", "24 mm", "mm", "source", _EL + " inlet_d: powerCON TRUE1 TOP cut-out 23.8, etherCON NE8FDP 24"),
     ("el_sl_x", "el_inlet_x + 30 mm", "mm", "calculation", _EL + " sl_x: the mains and LAN sleeve's centre (X 150)"),
     ("el_sl_w", "20 mm", "mm", "assumption", _EL + " SLEEVE: the sleeve's 20 x 20 envelope"),
+    # B2 under D-131 (the Lead's approval of WALL's B2 frame, 2026-11-01): the unit sits on two welded cross members
+    # (from the centre stile to the second stud) and fixes into them with 4 M6 rivnuts 838003 in Ø10.00 +0.10 holes
+    # (D-163) at the tubes' mid-depth; the mains and LAN cross the lower one through passages (ELECTRICAL's inputs
+    # in WALL's group, 2026-11-01)
+    ("el_rn_xu1", "110 mm", "mm", "source", _ELB2 + ": the upper cross member's first unit rivnut, in its underside"),
+    ("el_rn_xu2", "376 mm", "mm", "source", _ELB2 + ": the upper cross member's second unit rivnut, in its underside"),
+    ("el_rn_xl1", "160 mm", "mm", "source",
+     _ELB2 + ": the lower cross member's first unit rivnut, in its top (not 110: that clashed with the mains passage)"),
+    ("el_rn_xl2", "376 mm", "mm", "source", _ELB2 + ": the lower cross member's second unit rivnut, in its top"),
+    ("el_ps_mains_x", "127 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 17:47 UTC): the mains cord's passage through the lower cross member, moved "
+     "from X 113 so the unit's Ø15.9 entry keeps 2 diameters (31.8) from the free edge at its bottom wall's open corner"),
+    ("el_ps_mains_db", "15.9 mm", "mm", "source",
+     _ELB2 + ": the mains passage in the member's bottom wall, for the Heyco SB 625-7 bushing snapped in from below"),
+    ("el_ps_mains_dt", "20 mm", "mm", "source",
+     _ELB2 + ": the mains passage in the member's top wall, lined by the unit's own bushing from above"),
+    ("el_ps_lan_x", "207 mm", "mm", "source", _ELB2 + ": the LAN cable's passage through the lower cross member"),
+    ("el_ps_lan_db", "11.1 mm", "mm", "source",
+     _ELB2 + ": the LAN passage in the member's bottom wall, for the Heyco SB 437-5 bushing snapped in from below"),
+    ("el_ps_lan_dt", "14 mm", "mm", "source",
+     _ELB2 + ": the LAN passage in the member's top wall, lined by the unit's own bushing from above"),
+    # the LAN jack's column, moved right so the LAN keeps 50 from the mains everywhere (the Lead's default, ELECTRICAL's
+    # confirmation, 2026-11-01): 57 from the jack's flange to the mains channel at X 100
+    ("el_lan_x", "170 mm", "mm", "source", _ELB2 + ": the LAN jack at X 170, Z 375, the same cut-out, turned 180°"),
+    # the fill cut behind the skin (ELECTRICAL's envelopes and channels, 2026-11-01; WALL's cut agreed the same day)
+    ("el_box_l", "54 mm", "mm", "source", _ELB2 + ": the inlet's rear box and cord grip, X 66 to 148: 54 left of the inlet"),
+    ("el_box_r", "28 mm", "mm", "source", _ELB2 + ": the rear box 28 right of the inlet"),
+    ("el_box_h", "34 mm", "mm", "source", _ELB2 + ": the rear box Z 279 to 347: 34 each side of the inlet"),
+    ("el_jack_h", "16 mm", "mm", "source", _ELB2 + ": the jack's body X 154 to 186, Z 359 to 391: 16 round its centre"),
+    ("el_ch_m_x1", "100 mm", "mm", "source", _ELB2 + ": the mains cord's channel up at X 80 to 100, 20 wide; WALL "
+                                             "clears the fill from the centre stile to X 100 (no strip by its notches)"),
+    ("el_ch_jog_z", "750 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 18:05 UTC): the mains cord's jog over to its passage starts at Z 750, not "
+     "809, so its S-bend has about 70 of radius; the cord, Southwire's 105 °C SJEOOW 14/3 at 9.2, bends no tighter "
+     "than 4 x its diameter, 37 (its maker's sheet, ELECTRICAL 18:28 UTC)"),
+    ("el_ch_jog_x1", "el_ps_mains_x + 10 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 17:47 UTC): the mains cord's jog ends 10 past its passage, at X 137"),
+    ("el_ch_l_w", "16 mm", "mm", "source", _ELB2 + ": the LAN cable's channel 16 wide, up from the jack's top"),
+    ("el_ch_l_band", "49 mm", "mm", "source",
+     "ELECTRICAL in WALL's group (2026-11-01 18:05 UTC): the LAN band along the jack's top, Z 391 to 440, not 407: the "
+     "Cat6 bends no tighter than 4 x its diameter, 24, so it needs about 46 of height to move the 37 over to its riser"),
+    ("el_scr_d", "3.2 mm", "mm", "source",
+     _ELB2 + ": each connector's two screw holes for M3 screws with nuts (Neutrik's own drawings: powerCON TRUE1 "
+             "TOP NAC3MPX-TOP, etherCON NE8FDY-C6-B; D-133)"),
+    ("el_scr_dx", "9.5 mm", "mm", "source", _ELB2 + ": the screw holes on the diagonal, X +9.5 and -9.5 from the centre"),
+    ("el_scr_dz", "12 mm", "mm", "source", _ELB2 + ": the screw holes on the diagonal, Z +12 and -12 from the centre"),
+    # ELECTRICAL's cable-tie holes in the trays (the Lead's relay of 2026-11-01 11:37 UTC)
+    ("el_tie_d", "6.4 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): a Heyco 3904 push-mount cable tie in a Ø6.4 hole through the tray's back sheet; its wings sit behind the sheet, so never in front of a frame member"),
+    ("el_tie_r1_y1", "767 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 1 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y2", "657 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 2 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y3", "476.2 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 3 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y4", "295.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 4 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y5", "185.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 5 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y6", "23.8 mm", "mm", "source", "ELECTRICAL in WALL's group (2026-11-01, the column route agreed with CEILING): R1-CASS tie 6 along the trunk (Z el_trunk_z), moved from -41.5"),
+    ("el_tie_r1_y7", "-150 mm", "mm", "source", "ELECTRICAL in WALL's group (2026-11-01 17:37 UTC, WALL's ask): R1-CASS tie 7 along the trunk (Z el_trunk_z), moved from -268.4 (the column route) to -150, not -138.0, so its hole's edge keeps 15 from the face of R1's stud at Y -121.8; 162 from FX-COL's centre, inside ELECTRICAL's 150 rule"),
+    ("el_tie_r2_z1", "1476 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 1 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z2", "1688.7 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 2 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z3", "1901.3 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 3 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z4", "2114 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 4 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z5", "2224 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 5 along the call light feed (Y el_call_y)"),
+    ("el_tie_b4_z1", "1363.6 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 1 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z2", "1645.8 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 2 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z3", "1927.9 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 3 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z4", "2210 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 4 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z5", "2270 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 5 along the light feed (X el_lt_x)"),
+    # B2-CASS's ties along the trunk, held where ELECTRICAL's rules put them, so they follow the cassette in an edit (at
+    # the P04 size X 545, 844.25 and 1143.5; ELECTRICAL's 844.2 rounds the middle one): the first 150 past the power
+    # unit's cut-out, the last 22.5 inside the cassette's corner end, the middle one halfway
+    ("el_tie_b2_x1", "el_cut_x1 + 150 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 1 along the trunk (Z el_trunk_z), X 545: none within 150 of the power unit's cut-out"),
+    ("el_tie_b2_x3", "pod_w / 2 - stack_t - 22.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 3 along the trunk (Z el_trunk_z), X 1143.5: 22.5 inside the cassette's corner end"),
+    ("el_tie_b2_x2", "(el_tie_b2_x1 + el_tie_b2_x3) / 2", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 2 along the trunk (Z el_trunk_z), halfway: X 844.25 (ELECTRICAL's 844.2)"),
 ]
 # what each design needs, by position and kind (the el_ names these refer to come with them)
+B2_FRAME_EL = ("el_rn_xu1", "el_rn_xu2", "el_rn_xl1", "el_rn_xl2", "el_ps_mains_x", "el_ps_mains_db", "el_ps_mains_dt",
+               "el_ps_lan_x", "el_ps_lan_db", "el_ps_lan_dt")
 EL_USE = {
     ("R1", "cass"): ("el_fs_y0", "el_fs_y1", "el_fs_dz", "el_trunk_z", "el_kit_d", "el_kit_dz", "el_y_kit",
-                     "el_grm_d", "el_y_cx"),
-    ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z"),
+                     "el_y_fx", "el_z_fx", "el_fx_d", "el_tie_d") + tuple("el_tie_r1_y%d" % i for i in range(1, 8)),
+    ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z", "el_tie_d")
+                    + tuple("el_tie_r2_z%d" % i for i in range(1, 6)),
     # a plain cut-out (no returns, so no slot or bushing in them): PROPOSED by WALL 2026-10-31 21:08 UTC
     ("B2", "cass"): ("el_cut_x0", "el_cut_x1", "el_cut_z0", "el_cut_z1", "el_lt_x", "el_grm_d", "el_y_bg",
-                     "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z"),
+                     "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z", "el_tie_d")
+                    + tuple("el_tie_b2_x%d" % i for i in range(1, 4)),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
-                      "el_sl_x", "el_sl_w"),
-    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_ceil_z", "el_grm_s"),
+                      "el_lan_x", "el_pu_zc", "el_pu_h", "el_scr_d", "el_scr_dx", "el_scr_dz", "el_box_l", "el_box_r",
+                      "el_box_h", "el_jack_h", "el_ch_m_x1", "el_ch_jog_z", "el_ch_jog_x1", "el_ch_l_w", "el_ch_l_band")
+                     + B2_FRAME_EL,
+    # B2's frame carries the unit: its cross members' heights, rivnuts and cable passages (ELECTRICAL, 2026-11-01)
+    ("B2", "frame"): ("el_pu_zc", "el_pu_h") + B2_FRAME_EL,
+    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_ceil_z", "el_grm_s",
+                     "el_tie_d") + tuple("el_tie_b4_z%d" % i for i in range(1, 6)),
 }
 
 
@@ -393,8 +529,17 @@ def el_params(code, kind):
     return [p for p in EL_PARAMS if p[0] in want]
 
 
-EL_KIND = "frame" if PART == "frame" else ("panel" if PANEL_SIDE else "cass")    # a frame has none of them
+EL_KIND = "frame" if PART == "frame" else ("panel" if PANEL_SIDE else "cass")    # only B2's frame has any
 WALL_PARAMS = WALL_PARAMS + el_params(CODE, EL_KIND)
+if CODE in INT_FIX:
+    WALL_PARAMS = WALL_PARAMS + INT_PARAMS[CODE] + INT_COMMON
+if CODE == "R2":
+    # the Lead's ruling of 2026-11-01: the screen rail's rivnuts (Z 1320, 1380) on R2's last stud fell inside its
+    # bottom-back clip zone (Z 1327 to 1387), so that one zone moves up, clear of them
+    WALL_PARAMS = WALL_PARAMS + [
+        ("clip_dz_back_low", "170 mm", "mm", "confirmed",
+         "the Lead's ruling of 2026-11-01: R2's bottom-back clip zone centre 170 above the cassette's bottom (Z 1397.26 "
+         "to 1457.26), clear of the screen rail's rivnuts on the same stud")]
 # the cassette ledge (the Lead's ruling of 2026-11-01, WALL's sizes accepted the same day): lower panels only
 _LG = "the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted)"
 LEDGE_PARAMS = [
@@ -421,7 +566,7 @@ LEDGE_PARAMS = [
     ("ledge_rivet_n", "6", "", "assumption", _LG + ": 6 rivets for the two cassettes' 20.2 kg, about 33 N each"),
     ("ledge_rivet_e", "40 mm", "mm", "assumption", "the end rivets 40 in from the ledge's ends"),
     ("ledge_rivet_z", "tube_w / 2 - 1 mm", "mm", "calculation",
-     "the rivet line 9 above the frame's bottom: 9.0 from the upright's top edge (2.2 x the Ø4 rivet) and the hole's "
+     "the rivet line 9 above the frame's bottom: 9.0 from the upright's top edge (2.8 x the Ø3.2 rivet) and the hole's "
      "edge 8.2 from the bend"),
     ("ledge_rivet_pitch", "(ledge_len - 2 * ledge_rivet_e) / (ledge_rivet_n - 1)", "mm", "calculation",
      "even, so the pattern is symmetric and the turned copy (RH) matches: one part"),
@@ -1078,7 +1223,15 @@ Z_CASS1 = Z1 if ROW == 1 else "pod_h - outer_t - lin_gap"
 _ALLOC = []
 MEMBER_WORDS = {"RAIL - BOTTOM": "RAIL BOTTOM", "RAIL - TOP": "RAIL TOP", "STILE - FRONT": "STILE FRONT",
                 "STILE - BACK": "STILE BACK", "STILE - MID": "STILE MID", "STILE - OUTER": "STILE OUTER",
-                "STILE - CENTRE": "STILE CENTRE"}
+                "STILE - CENTRE": "STILE CENTRE",
+                # R1's and R2's studs carrying INTERIOR's rivnuts: their own number (D-120; the Lead's ruling of
+                # 2026-11-01): Control's 212206 "STUD WITH LEDGE BRACKET RIVNUTS" (R1, D-172) and 212406 "STUD WITH
+                # SCREEN RAIL RIVNUTS" (R2)
+                "STILE - MID INTERIOR": "STUD WITH",
+                # B2's members round the power unit (the Lead's approval of WALL's B2 frame, 2026-11-01): Control's
+                # 212606 to 212609 (WALL group, 2026-11-01)
+                "CROSS - LOWER": "CROSS MEMBER LOWER", "CROSS - UPPER": "CROSS MEMBER UPPER",
+                "STUD - BELOW UNIT": "STUD BELOW THE POWER UNIT", "STUD - STUB": "STUB ABOVE THE POWER UNIT"}
 
 
 def allocation(repo_root):
@@ -1097,9 +1250,10 @@ def member_numbers(repo_root, frame_pn):
     out = {}
     for r in allocation(repo_root):
         if frame_pn in r["parent"].split() and r["part_number"].startswith("212"):
-            for key, word in MEMBER_WORDS.items():
-                if " FRAME %s" % word in r["name"]:
-                    out[key] = (r["part_number"], r["name"], r["name_vi"])
+            # the longest member word the name holds, so "STILE MID BELOW UNIT" isn't read as "STILE MID"
+            hits = [(len(word), key) for key, word in MEMBER_WORDS.items() if " FRAME %s" % word in r["name"]]
+            if hits:
+                out[max(hits)[1]] = (r["part_number"], r["name"], r["name_vi"])
     return out
 
 
@@ -1400,7 +1554,12 @@ def build_frame(design, frame, out, xf, yf, zs):
     there (T joints), one component placed by a pattern of copies. D-131 cancels D-117's cleats, so the rails have
     no cleat slots. Returns {member key: (component, body)}."""
     nums = member_numbers(ARGS["repo_root"], frame.partNumber)
-    need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - FRONT", "STILE - BACK", "STILE - MID"]
+    need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - FRONT", "STILE - BACK", "STILE - MID"] + (
+        ["STILE - MID INTERIOR"] if CODE in INT_FIX else [])
+    if ARGS.get("dry") == "1":                # a dry run (never saved) labels a member with no number yet
+        for k in [k for k in need if k not in nums]:
+            nums[k] = ("DRY-%s" % re.sub(r"[^A-Z]+", "-", k).strip("-"),
+                       "WALL - FRAME %s (DRY RUN, NO NUMBER YET)" % MEMBER_WORDS[k], "")
     if [k for k in need if k not in nums]:
         raise RuntimeError("no master BOM numbers for %s of frame %s (number-allocation.csv)" % (
             [k for k in need if k not in nums], frame.partNumber))
@@ -1426,14 +1585,24 @@ def build_frame(design, frame, out, xf, yf, zs):
                  1 if ev(design, X_FRAME_IN) > ev(design, X_FRAME_OUT) else -1)
     studs = ["stud_c%d" % k for k in range(1, int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1)]
     yr = lambda c: ("(%s) + %s - tube_w / 2" % (Y_FRONT, c), "(%s) + %s + tube_w / 2" % (Y_FRONT, c))  # noqa: E731
-    make("STILE - MID", yr(studs[0]), zs, "z", "stud_t")
-    sc = members["STILE - MID"][0]
-    ref = offset_origin(sc, None, None, None, name="JOINT ORIGIN - STUD")
     xs = sorted(ev(design, e) for e in xf)
-    for k, c in enumerate(studs[1:], 2):
-        tgt = offset_origin(frame, None, "(%s) - (%s)" % (c, studs[0]), None, name="JOINT ORIGIN - STUD %d" % k)
-        joint_copy(design, frame, sc, ref, tgt, (xs[0], ev(design, yr(c)[0]), ev(design, zs[0]), xs[1],
-                                                 ev(design, yr(c)[1]), ev(design, zs[1])), "STUD %d" % k)
+    # one part per stud kind, the others its copies held by joints: the plain studs, and on R1 and R2 the studs that
+    # carry INTERIOR's rivnuts (their holes differ, so their own number, D-120)
+    fix = INT_FIX.get(CODE, ())
+    groups = [("STILE - MID", "STUD", [c for k, c in enumerate(studs, 1) if k not in fix])]
+    if fix:
+        # the part itself is the back-most of them (its holes' Y stays one side of 0 in an edit: a hole's dimension
+        # from the sketch origin can't cross it), the others its copies
+        groups.append(("STILE - MID INTERIOR", "INTERIOR STUD", [c for k, c in enumerate(studs, 1) if k in fix][::-1]))
+    for key, word, group in groups:
+        make(key, yr(group[0]), zs, "z", "stud_t")
+        sc = members[key][0]
+        ref = offset_origin(sc, None, None, None, name="JOINT ORIGIN - %s" % word)
+        for k, c in enumerate(group[1:], 2):
+            tgt = offset_origin(frame, None, "(%s) - (%s)" % (c, group[0]), None,
+                                name="JOINT ORIGIN - %s %d" % (word, k))
+            joint_copy(design, frame, sc, ref, tgt, (xs[0], ev(design, yr(c)[0]), ev(design, zs[0]), xs[1],
+                                                     ev(design, yr(c)[1]), ev(design, zs[1])), "%s %d" % (word, k))
     for key, (c, _b) in members.items():
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
@@ -1748,10 +1917,11 @@ def joint_features(design, members, out):
     b = hole(design, fc, fc.bRepBodies.item(0), "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d",
              t, "FRONT STILE KEY ACCESS 1")
     pattern_feat(fc, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
-    if ROW == 1:
-        # D-169: the decor block's two locating pins in Z slots in the front wall, on the bolt line, 100 from each end
-        # of the seam edge (Joints: Z 212.26 and 1155.00 on L1, 120 clear of the nearest bolts); made after welding
-        # (J-FRAME-01), as the bottom rail's spigot slot: a box through the wall and a hole at each end
+    if CODE == "L1":
+        # D-169: the decor block DL locates on two pins in Z slots in L1's front wall, on the bolt line, 100 from each
+        # end of the seam edge (Joints: Z 212.26 and 1155.00, 120 clear of the nearest bolts); made after welding
+        # (J-FRAME-01), as the bottom rail's spigot slot: a box through the wall and a hole at each end. L1 only: as
+        # amended the same day, DR and DT keep their base locators (D-169), so R1's front member has no slots
         sh = "(pin_slot_l - pin_slot_w) / 2"
         for k, zc in (("LOWER", "(%s) + spigot_edge" % Z0), ("UPPER", "(%s) - spigot_edge" % Z1)):
             box(design, fc, "FRONT STILE PIN SLOT %s" % k, ("(%s) - pin_slot_w / 2" % xc, "(%s) + pin_slot_w / 2" % xc),
@@ -1766,11 +1936,38 @@ def joint_features(design, members, out):
     pattern_feat(kc, [r], "z", "n_side_jnt", "corner_bolt_pitch", "BACK STILE CORNER RIVNUTS")
     hw_site("BACK STILE CORNER", "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
             ("z", "n_side_jnt", "corner_bolt_pitch"), member="STILE - BACK")
+    if CODE in INT_FIX:
+        interior_fixings(design, members)
     for key, (c, _b) in list(members.items()):
         members[key] = (c, c.bRepBodies.item(0))
         out[key] = c.bRepBodies.item(0)
     print("step 6: joint features: %d hole features (before patterns)" % sum(
         c.features.holeFeatures.count for c, _b in members.values()))
+
+
+def int_studs():
+    """The stud_c names of the studs carrying INTERIOR's fixings on this position, in Y order."""
+    return ["stud_c%d" % k for k in INT_FIX.get(CODE, ())]
+
+
+def interior_fixings(design, members):
+    """INTERIOR's fixings (INT_FIX): two rivnut holes, Ø10.00 +0.10 (D-163), in the room-side wall of the stud part
+    that carries them (its copies take them too), on the stud's centre line at int_rn_z1 and int_rn_z2, made after
+    welding like every joint hole (J-FRAME-01); a rivnut 838003 in each hole of every copy, no stop washer (its head
+    takes INTERIOR's stand-off)."""
+    c, body = members["STILE - MID INTERIOR"]
+    studs = int_studs()
+    for i, z in enumerate(("int_rn_z1", "int_rn_z2"), 1):
+        # in the part, which build_frame placed at the back-most of these studs
+        hole(design, c, c.bRepBodies.item(0), "x", X_FRAME_IN, S, {"y": "(%s) + %s" % (Y_FRONT, studs[-1]), "z": z},
+             "rivnut_d", "stud_t", "INTERIOR STUD RIVNUT %d" % i)
+        for k, st in enumerate(studs, 1):
+            hw_site("INTERIOR STUD %d RIVNUT %d" % (k, i), "x", X_FRAME_IN, S,
+                    {"y": "(%s) + %s" % (Y_FRONT, st), "z": z}, washer=False, member="STILE - MID INTERIOR")
+    if c.bRepBodies.count != 1:
+        raise RuntimeError("the INTERIOR stud split into %d bodies at its rivnut holes" % c.bRepBodies.count)
+    print("step 6c: INTERIOR's fixings: 2 rivnut holes in the INTERIOR stud part, %d rivnuts on its %d copies (Y %s)"
+          % (2 * len(studs), len(studs), ", ".join("%.1f" % (ev(design, Y_FRONT) + ev(design, st)) for st in studs)))
 
 
 # ---------------------------------------------------------------- hardware as copies of one component per part
@@ -1932,6 +2129,20 @@ def place_one(design, root, key, site, offset_expr, member_body_proxy, hole_d):
 PLACED_KEYS = set()
 
 
+def site_proxy(design, mc, s):
+    """The member's body, in the root's context, of the copy whose box holds the site's hole centre: a stud part has
+    copies held by joints (INTERIOR's studs carry rivnuts on every copy), the other members one occurrence."""
+    centre = {a: ev(design, e) for a, e in s["pos"].items()}
+    centre[s["axis"]] = ev(design, s["face"])
+    occs = design.rootComponent.allOccurrencesByComponent(mc)
+    for i in range(occs.count):
+        px = mc.bRepBodies.item(0).createForAssemblyContext(occs.item(i))
+        b = bbox(px)
+        if all(b[k] - 0.05 <= centre["xyz"[k]] <= b[k + 3] + 0.05 for k in range(3)):
+            return px
+    raise RuntimeError("%s: no copy of %s holds the hole at %s" % (s["label"], mc.name, centre))
+
+
 def place_hardware(design, root, members, out):
     """The joint hardware the panel carries from the factory (joints register 2.1; sizes H-03, H-05, H-08), as
     copies of one component per part (D-120): at every rivnut hole an H-03 rivnut, with an H-08 stop washer under
@@ -1943,8 +2154,7 @@ def place_hardware(design, root, members, out):
     n_occ = 0
     for s in HW_SITES:
         mc, _mb = members[s["member"]]
-        mo = root_occ(design, mc)
-        proxy = mc.bRepBodies.item(0).createForAssemblyContext(mo)
+        proxy = site_proxy(design, mc, s)
         hd = ev(design, "rivnut_d")
         seeds = []
         if s.get("kind") == "rivet":
@@ -2283,6 +2493,29 @@ def el_inside(design, label, lo_hi, keep):
                 label, min(a, b), max(a, b), min(c, d), max(c, d), keep))
 
 
+TIE_SITES = {"R1": [("el_tie_r1_y%d" % i, "el_trunk_z") for i in range(1, 8)],
+             "R2": [("el_call_y", "el_tie_r2_z%d" % i) for i in range(1, 6)]}
+
+
+def el_tray_ties(design, tray, pan, yc, zc):
+    """ELECTRICAL's cable-tie holes (Heyco 3904 push-mount, Ø el_tie_d) through the side tray's back sheet: R1-CASS
+    along the trunk, R2-CASS along the call light feed (TIE_SITES), each inside the back with 5 round it, drilled from
+    the back face toward the room. Their wings sit behind the sheet: check_tie_holes.py checks them clear of the
+    frame's members on the STEPs."""
+    sites = TIE_SITES.get(CODE)
+    if not sites:
+        return pan
+    for k, (y, z) in enumerate(sites, 1):
+        el_inside(design, "TIE %d" % k, [("(%s) - el_tie_d / 2" % y, "(%s) + el_tie_d / 2" % y) + tuple(yc),
+                                         ("(%s) - el_tie_d / 2" % z, "(%s) + el_tie_d / 2" % z) + tuple(zc)], 5.0)
+        hole(design, tray, tray.bRepBodies.item(0), "x", X_TRAY_BACK, -S, {"y": y, "z": z}, "el_tie_d", "tray_t",
+             "TRAY CABLE TIE %d" % k)
+    if tray.bRepBodies.count != 1:
+        raise RuntimeError("the tray split into %d bodies at the tie holes" % tray.bRepBodies.count)
+    print("step 2b: %d of ELECTRICAL's cable-tie holes in %s's tray" % (len(sites), CODE))
+    return tray.bRepBodies.item(0)
+
+
 def el_felt_cuts(design, felt, fb, yc, zc):
     """ELECTRICAL's felt-only openings in the right linings (R1-CASS, R2-CASS; EL_PARAMS): through the 9 mm felt
     from its room face. No steel is there: the tray's lips are only at its edges, so no bushing; the felt hole
@@ -2300,7 +2533,7 @@ def el_felt_cuts(design, felt, fb, yc, zc):
             sy, sz, "cut", fb)
         fb = felt.bRepBodies.item(0)
         holes = [("FA-KIT VOICE KIT ACCESS", "el_y_kit", "el_trunk_z + el_kit_dz", "el_kit_d"),
-                 ("FX-COL EXIT INTO THE AIR COLUMN", "el_y_cx", "el_trunk_z", "el_grm_d")]
+                 ("FX-COL EXIT INTO THE AIR COLUMN", "el_y_fx", "el_z_fx", "el_fx_d")]
     else:
         holes = [("FX-CALL0 CALL LIGHT FEED BEHIND THE SHELF", "el_call_y", "el_shelf_z", "el_grm_s"),
                  ("FX-CALL2 CALL LIGHT EXIT", "el_call_y", "el_call_z", "el_grm_s")]
@@ -2316,6 +2549,34 @@ def el_felt_cuts(design, felt, fb, yc, zc):
     return fb
 
 
+def int_clearance(design, part, body, kind, yc, zc):
+    """INTERIOR's stand-offs pass through the lining (INT_FIX): a Ø16 clearance hole at each fixing, in the tray's back
+    sheet (drilled from the frame side, as the tie holes) or through the felt (from its room face), so the floating
+    lining never touches a stand-off (D-17; the Lead's ruling of 2026-11-01)."""
+    studs = int_studs()
+    if not studs:
+        return body
+    n = 0
+    for st in studs:
+        for z in ("int_rn_z1", "int_rn_z2"):
+            n += 1
+            y = "(%s) + %s" % (Y_FRONT, st)
+            el_inside(design, "STAND-OFF %d" % n, [("(%s) - int_clr_d / 2" % y, "(%s) + int_clr_d / 2" % y) + tuple(yc),
+                                                   ("(%s) - int_clr_d / 2" % z, "(%s) + int_clr_d / 2" % z) + tuple(zc)],
+                      5.0)
+            if kind == "tray":
+                hole(design, part, part.bRepBodies.item(0), "x", X_TRAY_BACK, -S, {"y": y, "z": z}, "int_clr_d",
+                     "tray_t", "TRAY STAND-OFF CLEARANCE %d" % n)
+            else:
+                hole(design, part, part.bRepBodies.item(0), "x", X_FELT_FACE, S, {"y": y, "z": z}, "int_clr_d",
+                     "felt_t + 1 mm", "FELT STAND-OFF CLEARANCE %d" % n)
+    if part.bRepBodies.count != 1:
+        raise RuntimeError("the %s split into %d bodies at the stand-off holes" % (kind, part.bRepBodies.count))
+    print("step %s: %d clearance holes for INTERIOR's stand-offs in %s's %s" % ("2c" if kind == "tray" else "3c", n,
+                                                                              CODE, kind))
+    return part.bRepBodies.item(0)
+
+
 def build_cassette(design, root):
     out = {}
     want = WANT[PART]
@@ -2329,6 +2590,8 @@ def build_cassette(design, root):
     zc = (Z0, Z_CASS1)
     if tray:
         pan = build_tray(design, root, tray, yc, zc)
+        pan = el_tray_ties(design, tray, pan, yc, zc)
+        pan = int_clearance(design, tray, pan, "tray", yc, zc)
         out[pan.name] = pan
         print("step 2: tray", size(bbox(pan)))
         set_material(design, [pan], "tray", "GALVANISED STEEL 0.5")
@@ -2340,7 +2603,8 @@ def build_cassette(design, root):
         out[fb.name] = fb
         print("step 3: felt", size(bbox(fb)))
         set_material(design, [fb], "felt", "PET FELT 9 MM DARK GRAY")
-        out[fb.name] = el_felt_cuts(design, felt, fb, yc, zc)
+        fb = el_felt_cuts(design, felt, fb, yc, zc)
+        out[fb.name] = int_clearance(design, felt, fb, "felt", yc, zc)
     if not clip:
         return out
     # reserved zones for the captive clips (H03): in the 4 mm gap between the frame's inner face and the
@@ -2354,6 +2618,8 @@ def build_cassette(design, root):
     for zi, zr in enumerate(zs):
         for yi, yr in enumerate(ys):
             n += 1
+            if CODE == "R2" and zi == 0 and yi == 1:       # clear of the screen rail's rivnuts (the Lead's ruling)
+                zr = ("(%s) + clip_dz_back_low - clip_zone_h / 2" % Z0, "(%s) + clip_dz_back_low + clip_zone_h / 2" % Z0)
             b = box(design, clip, "CLIP ZONE %d" % n, (X_FRAME_IN, X_TRAY_BACK), yr, zr).bodies.item(0)
             b.name = "HOLD - CLIP ZONE %d (%s %s)" % (n, "BOTTOM" if zi == 0 else "TOP", "FRONT" if yi == 0 else "BACK")
             out[b.name] = b

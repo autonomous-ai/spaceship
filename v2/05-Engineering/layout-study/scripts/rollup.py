@@ -133,7 +133,13 @@ def wall_back_cad(n):
                 felt=by[f"51140{n}"]["kg"], cass_seals=seals, ledge=ledge)
 
 
-WALL_BACK = {n: wall_back_cad(n) for n in (1, 2)}            # B1 and B2, the lower back panels (S50)
+def _back_listed(n):
+    import glob
+    return bool(glob.glob(os.path.join(MANUF, "wall", f"21020{n}_P01_*_BOM.csv")))
+
+
+# B1 and B2, the lower back panels (S50); B3 and B4, the upper ones, once their D-131 builds list them
+WALL_BACK = {n: wall_back_cad(n) for n in (1, 2, 3, 4) if _back_listed(n)}
 FRONT_DOOR_LIST = os.path.join(MANUF, "front", "360001_P01_FRONT-DOOR-UNIT_BOM.csv")        # PR #27 (S36)
 
 
@@ -487,7 +493,7 @@ KEY_PNS = ("111211", "111212", "111213", "111214", "111215")  # the corner key f
 BASE_CAD = base_cad(elsewhere=KEY_PNS + FIXING_PNS + ("831001", "831002"))   # S54: what the other lines hold stays there
 
 CAP_KG = 460.0          # provisional, D-131 (the steel frames; was 420, D-37 and D-54), until the wall sample's recount
-TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
+TARGET_KG = 450.0       # confirmed: D-175 (2026-11-01): D-81's 410 retired with D-131's steel; 450, the same 10 under the cap
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
 D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not in the sum yet" (S39)
 
@@ -589,11 +595,12 @@ OFF = dict(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_
 
 def back_cad_kg(n, fill, kgm_s, n_back):
     """WALL's back panel B<n> from its CAD (S50): its made parts and bond set, with the fill at `fill` and the inner studs
-    at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model)."""
+    at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model). A D-131 steel
+    frame's studs are the design (D-131, D-135: 3 on a back panel), so they keep their CAD mass and count."""
     w = WALL_BACK[n]
     return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"] + w["ledge"]
             + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1)
-            + (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s)
+            + (0.0 if w["steel"] else (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s))
 
 
 def back_est_kg(fill, kgm12, kgm_s, n_back):
@@ -637,15 +644,24 @@ def lines(**adopt):
                      f"rebuilt yet has none)" if wa["ledge"] or wb["ledge"] else "")
                   + "; their other hardware stays in the fixings kit's line"))
     est_back = back_est_kg(fill, kgm12, kgm_s, n_back)
-    b1, b2 = WALL_BACK[1], WALL_BACK[2]
-    cad1, cad2 = (back_cad_kg(n, fill, kgm_s, n_back) for n in (1, 2))
-    L.append(("WALL", "B1 to B4, back outer panels", 4, (cad1 + cad2 + 2 * est_back) / 4, "calculation (part CAD)" + prov,
-              f"part CAD on main: B1 and B2 from WALL parts lists 210201 and 210202 P01 (S50): frames {b1['frame']:.3f} and "
-              f"{b2['frame']:.3f} (mid stiles at {b1['mid_t']:g} mm), skins {b1['skin']:.3f} and {b2['skin']:.3f}, fill "
-              f"{b1['fill']:.3f} and {b2['fill']:.3f} at {b1['fill_rho']:g} kg/m3, bond sets {b1['bond']:.2f}: {cad1:.2f} and "
-              f"{cad2:.2f} kg; their hardware stays in the fixings kit's line. B3 and B4 stay this study's model at the P04 "
-              f"size (S33), {est_back:.2f} kg each: frame {P04['back_fw']} under the {P04['back_w']} skin, fill {fill:g} kg/m3"
-              + ("; 2 inner studs at 393 mm centres, inside D-16 (D-85)" if a["back2"] else "") + studs_txt))
+    b1, b2 = WALL_BACK[1], WALL_BACK[2]                       # the lower back cassettes' line reads them below
+    cads = {n: back_cad_kg(n, fill, kgm_s, n_back) for n in sorted(WALL_BACK)}
+    model = [n for n in (1, 2, 3, 4) if n not in cads]
+    L.append(("WALL", "B1 to B4, back outer panels", 4, (sum(cads.values()) + len(model) * est_back) / 4,
+              ("calculation (part CAD)" if model else "calculation (CAD)") + prov,
+              ("part CAD on main: " if model else "CAD on main: ") + "; ".join(
+                  f"B{n} from WALL parts list 21020{n} P01: frame {WALL_BACK[n]['frame']:.3f} "
+                  + (f"({WALL_BACK[n]['mid_n']} studs, steel, D-131)" if WALL_BACK[n]["steel"] else
+                     f"(mid stiles at {WALL_BACK[n]['mid_t']:g} mm)")
+                  + f", skin {WALL_BACK[n]['skin']:.3f}, fill {WALL_BACK[n]['fill']:.3f} at {WALL_BACK[n]['fill_rho']:g} "
+                  f"kg/m3, bond set {WALL_BACK[n]['bond']:.2f}"
+                  + (f", cassette ledge set {WALL_BACK[n]['ledge']:.3f}" if WALL_BACK[n]["ledge"] else "")
+                  + f": {cads[n]:.2f} kg" for n in cads)
+              + "; their hardware stays in the fixings kit's line"
+              + ((f". {' and '.join('B%d' % n for n in model)} stay this study's model at the P04 size (S33), "
+                  f"{est_back:.2f} kg each: frame {P04['back_fw']} under the {P04['back_w']} skin, fill {fill:g} kg/m3"
+                  + ("; 2 inner studs at 393 mm centres, inside D-16 (D-85)" if a["back2"] else "") + studs_txt)
+                 if model else "")))
     L.append(("WALL", "40 x 40 corner edge tubes beyond the panels' own", 1,
               CORNER_TUBES_KG - 4 * stile_delta_kg() - 2 * top_delta_kg() - 2 * ceil_back_delta_kg(), "calculation",
               "D-63's 1.3 kg less the 40 x 40 members the panels' CAD carries: the four side panels' back stiles, L2 and R2's "
@@ -653,10 +669,11 @@ def lines(**adopt):
     back_a = P04["back_w"] * P04["back_h"] * 1e-6
     L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond the panels in CAD", 1,
               BOND_OVER_KG - sum(WALL_SIDE[n]["bond"] - p("bond_kgm2") * side_a for n in (1, 2, 3, 4))
-              - sum(WALL_BACK[n]["bond"] - p("bond_kgm2") * back_a for n in (1, 2))
+              - sum(WALL_BACK[n]["bond"] - p("bond_kgm2") * back_a for n in WALL_BACK)
               - 2 * (CEILING["bond"] - p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6), "calculation",
-              "D-71's 0.5 kg (PR #23) less the share of the panels whose CAD carries their bond: the four side panels, B1 and "
-              "B2, and the ceiling halves (S34, S35, S39, S50)"))
+              "D-71's 0.5 kg (PR #23) less the share of the panels whose CAD carries their bond: the four side panels, "
+              + " and ".join(", ".join("B%d" % n for n in sorted(WALL_BACK)).rsplit(", ", 1))
+              + ", and the ceiling halves (S34, S35, S39, S50)"))
     for item, a_, b_, hh in (("side, lower", 1, 2, P04["side_cass_lo_h"]), ("side, upper", 3, 4, P04["side_cass_up_h"])):
         wa, wb = WALL_SIDE[a_], WALL_SIDE[b_]
         cas = sum(w_["tray"] + w_["felt"] + w_["cass_seals"] for w_ in (wa, wb)) / 2
@@ -674,11 +691,20 @@ def lines(**adopt):
               f"their lips, felts {b1['felt']:.3f} and {b2['felt']:.3f}, hook-and-loop and seals; their clips are in the named "
               "clips' line" + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
     w, h = P04["back_cass_w"], P04["back_cass_up_h"]
-    L.append(("LINING", "Wall cassette, back, upper, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
-              final_leaf_kg(w, h) - (0.0 if rails else p("leaf_clip_kgm2") * w * h * 1e-6) + LIP_KG,
-              "calculation; lips confirmed", "this study's model at the P04 size (S33)"
-              + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
-              + ", + 0.43 kg of lips (D-69)"))
+    if 3 in WALL_BACK and 4 in WALL_BACK:            # the upper back cassettes from their CAD (D-131 builds)
+        b3, b4 = WALL_BACK[3], WALL_BACK[4]
+        cu = sum(WALL_BACK[n]["tray"] + WALL_BACK[n]["felt"] + WALL_BACK[n]["cass_seals"] for n in (3, 4)) / 2
+        L.append(("LINING", "Wall cassette, back, upper, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
+                  cu + (p("leaf_clip_kgm2") * w * h * 1e-6 if rails else 0.0), "calculation (CAD)",
+                  f"CAD on main: WALL parts lists 510203 and 510204 P01: trays {b3['tray']:.3f} and {b4['tray']:.3f} with "
+                  f"their lips, felts {b3['felt']:.3f} and {b4['felt']:.3f}, hook-and-loop and seals; their clips are in the "
+                  "named clips' line" + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
+    else:
+        L.append(("LINING", "Wall cassette, back, upper, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
+                  final_leaf_kg(w, h) - (0.0 if rails else p("leaf_clip_kgm2") * w * h * 1e-6) + LIP_KG,
+                  "calculation; lips confirmed", "this study's model at the P04 size (S33)"
+                  + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
+                  + ", + 0.43 kg of lips (D-69)"))
     cg = CEILING
     L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2, (cg["c1"] + cg["c2"]) / 2,
               "calculation (CAD)", f"S35, CAD on main: CEILING parts list 410000 P01: frames {cg['frames'][0]:.3f} and "
@@ -1112,7 +1138,8 @@ def rollup_md(rows):
     md.append("")
     md.append("## Parked (D-85)")
     md.append("")
-    md.append(f"{gap(tot - TARGET_KG).capitalize()} the {TARGET_KG:.0f} kg target, which stays (D-85). The wall sample "
+    md.append(f"{gap(tot - TARGET_KG).capitalize()} the {TARGET_KG:.0f} kg target (D-175: D-81's 410 retired with D-131's "
+              "steel frames; the same 10 kg under the cap). The wall sample "
               "settles the fill and the felt (FRONT's CAD settled the decor frames, PR #105). Each keeps the look and the "
               "sound targets.")
     md.append("")

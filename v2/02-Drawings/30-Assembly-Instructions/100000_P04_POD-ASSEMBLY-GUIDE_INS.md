@@ -76,7 +76,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 3](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-01** WALL - PANEL ASSY - BACK LOWER - B1 (8.6 kg), **1-02** WALL - PANEL ASSY - BACK LOWER - B2 (11.5 kg).
+- **Parts:** **1-01** WALL - PANEL ASSY - BACK LOWER - B1 (13.3 kg), **1-02** WALL - PANEL ASSY - BACK LOWER - B2 (16.8 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1. B2 carries the power unit, wired and tested at the factory (11.6 kg).
 - **Person B:** From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).
@@ -87,7 +87,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 4](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-03** WALL - PANEL ASSY - SIDE LOWER - LH (15.0 kg), **1-04** WALL - PANEL ASSY - SIDE LOWER - RH (15.0 kg).
+- **Parts:** **1-03** WALL - PANEL ASSY - SIDE LOWER - LH (19.7 kg), **1-04** WALL - PANEL ASSY - SIDE LOWER - RH (19.7 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Stands L1 on its band spigots against B1's edge and holds it; then R1 against B2.
 - **Person B:** Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays.
@@ -98,7 +98,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 5](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-05_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-05** WALL - PANEL ASSY - BACK UPPER - B3 (8.6 kg), **1-06** WALL - PANEL ASSY - BACK UPPER - B4 (8.6 kg).
+- **Parts:** **1-05** WALL - PANEL ASSY - BACK UPPER - B3 (13.3 kg), **1-06** WALL - PANEL ASSY - BACK UPPER - B4 (13.3 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Lifts B3 onto B1's top spigots (step stool), then B4 onto B2's, dropping past the closing seam's lead-in chamfer.
 - **Person B:** First the 3 pins of the B3-B4 closing seam, snug only; then the 4 horizontal-seam bolts under each (B1-B3, B2-B4).
@@ -109,7 +109,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 6](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-07** WALL - PANEL ASSY - SIDE UPPER - LH (11.3 kg), **1-08** WALL - PANEL ASSY - SIDE UPPER - RH (11.3 kg).
+- **Parts:** **1-07** WALL - PANEL ASSY - SIDE UPPER - LH (18.1 kg), **1-08** WALL - PANEL ASSY - SIDE UPPER - RH (18.1 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.
 - **Person B:** Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.
@@ -194,7 +194,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 14](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png)
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **1-11** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-12** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-13** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-15** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-16** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-17** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-18** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
+- **Parts:** **1-11** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-12** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-13** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-15** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-16** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-17** LINING - CASSETTE - BACK UPPER - B3 (8.2 kg), **1-18** LINING - CASSETTE - BACK UPPER - B4 (8.2 kg).
 - **Fasteners:** none.
 - **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.

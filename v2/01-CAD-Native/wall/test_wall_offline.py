@@ -228,7 +228,7 @@ class WallSidePanelTest(unittest.TestCase):
                         continue
                     self.assertRegex(pn, r"^(21|51)\d{4}$")
                     self.assertNotIn(pn, ns["RESERVED"])
-                    self.assertNotIn(pn, seen, "%s used twice" % pn)
+                    self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                     seen[pn] = name
                     self.assertTrue(vn)
         self.assertEqual(seen["210101"], "WALL - PANEL ASSY - SIDE LOWER - LH")
@@ -290,7 +290,7 @@ class WallBackPanelTest(unittest.TestCase):
                     continue
                 self.assertRegex(pn, r"^(21|51)\d{4}$")
                 self.assertNotIn(pn, ns["RESERVED"])
-                self.assertNotIn(pn, seen, "%s used twice" % pn)
+                self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                 seen[pn] = name
         self.assertEqual(seen["210201"], "WALL - PANEL ASSY - BACK LOWER - B1")
         self.assertEqual(seen["211204"], "WALL - PANEL FRAME - BACK UPPER - B4")
@@ -349,7 +349,7 @@ class WallBackPanelTest(unittest.TestCase):
 
 # ELECTRICAL P01 (electrical_model.py, PR #64) with the PM's final sizes of 2026-10-31 20:38 UTC: where its
 # features sit in the right linings (mm)
-EL_SIDE_EXPECT = {"1": {"el_y_kit": 240.5, "el_y_cx": -298.0, "el_trunk_z": 1100.0, "el_kit_d": 60.0, "el_grm_d": 19.1,
+EL_SIDE_EXPECT = {"1": {"el_y_kit": 240.5, "el_y_fx": -312.0, "el_z_fx": 1162.5, "el_fx_d": 32.0, "el_trunk_z": 1100.0, "el_kit_d": 60.0,
                         "el_fs_y0": 2.0, "el_fs_y1": 20.0, "el_fs_dz": 60.0, "el_kit_dz": 80.0},
                   "2": {"el_call_y": -209.5, "el_call_z": 1450.0, "el_shelf_z": 2250.0, "el_grm_s": 12.0}}
 
@@ -383,7 +383,7 @@ class ElectricalInterfaceSideTest(unittest.TestCase):
                     boxes = {"FS-CNR": (yb + v["el_fs_y0"], yb + v["el_fs_y1"], v["el_trunk_z"] - v["el_fs_dz"],
                                         v["el_trunk_z"] + v["el_fs_dz"])}
                     holes = {"FA-KIT": (v["el_y_kit"], v["el_trunk_z"] + v["el_kit_dz"], v["el_kit_d"]),
-                             "FX-COL": (v["el_y_cx"], v["el_trunk_z"], v["el_grm_d"])}
+                             "FX-COL": (v["el_y_fx"], v["el_z_fx"], v["el_fx_d"])}
                 else:
                     boxes = {}
                     holes = {"FX-CALL0": (v["el_call_y"], v["el_shelf_z"], v["el_grm_s"]),
@@ -400,8 +400,13 @@ EL_BACK_EXPECT = {("B2", "cassette"): {"el_cut_x0": 91.0, "el_cut_x1": 395.0, "e
                                        "el_lt_x": 346.0, "el_y_bg": 787.5, "el_y_xc": 781.5, "el_grm_d": 19.1},
                   ("B4", "cassette"): {"el_lt_x": 346.0, "el_shelf_z": 2250.0, "el_ceil_x": 583.0, "el_ceil_z": 2330.0,
                                        "el_grm_s": 12.0, "el_shelf_d": 16.0},
-                  ("B2", "panel"): {"el_inlet_x": 120.0, "el_inlet_z": 313.0, "el_lan_z": 375.0, "el_inlet_d": 24.0,
-                                    "el_sl_x": 150.0, "el_cut_x0": 91.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0}}
+                  # ELECTRICAL's B2 inputs (2026-11-01): the jack moved to X 170 for 50 from the mains everywhere; the
+                  # mains passage moved to X 127 (17:47 UTC); the bend room: the mains jog from Z 750 to X 137, the LAN
+                  # band Z 391 to 440 (18:05 UTC)
+                  ("B2", "panel"): {"el_inlet_x": 120.0, "el_inlet_z": 313.0, "el_lan_x": 170.0, "el_lan_z": 375.0,
+                                    "el_inlet_d": 24.0, "el_cut_x0": 91.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0,
+                                    "el_ps_mains_x": 127.0, "el_ps_lan_x": 207.0, "el_rn_xl1": 160.0, "el_rn_xu1": 110.0,
+                                    "el_ch_jog_z": 750.0, "el_ch_jog_x1": 137.0, "el_ch_l_band": 49.0}}
 
 
 class ElectricalInterfaceBackTest(unittest.TestCase):
@@ -419,17 +424,92 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
                 self.assertAlmostEqual(v[k], x, places=3, msg="%s %s %s" % (pos, part, k))
 
     def test_only_b2_and_b4_carry_them(self):
-        for pos, part in (("B1", "cassette"), ("B3", "cassette"), ("B1", "panel"), ("B4", "panel"), ("B2", "frame")):
+        for pos, part in (("B1", "cassette"), ("B3", "cassette"), ("B1", "panel"), ("B4", "panel"), ("B1", "frame")):
             ns = load_back(pos, part)
             self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (pos, part))
+        # B2's frame carries the unit (the Lead's approval of WALL's B2 frame, 2026-11-01): only its fixings' names
+        ns = load_back("B2", "frame")
+        self.assertEqual(sorted(q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")),
+                         sorted(("el_pu_zc", "el_pu_h") + ns["B2_FRAME_EL"]))
 
-    @unittest.skip("B2's layout waits (PM 2026-11-01: the unit's 373 bay with cross members; D-133 changes the unit)")
-    def test_unit_clears_the_first_stud_by_4_75(self):
-        """PM ruling 2026-10-31 20:35 UTC: 0.75 is too tight; the unit stands 4.75 clear of B2's first stud (the
-        stud's face is at X 395.747, which the messages round to 395.75)."""
-        cass, panel = self.resolved("B2", "cassette"), self.resolved("B2", "panel")
-        stud = panel["close_gap"] / 2 + panel["stile_pitch"]
-        self.assertAlmostEqual(stud - (cass["el_pu_x0"] + cass["el_pu_w"]), 4.75, delta=0.005)
+    def test_b2_unit_sits_on_its_cross_members(self):
+        """D-131's first stud is behind the unit, so two cross members from the centre stile to the second stud carry
+        it, a rivnut head (0.76) off its bottom and top (ELECTRICAL: the unit sits on the heads); the unit, its 4 rivnuts
+        and both passages lie on the members, clear of their welded ends; the top-front clip zone lies on the stub."""
+        v = self.resolved("B2", "panel")
+        x_lo, x_hi = v["close_gap"] / 2 + v["tube_w"], v["close_gap"] / 2 + 2 * v["stile_pitch"]
+        self.assertAlmostEqual(x_hi - x_lo, 569.5, delta=0.01)
+        u0, u1 = v["el_pu_zc"] - v["el_pu_h"] / 2, v["el_pu_zc"] + v["el_pu_h"] / 2
+        self.assertAlmostEqual(v["xm_z0"] + v["tube_w"] + v["rivnut_head_t"], u0, places=6)
+        self.assertAlmostEqual(v["xm_z1"] - v["tube_w"] - v["rivnut_head_t"], u1, places=6)
+        self.assertAlmostEqual(v["xm_z0"], 849.24, delta=0.005)
+        self.assertAlmostEqual(v["xm_z1"], 1150.76, delta=0.005)
+        c = self.resolved("B2", "cassette")                               # the unit's X lives in the cassette's list
+        self.assertGreater(c["el_pu_x0"] - x_lo, 50)                       # the closing seam's pin bolt access
+        self.assertGreater(x_hi - (c["el_pu_x0"] + c["el_pu_w"]), 150)
+        holes = [(v["el_rn_xl1"], v["rivnut_d"]), (v["el_rn_xl2"], v["rivnut_d"]),
+                 (v["el_ps_mains_x"], v["el_ps_mains_dt"]), (v["el_ps_lan_x"], v["el_ps_lan_dt"])]
+        for x, d in holes + [(v["el_rn_xu1"], v["rivnut_d"]), (v["el_rn_xu2"], v["rivnut_d"])]:
+            self.assertGreater(x - d / 2 - x_lo, 10)
+            self.assertGreater(x_hi - x - d / 2, 10)
+        holes.sort()
+        # the lower member's top wall: a ligament of at least one rivnut hole (Ø10) between hole edges (assumption);
+        # 18 between the mains passage and the first rivnut since ELECTRICAL moved the passage to X 127
+        for (xa, da), (xb, db) in zip(holes, holes[1:]):
+            self.assertGreaterEqual(xb - db / 2 - (xa + da / 2), v["rivnut_d"], (xa, xb))
+        # and a rivnut's head (CAL2-610-4.2: Ø12.95 at most, D-163) sits flat, clear of each passage's edge
+        for xr in (v["el_rn_xl1"], v["el_rn_xl2"]):
+            for xp, dp in ((v["el_ps_mains_x"], v["el_ps_mains_dt"]), (v["el_ps_lan_x"], v["el_ps_lan_dt"])):
+                self.assertGreater(abs(xr - xp) - 12.95 / 2 - dp / 2, 10, (xr, xp))
+        # the first stud (below the unit) stays clear of the passages under the lower member
+        stud = (v["close_gap"] / 2 + v["stile_pitch"], v["close_gap"] / 2 + v["stile_pitch"] + v["tube_w"])
+        for x, d in ((v["el_ps_mains_x"], v["el_ps_mains_db"]), (v["el_ps_lan_x"], v["el_ps_lan_db"])):
+            self.assertGreater(stud[0] - (x + d / 2), 50)
+        z_top = c["panel_z0"] + c["back_ph"]
+        zone = (z_top - c["clip_top_dz"] - c["clip_zone_h"] / 2, z_top - c["clip_top_dz"] + c["clip_zone_h"] / 2)
+        stub = (c["xm_z1"], z_top - c["top_h"])
+        self.assertGreaterEqual(zone[0], stub[0] - 1e-6)
+        self.assertLessEqual(zone[1], stub[1] + 1e-6)
+        self.assertGreater(zone[0] - c["el_cut_z1"], 15)                   # clear of the tray's unit cut-out
+
+    def test_b2_fill_cut_keeps_the_cables_apart(self):
+        """B2's fill cut behind the skin (ELECTRICAL's envelopes and channels, 2026-11-01): the mains side of the cut
+        (the cleared strip and its jog) stays 50 or more from the LAN side (the band along the jack's top and its channel
+        up to the passage), as ELECTRICAL's rule asks; the jack sits right of the inlet's box; and each cable has room
+        for its bend (ELECTRICAL's bend check, 2026-11-01 18:05 UTC)."""
+        ns = load_back("B2", "panel")
+        v = resolve(ns)
+        cuts = {lab: [evaluate(e, v) for e in xr + zr] for lab, xr, zr in ns["B2_CUTS"]}
+        mains_right = max(cuts["MAINS CHANNEL"][1], cuts["MAINS JOG"][1])
+        band = dict((lab, [evaluate(e, v) for e in xr + zr]) for lab, xr, zr in ns["B2_ISLAND_NOTCHES"])["LAN BAND"]
+        self.assertGreaterEqual(band[0] - cuts["MAINS CHANNEL"][1], 50.0)                # at the band (62)
+        self.assertGreaterEqual(v["el_ps_lan_x"] - v["el_ch_l_w"] / 2 - mains_right, 50.0)   # at the jog (62)
+        self.assertGreater(v["el_lan_x"] - v["el_jack_h"], v["el_inlet_x"] + v["el_box_r"])  # the jack clear of the box
+        # ELECTRICAL's numbers: the jog from Z 750 to X 137, the band Z 391 to 440
+        self.assertAlmostEqual(cuts["MAINS JOG"][2], 750.0, places=6)
+        self.assertAlmostEqual(cuts["MAINS JOG"][1], 137.0, places=6)
+        self.assertAlmostEqual(cuts["MAINS CHANNEL"][3], 750.0, places=6)
+        self.assertAlmostEqual(band[2], 391.0, places=6)
+        self.assertAlmostEqual(band[3], 440.0, places=6)
+        # the mains cord's S-bend (two equal arcs) from its channel's middle up to the passage: 4 x its 9.2 diameter,
+        # 37 (Southwire's SJEOOW 14/3 sheet, via ELECTRICAL), fits in the jog's height
+        d, h = v["el_ps_mains_x"] - (v["el_ch_m_x1"] - 10.0), cuts["MAINS JOG"][3] - cuts["MAINS JOG"][2]
+        self.assertGreaterEqual(((h / 2) ** 2 + (d / 2) ** 2) / d, 4 * 9.2)
+        # the Cat6's S-bend at 4 x its diameter, 24, from the jack's centre over to its riser's, fits in the band
+        d, r = v["el_ps_lan_x"] - v["el_lan_x"], 24.0
+        self.assertLessEqual(2 * (r ** 2 - (r - d / 2) ** 2) ** 0.5, band[3] - band[2])
+
+    def test_b2_frame_members_and_bays(self):
+        """B2's frame: the perimeter, studs 2 and 3, and the four members round the unit, each with a number key the
+        allocation's names reach; its fill: bays 1 and 2 split below and above the unit, then bays 3 and 4."""
+        ns = load_back("B2", "panel")
+        for key in ("CROSS - LOWER", "CROSS - UPPER", "STUD - BELOW UNIT", "STUD - STUB"):
+            self.assertIn(key, ns["MEMBER_WORDS"])
+        words = sorted(ns["MEMBER_WORDS"].values(), key=len)
+        for i, w in enumerate(words):        # a longer word that holds a shorter one is matched first (longest wins)
+            for w2 in words[i + 1:]:
+                if w in w2:
+                    self.assertGreater(len(w2), len(w))
 
     def test_openings_stay_inside_through_the_edit_test(self):
         """As built and under the back edit (pod_w 2300, back_ph 1080): the cut-out lies 30 inside B2-CASS and
@@ -535,6 +615,51 @@ class FillDxfTest(unittest.TestCase):
         with self.assertRaises(ValueError):                         # a cut right across: two pieces
             mf.outline(100, 50, [(40, 60, 0, 50)])
 
+    def test_labels_follow_the_shape(self):
+        """A form keeps its label (and so its number) while its shape stays, and a new form takes the next free
+        label: in (panel, bay) order, R1's sixth stud put two new forms between L1's and L2's, and every later label
+        found another form's number at the same size."""
+        mf = self.mf()
+
+        def pc(panel, bay, w, pockets=()):
+            return {"panel": panel, "bay": bay, "w": w, "h": 1000.0, "pockets": sorted(pockets)}
+        a, b, c = pc("210101", 1, 240.0, [(0.0, 60.0, 0.0, 60.0)]), pc("210103", 1, 230.9), pc("210102", 6, 100.0)
+        groups = {mf.form_key(x): [x] for x in (a, b, c)}
+        prev = {"F01": (mf.form_key(a), "211515", tuple(a["pockets"])), "F02": (mf.form_key(b), "211516", ())}
+        got = [(f, m[0]["w"]) for f, _k, m in mf.label_forms(groups, prev, {"F02": [], "F03": []})]
+        # c sorts between a and b by panel, but takes F04: after the last list's labels and the live F03
+        self.assertEqual(got, [("F01", 240.0), ("F02", 230.9), ("F04", 100.0)])
+
+    def test_an_unnumbered_form_recut_keeps_its_label(self):
+        """A form not yet numbered (no allocation row, no DXF) whose pieces are re-cut in the same bays keeps its label,
+        as B2's F19 and F22 did when ELECTRICAL moved the mains passage and widened the bend room (2026-11-01); a
+        numbered form never does (a new shape is a new form), nor one re-cut into other bays."""
+        mf = self.mf()
+
+        def pc(pos, bay, w, pockets=()):
+            return {"panel": "2102%02d" % int(pos[1]), "position": pos, "bay": bay, "w": w, "h": 717.0,
+                    "pockets": sorted(pockets)}
+        old19, new19 = pc("B2", 1, 274.7, [(0.0, 100.2, 677.0, 717.0)]), pc("B2", 1, 274.7, [(0.0, 114.2, 617.8, 717.0)])
+        old22, new22 = pc("B2", 7, 99.0, [(0.0, 23.0, 418.2, 458.2)]), pc("B2", 7, 99.0, [(0.0, 37.0, 359.0, 458.2)])
+        num, renum = pc("B1", 1, 274.7, [(0.0, 60.0, 0.0, 60.0)]), pc("B1", 1, 274.7, [(0.0, 70.0, 0.0, 60.0)])
+        prev = {"F09": (mf.form_key(num), "211614", tuple(num["pockets"]), {("B1", 1)}),
+                "F19": (mf.form_key(old19), "", tuple(old19["pockets"]), {("B2", 1)}),
+                "F22": (mf.form_key(old22), "", tuple(old22["pockets"]), {("B2", 7)})}
+        groups = {mf.form_key(x): [x] for x in (new19, new22, renum)}
+        got = {m[0]["position"] + str(m[0]["bay"]): f for f, _k, m in mf.label_forms(groups, prev, {"F09": []})}
+        self.assertEqual(got, {"B21": "F19", "B27": "F22", "B11": "F23"})
+        # re-cut into another bay: a new label
+        moved = pc("B2", 2, 274.7, [(0.0, 114.2, 617.8, 717.0)])
+        got = [f for f, _k, _m in mf.label_forms({mf.form_key(moved): [moved]}, prev, {})]
+        self.assertEqual(got, ["F23"])
+
+    def test_the_list_is_current(self):
+        """FILL-PIECES.csv reads back as exactly the forms the build scripts give now (rerun make_fill_pieces.py
+        after a layout change), so each form keeps its label on the next run."""
+        mf = self.mf()
+        prev = mf.previous_forms(os.path.join(REPO, "v2/03-Manufacturing/wall/FILL-PIECES.csv"))
+        self.assertEqual({v[0] for v in prev.values()}, {mf.form_key(p) for p in mf.side_pieces() + mf.back_pieces()})
+
     def test_fill_dxfs_match_the_cad(self):
         sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
         import contextlib
@@ -546,6 +671,109 @@ class FillDxfTest(unittest.TestCase):
         self.assertEqual(rc, 0, out.getvalue()[-2000:])
         self.assertIn(" 0 mismatches", out.getvalue())
         self.assertNotIn("BAD ", out.getvalue())
+
+
+class TrayCableTieTest(unittest.TestCase):
+    """ELECTRICAL's 20 cable-tie holes (the Lead's relay of 2026-11-01 11:37 UTC): Ø6.4 in R1's, R2's, B4's and B2's tray
+    backs at ELECTRICAL's places, each inside its tray's back with room round it; none in L1, L2, B1 or B3."""
+
+    WANT = {"R1": ("y", [767.0, 657.0, 476.2, 295.5, 185.5, 23.8, -150.0], "el_trunk_z", 1100.0),
+            "R2": ("z", [1476.0, 1688.7, 1901.3, 2114.0, 2224.0], "el_call_y", -209.5)}
+
+    def test_side_trays_carry_electricals_ties(self):
+        for code, (axis, along, fixed, at) in self.WANT.items():
+            ns = load(part="cassette", side=code[0], row=code[1])
+            v = resolve(ns)
+            sites = ns["TIE_SITES"][code]
+            self.assertEqual(len(sites), len(along))
+            self.assertAlmostEqual(v["el_tie_d"], 6.4, places=6)
+            got = sorted(v[s_[0] if axis == "y" else s_[1]] for s_ in sites)
+            self.assertEqual(got, sorted(along))
+            self.assertAlmostEqual(v[fixed], at, places=1)
+            # inside the tray's back with 5 round it
+            y0 = v["pod_d"] / 2 - v["wall_depth"] + v["lin_front_dy"]
+            y1 = v["pod_d"] / 2 - v["stack_t"] + v["cass_t"]
+            z0 = v["panel_z0"] if code[1] == "1" else v["panel_z0"] + v["side_h"] + v["seam_gap"]
+            z1 = v["panel_z0"] + v["side_h"] if code[1] == "1" else v["pod_h"] - v["outer_t"] - v["lin_gap"]
+            for ye, ze in sites:
+                yy, zz = v[ye], v[ze]
+                self.assertTrue(y0 + 5 + 3.2 <= yy <= y1 - 5 - 3.2, (code, yy))
+                self.assertTrue(z0 + 5 + 3.2 <= zz <= z1 - 5 - 3.2, (code, zz))
+        for side, row in (("L", "1"), ("L", "2")):
+            self.assertNotIn(side + row, load(part="cassette", side=side, row=row)["TIE_SITES"])
+
+    def test_back_trays_name_electricals_ties(self):
+        v = resolve(load(part="cassette", side="R", row="1"))      # the table holds every el_ value
+        ns = load(part="cassette", side="R", row="1")
+        table = {p[0]: p for p in ns["EL_PARAMS"]}
+        self.assertEqual([float(table["el_tie_b4_z%d" % i][1].split()[0]) for i in range(1, 6)],
+                         [1363.6, 1645.8, 1927.9, 2210.0, 2270.0])
+        # B2's ties are held by ELECTRICAL's rules (past the unit's cut-out, inside the corner end), so read their values
+        b2 = resolve(load_back("B2", "cassette"))
+        self.assertEqual([round(b2["el_tie_b2_x%d" % i], 2) for i in range(1, 4)], [545.0, 844.25, 1143.5])
+        self.assertTrue(v)
+
+
+class InteriorFixingsTest(unittest.TestCase):
+    """INTERIOR's fixings on D-131's studs (the Lead's rulings of 2026-11-01): R1's ledge brackets on studs Y -240,
+    103.6, 329.1 and 700 (two of them added), rivnuts at Z 815 and 1045; R2's screen rail on studs Y -121.8 and 580,
+    rivnuts at Z 1320 and 1380; Ø16 clearance holes in the lining; R2's bottom-back clip zone moved up clear of them."""
+
+    def ys(self, side, row):
+        ns = load("panel", side, row)
+        v = resolve(ns)
+        y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+        n = int(round(v["stile_n_mid"]))
+        return ns, v, [round(y_front + v["stud_c%d" % k], 1) for k in range(1, n + 1)]
+
+    def test_studs_and_fixings(self):
+        ns, v, ys = self.ys("R", "1")
+        self.assertEqual(ys, [-372.7, -240.0, -121.8, 103.6, 329.1, 580.0, 700.0])
+        self.assertEqual([ys[k - 1] for k in ns["INT_FIX"]["R1"]], [-240.0, 103.6, 329.1, 700.0])
+        self.assertEqual((v["int_rn_z1"], v["int_rn_z2"]), (815.0, 1045.0))
+        ns2, v2, ys2 = self.ys("R", "2")
+        self.assertEqual([ys2[k - 1] for k in ns2["INT_FIX"]["R2"]], [-121.8, 580.0])
+        self.assertEqual((v2["int_rn_z1"], v2["int_rn_z2"]), (1320.0, 1380.0))
+        _ns, _v, ys_l = self.ys("L", "1")
+        self.assertEqual(ys_l, [-372.7, -121.8, 103.6, 329.1, 580.0])           # L1 keeps D-131's five
+
+    def test_bays_stay_under_the_skin_limit_and_clear_of_bolts(self):
+        """Every R1 bay is no wider than L1's widest (so the skin keeps its 2 mm), and the added studs stand 30 or more
+        clear of every bolt (R-J14)."""
+        def bays(side):
+            _n, v, ys = self.ys(side, "1")
+            y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+            edges = [y_front + v["tube_w"]] + [y + d * v["tube_w"] / 2 for y in ys for d in (-1, 1)]
+            return [edges[i + 1] - edges[i] for i in range(0, len(edges) - 1, 2)]
+        self.assertLessEqual(max(bays("R")), max(bays("L")) + 1e-6)
+        ns, v, ys = self.ys("R", "1")
+        tw = v["tube_w"]
+        y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+        bolts = [y_front + v["bolt_edge"] + i * v["len_bolt_pitch"] for i in range(int(round(v["n_len_bolt"])))]
+        for y in (ys[1], ys[6]):
+            self.assertGreaterEqual(min(abs(y - b) for b in bolts) - tw / 2, 30.0, y)
+
+    def test_clearances_against_clips_and_ties(self):
+        for side_row, code in ((("R", "1"), "R1"), (("R", "2"), "R2")):
+            ns = load("cassette", *side_row)
+            v = resolve(ns)
+            y_front = v["pod_d"] / 2 - v["wall_depth"] + v["seam_gap"]
+            z0 = v["panel_z0"] + (0 if code == "R1" else v["side_h"] + v["seam_gap"])
+            n = int(round(v["stile_n_mid"]))
+            last = y_front + v["stud_c%d" % n]
+            back_low = v["clip_dz_back_low"] if code == "R2" else v["clip_zone_dz"]
+            zone = (z0 + back_low - v["clip_zone_h"] / 2, z0 + back_low + v["clip_zone_h"] / 2)
+            fixes = [(y_front + v["stud_c%d" % k], z) for k in ns["INT_FIX"][code]
+                     for z in (v["int_rn_z1"], v["int_rn_z2"])]
+            for y, z in fixes:
+                if abs(y - last) < 1:                          # on the stud with the back clips
+                    self.assertTrue(z + v["int_clr_d"] / 2 < zone[0] or z - v["int_clr_d"] / 2 > zone[1], (code, z, zone))
+            ties = [(v[a] if a in v else None, v[b] if b in v else None) for a, b in ns["TIE_SITES"][code]]
+            for ty, tz in ties:
+                for y, z in fixes:
+                    gap = max(abs(ty - y), abs(tz - z)) - (v["int_clr_d"] + v["el_tie_d"]) / 2
+                    self.assertGreater(gap, 10.0, (code, ty, tz, y, z))
+        self.assertAlmostEqual(z0 + back_low - v["clip_zone_h"] / 2, 1397.26, delta=0.01)
 
 
 class CassetteLedgeTest(unittest.TestCase):
@@ -562,6 +790,15 @@ class CassetteLedgeTest(unittest.TestCase):
         y0 = vl["pod_d"] / 2 - vl["wall_depth"] + vl["ledge_front_dy"] + vl["ledge_end"]
         self.assertAlmostEqual(y0, -635.0, places=2)
         self.assertAlmostEqual(vr["pod_d"] / 2 - vr["wall_depth"] + vr["lin_front_dy"] + vr["ledge_end"], y0, places=2)
+
+    def test_b1_and_b2_get_the_same_back_ledge(self):
+        nb1, nb2 = load_back("B1"), load_back("B2")
+        v1, v2 = resolve(nb1), resolve(nb2)
+        for k in ("ledge_len", "ledge_rivet_pitch", "ledge_rivet_e", "ledge_rivet_z", "ledge_out", "ledge_t"):
+            self.assertAlmostEqual(v1[k], v2[k], places=6, msg=k)
+        self.assertAlmostEqual(v1["ledge_len"], 1154.87, places=1)
+        self.assertEqual(nb1["PARTS"]["ledge"][0], "211801")
+        self.assertNotIn("ledge_len", resolve(load_back("B3")))
 
     def test_rivet_pattern_is_symmetric_and_clear_of_the_ends(self):
         v = resolve(load())

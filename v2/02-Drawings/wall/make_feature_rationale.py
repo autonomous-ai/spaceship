@@ -17,6 +17,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall", "out")
 REG = "joints register V2-ENG-JNT-01 P01 (PR #23)"
+RIVNUT_KEY = 9.53             # the tables' key for a rivnut hole, whatever its size in the CAD (D-163: 10.00)
 
 # back panels B1-B4 (wall_back_panel.py): the families that differ from the side panels'
 FAMILIES_BACK = {
@@ -124,20 +125,24 @@ FAMILIES_EL = {
         "halfway between the air column's back face and the back lining (Y el_y_kit), 80 above the trunk (Z 1180)",
         ELS + ": kit_d, y_kit, trunk_z", "felt only: no steel there (the lips are at the tray's edges)",
         "±1 (knife cut, assumption)", "knife or CNC knife", "assumption (ELECTRICAL)"),
-    (FELT, 19.1, "x"): (
-        "F36", "FX-COL: the trunk's way out of R1-CASS into the air column's cable chase",
-        "ELECTRICAL trunk harness 710021", "Y el_y_cx (13 behind the column's back face), at the trunk (Z 1100)",
-        ELS + ": y_cx, trunk_z, grm_d", "felt only", "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
+    (FELT, 32.0, "x"): (
+        "F36", "FX-COL: the trunk's way out of R1-CASS into the air column, passing its mated plug pair",
+        "ELECTRICAL trunk harness 710021 (its plug pair's joint and slack in R1-CASS's gap behind it)",
+        "Y el_y_fx (27 in front of the column's back face, hidden behind the column), Z 1162.5",
+        "ELECTRICAL in WALL's group (2026-11-01; the column route agreed with CEILING): y_fx, z_fx, fx_d",
+        "felt only", "±1 (assumption)", "knife", "source (ELECTRICAL)"),
     (FELT, 12.0, "x"): (
         "F37", "FX-CALL0 and FX-CALL2: the call light feed into R2-CASS behind the shelf and out above the screen",
         "ELECTRICAL call light harness 710024", "Y el_call_y (the front end of a 900 bar), Z 2250 and 1450",
         ELS + ": call_y, shelf_z, call_z, grm_s", "felt only", "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
     ("SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM", 24.0, "y"): (
         "F38", "Mains inlet and LAN feed-through holes in B2's skin",
-        "powerCON TRUE1 TOP (cut-out 23.8) and etherCON NE8FDP (24), ELECTRICAL's selection E",
-        "X 120, clear of the closing seam member and its pin pocket; Z 313 and 375 (v1's positions + 15)",
-        ELS + ": inlet_x, inlet_z, lan_z, inlet_d", "fill cut-out F47 behind them", "±0.2 (CNC router, assumption)",
-        "routed with the skin blank (DXF)", "source (ELECTRICAL)"),
+        "powerCON TRUE1 TOP NAC3MPX-TOP and etherCON CAT6 NE8FDY-C6-B, turned 180° (D-133; ELECTRICAL's B2 inputs)",
+        "the inlet at X 120, Z 313; the jack at X 170, Z 375, moved right so the LAN keeps 50 or more from the mains "
+        "everywhere (the Lead's ruling and ELECTRICAL's check, 2026-11-01); each with F59's two screw holes",
+        ELS + "; ELECTRICAL's B2 inputs (WALL group, 2026-11-01): inlet_x, inlet_z, lan_x, lan_z, inlet_d",
+        "the fill cut-outs F47 behind them", "±0.2 (CNC router, assumption)", "routed with the skin blank (DXF)",
+        "source (ELECTRICAL)"),
     (TRAY, 19.1, "z"): (
         "F39", "Bushing holes for the light feed across the B2/B4 lining joint: G-B2-B4 in B2-CASS's top return and "
         "B4-CASS's bottom return", "Heyco 2836 SB 750-625 bushing (ELECTRICAL)",
@@ -172,13 +177,22 @@ OTHER_EL = {
             "of other features in the 8 band round it", "the felt edge there has no lip: the unit's front plate 320 x 284 "
             "covers it by 8 all round, 2 off the felt on four nylon spacers (ELECTRICAL)",
             "ELECTRICAL via the PM 2026-10-31 21:20 UTC", "", "±1", "source (ELECTRICAL)"),
-           ("F47", "{fill}", "Fill left out in the first bay: the unit (the cut-out's size, run on to the first stud so "
-            "no sliver stays), the sleeve 20 wide down to Z 301, the inlet and LAN connectors (X 108 to 160, Z 301 to "
-            "387)", "room for ELECTRICAL's factory-fitted parts; knife cut through the 40 fill", ELS,
-            "the unit's cut-out runs to the first stud as it moves", "±2 (knife, assumption)",
-            "source (ELECTRICAL); the unit's fixing HOLD (IF-12)"),
-           ("F48", "NO-PN-HOLD-H03", "The top clip zone on the first stud starts 0.75 from the cut-out's edge (X 395)",
-            "the clip (H03) needs its edge distance on the tray base there", "HOLD H03", "", "", "HOLD")],
+           ("F47", "{fill}", "Fill cut behind the skin in bay 1 below the unit, right through the batt: the inlet's rear "
+            "box and cord grip (X 66 to 148, Z 279 to 347), the strip by the centre stile to X 100 up to Z 750 (the "
+            "mains cord's channel X 80 to 100), its jog from Z 750 to the lower cross member over to the mains passage "
+            "(to X 137), the jack and the band under it, and the LAN's band along the jack's top (Z 391 to 440) and "
+            "channel X 199 to 215 up to its passage; the fill between the channels is its own piece (bay 7); no fill in "
+            "the unit's space between the cross members",
+            "room for ELECTRICAL's connectors and cables, the two kept 50 or more apart everywhere (62 at the band and "
+            "at the jog; ELECTRICAL's rule), each with room for its bend (the mains cord's S-bend about 70 of radius "
+            "against its 37, the Cat6's 24 in the band), with no thin bridge of batt left; knife cut (D-128)",
+            "ELECTRICAL's envelopes and channels (WALL group, 2026-11-01), its passage move (17:47 UTC) and bend check "
+            "(18:05 UTC); WALL's cut, agreed the same day",
+            "fixed at ELECTRICAL's places", "±2 (knife, assumption)", "source (ELECTRICAL); DECIDED (the cut)"),
+           ("F48", "NO-PN-HOLD-H03", "The top-front clip zone on the first stud's 60 stub above the unit (Z 1150.87 to "
+            "1210.87), its centre 50.06 under the cassette's top", "the first stud stops under the unit (the Lead's "
+            "approval of WALL's B2 frame, 2026-11-01): the stub carries the clip, 16.9 clear of the tray's unit cut-out",
+            "HOLD H03; clip_top_dz", "follows the cross member and the top rail", "", "HOLD")],
 }
 POSITIONS = {"2101": ("L1", "R1", "L2", "R2"), "2102": ("B1", "B2", "B3", "B4")}
 # D-117 and D-120: the frame's corners and parts once it is rebuilt that way (the reports show member parts)
@@ -275,6 +289,16 @@ FAMILIES = {
         "±0.2 (assumption); drilled with the ledge held in place as the jig", "drilled after welding and the "
         "touch-up (J-FRAME-01)", "assumption (positions); DECIDED (the ledge)"),
 }
+for _ax in ("x", "y"):                      # side trays' backs face X, back trays' face Y
+    FAMILIES_EL[(TRAY, 6.4, _ax)] = (
+        "F53", "Cable-tie holes: ELECTRICAL's Heyco 3904 push-mount ties hold its cables in the 24 cable gap (R1 and B2 "
+        "along the trunk, R2 along the call light feed, B4 along the light feed)", "Heyco 3904 push-mount cable tie "
+        "(ELECTRICAL)", "a tie every 300 or closer along each cable, one 20 inside each connector pocket's end, none "
+        "within 150 of the power unit's cut-out (ELECTRICAL's rule); never in front of a frame member, since the tie's "
+        "wings sit behind the sheet (check_tie_holes.py)", ELS + ": positions as ELECTRICAL gave them (the Lead's "
+        "relay, 2026-11-01 11:37 UTC)", "each 5 or more inside the tray's back; its edge 20 or more from a member's "
+        "face (checked on the STEPs)", "±0.5 (assumption)", "punched or laser cut in the flat blank (DXF)",
+        "source (ELECTRICAL)")
 FAMILIES[("STILE - FRONT", 8.5, "y")] = (
     "F52", "D-169 pin slots: the decor block locates on two pins along its pull, in two Z slots in the front wall "
     "(L1 only, for DL: as amended the same day, DR and DT keep their base locators)", "the block's two 831001 "
@@ -284,6 +308,52 @@ FAMILIES[("STILE - FRONT", 8.5, "y")] = (
     "120 clear of the nearest J-FRONT-01 bolt holes (F07)", "±0.2 to the bolt holes (Joints)",
     "drilled and slotted after welding (J-FRAME-01)", "DECIDED (D-169)")
 LEDGE_BODY = "LEDGE - STEEL ANGLE UNDER THE CASSETTE"
+# INTERIOR's fixings on R1's and R2's studs (the Lead's rulings of 2026-11-01 on CEILING's load check)
+INT = "the Lead's rulings of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group)"
+FAMILIES[("STILE - MID INTERIOR", RIVNUT_KEY, "x")] = (
+    "F54", "INTERIOR's fixing rivnuts: R1's work wall ledge brackets (818101, 4) and R2's screen rail (818102), each "
+    "an M6 into a rivnut on the stud's room face", "Sherex CAH2-610-4.2 (838003), no stop washer: its head takes "
+    "INTERIOR's Ø12 steel stand-off, which runs to 5 proud of the felt",
+    "2 per stud on the stud's centre line: R1 studs Y -240, 103.6, 329.1 and 700 at Z 815 and 1045; R2 studs "
+    "Y -121.8 and 580 at Z 1320 and 1380 (the studs that carry them are their own part, 212206 and 212406, D-120)",
+    INT + "; D-172", "15.2 to each side wall of the stud's 40 face; clear of the clip zones and ELECTRICAL's tie holes "
+    "(test_wall_offline.py)", "Ø9.53 +0.10 (Sherex); position ±0.5 (assumption: INTERIOR's bracket slots take it)",
+    "drilled after welding and the touch-up (J-FRAME-01); rivnuts set after", "DECIDED (the Lead's rulings)")
+FAMILIES_EL[(TRAY, 16.0, "x")] = (
+    "F55", "Stand-off clearance holes in the tray: INTERIOR's Ø12 stand-offs pass through the lining to the studs",
+    "INTERIOR's stand-offs (to its ledge brackets on R1, its screen rail on R2)", "one at each INTERIOR rivnut (F54)",
+    INT, "2 round the Ø12 stand-off, so the floating lining never touches it (D-17)", "±0.5 (assumption)",
+    "punched or laser cut in the flat blank (DXF)", "DECIDED (the Lead's rulings)")
+FAMILIES_EL[(FELT, 16.0, "x")] = (
+    "F56", "Stand-off clearance holes in the felt, in line with F55", "INTERIOR's stand-offs",
+    "one at each INTERIOR rivnut (F54)", INT, "as F55: 2 round the stand-off", "±1 (knife, assumption)", "knife",
+    "DECIDED (the Lead's rulings)")
+# B2 under D-131 (the Lead's approval of WALL's B2 frame, 2026-11-01): the power unit on two cross members
+B2F = "the Lead's approval of WALL's B2 frame (2026-11-01); ELECTRICAL's B2 inputs (WALL group, 2026-11-01)"
+FAMILIES_BACK[("CROSS - LOWER", RIVNUT_KEY, "z")] = (
+    "F57", "The power unit's fixing rivnuts: the unit sits on the lower cross member's 2 rivnut heads and fixes into "
+    "them and the upper member's 2", "Sherex CAH2-610-4.2 (838003), no stop washer; ELECTRICAL's M6 x 16 (838001) "
+    "with washers 838004, driven from inside the empty unit", "on the tubes' centre line Y 824: the lower member's top "
+    "at X 160 and 376, the upper member's underside at X 110 and 376", B2F,
+    "15.2 to each side wall; 32 or more from the cable passages (F58)", "Ø9.53 +0.10 (Sherex); position ±0.5",
+    "drilled after welding (J-FRAME-01); rivnuts set after", "source (ELECTRICAL); DECIDED (the frame)")
+FAMILIES_BACK[("CROSS - UPPER", RIVNUT_KEY, "z")] = FAMILIES_BACK[("CROSS - LOWER", RIVNUT_KEY, "z")]
+for _d, _what in ((15.9, "the mains passage's bottom wall, for the Heyco SB 625-7 bushing snapped in from below"),
+                  (20.0, "the mains passage's top wall, lined by the unit's own bushing from above"),
+                  (11.1, "the LAN passage's bottom wall, for the Heyco SB 437-5 bushing"),
+                  (14.0, "the LAN passage's top wall, lined by the unit's own bushing")):
+    FAMILIES_BACK[("CROSS - LOWER", _d, "z")] = (
+        "F58", "Cable passages through the lower cross member: the mains cord (SJEOOW 14/3) and the LAN cable rise from "
+        "the inlet and the jack into the unit, apart (%s)" % _what, "ELECTRICAL's bushings and the unit's",
+        "the mains at X 127 (moved from 113 so the unit's Ø15.9 entry keeps 2 diameters from its bottom wall's free "
+        "edge, ELECTRICAL 2026-11-01 17:47 UTC), the LAN at X 207, on the tube's centre line Y 824", B2F,
+        "32 or more from the unit's rivnuts; left of the first stud's T joint below", "±0.5 (assumption)",
+        "drilled after welding (J-FRAME-01)", "source (ELECTRICAL)")
+FAMILIES_BACK[("SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM", 3.2, "y")] = (
+    "F59", "The connectors' screw holes: two per connector on the diagonal, +9.5/+12 and -9.5/-12 (X/Z) from its "
+    "centre", "M3 screws with nuts (ELECTRICAL), holding the inlet and the LAN jack (Neutrik's drawings)",
+    "beside F38's Ø24 holes", B2F + "; D-133", "the ACP's 3 thickness, the jack's panel limit", "±0.2 (CNC router, "
+    "assumption)", "routed with the skin blank (DXF)", "source (ELECTRICAL)")
 FAMILIES[(LEDGE_BODY, 3.3, "x")] = (
     "F51", "The ledge's own rivet holes, matching F50, countersunk on the upright's room face so the heads sit flush",
     "838012, closed-end countersunk blind rivets ISO 15974 Ø3.2 x 8, heads flush in Ø6.7 x 120 countersinks (D-166)",
@@ -292,6 +362,8 @@ FAMILIES[(LEDGE_BODY, 3.3, "x")] = (
     "centre 9.0 from the upright's top edge (2.8 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
     "bend (calculation)", "±0.2 (assumption); countersink Ø per its rivet", "laser cut in the flat blank (DXF), "
     "countersunk by machining", "assumption")
+FAMILIES[(LEDGE_BODY, 3.3, "y")] = FAMILIES[(LEDGE_BODY, 3.3, "x")]       # the back ledge's (211801), facing -Y
+FAMILIES_BACK[("RAIL - BOTTOM", 3.3, "y")] = FAMILIES[("RAIL - BOTTOM", 3.3, "x")]   # the back rail's rivet holes
 
 OTHER = [
     ("F10", "{frame}", "Five studs (0.8 wall, D-131 start; perimeter 1.0), set from the bolts: 50 past the 1st, "
@@ -338,7 +410,6 @@ def load(pn):
         return json.load(fh)
 
 
-RIVNUT_KEY = 9.53             # the tables' key for a rivnut hole, whatever its size in the CAD (D-163: 10.00)
 
 
 def _subs(text, pairs):

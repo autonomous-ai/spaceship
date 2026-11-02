@@ -121,8 +121,10 @@ SKELETON = "100000_P04_POD-SKELETON_CAD"
 
 # D-131 (PM, 2026-11-01): the frames turn to welded, galvanized steel, L1 first as the sample panel; the other
 # panels follow after its review (Lead). Specs for a held position are skipped, so a queued run builds no panel
-# out of turn. "ALL" holds every position (while the builder is being changed).
-ON_HOLD = {"R1", "L2", "R2", "B1", "B2", "B3", "B4"}
+# out of turn. "ALL" holds every position (while the builder is being changed). After L1's single rebuild the Lead
+# took WALL's order (2026-11-01): L2, B1 with B3, B4, R2, R1, B2. Nothing is held now: Control's rows are in and
+# B2's third dry run passed with ELECTRICAL's passage move and bend changes.
+ON_HOLD = set()
 
 
 def preflight(app):
