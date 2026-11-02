@@ -7,9 +7,11 @@
 Builds 810000 INTERIOR in pod coordinates (conventions.md section 4):
 
   810101 INTERIOR - WORK WALL LEDGE ASSY: 811101 ledge top (1.5 mm folded aluminium, its
-         section a sketch extruded along the wall) and 2 x 818101 bracket envelopes (HOLD)
+         section a sketch extruded along the wall, each fold filleted to its inside radius = the
+         sheet and its outside radius = twice the sheet) and 2 x 818101 bracket envelopes (HOLD,
+         their top back edge relieved for the ledge's inside bend)
   810201 INTERIOR - LIGHT SHELF ASSY: 811201 back, 811202 LH, 811203 RH (1.0 mm folded
-         aluminium U), the LED profile RH (D-126: a bought profile set, one HOLD envelope); cable holes at ELECTRICAL's
+         aluminium U, folds as the ledge's), the LED profile RH (D-126: a bought profile set, one HOLD envelope); cable holes at ELECTRICAL's
          feed (X 355) and call-light drop (Y -209.5)
   818102 INTERIOR - SCREEN RAIL (HOLD envelope)
 
@@ -162,6 +164,59 @@ def extrude_along(comp, sk, axis, a0, a1, name):
     return f.bodies.item(0)
 
 
+def bend_fillets(comp, body, key, name, sec, kind, ctx):
+    """Real folds (the Lead's ruling 2026-11-01 on #335: each fold's inside radius equals the sheet, so the model, its STEP
+    and its DXF agree): fillet each fold's inside corner edge by the inside radius and its outside corner edge by the
+    inside radius plus the sheet (I.bends). The section sketch stays as it is, fully constrained; each edge is found by
+    its place, the straight edge along the extrusion through that corner of the section, and there must be one."""
+    along = 1 if kind == "xz" else 0                 # model axis of the extrusion: Y for an XZ section, X for a YZ one
+    across = 0 if kind == "xz" else 1                # the section's u axis in the model
+    groups = {}
+    for idx, side, rexpr in I.bends(key):
+        u, z = (ctx.ev(e) for e in sec[idx])
+        groups.setdefault((side, rexpr), []).append((idx, u, z))
+    for (side, rexpr), corners in sorted(groups.items()):
+        coll = adsk.core.ObjectCollection.create()
+        for idx, u, z in corners:
+            hits = []
+            for e in body.edges:
+                if e.geometry.objectType != adsk.core.Line3D.classType():
+                    continue
+                a, b = e.startVertex.geometry, e.endVertex.geometry
+                pa = (a.x / CB.MM, a.y / CB.MM, a.z / CB.MM)
+                pb = (b.x / CB.MM, b.y / CB.MM, b.z / CB.MM)
+                if abs(pa[along] - pb[along]) < 1.0:
+                    continue                         # not along the extrusion
+                if all(abs(q[across] - u) < 1e-3 and abs(q[2] - z) < 1e-3 for q in (pa, pb)):
+                    hits.append(e)
+            if len(hits) != 1:
+                raise RuntimeError("%s: %d edges at fold corner %d (%.3f, %.3f), want 1" % (name, len(hits), idx, u, z))
+            coll.add(hits[0])
+        fi = comp.features.filletFeatures.createInput()
+        fi.edgeSetInputs.addConstantRadiusEdgeSet(coll, CB.vi(rexpr), False)
+        f = comp.features.filletFeatures.add(fi)
+        f.name = "BEND %s R (%s) - %s" % (side.upper(), rexpr, name)
+
+
+def fold_check(made, vals):
+    """Every bent body's faces round its extrusion axis are its two folds' inside and outside faces, at the model's
+    radii (I.bends): [(body name, problem)], empty when all hold, and the number of fold faces seen."""
+    kinds = {name: (key, kind) for key, name, kind, _d in I.layout()}
+    bad, n = [], 0
+    for name, (key, kind) in kinds.items():
+        if key not in I.BENT or name not in made:
+            continue
+        ax = (0, 1, 0) if kind == "xz" else (1, 0, 0)
+        cyls = [adsk.core.Cylinder.cast(f.geometry) for f in made[name][1].faces]
+        got = sorted(round(c.radius / CB.MM, 3) for c in cyls
+                     if c is not None and abs(abs(c.axis.x * ax[0] + c.axis.y * ax[1] + c.axis.z * ax[2]) - 1) < 1e-6)
+        want = sorted(round(I.ev(vals, e), 3) for _i, _s, e in I.bends(key))
+        n += len(got)
+        if got != want:
+            bad.append((name, "folds %s, want %s" % (got, want)))
+    return bad, n
+
+
 def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
     plane = CB.offset_plane(comp, comp.xZConstructionPlane, y0, "PLANE - %s" % name)
     sk = comp.sketches.add(plane)
@@ -220,14 +275,13 @@ def open_or_create(app, name):
     folder = proj.rootFolder
     for n in parts[1:]:
         folder = folder.dataFolders.itemByName(n)
-    found, unreadable = [], 0
-    for i in range(folder.dataFiles.count):
-        try:
-            f = folder.dataFiles.item(i)
-            if f.name == name:
-                found.append(f)
-        except RuntimeError:
-            unreadable += 1
+    # the shared folder reader (tools/fusion/fusion_folder.py, given to every script by the runner): one fetch of the
+    # folder per pass; reading it entry by entry took about 7 min on 2026-11-01 (AIR's follow-up build ran past 900 s)
+    from fusion_folder import read_folder
+    files, unknown, _others = read_folder(folder, stop_when=lambda fs, _u, _o: name in fs)
+    found, unreadable = list(files.get(name, [])), len(unknown)
+    if len(found) > 1:
+        raise RuntimeError("%d files called %r in %s; rename the extra ones first (D-141)" % (len(found), name, FOLDER))
     app.data.activeProject = proj
     if found:
         d = app.documents.open(found[0], True)
@@ -261,6 +315,8 @@ def build_bodies(root, design, ctx, keys):
             sec, a0, a1 = data
             sk = poly(root, "SECTION - " + name, sec, kind, ctx)
             made[name] = (root, extrude_along(root, sk, "y" if kind == "xz" else "x", a0, a1, name))
+            if key in I.BENT:
+                bend_fillets(root, made[name][1], key, name, sec, kind, ctx)
     for k, (bname, kind, a) in enumerate(I.features()):
         if bname not in made:
             continue
@@ -361,6 +417,8 @@ def run(_context):
                 sec, a0, a1 = data
                 sk = poly(c, "SECTION - " + name, sec, kind, ctx)
                 made[name] = (c, extrude_along(c, sk, "y" if kind == "xz" else "x", a0, a1, name))
+                if key in I.BENT:
+                    bend_fillets(c, made[name][1], key, name, sec, kind, ctx)
         for key, c in comps.items():
             set_material(design, c, key)
         for k, (bname, kind, a) in enumerate(I.features()):
@@ -396,6 +454,10 @@ def run(_context):
             if d > 0.05:
                 off.append((name, round(d, 3)))
         print("position check: %d layout bodies, worst %.3f mm, off %s" % (len(want), worst, off or "none"))
+        fold_bad, fold_n = fold_check(made, ctx.vals)
+        print("fold check: %d fold faces of the bent parts at their radii (inside the sheet, outside twice), off %s" % (
+            fold_n, fold_bad or "none"))
+        off += fold_bad
         for n, b in bodies:
             print("BODY|%s|%s" % (n, CB.body_box(b)))
         for occ in root.allOccurrences:

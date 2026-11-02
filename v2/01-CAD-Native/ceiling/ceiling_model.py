@@ -183,7 +183,7 @@ CEILING_PARAMS = [
     ("slv_rn_clr", "1 mm", "mm", "assumption", "the bulge's clearance to cross member 1's back face"),
     ("slv_rn_yb", "(pod_d / 2 - wall_depth) + cs_front - x1_ov + tube_w + slv_bulge / 2 + slv_rn_clr", "mm", "calculation",
      "the back side's rivnuts behind cross member 1: its back face plus half the bulge plus the clearance (Y -273)"),
-    # D-177 (PM ruling 2026-11-01): each skin hole passes a set rivnut (its body and the bulge right under the 1 mm flange,
+    # D-177 (PM ruling 2026-11-02): each skin hole passes a set rivnut (its body and the bulge right under the 1 mm flange,
     # which sits in the skin's thickness) wherever the sleeve lands in its slot. The flange's butyl ring, outside the four
     # holes, seals them and the sleeve's gap in the slot (J-AIR-03; AIR's list)
     ("slv_fit", "1.0 mm", "mm", "confirmed", "D-177: the roof sleeve is 1.0 smaller a side than the roof slot, so it drops in at "

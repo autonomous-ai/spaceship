@@ -10,7 +10,7 @@ The method was proven first, on unsaved designs (D-118): turned-copy probes 2 to
 
 ## What version 13 changes
 
-- **D-177 (PM ruling 2026-11-01, Reviewer 17's P1 on #348):** C2's four holes under the roof sleeve's factory-set rivnuts are Ø17 clearance holes (`hole_slv`), not the rivnut's own Ø10.00. Each passes a set rivnut, its 9.91 body and the bulge (about 14, an assumption) that forms right under the 1 mm flange in the skin's hole, wherever the sleeve lands in its slot: 14 + 2 × (1.0, the sleeve's play a side, which AIR's walls take, + 0.5 for the two holes' positions). At full play the back pair's bodies clear cross member 1 by 1.5, and the flange covers each hole with 10.0 outside it, room for AIR's 8-wide butyl ring (J-AIR-03), which closes the holes and the sleeve's gap (REQ-VCK-06). Rationale F-4113-04. Nothing else in the model moves; the four new parameters make 161.
+- **D-177 (PM ruling 2026-11-02, Reviewer 17's P1 on #348):** C2's four holes under the roof sleeve's factory-set rivnuts are Ø17 clearance holes (`hole_slv`), not the rivnut's own Ø10.00. Each passes a set rivnut, its 9.91 body and the bulge (about 14, an assumption) that forms right under the 1 mm flange in the skin's hole, wherever the sleeve lands in its slot: 14 + 2 × (1.0, the sleeve's play a side, which AIR's walls take, + 0.5 for the two holes' positions). At full play the back pair's bodies clear cross member 1 by 1.5, and the flange covers each hole with 10.0 outside it, room for AIR's 8-wide butyl ring (J-AIR-03), which closes the holes and the sleeve's gap (REQ-VCK-06). Rationale F-4113-04. Nothing else in the model moves; the four new parameters make 161.
 
 ## What version 12 changed
 
