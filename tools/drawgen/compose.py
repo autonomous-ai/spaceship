@@ -76,6 +76,43 @@ def fold_window(v, rows):
     return {"box": box, "w": box[1] - box[0], "h": box[3] - box[2]}
 
 
+def _cuts_overlap(c1, c2, tol=0.5):
+    """Two cutting-plane lines on one view (sheet mm) that lie on one line and share a stretch longer than tol."""
+    (a, b), (p, q) = c1, c2
+    d = (b[0] - a[0], b[1] - a[1])
+    L = math.hypot(*d)
+    if L < 1e-9:
+        return False
+    u = (d[0] / L, d[1] / L)
+    off = lambda z: abs((z[0] - a[0]) * u[1] - (z[1] - a[1]) * u[0])
+    if off(p) > tol or off(q) > tol:
+        return False
+    t = sorted(((p[0] - a[0]) * u[0] + (p[1] - a[1]) * u[1], (q[0] - a[0]) * u[0] + (q[1] - a[1]) * u[1]))
+    return min(L, t[1]) - max(0.0, t[0]) > tol
+
+
+def _fold_cut(P, r, tr):
+    """A fold section's cutting plane on view P, only across its own fold: the stretch of the plane's trace over the
+    fold's outside arc and 2 past it (r + t + 2 each side of its middle), so two fold sections cut in one plane
+    (AIR's 611801: B1 and B6, both at the duct's mid height) draw apart, each pair of letters by its own fold
+    (ISO 128-40 lets a cutting plane be shown by its ends). None when the fold doesn't lie on the trace."""
+    bd = r.fold["bend"]
+    c = P.to2d(r.point)
+    d = (tr[1][0] - tr[0][0], tr[1][1] - tr[0][1])
+    L = math.hypot(*d)
+    if L < 1e-9:
+        return None
+    u = (d[0] / L, d[1] / L)
+    if abs((c[0] - tr[0][0]) * u[1] - (c[1] - tr[0][1]) * u[0]) > 0.5:
+        return None
+    tc = (c[0] - tr[0][0]) * u[0] + (c[1] - tr[0][1]) * u[1]
+    h = bd.r + bd.t + 2.0
+    lo, hi = max(0.0, tc - h), min(L, tc + h)
+    if hi - lo < 1.0:
+        return None
+    return ((tr[0][0] + u[0] * lo, tr[0][1] + u[1] * lo), (tr[0][0] + u[0] * hi, tr[0][1] + u[1] * hi))
+
+
 def fold_section_words(r):
     """A fold section's title words: the fold it cuts, its angle and inside radius, and every fold of the same angle
     and radius it stands for, each named (the Lead on #369)."""
@@ -2221,10 +2258,13 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         a, b = (a[0] - u[0] * 5, a[1] - u[1] * 5), (b[0] + u[0] * 5, b[1] + u[1] * 5)
         look = P.to2d(vmul(g.normal, -1.0))
         sh.section_arrows(a, b, vd.letter, look)
+    cuts_drawn = []
     for vd in removed:
         r = vd.r
         body2d = project.extent(project.project(r.body.shape, P))
         tr = _trace(P, r.point, r.n, body2d)
+        if tr and getattr(r, "fold", None):
+            tr = _fold_cut(P, r, tr)
         if not tr:
             continue
         a, b = pvd.S(tr[0]), pvd.S(tr[1])
@@ -2233,6 +2273,11 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         u = (d[0] / L, d[1] / L)
         a, b = (a[0] - u[0] * 6, a[1] - u[1] * 6), (b[0] + u[0] * 6, b[1] + u[1] * 6)
         look = P.to2d(vmul(r.n, -1.0))
+        for a_, b_, l_ in cuts_drawn:
+            if _cuts_overlap((a, b), (a_, b_)):
+                raise NotDrawable("%s: the cutting planes of sections %s and %s lie on one another on the principal "
+                                  "view" % (part.pn, l_, vd.letter))
+        cuts_drawn.append((a, b, vd.letter))
         sh.section_arrows(a, b, vd.letter, look, size=3.5)
     sh.flush()
     for nm, vd in vds.items():
@@ -2441,8 +2486,12 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                         continue
                     cands = [(tail[0] + u[0] * 2.0 + sd * side[0] * 2.5, tail[1] + u[1] * 2.0 + sd * side[1] * 2.5 - 1.75)
                              for sd in (0, 1, -1, 2, -2)]
+                    # the arrow isn't drawn yet, so its own shaft is tested here, through the letter itself (AIR's
+                    # 611801: on a slant arrow the letter sat on the shaft's tail; in line with it, it stays put)
                     q = next((q for q in cands
-                              if sh.is_free(sh.text_box(q[0], q[1], avd.letter, 3.5, "center", bold=True))), None)
+                              if sh.is_free(sh.text_box(q[0], q[1], avd.letter, 3.5, "center", bold=True)) and
+                              not sh._seg_box(tail, tip, sh.text_box(q[0], q[1], avd.letter, 3.5, "center",
+                                                                     bold=True), gap=0.0)), None)
                     if q is not None:
                         pick = (tip, tail, q)
                         break
