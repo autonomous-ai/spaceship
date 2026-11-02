@@ -23,10 +23,12 @@
 9. A sub-assembly's number owns every solid under it in the STEP (the read-back's rule, as drawing's).
 10. A balloon's point must be in sight: an arrow ends on an outline drawn in its view, a dot's point is the first
     surface on its sight line (the read-back fails one on the felt under the tray).
+11. A curve drawn as a chain of cubic pieces (an ellipse) is read piece by piece, as drawn.
 """
 
 import csv
 import json
+import math
 import os
 import shutil
 import sys
@@ -171,6 +173,10 @@ def test_unmodelled_rows_and_reference_parts():
 def test_units_join_and_printed_widths():
     assert assembly.unit_of({"part_number": "848001"}) == "m"
     assert assembly.unit_of({"part_number": "838003", "unit": "pcs"}) == ""
+    # a count in any case (Reviewer 9 on #408); any other unit is printed as the list writes it
+    assert assembly.unit_of({"part_number": "838003", "unit": "EA"}) == ""
+    assert assembly.unit_of({"part_number": "838003", "unit": "PCS"}) == ""
+    assert assembly.unit_of({"part_number": "518003", "unit": "SET"}) == "SET"
     assert assembly.qty_text("4") == "4" and assembly.qty_text("1.199") == "1.199"
     assert assembly._join(["BASE - TUBE END CAP - BLACK -", "HOLD"]) == "BASE - TUBE END CAP - BLACK - HOLD"
     assert assembly._join(["SHEREX CAH3-", "610-4.2"]) == "SHEREX CAH3-610-4.2"
@@ -235,6 +241,101 @@ def test_a_count_in_sets_is_counted_as_pieces():
             assert "the list has 3 of 518001 under it, the STEP 4" in str(e), e
     finally:
         inputs.team_lists = real
+
+
+def test_other_teams_rows_join_the_table():
+    """The Lead's ruling (2026-11-01, Reviewer 16's find): ELECTRICAL's list names INTERIOR's light shelf 810201 as
+    the parent of the LED profile 718101, its cover 718102, end caps 718103 (2) and clips 718104 (3), so they are
+    the shelf's own parts: its table has 7 lines (INTERIOR's rows, then ELECTRICAL's), the profile is ballooned, the
+    three not in the STEP are marked *, and the overall height is 52.5 (Z 2217.5 to 2270). The sheet names both
+    lists, and the read-back reads the table against both."""
+    final, _rep = assembly.generate("810201", "interior", {}, os.path.join(TMP, "shelf"))
+    fails, st = assembly.check(final)
+    assert not fails and st["rows"] == 7 and st["balloons"] == 4, (fails, st)
+    data = readback.read_data(fitz.open(final))
+    assert [d["value"] for d in data["dims"] if d["view"] == "above" and d["axis"] == "y"] == [52.5], data["dims"]
+    assert [os.path.basename(s_["path"]) for s_ in data["sources"] if s_["role"] == "parts list"] == [
+        "810000_P01_INTERIOR-PARTS-LIST_BOM.csv", "710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv"], data["sources"]
+    text = " ".join(fitz.open(final)[0].get_text().split())
+    assert "as the parts lists 810000_P01_INTERIOR-PARTS-LIST_BOM.csv and 710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv" \
+        in text, text[:600]
+    assert "(5 718102, 6 718103, 7 718104)" in text
+
+
+def _profile_elsewhere(tag):
+    """ELECTRICAL's list as a copy that puts the LED profile 718101 under another assembly (710099), so the light
+    shelf's STEP holds it as a true reference part: placed there, but no list puts it under the shelf. Returns the
+    real team_lists to put back."""
+    real = inputs.team_lists
+    src = next(p for p in real("electrical") if os.path.basename(p) == "710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv")
+    with open(src, newline="", encoding="utf-8") as fh:
+        rd = csv.DictReader(fh)
+        cols, rows = rd.fieldnames, list(rd)
+    moved = [r for r in rows if (r.get("part_number") or "").strip() == "718101"]
+    assert moved and all((r.get("parent") or "").strip() == "810201" for r in moved), moved
+    for r in moved:
+        r["parent"] = "710099"
+    dst = os.path.join(TMP, tag, os.path.basename(src))
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, cols)
+        w.writeheader()
+        w.writerows(rows)
+    inputs.team_lists = lambda t: [dst if p == src else p for p in real(t)] if t == "electrical" else real(t)
+    return real
+
+
+def test_overall_sizes_are_the_assemblys_own_parts():
+    """The Lead's rulings (2026-11-01): an assembly's overall sizes cover only its own parts, so a true reference
+    outline (a part its STEP places there but no list puts under it) stays out. Here the light shelf 810201 with its
+    LED profile 718101 listed under another assembly: the front view's height is 40 (Z 2230 to 2270), not 52.5, and
+    the profile is drawn as a reference outline, its note naming where its list puts it. Where the combined size
+    matters for fitting, the entry's combined_sizes adds it in brackets outside, as a reference dimension: (52.5).
+    The read-back measures every overall size again from the STEP (the lists' parts only, everything for a bracketed
+    one), so the height drawn over the reference, 52.5, fails it."""
+    real = _profile_elsewhere("ref")
+    try:
+        final, _rep = assembly.generate("810201", "interior", {}, os.path.join(TMP, "shelf_ref"))
+        data = readback.read_data(fitz.open(final))
+        height = [d for d in data["dims"] if d["view"] == "above" and d["axis"] == "y"]
+        assert [(d["value"], d["text"]) for d in height] == [(40.0, "40")], data["dims"]
+        assert data["refs"] == ["718101"], data["refs"]
+        assert "the parts list puts it under 710099" in " ".join(fitz.open(final)[0].get_text().split())
+        fails, st = assembly.check(final)
+        assert not fails and st["overall"] == 3 and st["rows"] == 6, (fails, st)
+        # the combined size where the entry asks for it, in brackets outside the overall size
+        both, _rep = assembly.generate("810201", "interior", {"combined_sizes": ["Z"]}, os.path.join(TMP, "shelf2"))
+        data2 = readback.read_data(fitz.open(both))
+        height = [(d["value"], d["text"], d.get("reference", False)) for d in data2["dims"] if d["view"] == "above"]
+        assert height == [(40.0, "40", False), (52.5, "(52.5)", True)], height
+        fails, st = assembly.check(both)
+        assert not fails and st["overall"] == 4, (fails, st)
+        assert "(52.5)" in fitz.open(both)[0].get_text()
+
+        # the height drawn over the reference outline: the read-back fails it
+        def over_the_reference(d):
+            for x in d["dims"]:
+                if x["view"] == "above" and x["axis"] == "y":
+                    x["value"], x["text"] = 52.5, "52.5"
+        fails, _st = assembly.check(_with_data(final, os.path.join(TMP, "shelf_over.pdf"), over_the_reference))
+        assert any("overall size 52.5 on the above view: the STEP's own parts give 40.00" in f for f in fails), fails
+    finally:
+        inputs.team_lists = real
+
+
+def test_a_named_parts_envelope_says_it_waits_for_its_model():
+    """WALL's 518003 (D-170: Fastmount MC-F10 + MC-SM5) is named in its list row, and only its model is missing, so
+    the note says the STEP holds only its envelope until the part is modelled (the WALL Drawings Engineer); a held
+    part with no product named (main's 518001, HOLD-08) keeps 'isn't named yet'."""
+    team, entry = assembly.assemblies()["510101"]
+    assy = assembly.Assy("510101", team, entry)
+    clip = next(it for it in assy.table_items if it.pn == "518001")
+    held = " ".join(assembly.notes_for(assy, {}))
+    assert "the part isn't named yet (HOLD)" in held, held
+    clip.row = dict(clip.row, kind="PI", maker="Fastmount (joints register H-49)", status="DRAFT")
+    named = " ".join(assembly.notes_for(assy, {}))
+    assert "the part is named, but the STEP holds only its envelope until the part is modelled" in named, named
+    assert "isn't named yet" not in named
 
 
 def test_shafts_cut_along_their_axis_are_drawn_whole():
@@ -415,6 +516,24 @@ def test_an_assembly_class_brings_its_own_kind_sources_and_extra():
     assert "EXTRA" in fitz.open(out)[0].get_text()
     fails, _st = assembly.check(out)
     assert fails and "not an assembly sheet" in fails[0], fails
+
+
+def test_a_curve_of_several_pieces_is_read_as_drawn():
+    """A curve the sheet draws as a chain of cubic pieces (project._bezier_pieces: an ellipse, a spline) is read the
+    same way: a balloon's point on it lies on the drawn pieces, and a point on them is 0 from it (BASE's 110104: the
+    stud head's ellipse in section D, read as one curve of degree 6, put balloon 6's arrow 0.1 mm off the line)."""
+    import project
+    k, a_, b_ = 0.5522847498, 6.0, 4.0           # a half ellipse, 6 by 4, as two cubic quarter pieces
+    chain = [(a_, 0.0), (a_, k * b_), (k * a_, b_), (0.0, b_), (-k * a_, b_), (-a_, k * b_), (-a_, 0.0)]
+    p = project.Prim("bezier", True, pts=chain)
+    drawn = [assembly.bez(chain[3 * j:3 * j + 4], i / 400.0) for j in range(2) for i in range(401)]
+    for t in (0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0):
+        pt, _d = assembly.prim_point(p, t)
+        off = min(math.dist(pt, q) for q in drawn)
+        assert off < 0.01, "t %.1f: %.3f mm off the drawn line" % (t, off)
+    assert assembly.prim_dist((0.0, b_), p) < 1e-6, assembly.prim_dist((0.0, b_), p)
+    one = project.Prim("bezier", True, pts=chain[:4])           # one piece reads as before
+    assert math.dist(assembly.prim_point(one, 0.5)[0], assembly.bez(chain[:4], 0.5)) < 1e-12
 
 
 def test_never_goes_over_a_fusion_drawing():
