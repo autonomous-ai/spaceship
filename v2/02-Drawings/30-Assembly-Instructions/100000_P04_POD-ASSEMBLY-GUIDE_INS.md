@@ -241,7 +241,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 19. Light shelf
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-13** INTERIOR - LIGHT SHELF ASSY (1.6 kg).
+- **Parts:** **2-13** INTERIOR - LIGHT SHELF ASSY (1.8 kg).
 - **Fasteners:** the light shelf's fixings (INTERIOR's parts list 810201 names none yet).
 - **Person A:** Fits the light shelf along the tops of the side and back walls: the back shelf, the two side shelves, and the down-light channel with its diffuser on the right wall (INTERIOR 810201).
 - **Person B:** Plugs the light shelf feed.
