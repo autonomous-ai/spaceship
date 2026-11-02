@@ -38,44 +38,49 @@
    "expression": "dl_w - pod_w / 2 - dl_skin_t"
   },
   {
-   "component": "368005 FRONT - FRAME-STOP SEAL",
+   "component": "368005 FRONT - FRAME-STOP SEAL - HINGE SIDE 1",
    "index": 0,
    "expression": "door_xl - pod_w / 2"
   },
   {
-   "component": "368005 FRONT - FRAME-STOP SEAL",
+   "component": "368005 FRONT - FRAME-STOP SEAL - HINGE SIDE 4",
    "index": 5,
    "expression": "dt_zb - ps_s"
   },
   {
-   "component": "351103 FRONT - DOOR HINGE-SIDE STOP - DL",
+   "component": "351105 FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1",
    "index": 3,
    "expression": "dl_w + stop_reach - pod_w / 2"
   },
   {
-   "component": "351104 FRONT - DECOR FRAME - DL",
+   "component": "352104 FRONT - DECOR FRAME DL - BACK RING BOLT LINE",
    "index": 0,
-   "expression": "-pod_w / 2 + dl_skin_t"
+   "expression": "-pod_w / 2 + dl_fo"
   },
   {
-   "component": "351104 FRONT - DECOR FRAME - DL",
+   "component": "352102 FRONT - DECOR FRAME DL - BACK RING DOOR SIDE",
    "index": 3,
-   "expression": "dl_w - pod_w / 2 - dl_skin_t"
+   "expression": "dl_w - pod_w / 2 - dl_fo"
   },
   {
-   "component": "351104 FRONT - DECOR FRAME - DL",
+   "component": "352101 FRONT - DECOR FRAME DL - BACK RING BOTTOM",
    "index": 2,
    "expression": "wall_z0"
   },
   {
-   "component": "351104 FRONT - DECOR FRAME - DL",
+   "component": "352103 FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT",
    "index": 4,
    "expression": "-pod_d / 2 + decor_d - dl_back_t"
   },
   {
-   "component": "351104 FRONT - DECOR FRAME - DL",
+   "component": "352112 FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1",
+   "index": 3,
+   "expression": "dl_w - pod_w / 2 - dl_fo"
+  },
+  {
+   "component": "352112 FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1",
    "index": 1,
-   "expression": "-dl_y3 + dl_skin_t"
+   "expression": "((((dl_y3 - dl_y2) / dl_l2) * ((-(-pod_w / 2 + dl_w) + dl_fo + fr_w)) - (-(((dl_y3 - dl_y2) / dl_l2 * (-pod_w / 2 + dl_x2) + (dl_x3 - dl_x2) / dl_l2 * (-dl_y2) + dl_fo)))) / (-(-((dl_x3 - dl_x2) / dl_l2))))"
   }
  ]
 }

@@ -15,7 +15,8 @@ one component, sketches constrained to the parameters, and features named by
 function:
 
     111211_P01_BASE-CORNER-KEY-TABULATED_CAD   corner key family, joints register J-BASE-02:
-        cut_angle 0 (111211), -24.14 (111212 LH), +24.02 (111213 RH), -7.25 (111214)
+        cut_angle 0 (111211), -24.1446 (111212 LH), +24.02 (111213 RH), -7.2546 (111214), 0 (111215):
+        the mitres exactly, as corner_keys.py computes them (BASE, 2026-11-01)
         saved and drawn at 0 (111211); one STEP per part number
     831001_P01_HARDWARE-LOCATING-SPIGOT_CAD    spigot family, register H-05 and H-45: pin_proud 8 (831001) or 11
                                                (831010, DR's DT ledge, J-FRONT-03); saved at 831001; one STEP per
@@ -75,11 +76,12 @@ PLATE_VARIANTS = [  # part number, name, the two members' widths in the frame's 
     ("831009", "HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL", "40 mm", "40 mm",
      "831009_P01_HARDWARE-MITRE-PLATE-40X40-45DEG"),
 ]
-KEY_VARIANTS = [  # part number, STEP file, cut angle (signed, see the docstring)
-    ("111211", "111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step", "0 deg"),
-    ("111212", "111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step", "-24.14 deg"),
-    ("111213", "111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step", "24.02 deg"),
-    ("111214", "111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step", "-7.25 deg"),
+KEY_VARIANTS = [  # part number, STEP file, cut angle (signed, see the docstring), fix_y, fix_step (D-144)
+    ("111211", "111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step", "0 deg", "6 mm", "7.3 mm"),
+    ("111212", "111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step", "-24.1446 deg", "7 mm", "0 mm"),
+    ("111213", "111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step", "24.02 deg", "7 mm", "0 mm"),
+    ("111214", "111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step", "-7.2546 deg", "7 mm", "0 mm"),
+    ("111215", "111215_P01_BASE-CORNER-KEY-SQUARE-INLINE_STEP.step", "0 deg", "7 mm", "0 mm"),
 ]
 DRAWN = "0 deg"        # saved state: 111211 (square, true circles in every view), drawn on the tabulated sheet
 CM = 0.1               # the API's lengths are cm
@@ -406,20 +408,23 @@ def build_keys(app):
         ("key_h", "75 mm", "mm", "PROPOSED: height, in the band's 97 bore (joints register J-BASE-02)"),
         ("key_len", "30 mm", "mm", "PROPOSED: length along the carrier on the centre line; 30 keeps the carrier's Ø7.0 fixing holes 2 x 7 from its cut end (J-BASE-02)"),
         ("cut_angle", DRAWN, "deg",
-         "SOURCE: stud face cut from square, signed: 0 (111211), -24.14 (111212), +24.02 (111213), -7.25 (111214); "
+         "SOURCE: stud face cut from square, signed: 0 (111211), -24.1446 (111212), +24.02 (111213), -7.2546 (111214), "
+         "0 (111215); "
          "BASE's front geometry (corner-keys.csv)"),
         ("fix_x", "10.5 mm", "mm", "PROPOSED: fixing holes from the key's back face, over 2 x the hole (C09) (FR-16)"),
-        ("fix_y", "7 mm", "mm", "PROPOSED: fixing holes either side of the centre line, 10.5 from the side faces (C09) (FR-16)"),
+        ("fix_y", "6 mm", "mm", "PROPOSED: fixing holes either side of the centre line: 6 on 111211 (D-144), 7 on the others (C09) (FR-16)"),
+        ("fix_step", "7.3 mm", "mm", "PROPOSED (D-144): the -y fixing hole's step along x from fix_x; 7.3 on 111211 (the back corners), 0 on the others"),
         ("stud_z1", "26 mm", "mm", "PROPOSED: lower hook stud above the key's bottom; Z 37.5 in the pod (FR-15)"),
         ("stud_z2", "60 mm", "mm", "PROPOSED: upper hook stud above the key's bottom; Z 71.5 in the pod (FR-15)"),
         ("tap_d", "5 mm", "mm", "SOURCE: M6 x 1 tap drill 5.0 (ISO 2306, unverified)"),
         ("fix_drill", "18 mm", "mm", "CALCULATION: fixing hole drill depth, thread 15 + 3 for the drill point"),
         ("fix_thread", "15 mm", "mm", "DECIDED: at least 15 of thread (PM ruling on F-017); an 838010 M6 x 12 button head through the 1.5 wall engages 10.5"),
     ])
-    root = set_root(design, "111211", "BASE - CORNER KEY - TABULATED 111211, 111212, 111213, 111214",
-                    "Ke góc đế (bảng 111211, 111212, 111213, 111214)",
+    root = set_root(design, "111211", "BASE - CORNER KEY - TABULATED 111211, 111212, 111213, 111214, 111215",
+                    "Ke góc đế (bảng 111211 đến 111215)",
                     "UNITS MM; MATERIAL EN AW-6061-T6; FINISH MILL FINISH, DEBURRED; ISO 2768-m; CUT 111211 0 DEG (SHOWN), "
-                    "111212 -24.14 DEG, 111213 +24.02 DEG, 111214 -7.25 DEG; joints register J-BASE-02; PROPOSED")
+                    "111212 -24.1446 DEG, 111213 +24.02 DEG, 111214 -7.2546 DEG, 111215 0 DEG; FIXING HOLES 111211 AT "
+                    "(10.5, +6) AND (17.8, -6), THE OTHERS AT (10.5, +-7) (D-144); joints register J-BASE-02; PROPOSED")
     comp = root
     sk = comp.sketches.add(comp.xYConstructionPlane)
     sk.name = "SKETCH - KEY PLAN"
@@ -460,7 +465,8 @@ def build_keys(app):
         bottom = face_where(body, lambda n: n.z < -0.99)
         back = line_edge(bottom, lambda q: abs(q[0]) < 0.01)
         edge_y = line_edge(bottom, lambda q: abs(q[1] - side * 17.5) < 0.01)
-        hole(comp, body, bottom, (10.5, side * 7.0, 0), back, "fix_x", edge_y, "key_w / 2 - fix_y", "fix_drill",
+        hole(comp, body, bottom, (10.5 + (7.3 if side < 0 else 0.0), side * 6.0, 0), back,
+             "fix_x" if side > 0 else "fix_x + fix_step", edge_y, "key_w / 2 - fix_y", "fix_drill",
              "HOLE - %s M6 (DRILL 5.0 X 18)" % name)
     for name, zp, z in (("HOOK STUD LOW", "stud_z1", 26.0), ("HOOK STUD HIGH", "stud_z2", 60.0)):
         face = stud_face(body)
@@ -482,13 +488,18 @@ def build_keys(app):
         rev, fmt(box(body)), mat, body.physicalProperties.mass))
 
     names = {"111211": "BASE - CORNER KEY - SQUARE - COMMON", "111212": "BASE - CORNER KEY - FRONT - LH",
-             "111213": "BASE - CORNER KEY - FRONT - RH", "111214": "BASE - CORNER KEY - KNEE - LH"}
+             "111213": "BASE - CORNER KEY - FRONT - RH", "111214": "BASE - CORNER KEY - KNEE - LH",
+             "111215": "BASE - CORNER KEY - SQUARE - INLINE"}
+    holes_of = {pn: (fy, fs) for pn, _step, _ang, fy, fs in KEY_VARIANTS}
     family = (root.partNumber, root.description)
 
     def state(expr, pn):
         def go():
             design.userParameters.itemByName("cut_angle").expression = expr
             num = pn.split()[0]
+            if num in holes_of:         # D-144: each number's fixing holes
+                design.userParameters.itemByName("fix_y").expression = holes_of[num][0]
+                design.userParameters.itemByName("fix_step").expression = holes_of[num][1]
             if num in names:            # each STEP carries its own part number (C06)
                 root.partNumber = num
                 root.description = "%s | rev %s | cut %s | joints register J-BASE-02 | PROPOSED" % (names[num], REV, expr)
@@ -500,9 +511,9 @@ def build_keys(app):
         return go
 
     save_export(app, doc, design, f, KEYS,
-                "Corner key family 111211-111214, rev P01, PROPOSED (joints register J-BASE-02); saved at cut_angle "
-                "0 (111211). Built by joints_hardware_build.py",
-                [(step, state(ang, pn)) for pn, step, ang in KEY_VARIANTS])
+                "Corner key family 111211-111215, rev P01, PROPOSED (joints register J-BASE-02, D-144); saved at "
+                "cut_angle 0 (111211). Built by joints_hardware_build.py",
+                [(step, state(ang, pn)) for pn, step, ang, _fy, _fs in KEY_VARIANTS])
     state(DRAWN, "111211 (back to the drawn state)")()
     root.partNumber, root.description = family
     edit_test(design, lambda: box(comp.bRepBodies.item(0)), [("key_h", "80 mm")],

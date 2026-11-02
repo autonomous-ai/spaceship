@@ -735,12 +735,14 @@ D60 = dict(
                                                                      # its left face stays behind the block)
     soffit=((-1161.0, 1161.0), (-645.0, -285.0), (2120.0, 2340.0)),  # soffit outer: X, Y, Z (AIR #91: 5 mm off the linings)
     kick=(24.0, 124.0),              # supply kick grille on the column's front and left faces, Z (AIR #91)
-    sup_box=((673.0, 973.0), (-822.0, -667.0), (1650.0, 1950.0)),    # supply fan box in DR: FRONT's reserved space
-                                                                     # (X 673, 4 mm clear of DR's diagonal tube), 25 mm
-                                                                     # off DR's front skin for FRONT's skin tube at
-                                                                     # Z 1915 (PM rulings 2026-11-01; was X 662, 5 mm)
-    dr_open=((961.0, 1161.0), (1895.0, 2110.0)),                     # opening in the block's inner face: X, Z
-    riser_x=(956.0, 1095.0),          # intake riser X: FRONT's reserved space (PR #105)
+    sup_box=((680.0, 980.0), (-819.0, -664.0), (1650.0, 1950.0)),    # supply fan box in DR: FRONT's reserved space,
+                                                                     # X 680 to 980 (PM ruling 2026-11-01: 7 mm right of
+                                                                     # X 673 for DR's 3 mm bond line), front Y -819
+                                                                     # behind the cross tube F09 (FRONT's fb_y0)
+    dr_open=((961.0, 1146.0), (1895.0, 2102.0)),                     # opening in the block's inner face: X, Z, 185 x 207
+                                                                     # (PM ruling 2026-11-01; FRONT's op_w, op_h; was
+                                                                     # 200 x 215)
+    riser_x=(959.0, 1098.0),          # intake riser X: FRONT's ri_x0, 3 mm right with DR's bond line (was 956)
     riser_y=(-803.0, -653.0),         # its Y: 4.8 mm off DR's corner facet at its front-right corner, 6.5 off DR's panels
     riser_lo=(139.0, 150.0, 1340.0),  # the riser with its sealed intake boot (D-130): width, depth, length from the band top
     riser_up=(250.0, 150.0, 400.0),   # the lower transition into the fan box (FRONT's reserved space), as a duct with 2 bends
@@ -913,7 +915,8 @@ def dr_transition():
 
 
 FRONT_DR_FILE = HERE.parents[1] / "01-CAD-Native" / "front" / "dr_block.py"   # FRONT owns DR (PM ruling, D-130)
-FRONT_DR_PENDING = {"ri_d": 155.0, "fb_y0": -847.0, "op_w": 203.0}  # FRONT's values before its D-130 change lands
+FRONT_DR_PENDING = {"ri_d": 155.0}  # FRONT's value before its D-130 change lands
+FRONT_DR_EXPRESSIONS = {"fb_y0": -819.0}  # names FRONT gives as an expression, with the value its note states
 
 
 def front_dr_drift():
@@ -931,6 +934,10 @@ def front_dr_drift():
     out = []
     for name, v in mine.items():
         m = re.search(r'\("%s",\s*"(-?[\d.]+) mm"' % name, text)
+        if not m and name in FRONT_DR_EXPRESSIONS and re.search(r'\("%s",\s*"[^"]*[a-z_]' % name, text):
+            theirs = FRONT_DR_EXPRESSIONS[name]      # FRONT's expression; its note's value, kept here by hand
+            out.append((name, theirs, v, "ok" if abs(theirs - v) < 0.01 else "MISMATCH"))
+            continue
         if not m:
             out.append((name, None, v, "MISMATCH"))
             continue

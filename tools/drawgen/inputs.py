@@ -93,6 +93,81 @@ def parts_row(pn, team):
     return best[1], best[2], best[3]
 
 
+def cut_list_rows(team, cfg, pn):
+    """A welded frame's cut list from the team CSV its entry names (D-162), as the parts list's level-2 cut rows read,
+    and that file: its rows whose frame is pn, one per member number (D-120: one number is one member; a number with
+    two lengths or two ends texts is refused), the quantity their sum, the name the member's number and name (its
+    bodies carry the same). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty,
+    ends (holes when present). Welded-in made parts the entry names (a frame's mitre plates) follow, from their
+    parts-list rows, as having their own drawing."""
+    path = os.path.join(MANUF, team, cfg["file"])
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh) if (r.get("frame") or "").strip() == pn]
+    out, by = [], {}
+    for r in rows:
+        num = (r.get("member_part") or "").strip()
+        if not num:
+            raise ValueError("cut list %s: a row of %s has no member number" % (os.path.basename(path), pn))
+        length, ends = (r.get("length_mm") or "").strip(), (r.get("ends") or "").strip()
+        q = float((r.get("qty") or "1").strip() or 1)
+        if num in by:
+            o = by[num]
+            if (o["cut_length_mm"], o["note"]) != (length, ends):
+                raise ValueError("cut list %s: member %s has two lengths or two ends texts (D-120)" % (
+                    os.path.basename(path), num))
+            o["_q"] += q
+            continue
+        o = {"kind": "cut", "member_part": num, "name": "%s %s" % (num, (r.get("name") or "").strip()),
+             "size_mm": (r.get("section") or "").strip(), "material": (r.get("section") or "").strip(),
+             "cut_length_mm": length, "tolerance": cfg.get("tolerance", ""), "note": ends,
+             "holes": (r.get("holes") or "").strip(), "_q": q}
+        by[num] = o
+        out.append(o)
+    if not out:
+        raise ValueError("cut list %s has no row for %s" % (os.path.basename(path), pn))
+    for wpn in cfg.get("welded_in", ()):
+        row = parts_row(wpn, team)[0]
+        if not row:
+            raise ValueError("welded-in part %s has no parts-list row" % wpn)
+        q = (row.get("qty_per_parent") or row.get("qty") or "").strip()
+        out.append({"kind": "cut", "member_part": wpn, "name": "%s %s" % (wpn, (row.get("name") or "").strip()),
+                    "size_mm": (row.get("material") or "").strip(), "material": (row.get("material") or "").strip(),
+                    "cut_length_mm": "-", "tolerance": "",
+                    "note": "welded in; no drawing of its own, its parts-list row defines it (D-125)",
+                    "_q": float(q or 0)})
+    for o in out:
+        q = o.pop("_q")
+        o["qty"] = ("%d" % q) if q == int(q) else ("%g" % q)
+    return out, path
+
+
+ANGLE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:°|deg\b)")
+
+
+def ends_cell(note, tol=""):
+    """A cut list row's ends as the sheet prints them: the text as written, shortened to 'square-cut ends' only when
+    it says square and gives no angle (agreed with the generator's owner: 'mitred 63.43 deg off square' keeps its
+    angle)."""
+    words = (note or "") + " " + (tol or "")
+    square = "square" in words.lower() and not ANGLE.search(words)
+    return ("%s; %s" % ("square-cut ends" if square else (note or ""), (tol or "").split(",")[0])).strip("; ")
+
+
+def ends_angles(text):
+    """The two end cuts' angles from square a cut list's ends text gives, sorted, or None when it gives none it can
+    be read for: 'square ...' with no angle is 0 and 0; one angle with 'both' is that angle twice; two angles are
+    those."""
+    t = text or ""
+    found = [float(x) for x in ANGLE.findall(t)]
+    if not found:
+        return [0.0, 0.0] if "square" in t.lower() else None
+    if len(found) == 1:
+        return [found[0], found[0]] if re.search(r"\bboth\b", t, re.I) else None
+    if len(found) == 2:
+        return sorted(found)
+    return None
+
+
 # ------------------------------------------------------------------ feature rationale
 
 FR_ROW = re.compile(r"^\|\s*(F\d+[A-Z]?)\s*\|\s*(\d{6})\s+([^|]*?)\s*\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)\|"
@@ -135,6 +210,47 @@ def match_feature(rows, body_name, dia, axis_letter, centre3):
         if any(abs(a - c[0]) < 0.051 and abs(b - c[1]) < 0.051 for a, b in r["centres"]):
             return r
     return None
+
+
+SIZE_XY = re.compile(r"(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)")
+RANGE = re.compile(r"\b([XYZ])\s+(-?\d+(?:\.\d+)?)\s+to\s+(-?\d+(?:\.\d+)?)")
+
+
+def cutout_rows(pn, team):
+    """The registers' other-features rows for pn that name a size 'a x b' (WALL's | ID | Part | Feature | Why | ... |
+    tables): [{id, function, mating, size, ranges {axis: (lo, hi)}, file}]."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(DRAWINGS, team, "FEATURE-RATIONALE*.md"))):
+        with open(p, encoding="utf-8") as fh:
+            for line in fh:
+                cells = [c.strip() for c in line.strip().strip("|").split("|")]
+                if len(cells) < 4 or not re.fullmatch(r"F[A-Z0-9-]*\d+[A-Z]?", cells[0] or "-"):
+                    continue
+                if not cells[1].startswith(pn):
+                    continue
+                m = SIZE_XY.search(cells[2])
+                if not m:
+                    continue
+                out.append({"id": cells[0], "function": cells[2].split("(")[0].strip(), "mating": "",
+                            "size": (float(m.group(1)), float(m.group(2))),
+                            "ranges": {a: (float(lo), float(hi)) for a, lo, hi in RANGE.findall(cells[2])},
+                            "file": rel(p)})
+    return out
+
+
+def match_cutout(rows, length, width, box):
+    """The register row for a cut-out (#355's P2, Reviewer 6): its size either way round within 0.05, and every
+    range the row states (X 91 to 395 ...) its extent on that axis within 0.5 (box: x0, y0, z0, x1, y1, z1); the
+    one row that fits, else None."""
+    fit = []
+    for r in rows:
+        a, b = r["size"]
+        if not ((abs(a - length) <= 0.05 and abs(b - width) <= 0.05) or (abs(a - width) <= 0.05 and abs(b - length) <= 0.05)):
+            continue
+        k = {"X": 0, "Y": 1, "Z": 2}
+        if all(abs(box[k[ax]] - lo) <= 0.5 and abs(box[3 + k[ax]] - hi) <= 0.5 for ax, (lo, hi) in r["ranges"].items()):
+            fit.append(r)
+    return fit[0] if len(fit) == 1 else None
 
 
 def short_function(fn):
