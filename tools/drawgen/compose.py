@@ -2901,7 +2901,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
             where = "seen in section %s-%s" % (vd.letter, vd.letter)
         head = ["%s: %s" % (table_name(g), face_title(part, g)),
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
-        y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
+        y = place_table(sh, part, right_x0, y, cols, rows, head)
     fl = getattr(part, "flat", None)
     if fl and fl.vgroove:
         gcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
@@ -2916,7 +2916,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                     "each line at the middle of its fold's outside arc (the flat develops along the outer face: each leg "
                     "to its arc, plus the arc)" if rounded else
                     "each line at the outside corner (the flat is the sum of the outside lengths)")]
-        y = sh.table(right_x0, y, gcols, grows, size=2.5, title=head, title_size=2.5) - 5.0
+        y = place_table(sh, part, right_x0, y, gcols, grows, head)
     elif fl:
         bcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
                  ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 148, "l")]
@@ -2932,8 +2932,38 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
         head = ["BENDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
                 "UP: the flange folds toward the viewer of the flat pattern as drawn; K-factor %s, inside radius from %s"
                 % (fmt(fl.k, 3), fl.radius_from)]
-        y = sh.table(right_x0, y, bcols, brows, size=2.5, title=head, title_size=2.5) - 5.0
+        y = place_table(sh, part, right_x0, y, bcols, brows, head)
     return y, members
+
+
+def place_table(sh, part, x, y, cols, rows, head):
+    """A table of sheet 1 in the right column at y when it ends above the title block (its room, TB_ROOM), and the
+    column's next y; else the first clear place on the sheet that holds it whole, from the top right leftward and
+    down, clear of every view, text and line already drawn and of the title block, and the column's y unchanged. When
+    none holds it the sheet is refused: a table never runs into the title block (AIR's 611801: nine hole tables and
+    its bend table on one sheet)."""
+    h = sh.table_height(cols, rows, size=2.5, title=head, title_size=2.5)
+    if y - h >= 10 + TB_ROOM:
+        return sh.table(x, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
+    w = sum(c[1] for c in cols)
+    tb = (sh.W - 10 - TB_W - 4.0, 0.0, sh.W, 10 + TB_ROOM)
+    kept = list(sh.reserved)
+    sh.reserved = [b_ for b_ in sh.reserved if b_[0] < x - 1.0] + [tb]     # the column itself may hold it lower down
+    try:
+        xx = x
+        while xx >= 22.0:
+            yy = sh.H - 16.0
+            while yy - h >= 14.0:
+                box = (xx - 3.0, yy - h - 3.0, xx + w + 3.0, yy + 3.0)
+                if sh.is_free(box):
+                    sh.table(xx, yy, cols, rows, size=2.5, title=head, title_size=2.5)
+                    kept.append(box)
+                    return y
+                yy -= 5.0
+            xx -= 10.0
+    finally:
+        sh.reserved = kept
+    raise NotDrawable("%s: its tables don't fit on sheet 1 beside its views (%s)" % (part.pn, head[0]))
 
 
 def cut_list_table(sh, part, members, x, y, width):

@@ -622,6 +622,83 @@ def test_v_groove_with_its_outside_radius():
     assert any("no outside arc R2.5" in x_ for x_ in f4), f4
 
 
+def _drilled_block(path, nx=7):
+    """A 400 x 300 x 200 block drilled through three ways: nx x 5 holes along Z, 4 x 5 along Y, 4 x 4 along X (Ø6),
+    clear of each other."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    sh = [BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 400, 300, 200).Shape()]
+
+    def cut(o, dr, L):
+        c = BRepAlgoAPI_Cut(sh[0], BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*o), gp_Dir(*dr)), 3.0, L).Shape())
+        c.Build()
+        sh[0] = c.Shape()
+    for x in [20.0 + 360.0 * i / (nx - 1) for i in range(nx)]:
+        for y in (40, 95, 150, 205, 260):
+            cut((x, y, -1), (0, 0, 1), 202)
+    for x in (80, 160, 240, 320):
+        for z in (30, 65, 100, 135, 170):
+            cut((x + 7, -1, z), (0, 1, 0), 302)
+    for y in (70, 125, 180, 235):
+        for z in (47, 82, 117, 152):
+            cut((-1, y, z), (1, 0, 0), 402)
+    w = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh[0], STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    return path
+
+
+def test_tables_that_dont_fit_their_column_move_never_into_the_title_block():
+    """AIR's 611801: nine hole tables and its bend table ran down the right column into the title block (the sheet
+    only warned). A table that wouldn't end above the title block's room now goes in the first clear place on the
+    sheet that holds it whole; where none does, the sheet is refused. A block drilled three ways (71 holes, three
+    tables) draws with its last table beside the views, nothing of it in the title block's corner, and reads back;
+    a sheet with no clear place at all refuses the table."""
+    import re
+    d = os.path.join(TMP, "tables_room")
+    os.makedirs(d, exist_ok=True)
+    step = _drilled_block(os.path.join(d, "219962_P01_TEST-BLOCK-DRILLED_STEP.step"))
+    row = dict(ROW, part_number="219962", name="TEST - BLOCK - DRILLED")
+    p = os.path.join(d, "219962.pdf")
+    rep = compose.make("219962", "none", SPEC, p, step=step, row=row)
+    assert not rep.get("warning"), rep.get("warning")
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    tb = readback.text_boxes(doc[0], data["sheet_h"])
+    W = doc[0].rect.width / readback.MM
+    corner = (W - 10 - compose.TB_W - 4.0, 10 + compose.TB_ROOM)
+    titles = [t for t in tb if t[4].startswith("HOLES H")]
+    assert len(titles) == 3 and min(t[0] for t in titles) < W - 10 - compose.TABLE_W - 10, titles   # one moved left
+    tags = [t for t in tb if re.fullmatch(r"H\d\d", t[4])]
+    assert not any(t[0] >= corner[0] and t[1] < corner[1] for t in titles + tags), "a table in the title block's corner"
+    # no clear place anywhere: refused, never drawn over the title block
+
+    class Full:
+        W, H, reserved = 841.0, 594.0, []
+
+        def table_height(self, *a, **k):
+            return 300.0
+
+        def is_free(self, box):
+            return False
+    try:
+        compose.place_table(Full(), type("P", (), {"pn": "219962"})(),
+                            500.0, 200.0, [("TAG", 14, "c")], [["H01"]], ["HOLES H01: test"])
+        raise AssertionError("placed a table where nothing is clear")
+    except compose.NotDrawable as e:
+        assert "its tables don't fit on sheet 1 beside its views" in str(e), e
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")

@@ -101,6 +101,9 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
   Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.
+  A table that wouldn't end above the title block's room goes in the first clear place on sheet 1 that holds it
+  whole (from the top right, leftward and down); where none does, the sheet is refused, never drawn into the title
+  block (AIR's 611801).
 - Labels: every line is drawn first (views, cutting planes, dimensions), then hole callouts, view titles, tags,
   origin names and datum symbols each go where they touch no line and no other text.
 - Title block: UNITS: mm, the first-angle symbol, part number, name (English and Vietnamese), revision of the
