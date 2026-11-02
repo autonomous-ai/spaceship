@@ -261,6 +261,126 @@ def test_d132_no_floor():
     assert [o for o in final["ops"] if o["src"] == "t_floor_film_off_s"], final["ops"]
     assert final["n"] <= pack.CLOCK_LAST_STEP
 
+
+def test_time_rulings_2026_11_01():
+    # the PM's rulings on the time sinks: the installers' driver for every bolt but the roof grille's 4 (the kit's key,
+    # no room above the roof), a rest for each overhead lift (no one holds a part overhead to fix it), the final check
+    # split between the two people; v2's target about 104 minutes
+    m = pack.Model()
+    ops = [(st["n"], o) for st in m.steps for o in st["ops"]]
+    roof = next(s["n"] for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
+    assert {n for n, o in ops if o["src"] == "t_bolt_captive_s"} == {roof}, [(n, o["text"]) for n, o in ops if o["src"] == "t_bolt_captive_s"]
+    second = sum(o["n"] for n, o in ops if o["text"].startswith("tighten the 6 upper corner bolts"))   # step 6's, tightened in 7
+    assert sum(o["n"] for n, o in ops if o["src"] == "t_bolt_driver_s") == sum(m.bolts_by_joint().values()) - 4 + second
+    assert not [o for n, o in ops if o["src"] == "t_place_overhead_s"]
+    assert sum(o["n"] for n, o in ops if o["src"] == "t_overhead_rest_s") == 6
+    final = next(s["n"] for s in pack.STEPS if s["title"].startswith("Final check"))
+    assert all(o["who"] == 1 for n, o in ops if n == final), [o for n, o in ops if n == final]
+    assert pack.MINE["time_target_min"].value == 104
+    clock = m.time_total(pack.CLOCK_LAST_STEP) / 60
+    assert 104 <= clock < 115, clock
+    guide = pack.outputs(m)[pack.OUT_GUIDE]
+    assert "no power drivers" not in guide and "cordless driver" in guide and "no one holds a part overhead" in guide
+
+
+def test_d133_us_mains():
+    # D-133: the pod plugs into a US 120 V wall outlet; no 220 V socket and no electrician on site
+    guide = pack.outputs(pack.Model())[pack.OUT_GUIDE]
+    assert "220 V" not in guide and "electrician" not in guide.lower(), [l for l in guide.splitlines() if "220" in l or "lectrician" in l]
+    assert "120 V wall outlet" in guide
+
+
+def test_seam_prop():
+    # D-152 and the PM's rulings 2026-11-01: the seam prop is its own 45 x 45 packing timber, labelled and marked, on a
+    # plywood foot (about 300 x 300, felt under it) so it stands on its own, under a plywood cap (about 150 x 150) that
+    # straddles the C1-C2 seam without measuring, cut 5 mm short with a packer to take up the floor. It rides in its
+    # own lane in tier 3, its cap and foot clear of the lanes beside it; it comes away right after the 4 seam pins and
+    # stays with the pod. It is packing (911004 to 911006 in the tare), not a part of the pod and not a piece
+    mn = pack.MINE
+    prop, foot, cap = (next(it for it in pack.PACKAGING if it["pn"] == pn) for pn in ("911004", "911005", "911006"))
+    assert prop["pallet"] == foot["pallet"] == cap["pallet"] == 2 and prop["wood"], (prop, foot, cap)
+    assert not foot.get("wood") and not cap.get("wood")                     # plywood: outside ISPM 15
+    assert prop["kg"] == mn["prop_kg"].value and foot["kg"] == mn["prop_foot_kg"].value and cap["kg"] == mn["prop_cap_kg"].value
+    assert "45 X 45" in prop["name"] and "LABELLED AND MARKED" in prop["name"] and "5 MM SHORT" in prop["name"], prop["name"]
+    assert "300 X 300" in foot["name"] and "FELT" in foot["name"] and "150 X 150" in cap["name"], (foot["name"], cap["name"])
+    assert mn["prop_h"].value == pack.sk("pod_h") - pack.sk("outer_t") and mn["prop_w"].value == 45
+    assert mn["prop_foot"].value == 300 and mn["prop_cap"].value == 150 and mn["prop_short"].value == 5
+    timber = mn["prop_h"].value - mn["prop_short"].value - mn["prop_foot_t"].value - mn["prop_felt_t"].value - mn["prop_cap_t"].value
+    assert mn["prop_kg"].value == round(45 * 45 * timber * 500e-9, 1), mn["prop_kg"].value
+    m = pack.Model()
+    tiers, _h = m.tiers2()
+    lanes = [(t, ln) for t in tiers for ln in t["lanes"] if any(it["tag"] == "PROP" for it in ln["items"])]
+    assert len(lanes) == 1 and lanes[0][0]["name"].startswith("Tier 3"), lanes
+    t3, ln = lanes[0]
+    pl = ln["plates"]
+    assert ln["width"] == 45 and ln["length"] == mn["prop_h"].value - mn["prop_short"].value and pl["ok"] and ln["ok"], (ln, pl)
+    assert t3["ok"] and t3["h"] >= mn["prop_foot"].value and pl["gap"] >= mn["wrap"].value, pl
+    for o in t3["lanes"]:       # the lanes beside the cap start clear of it and still end on the deck
+        assert o["ok"] and o["start"] + o["length"] <= mn["pal_long_l_exact"].value, o["items"][0]["tag"]
+    assert {o["items"][0]["tag"] for o in t3["lanes"] if o["start"] > 0} == set(pl["beside"]) == {"2-08", "2-10"}, pl["beside"]
+    ceiling = next(s for s in pack.STEPS if s["title"].startswith("Ceiling"))
+    srcs = [o["src"] for o in ceiling["ops"]]
+    assert srcs.index("t_prop_s") < srcs.index("t_overhead_rest_s") < srcs.index("t_prop_off_s"), srcs
+    assert next(o for o in ceiling["ops"] if o["src"] == "t_prop_s")["who"] == 1
+    a, b = ceiling["A"], ceiling["B"]
+    for words in ("on its plywood foot", "5 mm setting packer", "midway between the side walls", "straddles the seam",
+                  "nothing needs measuring", "stands on its own", "the packer stays out"):
+        assert words in a, words
+    assert "keeps a hand" not in a and "tips easily" in ceiling["caution"]
+    assert b.index("takes the seam prop and its packer away") < b.index("back-edge bolts"), b    # right after the pins
+    assert "stays with the pod" in b
+    assert not [p for p in pack.PIECES if "PROP" in p.name]
+    pk2 = m.packaging(2)
+    assert prop in pk2 and foot in pk2 and cap in pk2 and abs(m.tare(2) - sum(it["kg"] * it["qty"] for it in pk2)) < 1e-9
+    outs = pack.outputs(m)
+    plan, guide = outs[pack.OUT_PLAN], outs[pack.OUT_GUIDE]
+    assert "SEAM PROP 911004 on its foot 911005 under its cap 911006" in plan and "stays with the pod" in plan and "{{" not in plan
+    take_down = guide[guide.index("Unplug the pod's cord first."):]
+    assert take_down.index("stand the seam prop") < take_down.index("the 4 seam pins"), "the prop goes back before the pins come out"
+
+
+def test_reviewer11_hold_on_310():
+    # Reviewer 11's Hold at 01b771d, as the Lead listed it: D-152's slip sheet in step 11, the door's pinch caution in
+    # step 10 (368008 fitted with the door only just open), step 21 inside first, and the wording fixes
+    dt = next(s for s in pack.STEPS if s["title"].startswith("Top decor block DT"))
+    assert "PE sheet from the packing" in dt["A"] and "slip sheet" in dt["A"] and "pulls the slip sheet out" in dt["B"], dt
+    assert [o["src"] for o in dt["ops"]].count("t_slip_s") == 2 and "slip sheet is out" in dt["check"]
+    door = next(s for s in pack.STEPS if s["title"].startswith("Door"))
+    for words in ("A holds the door", "a packer wedges its free corner", "fingers stay clear of the hinge side"):
+        assert words in door["caution"], words
+    assert "only just open" in door["B"]
+    final = next(s for s in pack.STEPS if s["title"].startswith("Final"))
+    assert final["B"].index("inside first") < final["B"].index("Once A's light test is done"), final["B"]
+    guide = pack.outputs(pack.Model())[pack.OUT_GUIDE]
+    assert "Never two people on one step stool" in guide and "One person on a step stool at a time" not in guide
+    assert "the driver's 5 mm bit (or the kit's key) goes through the Ø19 hole" in guide
+    assert "would save about 7 minutes more" in guide and "would take about 7 minutes more" not in guide
+    assert "both end brushes stand on the floor along their whole length and close against the end plates" in guide
+    assert "the seam prop stays with the pod" in guide
+
+
+def test_kick_strip_brushes():
+    # the PM's ruling 2026-11-01: the kick strip's two end brushes ship in the door's kit bag with an alcohol wipe and are
+    # pressed on in step 10, once the glides are set and the door hangs; about a minute for both in D-148's clock
+    door = next(s for s in pack.STEPS if s["title"].startswith("Door"))
+    band = next(s for s in pack.STEPS if s["title"] == "Base band")
+    assert band["n"] < door["n"]
+    brush = [o for o in door["ops"] if o["src"] == "t_brush_s"]
+    assert len(brush) == 1 and brush[0]["n"] == 2 and brush[0]["secs"] * brush[0]["n"] == 60, brush
+    srcs = [o["src"] for o in door["ops"]]
+    assert srcs.index("t_door_prehung_min") < srcs.index("t_brush_s"), srcs
+    for words in ("alcohol wipe", "stands each brush on the room floor", "presses it firmly along its whole length", "368008"):
+        assert words in door["B"], words
+    note = pack.PIECE["2-02"].note
+    assert "kit bag" in note and "368008" in note and "hinge-end brush 368009" in note and "alcohol wipe" in note, note   # D-154
+    assert [f for f in pack.OTHER_FIXINGS if f["step"] == door["n"] and "end brushes" in f["where"] and f["count"] == 0]
+    without = [dict(s, ops=[o for o in s["ops"] if o["src"] != "t_brush_s"]) for s in pack.STEPS]
+    delta = pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - pack.clock_min(without, pack.OTHER_FIXINGS)
+    assert abs(delta - 60 / 2 * (1 + pack.lay("inefficiency")) / 60) < 1e-9, delta   # one person's minute, shared
+    guide = pack.outputs(pack.Model())[pack.OUT_GUIDE]
+    assert "the kick strip's two end brushes from the door's kit bag" in guide and "HOLD-25" in guide
+
+
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
     outs = pack.outputs(pack.Model())
@@ -284,7 +404,7 @@ def test_elevator_rule():
 def test_export_wood_is_ispm15():
     # every solid-wood packaging part is heat-treated and ISPM 15 stamped, or US ports refuse it
     wood = [it for it in pack.PACKAGING if it.get("wood")]
-    assert {it["pn"] for it in wood} == {"918001", "918002", "911001", "911003"}, wood
+    assert {it["pn"] for it in wood} == {"918001", "918002", "911001", "911003", "911004"}, wood   # 911004: the seam prop
     assert all("ISPM 15" in it["name"] for it in wood), [it["name"] for it in wood]
 
 
