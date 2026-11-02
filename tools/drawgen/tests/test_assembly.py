@@ -345,6 +345,33 @@ def test_a_named_parts_envelope_says_it_waits_for_its_model():
     assert "isn't named yet" not in named
 
 
+def test_a_view_is_titled_by_the_way_it_looks():
+    """CEILING's 410000 (the CEILING Drawings Engineer 2's find, the Lead's ruling, 2026-11-01): a related view that
+    matches no standard view kept its relative name, so with the view from above as the principal, the view placed
+    under it, looking toward -Y with Y = -Z, was titled VIEW FROM ABOVE and drawn upside down. Every view is titled by
+    the way it looks, and one that would be upside down is turned upright in its first-angle place, with ROTATED
+    180° in its title. Here on main's exhaust fan box 610402 with the plan as its principal. Views turned 90° in
+    their plane (110101's and the cassettes' views from above) keep their places and titles."""
+    team, entry = assembly.assemblies()["610402"]
+    e = {k: v for k, v in entry.items() if k not in ("sections", "interfaces", "datums", "centre_lines",
+                                                    "balloon_views", "overall_sides")}
+    e.update(principal="top", views=["above"])
+    final, _rep = assembly.generate("610402", team, e, os.path.join(TMP, "rear"))
+    fails, _st = assembly.check(final)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(final))
+    v = next(x for x in data["views"] if x["name"] == "above")
+    assert [round(c) for c in v["n"]] == [0, 1, 0], v              # looking toward -Y: a rear view
+    assert [round(c) for c in v["x"]] == [-1, 0, 0] and [round(c) for c in v["y"]] == [0, 0, 1], v     # upright
+    text = " ".join(fitz.open(final)[0].get_text().split())
+    assert "REAR VIEW ROTATED 180°" in text and "X = -X, Y = +Z (pod axes); looking toward -Y" in text, text[:800]
+    assert "VIEW FROM ABOVE" in text                                # the principal
+    # a plan turned 90° in its plane keeps its first-angle place and its title
+    team, entry = assembly.assemblies()["110101"]
+    above = assembly.plan_views(assembly.Assy("110101", team, entry))["above"]
+    assert not getattr(above, "rotated", False) and assembly._title_words(above) == "VIEW FROM ABOVE"
+
+
 def test_shafts_cut_along_their_axis_are_drawn_whole():
     """ISO 128-50: the entry's spigots and glide stems are drawn whole where a section cuts them, not hatched; a
     spigot the plane doesn't cut (in front of section C) is not drawn in it at all. The entry may name more such
