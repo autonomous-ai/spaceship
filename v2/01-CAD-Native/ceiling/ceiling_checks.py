@@ -12,6 +12,10 @@ import adsk.fusion
 import ceiling_model as M
 
 TOL = 0.05   # mm
+# the frame members' part numbers (D-120): each member its own component; the plain cross member
+# (X2, X3 of both halves) is one common part placed as copies
+CROSS_PN = M.PARTS["m_cross"][0]
+MEMBER_PNS = {v[0] for k, v in M.PARTS.items() if k.startswith("m_")}
 
 
 def bb_mm(b):
@@ -31,6 +35,9 @@ def expected(design):
         for code, name, _axis, b in M.frame_members(half):
             x0, x1, y0, y1, z0, z1 = (ev(e) for e in b)
             out["%s %s" % (half, name)] = [x0, y0, z0, x1, y1, z1]
+        vals = param_values(design)
+        for name, pkey, b in M.plate_boxes(vals, half):          # the mitre plates (D-131, J-FRAME-01)
+            out["%s %s %s" % (half, "MITRE", name)] = [b[0], b[2], b[4], b[1], b[3], b[5]]
         sx, sy, sz = (ev(e) for e in M.SKIN_PLACES[half])
         b = [ev(e) for e in M.skin_box()]
         out["SKIN %s" % half] = [b[0] + sx, b[2] + sy, b[4] + sz, b[1] + sx, b[3] + sy, b[5] + sz]
@@ -62,8 +69,13 @@ def actual(design):
             box = bb_mm(b)
             pn = c.partNumber
             half = "C1" if (box[0] + box[3]) / 2 < 0 else "C2"
-            if pn in ("411101", "411102"):
-                out[b.name] = box
+            if pn in MEMBER_PNS and pn != CROSS_PN:
+                # "C1 SIDE MEMBER" and so on, keyed by the half the body sits in: the side member and cross member 1
+                # are one part each for both frames (M.TURNED), their bodies named without a half ("SIDE MEMBER")
+                nm = b.name.split(" ", 1)
+                out["%s %s" % (half, nm[1] if nm[0] in ("C1", "C2") and len(nm) > 1 else b.name)] = box
+            elif pn == CROSS_PN:
+                out.setdefault("%s|%s" % (pn, half), []).append(box)
             elif pn in ("411301", "411302"):
                 out["SKIN %s" % ("C1" if pn == "411301" else "C2")] = box
             elif pn == "513101":
@@ -95,7 +107,13 @@ def match_many(exp, act_list, keys):
 def check(design):
     exp, act = expected(design), actual(design)
     worst, bad = 0.0, []
-    single = [k for k in exp if " MEMBER" in k or k.startswith("SKIN") or k.endswith(("TRAY", "FELT 9"))]
+    shared = {"%s CROSS MEMBER %d" % (h, k) for h in ("C1", "C2") for k in (2, 3)}
+    single = [k for k in exp if (" MEMBER" in k and k not in shared) or k.startswith("SKIN") or k.endswith(("TRAY", "FELT 9"))]
+    for half in ("C1", "C2"):                       # the common cross member's copies, by nearest fit
+        keys = ["%s CROSS MEMBER %d" % (half, k) for k in (2, 3)]
+        w, b = match_many(exp, act.get("%s|%s" % (CROSS_PN, half), []), keys)
+        worst = max(worst, w)
+        bad += b
     for k in single:
         if k not in act:
             bad.append((k, "missing"))
@@ -105,9 +123,9 @@ def check(design):
         if d > TOL:
             bad.append((k, round(d, 3)))
     groups = {"513102": "RIB", "513301": "FILL BAY", "513302": "FILL BAY", "513303": "FILL BAY",
-              "518001": "CLIP", "518002": "CATCH"}
+              "518001": "CLIP", "518002": "CATCH", "831007": "MITRE", "831008": "MITRE"}
     for half in ("C1", "C2"):
-        for prefix in ("RIB", "FILL BAY", "CLIP", "CATCH"):
+        for prefix in ("RIB", "FILL BAY", "CLIP", "CATCH", "MITRE"):
             keys = [k for k in exp if k.startswith("%s %s" % (half, prefix))]
             acts = []
             for pn, pre in groups.items():
@@ -141,10 +159,10 @@ def hole_check(design, tol=TOL):
     cyl = {"C1": [], "C2": []}
     for occ in root.allOccurrences:
         pn = occ.component.partNumber
-        if pn not in ("411101", "411102"):
+        if pn not in MEMBER_PNS:
             continue
-        half = "C1" if pn == "411101" else "C2"
         for b in occ.bRepBodies:
+            half = "C1" if (b.boundingBox.minPoint.x + b.boundingBox.maxPoint.x) < 0 else "C2"
             for f in b.faces:
                 g = f.geometry
                 if g.objectType != adsk.core.Cylinder.classType():

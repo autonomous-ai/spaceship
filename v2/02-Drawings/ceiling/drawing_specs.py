@@ -100,19 +100,19 @@ SPECS = {
     ]),
     "fill_a": spec("fill_a", 0.2, [
         "Tolerances (assumption): cut sizes +/-2; thickness as supplied.",
-        "PET fill 40, 25 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
+        "PET fill 40, 24 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
         "Cut file: 513301_P01_LINING-FILL-CEILING-BAY-A_DXF.dxf. Notches clear the clips and catches by 5.",
         "Fixing to the tray's back: HOLD (H10); gravity holds it in service.",
     ]),
     "fill_b": spec("fill_b", 0.2, [
         "Tolerances (assumption): cut sizes +/-2; thickness as supplied.",
-        "PET fill 40, 25 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
+        "PET fill 40, 24 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
         "Cut file: 513302_P01_LINING-FILL-CEILING-BAY-B_DXF.dxf. Notches clear the clips by 5.",
         "Fixing to the tray's back: HOLD (H10).",
     ]),
     "fill_c": spec("fill_c", 0.2, [
         "Tolerances (assumption): cut sizes +/-2; thickness as supplied.",
-        "PET fill 40, 25 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
+        "PET fill 40, 24 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
         "Cut file: 513303_P01_LINING-FILL-CEILING-BAY-C_DXF.dxf. Notches clear the clips by 5.",
         "Fixing to the tray's back: HOLD (H10).",
     ]),
@@ -147,7 +147,8 @@ def frame_hole_notes(half):
              "BACK SPIGOT ROUND": "back member, underside", "BACK SPIGOT SLOT": "back member, underside, slot 14 long along X",
              "SOFFIT HANGER FRONT": "front member, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
              "SOFFIT HANGER X1": "cross member X1, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
-             "SOFFIT LOCK": "front member, underside (rivnuts 838003 for the soffit's two captive lock screws, D-87)"}
+             "SOFFIT LOCK": "cross member 1, underside (rivnuts 838003 for the soffit's two captive lock screws, D-87; "
+                            "C2's are the same part's, unused)"}
     out = []
     for (name, d), pts in rows.items():
         if name.startswith(("BACK", "SOFFIT")):
@@ -172,18 +173,34 @@ def frame_spec(key, half):
            "4 M6 x 25 pins 838002 with washers 838004 in the seam member's rivnuts; joint gasket 848001 on "
            "the back member's underside")
     return spec(key, 0.2, [
-        "Tolerances (assumption until the factory confirms): tube cut length +/-0.5; holes +/-0.2 from the round "
-        "spigot hole (R-J6); spigot positions and round spigot hole to the closing face +/-0.1 (ST-04).",
-        "Aluminium 6063-T6 tube (alloy ISS-034): 20 x 40 x 1.2, back member 40 x 40 x 1.2 (R-J3). Mill finish "
-        "with the bond prep (D-79). Frame %s, %.2f wide (skeleton half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
+        "Tolerances (assumption until the factory confirms): tube cut length +/-0.5, mitre angles +/-0.25 deg; holes "
+        "and slots +/-0.2 from the round spigot hole (R-J6); spigot positions and round spigot hole to the closing "
+        "face +/-0.1 (ST-04); the frame assembled in a jig, diagonals within 1.",
+        "Galvanized steel tube, S280GD+Z or SGC400 (yield 280 MPa or more), Z100 (D-131, J-FRAME-01): 20 x 40 x 1.0, "
+        "back member 40 x 40 x 1.0 (R-J3), cross members 2 and 3 20 x 40 x 0.8. Frame %s, %.2f wide (skeleton "
+        "half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
         "Datums: A = the closing face (the seam member's outer face, %.2f from X 0); B = the front member's front "
         "face (Y %.2f); C = the frame's underside (Z %.2f)." % (v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)),
-        "Members (cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side and seam %.2f, front and cross members "
-        "X1-X3 %.2f, back %.2f; cross members at %.2f pitch from B. Frame joints HOLD (H11)." % (
-            v["wall_depth"] - v["back_w"], v["half_fw"] - 2 * v["tube_w"], v["half_fw"], v["fr_pitch"]),
+        "Members, each its own part (D-120; cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side %s (common: "
+        "C2's is C1's turned upside down) and seam %s %.2f; front %s and back %s %.2f, at the outer face; cross "
+        "member 1 %s (common: C2's is C1's turned end for end) and the plain cross members 412001 (X2, X3) %.2f, "
+        "square cut; cross members at %.2f pitch from B." % (
+            M.PARTS["m_side"][0], M.PARTS["m_seam_" + half.lower()][0], v["wall_depth"],
+            M.PARTS["m_front_" + half.lower()][0], M.PARTS["m_back_" + half.lower()][0], v["half_fw"],
+            M.PARTS["m_x1"][0], v["half_fw"] - 2 * v["tube_w"], v["fr_pitch"]),
+        "Corners mitred from the outer corner to the inner corner (D-117): 45 deg at the front; at the back the "
+        "back member is cut 26.57 deg off square and the side and seam members 63.43 deg. A 2.0 mitre plate is "
+        "welded into every corner (831007 at the front, 831008 at the back), each member cut back square to the "
+        "mitre so the outside sizes stay: 1.41 along it at 45 deg, 2.24 off the side and seam members and 1.12 off "
+        "the back member at the back (J-FRAME-01). Each plate is a square-ended blank, 831007 %.1f long from %.2f "
+        "along the mitre from the outer corner, 831008 %.1f from %.2f, so both ends sit 0.5 inside the frame's "
+        "faces; the weld fills the steps and is ground flush." % (v["mp45_l"], v["mp45_x0"], v["mp_sb_l"], v["mp_sb_x0"]),
+        "Welded in a jig (D-131): the corners with their plates, then the T joints; beads ground flush on the skin "
+        "and closing faces; every burnt zone wire-brushed and coated with 2-component zinc-rich epoxy. No vent or "
+        "drain holes. Every joint hole made after welding, from the joint faces (J-FRAME-01).",
         "Joint holes (joints register 2.9; the register owns the bolt lines, PM ruling 2026-10-31):",
     ] + frame_hole_notes(half) + [
-        "1 x 45 deg lead-in on the closing face's lower edge, seam member and back member end (R-J9).",
+        "1 x 45 deg lead-in on the closing face's lower edge, the seam member's full length (R-J9).",
         "Every bolt is 30 or more from any member that meets its own (R-J14); none sits under the roof slot (D-60).",
         "Fitted in the factory: " + fit + ".",
     ], holes="left", views=FRAME_VIEWS, scales={"iso": 0.1})
@@ -211,27 +228,6 @@ def skin_spec(key, half):
     return spec(key, 0.2, notes, views=FRAME_VIEWS, scales={"iso": 0.1})
 
 
-def fill_table():
-    """D-89 tabulated drawing: the three fill strips (one drawing, drawn from 513301)."""
-    v = _vals()
-    rows, seen = [], set()
-    for key, bay, box, notches in M.fill_strips(v):
-        if key in seen:
-            continue
-        seen.add(key)
-        b = [M.ev(v, e) for e in box]
-        ns = []
-        for _n, nb in notches:
-            n = [M.ev(v, e) for e in nb]
-            if M.overlap(tuple(b), tuple(n)):
-                ns.append("%.1f x %.1f at X' %.1f, %s edge" % (min(n[1], b[1]) - max(n[0], b[0]), min(n[3], b[3]) - max(n[2], b[2]),
-                                                             (max(n[0], b[0]) + min(n[1], b[1])) / 2,
-                                                             "front" if abs(max(n[2], b[2]) - b[2]) < 1e-6 else "back"))
-        rows.append("%s %s: %.1f x %.1f x %.0f, notches %s." % (
-            M.PARTS[key][0], M.PARTS[key][1].split(" - ")[-1], b[1] - b[0], b[3] - b[2], v["fill_t"], "; ".join(ns) or "none"))
-    return rows
-
-
 def tabulated(sp, drawing, covers, extra_notes):
     sp = dict(sp)
     sp["drawing"] = drawing
@@ -250,9 +246,8 @@ SPECS.update({
 SPECS["skins"] = tabulated(skin_spec("skin_c2", "C2"), "411302_P01_CEILING-SKIN-C1-C2_DWG", ["411301"], [
     "TABULATED (D-89): drawn as 411302 C2. 411301 C1 is the same outline mirrored about X 0, with no roof slot.",
 ])
-SPECS["fills"] = tabulated(SPECS["fill_a"], "513301_P01_LINING-FILL-CEILING-BAYS-A-B-C_DWG", ["513302", "513303"], [
-    "TABULATED (D-89): drawn as 513301. Sizes X' x Y' x thickness and notches (X' from the strip's centre):",
-] + fill_table())
+# D-128 (PM ruling 2026-11-01): the notched fill strips 513301 to 513303 need no drawing either: each DXF gives the
+# full outline with every notch, and the parts-list row the material, density, thickness, tolerance and number
 
 # D-89 part 4 (PM ruling 2026-11-01): flat parts cut from sheet with no bends or machined
 # features (the two skins) need no drawing: their DXF and parts-list rows define them
@@ -278,4 +273,4 @@ _ga = spec("ceiling", 0.1, [
 ], views={"front": (300, 470), "top": (300, 250), "left": (620, 470), "iso": (620, 240)}, scales={"iso": 0.05})
 _ga["design"] = "410000_P01_CEILING_CAD"
 SPECS["ga"] = _ga
-ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib", "fills"]
+ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib"]
