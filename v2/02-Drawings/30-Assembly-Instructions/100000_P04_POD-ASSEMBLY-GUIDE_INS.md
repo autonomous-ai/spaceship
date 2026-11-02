@@ -13,7 +13,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
-5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. Pictures made before D-132 still show the floor panels and the threshold, faded, from step 3 on; the next picture run drops them. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
+5. **Pictures:** each step that fits parts has a line drawing made from the parts' own CAD on main, outside Fusion, with the drawing generator's exact hidden-line projection: the step's parts black, each with its packing label, and the parts fitted before grey. A part that goes into another is drawn clear of it, with an arrow into place, and an arrow shows any move whose direction matters. A part whose CAD is still to come is drawn dashed from the skeleton's block and marked CAD TO COME. The four renders below show the whole pod.
 
 | Front, from the right and above | Back, from the left and above |
 |---|---|
@@ -184,6 +184,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 13. Air parts in DR: the intake riser with its supply fan box
 
+![Step 13](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-13_IMG.png)
+
 - **Time:** about 4 min for 2 people.
 - **Parts:** **2-16** AIR - SUPPLY FAN BOX (13.4 kg).
 - **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
@@ -204,6 +206,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 15. Air column and supply cartridge
 
+![Step 15](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-15_IMG.png)
+
 - **Time:** about 7 min for 2 people.
 - **Parts:** **2-10** AIR - AIR COLUMN (8.1 kg), **2-17** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02).
@@ -213,6 +217,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 16. Soffit and exhaust cartridge
 
+![Step 16](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-16_IMG.png)
+
 - **Time:** about 5 min for 2 people.
 - **Parts:** **2-09** AIR - SOFFIT (14.8 kg), **2-18** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** 2 × 838002 M6 × 25 (J-AIR-01). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
@@ -221,6 +227,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Soffit underside at Z 2120, level; the fan box's top gasket square under the roof slot; the door still clears.
 
 ### Step 17. Roof sleeve and grille
+
+![Step 17](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-17_IMG.png)
 
 - **Time:** about 3 min for 2 people.
 - **Parts:** the roof sleeve 611601 and the roof grille 611602 with its 4 bolts and washers in their bag, which came off C2 (1-10) at unpacking.
@@ -241,6 +249,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Both catches on each cassette; front edges 3 mm behind the soffit.
 
 ### Step 19. Light shelf
+
+![Step 19](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-19_IMG.png)
 
 - **Time:** about 6 min for 2 people.
 - **Parts:** **2-13** INTERIOR - LIGHT SHELF ASSY (1.6 kg).
@@ -268,6 +278,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Every check in the final check list is ticked.
 
 ### Step 22. Work-wall ledge and screen rail, after the clock
+
+![Step 22](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-22_IMG.png)
 
 - **Time:** about 8 min for 2 people.
 - **Parts:** **2-15** INTERIOR - WORK WALL LEDGE ASSY (1.9 kg).
@@ -440,7 +452,7 @@ Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unh
 | Air column, soffit and fan box fixings; the soffit's fit between the side linings | AIR (CEILING Engineer) | not designed yet |
 | Light shelf, ledge, screen rail | INTERIOR | parts designed (810201, 810101); the ledge brackets 818101 and the screen rail 818102 on HOLD; their fixings not listed yet (D-70) |
 | Electrical connectors and the wiring diagram | ELECTRICAL | not designed yet |
-| Step pictures from the Fusion model | Packing and Assembly | after each part's CAD lands and the screen is unlocked |
+| The dashed blocks in the step pictures (B3 and B4, their two cassettes, the band's front-left pieces): drawn from their CAD when it lands | WALL, BASE; Packing and Assembly redraws | the pictures' check fails while any picture is stale |
 | The driver's clutch value and the bit length for the captive bolts, with margin against the rivnut spinning out | Joints Engineer | the PM's ruling 2026-11-01 |
 | The seam prop's height and its spot under the front end of the C1-C2 seam (2354 mm from the skeleton for now), and that C2's seam corner shares its cap with C1's | CEILING | asked |
 | The kick strip's two end brushes 368008 and 368009: their products, and the lowest room temperature their adhesive takes | FRONT, Hardware Engineer | HOLD-23 and HOLD-25 (joints register H-43, H-46; D-153, D-154) |
