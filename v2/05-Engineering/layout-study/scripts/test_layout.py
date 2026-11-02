@@ -305,14 +305,6 @@ def test_rollup_items_the_packing_plan_reads():
 
 P_DEFAULT_CEIL = p("ceil_t")
 
-if __name__ == "__main__":
-    tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
-    for fn in tests:
-        fn()
-        print(f"ok  {fn.__name__}")
-    print(f"{len(tests)} tests passed")
-
-
 def test_light_shelf_counts_electricals_rows_once():
     """INTERIOR's 810201 row holds ELECTRICAL's four down-light rows since #437 (its mass status names them), so the
     roll-up must not add them again (Reviewer 21 on #437): the shelf's mass equals its child rows totalled on their own,
@@ -327,3 +319,10 @@ def test_light_shelf_counts_electricals_rows_once():
                 if r["parent"] == "810201":
                     kids += float(r["qty_per_parent"]) * float(r["mass_each_kg"])
     assert abs(R.INTERIOR["shelf"] - kids) < 0.002, (R.INTERIOR["shelf"], kids)
+
+if __name__ == "__main__":
+    tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
+    for fn in tests:
+        fn()
+        print(f"ok  {fn.__name__}")
+    print(f"{len(tests)} tests passed")
