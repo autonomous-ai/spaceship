@@ -516,8 +516,8 @@ def analyse(body, dxf_path, k, holes=(), radius=None, radius_from=None, tol=0.05
         raise ValueError("its DXF isn't in mm ($INSUNITS %s)" % fl.dxf.units)
     sh = read(body)
     cuts, odd = sheetmetal.model_cutouts(body)
-    if cuts or odd:
-        raise ValueError("its cut-outs that aren't round holes aren't read with folds along any line yet")
+    if odd:
+        raise ValueError("it has cut-outs drawgen can't size yet (%s)" % ", ".join(odd[:3]))
     rs = {round(b.r, 4) for b in sh.bends}
     if len(rs) > 1:
         raise ValueError("its bends have different inside radii (%s)" % ", ".join("R%s" % sheetmetal._f(r) for r in rs))
@@ -531,8 +531,10 @@ def analyse(body, dxf_path, k, holes=(), radius=None, radius_from=None, tol=0.05
             raise ValueError("the model's Ø%s hole at (%s) isn't on one flange" % (
                 sheetmetal._f(h.dia), ", ".join(sheetmetal._f(x) for x in c)))
         holes_flat.append((q, h.dia))
-    if fl.dxf.cut_loops() != 1:
-        raise ValueError("its DXF cuts shapes inside its outline besides round holes")
+    comps = fl.dxf.cut_components()
+    if len(comps) != 1 + len(cuts):
+        raise ValueError("its DXF cuts %d shapes inside its outline besides round holes, its model %d cut-outs" % (
+            len(comps) - 1, len(cuts)))
     found, why = match(uf, fl.dxf, holes_flat, tol)
     if why:
         raise ValueError(why)
@@ -548,6 +550,19 @@ def analyse(body, dxf_path, k, holes=(), radius=None, radius_from=None, tol=0.05
     if found and not kept:
         raise ValueError("its DXF's outline isn't where the model unfolds to at K %s: %s" % (sheetmetal._f(k), out_why))
     found = kept
+    # its cut-outs (rectangles and slots, AIR's 611801's outlet window): each one's edge, unfolded through the flange
+    # it is in, the same shape as one of the DXF's, point for point both ways and counted (as in the one-run mode)
+    if cuts:
+        kept, cut_why = [], None
+        for T_, pr_ in found:
+            cf = sheetmetal.cutout_fails(_Placed(sh, uf, T_), cuts, comps[1:], tol)
+            if cf:
+                cut_why = cut_why or cf[0]
+                continue
+            kept.append((T_, pr_))
+        if found and not kept:
+            raise ValueError("its DXF's cut-outs aren't where the model unfolds to: %s" % cut_why)
+        found = kept
     if not found:
         raise ValueError("its DXF's bend lines and holes don't sit where the model unfolds to at K %s (each within %s)"
                          % (sheetmetal._f(k), tol))
@@ -584,7 +599,19 @@ def analyse(body, dxf_path, k, holes=(), radius=None, radius_from=None, tol=0.05
     fl.sheet, fl.unfolded, fl.T = sh, uf, T
     fl.viewed = "from the side the DXF shows"
     fl.holes_flat = holes_flat
+    fl.cutouts = cuts
     return fl
+
+
+class _Placed:
+    """A point of the sheet in the DXF's frame: through the flange it is in, then the DXF's placement (or None)."""
+
+    def __init__(self, sh, uf, T):
+        self.sh, self.uf, self.T = sh, uf, T
+
+    def where(self, P):
+        q = where(self.sh, self.uf, P)
+        return None if q is None else _apply(self.T, q)
 
 
 def record(fl):

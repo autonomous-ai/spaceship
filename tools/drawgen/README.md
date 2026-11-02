@@ -109,8 +109,8 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   first of its kind, round the whole arc and 10 of each leg (25 either way at least), titled typical for the others of
   its kind (Reviewer 15 on #369: one section per fold ran past the letters on 611701's 17 folds; a sheet that needs
   more sections and lettered views than the letters D to Z is refused, never crashes), and a bend table giving each
-  line from end to end in the flat, its direction, angle, inside radius and allowance. Cut-outs and slots aren't read
-  in this mode yet. The read-back checks each recorded flange against the STEP's faces (and its material side
+  line from end to end in the flat, its direction, angle, inside radius and allowance. Cut-outs that aren't round holes (rectangles, round-cornered or not) are read as in the one-way
+  mode, each unfolded through the flange it is in (AIR's 611801's outlet window); slots aren't read in this mode yet. The read-back checks each recorded flange against the STEP's faces (and its material side
   against the other skin, t behind it), each strip's width against its allowance at the printed K with the DXF's line
   in its middle, the STEP's holes through the recorded flanges onto the DXF's circles, both ways; every printed bend
   row against the record and every recorded bend against the STEP (a fold on its axis, the angle it sweeps, its
