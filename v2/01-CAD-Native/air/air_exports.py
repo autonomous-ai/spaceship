@@ -107,7 +107,7 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "lin_s": "as supplied (the maker's facing)", "lip": "mill finish (hidden, D-79)",
           "lt_br": "mill finish (hidden, D-79)", "strap": "mill finish (hidden, D-79)", "st_ang": "mill finish (hidden, D-79)",
           "m_ang": "mill finish (hidden, D-79)", "sof_fill_r": "as supplied", "sof_fill_c": "as supplied"}
-PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
+PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut; ELECTRICAL's harness holes drilled in the side leg",
            "sof_rail_d": "laser cut flat bar, forks and holes", "sof_rail_r": "laser cut flat bar, forks", "sof_end": "laser cut",
            "sof_door": "laser cut: the outline, the two head pockets and B08's three reliefs (its DXF)",
            "col_front": "CNC routed ACP, felt laminated", "col_left": "CNC routed ACP, felt laminated",
@@ -295,6 +295,9 @@ def size_tol(v, key):
         return size, "knife cut +/-2 (assumption); a plain piece, no drawing (D-89)"
     if key in FLAT:
         return size, "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4)"
+    if key in ("col_ang", "col_ang_b"):
+        return size, ("cut length +/-0.5, holes +/-0.2 from the bottom end, the one that lands on BASE's spigots "
+                      "(assumption); section to EN 755-9, the standard for extruded aluminium profiles (source)")
     return size, "ISO 2768-m; see the drawing"
 
 
