@@ -594,6 +594,25 @@ class D89SoftGoods(unittest.TestCase):
                 self.assertEqual(bool(rc.soft_kind(n, m)), common.is_soft(n, material=m), (n, m))
                 self.assertEqual(rc.soft_kind(n, m) == "felt or fill", common.is_soft(n, kinds=("FELT", "FILL"), material=m), (n, m))
 
+    def test_the_checklist_passes_a_linings_material_on_its_own_line(self):
+        """Reviewer 21 on #443: the drawing decision itself, through check_parts, so a caller that forgets to pass the
+        material fails even while the shared classifier works. 611407 with a row giving size, material and tolerance:
+        in PET fibre it is drawn by its row (D-89, D-180); in steel or with no material it still owes a drawing."""
+        fai = rc.fai_plan(PLAN, BOM)
+        src = "v2/03-Manufacturing/air/610000_P01_AIR_BOM.csv"
+        name = "AIR - FAN BOX LINING - SUPPLY END"
+        head = "part_number,name,size_mm,material,tolerance_mm\n"
+        def line(material):
+            part = row("611407", "make", name, material, team="AIR", src=src)
+            lists = {src: head + f"611407,{name},50 x 149 x 152,\"{material}\",±2\n"}
+            cads = files("611407_P01_AIR-FAN-BOX-LINING-SUPPLY-END_CAD.f3d", "611407_P01_AIR-FAN-BOX-LINING-SUPPLY-END_STEP.step",
+                         folder="v2/03-Manufacturing/air/")
+            made, _ = rc.check_parts([part], [], rc.files_by_pn(cads), list(cads), fai, fai[1], {}, "unlocked", BOM, {}, lists)
+            return made[0]["dwg"]
+        self.assertEqual(line("polyester (PET) fibre, 32 kg/m3"), "cut list (D-89)")
+        self.assertEqual(line("galvanized steel 0.8"), "no")
+        self.assertEqual(line(""), "no")
+
     FILL_PIECES = ("WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
                    "WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1")
 
