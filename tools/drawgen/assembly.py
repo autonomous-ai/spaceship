@@ -742,7 +742,16 @@ def plan_views(assy):
     shown = set(P.shown(assy.occs))
     want = {it for it in assy.items if it.occs}
     asked = entry.get("views")
-    cand = {nm: make(nm, project.related(P.view, nm)) for nm in (asked or ["above", "below", "from_left", "from_right"])}
+    def related(nm):
+        # a related view looking sideways with its up running down the pod is drawn upright, turned 180° in its
+        # first-angle place, and its title says so (the Lead, 2026-11-01); plan views and turned-by-90° ones stay
+        v = project.related(P.view, nm)
+        if not _upside_down(v):
+            return make(nm, v)
+        av = make(nm, project.View(nm, v.n, vmul(v.x, -1.0), vmul(v.y, -1.0)))
+        av.rotated = True
+        return av
+    cand = {nm: related(nm) for nm in (asked or ["above", "below", "from_left", "from_right"])}
     if asked:
         views.update(cand)
         for v in cand.values():
@@ -1210,8 +1219,7 @@ def view_title(sh, av, assy):
     if av.kind == "section":
         head = "SECTION %s-%s  %s" % (av.letter, av.letter, scale_text(av.scale))
     else:
-        head = "%s  %s" % (STD_WORDS.get(_std_name(av.view)) or VIEW_WORDS.get(av.name) or "VIEW",
-                           scale_text(av.scale))
+        head = "%s  %s" % (_title_words(av), scale_text(av.scale))
     words = mapping_words(av.view, True)
     x0, y0, x1, y1 = av.box()
     cx = (x0 + x1) / 2
@@ -1232,6 +1240,25 @@ def _std_name(view):
         if all(abs(a - b) < 1e-9 for a, b in zip(n, view.n)) and all(abs(a - b) < 1e-9 for a, b in zip(x, view.x)):
             return nm
     return None
+
+
+def _look_name(view):
+    """The standard pod view that looks the same way as this one, whatever way it is turned in its plane."""
+    return next((nm for nm, (n, _x, _y) in POD_VIEWS.items() if all(abs(a - b) < 1e-9 for a, b in zip(n, view.n))),
+                None)
+
+
+def _upside_down(view):
+    """A view looking sideways whose up runs down the pod (-Z): it is turned upright (the Lead, 2026-11-01)."""
+    return abs(view.n[2]) < 0.5 and view.y[2] < -0.5
+
+
+def _title_words(av):
+    """A view's title by the direction it looks (the Lead's ruling, 2026-11-01: a related view that matches no
+    standard view kept its relative name, so CEILING's 410000 titled a rear view VIEW FROM ABOVE), with ROTATED 180°
+    when it was turned upright from its first-angle place."""
+    words = STD_WORDS.get(_look_name(av.view)) or VIEW_WORDS.get(av.name) or "VIEW"
+    return words + (" ROTATED 180°" if getattr(av, "rotated", False) else "")
 
 
 # ------------------------------------------------------------------ balloons (ISO 6433)
@@ -1549,7 +1576,7 @@ def _view_words(views, nm):
         return nm
     if v.kind == "section":
         return "SECTION %s-%s" % (v.letter, v.letter)
-    return STD_WORDS.get(_std_name(v.view)) or VIEW_WORDS.get(nm) or "VIEW"     # as view_title names it
+    return _title_words(v)      # as view_title names it
 
 
 def notes_for(assy, views, ifaces=None, datums=None):
