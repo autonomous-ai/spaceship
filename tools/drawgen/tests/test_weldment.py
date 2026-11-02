@@ -64,9 +64,10 @@ def _holes(sh, centres):
     return sh
 
 
-def _tube(x0, y0, length, along_x, mitre=0.0):
+def _tube(x0, y0, length, along_x, mitre=0.0, flip_b=False):
     """A 20 x 20 x 1.5 box tube, length along X (or Y), from (x0, y0, 0); mitre: both ends cut that many degrees from
-    square in plan (the long points on its -Y face), as a frame's corner members are."""
+    square in plan (the long points on its -Y face), as a frame's corner members are. flip_b: the far end's long
+    point on the +Y face instead, so the two cuts are parallel planes (FRONT's lean 'parallel')."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
     from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
     from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
@@ -89,21 +90,24 @@ def _tube(x0, y0, length, along_x, mitre=0.0):
         if mitre:
             k = 20.0 * math.tan(math.radians(mitre))
             sh = cut(sh, wedge([(x0 - 1, y0 + 20), (x0 + k, y0 + 20), (x0, y0), (x0 - 1, y0)]))
-            sh = cut(sh, wedge([(x0 + length + 1, y0 + 20), (x0 + length - k, y0 + 20), (x0 + length, y0),
-                                (x0 + length + 1, y0)]))
+            far = [(x0 + length + 1, y0 + 20), (x0 + length - k, y0 + 20), (x0 + length, y0), (x0 + length + 1, y0)]
+            if flip_b:
+                far = [(x0 + length + 1, y0), (x0 + length - k, y0), (x0 + length, y0 + 20), (x0 + length + 1, y0 + 20)]
+            sh = cut(sh, wedge(far))
     else:
         sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, 0), 20, length, 20).Shape(),
                  BRepPrimAPI_MakeBox(gp_Pnt(x0 + 1.5, y0 - 1, 1.5), 17, length + 2, 17).Shape())
     return sh
 
 
-def _weldment(path, bought=False, own=False, holes=False, two_cut=False):
+def _weldment(path, bought=False, own=False, holes=False, two_cut=False, parallel=False):
     """A test assembly '219970 TEST ASSY' holding the frame '219980 TEST FRAME' (no body of its own) at 0,0,0, as a
     team STEP holds CEILING's 411101: two long members 219981 (300, both ends mitred 45° in plan), two short ones
     219982
     (180, between them), and one plate 219983 (a 2 mm plate on the corner), each a part named by its number. With
     bought, a bought part 219984 sits under the frame too. With two_cut, the long members' right ends have two cuts,
-    as FRONT's 352207 has: the 45° mitre and its long point cut square 2 mm back, so they are 298 long. Each placement
+    as FRONT's 352207 has: the 45° mitre and its long point cut square 2 mm back, so they are 298 long. With parallel,
+    their right ends' long points are on the +Y face, so each long member's two cuts are parallel. Each placement
     is named as Fusion names them ('NAME:1'), so the repo's own STEP reader sees the tree as it sees Fusion's
     files."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
@@ -134,10 +138,10 @@ def _weldment(path, bought=False, own=False, holes=False, two_cut=False):
         name(frame, "219980 TEST FRAME")
     # no holes here: the repo's STEP reader reads Fusion's hole faces, not the ones OCC writes; the after-weld holes
     # are read back on CEILING's own frames below
-    long_a = _tube(0, 0, 300, True, mitre=45.0)
+    long_a = _tube(0, 0, 300, True, mitre=45.0, flip_b=parallel)
     if holes:               # two after-weld holes in one long member (the register test: OCC finds them)
         long_a = _holes(long_a, [(100, 10), (200, 10)])
-    long_b = _tube(0, 200, 300, True, mitre=45.0)
+    long_b = _tube(0, 200, 300, True, mitre=45.0, flip_b=parallel)
     if two_cut:             # the long point at the right end cut square 2 mm back: a second cut at that end
 
         def tip(sh, y0):
@@ -213,10 +217,11 @@ class _Rows:
         inputs.parts_row = self.real
 
 
-def _made(tag, rows=GOOD, bought=False, welded_in=("219983",), two_cut=False):
+def _made(tag, rows=GOOD, bought=False, welded_in=("219983",), two_cut=False, parallel=False):
     d = os.path.join(TMP, tag)
     os.makedirs(d, exist_ok=True)
-    step = _weldment(os.path.join(d, "219970_P01_TEST-ASSY_STEP.step"), bought=bought, two_cut=two_cut)
+    step = _weldment(os.path.join(d, "219970_P01_TEST-ASSY_STEP.step"), bought=bought, two_cut=two_cut,
+                     parallel=parallel)
     spec = dict(SPEC, cut_list={"file": _cut_list(os.path.join(d, "cut.csv"), rows), "welded_in": list(welded_in)})
     return d, step, spec
 
@@ -371,8 +376,9 @@ def test_front_angle_columns_and_parts_list_names():
     """FRONT's cut lists (#313, for its D-131 frames): the model check reads each row's end angles from its two angle
     columns, because a text with two cuts at one end or a tolerance note gives no pair. At a two-cut end both cuts
     are checked (the generator's owner on #404): the steepest against the body's steepest there, and the angles
-    against that end's cut faces, both ways. A text that does give both angles must agree with the columns, and each
-    member prints its parts-list name, not the tube's place (the Lead's ruling, 2026-11-01)."""
+    against that end's cut faces, both ways. The sheet prints each end from the checked columns, not the text (the
+    Lead's ruling on #424), and each member its parts-list name, not the tube's place (the Lead's ruling,
+    2026-11-01)."""
     rows = _front_rows()
     d, step, spec = _made("front", rows, two_cut=True)
     p = os.path.join(d, "frame.pdf")
@@ -388,36 +394,40 @@ def test_front_angle_columns_and_parts_list_names():
     text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
     assert "219981 TEST - FRAME - MEMBER LONG" in text and "219982 TEST - FRAME - MEMBER SHORT" in text, text[:600]
     assert "LONG MEMBER AT THE" not in text and "SHORT MEMBER" not in text
-    assert "two cuts, 45.0° and square (0°)" in text           # the ends as written
+    assert "left end (A) 45.0°; right end (B) two cuts, 45.0° and square" in text    # from the checked columns
     # a member with no parts-list row keeps the cut list's own name
     with _Rows({"219983": PLATE_ROW}):
         got, _p = inputs.cut_list_rows("none", spec["cut_list"], "219980")
     assert got[0]["name"] == "219981 LONG MEMBER AT THE FRONT", got[0]["name"]
     # the columns are checked against the model: an angle a degree off is refused
-    body = "its body's end cuts 45.00°; 0.00° and 45.00° from square"
+    body = "its body's end cuts there 45.00° and at its other end 0.00° and 45.00° from square"
     rows = _front_rows()
     for r in rows[:2]:
         r["end_a_deg"] = "44.0"
-    _refused("front1", "its cut list's ends give 44°; 0° and 45°, " + body, rows, two_cut=True)
+    _refused("front1", "its cut list gives end A (its left end) 44° and end B 0° and 45°, " + body, rows,
+             two_cut=True)
     # a two-cut end's steepest is the body's steepest there: a 30° cut can't stand in for the 45° mitre
     rows = _front_rows()
     for r in rows[:2]:
         r["end_b_deg"] = "30.0 and 0.0 (two cuts)"
-    _refused("front2", "its cut list's ends give 45°; 0° and 30°, " + body, rows, two_cut=True)
+    _refused("front2", "its cut list gives end A (its left end) 45° and end B 0° and 30°, " + body, rows,
+             two_cut=True)
     # and its other cut is checked too: a 10° second cut the body doesn't have is refused
     rows = _front_rows()
     for r in rows[:2]:
         r["end_b_deg"] = "45.0 and 10.0 (two cuts)"
-    _refused("front6", "its cut list's ends give 45°; 10° and 45°, " + body, rows, two_cut=True)
+    _refused("front6", "its cut list gives end A (its left end) 45° and end B 10° and 45°, " + body, rows,
+             two_cut=True)
     # both ways: an end the list gives one cut where the body has two is refused
     rows = _front_rows()
     for r in rows[:2]:
         r["end_b_deg"] = "45.0"
-    _refused("front7", "its cut list's ends give 45°; 45°, " + body, rows, two_cut=True)
-    # a text that gives both angles must say what the columns say
+    _refused("front7", "its cut list gives end A (its left end) 45° and end B 45°, " + body, rows, two_cut=True)
+    # the short members' columns say 45°, their bodies are square: refused, whatever the text says
     rows = _front_rows()
     rows[2]["end_b_deg"] = "45.0"
-    _refused("front3", "member 219982's ends text gives 0°, 0°, its end angle columns 0°, 45°", rows, two_cut=True)
+    _refused("front3", "member 219982: its cut list gives its two ends different cuts, but its ends text doesn't say "
+             "which end is A", rows, two_cut=True)
     # a row whose columns give one end only
     rows = _front_rows()
     rows[2]["end_b_deg"] = "square"
@@ -428,6 +438,83 @@ def test_front_angle_columns_and_parts_list_names():
     rows[1]["end_a_deg"] = "46.0"
     _refused("front5", "member 219981 has two lengths or two ends texts or two pairs of end angles", rows,
              two_cut=True)
+
+
+def test_the_sheet_prints_the_ends_from_the_checked_columns():
+    """Reviewer 6 on #424, the Lead's ruling: under D-162 the printed ends are the member's drawing, so they come from
+    the checked columns, never the list's own text. Here the text contradicts the columns twice (other angles, and
+    the lean the other way), and the sheet still prints the columns' values, which the model check passed; the row's
+    note, free words the check doesn't read, follows in brackets."""
+    rows = _front_rows()
+    for r in rows[:2]:
+        r.update(lean="opposite", note="mitred to its neighbours",
+                 ends="left end (A) 30.0°; right end (B) 60.0°; the cuts lean the same way (parallel)")
+    d, step, spec = _made("printed", rows, two_cut=True)
+    p = os.path.join(d, "frame.pdf")
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
+    assert not fails, fails
+    text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
+    want = ("left end (A) 45.0°; right end (B) two cuts, 45.0° and square; the cuts lean apart (opposite) "
+            "(note: mitred to its neighbours)")
+    assert want in text, text
+    assert "30.0°" not in text and "60.0°" not in text and "the same way" not in text, text
+
+
+def _lean_rows(lean):
+    """GOOD as FRONT writes it for the frame with one 45° cut at each end of the long members: end A named (the left
+    one), the angle columns and the lean column."""
+    rows = [dict(r) for r in GOOD]
+    for r in rows[:2]:
+        r.update(end_a_deg="45.0", end_b_deg="45.0", lean=lean,
+                 ends="left end (A) 45.0°; right end (B) 45.0°; the cuts %s" % (
+                     "lean apart (opposite)" if lean == "opposite" else "are parallel"))
+    rows[2].update(end_a_deg="0.0", end_b_deg="0.0", lean="square", ends="square both ends, between the rails")
+    return rows
+
+
+def test_front_end_a_and_the_lean_are_the_models():
+    """Reviewer 6 on #404, the Lead's ruling: under D-162 the cut list row is the member's drawing, so its end A and
+    its lean are checked against the model too. End A is the end its ends text names, in pod axes (left -X, right
+    +X, front -Y, back +Y, lower -Z, upper +Z: FRONT's cut lists, checked on all 63 of #313's members); its cuts must
+    be that end's. A row whose two ends differ must say which end is A. The lean: 'opposite' (the cuts lean apart)
+    is two mirror-image cuts, whose tilts point the same way; 'parallel' is two parallel cut planes."""
+    # end A and end B swapped: the left end has the plain 45° mitre, the right end the two cuts
+    rows = _front_rows()
+    for r in rows[:2]:
+        r["end_a_deg"], r["end_b_deg"] = "45.0 and 0.0 (two cuts)", "45.0"
+    _refused("order1", "its cut list gives end A (its left end) 0° and 45° and end B 45°, its body's end cuts there "
+             "45.00° and at its other end 0.00° and 45.00° from square", rows, two_cut=True)
+    # two different ends, and a text that doesn't name end A
+    rows = _front_rows()
+    for r in rows[:2]:
+        r["ends"] = "two cuts at one end: 45.0° and square (0°); a 45.0° mitre at the other"
+    _refused("order2", "its cut list gives its two ends different cuts, but its ends text doesn't say which end is A",
+             rows, two_cut=True)
+    # the lean: the long members' cuts are mirror images (long points on one face), so 'opposite' draws and reads
+    # back, and 'parallel' is refused
+    d, step, spec = _made("lean1", _lean_rows("opposite"))
+    p = os.path.join(d, "frame.pdf")
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
+    assert not fails, fails
+    _refused("lean2", "its cut list says its end cuts lean parallel ('parallel'), its body's lean apart (mirror "
+             "images: 'opposite')", _lean_rows("parallel"))
+    # and the other way: parallel cuts (long points on opposite faces) draw as 'parallel', 'opposite' is refused
+    d, step, spec = _made("lean3", _lean_rows("parallel"), parallel=True)
+    p = os.path.join(d, "frame.pdf")
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
+    assert not fails, fails
+    _refused("lean4", "its cut list says its end cuts lean apart (mirror images: 'opposite'), its body's lean "
+             "parallel ('parallel')", _lean_rows("opposite"), parallel=True)
+    # one number, two leans (D-120)
+    rows = _lean_rows("opposite")
+    rows[1]["lean"] = "parallel"
+    _refused("lean5", "member 219981 has two lengths or two ends texts or two pairs of end angles or two leans", rows)
 
 
 def test_a_bought_part_under_the_frame_is_refused():

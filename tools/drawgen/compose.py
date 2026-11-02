@@ -2736,18 +2736,21 @@ def member_ends(body):
 
 
 def member_end_cuts(body):
-    """Each end's cuts on a straight member, for a cut list that gives each end's angles (FRONT's two columns):
-    [(the steepest cut, as member_ends finds it, [every cut face's angle from square])] for its low and its high end
-    along its axis. Every flat face counts here whatever its size (DR's second cuts at the back ring are 2.1 mm across
-    the way they slope): a sloped one by the half it sits in, a square one only where it is the end itself (not a
-    notch's wall). None when the body isn't a straight member."""
+    """Each end's cuts on a straight member, for a cut list that gives each end's angles (FRONT's two columns): (its
+    axis, [(the steepest cut, as member_ends finds it, [every cut face's angle from square], the way the steepest cut
+    tilts)] for its low and its high end along that axis). Every flat face counts here whatever its size (DR's second
+    cuts at the back ring are 2.1 mm across the way they slope): a sloped one by the half it sits in, a square one
+    only where it is the end itself (not a notch's wall). The tilt is the steepest face's outward normal less its part
+    along the axis, as a unit vector (None for a square end): two ends whose tilts point the same way are cut as
+    mirror images (FRONT's lean 'opposite', the cuts lean apart), opposite ways as parallel planes ('parallel').
+    None when the body isn't a straight member."""
     ax = geom.member_axis(body)
     if ax is None:
         return None
     pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(body.shape)]
     lo, hi = min(vdot(q, ax) for q in pts), max(vdot(q, ax) for q in pts)
     mid = (lo + hi) / 2
-    steep, faces = [0.0, 0.0], [[], []]
+    steep, faces, tilt = [0.0, 0.0], [[], []], [None, None]
     for n, _off, _area, f in geom.planes(body):
         c = abs(vdot(n, ax))
         if c < 0.019:
@@ -2766,9 +2769,14 @@ def member_end_cuts(body):
         faces[k].append(a)
         u = vnorm(vcross(ax, n))
         w = vnorm(vcross(u, ax))
-        if max(vdot(q, w) for q in fp) - min(vdot(q, w) for q in fp) >= 6.0:
-            steep[k] = max(steep[k], a)
-    return [(steep[k], sorted(faces[k])) for k in (0, 1)]
+        if max(vdot(q, w) for q in fp) - min(vdot(q, w) for q in fp) >= 6.0 and a > steep[k]:
+            steep[k] = a
+            out = n if vdot(n, ax) * (1 if k else -1) > 0 else tuple(-x for x in n)     # away from the middle
+            tilt[k] = vnorm(tuple(out[i] - vdot(out, ax) * ax[i] for i in range(3)))
+    return ax, [(steep[k], sorted(faces[k]), tilt[k]) for k in (0, 1)]
+
+
+LEAN_WORDS = {"opposite": "apart (mirror images: 'opposite')", "parallel": "parallel ('parallel')"}
 
 
 def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
@@ -2788,7 +2796,7 @@ def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
         return "its cut list says %s long, its body is %.2f" % (row["cut_length_mm"], length)
     cuts = row.get("cuts")
     if cuts:
-        model = member_end_cuts(body)
+        ax, model = member_end_cuts(body)
 
         def near(a, xs):
             return any(abs(a - x) <= tol_deg for x in xs)
@@ -2796,10 +2804,38 @@ def member_vs_row(body, row, tol_mm=0.05, tol_deg=0.05):
         def fits(end, cell):
             return (abs(end[0] - max(cell)) <= tol_deg and all(near(a, end[1]) for a in cell)
                     and all(near(f, cell) for f in end[1]))
-        if not any(fits(model[i], cuts[0]) and fits(model[1 - i], cuts[1]) for i in (0, 1)):
+
+        def said(cell):
+            return " and ".join("%g°" % a for a in cell)
+
+        def has(end):
+            return " and ".join("%.2f°" % a for a in end[1]) or "none"
+        # end A is the one its ends text names (Reviewer 6 on #404: 352201's 22.4 and 45.0 swapped passed unordered)
+        ia = None
+        if row.get("a_dir"):
+            proj = vdot(ax, row["a_dir"])
+            ia = (0 if proj < 0 else 1) if abs(proj) > 0.2 else None
+        same = len(cuts[0]) == len(cuts[1]) and all(abs(a - b) <= tol_deg for a, b in zip(cuts[0], cuts[1]))
+        if ia is not None:
+            if not (fits(model[ia], cuts[0]) and fits(model[1 - ia], cuts[1])):
+                return "its cut list gives end A (its %s end) %s and end B %s, its body's end cuts there %s and at " \
+                       "its other end %s from square" % (row["a_words"], said(cuts[0]), said(cuts[1]),
+                                                         has(model[ia]), has(model[1 - ia]))
+        elif not same:
+            return ("its cut list gives its two ends different cuts, but its ends text doesn't say which end is A "
+                    "(left, right, front, back, lower or upper before 'end (A)')" if not row.get("a_dir") else
+                    "its ends text puts end A at its %s end, which doesn't tell its two ends apart" % row["a_words"])
+        elif not any(fits(model[i], cuts[0]) and fits(model[1 - i], cuts[1]) for i in (0, 1)):
             return "its cut list's ends give %s, its body's end cuts %s from square" % (
-                "; ".join(" and ".join("%g°" % a for a in cell) for cell in cuts),
-                "; ".join(" and ".join("%.2f°" % a for a in end[1]) or "none" for end in model))
+                "; ".join(said(cell) for cell in cuts), "; ".join(has(end) for end in model))
+        # how the two cuts lean (Reviewer 6 on #404: DR's 352310 listed 'opposite' and 352302 listed 'parallel' passed)
+        lean = row.get("lean", "")
+        if lean in LEAN_WORDS and model[0][2] and model[1][2]:
+            d = vdot(model[0][2], model[1][2])
+            got = "opposite" if d > 0.5 else "parallel" if d < -0.5 else None
+            if got != lean:
+                return "its cut list says its end cuts lean %s, its body's lean %s" % (
+                    LEAN_WORDS[lean], LEAN_WORDS.get(got, "neither apart nor parallel"))
         return None
     want_a = row.get("angles") or inputs.ends_angles(row.get("note"))     # FRONT's angle columns, else the text
     if want_a is None:
