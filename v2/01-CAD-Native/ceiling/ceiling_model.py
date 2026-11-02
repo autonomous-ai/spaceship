@@ -211,7 +211,7 @@ CEILING_PARAMS = [
     ("slv_rn_clr", "1 mm", "mm", "assumption", "the bulge's clearance to cross member 1's back face"),
     ("slv_rn_yb", "(pod_d / 2 - wall_depth) + cs_front - x1_ov + tube_w + slv_bulge / 2 + slv_rn_clr", "mm", "calculation",
      "the back side's rivnuts behind cross member 1: its back face plus half the bulge plus the clearance (Y -273)"),
-    # D-177 (PM ruling 2026-11-01): each skin hole passes a set rivnut (its body and the bulge right under the 1 mm flange,
+    # D-177 (PM ruling 2026-11-02): each skin hole passes a set rivnut (its body and the bulge right under the 1 mm flange,
     # which sits in the skin's thickness) wherever the sleeve lands in its slot. The flange's butyl ring, outside the four
     # holes, seals them and the sleeve's gap in the slot (J-AIR-03; AIR's list)
     ("slv_fit", "1.0 mm", "mm", "confirmed", "D-177: the roof sleeve is 1.0 smaller a side than the roof slot, so it drops in at "
@@ -308,7 +308,7 @@ PROCESS = {
                 "holes; every joint hole made after welding, from the joint faces",
     "frame_c2": "welded in a jig (D-131, J-FRAME-01): the corners with their mitre plates, then the T joints; no vent or drain "
                 "holes; every joint hole made after welding, from the joint faces",
-    "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
+    "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot and four Ø17 pass-through openings routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
     "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
     # the members (D-120): cut from galvanized steel tube (D-131); mitred where they meet the corners (D-117), cut back
     #      for the mitre plates; holes CNC or jig drilled after welding
