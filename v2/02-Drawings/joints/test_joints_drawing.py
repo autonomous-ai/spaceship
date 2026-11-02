@@ -283,5 +283,41 @@ if fitz is not None:
     except SystemExit:
         check(True, "letters: a value not on the views stops the finish")
 
+# a value two sizes share (the spigot's pin Ø8, left to right, and its stud's 8 long, bottom to top): "h" relabels only
+# the left-to-right one, the other stays; without a way it stops, as the value is there twice
+if fitz is not None:
+    doc = fitz.open()
+    page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    k = page.rect.width / 420.0
+    page.insert_text(fitz.Point(88.0 * k, 131.0 * k), "8", fontsize=13.86, fontname="helv", rotate=90)
+    page.insert_text(fitz.Point(119.0 * k, 113.0 * k), "8", fontsize=13.86, fontname="helv")
+    page.insert_text(fitz.Point(115.0 * k, 159.0 * k), "5.88", fontsize=13.86, fontname="helv")
+    src, dst = os.path.join(tmp, "relabel-in.pdf"), os.path.join(tmp, "relabel-out.pdf")
+    doc.save(src)
+    JD.letter_dims(src, dst, [("8", "Ø8 h9", "h"), ("5.88", "M6")])
+    got = [(t, d) for t, d, _s in JD.view_spans(fitz.open(dst)[0])]
+    check(sorted(got) == sorted([("8", (0.0, -1.0)), ("Ø8 h9", (1.0, 0.0)), ("M6", (1.0, 0.0))]),
+          "relabel: the left-to-right 8 becomes Ø8 h9 and 5.88 M6; the bottom-to-top 8 stays (%s)" % got)
+    try:
+        JD.letter_dims(src, dst, [("8", "Ø8 h9")])
+        check(False, "relabel: a value on the views twice, with no way given, stops the finish")
+    except SystemExit:
+        check(True, "relabel: a value on the views twice, with no way given, stops the finish")
+
+# the spigot sheet itself: its pin's diameter reads Ø8 h9 and the stud M6 on the views, and no dimension value is
+# printed twice (the mechanical check's ISO 129-1 rule, which counts Fusion's dimension texts)
+if fitz is not None:
+    _pdf = os.path.join(HERE, JD.PARTS["spigot"]["drawing"] + ".pdf")
+    _v = [(t, d) for t, d, _s in JD.view_spans(fitz.open(_pdf)[0])]
+    check(_v.count(("Ø8 h9", (1.0, 0.0))) == 1 and _v.count(("M6", (1.0, 0.0))) == 1 and
+          not [t for t, _d in _v if t in ("5.88", "7.24", "15.24")],
+          "spigot sheet: the views read Ø8 h9 and M6 once, and L and L + 8 for the table's sizes (%s)" % _v)
+    _spec = importlib.util.spec_from_file_location("pdf_traps", os.path.join(HERE, "..", "..", "..", "tools", "checks",
+                                                                             "pdf_traps.py"))
+    _pt = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_pt)
+    _tw = [f for f in _pt.findings(_pdf) if f[0] == "dimension-twice"]
+    check(not _tw, "spigot sheet: no dimension value printed twice (%s)" % _tw)
+
 print("\n%d failure(s)" % len(FAILS))
 sys.exit(1 if FAILS else 0)
