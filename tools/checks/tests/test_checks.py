@@ -1842,3 +1842,49 @@ def test_an_edge_exception_with_a_place_covers_a_corners_two_edges_and_only_thos
     assert len(edge_findings(place="X 10 Y 11", max_short_edges="1")) == 1   # a row covering one edge only
     assert len(edge_findings(place="X 30 Y 11")) == 1                # another hole's place
     assert len(edge_findings(place="X 10 Y 11", min_edge_mm="10.5")) == 1    # 10 mm is under the row's minimum
+
+
+def test_an_edge_exception_place_must_pick_out_one_hole(monkeypatch, tmp_path):
+    # Reviewer 21 on #448: a place naming fewer axes than it needs matched other holes ('X 10' took both corner holes)
+    width, height, t, d = 100.0, 50.0, 2.0, 6.0
+    holes = [(10.0, 11.0), (10.0, 39.0)]                              # two corner holes on one X
+    s = sf.Solid(1, "plate")
+    corners = [(0, 0), (width, 0), (width, height), (0, height)]
+    lt = [((*corners[i], t), (*corners[(i + 1) % 4], t)) for i in range(4)]
+    lb = [((*corners[i], 0.0), (*corners[(i + 1) % 4], 0.0)) for i in range(4)]
+    rt = [_arc((x, y, t), (0, 0, 1), (1, 0, 0), d / 2, 0, 0) for x, y in holes]
+    rb = [_arc((x, y, 0.0), (0, 0, 1), (1, 0, 0), d / 2, 0, 0) for x, y in holes]
+    s.faces.append(sf.Face(1, "plane", (0, 0, t), (0, 0, 1), None, True, [p for ln in lt for p in ln] + [a[2] for a in rt], rt, lt))
+    s.faces.append(sf.Face(2, "plane", (0, 0, 0), (0, 0, -1), None, True, [p for ln in lb for p in ln] + [a[2] for a in rb], rb, lb))
+    for k, (x, y) in enumerate(holes):
+        s.faces.append(sf.Face(3 + k, "cylinder", (x, y, 0), (0, 0, 1), d / 2, False, [rt[k][2], rb[k][2]], [rt[k], rb[k]], []))
+    for i in range(4):
+        a, b = corners[i], corners[(i + 1) % 4]
+        n = sf.norm(((b[1] - a[1]), -(b[0] - a[0]), 0.0))
+        s.faces.append(sf.Face(10 + i, "plane", (*a, 0.0), n, None, True, [(*a, 0.0), (*b, 0.0), (*a, t), (*b, t)],
+                               [], [((*a, 0.0), (*b, 0.0)), ((*a, t), (*b, t))]))
+    s.box = (0, 0, 0, width, height, t)
+    s.thickness = sf._sheet_thickness(s)
+    s.holes = sf._holes(s)
+    assert len(s.holes) == 2
+
+    class FakeStep:
+        def instances(self):
+            return [{"solid": 1, "part_number": "711998", "name": "x", "path": ["711998"], "frame": sf.Frame()}]
+
+        def solid(self, sid):
+            return s
+    monkeypatch.setitem(c_geometry.load_step.__defaults__[0], str(tmp_path / "x.step"), FakeStep())
+
+    def flagged(place):
+        rows = {"711998": [{"hole_dia_mm": "6.0", "min_edge_mm": "9.5", "max_short_edges": "2", "place": place}]}
+        return sorted(round(f.evidence["edge_mm"], 1) for f in c_geometry.check_part_features(
+            str(tmp_path), str(tmp_path / "x.step"), {}, [], hole_rules=[], edge_exceptions=rows)
+            if f.rule == "edge-distance")
+    assert flagged("") == [10.0, 10.0]                                  # no place: corner edges aren't one strip
+    assert flagged("X 10") == [10.0, 10.0]                              # matches both holes: accepts neither
+    assert flagged("X 10 Y 11") == [10.0]                               # one hole: only it is excused
+    assert flagged("X 10 Y 11 Z 1") == [10.0]                           # a full centre, the same
+    assert flagged("X 10 Y +11") == [10.0]                              # a written + sign reads as the number
+    for bad in ("near the corner", "X 10 X 11", "X 10 Y 11 left"):    # unreadable places accept nothing
+        assert flagged(bad) == [10.0, 10.0], bad

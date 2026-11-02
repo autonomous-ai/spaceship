@@ -741,12 +741,13 @@ def load_edge_exceptions(root):
     return out
 
 
-EDGE_PLACE = re.compile(r"\b([XYZ])\s*(-?\d+(?:\.\d+)?)", re.I)    # a row's place: "X 127 Z 4"
+EDGE_PLACE = re.compile(r"\b([XYZ])\s*([-+]?\d+(?:\.\d+)?)", re.I)    # a row's place: "X 127 Z 4"
 EDGE_PLACE_TOL = 0.5        # mm
 
 
-def _edge_accepted(rows, hole, edges, need):
-    """The accepting row for this hole, or None (see load_edge_exceptions)."""
+def _edge_accepted(rows, hole, edges, need, holes=None):
+    """The accepting row for this hole, or None (see load_edge_exceptions). holes: all the part's holes, so a row's
+    place must pick out this hole alone (Reviewer 21 on #448: a place naming two axes matched holes on other walls)."""
     short = [e for e in edges if e[0] + 1e-6 < need]
     ax = sf.norm(hole.axis)
 
@@ -761,9 +762,17 @@ def _edge_accepted(rows, hole, edges, need):
         if abs((num(row.get("hole_dia_mm")) or 0) - hole.diameter) > 0.05:
             continue
         lo, n_max = num(row.get("min_edge_mm")) or 0.0, int(num(row.get("max_short_edges")) or 0)
-        place = {k.lower(): float(v) for k, v in EDGE_PLACE.findall(row.get("place") or "")}
-        if place and any(abs(hole.center["xyz".index(k)] - v) > EDGE_PLACE_TOL for k, v in place.items()):
-            continue                # a row with a place covers that one hole only
+        text = (row.get("place") or "").strip()
+        place = {}
+        if text:
+            found = EDGE_PLACE.findall(text)
+            axes = [k.lower() for k, _v in found]
+            if not found or len(set(axes)) != len(axes) or EDGE_PLACE.sub("", text).strip(" ,;"):
+                continue            # a place the check can't read accepts nothing
+            place = {k.lower(): float(v) for k, v in found}
+            at = lambda h: all(abs(h.center["xyz".index(k)] - v) <= EDGE_PLACE_TOL for k, v in place.items())
+            if not at(hole) or sum(1 for h in (holes or [hole]) if at(h)) != 1:
+                continue            # a row with a place covers one hole: this one, and no other the place matches
         # without a place, the short edges must be parallel (one strip); a row naming the hole's place may cover
         # edges meeting at a corner, as a notch's or bend relief's two sides (the PM, 2026-11-02, ELECTRICAL's H04)
         parallel = all(abs(abs(sf.dot(e[1], lines[0][1])) - 1.0) < 1e-3 for e in short)
@@ -841,7 +850,7 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
             need = edge_factor * h.diameter
             if e + 1e-6 < need:
                 rows = edge_exceptions.get(pn, [])
-                if rows and _edge_accepted(rows, h, edges, need):
+                if rows and _edge_accepted(rows, h, edges, need, holes):
                     continue        # an edge distance the PM accepted, with its rationale
                 sev = "severe" if e < 1.5 * h.diameter else "major"
                 ruled = ""
