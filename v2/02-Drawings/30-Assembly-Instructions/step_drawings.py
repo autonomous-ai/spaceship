@@ -360,6 +360,7 @@ def draw_step(n, out_dir):
     class Assy:     # what place_balloons reads: the occurrences in the view's order, their shapes, its name
         pn = "step %d" % n
         shapes = [p.shape for p in parts]
+        entry = {}          # no sheet entry: the assembly mode's per-item options (balloon views) stay at their defaults
 
     Assy.occs = occs
     # the parts: grey (fitted before) under black (this step); a part with no CAD dashed
