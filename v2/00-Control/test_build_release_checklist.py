@@ -579,6 +579,21 @@ class D89SoftGoods(unittest.TestCase):
         for m in ("PET fibre 32 kg/m3", "melamine foam", "galvanized steel 0.8", ""):
             self.assertEqual(bool(rc.soft_kind(n, m)), common.is_soft(n, material=m), m)
 
+    def test_airs_three_linings_read_as_c05_reads_them(self):
+        """Reviewer 21's probes on #443: AIR's 611405 to 611407 by their own names. With polyester (PET) fibre they are
+        felts, with foam soft goods; steel or no material keep their drawings; and the checklist agrees with C05 each
+        time."""
+        import common
+        names = ("AIR - FAN BOX LINING - EXHAUST SIDE", "AIR - FAN BOX LINING - EXHAUST FAR END",
+                 "AIR - FAN BOX LINING - SUPPLY END")
+        cases = {"polyester (PET) fibre, 32 kg/m3, 50 mm": "felt or fill", "melamine foam, 50 mm": "soft",
+                 "galvanized steel 0.8": "", "": ""}
+        for n in names:
+            for m, want in cases.items():
+                self.assertEqual(rc.soft_kind(n, m), want, (n, m))
+                self.assertEqual(bool(rc.soft_kind(n, m)), common.is_soft(n, material=m), (n, m))
+                self.assertEqual(rc.soft_kind(n, m) == "felt or fill", common.is_soft(n, kinds=("FELT", "FILL"), material=m), (n, m))
+
     FILL_PIECES = ("WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
                    "WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1")
 
