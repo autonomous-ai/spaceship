@@ -58,26 +58,53 @@ def read_parts_list(path):
     return out
 
 
-def wall_side_cad(n):
-    """WALL's side panel 21010n and its lining cassette 51010n from the merged parts list (PRs #41, #104): the made
-    parts and the bond set per panel; the hardware stays in the fixings kit's line, the clips in the named clips' line."""
-    import glob
+def wall_panel_parts(rows, by, fr, fi, end):
+    """One WALL outer panel's frame, studs and fill from its parts list, in either of the two layouts until every
+    panel is rebuilt (the Lead's ruling, 2026-11-01): before D-120, one fill part `fi` and the frame's cut-length rows
+    'STILE - MID ...' in aluminium; after it (D-120, D-123, D-131), the fill as numbered pieces straight in the panel
+    ('CAVITY FILL PIECE Fnn') and a welded steel frame whose row is the total of its member rows ('FRAME STILE MID'
+    for the studs) and mitre plates. `end`: the row index the frame's own rows stop before. Returns (frame kg, fill kg,
+    fill kg/m3, the fill rows' part numbers, the studs' rows, the studs' gauge, steel)."""
     import re
+    frame = rows.index(by[fr])
+    steel = "steel" in (by[fr]["material"] or "").lower()
+    pieces = [r for r in rows if r["level"] == 1 and re.search(r"CAVITY FILL PIECE F\d\d", r["name"], re.I)]
+    if pieces:
+        fill_rows = pieces
+        mids = [r for r in rows[frame + 1:end] if r["level"] == 2 and "FRAME STILE MID" in r["name"].upper()]
+        t_mid = float(re.search(r"tube\s*\d+\s*x\s*\d+\s*x\s*(\d+(?:\.\d+)?)", mids[0]["material"]).group(1))
+    else:
+        fill_rows = [by[fi]]
+        mids = [r for r in rows[frame + 1:end] if r["level"] == 2 and "STILE - MID" in r["name"].upper()]
+        t_mid = float(re.search(r"x\s*(\d+(?:\.\d+)?)\s*$", mids[0]["material"].strip()).group(1))
+    rho = float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", fill_rows[0]["material"]).group(1))
+    return (by[fr]["kg"], sum(r["kg"] for r in fill_rows), rho, {r["pn"] for r in fill_rows}, mids, t_mid, steel)
+
+
+def wall_side_cad(n):
+    """WALL's side panel 21010n and its lining cassette 51010n from the merged parts list (PRs #41, #104; #343 for the
+    D-131 steel sample L1): the made parts and the bond set per panel; the hardware stays in the fixings kit's line,
+    the clips in the named clips' line. A steel frame's studs are the design (D-131, D-135), so the study's aluminium
+    stud saving (D-85) isn't applied to them: their 'mid_kg' is 0 (their CAD mass is in 'mid_kg_cad')."""
+    import glob
     path = glob.glob(os.path.join(MANUF, "wall", f"21010{n}_P01_*_BOM.csv"))[0]
     rows = read_parts_list(path)
     by = {r["pn"]: r for r in rows if r["pn"]}
     fr, sk, fi, asm, cas = f"21110{n}", f"21130{n}", f"21150{n}", f"21010{n}", f"51010{n}"
-    frame = rows.index(by[fr])
-    mids = [r for r in rows[frame + 1:] if r["level"] == 2 and "STILE - MID" in r["name"].upper()]
-    rho = float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", by[fi]["material"]).group(1))
-    t_mid = float(re.search(r"x\s*(\d+(?:\.\d+)?)\s*$", mids[0]["material"].strip()).group(1))
+    frame_kg, fill_kg, rho, fill_pns, mids, t_mid, steel = wall_panel_parts(rows, by, fr, fi, rows.index(by[cas]))
     panel = rows[rows.index(by[asm]) + 1:rows.index(by[cas])]
-    hardware = sum(r["kg"] for r in panel if r["level"] == 1 and r["pn"] not in (fr, sk, fi, "108002"))
-    seals = sum(by[k]["kg"] for k in ("848011", "848012") if k in by and rows.index(by[k]) > rows.index(by[cas]))
-    return dict(path=os.path.basename(path), frame=by[fr]["kg"], skin=by[sk]["kg"], fill=by[fi]["kg"], fill_rho=rho,
-                bond=by["108002"]["kg"], mid_kg=sum(r["kg"] for r in mids), mid_n=int(sum(r["qty"] for r in mids)),
-                mid_t=t_mid, hardware=hardware, tray=by[f"51110{n}"]["kg"], felt=by[f"51130{n}"]["kg"], cass_seals=seals,
-                clips=by["518001"]["kg"])
+    hardware = sum(r["kg"] for r in panel if r["level"] == 1 and r["pn"] not in {fr, sk, "108002"} | fill_pns)
+    seals = sum(by[k]["kg"] for k in ("848011", "848012", "848016") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    # the cassette ledge set on a rebuilt lower panel (the Lead's ruling of 2026-11-01): the made angle (2117xx, 2118xx),
+    # its pad 848015 and its rivets 838012, none of them in the fixings kit's line; 0 on a panel not rebuilt yet
+    ledge = sum(r["kg"] for r in rows[rows.index(by[asm]) + 1:rows.index(by[cas])] if r["level"] == 1
+                and (r["pn"].startswith(("2117", "2118")) or r["pn"] in ("848015", "838012")))
+    mid_cad = sum(r["kg"] for r in mids)
+    return dict(path=os.path.basename(path), frame=frame_kg, skin=by[sk]["kg"], fill=fill_kg, fill_rho=rho,
+                bond=by["108002"]["kg"], mid_kg=0.0 if steel else mid_cad, mid_kg_cad=mid_cad,
+                mid_n=int(sum(r["qty"] for r in mids)), mid_t=t_mid, steel=steel, hardware=hardware,
+                tray=by[f"51110{n}"]["kg"], felt=by[f"51130{n}"]["kg"], cass_seals=seals, ledge=ledge,
+                clips=next(by[k]["kg"] for k in ("518003", "518001") if k in by))      # the walls' clip, or the old one
 
 
 WALL_SIDE = {n: wall_side_cad(n) for n in (1, 2, 3, 4)}      # L1, R1, L2, R2 (S34)
@@ -86,21 +113,24 @@ WALL_L1 = WALL_SIDE[1]
 
 def wall_back_cad(n):
     """WALL's back panel 21020n and its lining cassette 51020n from the merged parts list (PR #152): the made parts and
-    the bond set per panel; the hardware stays in the fixings kit's line, the clips in the named clips' line."""
+    the bond set per panel; the hardware stays in the fixings kit's line, the clips in the named clips' line. Either
+    layout, as wall_side_cad."""
     import glob
-    import re
     path = glob.glob(os.path.join(MANUF, "wall", f"21020{n}_P01_*_BOM.csv"))[0]
     rows = read_parts_list(path)
     by = {r["pn"]: r for r in rows if r["pn"]}
-    fr, sk, fi, cas = f"21120{n}", f"21140{n}", f"21160{n}", f"51020{n}"
-    mids = [r for r in rows[rows.index(by[fr]) + 1:rows.index(by[sk])]
-            if r["level"] == 2 and "STILE - MID" in r["name"].upper()]
-    rho = float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", by[fi]["material"]).group(1))
-    t_mid = float(re.search(r"x\s*(\d+(?:\.\d+)?)\s*$", mids[0]["material"].strip()).group(1))
-    seals = sum(by[k]["kg"] for k in ("848011", "848012") if k in by and rows.index(by[k]) > rows.index(by[cas]))
-    return dict(path=os.path.basename(path), frame=by[fr]["kg"], skin=by[sk]["kg"], fill=by[fi]["kg"], fill_rho=rho,
-                bond=by["108002"]["kg"], mid_kg=sum(r["kg"] for r in mids), mid_n=int(sum(r["qty"] for r in mids)),
-                mid_t=t_mid, tray=by[f"51120{n}"]["kg"], felt=by[f"51140{n}"]["kg"], cass_seals=seals)
+    fr, sk, fi, asm, cas = f"21120{n}", f"21140{n}", f"21160{n}", f"21020{n}", f"51020{n}"
+    frame_kg, fill_kg, rho, _pns, mids, t_mid, steel = wall_panel_parts(rows, by, fr, fi, rows.index(by[sk]))
+    seals = sum(by[k]["kg"] for k in ("848011", "848012", "848016") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    # the cassette ledge set on a rebuilt lower panel (the Lead's ruling of 2026-11-01): the made angle (2117xx, 2118xx),
+    # its pad 848015 and its rivets 838012, none of them in the fixings kit's line; 0 on a panel not rebuilt yet
+    ledge = sum(r["kg"] for r in rows[rows.index(by[asm]) + 1:rows.index(by[cas])] if r["level"] == 1
+                and (r["pn"].startswith(("2117", "2118")) or r["pn"] in ("848015", "838012")))
+    mid_cad = sum(r["kg"] for r in mids)
+    return dict(path=os.path.basename(path), frame=frame_kg, skin=by[sk]["kg"], fill=fill_kg, fill_rho=rho,
+                bond=by["108002"]["kg"], mid_kg=0.0 if steel else mid_cad, mid_kg_cad=mid_cad,
+                mid_n=int(sum(r["qty"] for r in mids)), mid_t=t_mid, steel=steel, tray=by[f"51120{n}"]["kg"],
+                felt=by[f"51140{n}"]["kg"], cass_seals=seals, ledge=ledge)
 
 
 WALL_BACK = {n: wall_back_cad(n) for n in (1, 2)}            # B1 and B2, the lower back panels (S50)
@@ -439,7 +469,7 @@ def air_parts(fill):
 KEY_PNS = ("111211", "111212", "111213", "111214", "111215")  # the corner key family: square (back), front LH and RH, knee LH, square (inline, D-144)
 BASE_CAD = base_cad(elsewhere=KEY_PNS + FIXING_PNS + ("831001", "831002"))   # S54: what the other lines hold stays there
 
-CAP_KG = 420.0          # confirmed, D-37 and D-54
+CAP_KG = 460.0          # provisional, D-131 (the steel frames; was 420, D-37 and D-54), until the wall sample's recount
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
 D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not in the sum yet" (S39)
@@ -481,8 +511,6 @@ T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 fram
                               # rivnuts, and the ceiling's inner members stay 1.2 for the overhead clips and catches (D-85)
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the solid kick strip of PR #27's first list (S36) and D-85's hollow budget
-CLEATS_KG = 1.2               # kg per pod: the WALL and CEILING frames' internal cleats with their glue, 14.9 g corner cleats
-                              # and 6.7 g T plugs (D-117, S49; assumption until the Joints Engineer's cleat models land)
 ELEC_KG_RELAYED = 4.94        # kg: ELECTRICAL as relayed before its CAD merged (S43), the estimate in the swap table
 ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: the relayed lights and call light the estimate's strip share used
 LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
@@ -546,7 +574,7 @@ def back_cad_kg(n, fill, kgm_s, n_back):
     """WALL's back panel B<n> from its CAD (S50): its made parts and bond set, with the fill at `fill` and the inner studs
     at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model)."""
     w = WALL_BACK[n]
-    return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
+    return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"] + w["ledge"]
             + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1)
             + (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s)
 
@@ -561,7 +589,7 @@ def back_est_kg(fill, kgm12, kgm_s, n_back):
 
 def lines(**adopt):
     """[(group, item, qty, kg_each, status, source)] for the pod on skeleton P04: tonight's numbers with the PM's adopted
-    savings (D-81, D-85). Group LATER is outside the 420 kg cap (the voice kit, D-11). A keyword switches an adopted
+    savings (D-81, D-85). Group LATER is outside the cap (the voice kit, D-11). A keyword switches an adopted
     saving back off (its value in OFF); applied() prices each saving that way."""
     a = dict(ADOPTED, **adopt)
     fill, rails, band_t = a["fill"], not a["clip_only"], a["band_t"]
@@ -580,14 +608,17 @@ def lines(**adopt):
         up = final_outer_kg(P04["side_w"], P04["side_up_h"], P04["frame_d"], FINAL)
     def side(n):
         w = WALL_SIDE[n]
-        return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
+        return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"] + w["ledge"]
                 + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1))
     for item, a_, b_ in (("L1 and R1, lower side outer panels", 1, 2), ("L2 and R2, upper side outer panels", 3, 4)):
         wa, wb = WALL_SIDE[a_], WALL_SIDE[b_]
         L.append(("WALL", item, 2, (side(a_) + side(b_)) / 2, "calculation (CAD)" + prov,
                   f"S34, CAD on main: WALL parts lists 21010{a_} and 21010{b_} P01: frames {wa['frame']:.3f} and "
                   f"{wb['frame']:.3f} (mid stiles at {wa['mid_t']:g} mm), skins {wa['skin']:.3f}, fill {wa['fill']:.3f} at "
-                  f"{wa['fill_rho']:g} kg/m3, bond sets {wa['bond']:.2f}; their hardware stays in the fixings kit's line"))
+                  f"{wa['fill_rho']:g} kg/m3, bond sets {wa['bond']:.2f}"
+                  + (f", cassette ledge sets {wa['ledge']:.3f} and {wb['ledge']:.3f} (angle, pad and rivets; a panel not "
+                     f"rebuilt yet has none)" if wa["ledge"] or wb["ledge"] else "")
+                  + "; their other hardware stays in the fixings kit's line"))
     est_back = back_est_kg(fill, kgm12, kgm_s, n_back)
     b1, b2 = WALL_BACK[1], WALL_BACK[2]
     cad1, cad2 = (back_cad_kg(n, fill, kgm_s, n_back) for n in (1, 2))
@@ -767,18 +798,17 @@ def lines(**adopt):
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
     nt, kt = JOINTS.get("831010", (0, 0.0))     # DT's two 11 mm spigots on DR's ledge (J-FRONT-03, D-157)
     rc = register_counts()
-    L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats", 1,
-              fixings_kg() + ns * ks + nt * kt + nw * kw + CLEATS_KG, "calculation (part CAD); cleats assumption",
+    L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers", 1,
+              fixings_kg() + ns * ks + nt * kt + nw * kw, "calculation (part CAD)",
               f"part CAD on main: the joints register's counts (S48: {rc['838001']:.0f} M6 x 16 and {rc['838002']:.0f} M6 x 25 "
               f"bolts, {rc['838003']:.0f} rivnuts, {rc['838004']:.0f} washers, {rc['838005']:.0f} retainers, {rc['848001']:g} m of "
               f"joint gasket, {rc['848004']:g} m of closing-seam seal) at the parts lists' masses ({fixings_kg():.2f} kg, D-116); "
               f"{ns + nt} spigots ({ns} of 831001, {nt} of 831010) and {nw} stop washers from the joints' made hardware "
-              f"list ({ns * ks + nt * kt + nw * kw:.2f} kg, S45); and a "
-              f"{CLEATS_KG:.1f} kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and "
-              f"6.7 g T plugs (D-117, S49), until their models land"))
+              f"list ({ns * ks + nt * kt + nw * kw:.2f} kg, S45); no frame cleats: D-131 welds the frames, so D-117's "
+              f"cleats are cancelled"))
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
-        L.append(("LATER", "Voice cockpit kit reserve, outside the 420 kg cap", 1, pt.kg, pt.status,
+        L.append(("LATER", f"Voice cockpit kit reserve, outside the {CAP_KG:.0f} kg cap", 1, pt.kg, pt.status,
                   "the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81)"))
     else:
         L.append(("ELECTRICAL", "Voice cockpit kit reserve", 1, pt.kg, pt.status, "this study's model (D-11)"))
@@ -1027,8 +1057,7 @@ def rollup_md(rows):
     md.append(f"- **Interior and allowances.** The light shelf ({allow['Light shelf']:.1f} kg) and the work-wall ledge with "
               f"the screen rail ({allow['Work-wall ledge']:.1f} kg) are INTERIOR's CAD (D-70, D-85); the named clips "
               f"({allow['Named clips and catches: 44 clips and 4 catch lanyards']:.1f} kg) stay an allowance (assumption) until "
-              f"they're named, and so do the WALL and CEILING frames' internal cleats ({CLEATS_KG:.1f} kg with their glue, D-117), "
-              f"carried on the fixings kit's line; the two ceiling lights go (D-70), {2 * p('light_kg'):.1f} kg less.")
+              f"they're named; the two ceiling lights go (D-70), {2 * p('light_kg'):.1f} kg less.")
     md.append("")
     md.append("| Assembly | kg |")
     md.append("|---|---:|")
@@ -1036,7 +1065,7 @@ def rollup_md(rows):
         if g in by:
             md.append(f"| {g} | {by[g]:.1f} |")
     md.append(f"| **Pod as shipped** | **{tot:.1f}** |")
-    md.append(f"| Cap (D-37, D-54) | {CAP_KG:.0f} ({gap(tot - CAP_KG)}) |")
+    md.append(f"| Cap (D-131, provisional; was 420, D-37 and D-54) | {CAP_KG:.0f} ({gap(tot - CAP_KG)}) |")
     md.append(f"| Target (PM) | {TARGET_KG:.0f} ({gap(tot - TARGET_KG)}) |")
     md.append(f"| Voice cockpit kit reserve, later (D-11) | {later:.1f}, outside the cap |")
     md.append("")

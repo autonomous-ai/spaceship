@@ -243,9 +243,33 @@ def test(app, doc, out):
                                                          adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
         jin = root.joints.createInput(g_hw, g_hole)
         jin.setAsRigidJointMotion()
+        if i == 1:
+            jin.offset = vi("1.5 mm")             # a washer's thickness under the head, as a joint offset
         j = root.joints.add(jin)
         j.name = "JOINT - RIVNUT %d IN ITS HOLE" % (i + 1)
         joints.append(j)
+        p("TEST|joint %d: health %s; rivnut copy box %s (the rail's bottom face is Z 0; the head should hang below it)" % (
+            i + 1, j.healthState, bbox(occ.bRepBodies.item(0))))
+    # 3b. the plan for the panels: one joint for the first copy, then a pattern of that copy like the holes
+    hw3 = root.occurrences.addExistingComponent(hwc, adsk.core.Matrix3D.create())
+    g_hw = adsk.fusion.JointGeometry.createByCurve(hw_edge.createForAssemblyContext(hw3),
+                                                   adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+    g_hole = adsk.fusion.JointGeometry.createByCurve(hole_edges[0].createForAssemblyContext(rail_o),
+                                                     adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+    jin = root.joints.createInput(g_hw, g_hole)
+    jin.setAsRigidJointMotion()
+    jin.offset = vi("20 mm")                      # lifted clear of the first copy, so the two don't overlap
+    j3 = root.joints.add(jin)
+    j3.name = "JOINT - RIVNUT 3 (PATTERN SEED)"
+    pc = adsk.core.ObjectCollection.create()
+    pc.add(hw3)
+    ppin = root.features.rectangularPatternFeatures.createInput(pc, root.yConstructionAxis, vi("2"), vi("hole_p"),
+                                                                adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
+    ppin.setDirectionTwo(root.zConstructionAxis, vi("1"), vi("1 mm"))
+    ppat = root.features.rectangularPatternFeatures.add(ppin)
+    ppat.name = "PATTERN - RIVNUT COPIES FROM THE SEED"
+    p("TEST|seed joint %s, copy pattern %s; occurrences of the rivnut part: %d" % (
+        j3.healthState, ppat.healthState, root.allOccurrencesByComponent(hwc).count))
     # 4. report, edit, report, undo
     def snap():
         rows = {}

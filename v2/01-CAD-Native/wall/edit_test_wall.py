@@ -29,13 +29,14 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 # side_h 1120, not 1000: ELECTRICAL's trunk holes in R1-CASS sit at fixed heights up to Z 1210 (el_trunk_z +
 # el_kit_dz + el_kit_d / 2), and a lower row 1000 high would put its top (Z 1112) under them; ELECTRICAL moves
 # the trunk before the rows change that much
-EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm"), ("stile_pitch_max", "300 mm")]
+# the side studs follow the bolts (stud_c1 to stud_c5, D-131 sample), not stile_pitch_max, so the rule isn't edited
+EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm")]
 # back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
 # (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
 # (2300 - 92 - 2 x 2.26 - 5.5) / 2); back_ph 1080, not 1000: ELECTRICAL's power unit cut-out in B2-CASS reaches
 # Z 1134 at a fixed height, and a lower row 1000 high would end at Z 1112, under it
-EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1080 mm"),
-              ("stile_pitch_max", "300 mm")]
+# (the stud count is fixed now, 3 copies held by joints, so the rule isn't edited; the pitch follows half_fw)
+EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1080 mm")]
 BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
 
 
@@ -46,13 +47,33 @@ def box(b):
 
 
 def snapshot(design):
-    return {"%s / %s" % (c.partNumber, b.name): box(b) for c in design.allComponents for b in c.bRepBodies}
+    """Every body as placed, one entry per copy (D-120: a part's copies are occurrences of one component):
+    {path / body name: box}."""
+    root = design.rootComponent
+    out = {"%s / %s" % (root.partNumber, b.name): box(b) for b in root.bRepBodies}
+    for occ in root.allOccurrences:
+        for b in occ.bRepBodies:
+            out["%s / %s" % (occ.fullPathName, b.name)] = box(b)
+    return out
 
 
 def health(design):
+    """(timeline items, the ones not healthy with Fusion's messages, loose sketches). A timeline group is only a
+    container (a STEP import's group reports "unknown": the dry run's probe, 2026-11-01), so it is judged by its own
+    items, as the builders judge it (wall_side_panel.py run)."""
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
     tl = design.timeline
-    bad = ["%s (%s)" % (tl.item(i).name, tl.item(i).errorOrWarningMessage) for i in range(tl.count)
-           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    bad = []
+    for i in range(tl.count):
+        it = tl.item(i)
+        if it.healthState == healthy:
+            continue
+        if it.isGroup:
+            g = adsk.fusion.TimelineGroup.cast(it)
+            bad += ["%s / %s (%s)" % (it.name, g.item(j).name, g.item(j).errorOrWarningMessage)
+                    for j in range(g.count) if g.item(j).healthState != healthy]
+            continue
+        bad.append("%s (%s)" % (it.name, it.errorOrWarningMessage))
     loose = [sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
     return tl.count, bad, loose
 
@@ -183,6 +204,12 @@ def el_back_checks(design, root_pn, before_p, after_p):
     return out
 
 
+def cut_back(w_member, w_other, plate_t=2.0):
+    """How far a mitred member's end stands back from the frame's outer corner for the 2 mm plate (Joints, D-131):
+    (plate_t / 2) x the mitre's length in the frame plane / the member's own width."""
+    return plate_t / 2.0 * math.hypot(w_member, w_other) / w_member
+
+
 def back_checks(after, p):
     """What must follow on a back wall panel or its cassette (wall_back_panel.py) after EDITS_BACK."""
     def nm(k):
@@ -190,22 +217,37 @@ def back_checks(after, p):
     seam, gap = 2.26, 5.5
     pick = (lambda pre: sorted((v for k, v in after.items() if nm(k).startswith(pre)), key=lambda b: b[0]))
     rails, stiles, mids = pick("RAIL"), pick("STILE"), pick("STILE - MID")
+    perim = pick("STILE - OUTER") + pick("STILE - CENTRE")
     bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
     zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
-    rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
+    if any(nm(k) == "RIVNUT" for k in after):       # D-120: copies of one RIVNUT body; the top rail's, less the spigots'
+        top = max(r[5] for r in rails) if rails else 0.0
+        spig_x = sorted((v[0] + v[3]) / 2.0 for k, v in after.items() if nm(k) == "SPIGOT")
+        rivs = [v for k, v in sorted(after.items()) if nm(k) == "RIVNUT" and v[5] > top + 0.1 and v[2] < top + 0.1
+                and all(abs((v[0] + v[3]) / 2.0 - x) > 0.5 for x in spig_x)]
+    else:
+        rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
     rule = p["stile_pitch_max"]
-    n_mid = math.ceil((p["frm_len"] - 20) / rule) - 1
+    n_mid = int(round(p["stile_n_mid"]))                   # fixed (D-135); the pitch follows the width
     out = []
     if rails:
-        out += [("frame width follows half_fw (%g)" % p["frm_len"],
-                 abs(p["frm_len"] - p["half_fw"]) < 0.01 and all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
-                ("frame stays close_gap / 2 from X 0 at the closing seam",
-                 all(abs(min(abs(r[0]), abs(r[3])) - gap / 2) < 0.01 for r in rails)),
+        cb = cut_back(20.0, 20.0)
+        out += [("frame width follows half_fw (%g), the rails 2 plate cut-backs shorter" % p["frm_len"],
+                 abs(p["frm_len"] - p["half_fw"]) < 0.01 and all(abs((r[3] - r[0]) - (p["frm_len"] - 2 * cb)) < 0.01
+                                                                  for r in rails)),
+                ("frame stays close_gap / 2 from X 0 at the closing seam (the rail one cut-back further)",
+                 all(abs(min(abs(r[0]), abs(r[3])) - (gap / 2 + cb)) < 0.01 for r in rails)),
                 ("frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26)",
-                 all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam)) < 0.01 for r in rails)),
-                ("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
-                                                         for st in stiles)),
-                ("stud count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
+                 all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam - cb)) < 0.01 for r in rails)),
+] + ([("perimeter stiles span the row height less 2 plate cut-backs of 1.41 (D-117, D-131)",
+                  all(abs((st[5] - st[2]) - (p["pnl_h"] - 2 * cut_back(20.0, 20.0))) < 0.01 for st in perim)
+                  and len(perim) == 2),
+                 ("studs span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01 for st in mids))]
+                if perim else
+                [("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
+                                                         for st in stiles))]) + [
+                ("%d studs, evenly spaced (D-135)" % n_mid, len(mids) == n_mid and all(
+                    abs((b[0] - a[0]) - p["stile_pitch"]) < 0.01 for a, b in zip(mids, mids[1:]))),
                 ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
     if bays:
         out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
@@ -222,12 +264,14 @@ def back_checks(after, p):
         fe = felts[0]
         out.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
                     abs((fe[3] - fe[0]) - (p["cass_len"] - 3)) < 0.01 and abs((fe[5] - fe[2]) - (p["cass_h"] - 3)) < 0.01))
+    # the frame's low-X end: its perimeter members' outer face there (the outer or centre stile). Not the rails' own
+    # ends: D-131 cuts each rail back 1.41 from the corner for the mitre plate (dry run 8: the 220 rule read off the
+    # rail's end was 1.41 out), and the 220 rule, the studs and the clip zones are all set from the frame's end
+    x_low = min(v[0] for v in rails + perim) if rails else None
     if zones and rails:
-        x_low = min(r[0] for r in rails)
         want = sorted({round(x_low + p["stile_pitch"], 2), round(x_low + p["stile_n_mid"] * p["stile_pitch"], 2)})
         out.append(("clip zones sit on the first and last stud", sorted({round(z[0], 2) for z in zones}) == want))
     if rivs and rails:
-        x_low = min(r[0] for r in rails)
         pitch = (p["frm_len"] - 440.0) / 3.0
         want = [round(x_low + 220.0 + i * pitch, 2) for i in range(4)]
         got = sorted(round((r[0] + r[3]) / 2.0, 2) for r in rivs)
@@ -271,7 +315,9 @@ def record(design, rel):
     edits = EDITS_BACK if back_wall else EDITS
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
              "cass_len", "cass_h", "pnl_h") + EL_BACK.get(root_pn, ()) if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
-                                         "stile_pitch", "cass_len", "cass_h", "top_h", "pod_h", "panel_z0",
+                                         "stud_c1", "stud_c2", "stud_c3", "stud_c4", "stud_c5", "cass_len", "cass_h",
+                                         "lin_front_dy",
+                                         "top_h", "pod_h", "panel_z0",
                                          "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
@@ -311,7 +357,7 @@ def record(design, rel):
         checks = []
         seam = 2.26
         y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
-        y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
+        y0c = 850.0 - after_p["wall_depth"] + after_p.get("lin_front_dy", 0.0)   # the cassette's front end
         # rows as the builder makes them: the lower panel from panel_z0, side_h high; the upper one from one seam
         # gap above it up to the roof datum pod_h (its cassette floats lin_gap under the roof frame)
         upper = root_pn[4:6] in ("03", "04")
@@ -329,23 +375,58 @@ def record(design, rel):
         trays = [v for k, v in after.items() if nm(k).startswith("TRAY")]
         felts = [v for k, v in after.items() if nm(k).startswith("FELT")]
         zones = [v for k, v in after.items() if "CLIP ZONE" in nm(k)]
-        rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
-        washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
-        spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
-        rule = after_p["stile_pitch_max"]
-        n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / rule) - 1
+        # hardware: the old bodies were named per site; the D-120 copies are one RIVNUT, STOP WASHER, SPIGOT body
+        # each, placed: the top rail's are the ones above its top face (a lower panel's J-WALL-01 nut side)
+        def on_top_rail(v):
+            return v[5] > z1 + 0.1 and v[2] < z1 + 0.1
+        if any(nm(k) == "RIVNUT" for k in after):
+            spig_y = sorted((v[1] + v[4]) / 2.0 for k, v in after.items() if nm(k) == "SPIGOT")
+            rivs = sorted((v for k, v in after.items() if nm(k) == "RIVNUT" and on_top_rail(v) and
+                           all(abs((v[1] + v[4]) / 2.0 - y) > 0.5 for y in spig_y)), key=lambda v: v[1])
+            washers = sorted((v for k, v in after.items() if nm(k) == "STOP WASHER" and on_top_rail(v)),
+                             key=lambda v: v[1])
+            spig_front = sorted((v for k, v in after.items() if nm(k) == "SPIGOT"), key=lambda v: v[1])[:1]
+        else:
+            rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
+            washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
+            spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
+        # D-131 sample: 5 studs set from the bolts (stud_c1 to stud_c5); every bay's skin within the PM's 2 mm (a
+        # clear bay of 275 or less at these heights) and every bolt 30 or more clear of every stud (R-J14)
+        n_mid = int(round(after_p["stile_n_mid"]))
+        pitch = (after_p["wall_depth"] - seam - 440.0) / 3.0                # len_bolt_pitch (220 rule)
+        bolts = [y0p + 220.0 + i * pitch for i in range(4)]
+        y_front_in = y0p + 20.0
+        # the frame stops skin_t + bond_t (3 + 3) inside the panel's back end: the return's bond line (the Lead, 2026-11-01)
+        y_back_in = y0p + (after_p["wall_depth"] - seam - 6) - 40.0
+        mid_y = sorted(m[1] for m in mids)
+        faces = [y_front_in] + [y for m in sorted(mids, key=lambda m: m[1]) for y in (m[1], m[4])] + [y_back_in]
+        clear = [faces[i + 1] - faces[i] for i in range(0, len(faces), 2)]
         if rails:
             checks += [
-                ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
-                                                        for r in rails)),
-                ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
-                ("stiles span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
-                                                                  < 0.01 for st in stiles)),
-                ("mid stile count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
-                ("no stile pitch over %g" % rule, all(b[1] - a[1] <= rule + 0.01 for a, b in zip(mids, mids[1:]))),
+                # D-117's mitres with D-131's 2 mm plates: each perimeter member stands back from its outer corners
+                # by its cut-back (1.41 for 20 to 20 and 40 to 40; 2.24 / 1.12 where a 20 meets a 40)
+                ("rails run wall_depth - 2.26 - 6 (the back return and its bond line) less their plate cut-backs", all(
+                    abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 6 - cut_back(r[5] - r[2], 20.0)
+                                         - cut_back(r[5] - r[2], 40.0))) < 0.01 for r in rails)),
+                ("rails start one cut-back behind the frame's front end (2.26 behind the decor back plate)",
+                 all(abs(r[1] - (y0p + cut_back(r[5] - r[2], 20.0))) < 0.01 for r in rails)),
+                ("perimeter stiles span the panel height less their plate cut-backs",
+                 all(abs((st[5] - st[2]) - (z1 - z0 - cut_back(st[4] - st[1], 20.0)
+                                            - cut_back(st[4] - st[1], after_p["top_h"]))) < 0.01
+                     for k, st in after.items() if nm(k) in ("STILE - FRONT", "STILE - BACK"))),
+                ("studs span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
+                                                                 < 0.01 for st in mids)),
+                ("%d studs, set from the bolts" % n_mid, len(mids) == n_mid and all(
+                    abs((m[1] + m[4]) / 2.0 - (y0p + after_p["stud_c%d" % (k + 1)])) < 0.01
+                    for k, m in enumerate(sorted(mids, key=lambda m: m[1])))),
+                ("every clear bay 275 or less (the skin's 2 mm limit) %s" % [round(c, 1) for c in clear],
+                 all(c <= 275.0 for c in clear)),
+                ("every bolt 30 or more clear of every stud (R-J14)",
+                 all(min(abs(b - y) for y in mid_y + [m[4] for m in mids]) >= 30.0 - 0.01 and
+                     not any(m[1] - 0.01 < b < m[4] + 0.01 for m in mids) for b in bolts)),
             ]
         if bays:
-            checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+            checks.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
         if skins:
             sk = skins[0]
             checks.append(("skin runs wall_depth - 2.26 and the panel height", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
@@ -353,7 +434,8 @@ def record(design, rel):
         if trays:
             tr = trays[0]
             checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
-                       ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
+                       ("tray starts lin_front_dy behind the decor back plate (R: 5, clear of DR's panel)",
+                        abs(tr[1] - y0c) < 0.01),
                        ("tray height follows the row (cass_h)", abs((tr[5] - tr[2]) - (zc1 - z0)) < 0.01 and
                         abs(after_p["cass_h"] - (zc1 - z0)) < 0.01)]
         if felts:
@@ -363,10 +445,10 @@ def record(design, rel):
                            abs((fe[5] - fe[2]) - (zc1 - z0 - 3)) < 0.01))
         if zones:
             checks += [
-                ("clip zones sit on the first and last mid stile",
-                 sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
-                                                                      round(y0p + after_p["stile_n_mid"] *
-                                                                            after_p["stile_pitch"], 2)})),
+                ("clip zones sit on the first and last stud",
+                 sorted({round(zz[1], 2) for zz in zones}) == sorted({
+                     round(y0p + after_p["stud_c1"] - 10.0, 2),
+                     round(y0p + after_p["stud_c%d" % int(round(after_p["stile_n_mid"]))] - 10.0, 2)})),
                 ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (zc1 - 70)) < 0.01),
             ]
         if rivs:

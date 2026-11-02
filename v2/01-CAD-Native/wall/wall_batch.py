@@ -7,7 +7,8 @@ Fusion queue; fold work into fewer, bigger runs).
 Each spec is MODE:BUILDER:PART:POSITION. MODE is new (make the document), rebuild (open it and rebuild
 the design the script made), auto (rebuild it if it is in the folder, else make it) or front (only save the
 drawings' Front, seen from inside the pod); BUILDER is side (wall_side_panel.py, positions L1 R1 L2 R2) or back
-(wall_back_panel.py, positions B1-B4); PART is panel, cassette, frame, skin, fill, tray or felt. The document
+(wall_back_panel.py, positions B1-B4); PART is panel, cassette, frame, skin, tray or felt (a fill spec is skipped:
+D-123 cancels the panels' fill numbers, the pieces are built in the panel). The document
 name is the builder's own (`<pn>_P01_<NAME>_CAD`) in Default Project / FocusPod v2, opened the way
 run_script.py --doc opens one. For each spec the builder runs in a fresh namespace with post=1, so it
 builds, checks, saves (holding the part number and description), exports, reports and edit-tests, and then
@@ -43,23 +44,13 @@ def folder(app):
     return proj, f
 
 
-def find_file(fold, name, tries=12, wait=2.5):
-    """The folder's files called `name`. The list can fail while others save (2026-10-31 20:55: three quick tries
-    failed and the batch lost a design), so retry for about half a minute, letting Fusion catch up."""
-    import time
-    last = None
-    for _attempt in range(tries):
-        try:
-            n = fold.dataFiles.count
-            files = [fold.dataFiles.item(i) for i in range(n)]
-            if n and all(f is not None for f in files):
-                return [f for f in files if f.name == name]
-        except RuntimeError as exc:
-            last = exc
-        adsk.doEvents()
-        time.sleep(wait)
-        adsk.doEvents()
-    raise RuntimeError("could not list the files in %s after %d tries (%s)" % (FOLDER[1], tries, last))
+def find_file(fold, name):
+    """The folder's files called `name`, through the shared folder reader (tools/fusion/fusion_folder.py, #213:
+    one fetch of the folder per pass; it reads again while an entry can't be read, and stops once `name` is
+    found). The old per-entry reads took minutes per scan (Fusion Engineer 2's log study, 2026-11-01)."""
+    from fusion_folder import read_folder     # run_script.py makes it importable and loads it fresh every run
+    files, _unknown, _others = read_folder(fold, stop_when=lambda f, u, o: name in f)
+    return files.get(name, [])
 
 
 def builder_args(builder, part, position):
@@ -128,6 +119,11 @@ def open_or_make(app, name, make, allow_existing=False):
 
 SKELETON = "100000_P04_POD-SKELETON_CAD"
 
+# D-131 (PM, 2026-11-01): the frames turn to welded, galvanized steel, L1 first as the sample panel; the other
+# panels follow after its review (Lead). Specs for a held position are skipped, so a queued run builds no panel
+# out of turn. "ALL" holds every position (while the builder is being changed).
+ON_HOLD = {"R1", "L2", "R2", "B1", "B2", "B3", "B4"}
+
 
 def preflight(app):
     """Before making any document: every skeleton name the builders link must be a favorite of the cloud
@@ -183,6 +179,13 @@ def run(_context):
             mode, builder, part, position = spec.split(":")
             if mode not in ("new", "rebuild", "front", "auto") or builder not in BUILDERS:
                 raise RuntimeError("bad spec %r" % spec)
+            if "ALL" in ON_HOLD or position in ON_HOLD:
+                print("BATCH|skip %s: on hold (D-131: L1 is the steel sample; the others wait for its review)" % spec)
+                continue
+            if part == "fill":           # D-123: no fill part any more; its pieces are built in the panel
+                print("BATCH|skip %s: the panel's fill number is cancelled (D-123); the fill pieces are built "
+                      "straight into the panel and cut from their DXFs (D-128)" % spec)
+                continue
             name = doc_name(app, builder, part, position)
             print("BATCH|start %s -> %s" % (spec, name))
             doc, opened, existed = open_or_make(app, name, mode in ("new", "auto"), allow_existing=mode == "auto")

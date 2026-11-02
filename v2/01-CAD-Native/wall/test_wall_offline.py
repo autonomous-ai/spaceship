@@ -89,14 +89,28 @@ def resolve(ns, override=None):
 
 
 def evaluate(expr, vals):
+    """A parameter expression as Fusion evaluates it: lengths in mm, angles ("deg") in radians, tan() on them."""
     py = re.sub(r"(\d)\s*mm\b", r"\1", expr)
-    return eval(py, {"__builtins__": {}}, dict(vals, ceil=math.ceil, floor=math.floor, abs=abs))
+    py = re.sub(r"(\d+(?:\.\d+)?)\s*deg\b", r"(\1 * pi / 180)", py)
+    return eval(py, {"__builtins__": {}}, dict(vals, ceil=math.ceil, floor=math.floor, abs=abs, tan=math.tan,
+                                               pi=math.pi))
 
 
 # joints register V2-ENG-JNT-01 table 2.1 (main, PR #47): numbers and names of the hardware WALL models
-REGISTER_HW = {"838003": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
-               "831002": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
-               "831001": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS"}
+def register_hw():
+    """{part number: English name} of the joints register's hardware rows (| H-nn | **NNNNNN** | NAME · Vietnamese |),
+    so WALL's hardware names are checked against the register itself."""
+    path = os.path.join(HERE, "..", "..", "05-Engineering", "joints", "joints-register.md")
+    out = {}
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            m = re.match(r"\|\s*H-\d+\s*\|\s*\*\*(\d{6})\*\*\s*\|\s*([^·|]+?)\s*·", line)
+            if m:
+                out[m.group(1)] = m.group(2).strip()
+    return out
+
+
+REGISTER_HW = register_hw()
 
 
 class WallSidePanelTest(unittest.TestCase):
@@ -107,10 +121,10 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertAlmostEqual(v["side_h"], 1142.74)     # (2290 - 2 x 2.26) / 2, PM ruling on F-008
         self.assertEqual(v["tube_d"], 40)                # D-34: 20 x 40 x 1.2, behind the 3 mm bond line
         self.assertAlmostEqual(v["pnl_len"], 1492.74)    # 1495 less the decor seam gap
-        self.assertAlmostEqual(v["frm_len"], 1489.74)    # less the 3 mm back return
-        self.assertEqual(v["stile_n_mid"], 3)
-        self.assertAlmostEqual(v["stile_pitch"], 364.935)   # (1489.74 - 10 - 20) / 4, 40 mm back stile
-        self.assertLessEqual(v["stile_pitch"], v["stile_pitch_max"])   # D-16, D-34
+        self.assertAlmostEqual(v["frm_len"], 1486.74)    # less the 3 mm back return and its 3 mm bond line
+        self.assertEqual(v["stile_n_mid"], 5)               # D-131 sample: 5 studs set from the bolts
+        self.assertEqual([round(v["stud_c%d" % k], 2) for k in range(1, 6)], [270.0, 520.91, 746.37, 971.83, 1222.74])
+        self.assertEqual(v["stile_pitch_max"], 300)         # PM 2026-11-01: the skin's 2 mm limit
         self.assertEqual(v["corner_w"], 40)
         self.assertAlmostEqual(v["stile_len"], 1102.74)
         self.assertAlmostEqual(v["side_jnt_pitch"], 351.37)  # 3 bolts, 220 from each end of 1142.74 (R-J14)
@@ -118,13 +132,27 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["access_d"], 19)              # FR-03: passes the 18 mm head washer
         self.assertEqual(v["bolt_line_y"], 824)          # R-J15: back panel tube centre
         self.assertEqual(v["bolt_d"], 7)                 # PM ruling on F-009
-        self.assertEqual(v["tube_t"], 1.2)               # D-85: perimeter members keep 1.2 (they carry the rivnuts)
-        self.assertEqual(v["stud_t"], 1.0)               # D-85: intermediate studs at 1.0
+        self.assertEqual(v["tube_t"], 1.2)               # Joints' gauges (PM 05:29): side rails and front stiles
+        self.assertEqual(v["corner_t"], 1.0)             # the 40 x 40 members
+        self.assertEqual(v["stud_t"], 0.8)               # the studs
+        self.assertEqual(v["plate_t"], 2)                # the mitre plate (Joints' corner detail)
+        self.assertEqual(resolve(load_back("B1"))["tube_t"], 1.0)   # back perimeters
         self.assertAlmostEqual(v["rivnut_head_t"] + v["stopw_t"], v["seam_gap"])   # the 2.26 metal stop (R-J5)
-        self.assertLess(v["spigot_thread_l"], v["rivnut_len"] + v["rivnut_head_t"])  # thread stays in the rivnut
+        # the spigot is Joints' 831001 STEP (F-189): its pin top stands where WALL's rule puts it, and its M6 stud
+        # stays inside the rivnut below its origin on the rivnut head
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "..", "tools", "checks"))
+        import stepfile
+        sf = stepfile.StepFile(os.path.join(HERE, "..", "..", "03-Manufacturing", "joints",
+                                            "831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step"))
+        zs = [p[2] for i in sf.instances() for p in sf.solid(i["solid"]).points()]
+        self.assertAlmostEqual(max(zs), v["spigot_proud"] - v["rivnut_head_t"], places=2)
+        self.assertLess(-min(zs), v["rivnut_len"] + v["rivnut_head_t"])
         self.assertEqual(v["tray_h"], 34)                # returns the full cassette depth, lips hold the felt
         self.assertEqual(v["gap_h"], 24)                 # air gap behind the felt (D-17's 25 less the lip sheet)
         self.assertAlmostEqual(v["cass_len"], 1445)      # decor back plate to past the back cassette's face (D-57)
+        r = resolve(load("cassette", "R", "1"))           # the right side starts at Y -640, clear of DR's panel
+        self.assertAlmostEqual(r["pod_d"] / 2 - r["wall_depth"] + r["lin_front_dy"], -640.0)
+        self.assertAlmostEqual(r["cass_len"], 1440)
         self.assertAlmostEqual(v["cass_h"], 1142.74)
         self.assertEqual(v["stack_t"], v["outer_t"] + 4 + v["cass_t"])  # 46 + 4 gap + 34 = 84 (PM ruling)
         self.assertEqual(v["outer_t"], v["skin_t"] + v["bond_t"] + v["tube_d"])
@@ -158,18 +186,27 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(load(part="tray")["DOC_NAME"], "511101_P01_LINING-TRAY-SIDE-LOWER-LH_CAD")
         self.assertEqual(load(part="skin", side="R", row="2")["DOC_NAME"], "211304_P01_WALL-SKIN-SIDE-UPPER-RH_CAD")
 
-    def test_stile_rule_holds_when_the_wall_depth_changes(self):
+    def side_bays(self, v):
+        """Clear bays (mm) between the front stile, the studs and the 40 x 40 back stile."""
+        faces = [20.0] + [v["stud_c%d" % k] + d * 10.0 for k in range(1, int(v["stile_n_mid"]) + 1) for d in (-1, 1)] + \
+            [v["frm_len"] - 40.0]
+        return [faces[i + 1] - faces[i] for i in range(0, len(faces), 2)]
+
+    def test_stud_layout_holds_when_the_wall_depth_changes(self):
+        """The studs follow the bolts: every clear bay within the skin's 2 mm limit (275 or less) and not pinched,
+        over the edit test's depths and beyond."""
         ns = load()
-        for depth in (1200, 1495, 1600, 2000):
+        for depth in (1300, 1400, 1495, 1550):
             vals = resolve(ns, override={"wall_depth": depth})
-            self.assertLessEqual(vals["stile_pitch"], 400, depth)
-            self.assertGreater(vals["stile_pitch"], 200, depth)
+            bays = self.side_bays(vals)
+            self.assertLessEqual(max(bays), 275.0, (depth, bays))
+            self.assertGreater(min(bays), 100.0, (depth, bays))
 
     def test_every_bolt_is_30_clear_of_every_stile(self):
         """R-J14: every bolt along the panel at least 30 mm from any stile face (the 60 mm key pocket fits)."""
         v = resolve(load())
         y0 = 0.0                                          # panel front end
-        stiles = [(y0, y0 + 20)] + [(y0 + k * v["stile_pitch"], y0 + k * v["stile_pitch"] + 20)
+        stiles = [(y0, y0 + 20)] + [(y0 + v["stud_c%d" % k] - 10, y0 + v["stud_c%d" % k] + 10)
                                     for k in range(1, int(v["stile_n_mid"]) + 1)] + [(v["frm_len"] - 40, v["frm_len"])]
         for i in range(int(v["n_len_bolt"])):
             yb = y0 + v["bolt_edge"] + i * v["len_bolt_pitch"]
@@ -191,7 +228,7 @@ class WallSidePanelTest(unittest.TestCase):
                         continue
                     self.assertRegex(pn, r"^(21|51)\d{4}$")
                     self.assertNotIn(pn, ns["RESERVED"])
-                    self.assertNotIn(pn, seen, "%s used twice" % pn)
+                    self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                     seen[pn] = name
                     self.assertTrue(vn)
         self.assertEqual(seen["210101"], "WALL - PANEL ASSY - SIDE LOWER - LH")
@@ -228,12 +265,12 @@ class WallBackPanelTest(unittest.TestCase):
             self.assertAlmostEqual(v["half_pw"], 1200.61, places=2)     # skin width (R-J16)
             self.assertAlmostEqual(v["frm_len"], 1198.99, places=2)     # frame width, register 2.8
             self.assertAlmostEqual(v["pnl_h"], 1118.61, places=2)       # both rows, register 2.8
-            self.assertEqual(v["stile_n_mid"], 2)                       # D-85: 2 studs at 393
-            self.assertAlmostEqual(v["stile_pitch"], 393.0, places=2)
+            self.assertEqual(v["stile_n_mid"], 3)                       # PM 2026-11-01: 3 studs, the skin's 2 mm
+            self.assertAlmostEqual(v["stile_pitch"], 294.75, places=2)
             self.assertAlmostEqual(v["len_bolt_pitch"], 253.0, places=2)   # register 2.9: 220, 473, 725.99, 978.99
             self.assertAlmostEqual(v["side_jnt_pitch"], 339.31, delta=0.01)  # register 2.9: 220, 559.31, 898.61
             self.assertAlmostEqual(v["cass_len"], 1164.87, places=2)    # side lining face to 1.13 short of X 0
-            self.assertEqual(v["stud_t"], 1.0)
+            self.assertEqual(v["stud_t"], 0.8)                         # D-131 start value, Joints' check
         self.assertAlmostEqual(resolve(load_back("B1"))["cass_h"], 1118.61, places=2)
         self.assertAlmostEqual(resolve(load_back("B3"))["cass_h"], 1116.87, places=2)   # floats 4 under the roof frame
 
@@ -253,7 +290,7 @@ class WallBackPanelTest(unittest.TestCase):
                     continue
                 self.assertRegex(pn, r"^(21|51)\d{4}$")
                 self.assertNotIn(pn, ns["RESERVED"])
-                self.assertNotIn(pn, seen, "%s used twice" % pn)
+                self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                 seen[pn] = name
         self.assertEqual(seen["210201"], "WALL - PANEL ASSY - BACK LOWER - B1")
         self.assertEqual(seen["211204"], "WALL - PANEL FRAME - BACK UPPER - B4")
@@ -327,7 +364,7 @@ class ElectricalInterfaceSideTest(unittest.TestCase):
 
     def test_only_the_right_cassettes_carry_them(self):
         for part, side, row in (("cassette", "L", "1"), ("cassette", "L", "2"), ("panel", "R", "1"),
-                                ("frame", "R", "2"), ("fill", "R", "1")):
+                                ("frame", "R", "2"), ("skin", "R", "1")):
             ns = load(part, side, row)
             self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (part, side, row))
 
@@ -337,7 +374,7 @@ class ElectricalInterfaceSideTest(unittest.TestCase):
         for row in ("1", "2"):
             for over in (None, {"wall_depth": 1300.0, "side_h": 1120.0}):
                 v = resolve(load("cassette", "R", row), over)
-                fy = (850.0 - v["wall_depth"] + 1.5, v["pod_d"] / 2 - v["stack_t"] + v["cass_t"] - 1.5)
+                fy = (850.0 - v["wall_depth"] + v["lin_front_dy"] + 1.5, v["pod_d"] / 2 - v["stack_t"] + v["cass_t"] - 1.5)
                 z0 = v["panel_z0"] + (0.0 if row == "1" else v["side_h"] + v["seam_gap"])
                 z1 = v["panel_z0"] + v["side_h"] if row == "1" else v["pod_h"] - v["outer_t"] - v["lin_gap"]
                 fz = (z0 + 1.5, z1 - 1.5)
@@ -386,6 +423,7 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
             ns = load_back(pos, part)
             self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (pos, part))
 
+    @unittest.skip("B2's layout waits (PM 2026-11-01: the unit's 373 bay with cross members; D-133 changes the unit)")
     def test_unit_clears_the_first_stud_by_4_75(self):
         """PM ruling 2026-10-31 20:35 UTC: 0.75 is too tight; the unit stands 4.75 clear of B2's first stud (the
         stud's face is at X 395.747, which the messages round to 395.75)."""
@@ -415,6 +453,251 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
         self.assertGreater(v["el_cut_x0"] - 8, v["seam_gap"] / 2 + v["lip_w"])
         self.assertLess(v["el_cut_z1"] + 8, v["panel_z0"] + v["back_ph"] - v["lip_w"])
         self.assertGreater(v["el_cut_z0"] - 8, v["panel_z0"] + v["lip_w"])
+
+
+class PolygonPlanTest(unittest.TestCase):
+    """poly_plan: straight sides get their constraint and each tied group of corners one dimension, so a sketch is
+    fully constrained with nothing repeated (the L1 run of 2026-11-01 failed on a repeated dimension)."""
+
+    def plan(self):
+        return load("panel", "L", "1")["poly_plan"]
+
+    def test_mitre_triangle(self):
+        sides, dims = self.plan()([(-2.0, -2.0), (-2.0, 22.0), (22.0, 22.0)],
+                                  [("ya", "za"), ("ya", "zc"), ("yc", "zc")])
+        self.assertEqual(sides, [(0, "V"), (1, "H")])
+        self.assertEqual(dims, [(0, "x", "ya"), (0, "y", "za"), (1, "y", "zc"), (2, "x", "yc")])
+        self.assertEqual(len(sides) + len(dims), 2 * 3)          # 3 corners, 2 degrees of freedom each
+
+    def test_slanted_triangle_and_rectangle(self):
+        plan = self.plan()
+        sides, dims = plan([(0.0, 0.0), (1.0, 0.5), (0.3, 2.0)], [("a", "b"), ("c", "d"), ("e", "f")])
+        self.assertEqual((sides, len(dims)), ([], 6))
+        sides, dims = plan([(0.0, 0.0), (5.0, 0.0), (5.0, 3.0), (0.0, 3.0)],
+                           [("x0", "y0"), ("x1", "y0"), ("x1", "y1"), ("x0", "y1")])
+        self.assertEqual(len(sides) + len(dims), 2 * 4)
+        self.assertEqual([d[2] for d in dims], ["x0", "y0", "x1", "y1"])
+
+    def test_tied_corners_must_share_their_expression(self):
+        with self.assertRaises(ValueError):
+            self.plan()([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0)], [("a", "b"), ("a2", "c"), ("d", "c")])
+
+
+class FillPiecesInThePanelTest(unittest.TestCase):
+    """D-123: the panels' fill numbers are cancelled; the pieces go straight into the panel assembly."""
+
+    def test_no_fill_part_or_number(self):
+        with self.assertRaises(ValueError):
+            load("fill", "L", "1")
+        ns = load("panel", "L", "1")
+        self.assertNotIn("fill", ns["PARTS"])
+        self.assertIn("fill", ns["WANT"]["panel"])
+
+    def test_every_bay_gets_its_allocated_number(self):
+        """A real build takes each bay's number from the allocation by form and size; a size written "240.0" in
+        FILL-PIECES.csv must still find "F01 240 X 1102.7" (dry run 8 left F01 and F04 unnumbered)."""
+        import csv
+        ns = load("panel", "L", "1")
+        rows = list(csv.DictReader(open(os.path.join(REPO, "v2/03-Manufacturing/wall/FILL-PIECES.csv"),
+                                        encoding="utf-8")))
+        for code in sorted({r["position"] for r in rows}):
+            # a form whose number isn't allocated yet has none in the list: its bays get none (a real build stops)
+            want = {int(r["bay"]): r["number"] for r in rows if r["position"] == code and r["number"]}
+            got = ns["fill_numbers"](REPO, code)
+            self.assertEqual({b: v[0] for b, v in got.items()}, want, code)
+            for bay, (pn, name, vn) in got.items():
+                self.assertIn(" FILL PIECE ", name, (code, bay))
+                self.assertTrue(vn, (code, bay))
+
+
+class FillDxfTest(unittest.TestCase):
+    """D-128: each fill-piece form is cut from its own DXF (make_fill_pieces.py); the DXFs match the CAD."""
+
+    def mf(self):
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
+        import make_fill_pieces
+        return make_fill_pieces
+
+    def test_outline_shapes(self):
+        mf = self.mf()
+        notch = mf.outline(100, 50, [(0, 10, 10, 20)])               # a notch in the left edge
+        self.assertEqual((len(notch), len(notch[0])), (1, 8))
+        self.assertAlmostEqual(sum(mf.area(lp) for lp in notch), 5000 - 100)
+        hole = mf.outline(100, 50, [(40, 60, 20, 30)])              # an opening inside: a second, clockwise loop
+        self.assertEqual([len(lp) for lp in hole], [4, 4])
+        self.assertLess(mf.area(hole[1]), 0)
+        merged = mf.outline(100, 50, [(80, 100, 10, 40), (70, 90, 20, 30)])   # overlapping openings merge
+        self.assertEqual((len(merged), len(merged[0])), (1, 12))
+        self.assertAlmostEqual(sum(mf.area(lp) for lp in merged), 5000 - mf.open_area(100, 50, [(80, 100, 10, 40),
+                                                                                              (70, 90, 20, 30)]))
+        with self.assertRaises(ValueError):                         # openings touching at a corner only
+            mf.outline(100, 50, [(20, 30, 20, 30), (30, 40, 30, 40)])
+        with self.assertRaises(ValueError):                         # a cut right across: two pieces
+            mf.outline(100, 50, [(40, 60, 0, 50)])
+
+    def test_fill_dxfs_match_the_cad(self):
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
+        import contextlib
+        import io
+        import check_fill_dxfs
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = check_fill_dxfs.main()
+        self.assertEqual(rc, 0, out.getvalue()[-2000:])
+        self.assertIn(" 0 mismatches", out.getvalue())
+        self.assertNotIn("BAD ", out.getvalue())
+
+
+class CassetteLedgeTest(unittest.TestCase):
+    """The Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge on the lower frame's bottom rail
+    (WALL's sizes, accepted): one part for L1 and R1, its leg the 2.26 seam gap under the frame, lower panels only."""
+
+    def test_l1_and_r1_get_the_same_ledge(self):
+        vl, vr = resolve(load(side="L")), resolve(load(side="R"))
+        for k in ("ledge_len", "ledge_rivet_pitch", "ledge_rivet_e", "ledge_rivet_z", "ledge_out", "ledge_up",
+                  "ledge_t", "ledge_rivet_d", "ledge_rivet_n"):
+            self.assertAlmostEqual(vl[k], vr[k], places=6, msg=k)
+        self.assertAlmostEqual(vl["ledge_len"], 1430.0, places=2)
+        # the ledge starts where R1's cassette does, 5 in, on both sides
+        y0 = vl["pod_d"] / 2 - vl["wall_depth"] + vl["ledge_front_dy"] + vl["ledge_end"]
+        self.assertAlmostEqual(y0, -635.0, places=2)
+        self.assertAlmostEqual(vr["pod_d"] / 2 - vr["wall_depth"] + vr["lin_front_dy"] + vr["ledge_end"], y0, places=2)
+
+    def test_rivet_pattern_is_symmetric_and_clear_of_the_ends(self):
+        v = resolve(load())
+        first = v["ledge_rivet_e"]
+        last = first + (v["ledge_rivet_n"] - 1) * v["ledge_rivet_pitch"]
+        self.assertAlmostEqual(v["ledge_len"] - last, first, places=6)
+        # centre to the upright's top edge at least 2 x the rivet (edge distance); the countersink's edge at least 2t
+        # clear of the bend and of the top edge; the head's depth leaves land in the upright (the Lead's 1.5 ruling)
+        top = v["ledge_pad_t"] + v["ledge_t"] + v["ledge_up"]            # the upright's top above the leg's bottom
+        centre = v["ledge_pad_t"] + v["ledge_t"] + v["ledge_rivet_z"]
+        self.assertGreaterEqual(top - centre, 2 * v["rivet_d"])
+        self.assertGreaterEqual(centre - v["ledge_csk_d"] / 2 - (v["ledge_t"] + v["ledge_r"]), 2 * v["ledge_t"])
+        self.assertGreaterEqual(top - centre - v["ledge_csk_d"] / 2, 2 * v["ledge_t"])
+        csk_depth = (v["ledge_csk_d"] - v["ledge_rivet_d"]) / 2 / math.tan(v["rivet_csk_angle"] / 2)
+        self.assertGreaterEqual(v["ledge_t"] - csk_depth, v["ledge_t"] / 3)     # land under the countersink
+        self.assertGreaterEqual(v["ledge_csk_d"], v["rivet_head_d"])            # no head stands proud
+
+    def test_the_leg_sits_the_squeezed_pad_under_the_frame_and_lower_panels_only(self):
+        """Joints' pad (PORON 4701-40, 320 grade, 2.36 standard) squeezed about 2% to 2.31 under the cassettes, so
+        the leg sits that far under the frame and the lining doesn't move; inside the foam's ±10% of 2.36."""
+        v = resolve(load())
+        self.assertAlmostEqual(v["ledge_pad_t"], 2.31, places=6)
+        self.assertTrue(2.36 * 0.9 <= v["ledge_pad_t"] <= 2.36 * 1.1)
+        self.assertNotIn("ledge_len", resolve(load(row="2")))
+
+
+class MemberEndsTest(unittest.TestCase):
+    """The Lead's ruling of 2026-11-01: the frame drawing's cut list is each member's drawing, so every member row
+    names each end's angle by its end and the long points' face, and they are the STEP's (check_member_ends.py)."""
+
+    def cme(self):
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
+        import check_member_ends
+        return check_member_ends
+
+    def test_every_d120_panel_lists_its_member_ends_as_its_step(self):
+        cme = self.cme()
+        steps = cme.panel_steps()
+        self.assertTrue(steps, "no D-120 panel STEP found")
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = cme.main(["x"] + steps)
+        self.assertEqual(rc, 0, out.getvalue()[-2000:])
+
+    def test_the_tube_cut_list_is_current(self):
+        """210000_P01_WALL-TUBE-CUT-LIST_BOM.csv (the weldment drawings' cut list, D-162) is the panel lists' member
+        rows as they stand: regenerated from copies of the lists, it equals the committed file."""
+        import glob
+        import shutil
+        import tempfile
+        mf = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall")
+        sys.path.insert(0, mf)
+        import make_parts_list
+        with tempfile.TemporaryDirectory() as tmp:
+            for p in glob.glob(os.path.join(mf, "210[12]0[1-4]_P01_*_BOM.csv")):
+                shutil.copy(p, tmp)
+            make_parts_list.write_cut_list(tmp)
+            with open(os.path.join(tmp, make_parts_list.CUT_LIST), encoding="utf-8") as fh:
+                fresh = fh.read()
+        with open(os.path.join(mf, make_parts_list.CUT_LIST), encoding="utf-8") as fh:
+            self.assertEqual(fh.read(), fresh)
+        self.assertIn("212101", fresh)
+
+    def test_a_flipped_rail_is_caught(self):
+        cme = self.cme()
+        import csv
+        import glob
+        import tempfile
+        mf = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall")
+        step = glob.glob(os.path.join(mf, "210101_P01_*_STEP.step"))[0]
+        bom = glob.glob(os.path.join(mf, "210101_P01_*_BOM.csv"))[0]
+        rows = list(csv.DictReader(open(bom, encoding="utf-8")))
+        rail = [r for r in rows if r["part_number"].startswith("212") and "RAIL BOTTOM" in r["name"]][0]
+        m = re.search(r"front end mitred ([\d.]+)° and back end ([\d.]+)°", rail["note"])
+        self.assertTrue(m, rail["note"])
+        rail["note"] = rail["note"].replace(m.group(0), "front end mitred %s° and back end %s°" % (m.group(2),
+                                                                                                    m.group(1)))
+        with tempfile.TemporaryDirectory() as tmp:
+            p = os.path.join(tmp, "210101_flipped_BOM.csv")
+            with open(p, "w", encoding="utf-8", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+                w.writeheader()
+                w.writerows(rows)
+            bad = cme.check(step, p)
+        self.assertTrue(any(rail["part_number"] in b and "low end" in b for b in bad), bad)
+        self.assertTrue(any(rail["part_number"] in b and "high end" in b for b in bad), bad)
+
+
+class EditTestBackChecksTest(unittest.TestCase):
+    """The edit test's back-panel checks read a D-131 frame right: each rail stops 1.41 short of the frame's corner
+    for the mitre plate, and the 220 rule is set from the frame's end, not the rail's (dry run 8, B1 after the edit:
+    the frame end X -1101.74, the rails from -1100.33, the rivnuts at 220 + 3 x 219.66 from the frame end)."""
+
+    def setUp(self):
+        fake = types.ModuleType("adsk")
+        fake.core = types.ModuleType("adsk.core")
+        fake.fusion = types.ModuleType("adsk.fusion")
+        sys.modules.update({"adsk": fake, "adsk.core": fake.core, "adsk.fusion": fake.fusion})
+        sys.path.insert(0, HERE)
+        import edit_test_wall
+        self.et = edit_test_wall
+        self.p = {"pod_w": 2300, "half_pw": 1100.61, "half_fw": 1098.99, "back_ph": 1080, "stile_pitch_max": 300,
+                  "frm_len": 1098.99, "stile_n_mid": 3, "stile_pitch": 269.748, "cass_len": 1064.87, "cass_h": 1080,
+                  "pnl_h": 1080}
+        f = "211201 FRAME:1+"
+        self.after = {
+            f + "212501 RAIL BOTTOM:1 / RAIL - BOTTOM": (-1100.33, 804.0, 112.26, -4.16, 844.0, 132.26),
+            f + "212502 RAIL TOP:1 / RAIL - TOP": (-1100.33, 804.0, 1172.26, -4.16, 844.0, 1192.26),
+            f + "212503 STILE OUTER:1 / STILE - OUTER": (-1101.74, 804.0, 113.67, -1081.74, 844.0, 1190.85),
+            f + "212504 STILE CENTRE:1 / STILE - CENTRE": (-22.75, 804.0, 113.67, -2.75, 844.0, 1190.85),
+            f + "212505 STILE MID:1 / STILE - MID": (-831.99, 804.0, 132.26, -811.99, 844.0, 1172.26),
+            f + "212505 STILE MID:2 / STILE - MID": (-562.25, 804.0, 132.26, -542.25, 844.0, 1172.26),
+            f + "212505 STILE MID:3 / STILE - MID": (-292.5, 804.0, 132.26, -272.5, 844.0, 1172.26),
+            "211401 SKIN:1 / SKIN - ACP 3": (-1101.74, 847.0, 112.26, -1.13, 850.0, 1192.26),
+            "831001 SPIGOT:1 / SPIGOT": (-1005.74, 820.0, 1185.02, -997.74, 828.0, 1200.26),
+            "831001 SPIGOT:2 / SPIGOT": (-106.75, 820.0, 1185.02, -98.75, 828.0, 1200.26),
+        }
+        for i, (x0, x1) in enumerate(((-888.22, -875.26), (-668.56, -655.6), (-448.89, -435.93), (-229.23, -216.27),
+                                      (-1008.22, -995.26), (-109.23, -96.27)), 1):
+            z0 = 1183.6 if i <= 4 else 1182.1
+            self.after["838003 RIVNUT:%d / RIVNUT" % i] = (x0, 817.52, z0, x1, 830.48, z0 + 10.92)
+
+    def check(self, after):
+        return {name.split(" [")[0]: ok for name, ok in self.et.back_checks(after, self.p)}
+
+    def test_rivnuts_from_the_frame_end_pass(self):
+        got = self.check(self.after)
+        self.assertTrue(got["top rail rivnuts follow the 220 rule"], got)
+        self.assertTrue(all(got.values()), got)
+
+    def test_rivnuts_set_from_the_rail_end_fail(self):
+        moved = {k: ((v[0] + 1.41, v[1], v[2], v[3] + 1.41, v[4], v[5]) if k.endswith("RIVNUT") and v[2] > 1183
+                     else v) for k, v in self.after.items()}
+        self.assertFalse(self.check(moved)["top rail rivnuts follow the 220 rule"])
 
 
 if __name__ == "__main__":
