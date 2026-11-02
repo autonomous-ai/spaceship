@@ -67,7 +67,9 @@ SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{
 PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD\b", re.I)
 HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
 PRODUCT_NAMED = re.compile(r"\b(?:part|product|system)\b[^;]*\b(?:DECIDED|source)\b", re.I)
-TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
+# a test plan's test, a joint test, a functional check, or an FAI check (K-A07: each soffit latch holds 25 N), as the
+# FAI plan's bought-part lines name them (the Lead, 2026-11-01)
+TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d|K-[A-Z]\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
                "air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"

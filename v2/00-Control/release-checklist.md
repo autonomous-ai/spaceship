@@ -6,9 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (369cb600), PR #350 (6546c904), PR #348 (3d7c6ae6), PR #339 (93ede056), PR #366 (09b48f53), PR #356 (073a0ba7), PR #313 (780aa830), PR #377 (d70ef55e), PR #310 (b10bfb2d), PR #364 (db237676), PR #320 (2a4b6263), PR #319 (7d90ef4d), PR #343 (074c4b82), PR #378 (55566033), PR #337 (51832426), PR #382 (35640feb), PR #392 (81026d09), PR #394 (ed095996). The Mac's screen at run time: **unlocked**. 571 files in the CAD, drawing and manufacturing folders; the FAI plan's 96 characteristics, 11 functional checks and 22 bought-part test lines.
+Read from: main (ae83f273), PR #348 (3d7c6ae6), PR #366 (09b48f53), PR #356 (073a0ba7), PR #313 (780aa830), PR #310 (b10bfb2d), PR #364 (db237676), PR #320 (2a4b6263), PR #319 (7d90ef4d), PR #337 (51832426), PR #382 (35640feb), PR #378 (3a1b82f4), PR #343 (dc817309), PR #395 (c440a148), PR #398 (c48b78fd), PR #392 (39f6bbea), PR #377 (96b0db16), PR #399 (d11f2f2e), PR #401 (47acac25), PR #339 (b18b3da6), PR #396 (09c10ffc). The Mac's screen at run time: **unlocked**. 633 files in the CAD, drawing and manufacturing folders; the FAI plan's 96 characteristics, 11 functional checks and 22 bought-part test lines.
 
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/05-Engineering/joints/joints-register.md`: PR #382 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-lining changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later.
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/air/610101_P01_AIR-AIR-COLUMN_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/ceiling/510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/wall/510201_P01_LINING-CASSETTE-BACK-LOWER-B1_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/02-Drawings/wall/510202_P01_LINING-CASSETTE-BACK-LOWER-B2_DWG.pdf`: PR #377 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: PR #382 changed it, but main changed it later; `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-lining changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #348 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -16,32 +16,36 @@ Read from main although an open PR changed them, because main changed them later
 
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| BASE | 4 | 7 | 0 | 0 | 3 | 1 | 5 |
+| BASE | 12 | 6 | 0 | 0 | 3 | 1 | 3 |
 | CEILING | 17 | 6 | 0 | 0 | 5 | 0 | 5 |
-| CEILING (builds AIR, D-80) | 15 | 17 | 0 | 9 | 4 | 0 | 9 |
+| CEILING (builds AIR, D-80) | 15 | 26 | 0 | 9 | 4 | 0 | 9 |
 | CEILING (builds INTERIOR, D-80) | 0 | 3 | 0 | 4 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 1 | 0 | 3 | 70 | 1 | 12 |
-| FRONT | 55 | 14 | 0 | 3 | 5 | 0 | 8 |
-| JOINTS | 3 | 8 | 0 | 0 | 0 | 0 | 0 |
-| WALL | 20 | 41 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 122 | 97 | 0 | 19 | 78 | 3 | 42 |
+| FRONT | 55 | 15 | 0 | 3 | 6 | 0 | 7 |
+| JOINTS | 5 | 6 | 0 | 0 | 0 | 0 | 0 |
+| WALL | 22 | 40 | 0 | 0 | 5 | 5 | 4 |
+| **All, each number once** | 134 | 103 | 0 | 19 | 79 | 7 | 39 |
 
-90 of the 238 made numbers have no drawing yet; for 57 of them the drawing is the only gap, so their drawings can start now (D-84).
+97 of the 256 made numbers have no drawing yet; for 52 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD 17, STEP 11, FAI 8.
+What the open made numbers miss: drawing 97, BOM row 25, CAD 24, DXF or cut list 20, FAI 12, STEP 11.
 
 ## Made parts with no FAI line
 
-8 made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:
+12 made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:
 
 | Team | Part | Name | From |
 |---|---|---|---|
-| BASE | 111301 | BASE - SILL - FIXED GLASS | main |
-| JOINTS | 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343, PR #348 |
-| JOINTS | 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343, PR #348 |
+| BASE | 111602 | BASE - LEVELLING GLIDE - M10 - D40 | PR #396 |
+| BASE | 111301 | BASE - SILL - FIXED GLASS | PR #396 |
+| BASE | 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | PR #396 |
+| BASE | 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | PR #396 |
+| JOINTS | 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #348, PR #401 |
+| JOINTS | 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #348, PR #401 |
 | FRONT | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | PR #378 |
 | FRONT | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | PR #378 |
 | FRONT | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | PR #378 |
+| FRONT | 361004 | FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS | PR #339 |
 | JOINTS | 831009 | HARDWARE MITRE PLATE 40X40 45DEG | main |
 | JOINTS | 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | main |
 
@@ -51,17 +55,24 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 110000 | BASE | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
-| 110101 | BASE - BAND ASSY - SIDE - LH | main | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
-| 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
-| 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
-| 110102 | BASE - BAND ASSY - SIDE - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111102 | BASE - BAND TUBE - SIDE - RH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
-| 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
-| 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
-| 111301 | BASE - SILL - FIXED GLASS | main | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
+| 110000 | BASE | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | done |
+| 110101 | BASE - BAND ASSY - SIDE - LH | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
+| 111101 | BASE - BAND TUBE - SIDE - LH | PR #396 | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
+| 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | PR #396 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
+| 111601 | BASE - GLIDE DOUBLER - COMMON | PR #396 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
+| 111602 | BASE - LEVELLING GLIDE - M10 - D40 | PR #396 | yes | yes | yes | n/a | no | yes | yes | no | open: drawing, FAI |
+| 110102 | BASE - BAND ASSY - SIDE - RH | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
+| 111102 | BASE - BAND TUBE - SIDE - RH | PR #396 | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
+| 110103 | BASE - BAND ASSY - BACK | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
+| 111103 | BASE - BAND TUBE - BACK | PR #396 | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10, K-B11 | done |
+| 110104 | BASE - BAND ASSY - FRONT - LH | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
+| 111104 | BASE - BAND TUBE - FRONT - FACET 1 - LH | PR #396 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 111105 | BASE - BAND TUBE - FRONT - FACET 2 - LH | PR #396 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
+| 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | PR #396 | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
+| 111301 | BASE - SILL - FIXED GLASS | PR #396 | yes | yes | yes | n/a | yes | yes | n/a | no | open: FAI |
+| 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | PR #396 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | PR #396 | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
 
 ### CEILING
 
@@ -136,6 +147,15 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 | 611408 | AIR - FAN BOX LIP ANGLE - SUPPLY | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
 | 611601 | AIR - ROOF SLEEVE | PR #378 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
 | 611602 | AIR - ROOF GRILLE | PR #378 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 610403 | AIR RISER TRANSITION | PR #395 | no | no | yes | — | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 610404 | AIR SUPPLY TRANSITION | PR #395 | no | no | yes | — | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611701 | AIR RISER TRANSITION LEFT WRAPPER | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611702 | AIR RISER TRANSITION RIGHT WRAPPER | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611703 | AIR RISER TRANSITION CHEEK | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611801 | AIR SUPPLY TRANSITION SHELL | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611802 | AIR SUPPLY TRANSITION FLOOR | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611803 | AIR SUPPLY TRANSITION VANE OVER THE BOX | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
+| 611804 | AIR SUPPLY TRANSITION VANE BESIDE THE BOX | PR #395 | no | no | yes | yes | no | no | — | K-A01, K-A02, K-A03 | open: BOM row, CAD, drawing |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -239,22 +259,23 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 | 360001 | FRONT - DOOR UNIT | PR #339 | yes | yes | yes | n/a | yes | yes | n/a | K-F07, K-F08 | done |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | PR #339 | yes | yes | yes | yes | yes | yes | n/a | K-F01, K-F02 | HOLD |
 | 361002 | FRONT - DOOR KICK STRIP | PR #339 | yes | yes | yes | yes | yes | yes | yes | K-F05, K-F06 | done |
-| 360002 | FRONT - FIXED GLASS UNIT | main | yes | yes | yes | n/a | yes | yes | n/a | K-F03, K-F04 | done |
-| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | main | yes | yes | yes | yes | yes | yes | n/a | K-F01, K-F02 | HOLD |
+| 361004 | FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS | PR #339 | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
+| 360002 | FRONT - FIXED GLASS UNIT | PR #339 | yes | yes | yes | n/a | yes | yes | n/a | K-F03, K-F04 | done |
+| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | PR #339 | yes | yes | yes | yes | yes | yes | n/a | K-F01, K-F02 | HOLD |
 | 351303 | FRONT DECOR INNER PANEL DR | main | no | no | no | yes | no | no | — | K-D08 | open: BOM row, CAD, STEP, drawing |
 
 ### JOINTS
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 111211 | BASE - CORNER KEY - SQUARE - COMMON | main | yes | yes | yes | yes | yes | yes | yes | K-B08 | done |
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #343, main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
-| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #343, PR #348, main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
-| 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #343, PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
-| 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #343, PR #348 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
-| 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111211 | BASE - CORNER KEY - SQUARE - COMMON | PR #396 | yes | yes | yes | yes | yes | yes | yes | K-B08 | done |
+| 111212 | BASE - CORNER KEY - FRONT - LH | PR #396 | yes | yes | yes | n/a | on 111211, tabulated (D-89) | yes | yes | K-B08 | done |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #396, PR #401 | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
+| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #348, PR #396, PR #401 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
+| 111214 | BASE - CORNER KEY - KNEE - LH | PR #396 | yes | yes | yes | n/a | on 111211, tabulated (D-89) | yes | yes | K-B08 | done |
+| 831007 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | PR #348, PR #401 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
+| 831008 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | PR #348, PR #401 | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | yes | no | open: FAI |
 | 111213 | BASE CORNER KEY FRONT RH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
-| 111214 | BASE CORNER KEY KNEE LH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 111215 | BASE CORNER KEY SQUARE INLINE | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 | 831009 | HARDWARE MITRE PLATE 40X40 45DEG | main | no | no | yes | yes | no | no | — | no | open: BOM row, CAD, drawing, FAI |
 | 831010 | HARDWARE LOCATING SPIGOT 11 PROUD | main | no | no | yes | — | on 831001, tabulated (D-89) | no | — | no | open: BOM row, CAD, FAI |
@@ -263,67 +284,68 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211101 | WALL - PANEL FRAME - SIDE LOWER - LH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
-| 212101 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
-| 212102 | WALL - FRAME RAIL TOP - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
-| 212103 | WALL - FRAME STILE FRONT - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
-| 212104 | WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
-| 212105 | WALL - FRAME STILE MID - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
-| 211301 | WALL - SKIN - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
-| 211515 | WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511101 | LINING - TRAY - SIDE LOWER - LH | PR #343 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02 | done |
-| 511301 | LINING - FELT - SIDE LOWER - LH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
-| 211302 | WALL - SKIN - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
-| 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510102 | LINING - CASSETTE - SIDE LOWER - RH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511102 | LINING - TRAY - SIDE LOWER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511302 | LINING - FELT - SIDE LOWER - RH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211103 | WALL - PANEL FRAME - SIDE UPPER - LH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
-| 211303 | WALL - SKIN - SIDE UPPER - LH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
-| 211503 | WALL - CAVITY FILL - SIDE UPPER - LH | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510103 | LINING - CASSETTE - SIDE UPPER - LH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511103 | LINING - TRAY - SIDE UPPER - LH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511303 | LINING - FELT - SIDE UPPER - LH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210104 | WALL - PANEL ASSY - SIDE UPPER - RH | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211104 | WALL - PANEL FRAME - SIDE UPPER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
-| 211304 | WALL - SKIN - SIDE UPPER - RH | PR #343 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
-| 211504 | WALL - CAVITY FILL - SIDE UPPER - RH | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510104 | LINING - CASSETTE - SIDE UPPER - RH | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511104 | LINING - TRAY - SIDE UPPER - RH | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511304 | LINING - FELT - SIDE UPPER - RH | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211201 | WALL - PANEL FRAME - BACK LOWER - B1 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
-| 211401 | WALL - SKIN - BACK LOWER - B1 | PR #343 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P08 | done |
-| 211601 | WALL - CAVITY FILL - BACK LOWER - B1 | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510201 | LINING - CASSETTE - BACK LOWER - B1 | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511201 | LINING - TRAY - BACK LOWER - B1 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511401 | LINING - FELT - BACK LOWER - B1 | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | PR #343 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211202 | WALL - PANEL FRAME - BACK LOWER - B2 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
-| 211402 | WALL - SKIN - BACK LOWER - B2 | PR #343 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P08 | done |
-| 211602 | WALL - CAVITY FILL - BACK LOWER - B2 | PR #343 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510202 | LINING - CASSETTE - BACK LOWER - B2 | PR #343 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
-| 511202 | LINING - TRAY - BACK LOWER - B2 | PR #343 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511402 | LINING - FELT - BACK LOWER - B2 | PR #343 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211101 | WALL - PANEL FRAME - SIDE LOWER - LH | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 212101 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
+| 212102 | WALL - FRAME RAIL TOP - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
+| 212103 | WALL - FRAME STILE FRONT - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
+| 212104 | WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
+| 212105 | WALL - FRAME STILE MID - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | its frame's cut list row, 211101 (D-162) | yes | yes | K-J18 | done |
+| 211301 | WALL - SKIN - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
+| 211515 | WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 211516 | WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 211517 | WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 211518 | WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | PR #401 | yes | yes | yes | yes | no | yes | yes | K-J20 | open: drawing |
+| 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #401 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
+| 511101 | LINING - TRAY - SIDE LOWER - LH | PR #401 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02 | done |
+| 511301 | LINING - FELT - SIDE LOWER - LH | PR #401 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | PR #401 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211302 | WALL - SKIN - SIDE LOWER - RH | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
+| 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | PR #401 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510102 | LINING - CASSETTE - SIDE LOWER - RH | PR #401 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
+| 511102 | LINING - TRAY - SIDE LOWER - RH | PR #401 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511302 | LINING - FELT - SIDE LOWER - RH | PR #401 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211103 | WALL - PANEL FRAME - SIDE UPPER - LH | PR #401 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211303 | WALL - SKIN - SIDE UPPER - LH | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
+| 211503 | WALL - CAVITY FILL - SIDE UPPER - LH | PR #401 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510103 | LINING - CASSETTE - SIDE UPPER - LH | PR #401 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
+| 511103 | LINING - TRAY - SIDE UPPER - LH | PR #401 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511303 | LINING - FELT - SIDE UPPER - LH | PR #401 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210104 | WALL - PANEL ASSY - SIDE UPPER - RH | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211104 | WALL - PANEL FRAME - SIDE UPPER - RH | PR #401 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211304 | WALL - SKIN - SIDE UPPER - RH | PR #401 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04, K-P08 | open: drawing |
+| 211504 | WALL - CAVITY FILL - SIDE UPPER - RH | PR #401 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510104 | LINING - CASSETTE - SIDE UPPER - RH | PR #401 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
+| 511104 | LINING - TRAY - SIDE UPPER - RH | PR #401 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511304 | LINING - FELT - SIDE UPPER - RH | PR #401 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211201 | WALL - PANEL FRAME - BACK LOWER - B1 | PR #401 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211401 | WALL - SKIN - BACK LOWER - B1 | PR #401 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P08 | done |
+| 211601 | WALL - CAVITY FILL - BACK LOWER - B1 | PR #401 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510201 | LINING - CASSETTE - BACK LOWER - B1 | PR #401 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
+| 511201 | LINING - TRAY - BACK LOWER - B1 | PR #401 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02 | done |
+| 511401 | LINING - FELT - BACK LOWER - B1 | PR #401 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | PR #401 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211202 | WALL - PANEL FRAME - BACK LOWER - B2 | PR #401 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211402 | WALL - SKIN - BACK LOWER - B2 | PR #401 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P08 | done |
+| 211602 | WALL - CAVITY FILL - BACK LOWER - B2 | PR #401 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510202 | LINING - CASSETTE - BACK LOWER - B2 | PR #401 | yes | yes | yes | n/a | yes | yes | n/a | K-L03, K-L05 | done |
+| 511202 | LINING - TRAY - BACK LOWER - B2 | PR #401 | yes | yes | yes | yes | yes | yes | yes | K-L01, K-L02 | done |
+| 511402 | LINING - FELT - BACK LOWER - B2 | PR #401 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 211501 | WALL CAVITY FILL SIDE LOWER LH | main | no | yes | yes | — | no | no | — | K-P05 | open: BOM row, drawing |
-| 211535 | WALL CAVITY FILL PIECE F05 240 X 1082 7 SIDE UPPER COMMON | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211536 | WALL CAVITY FILL PIECE F06 230 9 X 1082 7 SIDE UPPER COMMON | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211537 | WALL CAVITY FILL PIECE F07 205 5 X 1082 7 SIDE UPPER COMMON | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211538 | WALL CAVITY FILL PIECE F08 214 X 1082 7 SIDE UPPER COMMON | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211614 | WALL CAVITY FILL PIECE F09 274 7 X 1078 6 BACK LOWER B1 | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211615 | WALL CAVITY FILL PIECE F10 274 7 X 1078 6 BACK LOWER B1 | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211616 | WALL CAVITY FILL PIECE F11 274 7 X 1078 6 BACK LOWER B1 | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211634 | WALL CAVITY FILL PIECE F12 274 7 X 1078 6 BACK UPPER COMMON | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211635 | WALL CAVITY FILL PIECE F13 274 7 X 1078 6 BACK UPPER COMMON | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
-| 211636 | WALL CAVITY FILL PIECE F14 274 7 X 1078 6 BACK UPPER B3 | PR #343 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211535 | WALL CAVITY FILL PIECE F05 240 X 1082 7 SIDE UPPER COMMON | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211536 | WALL CAVITY FILL PIECE F06 230 9 X 1082 7 SIDE UPPER COMMON | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211537 | WALL CAVITY FILL PIECE F07 205 5 X 1082 7 SIDE UPPER COMMON | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211538 | WALL CAVITY FILL PIECE F08 214 X 1082 7 SIDE UPPER COMMON | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211614 | WALL CAVITY FILL PIECE F09 274 7 X 1078 6 BACK LOWER B1 | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211615 | WALL CAVITY FILL PIECE F10 274 7 X 1078 6 BACK LOWER B1 | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211616 | WALL CAVITY FILL PIECE F11 274 7 X 1078 6 BACK LOWER B1 | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211634 | WALL CAVITY FILL PIECE F12 274 7 X 1078 6 BACK UPPER COMMON | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211635 | WALL CAVITY FILL PIECE F13 274 7 X 1078 6 BACK UPPER COMMON | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
+| 211636 | WALL CAVITY FILL PIECE F14 274 7 X 1078 6 BACK UPPER B3 | PR #401 | no | no | no | yes | no | no | — | K-P05 | open: BOM row, CAD, STEP, drawing |
 
 ## Bought parts
 
@@ -331,26 +353,24 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 118002 | BASE - LEVELLING GLIDE - M10 - HOLD | main | H-25 | HOLD | no | HOLD |
-| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | main | H-27 | HOLD | no | HOLD |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
-| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | J-T6 | done |
-| 838006 | HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9 | main | H-26 | HOLD | no | HOLD |
-| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | main | H-06 | HOLD | J-T4 | HOLD |
-| 838007 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 | main | H-28 | yes | no | open: test |
-| 838008 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD | main | H-29 | HOLD | no | HOLD |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #396 | H-01 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #396 | H-03 | yes | J-T1, K-J19, T06 | done |
+| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | PR #396 | H-31 | yes | J-T6 | done |
+| 838006 | HARDWARE - RIVET NUT - M10 - STEEL ZINC - SHEREX CAL2-1015-7.9 | PR #396 | H-26 | HOLD | no | HOLD |
+| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | PR #396 | H-06 | HOLD | J-T4 | HOLD |
+| 838007 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 | PR #396 | H-28 | yes | no | open: test |
+| 838008 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD | PR #396 | H-29 | HOLD | no | HOLD |
 
 ### CEILING
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 518001 | LINING - CASSETTE CLIP | PR #348 | H-10 | HOLD | T07 | HOLD |
+| 518001 | LINING - CASSETTE CLIP | PR #348 | H-10 | HOLD | K-L11, T07 | HOLD |
 | 518002 | LINING - CEILING SAFETY CATCH | PR #348 | H-11 | HOLD | T08 | HOLD |
 | 108002 | POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE | PR #348 | H-12 | yes | T09 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #348 | H-01 | yes | J-T1, T06 | done |
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #348 | H-01P | yes | J-T1 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #348 | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #348 | H-03 | yes | J-T1, K-J19, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #348 | H-09 | yes | T06 | done |
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #348 | H-02 | HOLD | J-T2 | HOLD |
 | 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #348 | H-04 | HOLD | J-T3 | HOLD |
@@ -360,19 +380,19 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 618101 | AIR - SENSOR HUB ZONE - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618104 | AIR - SOFFIT HANGER STUD - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618101 | AIR - SENSOR HUB ZONE - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
+| 618104 | AIR - SOFFIT HANGER STUD - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
+| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
+| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | PR #378 | n/a (team-numbered) | HOLD | K-A07 | HOLD |
 | 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618102 | AIR - SUPPLY TRANSITION - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618103 | AIR - RISER TRANSITION - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 618501 | AIR - RISER BUFFER - RUBBER - M6 - HOLD | PR #378 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618102 | AIR - SUPPLY TRANSITION - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
+| 618103 | AIR - RISER TRANSITION - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
+| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
+| 618501 | AIR - RISER BUFFER - RUBBER - M6 - HOLD | PR #378 | n/a (team-numbered) | HOLD | no | HOLD |
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #378 | H-01P | yes | J-T1 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #378 | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #378 | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #378 | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #378 | H-03 | yes | J-T1, K-J19, T06 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -410,7 +430,7 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 | 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN - ELECTRI-FLEX LIQUATITE NM-11 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #337 | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #337 | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #337 | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #337 | H-03 | yes | J-T1, K-J19, T06 | done |
 | 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) - ALPHA WIRE 461419 BK005/WH005/GR005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
 | 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) - ALPHA WIRE 461419 BK005/WH005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
 | 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN - ALPHA WIRE 461419 GR005 | PR #337 | n/a (team-numbered) | yes | F-06 | done |
@@ -477,37 +497,42 @@ What the open made numbers miss: drawing 90, DXF or cut list 19, BOM row 18, CAD
 | 368007 | FRONT - DOOR CATCH - IN DT | PR #378 | H-23 | yes | F-02 | done |
 | 848013 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | PR #378 | H-34 | HOLD | T06 | HOLD |
 | 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | PR #339 | H-15 | yes | T13 | done |
-| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #339, main | H-16 | yes | F-03 | done |
+| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #339 | H-16 | yes | F-03 | done |
 | 368101 | FRONT - DOOR HINGE - HOLD | PR #339 | H-21 | HOLD | T13 | HOLD |
-| 368102 | FRONT - DOOR STRIKE | PR #339 | H-22 | HOLD | F-02 | HOLD |
+| 368102 | FRONT - DOOR STRIKE | PR #339 | H-22 | yes | F-02 | done |
 | 368006 | FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD | PR #339 | H-18 | HOLD | T13 | HOLD |
 | 368103 | FRONT - DOOR PULL PAIR - HOLD | PR #339 | H-24 | HOLD | T13 | HOLD |
 | 368008 | FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD | PR #339 | H-43 | HOLD | no | HOLD |
 | 368009 | FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD | PR #339 | H-46 | HOLD | no | HOLD |
-| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | main | H-19 | yes | F-03 | done |
-| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | main | H-17 | HOLD | T13 | HOLD |
+| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | PR #339 | H-19 | yes | F-03 | done |
+| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | PR #339 | H-17 | HOLD | T13 | HOLD |
 
 ### WALL
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 108002 | POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE | PR #343 | H-12 | yes | T09 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #343 | H-03 | yes | J-T1, T06 | done |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #343 | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #343 | H-09 | yes | T06 | done |
-| 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #343 | H-02 | HOLD | J-T2 | HOLD |
-| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #343 | H-04 | HOLD | J-T3 | HOLD |
-| 518001 | LINING - CASSETTE CLIP | PR #343 | H-10 | HOLD | T07 | HOLD |
-| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | PR #343 | H-13 | no | no | open: maker and SKU, test |
-| 848012 | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN | PR #343 | H-14 | HOLD | F-03 | HOLD |
-| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #343 | H-01P | yes | J-T1 | done |
-| 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | PR #343 | H-04B | HOLD | J-T3, J-T5 | HOLD |
+| 108002 | POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE | PR #401 | H-12 | yes | T09 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | PR #401 | H-03 | yes | J-T1, K-J19, T06 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #401 | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #401 | H-09 | yes | T06 | done |
+| 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #401 | H-02 | HOLD | J-T2 | HOLD |
+| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #401 | H-04 | HOLD | J-T3 | HOLD |
+| 848015 | SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA | PR #401 | no | no | no | open: register row, maker and SKU, test |
+| 838012 | HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8 | PR #401 | no | yes | K-J20 | open: register row |
+| 518003 | LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5 | PR #401 | no | yes | no | open: register row, test |
+| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | PR #401 | H-13 | no | no | open: maker and SKU, test |
+| 848016 | SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA | PR #401 | no | yes | no | open: register row, test |
+| 848012 | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN | PR #401 | H-14 | HOLD | F-03 | HOLD |
+| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #401 | H-01P | yes | J-T1 | done |
+| 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | PR #401 | H-04B | HOLD | J-T3, J-T5 | HOLD |
 
 ## Joints-register items no parts list uses yet
 
 | Part | Register | Name |
 |---|---|---|
 | 108001 | H-07 | POD - HEX KEY - 5 MM BALL END |
+| 118002 | H-25 | BASE - LEVELLING GLIDE - M10 - HOLD |
+| 118003 | H-27 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD |
 | 838011 | H-44 | HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 200HV ZINC |
 
 ## How it's built
