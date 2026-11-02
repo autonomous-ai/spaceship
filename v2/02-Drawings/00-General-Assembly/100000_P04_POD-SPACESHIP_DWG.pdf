@@ -2632,7 +2632,7 @@ endstream
 endobj
 
 290 0 obj
-<</Creator(drawgen)/Producer(drawgen \(tools/drawgen, PyMuPDF 1.27.2.3\))/Title(100000 POD - SPACESHIP)/Subject(100000_P04_POD-SPACESHIP_DWG P04 DRAFT)/Keywords(drawgen assembly; D-139; source v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step sha256:a5d2cb4b8afb)/Author(Autonomous)/CreationDate(D:20261102000000Z)/ModDate(D:20261102000000Z)>>
+<</Creator(drawgen)/Producer(drawgen \(tools/drawgen, PyMuPDF 1.27.2.3\))/Title(100000 POD - SPACESHIP)/Subject(100000_P04_POD-SPACESHIP_DWG P04 DRAFT)/Keywords(drawgen assembly; D-139; source v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step sha256:426f322dfa93)/Author(Autonomous)/CreationDate(D:20261102000000Z)/ModDate(D:20261102000000Z)>>
 endobj
 
 xref
@@ -2932,5 +2932,5 @@ xref
 trailer
 <</Size 291/Info 290 0 R/Root 1 0 R>>
 startxref
-172007
+172013
 %%EOF
