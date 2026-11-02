@@ -31,6 +31,10 @@ INTERIOR_PARAMS = [
     ("sh_hl", "20 mm", "mm", "assumption", "front lip height: hides the up-light strip from a seated eye"),
     ("sh_t", "1 mm", "mm", "assumption", "D-85 budget 0.4 kg/m: 1.0 mm aluminium, 118 mm2 section (0.32 kg/m) plus the strip"),
     ("sh_r", "sh_t", "mm", "confirmed", "inside bend radius of the shelf's two folds: the Lead's ruling 2026-11-01 on #335 (the drawing generator's bent sheet mode): every fold's inside radius equals the sheet, a safe bend for this aluminium; the flats use K 0.44 (assumption until the factory's bend table sets it), and model, STEP and DXF must agree"),
+    ("sh_fit", "1.25 mm", "mm", "calculation", "D-174 (the PM's ruling 2026-11-01): each run's fit gap at each end, hidden by its lip: "
+     "its cut length +0.5 (assumption) plus the two faces it fits between, +/-0.5 each (the soffit face or the side linings, "
+     "and the back run's lip; assumption) make 1.5 over the run, so 1.25 an end leaves 1.0 at worst; the side runs between the "
+     "soffit face and the back run's lip, the back run between the side linings"),
     ("sh_z0", "2230 mm", "mm", "assumption", "shelf underside; ELECTRICAL's feed and call-light drop are at Z 2250, in the back flange, and the felt ceiling (Z 2316) is 46 above the flange"),
     # the down-light (D-126): a bought surface LED aluminium profile under the right run, with a clip-on
     # cover (D-127: satin, at least 86 % of the light, the same clip-in style), end caps and mounting
@@ -95,8 +99,8 @@ MATERIALS = {   # name, density kg/m3, status, source
 }
 HOLD_MASS = {"bracket": (0.10, "assumption: an aluminium concealed shelf bracket with its stand-offs, about 0.1 kg (D-85 budget: the ledge with 2 brackets 1.4 kg)"),
              "rail": (0.50, "assumption: a 900 aluminium VESA rail, about 0.5 kg"),
-             "lprofile": (0.178, "assumption: about 0.18 kg/m x 0.991 m (the catalogue gives no mass; a 23 x 12.5 aluminium profile, 0.15 to 0.21 kg/m)"),
-             "lcover": (0.035, "assumption: about 0.035 kg/m x 0.991 m (satin cover, about 20 x 1.5)"),
+             "lprofile": (0.178, "assumption: about 0.18 kg/m x 0.9885 m (the catalogue gives no mass; a 23 x 12.5 aluminium profile, 0.15 to 0.21 kg/m)"),
+             "lcover": (0.035, "assumption: about 0.035 kg/m x 0.9885 m (satin cover, about 20 x 1.5)"),
              "lcap": (0.003, "assumption: a plastic end cap, about 3 g"),
              "lclip": (0.004, "assumption: a steel mounting clip, about 4 g")}
 # D-126's profile set, in ELECTRICAL's family (Control's allocation): listed by ELECTRICAL; the masses here
@@ -183,12 +187,14 @@ def layout():
     """[(part key, body name, kind, data)]: kind 'xz' (section in the XZ plane, extruded along
     Y from y0 to y1), 'yz' (section in the YZ plane, extruded along X) or 'box'."""
     out = []
-    sy0, sy1 = YFACE, "%s - sh_d" % YBL          # side shelves butt into the back shelf
-    out.append(("shelf_back", "LIGHT SHELF BACK", "yz", (shelf_section(YBL, -1, "yz"), XIL, XIR)))
+    # each run sh_fit short of the faces at both ends (D-174): the side runs between the soffit face and the back run's lip
+    sy0, sy1 = "%s + sh_fit" % YFACE, "%s - sh_d - sh_fit" % YBL
+    out.append(("shelf_back", "LIGHT SHELF BACK", "yz", (shelf_section(YBL, -1, "yz"), "%s + sh_fit" % XIL,
+                                                         "%s - sh_fit" % XIR)))
     out.append(("shelf_lh", "LIGHT SHELF LH", "xz", (shelf_section(XIL, 1, "xz"), sy0, sy1)))
     out.append(("shelf_rh", "LIGHT SHELF RH", "xz", (shelf_section(XIR, -1, "xz"), sy0, sy1)))
     # D-126: the LED profile under the right run (with its cover, end caps and clips: one HOLD envelope),
-    # the side run's own length (991, from the soffit's face to the corner joint with the back run), so
+    # the side run's own length (988.5: 991 from the soffit's face to the back run's lip, less the run's two D-174 fit gaps), so
     # every clip fixes to the side run and no end shows past it (Reviewer 6's check; the 1036 version
     # ran 45 under the back run's corner, open to view from below)
     out.append(("lprofile", "LED PROFILE RH", "box", ("%s - lp_x0 - lp_w" % XIR, "%s - lp_x0" % XIR, sy0, sy1,

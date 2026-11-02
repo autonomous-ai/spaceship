@@ -52,7 +52,7 @@ FINISH = {"ledge": "powder coat, charcoal to match the felt (RAL HOLD)", "shelf_
 GRADE_HOLD = {}
 PROCESS = {"ledge": "laser cut, brake bend (2 bends)", "shelf_back": "laser cut, brake bend (2 bends), cable hole",
            "shelf_lh": "laser cut, brake bend (2 bends)", "shelf_rh": "laser cut, brake bend (2 bends), cable hole",
-           "lprofile": "bought; cut to 991", "lcover": "bought; cut to 991", "lcap": "bought", "lclip": "bought"}
+           "lprofile": "bought; cut to 988.5", "lcover": "bought; cut to 988.5", "lcap": "bought", "lclip": "bought"}
 SKU = {   # D-126: the type picked from public catalogues only; the product stays HOLD until named
     "bracket": "HOLD: rated for a 225 N lean at the ledge's front edge x 3",
     "rail": "HOLD: VESA rail for a screen up to 900 wide, about 10 kg",
@@ -188,15 +188,38 @@ def parts_list(v, mass):
         if parent:
             kids.setdefault(parent, []).append((key, q))
 
+    others = other_teams_children(set(r["part_number"] for r in rows))
+
     def total(key):
         r = by_key[key]
         if r["kind"] != "HS":
             return float(r["mass_each_kg"] or 0.0)
-        return sum(q * total(k) for k, q in kids.get(key, []))
+        return sum(q * total(k) for k, q in kids.get(key, [])) + sum(q * m for _pn, q, m in others.get(r["part_number"], []))
     for key, r in by_key.items():
         if r["kind"] == "HS":
             r["mass_each_kg"] = "%.3f" % total(key)
+            theirs = others.get(r["part_number"])
+            if theirs:
+                r["mass_status"] = "calculation (sum of its parts, with %s from other teams' lists)" % ", ".join(
+                    sorted(pn for pn, _q, _m in theirs))
     return rows
+
+
+def other_teams_children(listed):
+    """{assembly part number: [(part number, qty per parent, mass each)]} of the rows in the other teams' parts lists
+    that name one of INTERIOR's assemblies as their parent: ELECTRICAL's LED profile, cover, end caps and clips sit in
+    the light shelf 810201 (the PM's ruling 2026-11-01, Reviewer 16), so its mass counts them."""
+    import glob
+    out = {}
+    for path in sorted(glob.glob(os.path.join(REPO, "v2", "03-Manufacturing", "*", "*PARTS-LIST_BOM.csv"))):
+        if os.path.abspath(os.path.dirname(path)) == os.path.abspath(OUT):
+            continue
+        with open(path, newline="", encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                if r.get("parent") in listed and r.get("part_number") not in listed:
+                    out.setdefault(r["parent"], []).append(
+                        (r["part_number"], float(r.get("qty_per_parent") or 0), float(r.get("mass_each_kg") or 0)))
+    return out
 
 
 def main(argv):

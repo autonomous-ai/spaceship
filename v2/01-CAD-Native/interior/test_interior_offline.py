@@ -117,6 +117,25 @@ class Fits(unittest.TestCase):
             self.assertGreaterEqual(gap(b, col), -1e-9, n)
 
 
+class FitGaps(unittest.TestCase):
+    """D-174 (the PM's ruling 2026-11-01): no shelf run is cut to the exact gap it fits in. Each stops sh_fit (1.25) short
+    of both faces: the side runs of the soffit face and the back run's lip, the back run of the two side linings."""
+
+    def test_runs_stop_short_of_their_faces(self):
+        g = V["sh_fit"]
+        self.assertGreaterEqual(g, 1.0)
+        self.assertLessEqual(g, 1.5)
+        back, lh, rh = b6("LIGHT SHELF BACK"), b6("LIGHT SHELF LH"), b6("LIGHT SHELF RH")
+        yface, ybl, xil, xir = (I.ev(V, e) for e in (I.YFACE, I.YBL, I.XIL, I.XIR))
+        for side in (lh, rh):
+            self.assertAlmostEqual(side[2] - yface, g, msg="off the soffit face")
+            self.assertAlmostEqual((ybl - V["sh_d"]) - side[3], g, msg="off the back run's lip")
+            self.assertAlmostEqual(side[3] - side[2], 991.0 - 2 * g)
+        self.assertAlmostEqual(back[0] - xil, g, msg="off the left lining")
+        self.assertAlmostEqual(xir - back[1], g, msg="off the right lining")
+        self.assertAlmostEqual(back[1] - back[0], 2332.0 - 2 * g)
+
+
 class DownLight(unittest.TestCase):
     """D-126: the LED profile under the right run takes ELECTRICAL's two 8 mm strips (20 inside or more),
     runs the side run's own length (from the soffit's face to the corner joint), so every clip fixes to
@@ -126,13 +145,14 @@ class DownLight(unittest.TestCase):
         b = b6("LED PROFILE RH")
         side = b6("LIGHT SHELF RH")
         self.assertGreaterEqual(V["lp_in"], 2 * 8.0 + 4.0 - 1e-9, "two 8 mm strips with room")
-        self.assertAlmostEqual(b[3] - b[2], 991.0, msg="991 long")
-        self.assertAlmostEqual(b[2], side[2], msg="from the soffit's face")
+        self.assertAlmostEqual(b[3] - b[2], 991.0 - 2 * V["sh_fit"], msg="988.5 long: the run's 991 less its fit gaps (D-174)")
+        self.assertAlmostEqual(b[2], side[2], msg="from the run's end by the soffit's face")
         self.assertAlmostEqual(b[3], side[3], msg="to the side run's end: nothing past it")
         self.assertGreaterEqual(b[0], side[0] - 1e-9, "within the side run's bottom")
         led = b6("LEDGE TOP")
         self.assertLessEqual(b[2], led[2])
-        self.assertLessEqual(led[3] - b[3], 35.0, "the ledge's last 34.5 lit from beside it")
+        # 35.75 with the run's D-174 fit gap (the profile stops 1.25 sooner); 34.5 before it
+        self.assertLessEqual(led[3] - b[3], 36.0, "the ledge's last 35.75 lit from beside it")
         xir = V["pod_w"] / 2 - V["stack_t"]
         self.assertAlmostEqual(xir - b[1], V["lp_x0"])
         self.assertAlmostEqual(b[5], V["sh_z0"], msg="on the shelf's underside")
