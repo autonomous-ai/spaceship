@@ -93,13 +93,38 @@ def parts_row(pn, team):
     return best[1], best[2], best[3]
 
 
+def welded_in_row(frame, wpn, team):
+    """A welded-in part's row under its frame's own row, in the team lists that nest by level (WALL's: a frame at one
+    level, the parts welded into it one level down): (row, list) when found, (None, True) when the frame's row is
+    nested but has no row of wpn under it, (None, False) when no list nests the frame (CEILING's lists name a parent
+    by a key of their own, not the frame's number). The frame's own row counts, never another frame's: WALL's mitre
+    plate 831007 is 2 under L1, 1 under L2, 4 under each back frame (the WALL Drawings Engineer on #365)."""
+    nested = False
+    for p in team_lists(team):
+        with open(p, newline="", encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+        for i, r in enumerate(rows):
+            lvl = (r.get("level") or "").strip()
+            if (r.get("part_number") or "").strip() != frame or not lvl.isdigit():
+                continue
+            nested = True
+            for r2 in rows[i + 1:]:
+                l2 = (r2.get("level") or "").strip()
+                if not l2.isdigit() or int(l2) <= int(lvl):
+                    break
+                if int(l2) == int(lvl) + 1 and (r2.get("part_number") or "").strip() == wpn:
+                    return r2, p
+    return None, nested
+
+
 def cut_list_rows(team, cfg, pn):
     """A welded frame's cut list from the team CSV its entry names (D-162), as the parts list's level-2 cut rows read,
     and that file: its rows whose frame is pn, one per member number (D-120: one number is one member; a number with
     two lengths or two ends texts is refused), the quantity their sum, the name the member's number and name (its
     bodies carry the same). The columns CEILING, WALL and FRONT share: member_part, name, section, length_mm, qty,
     ends (holes when present). Welded-in made parts the entry names (a frame's mitre plates) follow, from their
-    parts-list rows, as having their own drawing."""
+    parts-list rows, as having their own drawing; each one's count from its row under this frame in the frame's own
+    list (welded_in_row), from its own parts-list row only where no list nests the frame."""
     path = os.path.join(MANUF, team, cfg["file"])
     with open(path, newline="", encoding="utf-8") as fh:
         rows = [r for r in csv.DictReader(fh) if (r.get("frame") or "").strip() == pn]
@@ -129,7 +154,11 @@ def cut_list_rows(team, cfg, pn):
         row = parts_row(wpn, team)[0]
         if not row:
             raise ValueError("welded-in part %s has no parts-list row" % wpn)
-        q = (row.get("qty_per_parent") or row.get("qty") or "").strip()
+        under, nested = welded_in_row(pn, wpn, team)
+        if under is None and nested:
+            raise ValueError("welded-in part %s has no row under frame %s in the frame's own list, so its count in "
+                             "this frame isn't known" % (wpn, pn))
+        q = ((under or row).get("qty_per_parent") or (under or row).get("qty") or "").strip()
         out.append({"kind": "cut", "member_part": wpn, "name": "%s %s" % (wpn, (row.get("name") or "").strip()),
                     "size_mm": (row.get("material") or "").strip(), "material": (row.get("material") or "").strip(),
                     "cut_length_mm": "-", "tolerance": "",
