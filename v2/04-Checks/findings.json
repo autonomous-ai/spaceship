@@ -1,5 +1,5 @@
 {
- "next": 389,
+ "next": 398,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -890,7 +890,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -1039,7 +1039,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -1064,7 +1064,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -1089,7 +1089,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -1343,7 +1343,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -1399,7 +1399,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -1465,7 +1465,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41",
+   "last_seen": "2026-11-02 b185ba2f",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3121,7 +3121,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3146,7 +3146,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -3470,7 +3470,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3495,7 +3495,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3520,7 +3520,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3545,7 +3545,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3570,7 +3570,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3595,7 +3595,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3620,7 +3620,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3645,7 +3645,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3670,7 +3670,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3695,7 +3695,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3720,7 +3720,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3745,7 +3745,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3863,7 +3863,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3888,7 +3888,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -3913,7 +3913,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4480,7 +4480,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4536,7 +4536,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4561,7 +4561,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4586,7 +4586,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4642,7 +4642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4667,7 +4667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4846,7 +4846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -4871,7 +4871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5127,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5156,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5185,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5214,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5243,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5272,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5301,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5330,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5359,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5388,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5417,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5446,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5475,7 +5475,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5504,7 +5504,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5533,7 +5533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5562,7 +5562,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -5591,7 +5591,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5616,7 +5616,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5641,7 +5641,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5666,7 +5666,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5691,7 +5691,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5716,7 +5716,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5741,7 +5741,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5828,7 +5828,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5853,7 +5853,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -5942,7 +5942,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -6142,7 +6142,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6167,7 +6167,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6192,7 +6192,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6217,7 +6217,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6242,7 +6242,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6298,7 +6298,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6323,7 +6323,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6348,7 +6348,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6373,7 +6373,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6398,7 +6398,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6423,7 +6423,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6448,7 +6448,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6473,7 +6473,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6498,7 +6498,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6523,7 +6523,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -6650,7 +6650,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41",
+   "last_seen": "2026-11-02 b185ba2f",
    "closed": "2026-11-01 e796357"
   },
   {
@@ -7016,7 +7016,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C08",
@@ -7912,7 +7912,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -7968,7 +7968,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -7993,7 +7993,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8080,7 +8080,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8105,7 +8105,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8161,7 +8161,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8217,7 +8217,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8242,7 +8242,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8267,7 +8267,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -8292,7 +8292,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -8444,7 +8444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -8472,7 +8472,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -8500,7 +8500,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -8528,7 +8528,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -8556,7 +8556,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -8584,7 +8584,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -8634,7 +8634,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -9993,7 +9993,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10021,7 +10021,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10049,7 +10049,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10077,7 +10077,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10105,7 +10105,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10133,7 +10133,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10161,7 +10161,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10189,7 +10189,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10216,7 +10216,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10243,7 +10243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C11",
@@ -10270,7 +10270,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -10813,7 +10813,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -10838,7 +10838,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -10935,7 +10935,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C02",
@@ -10999,7 +10999,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C02",
@@ -11028,7 +11028,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -11064,7 +11064,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -11092,7 +11092,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -11120,7 +11120,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C09",
@@ -11148,7 +11148,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -11173,7 +11173,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -11198,7 +11198,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -11223,7 +11223,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -11248,7 +11248,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11367,7 +11367,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11427,7 +11427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11545,7 +11545,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11722,7 +11722,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11776,7 +11776,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11831,7 +11831,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -11984,7 +11984,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -12011,7 +12011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -12049,7 +12049,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -12080,7 +12080,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-02 7489dd41"
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -12135,7 +12135,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -12189,7 +12190,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -12243,7 +12245,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C01",
@@ -12298,7 +12301,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C06",
@@ -12322,7 +12326,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12346,7 +12351,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12370,7 +12376,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12394,7 +12401,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12418,7 +12426,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12442,7 +12451,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12466,7 +12476,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12490,7 +12501,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12514,7 +12526,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12538,7 +12551,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12562,7 +12576,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12586,7 +12601,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12610,7 +12626,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12634,7 +12651,8 @@
      "rev": "7489dd41",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
   },
   {
    "check": "C05",
@@ -12656,6 +12674,223 @@
     {
      "date": "2026-11-02",
      "rev": "7489dd41",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-02 b185ba2f"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "610403",
+   "severity": "major",
+   "message": "610403_P01_AIR-RISER-TRANSITION_STEP.step's top component carries part number 'AIR - RISER TRANSITION', not 610403 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 610403 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/610403_P01_AIR-RISER-TRANSITION_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|610403",
+   "id": "F-389",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "610404",
+   "severity": "major",
+   "message": "610404_P01_AIR-SUPPLY-TRANSITION_STEP.step's top component carries part number 'AIR - SUPPLY TRANSITION', not 610404 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 610404 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/610404_P01_AIR-SUPPLY-TRANSITION_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|610404",
+   "id": "F-390",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611701",
+   "severity": "major",
+   "message": "611701_P01_AIR-RISER-TRANSITION-LEFT-WRAPPER_STEP.step's top component carries part number '611701 AIR - RISER TRANSITION - LEFT WRAPPER', not 611701 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611701 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611701_P01_AIR-RISER-TRANSITION-LEFT-WRAPPER_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611701",
+   "id": "F-391",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611702",
+   "severity": "major",
+   "message": "611702_P01_AIR-RISER-TRANSITION-RIGHT-WRAPPER_STEP.step's top component carries part number '611702 AIR - RISER TRANSITION - RIGHT WRAPPER', not 611702 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611702 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611702_P01_AIR-RISER-TRANSITION-RIGHT-WRAPPER_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611702",
+   "id": "F-392",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611703",
+   "severity": "major",
+   "message": "611703_P01_AIR-RISER-TRANSITION-CHEEK_STEP.step's top component carries part number '611703 AIR - RISER TRANSITION - CHEEK', not 611703 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611703 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611703_P01_AIR-RISER-TRANSITION-CHEEK_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611703",
+   "id": "F-393",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611801",
+   "severity": "major",
+   "message": "611801_P01_AIR-SUPPLY-TRANSITION-SHELL_STEP.step's top component carries part number '611801 AIR - SUPPLY TRANSITION - SHELL', not 611801 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611801 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611801_P01_AIR-SUPPLY-TRANSITION-SHELL_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611801",
+   "id": "F-394",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611802",
+   "severity": "major",
+   "message": "611802_P01_AIR-SUPPLY-TRANSITION-FLOOR_STEP.step's top component carries part number '611802 AIR - SUPPLY TRANSITION - FLOOR', not 611802 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611802 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611802_P01_AIR-SUPPLY-TRANSITION-FLOOR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611802",
+   "id": "F-395",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611803",
+   "severity": "major",
+   "message": "611803_P01_AIR-SUPPLY-TRANSITION-VANE-OVER-THE-BOX_STEP.step's top component carries part number '611803 AIR - SUPPLY TRANSITION - VANE - OVER THE BOX', not 611803 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611803 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611803_P01_AIR-SUPPLY-TRANSITION-VANE-OVER-THE-BOX_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611803",
+   "id": "F-396",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611804",
+   "severity": "major",
+   "message": "611804_P01_AIR-SUPPLY-TRANSITION-VANE-BESIDE-THE-BOX_STEP.step's top component carries part number '611804 AIR - SUPPLY TRANSITION - VANE - BESIDE THE BOX', not 611804 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611804 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611804_P01_AIR-SUPPLY-TRANSITION-VANE-BESIDE-THE-BOX_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611804",
+   "id": "F-397",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-02 b185ba2f",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-02",
+     "rev": "b185ba2f",
      "event": "opened"
     }
    ]

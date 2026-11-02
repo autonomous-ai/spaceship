@@ -1,5 +1,5 @@
 {
- "rev": "7489dd41",
+ "rev": "b185ba2f",
  "date": "2026-11-02",
  "inputs": {
   "bodies_skeleton": 31,
@@ -48,6 +48,15 @@
   ],
   "part_steps": [
    "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "v2/03-Manufacturing/air/610403_P01_AIR-RISER-TRANSITION_STEP.step",
+   "v2/03-Manufacturing/air/610404_P01_AIR-SUPPLY-TRANSITION_STEP.step",
+   "v2/03-Manufacturing/air/611701_P01_AIR-RISER-TRANSITION-LEFT-WRAPPER_STEP.step",
+   "v2/03-Manufacturing/air/611702_P01_AIR-RISER-TRANSITION-RIGHT-WRAPPER_STEP.step",
+   "v2/03-Manufacturing/air/611703_P01_AIR-RISER-TRANSITION-CHEEK_STEP.step",
+   "v2/03-Manufacturing/air/611801_P01_AIR-SUPPLY-TRANSITION-SHELL_STEP.step",
+   "v2/03-Manufacturing/air/611802_P01_AIR-SUPPLY-TRANSITION-FLOOR_STEP.step",
+   "v2/03-Manufacturing/air/611803_P01_AIR-SUPPLY-TRANSITION-VANE-OVER-THE-BOX_STEP.step",
+   "v2/03-Manufacturing/air/611804_P01_AIR-SUPPLY-TRANSITION-VANE-BESIDE-THE-BOX_STEP.step",
    "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
    "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
    "v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step",
@@ -931,6 +940,114 @@
     "dia_mm": 7.0
    },
    "key": "C09|edge-distance|111102 BASE - BAND TUBE - SIDE - RH - TUBE hole Ø7.0 at X 1231 Y 837 Z 11"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "610403",
+   "severity": "major",
+   "message": "610403_P01_AIR-RISER-TRANSITION_STEP.step's top component carries part number 'AIR - RISER TRANSITION', not 610403 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 610403 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/610403_P01_AIR-RISER-TRANSITION_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|610403"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "610404",
+   "severity": "major",
+   "message": "610404_P01_AIR-SUPPLY-TRANSITION_STEP.step's top component carries part number 'AIR - SUPPLY TRANSITION', not 610404 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 610404 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/610404_P01_AIR-SUPPLY-TRANSITION_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|610404"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611701",
+   "severity": "major",
+   "message": "611701_P01_AIR-RISER-TRANSITION-LEFT-WRAPPER_STEP.step's top component carries part number '611701 AIR - RISER TRANSITION - LEFT WRAPPER', not 611701 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611701 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611701_P01_AIR-RISER-TRANSITION-LEFT-WRAPPER_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611701"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611702",
+   "severity": "major",
+   "message": "611702_P01_AIR-RISER-TRANSITION-RIGHT-WRAPPER_STEP.step's top component carries part number '611702 AIR - RISER TRANSITION - RIGHT WRAPPER', not 611702 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611702 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611702_P01_AIR-RISER-TRANSITION-RIGHT-WRAPPER_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611702"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611703",
+   "severity": "major",
+   "message": "611703_P01_AIR-RISER-TRANSITION-CHEEK_STEP.step's top component carries part number '611703 AIR - RISER TRANSITION - CHEEK', not 611703 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611703 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611703_P01_AIR-RISER-TRANSITION-CHEEK_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611703"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611801",
+   "severity": "major",
+   "message": "611801_P01_AIR-SUPPLY-TRANSITION-SHELL_STEP.step's top component carries part number '611801 AIR - SUPPLY TRANSITION - SHELL', not 611801 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611801 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611801_P01_AIR-SUPPLY-TRANSITION-SHELL_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611801"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611802",
+   "severity": "major",
+   "message": "611802_P01_AIR-SUPPLY-TRANSITION-FLOOR_STEP.step's top component carries part number '611802 AIR - SUPPLY TRANSITION - FLOOR', not 611802 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611802 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611802_P01_AIR-SUPPLY-TRANSITION-FLOOR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611802"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611803",
+   "severity": "major",
+   "message": "611803_P01_AIR-SUPPLY-TRANSITION-VANE-OVER-THE-BOX_STEP.step's top component carries part number '611803 AIR - SUPPLY TRANSITION - VANE - OVER THE BOX', not 611803 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611803 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611803_P01_AIR-SUPPLY-TRANSITION-VANE-OVER-THE-BOX_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611803"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "611804",
+   "severity": "major",
+   "message": "611804_P01_AIR-SUPPLY-TRANSITION-VANE-BESIDE-THE-BOX_STEP.step's top component carries part number '611804 AIR - SUPPLY TRANSITION - VANE - BESIDE THE BOX', not 611804 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 611804 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/air/611804_P01_AIR-SUPPLY-TRANSITION-VANE-BESIDE-THE-BOX_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|611804"
   },
   {
    "check": "C06",
