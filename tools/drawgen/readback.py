@@ -613,6 +613,27 @@ def flat_fails(data, texts, page_text, tol=TOL):
     return fails
 
 
+def flanges_holding(flanges, P, t):
+    """The recorded flanges (folds along any line) whose material holds point P: between the face and t behind it
+    against its outward normal, inside its outline (Reviewer 15 on #369: a wall 0.2 inside another flange's plane, on
+    its other side, claimed that flange's holes when either side counted)."""
+    hits = []
+    for fr in flanges:
+        if not -t - 0.01 <= dot(P, fr["N"]) - fr["o"] <= 0.01:
+            continue
+        loc = lambda q: (dot(sub(q, fr["p0"]), fr["ex"]), dot(sub(q, fr["p0"]), fr["ey"]))
+        poly = [loc(q) for q in fr["poly"]]
+        x, y = loc(P)
+        inside = False
+        for j in range(len(poly)):
+            (x1, y1), (x2, y2) = poly[j], poly[(j + 1) % len(poly)]
+            if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+                inside = not inside
+        if inside:
+            hits.append(fr)
+    return hits
+
+
 def unfold_fails(data, holes, faces, tol=TOL):
     """Folds along any line (AIR's ducts), against the STEP (the repo's reader) and the DXF read again: each flange the
     sheet records is a face of the STEP; each bend's strip in the flat is its allowance a (r + K t) at the printed K,
@@ -659,21 +680,7 @@ def unfold_fails(data, holes, faces, tol=TOL):
             fails.append("bend %s: the DXF has no BEND line along the middle of its strip" % b["tag"])
 
     def where(P):
-        hits = []
-        for fr in uf["flanges"]:
-            # in the flange's material only: from its face back t against its outward normal (Reviewer 15 on #369)
-            if not -t - 0.01 <= dot(P, fr["N"]) - fr["o"] <= 0.01:
-                continue
-            loc = lambda q: (dot(sub(q, fr["p0"]), fr["ex"]), dot(sub(q, fr["p0"]), fr["ey"]))
-            poly = [loc(q) for q in fr["poly"]]
-            x, y = loc(P)
-            inside = False
-            for j in range(len(poly)):
-                (x1, y1), (x2, y2) = poly[j], poly[(j + 1) % len(poly)]
-                if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
-                    inside = not inside
-            if inside:
-                hits.append(fr)
+        hits = flanges_holding(uf["flanges"], P, t)
         if len(hits) != 1:
             return None
         fr = hits[0]
@@ -702,22 +709,27 @@ def unfold_fails(data, holes, faces, tol=TOL):
 
 
 def bend_table_rows(page):
-    """{tag: {p, q, dir, angle, r, ba}} from the bend table of folds along any line, as printed: a line of words that
-    starts with a bend tag and says UP or DOWN."""
-    words = sorted(page.get_text("words"), key=lambda w: ((w[1] + w[3]) / 2, w[0]))
+    """{tag: {p, q, dir, angle, r, ba}} from the bend table of folds along any line, as printed: within the table only
+    (from its TAG column rightwards, the words of one row from its tag to its allowance), so a word level with a row
+    elsewhere on the sheet (a border's zone letter) can't spoil it (Reviewer 18 on #369)."""
+    words = page.get_text("words")
     lines, cy = [], None
-    for w in words:
+    for w in sorted(words, key=lambda w: ((w[1] + w[3]) / 2, w[0])):
         y = (w[1] + w[3]) / 2
         if cy is None or abs(y - cy) > 0.6:
             lines.append([])
             cy = y
         lines[-1].append(w)
+    heads = [ws for ws in lines if {"TAG", "DIRECTION", "ANGLE"} <= {w[4] for w in ws}]
+    if not heads:
+        return {}
+    left = min(w[0] for w in heads[0] if w[4] == "TAG") - 15.0      # the TAG column's cell, with its margin
     num = r"(-?[\d.]+)"
+    pat = re.compile(r"(?:^| )(B\d+) \(%s, %s\) - \(%s, %s\) (UP|DOWN) %s° R%s %s(?= |$)" % ((num,) * 4 + (num,) * 3))
     rows = {}
     for ws in lines:
-        ws.sort(key=lambda w: w[0])
-        text = " ".join(w[4] for w in ws)
-        m = re.match(r"(B\d+) \(%s, %s\) - \(%s, %s\) (UP|DOWN) %s° R%s %s$" % ((num,) * 4 + (num,) * 3), text)
+        text = " ".join(w[4] for w in sorted(ws, key=lambda w: w[0]) if w[0] >= left)
+        m = pat.search(text)
         if m:
             g = m.groups()
             rows[g[0]] = {"p": (float(g[1]), float(g[2])), "q": (float(g[3]), float(g[4])), "dir": g[5],

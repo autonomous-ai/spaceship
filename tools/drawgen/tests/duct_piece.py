@@ -5,9 +5,12 @@ import math
 T, R, K = 1.0, 1.0, 0.44
 BASE = [(0.0, 0.0), (300.0, 0.0), (260.0, 200.0), (40.0, 200.0)]
 ANGLES = (90.0, 60.0, 30.0)     # the three folds' angles; a test may set two alike (one section typical of both)
+TABS = None                     # a test's own tabs (same layout as tabs() gives) for its own BASE
 # edge index, angle (deg), s0, s1 (along the edge from its start), the tab's outer edge from its u=0 side to u=W side,
 # holes in tab coordinates (u along the edge from s0, v out from the bend), diameter
 def tabs():
+    if TABS is not None:
+        return TABS
     L = lambda i: math.dist(BASE[i], BASE[(i + 1) % 4])
     out = []
     w0 = 260.0
@@ -20,7 +23,7 @@ def tabs():
 
 
 def edge_frame(i):
-    P, Q = BASE[i], BASE[(i + 1) % 4]
+    P, Q = BASE[i], BASE[(i + 1) % len(BASE)]
     L = math.dist(P, Q)
     X = ((Q[0] - P[0]) / L, (Q[1] - P[1]) / L)
     W = (X[1], -X[0])          # outward: the base (counter-clockwise) is on the left
@@ -96,7 +99,7 @@ def flat():
     """The flat by hand: outline, bend lines, holes (the base's top face's x, y)."""
     outline, bends, holes = [], [], []
     tb = {i: (i, ang, s0, s1, outer, hs) for i, ang, s0, s1, outer, hs in tabs()}
-    for i in range(4):
+    for i in range(len(BASE)):
         P, X, W, L = edge_frame(i)
         q = lambda s, o: (P[0] + s * X[0] + o * W[0], P[1] + s * X[1] + o * W[1])
         outline.append(q(0.0, 0.0))
