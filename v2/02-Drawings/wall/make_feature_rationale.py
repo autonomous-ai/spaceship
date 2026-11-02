@@ -16,6 +16,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall", "out")
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 REG = "joints register V2-ENG-JNT-01 P01 (PR #23)"
 RIVNUT_KEY = 9.53             # the tables' key for a rivnut hole, whatever its size in the CAD (D-163: 10.00)
 
@@ -418,6 +419,32 @@ def _subs(text, pairs):
     return text
 
 
+
+def copy_offsets(rep, comp):
+    """[(dx, dy, dz)] of each placed copy of a component from its first body's own place: the report gives the
+    holes of one copy only, so a part copied with holes (R1's four INTERIOR studs, 212206) reads its copies' places
+    from the panel's STEP, and every copy's holes are listed."""
+    import glob
+    sys.path.insert(0, os.path.join(ROOT, "tools", "checks"))
+    import stepfile
+    pn = rep["document"].split("_")[0]
+    steps = glob.glob(os.path.join(ROOT, "v2", "03-Manufacturing", "wall", "%s_P01_*_STEP.step" % pn))
+    if not steps:
+        raise SystemExit("%s has copies with holes but no STEP to place them: export the panel first" % comp["part_number"])
+    sf = stepfile.StepFile(steps[0])
+    lo0 = comp["bodies"][0]["box"][:3]
+    offs = []
+    for inst in sf.instances():
+        if not (inst["name"] or "").startswith(comp["part_number"] + " "):
+            continue
+        pts = [inst["frame"].point(q) for q in sf.solid(inst["solid"]).points()]
+        lo = [min(q[k] for q in pts) for k in range(3)]
+        offs.append(tuple(round(lo[k] - lo0[k], 3) for k in range(3)))
+    if len(offs) != comp["copies"] or not any(all(abs(v) < 0.01 for v in o) for o in offs):
+        raise SystemExit("%s: %d copies in the STEP for %d in the report, or none at the report's place" % (
+            comp["part_number"], len(offs), comp["copies"]))
+    return sorted(offs)
+
 def holes(rep):
     rows = {}
     prm = {p["name"]: p["value"] for p in rep.get("parameters", [])}
@@ -428,20 +455,25 @@ def holes(rep):
         lining = c["part_number"].startswith(("5111", "5112", "5113", "5114"))
         if not (c["part_number"].startswith("21") or lining):
             continue
+        # a part copied with holes lists every copy's holes (the report gives one copy's)
+        offsets = copy_offsets(rep, c) if c.get("copies", 1) > 1 and any(b["holes"] for b in c["bodies"]) else [None]
         for b in c["bodies"]:
-            for h in b["holes"]:
-                if lining and h["d"] <= 3.0:
+            for h0 in b["holes"]:
+                if lining and h0["d"] <= 3.0:
                     continue
                 # not holes: a convex face (a report since the fold radius flags it), and the skin fold's outside
                 # radius in a report before that (a quarter cylinder at skin_fold_r; it is F14's)
-                if h.get("convex") or (b["name"].startswith("SKIN") and fold_d and not h["full_circle"]
-                                       and abs(h["d"] - fold_d) < 0.01):
+                if h0.get("convex") or (b["name"].startswith("SKIN") and fold_d and not h0["full_circle"]
+                                        and abs(h0["d"] - fold_d) < 0.01):
                     continue
                 # the cassette ledge's fold: its inside bend (radius ledge_r) is a part cylinder along the ledge
-                if b["name"] == LEDGE_BODY and not h["full_circle"] and abs(h["d"] - 2 * prm.get("ledge_r", -1)) < 0.01:
+                if b["name"] == LEDGE_BODY and not h0["full_circle"] and abs(h0["d"] - 2 * prm.get("ledge_r", -1)) < 0.01:
                     continue
-                key = (b["name"], h["d"], h["axis"])
-                rows.setdefault(key, []).append(h)
+                key = (b["name"], h0["d"], h0["axis"])
+                for off in offsets:
+                    h = h0 if off is None else dict(
+                        h0, centre=[None if v is None else round(v + o, 3) for v, o in zip(h0["centre"], off)])
+                    rows.setdefault(key, []).append(h)
     return rows
 
 

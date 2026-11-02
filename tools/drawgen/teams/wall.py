@@ -6,6 +6,7 @@ owner reviews the code and a team's first entries). See tools/drawgen/teams/READ
 # notes are J-FRAME-01's (joints register 3.17), and the entry refuses a parts list that still says aluminium.
 WALL_FRAME = {
     "datums": "spigot",
+    # weldment hook, #365); the mitre plates are Joints' parts, named in the notes
     "material_has": "steel", "material_why": "D-131's welded, galvanized steel frame",
     # the bottom rail's cassette-ledge rivets (lower panels): plain Ø3.3 holes, drilled after welding, for the
     # closed-end countersunk blind rivets 838012 (ISO 15974, Ø3.2; D-166) - not M4 tap drills
@@ -113,11 +114,27 @@ LEDGE_TOLERANCE = ("blank ±0.5; fold 90° ±1° (assumption); rivet holes ±0.2
 LEDGE = {"bent": True, "notes": LEDGE_NOTES, "tolerance": LEDGE_TOLERANCE,
          "rivet_holes": {3.3: "blind rivet 838012, closed end, countersunk, Ø3.2 (ISO 15974)"}}
 
+
+
+def _frame(plates):
+    """A frame's entry with its D-162 cut list (the Lead's ruling: the frame's cut list is its members' drawing), read
+    from WALL's tube cut list by the weldment hook (#365), and the mitre plates welded into it (Joints' 831007 to
+    831009, no drawing of their own: their parts-list rows define them)."""
+    return dict(WALL_FRAME, cut_list={"file": "210000_P01_WALL-TUBE-CUT-LIST_BOM.csv",
+                                      "tolerance": "length ±0.5 (parts list)", "welded_in": list(plates)})
+
+
 PARTS = {
     "511101": _tray("LH"),
     "211701": LEDGE,
-    "211101": WALL_FRAME,
-    "211102": WALL_FRAME,
+    "211101": WALL_FRAME,          # its sheet waits on #409's fix (D-169's pin slots), then takes _frame too
+    "211102": _frame(("831007", "831008")),
+    "211103": _frame(("831007", "831008", "831009")),
+    "211104": _frame(("831007", "831008", "831009")),
+    "211201": _frame(("831007",)),
+    "211202": _frame(("831007",)),
+    "211203": _frame(("831007",)),
+    "211204": _frame(("831007",)),
     "211301": _skin("LH"),
     "211302": _skin("RH"),
     "211303": _skin("LH"),
