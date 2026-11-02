@@ -1160,6 +1160,114 @@ def key_note_fails(text, matched, krows, tol=0.1, holes=None):
     return out
 
 
+def angle_fails(data, faces, page, tol=0.01):
+    """An angle member's section (AIR's 611103, FRONT's door stops), against the STEP's own faces (the repo's
+    reader). Its title: the legs' outside lengths (the part's extent along each leg), the wall, which both legs must
+    have (each leg's two faces across it), and its root (sharp: no fillet tangent to both inside faces). Each
+    dimension the section prints (Reviewer 6 on #391: only the title was read): its two ends, mapped back through the
+    section's view, on faces of the STEP within the part, the span between them the value it prints, an extension
+    line drawn from each end and the value printed by it; and a dimension for each leg's outside length and one for
+    the wall."""
+    fails = []
+    txt = " ".join(page.get_text().split())
+    tb = text_boxes(page, data["sheet_h"])
+    strokes = all_strokes(page, data["sheet_h"])
+    by_solid = {}
+    for f in faces:
+        by_solid.setdefault(f.get("solid"), []).append(f)
+    for ag in data.get("angle_sections", []):
+        L = ag["letter"]
+        u, v, heel = ag["u"], ag["v"], ag["heel"]
+        lax = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
+        # the placement the section was cut from: the solid with a face through the heel square to each leg. A part
+        # its team STEP holds twice is drawn once, and its sizes come from that one solid, never across both
+        # (CEILING Drawings Engineer 2 on #391: 611103 at X 961 and X 1152 read its 9 leg as 200)
+        def at_heel(fs):
+            return sum(1 for f in fs if f["kind"] == "plane" and "n" in f and f["pts"] and
+                       max(abs(dot(f["n"], u)), abs(dot(f["n"], v))) > 1 - 1e-6 and abs(dot(sub(heel, f["pts"][0]), f["n"])) < tol
+                       and all(min(p[k] for p in f["pts"]) - tol <= heel[k] <= max(p[k] for p in f["pts"]) + tol
+                               for k in range(3)))
+        own = next((fs for fs in by_solid.values() if at_heel(fs) >= 2), None)
+        if own is None:
+            fails.append("section %s-%s: no solid of the STEP has faces at its heel" % (L, L))
+            continue
+        planes = [f for f in own if f["kind"] == "plane" and "n" in f and f["pts"]]
+        pts = [p for f in planes for p in f["pts"]]
+        a = max(dot(sub(p, heel), u) for p in pts) - min(dot(sub(p, heel), u) for p in pts)
+        b = max(dot(sub(p, heel), v) for p in pts) - min(dot(sub(p, heel), v) for p in pts)
+
+        def wall(across):
+            """A leg's wall: the gap between the two side planes nearest the heel that face along `across`."""
+            offs = sorted({round(dot(sub(f["pts"][0], heel), across), 4) for f in planes
+                           if abs(abs(dot(f["n"], across)) - 1) < 1e-6})
+            return offs[1] - offs[0] if len(offs) >= 2 else None
+        t_a, t_b = wall(v), wall(u)         # the leg along u is t_a thick (across it, along v); the other t_b
+        m = re.search(r"SECTION %s-%s \S+ across the member: angle ([\d.]+) x ([\d.]+) x ([\d.]+), (sharp|R([\d.]+)) "
+                      r"root" % (L, L), txt)
+        if not m:
+            fails.append("section %s-%s: the angle's sizes and root aren't printed in its title" % (L, L))
+            continue
+        pa, pb, pt = float(m.group(1)), float(m.group(2)), float(m.group(3))
+        for name, got, want in (("leg along its x", pa, a), ("leg along its y", pb, b),
+                                ("wall (the leg along its x)", pt, t_a), ("wall (the leg along its y)", pt, t_b)):
+            if want is None or abs(got - want) > tol:
+                fails.append("section %s-%s prints the angle's %s %s; the STEP's is %s" % (
+                    L, L, name, _fmtv(got), "?" if want is None else _fmtv(want)))
+        # the root: a fillet tangent to both inside faces has its axis along the member at (t_b + r, t_a + r)
+        roots = []
+        for f in own:
+            if f["kind"] != "cylinder" or not f.get("concave") or "d" not in f or abs(abs(dot(f["d"], lax)) - 1) > 1e-6:
+                continue
+            ou, ov = dot(sub(f["o"], heel), u), dot(sub(f["o"], heel), v)
+            if t_a is not None and t_b is not None and abs(ou - t_b - f["r"]) < tol and abs(ov - t_a - f["r"]) < tol:
+                roots.append(f["r"])
+        if m.group(4) == "sharp" and roots:
+            fails.append("section %s-%s says sharp root; the STEP's root is R%s" % (L, L, _fmtv(roots[0])))
+        elif m.group(5) and not any(abs(r_ - float(m.group(5))) < tol for r_ in roots):
+            fails.append("section %s-%s says R%s root; the STEP's root is %s" % (
+                L, L, m.group(5), ("R%s" % _fmtv(roots[0])) if roots else "sharp"))
+        # each dimension the section prints, read back against the STEP through the section's view
+        sec = next((w for w in data["views"] if w["name"] == "section %s-%s" % (L, L)), None)
+        if sec is None:
+            fails.append("section %s-%s: the sheet records no view for it" % (L, L))
+            continue
+        st = dot(heel, sec["n"])
+
+        def model(q_):
+            """A sheet point of the section, back in the model on the section's plane."""
+            x_ = (q_[0] - sec["off"][0]) / sec["scale"]
+            y_ = (q_[1] - sec["off"][1]) / sec["scale"]
+            return tuple(x_ * sec["x"][k] + y_ * sec["y"][k] + st * sec["n"][k] for k in range(3))
+        spans = []
+        for dm in ag.get("dims") or []:
+            P1, P2 = model(dm["p1"]), model(dm["p2"])
+            along = sec["x"] if dm["side"] in ("up", "down") else sec["y"]
+            span = abs(dot(sub(P2, P1), along))
+            what = "its %s dimension %s" % ("horizontal" if dm["side"] in ("up", "down") else "vertical", dm["text"])
+            if abs(span - float(dm["text"])) > tol:
+                fails.append("section %s-%s: %s spans %s between its own ends" % (L, L, what, _fmtv(span)))
+            for P in (P1, P2):
+                cu, cv = dot(sub(P, heel), u), dot(sub(P, heel), v)
+                on = any(abs(dot(sub(P, f["pts"][0]), f["n"])) < tol for f in planes if abs(dot(f["n"], lax)) < 1e-6)
+                if not on or not (-tol <= cu <= a + tol and -tol <= cv <= b + tol):
+                    fails.append("section %s-%s: %s ends at (%s, %s) from the heel, on no face of the STEP" % (
+                        L, L, what, _fmtv(cu), _fmtv(cv)))
+            for q_ in (dm["p1"], dm["p2"]):
+                if not any(min(math.dist(q_, s_[0]), math.dist(q_, s_[1])) < 1.5 for s_ in strokes):
+                    fails.append("section %s-%s: %s has no extension line from its end" % (L, L, what))
+            box = (min(dm["p1"][0], dm["p2"][0]), min(dm["p1"][1], dm["p2"][1]),
+                   max(dm["p1"][0], dm["p2"][0]), max(dm["p1"][1], dm["p2"][1]))
+            if not _text_near(tb, dm["text"], box, pad=16.0):
+                fails.append("section %s-%s: %s isn't printed by it" % (L, L, what))
+            spans.append((abs(dot(along, u)) > 0.5, span))
+        for name, on_u, want in (("leg along its x", True, a), ("leg along its y", False, b)):
+            if not any(su == on_u and abs(sp - want) < tol for su, sp in spans):
+                fails.append("section %s-%s: no dimension gives the %s, %s" % (L, L, name, _fmtv(want)))
+        if not any((not su and t_a is not None and abs(sp - t_a) < tol) or (su and t_b is not None and abs(sp - t_b) < tol)
+                   for su, sp in spans):
+            fails.append("section %s-%s: no dimension gives the wall" % (L, L))
+    return fails
+
 def check(pdf_path, step_path=None, verbose=False):
     """Run every check on one drawing; returns (failures, stats)."""
     doc = fitz.open(pdf_path)
@@ -1295,6 +1403,7 @@ def check(pdf_path, step_path=None, verbose=False):
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
+    fails += angle_fails(data, faces, page)
     fails += flat_hole_fails(data, holes, faces)
     fails += csk_fails(data, faces, holes, page)
     fails += vgroove_radius_fails(data, faces)

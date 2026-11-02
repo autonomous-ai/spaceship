@@ -301,9 +301,13 @@ class Part:
         # flat faces: a straight member's notches, chamfers and welded end plates; any other flat feature (a step, a
         # pocket, an uneven chamfer) would be drawn without a size, so the part is refused
         self.notches, self.chamfers, self.plates = [], [], []
+        self.angles = []        # (body, its L section) for a member that is an angle (AIR's 611103, FRONT's stops)
         for b in ([] if self.flat else self.bodies):
             lax = geom.member_axis(b)
-            if lax is not None and not plain_section(b, lax):
+            ang = angle_section(b, lax) if lax is not None and not plain_section(b, lax) else None
+            if ang:
+                self.angles.append((b, ang))
+            elif lax is not None and not plain_section(b, lax):
                 raise NotDrawable("%s body %s is a profile whose section isn't a plain rectangle or rectangular tube: its "
                                   "section's sizes aren't drawn yet (D-139: Fusion, or the profile reading)" % (pn, b.name))
             nt, ch, plt, odd = geom.flat_features(b, [ft.f for ft in self.features if ft.body is b and ft.kind != "hole"])
@@ -420,7 +424,7 @@ class Part:
         return "%s_%s_%s_DWG" % (self.pn, self.rev, self.file_name)
 
 
-EXTRUDED_WORDS = re.compile(r"\bextru(?:ded|sion|sions)\b", re.I)
+EXTRUDED_WORDS = re.compile(r"\b(?:extru(?:ded|sion|sions)|angle)\b", re.I)   # an angle: a bought or extruded profile
 BENT_WORDS = re.compile(r"\b(?:bend|bends|bent|fold|folds|folded|brake|v-groove|groove and fold|press brake)\b", re.I)
 
 
@@ -796,6 +800,74 @@ def plain_section(b, lax):
             if _rectangle(outer, cuts=True) and _rectangle(inner):
                 return True
     return False
+
+
+def angle_section(b, lax):
+    """A 90° angle's section (an L of one wall, sharp at its heel, root and toes), at a station clear of its holes:
+    {"a", "b": the legs' outside lengths along u and v, "t": the wall, "r": 0 (the root is sharp), "point": the
+    station, "u", "v": the legs' directions (3D, from the heel)}; None for any other shape (a rounded heel, root or
+    toe, legs of two walls). A root fillet is refused before this, with the part's other curved faces (Reviewer 6 on
+    #391: the radius was claimed but never reached)."""
+    from OCP.TopAbs import TopAbs_WIRE
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepTools import BRepTools_WireExplorer
+    from OCP.GeomAbs import GeomAbs_Circle, GeomAbs_Line
+    sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), lax) for v in geom._vertices_of(b.shape)]
+    s0, s1 = min(sv), max(sv)
+    for tt in (0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8):
+        pt = vadd(b.centroid, vmul(lax, s0 + tt * (s1 - s0) - vdot(b.centroid, lax)))
+        faces = cut_faces(geom.half_space_keep(b.shape, pt, lax), pt, lax)
+        if len(faces) != 1:
+            continue
+        wires = []
+        e = TopExp_Explorer(faces[0], TopAbs_WIRE)
+        while e.More():
+            wires.append(TopoDS.Wire_s(e.Current()))
+            e.Next()
+        if len(wires) != 1:
+            continue
+        lines, arcs = [], []
+        ex = BRepTools_WireExplorer(wires[0])
+        while ex.More():
+            c = BRepAdaptor_Curve(ex.Current())
+            p0, p1 = geom.pnt(c.Value(c.FirstParameter())), geom.pnt(c.Value(c.LastParameter()))
+            if c.GetType() == GeomAbs_Line:
+                lines.append((p0, p1))
+            elif c.GetType() == GeomAbs_Circle:
+                arcs.append((geom.pnt(c.Circle().Location()), c.Circle().Radius()))
+            else:
+                return None
+            ex.Next()
+        if len(lines) != 6 or arcs:
+            return None
+        # the outside faces: the longest line in each of the two directions (with legs of two lengths, the long leg's
+        # inside face is longer than the short leg's outside: FRONT's 30 x 20 stops)
+        L = sorted(lines, key=lambda l: -math.dist(*l))
+        d0 = vnorm(vsub(L[0][1], L[0][0]))
+        across = [l for l in L if abs(vdot(vnorm(vsub(l[1], l[0])), d0)) < 1e-6]
+        if not across:
+            return None
+        (a0, a1), (b0, b1) = L[0], across[0]
+        heel = next((p for p in (a0, a1) for q in (b0, b1) if math.dist(p, q) < 1e-6), None)
+        if heel is None:
+            return None                 # a rounded heel: not sized yet
+        far_a = a1 if math.dist(a0, heel) < 1e-6 else a0
+        far_b = b1 if math.dist(b0, heel) < 1e-6 else b0
+        u, v = vnorm(vsub(far_a, heel)), vnorm(vsub(far_b, heel))
+        if abs(vdot(u, v)) > 1e-6:
+            return None                 # not 90°
+        pts = [p for l in lines for p in l]
+        a = max(vdot(vsub(p, heel), u) for p in pts)
+        bb = max(vdot(vsub(p, heel), v) for p in pts)
+        # each leg's wall: from its outside face to the inside face parallel to it
+        ta = min((vdot(vsub(p, heel), v) for l in lines for p in l
+                  if abs(abs(vdot(vnorm(vsub(l[1], l[0])), u)) - 1) < 1e-6 and vdot(vsub(p, heel), v) > 1e-6), default=None)
+        tb = min((vdot(vsub(p, heel), u) for l in lines for p in l
+                  if abs(abs(vdot(vnorm(vsub(l[1], l[0])), v)) - 1) < 1e-6 and vdot(vsub(p, heel), u) > 1e-6), default=None)
+        if ta is None or tb is None or abs(ta - tb) > 1e-3:
+            return None                 # legs of two walls: not sized yet
+        return {"a": a, "b": bb, "t": ta, "r": 0.0, "point": pt, "u": u, "v": v, "heel": heel}
+    return None
 
 
 def principal_view(part):
@@ -1194,6 +1266,14 @@ def plan_views(part, spec):
         r.n, r.y = vn.n, vn.y
         r.point = getattr(ch, "point", None) or vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 -
                                                                        vdot(b.centroid, ch.axis)))
+        pl.removed.append(r)
+    # an angle: a section across it at a station clear of its holes, its legs and wall sized (AIR's 611103)
+    for b, ang in getattr(part, "angles", []):
+        lax = geom.member_axis(b)
+        r = Plan()
+        r.feats, r.all, r.body = [], [], b
+        r.n, r.y, r.point = lax, ang["v"], ang["point"]
+        r.angle = ang
         pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
@@ -2156,6 +2236,22 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         if getattr(vd, "profile", None):
             profile_dims(sh, vd)
             continue
+
+        if getattr(r, "angle", None):
+            # the legs outside and the wall, from the heel (the section's own sizes)
+            ang = r.angle
+            hl = vd.S(vd.view.to2d(ang["heel"]))
+            pa = vd.S(vd.view.to2d(vadd(ang["heel"], vmul(ang["u"], ang["a"]))))
+            pb = vd.S(vd.view.to2d(vadd(ang["heel"], vmul(ang["v"], ang["b"]))))
+            pt_ = vd.S(vd.view.to2d(vadd(ang["heel"], vmul(ang["v"], ang["t"]))))
+            # the section's x is along leg a, its y along leg b (up from the heel): each size outside the part
+            right = hl[0] >= (vd.box()[0] + vd.box()[2]) / 2       # the heel on the right: leg a runs left
+            vd.angle_dims = [(hl, pa, "down", 8.0, fmt(ang["a"])),
+                             (hl, pb, "right" if right else "left", 8.0, fmt(ang["b"])),
+                             ((pa[0], hl[1]), (pa[0], pt_[1]), "left" if right else "right", 6.0, fmt(ang["t"]))]
+            for p1_, p2_, side_, gap_, txt_ in vd.angle_dims:
+                sh.dim_linear(p1_, p2_, side_, gap_, txt_, 2.5)
+            continue
         c = vd.S(vd.view.to2d(r.point))
         x0, y0, x1, y1 = vd.box()
         sh.centre_line((c[0], y0 - 4), (c[0], y1 + 4))
@@ -2533,6 +2629,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                   extra=mapping_words(vd.view, part.pod_system))
             continue
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
+              ("across the member: angle %s x %s x %s, sharp root" % (fmt(vd.r.angle["a"]), fmt(vd.r.angle["b"]),
+                                                                     fmt(vd.r.angle["t"])))
+              if getattr(vd.r, "angle", None) else
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
               if vd.r.feats else ("across %s, showing its bevel along it" % (vd.r.body.name or "the member"))
               if getattr(vd.r, "bevel", None) else "across the middle, showing the thickness",
@@ -3318,6 +3417,13 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
             "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
     if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
         out["flat"] = flat_data(part, pl)
+    angs = [{"letter": vd.letter, "a": vd.r.angle["a"], "b": vd.r.angle["b"], "t": vd.r.angle["t"], "r": vd.r.angle["r"],
+             "u": vd.r.angle["u"], "v": vd.r.angle["v"], "heel": vd.r.angle["heel"],
+             "dims": [{"p1": list(p1_), "p2": list(p2_), "side": side_, "text": txt_}
+                      for p1_, p2_, side_, _g, txt_ in getattr(vd, "angle_dims", [])]}
+            for vd in removed if getattr(vd.r, "angle", None)]
+    if angs:                            # an angle member's section, for the read-back (others keep their bytes)
+        out["angle_sections"] = angs
     if getattr(part, "cut_list_file", None):     # only a frame drawn from a team cut list (D-162)
         out["sources"].append({"role": "cut list", "path": inputs.rel(part.cut_list_file),
                                "sha256_12": inputs.sha12(part.cut_list_file)})
