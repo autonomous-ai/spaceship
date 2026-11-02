@@ -63,10 +63,10 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ![Step 2](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-02_IMG.png)
 
-- **Time:** about 10 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.4 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.6 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.6 kg), **2-07** BASE - BAND ASSY - FRONT - FIXED GLASS (2.5 kg), **2-14** BASE - SMALL PARTS CARTON (1.1 kg).
+- **Time:** about 9 min for 2 people.
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.5 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.5 kg), **2-22** BASE - BAND ASSY - FRONT - LH (0.9 kg), **2-14** BASE - SMALL PARTS CARTON (0.6 kg), **2-07** BASE - BAND ASSY - FRONT - FIXED GLASS (2.4 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
-- **Person A:** Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: FL1, then FL2 at the knee (under DL), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).
+- **Person A:** Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: DL's band piece (FL1 and FL2, joined at the knee in the factory), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03). Then, with A, lays a PE sheet from the packing over the room floor inside the band, clear of the soft lip, for the rest of the work: the room floor is the pod's floor now (D-132).
 - **Caution:** Nobody lifts the back band or stands on it until B1 and B2 bolt through its top wall in step 3: until then only its weight holds it on the studs (J-BASE-02).
 - **Check before the next step:** Band level within the spirit level's bubble; the back band resting on its glides with both end caps down over the studs; every front piece hooked home; the soft lip on the band's inner face touches the room floor all round (D-132); the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.
@@ -315,7 +315,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | Step | What | Pieces | Register bolts | Other fixings | 2-person min | 1-person min (shared) | Elapsed min |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1 | Unpack and set the parts down at their places | 1 | 0 | 0 | 10.0 | 0.0 | **11.5** |
-| 2 | Base band | 5 | 0 | 0 | 7.7 | 1.3 | **9.6** |
+| 2 | Base band | 6 | 0 | 0 | 7.3 | 1.7 | **9.4** |
 | 3 | Lower back wall: B1, B2 | 2 | 11 | 0 | 0.7 | 4.8 | **3.5** |
 | 4 | Lower side walls: L1, R1 | 2 | 14 | 0 | 0.7 | 5.7 | **4.0** |
 | 5 | Upper back wall: B3, B4 | 2 | 11 | 0 | 0.7 | 4.8 | **3.5** |
@@ -344,7 +344,7 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 2. Step 21 (Final check and film): 13 min.
 3. Step 1 (Unpack and set the parts down at their places): 12 min.
 4. Step 7 (Ceiling: C1, C2): 10 min.
-5. Step 2 (Base band): 10 min.
+5. Step 2 (Base band): 9 min.
 
 **D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 133 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
 
@@ -413,7 +413,7 @@ Unit times used:
 
 ## 8. Taking it down
 
-Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
+Power off at the mains first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; base band: FR1 off the rail first, then the rail, then DL's band piece (FL1 and FL2 in one), each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
 
 ## 9. Open items that touch this guide
 

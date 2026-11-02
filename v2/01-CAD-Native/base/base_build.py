@@ -64,15 +64,16 @@ BASE_PARAMS = [
     ("band_finish", "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'", "Text", "confirmed",
      "PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip"),
     ("cap_t", "2 mm", "mm", "source",
-     "the side band's back-end cap 118003: flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper "
+     "the tube end cap 111111 (D-165): flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper "
      "than 2, as the back corner key sits 2.5 from the end (D-129, joints register J-BASE-02); product HOLD"),
     # the wall above (WALL owns it; these say where its bottom member sits)
     ("jb_x", "outer_t - frame_t / 2", "mm", "calculation",
      "J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)"),
     # J-BASE-01, wall to base band
-    ("rn_hole", "9.53 mm", "mm", "source",
-     "Sherex CAH2-610-4.2 M6 rivet nut, steel, zinc plated (joints register H-03, D-131): hole 9.53 +0.10/0, as the aluminium "
-     "part's it replaced (unverified for the steel part, HOLD-04)"),
+    ("rn_hole", "10 mm", "mm", "source",
+     "D-163: the M6 rivet nut 838003 is Sherex CAL2-610-4.2, steel, zinc plated, knurled round body, in a round drilled hole "
+     "10.00 +0.10; T06's spin-out test (4 N m or more in the real tubes) confirms it (the head sizes below are CAH2-610-4.2's "
+     "until the joints register gives CAL2's)"),
     ("rn_flange", "12.96 mm", "mm", "source", "CAH2-610-4.2 head diameter 12.96 (joints register H-03)"),
     ("rn_inst", "10.16 mm", "mm", "source", "CAH2-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)"),
     ("rn_head_t", "0.76 mm", "mm", "source", "CAH2-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)"),
@@ -101,15 +102,24 @@ BASE_PARAMS = [
      "On the band's centre line it spans 16 to 24 from the outer face, inboard of the PORON strip that runs beside the washer line on its outer side (8 to 16, joints register FR-11)"),
     ("gl_dx", "0 mm", "mm", "confirmed",
      "PM ruling 2026-10-31 (BASE group): the doubler's hole centred across its 36 mm width, so the glide stands on the band's centre line"),
-    ("gl_nut_hole", "13 mm", "mm", "assumption", "hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD"),
-    ("gl_pad", "36 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width"),
-    ("gl_stem", "10 mm", "mm", "assumption", "glide stem M10 (envelope, HOLD)"),
-    ("gl_nut_t", "2 mm", "mm", "assumption", "M10 rivet nut head under the band, between the band and the glide pad (HOLD)"),
+    ("gl_nut_hole", "13.5 mm", "mm", "source",
+     "D-163: the glide's M10 rivet nut 838006 is Sherex CAL2-1015-7.9, knurled round body, in a round hole 13.50 +0.15 "
+     "through the band's bottom wall and the load block 111601 (grip 1.5 + 5 = 6.5, inside its 3.8 to 7.9)"),
+    ("gl_pad", "40 mm", "mm", "source",
+     "the glide 111602's base diameter, made to BASE's drawing (D-164, the Lead's ruling of 2026-11-01): no wider than the "
+     "band's 40"),
+    ("gl_stem", "10 mm", "mm", "source", "the glide's M10 stem, zinc-plated steel (D-164)"),
+    ("gl_socket", "5 mm", "mm", "source", "the 5 mm hex socket in the stem's top, turned with a hex key through gl_key_hole (D-164)"),
+    ("gl_socket_d", "6 mm", "mm", "assumption", "the socket's depth (the glide's drawing)"),
+    ("gl_nut_t", "0.89 mm", "mm", "source",
+     "the M10 rivet nut's head under the band: Sherex CAL2-1015-7.9, 0.81 to 0.97 (D-163, the maker's drawing), between "
+     "the band and the glide's base"),
     ("gl_min", "8.5 mm", "mm", "source",
      "lowest glide setting: the corner keys' button heads hang 3.3 under the band and nothing may come within 5 of the floor (PM ruling on F-018; "
      "joints register PR #99 via the Lead, 2026-11-01)"),
     ("gl_base_min", "gl_min - gl_nut_t", "mm", "calculation",
-     "the glide's base must stand this tall (6.5), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (glide spec, HOLD)"),
+     "the glide's base stands this tall (7.61, the drawing's 7.6), so that screwed fully home against the M10 rivnut's head "
+     "it holds the band at gl_min: a hard stop (D-164)"),
     ("gd_l", "54 mm", "mm", "confirmed",
      "PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 2 hole diameters (26) from the hole; "
      "54 gives 27, clear of that line"),
@@ -127,6 +137,12 @@ BASE_PARAMS = [
      "back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)"),
     ("ck_e", "10.5 mm", "mm", "source",
      "key fixing holes 10.5 from its back face (inside the band) and 7.0 either side of its centre line, so 10.5 from its side faces (joints register #127, J-BASE-02)"),
+    ("ck_fy", "6 mm", "mm", "source",
+     "back key 111211's fixing holes 6.0 either side of its centre line, so each 7.0 hole stays 14.0 from the side band's cut "
+     "end at Y 850 with the key turned either way (D-144: no edge exception; the Joints Engineer's layout, corner-keys.csv)"),
+    ("ck_e2", "17.8 mm", "mm", "source",
+     "back key 111211's second fixing hole 17.8 from its back face (stepped 7.3 from the first), so the two 838010 flanges "
+     "(up to Ø13.6) stand 14.05 apart (D-144, corner-keys.csv)"),
     ("ck_fix_hole", "7 mm", "mm", "source",
      "the keys' fixing screw holes in the carrier's bottom wall, Ø7.0 (J-BASE-02); the side bands carry the back keys since D-129"),
     ("ck_tap", "5 mm", "mm", "source", "M6 tap drill in the key (J-BASE-02)"),
@@ -181,14 +197,14 @@ PARTS = {
     "band_b_tube": ("111103", "BASE - BAND TUBE - BACK", "Viền chân nhôm 100x40 - cạnh sau", "MP", "band_b"),
     "pin": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8", "MP", None),
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
-    "glide": ("118002", "BASE - LEVELLING GLIDE - M10 - HOLD", "Chân chỉnh cao", "PI", None),
+    "glide": ("111602", "BASE - LEVELLING GLIDE - M10 - D40", "Chân chỉnh cao M10 - đế Ø40", "MP", None),
     "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
     "key": ("111211", "BASE - CORNER KEY - SQUARE - COMMON", "Ke góc đế - cắt vuông", "MP", None),
     "bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", None),
     "bscrew": ("838010", "HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2", "Vít đầu tròn có vành M6 × 12 inox",
                "PI", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", "PI", None),
-    "cap": ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD", "Nút bịt đầu ống 100x40", "PI", None),
+    "cap": ("111111", "BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK", "Nút bịt đầu ống 97 x 37 x 2 - nhôm đen", "MP", None),
     # the base seal's envelopes (D-132), one per band piece; the parts list counts the seal in metres (its runs)
     "seal_l": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_l"),
     "seal_b": ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "band_b"),
@@ -653,10 +669,11 @@ def step3_band_back(design):
 # ---------------------------------------------------------------- holes
 
 def hole(design, key, plane, label, xyz, dims, dia_expr, depth_expr, want_dir,
-         pattern=None):
+         pattern=None, csk=None):
     """A simple hole (Hole feature) at a sketch point on `plane`, drilled along
     want_dir (model vector) to depth_expr, optionally patterned:
-    pattern = (axis attribute name, count expr, extent expr)."""
+    pattern = (axis attribute name, count expr, extent expr); csk = (diameter expr,
+    angle expr): a countersink at the face it starts from."""
     comp = find_comp(design, key)
     body = comp.bRepBodies.item(0)
     sk = comp.sketches.add(plane)
@@ -667,7 +684,8 @@ def hole(design, key, plane, label, xyz, dims, dia_expr, depth_expr, want_dir,
         dim_coord(sk, pt, direction, expr, val)
     check_sketch(sk)
     holes = comp.features.holeFeatures
-    hin = holes.createSimpleInput(vi(dia_expr))
+    hin = holes.createCountersinkInput(vi(dia_expr), vi(csk[0]), vi(csk[1])) if csk else \
+        holes.createSimpleInput(vi(dia_expr))
     hin.setPositionBySketchPoint(pt)
     hin.setDistanceExtent(vi(depth_expr))
     n = plane.geometry.normal
@@ -761,7 +779,7 @@ def back_key_holes(design, key, sign, label):
     """D-129 (joints register J-BASE-02, FR-15, corner-keys.csv): the back corner key 111211 sits in this
     side band's back end, its stud face against the inner wall from inside. 2 x Ø7.0 through the inner
     wall for its hook stud bolts, on the back band's centre line at the studs' heights, and 2 x Ø7.0 in
-    the bottom wall for its fixing screws, ck_e from the key's back face and ck_y / 2 - ck_e either side
+    the bottom wall for its fixing screws, 6.0 either side of its centre line, ck_e and ck_e2 from its back face (D-144)
     of the centre line. One-point hole sketches, patterned (two circles in one YZ sketch
     over-constrained, 2026-11-01). sign: -1 for the left side band, +1 for the right."""
     v = lambda e: ev(design, e)  # noqa: E731
@@ -777,10 +795,14 @@ def back_key_holes(design, key, sign, label):
     hole(design, key, pl, "BACK KEY HOOK STUD BOLTS - %s (111211, D-129)" % label, (v(x_in), v(yk), v(z1)),
          [(Y, yk), (Z, z1)], "st_hole", "band_wall", into, ("zConstructionAxis", "2", "st_z2 - st_z1"))
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
-    xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - ck_e)" % s
-    yf = "%s - band_t / 2 - (ck_y / 2 - ck_e)" % YB
-    hole(design, key, bot, "BACK KEY FIXING - %s (111211, D-129)" % label, (v(xf), v(yf), v("glide_h")),
-         [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z, ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
+    # D-144: two holes, 6.0 either side of the key's centre line, one ck_e and one ck_e2 from its back face; the key
+    # is turned 180 deg at the right corner, so the stepped hole goes to the other side there
+    up_y = "+" if sign < 0 else "-"                         # the key's +y side, as seen in the pod
+    for lab, e, side in (("1", "ck_e", up_y), ("2", "ck_e2", "-" if up_y == "+" else "+")):
+        xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - %s)" % (s, e)
+        yf = "%s - band_t / 2 %s ck_fy" % (YB, side)
+        hole(design, key, bot, "BACK KEY FIXING %s - %s (111211, D-129, D-144)" % (lab, label), (v(xf), v(yf), v("glide_h")),
+             [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z)
 
 
 def cut_prism(comp, body, plane, sk, depth_expr, want_dir, name):
@@ -912,6 +934,8 @@ def seal_runs(design):
     xi, yb = "%s + band_t" % XL, "%s - band_t" % YB
     runs = [("seal_l", "band_l", "X = %.2f (side band LH, inner face)" % v(xi), Y_MITRE_IN, yb,
              [(xi, Y_MITRE_IN), ("%s + seal_t" % xi, Y_MITRE_IN), ("%s + seal_t" % xi, yb), (xi, yb)]),
+            # the back band's lip runs between the side bands' lips, which already fill the corners' seal_t squares:
+            # its run is its envelope (it counted 2 x seal_t too much before, 2026-11-01)
             ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), "%s + seal_t" % xi, "%s - band_t - seal_t" % XR,
              [("%s + seal_t" % xi, "%s - seal_t" % yb), ("%s - band_t - seal_t" % XR, "%s - seal_t" % yb),
               ("%s - band_t - seal_t" % XR, yb), ("%s + seal_t" % xi, yb)])]
@@ -926,6 +950,7 @@ def build_seal_envelopes(design):
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
     sections = globals()["p02_seal_sections"](design) if P02_ON else {}
+    cuts = globals()["p02_seal_cuts"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
         if key in sections:
@@ -949,6 +974,21 @@ def build_seal_envelopes(design):
             polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
             check_sketch(sk)
             extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+            if key in cuts:
+                # where a plate stands on the lip's fin (p02_seal_cuts): the envelope is cut from z_from up through its
+                # top; the fin under the plate stays joined to the leg below it, so the body stays one
+                pts_c, z_from = cuts[key]
+                skc = comp.sketches.add(comp.xYConstructionPlane)
+                skc.name = "PLAN - BASE SEAL LIP - WHERE THE PLATE STANDS ON THE FIN"
+                polygon(design, skc, [P(design, ex, ey) for ex, ey in pts_c], X, Y)
+                check_sketch(skc)
+                ci = comp.features.extrudeFeatures.createInput(one_profile(skc),
+                                                               adsk.fusion.FeatureOperations.CutFeatureOperation)
+                ci.startExtent = adsk.fusion.OffsetStartDefinition.create(vi(z_from))
+                ci.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(
+                    vi("glide_h + seal_leg - (%s) + 1 mm" % z_from)), adsk.fusion.ExtentDirections.PositiveExtentDirection)
+                ci.participantBodies = [single_body(comp)]
+                comp.features.extrudeFeatures.add(ci).name = "CUT - BASE SEAL LIP - ABOVE THE FIN, WHERE THE PLATE STANDS"
         body = single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
         if key in sections:
             got = bbox_mm(body)
@@ -1085,21 +1125,41 @@ def build_bscrew(design):
 
 
 def build_glide(design):
+    """The levelling glide 111602, made to BASE's drawing (D-164): a base gl_pad across and gl_base_min tall (screwed home
+    against the M10 rivnut's head it holds the band at gl_min, a hard stop) and an M10 stem up to glide_h + band_h / 2,
+    turned from zinc-plated steel, with a gl_socket hex socket in the stem's top for the key through the band's top wall."""
     comp = find_comp(design, "glide")
-    revolve_section(design, comp, "LEVELLING GLIDE - ENVELOPE (HOLD)", [
+    revolve_section(design, comp, "LEVELLING GLIDE - BASE AND STEM", [
         PZ(design, "0 mm", "0 mm"),
         PZ(design, "gl_pad / 2", "0 mm"),
-        PZ(design, "gl_pad / 2", "glide_h - gl_nut_t"),
-        PZ(design, "gl_stem / 2", "glide_h - gl_nut_t"),
+        PZ(design, "gl_pad / 2", "gl_base_min"),
+        PZ(design, "gl_stem / 2", "gl_base_min"),
         PZ(design, "gl_stem / 2", "glide_h + band_h / 2"),
         PZ(design, "0 mm", "glide_h + band_h / 2"),
     ])
+    top = offset_plane(comp, "xy", "glide_h + band_h / 2", ev(design, "glide_h + band_h / 2"), "PLANE - GLIDE STEM TOP")
+    sk = comp.sketches.add(top)
+    sk.name = "HEX SOCKET - gl_socket ACROSS FLATS"
+    zt = ev(design, "glide_h + band_h / 2")
+    hs, af = "(gl_socket / sqrt(3) / 2)", "(gl_socket / 2)"          # half the side, half across flats
+    pts = [("2 * %s" % hs, "0 mm"), (hs, af), ("-%s" % hs, af), ("-2 * %s" % hs, "0 mm"), ("-%s" % hs, "-%s" % af),
+           (hs, "-%s" % af)]
+    polygon(design, sk, [(ex, ey, (ev(design, ex), ev(design, ey), zt)) for ex, ey in pts], X, Y)
+    check_sketch(sk)
+    ci = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    n = top.geometry.normal
+    ci.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("gl_socket_d")),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.z < 0 else
+                        adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ci.participantBodies = [single_body(comp)]
+    comp.features.extrudeFeatures.add(ci).name = "CUT - HEX SOCKET gl_socket, gl_socket_d DEEP"
+    single_body(comp, PARTS["glide"][1])
 
 
 def build_cap(design):
-    """The side band's back-end cap 118003 (D-129): flat, cap_t thick, the size of the band's bore,
-    centred on its own origin in Y, so it is placed with its outer face flush with Y = pod_d / 2.
-    Product HOLD: this is its envelope."""
+    """The tube end cap 111111 (D-165, D-129): a flat aluminium plate cap_t thick, the size of the band's bore (97 x 37),
+    anodised black like the band and bonded flush in a band's open end; centred on its own origin in Y, so it is placed
+    with its outer face flush with the band's end face."""
     comp = find_comp(design, "cap")
     sk = comp.sketches.add(comp.xZConstructionPlane)
     sk.name = "OUTLINE - TUBE END CAP - THE BAND'S BORE"
@@ -1120,7 +1180,16 @@ def place(design, host_key, key, xyz, rot=None):
     Positions come from the same expressions as the holes and are set when
     the script runs (see the manifest)."""
     m = adsk.core.Matrix3D.create()
-    if rot == "x+":
+    if isinstance(rot, tuple) and rot[0] == "z":
+        # ("z", deg): turned deg about Z (a front key, its +X along its carrier at any angle)
+        m.setToRotation(math.radians(rot[1]), Z, adsk.core.Point3D.create(0, 0, 0))
+    elif isinstance(rot, tuple) and rot[0] == "hz":
+        # ("hz", deg): its +Z laid level, pointing deg in plan (a hook stud out of a mitred stud face)
+        m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
+        r2 = adsk.core.Matrix3D.create()
+        r2.setToRotation(math.radians(rot[1]), Z, adsk.core.Point3D.create(0, 0, 0))
+        m.transformBy(r2)
+    elif rot == "x+":
         m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
     elif rot == "y-":
         m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
@@ -1176,8 +1245,8 @@ def hardware_points(design):
         out.append((host, "key", (xk, yk, zk), krot))
         for zz in ("st_z1", "st_z2"):
             out.append((host, "bolt", (xw - sign * v("st_gap"), yk, zk + v(zz)), srot))
-        for dy in (-1, 1):
-            out.append((host, "bscrew", (xk - sign * v("ck_e"), yk + dy * v("ck_y / 2 - ck_e"), v("glide_h")), "z-"))
+        for e, dy in (("ck_e", -sign), ("ck_e2", sign)):           # D-144: the key's (10.5, +6) and (17.8, -6)
+            out.append((host, "bscrew", (xk - sign * v(e), yk + dy * v("ck_fy"), v("glide_h")), "z-"))
         out.append((host, "cap", (sign * v("pod_w / 2 - band_t / 2"), v("%s - cap_t / 2" % YB), v("glide_h")), None))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
@@ -1233,7 +1302,9 @@ def step7_hardware(design):
     build_pin(design)
     build_washer(design)
     build_doubler(design)
-    import_owner_part(design, "key")         # the Joints Engineer's 111211 (D-95), not a copy
+    for k in OWNER_STEP:                     # the Joints Engineer's keys (D-95), not copies: 111211, and P02's
+        if k in PARTS:
+            import_owner_part(design, k)
     build_bolt(design)
     build_bscrew(design)
     build_glide(design)
@@ -1267,8 +1338,8 @@ MATERIALS = {
     "key": ("Aluminum", None, None),
     "bolt": ("Steel", None, None),
     "bscrew": ("Steel", None, None),
-    "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
-    "cap": ("Aluminum", "Flat PE end cap 950 kg/m3 (ASSUMPTION)", 950.0),
+    "glide": ("Steel", None, None),
+    "cap": ("Aluminum", None, None),
     # the envelope (10 x 25 per metre) at 320 kg/m3 weighs the lip's 0.08 kg/m (assumption)
     "seal_l": ("Aluminum", "Lip seal envelope 320 kg/m3 (ASSUMPTION)", 320.0),
     "seal_b": ("Aluminum", "Lip seal envelope 320 kg/m3 (ASSUMPTION)", 320.0),
@@ -1498,18 +1569,10 @@ def step9_checks(design):
         raise RuntimeError("step 9 checks failed")
 
 
-# D-144 (#300) moved the back corners' fixing holes in corner-keys.csv (6.0 either side, at 10.5 and 17.8 from the
-# key's back face). This branch keeps the layout before it, as Joints' 111211 STEP still has it; the follow-up rebuild
-# takes D-144 with the new key STEP. Until then the check names the difference and fails only if the side band's
-# fixing holes match neither layout. Source: corner-keys.csv before #300 (main, parent of e796357).
-PRE_D144_FIX = {"back left corner": ((-1231.0, 837.0), (-1231.0, 823.0)),
-                "back right corner": ((1231.0, 823.0), (1231.0, 837.0))}
-
-
 def back_corner_check(design):
     """D-129: the back corners as built against the Joints Engineer's corner-keys.csv (one source, D-95):
     each key's back face centre and bottom, the side band's fixing and stud bolt holes, and the back band's
-    slot ends. Returns the names of what is off by 0.05 mm or more (the D-144 fixing holes: PRE_D144_FIX)."""
+    slot ends. Returns the names of what is off by 0.05 mm or more."""
     path = os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv")
     with open(path, encoding="utf-8") as fh:
         rows = [r for r in csv.DictReader(fh) if r["joint"] in ("back left corner", "back right corner")]
@@ -1531,11 +1594,8 @@ def back_corner_check(design):
         want_key = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]), float(r["key_bottom_z"]))
         got_keys = [tuple(mm(c) for c in (o.transform2.translation.x, o.transform2.translation.y,
                                           o.transform2.translation.z)) for o in keys]
-        fix_ok, fix_name = all(near(fix, w) for w in want_fix), "fixing holes"
-        if not fix_ok and all(near(fix, w) for w in PRE_D144_FIX.get(r["joint"], ())):
-            fix_ok, fix_name = True, "fixing holes OFF against D-144, as before it (the next branch takes D-144):"
         checks = [
-            (fix_name, fix_ok),
+            ("fixing holes", all(near(fix, w) for w in want_fix)),
             ("stud bolt holes", all(near(studs, w) for w in want_studs)),
             ("key position", any(max(abs(a - b) for a, b in zip(g, want_key)) < 0.05 for g in got_keys)),
             ("back band slot end", near(slot_ends, (float(r["face_centre_y"]), float(r["slot_end_z"])))),
@@ -1752,7 +1812,7 @@ def export_data(design):
             "inner_face_length": round(v(YB) - yi, 2),
             "front_end": "mitre to DL's outer facet band piece: %.2f deg from square, long point on the outer face"
                          % math.degrees(math.atan2(yi - yo, v("band_t"))),
-            "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)"},
+            "back_end": "square, flush with the back face: its key 111211 inside and the end cap 111111 (D-129)"},
         PARTS["band_b_tube"][0]: {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
             "outer_face_length": round(v("pod_w - 2 * band_t - 2 * band_wall"), 2),
@@ -1807,6 +1867,8 @@ PART_BUILDS = {
     "band_l_tube": ("step2_band_side_lh", "holes_side_lh"),
     "band_b_tube": ("step3_band_back", "holes_back"),
     "doubler": ("build_doubler",),
+    "glide": ("build_glide",),
+    "cap": ("build_cap",),
     "pin": ("build_pin",),
     "washer": ("build_washer",),
     "key": ("build_back_key",),
@@ -1825,7 +1887,12 @@ PART_SYSTEM = {
 
 
 def to_part_system(design, comp, key):
-    angle, tx, ty, tz = PART_SYSTEM[key]
+    # an entry is (angle, tx, ty, tz) as expressions, or a function of the design that gives them with the origin's
+    # words (P02's facet pieces under DL, whose turn comes from the skeleton's DL points)
+    spec = PART_SYSTEM[key]
+    spec = spec(design) if callable(spec) else spec
+    angle, tx, ty, tz = spec[:4]
+    where = spec[4] if len(spec) > 4 else "ORIGIN AT THE BACK END, OUTER FACE, BOTTOM"
     bodies = adsk.core.ObjectCollection.create()
     bodies.add(comp.bRepBodies.item(0))
     mf = comp.features.moveFeatures
@@ -1838,7 +1905,7 @@ def to_part_system(design, comp, key):
     mi = mf.createInput2(bodies)
     mi.defineAsTranslateXYZ(vi(tx), vi(ty), vi(tz), True)
     f2 = mf.add(mi)
-    f2.name = "MOVE - PART SYSTEM: ORIGIN AT THE BACK END, OUTER FACE, BOTTOM"
+    f2.name = "MOVE - PART SYSTEM: %s" % where
     print("  part system: turned %s about Z, moved by (%s, %s, %s): %s" % (
         angle, tx, ty, tz, fmt_box(bbox_mm(comp.bRepBodies.item(0)))))
 
@@ -1848,7 +1915,7 @@ def file_name(pn, name, doctype):
     capitals, words joined by hyphens."""
     t = name.replace("Ø", "D").replace("(HOLD)", "").upper()
     words = []
-    for w in t.replace(" - ", " ").split():
+    for w in t.replace(" - ", " ").replace("-", " ").split():     # DOOR-END: two words, joined again by a hyphen
         w = "".join(ch for ch in w if ch.isalnum() or ch == ".")
         if w:
             words.append(w)

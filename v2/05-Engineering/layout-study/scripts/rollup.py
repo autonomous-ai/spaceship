@@ -169,23 +169,25 @@ def dr_channels_kg(path=FRONT_FIXED_LIST):
     kg = sum(float(rows[k]["unit_mass_kg"]) * float(rows[k]["qty"] or 1) for k in ("368004", "368002"))
     return kg * (right + diag) / (bottom + right + diag + top)
 BASE_LIST = os.path.join(MANUF, "base", "110000_P01_BASE_BOM.csv")       # PR #55 (S44); P02 batch 1 (S54)
-BASE_TUBES = {"110101": "111101", "110102": "111102", "110103": "111103", "110106": "111106"}   # each band assembly's tube
-BASE_SHORT = {"110101": "the left side band", "110102": "the right side band", "110103": "the back band", "110106": "FR1"}
-BASE_OWN_LINES = {"118002": "glides", "111601": "blocks", "118001": "lip_m"}   # BASE parts with lines of their own here
+BASE_TUBES = {"110101": ("111101",), "110102": ("111102",), "110103": ("111103",), "110104": ("111104", "111105"),
+              "110106": ("111106",)}       # each band assembly's tubes: DL's band piece is FL1 and FL2, joined at the knee
+BASE_SHORT = {"110101": "the left side band", "110102": "the right side band", "110103": "the back band",
+              "110104": "DL's band piece", "110106": "FR1"}
+BASE_OWN_LINES = {"111602": "glides", "111601": "blocks", "118001": "lip_m"}   # BASE parts with lines of their own here
 
 
 def base_cad(path=BASE_LIST, elsewhere=()):
-    """BASE's P02 batch 1 parts list (S54): the side bands LH and RH, the back band, and FR1 with its sill. For each band
-    assembly, its tube and the small parts no other line holds (its own line); the glides, load blocks and lip by
+    """BASE's P02 parts list (S54): the side bands LH and RH, the back band, FR1 with its sill (batch 1) and DL's band
+    piece, FL1 and FL2 (batch 2). For each band assembly, its tubes and the small parts no other line holds (its own
+    line); the glides, load blocks and lip by
     assembly, for their own lines; and the parts in `elsewhere`, which other lines already hold (the corner keys in the
     joints' key line; the register's bolts and rivnuts and the joints' spigots and stop washers in the fixings kit's
-    line), so nothing counts twice. No floor and no threshold (D-132); the front-left pieces and the intake piece follow
-    in batches 2 and 3."""
+    line), so nothing counts twice. No floor and no threshold (D-132); the intake piece follows in batch 3."""
     import csv
     with open(path, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     top = next(float(r["unit_mass_kg"]) for r in rows if r["level"] == "0")
-    asm = {r["part_number"]: dict(name=r["name"], tube=0.0, tube_pn=BASE_TUBES[r["part_number"]], tube_len=0.0, own=[],
+    asm = {r["part_number"]: dict(name=r["name"], tube=0.0, tube_pns=BASE_TUBES[r["part_number"]], tube_len=0.0, own=[],
                                   keys=0.0) for r in rows if r["level"] == "1" and r["part_number"] in BASE_TUBES}
     per = {k: {} for k in BASE_OWN_LINES.values()}
     unit, held, total, block = {}, {}, 0.0, ""
@@ -195,8 +197,9 @@ def base_cad(path=BASE_LIST, elsewhere=()):
         pn, parent, q, each = r["part_number"], r["parent"], float(r["qty_per_pod"]), float(r["unit_mass_kg"])
         total += q * each
         a = asm[parent]
-        if pn == a["tube_pn"]:
-            a["tube"], a["tube_len"] = each * q, float(r["size_mm"].split(" x ")[0])
+        if pn in a["tube_pns"]:
+            a["tube"] += each * q
+            a["tube_len"] += float(r["size_mm"].split(" x ")[0])
         elif pn in BASE_OWN_LINES:
             k = BASE_OWN_LINES[pn]
             per[k][parent] = per[k].get(parent, 0.0) + q
@@ -669,19 +672,18 @@ def lines(**adopt):
     scale = kgm_band / al_rhs(100, 40, BAND_T_LIGHT)           # BASE's tubes are 1.5 mm; a 2.0 mm wall scales them
     wall = "; confirmed (1.5 mm)" if thin else ""
     for asm, item in (("110103", "Base band piece 100x40 - back"), ("110101", "Base band piece 100x40 - side LH"),
-                      ("110102", "Base band piece 100x40 - side RH"), ("110106", "Base band piece FR1 under the fixed glass")):
+                      ("110102", "Base band piece 100x40 - side RH"), ("110104", "Base band piece FL1 and FL2 under DL"),
+                      ("110106", "Base band piece FR1 under the fixed glass")):
         ba = bc["asm"][asm]
+        tubes = " and ".join(ba["tube_pns"])
         L.append(("BASE", f"{item}, {band_t:g} mm wall" + (", with its sill" if asm == "110106" else ""), 1,
                   ba["tube"] * scale + ba["own_kg"], "calculation (CAD)" + wall,
-                  f"S54, CAD on main: BASE parts list {asm} P02 batch 1: the tube {ba['tube_pn']} {ba['tube']:.4f}"
+                  f"S54, CAD on main: BASE parts list {asm} P02 batch {2 if asm == '110104' else 1}: the "
+                  f"tube{'s' if len(ba['tube_pns']) > 1 else ''} {tubes} {ba['tube']:.4f}"
                   + ("" if thin else f", scaled to a {band_t:g} mm wall") + f", and {ba['own_text']} {ba['own_kg']:.4f}; its "
                   "glides, load blocks and lip are in their own lines" + (", its corner key in the corner key line" if ba["keys"]
                   else "") + ", its rivnuts, spigots, stop washers and hook studs in the fixings kit's line (the joints "
                   "register counts them)"))
-    pt = base["B-BAND-FRONT-L"]
-    L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, pt.dims[0] * 1e-3 * kgm_band,
-              "calculation" + wall, "this study's model" + (f", {band_t:g} mm wall (D-81; BASE's check passed, D-86)" if thin
-                                                            else "") + "; P03 length; BASE's batch 2 models the front-left pieces"))
     pt, fr1 = base["B-BAND-FRONT-R"], bc["asm"]["110106"]["tube_len"]
     L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, the intake part, {band_t:g} mm wall", pt.qty,
               (pt.dims[0] - fr1) * 1e-3 * kgm_band, "calculation" + wall,
@@ -701,10 +703,9 @@ def lines(**adopt):
     glide = base["B-GLIDE"]
     ng = sum(bc["glides"].values())
     split = ", ".join(f"{n:g} on {BASE_SHORT[k]}" for k, n in bc["glides"].items())
-    L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), ng, bc["glide"], "assumption (CAD, HOLD)",
-              f"S54, CAD on main: BASE parts list 118002 P02 batch 1, a levelling glide on HOLD at each of its {ng:g} glides "
-              f"({split}); this study had {glide.qty:g}; the front-left pieces and the intake piece add theirs, if any, in "
-              "batches 2 and 3"))
+    L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), ng, bc["glide"], "calculation (CAD)",
+              f"S54, CAD on main: BASE parts list 111602 P02 batch 1, BASE's made levelling glide (D-164) at each of its {ng:g} glides "
+              f"({split}); this study had {glide.qty:g}; the intake piece adds its own, if any, in batch 3"))
     if thin:
         nb = sum(bc["blocks"].values())
         L.append(("BASE", "Glide load blocks: BASE's load block inside the band at each glide", 1, nb * bc["doubler"],
@@ -746,7 +747,7 @@ def lines(**adopt):
               f"S54, CAD on main: BASE parts list 118001 P02 batch 1, {lip:.3f} m ("
               + ", ".join(f"{BASE_SHORT[k]} {m:g}" for k, m in bc["lip_m"].items()) + f") at the PM's "
               f"{p('lip_seal_kgm'):.2f} kg/m (D-132); none across the door, where the door's drop seal closes on the room "
-              "floor; the front-left pieces and the intake piece add theirs in batches 2 and 3; the door edge seals are in "
+              "floor; the intake piece adds its own in batch 3; the door edge seals are in "
               "FRONT's parts lists (PM ruling 2026-11-01)"))
     L.append(("BASE", "Cable grommets: the sealed cable holes", 1, p("grommet_kg"), "source", "S20"))
     el = ELEC
@@ -875,8 +876,11 @@ def base_swaps():
             ("Base band piece, side LH", 1, side, own["110101"], src % "01"),
             ("Base band piece, side RH", 1, side, own["110102"], src % "02"),
             ("Base band piece FR1, with its sill (not in the estimate)", 1, fr, own["110106"], src % "06"),
+            ("Base band pieces FL1 and FL2 under DL, with the knee key's screws", 1,
+             base["B-BAND-FRONT-L"].qty * base["B-BAND-FRONT-L"].dims[0] * 1e-3 * kgm, own["110104"],
+             "BASE 110104 P02 batch 2 (S54), BASE's batch 2 PR"),
             ("Levelling glides: BASE's %g against this study's %g" % (ng, glide.qty), 1, glide.qty * bc["glide"],
-             ng * bc["glide"], "BASE 118002 P02 batch 1 (S54)"),
+             ng * bc["glide"], "BASE 111602 P02 batch 1 (S54, D-164)"),
             ("Corner keys, the 30 mm family", 6, base["B-KEY"].kg, sum(q * kg for q, kg in (JOINTS[pn] for pn in KEY_PNS)) / 6,
              "joints 111211 to 111214 P01, PR #139"),
             ("Glide load blocks (D-86's 0.4 kg), now BASE's %g blocks" % sum(bc["blocks"].values()), 1, LOAD_BLOCKS_KG,

@@ -106,6 +106,78 @@ python3 v2/03-Manufacturing/base/make_outputs.py --dxf
 
 The first try (10:40 UTC, queued at 10:05) stopped in step 6: the lip's fin, extruded as a second body and joined to the leg, stayed a second body. Nothing was saved, and the run closed its own document. The envelope is now one L-section extrude.
 
+## Run E, 2026-11-01, ended 12:55 UTC: D-144's back corners, batch 2 (FL1, FL2 with its hinge-side plate, lip and strike pad), the welded sill (111302, 111303) tied to FR1's joint; the edit test in the same run
+
+On the follow-up branch, with Joints' key STEPs and `corner-keys.csv` from #324 (f824ebc, frozen). The loader read the scripts when the lock was granted.
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/base/late_base.py --timeout 3600 \
+  --arg targets=v2/01-CAD-Native/base/base_build.py,v2/01-CAD-Native/base/base_edit_test.py,v2/02-Drawings/base/base_cleanup.py \
+  --arg save=1 --arg replace=1 --arg export=1 --arg scope=p02 --arg batch2=1 --arg also_parts=sill_bent,sill_plate \
+  --arg supersede=111301_P01_BASE-SILL-FIXED-GLASS_CAD
+python3 v2/03-Manufacturing/base/make_outputs.py --dxf
+```
+
+| What | Result |
+|---|---|
+| Change | D-144: the back key's fixing holes at Joints' new layout; batch 2: FL1 111104 (its corner end plate's keyholes for 111212, the knee key 111214's fixing holes, DL's round spigot) and FL2 111105 (its knee end plate's keyholes, DL's slot spigot, its glide; at the door end the welded block, the 2 mm hinge-side plate to the kick strip's back line with its full round, the strike pad, the lip under the plate: the PM's hinge-side ruling); the sill as a weldment of 111302 and 111303 (D-120), its right end and 4 rivnut holes tied to FR1's joint and FRONT's linked glass lines |
+| Timeline | 343 items, all healthy |
+| Sketches | 74, all fully constrained |
+| Keys | both back corners: fixing holes, stud bolt holes, key position and the back band's slot end MATCH `corner-keys.csv` (D-144); FL1's keyholes (111212) and the knee key's fixing holes, and FL2's keyholes (111214): MATCH |
+| Base seal (D-132, D-150) | 8 runs: LH 1462.07, back 2400.00, RH 1464.17, FL1 100.22, FL2 181.23, FL2's door-end plate 112.60, the sill's door end 108.50, FR1 694.54 mm |
+| Own clashes | 12 over 1 mm³, all expected |
+| Skeleton clashes | 8, all expected (the spigots enter L1, R1, B1, B2) |
+| Cloud save | `110000_P01_BASE_CAD` saved; the previous copy renamed `..._SUPERSEDED-2026-11-01-3` (never deleted) |
+| STEP | read back in Fusion: 117 occurrences, box X −1250.02…1250.02, Y −850.02…850.03, Z −0.03…118.03, largest difference 0.000 mm: MATCH |
+| Part designs | 111302 1.0336 kg, 111303 0.0609, 111101 1.6726, 111103 2.7044, 111104 0.1380, 111105 0.3809, 111102 1.6749: each healthy and fully constrained, saved (old copies renamed `_SUPERSEDED-2026-11-01-2`), STEP box MATCH |
+| Edit test | stopped in its first set: with the pod 100 deeper, FRONT's round spigot point fell off FL1 ("No target body"), as FRONT places DL's spigots from the front face while the skeleton gives DL's points from the pod's centre. Fixed in the test's pod-size set, which now moves DL's points with the front face (offline: both spigot points stay 13 from their band's nearest edge in every set); the cleanup after it didn't run, so run F renames the old one-piece sill design |
+| Outputs | parts list 61 rows, 11.97 kg; the members' DXFs (111302's flat pattern, 111303's blank) |
+| Names in exports | none: 4 byte hits in the decompressed .f3d files were one coordinate's binary bytes (the double −268.1686), not text; the STEP, CSV and data files are clean |
+
+## Run F, 2026-11-01 13:51 to 14:01 UTC: D-163's round rivnut holes, the made glide 111602 and end cap 111111, the sill's countersunk M3 holes, FL1 and FL2 in their own axes; stopped by a Fusion crash
+
+First a sample with nothing saved (13:48, its own queue place): the glide, the end cap, the sill's bent profile with its countersunk holes, and FL1 and FL2 in their own axes, each built in its own unsaved design: 5 of 5 healthy and fully constrained (glide 0.1064 kg, Ø40 × 60; cap 0.0194 kg; FL1 in CS-111104 X 0…123.24, Y 0…40, Z 0…100; FL2 in CS-111105 X 0…207.48, Y 0…141.16, Z 0…100, as the offline transform gave).
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/base/late_base.py --timeout 3600 \
+  --arg targets=v2/01-CAD-Native/base/base_build.py,v2/02-Drawings/base/base_cleanup.py,v2/01-CAD-Native/base/base_edit_test.py \
+  --arg save=1 --arg replace=1 --arg export=1 --arg scope=p02 --arg batch2=1 \
+  --arg also_parts=sill_bent,doubler,fr1,glide,cap --arg supersede=111301_P01_BASE-SILL-FIXED-GLASS_CAD
+```
+
+| What | Result |
+|---|---|
+| Assembly | saved and exported, which the build does only after every step-9 check passes (timeline, sketches, boxes, clashes, the corner keys); STEP 117 occurrences; the data file has D-163's sizes (`rn_hole` 10, `gl_nut_hole` 13.5, `ch_rn_hole` 5.1 with `ch_rn_csk` 8) |
+| Part designs | 111302, 111601, 111106, 111602, 111111, 111101, 111103 and 111104 saved and exported; their STEPs hold the new holes (Ø10.00, Ø13.50, Ø5.10) |
+| Stopped | Fusion crashed at 14:01 while it built FL2's design; the Lead relaunched it at 14:15. The run's printed results went with it. FL2's and the right band's designs, the old sill design's rename and the edit test didn't run |
+| Offline | the glide's STEP: one solid, 13 547.8 mm³, the socket 5.00 across flats; the cap's 7178.0 mm³ (97 × 37 × 2); FL1's own STEP turned back into the pod is its copy in 110000's STEP (228 vertices within 0.0000 mm, 22 of 22 faces) |
+| Outputs | parts list 61 rows, 11.59 kg; the cap's DXF; master BOM, roll-up and packing rerun |
+
+## Run G, 2026-11-01 15:14 to 15:24 UTC: the full rebuild after run F's crash, with D-169 (DL's base spigots gone); the old sill design renamed; the edit test in the same run
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/base/late_base.py --timeout 3600 \
+  --arg targets=v2/01-CAD-Native/base/base_build.py,v2/02-Drawings/base/base_cleanup.py,v2/01-CAD-Native/base/base_edit_test.py \
+  --arg save=1 --arg replace=1 --arg export=1 --arg scope=p02 --arg batch2=1 --arg also_parts=band_r_tube \
+  --arg supersede=111301_P01_BASE-SILL-FIXED-GLASS_CAD
+python3 v2/03-Manufacturing/base/make_outputs.py --dxf
+```
+
+| What | Result |
+|---|---|
+| Change | D-169 as amended (the Lead's ruling of 2026-11-01): DL locates on pins along the pull at its seam face with L1, so FL1's and FL2's spigot rivnut holes, rivnuts and spigots are out; FRONT's DL values are no longer read. Everything else as run F (D-163's holes, the made glide and end cap, the countersunk sill holes) |
+| Timeline | 337 items, all healthy (6 fewer: DL's two holes and FL1's top plane) |
+| Sketches | 73, all fully constrained |
+| Keys | both back corners: fixing holes, stud bolt holes, key position and slot end MATCH `corner-keys.csv` (D-144); FL1's keyholes (111212) and the knee key's fixing holes, FL2's keyholes (111214): MATCH |
+| Base seal (D-132, D-150) | 8 runs, as run E |
+| Own clashes | 12 over 1 mm³, all expected |
+| Skeleton clashes | 8, all expected (the spigots enter L1, R1, B1, B2) |
+| Cloud save | `110000_P01_BASE_CAD` saved; the previous copy renamed `..._SUPERSEDED-2026-11-01-5` (never deleted) |
+| STEP | read back in Fusion: 113 occurrences (DL's 2 spigots and 2 rivnuts gone), box X −1250.02…1250.03, Y −850.03…850.03, Z −0.03…118.03, largest difference 0.000 mm: MATCH |
+| Part designs | 111102 1.6747 kg, 111101 1.6724, 111103 2.7040, 111104 0.1383 (in CS-111104), 111105 0.3811 (in CS-111105): each healthy and fully constrained, saved (old copies renamed `_SUPERSEDED`), STEP box MATCH. The glide, end cap, load block, FR1 and sill members stand as run F saved them |
+| Cleanup | the one-piece sill design of P02 part 1 renamed `111301_P01_BASE-SILL-FIXED-GLASS_CAD_SUPERSEDED-2026-11-01-3` (never deleted) |
+| Edit test | PASS: every part we make follows all three sets and comes back exactly (EDIT-TEST-RECORD.md) |
+
 ## Earlier runs (no files kept)
 
 - 18:02 to 18:43: stopped at the first keyhole sketch (two circles in one sketch over-constrained in Fusion). The keyholes are now two hole features and one slot cut.

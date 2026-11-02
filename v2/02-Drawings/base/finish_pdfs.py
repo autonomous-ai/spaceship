@@ -44,18 +44,28 @@ DWG = {
     "110000": ("110000_P01_BASE_DWG", "1:10", "A2"),
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "1:5 (iso 1:10)", "A2"),
     "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "1:5 (iso 1:10)", "A1"),
+    "110102": ("110102_P01_BASE-BAND-ASSY-SIDE-RH_DWG", "1:5 (iso 1:10)", "A2"),
+    "110104": ("110104_P01_BASE-BAND-ASSY-FRONT-LH_DWG", "1:1 (iso 1:2)", "A3"),
+    "110106": ("110106_P01_BASE-BAND-ASSY-FRONT-FIXED-GLASS_DWG", "1:2 (iso 1:4)", "A2"),
     "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "1:5 (end view 1:2)", "A3"),
     "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
+    # Fusion sheets the generator can't draw yet (D-139; the Lead's ruling of 2026-11-01; DRAWING-RECORD.md)
+    "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "1:1 (iso 1:2)", "A3"),
+    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "1:2 (iso 1:4)", "A3"),
+    "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "2:1", "A3"),
 }
 # No drawing (D-89): 111601 (part 4: DXF and parts-list row). No floor (D-132).
 
 TOL = {
     "tube": "General tolerances, PROPOSED until the shop confirms them: cut length +0/-0.5; hole positions "
             "±0.2 from datum C along the band and ±0.2 from datum B across it (joints register R-J6: "
-            "Ø7.0 bolt holes on the wall side positioned ±0.2 from the spigot hole); rivnut holes Ø9.53 +0.10/0 "
-            "(maker). Not ISO 2768 on the anodised faces.",
-    "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (plywood ±0.3, "
-             "foam ±0.3); not ISO 2768 on wood or foam (guideline §3.2).",
+            "Ø7.0 bolt holes on the wall side positioned ±0.2 from the spigot hole); rivnut holes Ø10.00 +0.10/0 "
+            "and the glide's rivnut hole Ø13.50 +0.15/0 (D-163). Not ISO 2768 on the anodised faces.",
+    "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (guideline §3.2).",
+    "turned": "General tolerances ISO 2768-m. Thread M10 x 1.5-6g (ISO 965-1) along the stem (assumption). Base height "
+              "7.61 ±0.05 (D-164's 7.6): with the M10 rivnut's head (0.81 to 0.97) it sets the band's lowest setting, 8.5 "
+              "(PM ruling on F-018). Hex socket 5 across flats, +0.02/+0.14, to fit a 5 mm hex key (as ISO 4762's s 5; "
+              "assumption). Static rating 3.5 kN or more, proved by BT-04 (D-164).",
     "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
              "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
              "Ø5.0 +0.1/0 (HOLD with the rivnut).",
@@ -67,6 +77,23 @@ TOL = {
 DATUMS = {
     "111601": "Part system: X across the band, Y along it, origin at the plate centre. Hole Ø13 3 mm off centre "
               "toward the pod side (gl_dx).",
+    "111104": "Part system CS-111104: X along FL1's outer face from its corner end (the long point of its mitre, on "
+              "DL's outer facet), Y inward square to it, Z up from the band's bottom face. Datums: A = the top face "
+              "(DL's seat), B = the corner end plate's outer face, C = the outer face (Y 0). End cuts: the corner "
+              "24.14 deg off square (65.86 deg to the outer face), closed by a welded 1.5 plate (ground flush, "
+              "anodised with FL1); the knee 7.25 deg off square (82.75 deg), open, with the knee key 111214 inside.",
+    "111105": "Part system CS-111105: X along FL2's outer face from its knee end (the long point of its mitre), Y "
+              "inward square to it, Z up from the band's bottom face. Datums: A = the top face (DL's seat), B = the "
+              "knee end plate's outer face, C = the outer face (Y 0). End cuts: the knee 7.25 deg off square (82.75 "
+              "deg to the outer face); the door end 27.2 deg off square (62.8 deg), parallel to DL's door face. "
+              "At the door end: a 7 mm block welded on to reach "
+              "DL's door face, and a 2 mm plate welded into it, flush with DL's door face, from FL2's inner face to the "
+              "kick strip's back line (112.6 wide), from the band's bottom face to its top, its back edge a full round "
+              "R1 (the PM's hinge-side ruling); on the plate's door face the strike pad 8 x 12 x 65 (thickness HOLD), "
+              "from the bottom face up, centred on the glass line. Weld, grind flush and anodise with FL2: one part.",
+    "111602": "Part system: Z the glide's axis, up from the base's bottom face (on the room floor). Datums: A = the "
+              "base's bottom face, B = the axis. Turned in one piece from zinc-plated free-cutting steel without lead "
+              "(11SMn30 / AISI 1215 or similar, assumption), zinc plated, clear passivated (D-164).",
     "111211": "Part system: X into the band from the end face (X 0), Y across the band (centred), Z up from the "
               "key's bottom. Datums: A = bottom face (sits on the band's bottom wall, pod Z 11.5), B = end face "
               "(flush with the band's end), C = the Y faces' centre plane. Block 25 x 35 x 75.",
@@ -76,7 +103,7 @@ DATUMS = {
               "(door opening). The right end is closed by a welded 1.5 mm end plate with 2 keyholes.",
     "111301": "Pod coordinates: X along the sill from the door opening (X 218.5) to X 965. Section (view from the left, "
               "1:1): flange down FR1's inner face, ledge flush with the band top (Z 110), drop, seat under the U-channel "
-              "(Z 93 to 95), kerb down to F2 (Z 12). Datums: A = the ledge's top face, B = the flange's outer face "
+              "(Z 93 to 95), kerb down to the band's bottom line (Z 10; no floor, D-132). Datums: A = the ledge's top face, B = the flange's outer face "
               "(Y -810), C = the left end. Bends 90 deg, inside radius 2 (assumption, the bender confirms).",
     "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 850, "
               "on its glides. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide doublers, "
@@ -84,6 +111,24 @@ DATUMS = {
               "screws and its 2 stud bolts set 1.8 off the inner wall, and the flat end cap 118003 (J-BASE-02, D-129); "
               "the front end carries the front corner key 111212 (P02). GLIDES: level up from the highest floor spot; "
               "never below 8.5 mm under the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
+    "110102": "Pod coordinates (conventions §4), as built: the side band RH, X 1210 to 1250, Y -672 to 850, on "
+              "its glides; 110101's mirror. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide "
+              "load blocks, glides preset (D-87); in its back end the corner key 111211 (turned 180 deg) against the "
+              "inner wall, with its 2 fixing screws and 2 stud bolts set 1.8 off the inner wall, and the flat end cap "
+              "118003 (J-BASE-02, D-129, D-144); the front end carries the front corner key 111213 (with the intake, "
+              "P02 batch 3). GLIDES: level up from the highest floor spot; never below 8.5 mm under the band.",
+    "110104": "Pod coordinates (conventions §4), as built: DL's two facet pieces, FL1 (X -1250 to -1135) and FL2 "
+              "with its welded door-end block (to DL's door face, X -972). Factory-fitted: the knee key 111214 in FL1's "
+              "knee end with its 2 fixing screws and 2 hook studs (heads 1.8 off its stud face), FL2's glide with its "
+              "load block, the lip seal along the inner faces; no base spigots for DL (D-169: it locates on pins at "
+              "its seam face). On site it goes on along the left side band's front key studs, then down 10 (J-BASE-02); "
+              "FL2 goes on FL1's knee studs the same way at the factory. GLIDE: level up from the highest floor spot "
+              "before DL goes on.",
+    "110106": "Pod coordinates (conventions §4), as built: FR1 (X 218.5 to 915, Y -850 to -810) with its sill and "
+              "FRONT's bottom U-channel screwed on at the factory, its 2 glides with load blocks, the flat end cap at "
+              "the door opening (D-132) and the lip seal along its inner face. FR1 goes on last: along the intake's "
+              "inline key studs (111215, D-144), then down 10 (J-BASE-02). Its glides are levelled by turning their "
+              "base (no key holes on its visible top).",
     "110103": "Pod coordinates (conventions §4), as built: the back band, X -1210 to 1210 over its welded end "
               "plates, Y 810 to 850, on its glides. Factory-fitted: rivnuts, stop washers and spigots for B1 and B2 "
               "(J-BASE-01), glide doublers, glides preset (D-87). It is lowered straight down between the side bands: "
@@ -94,7 +139,18 @@ DATUMS = {
 }
 
 HOLES = {
-    "111601": "One hole Ø13 for the glide's M10 rivnut.",
+    "111601": "One hole Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163).",
+    "111104": "Top wall: none (DL's base spigot went with D-169). Bottom wall: the knee key's 2 fixing holes Ø7.0, 10.5 from its back face and 7.0 either side of its "
+              "centre line (J-BASE-02, 111214), in the hole table. Corner end plate: 2 keyholes on the plate's centre "
+              "line, a Ø12 entry 10 below each seat and a 6.5 slot up to it, the seats 27.5 and 61.5 above the bottom "
+              "face (J-BASE-02, the front corner key 111212's studs). The end view sees the plate turned 24.14 deg, "
+              "so the keyholes show narrower there than these sizes.",
+    "111105": "Top wall: the glide's key hole Ø8 (DL's base spigot went with D-169). "
+              "Bottom wall: the glide's rivnut hole Ø13.50 +0.15/0 (D-163); both in the hole table. Knee end plate: 2 "
+              "keyholes on the plate's centre line, a Ø12 entry 10 below each seat and a 6.5 slot up to it, the seats "
+              "27.5 and 61.5 above the bottom face (J-BASE-02, the knee key 111214's studs).",
+    "111602": "Hex socket 5 across flats, 6 deep, in the stem's top: a 5 mm hex key turns the glide from above through "
+              "the band top's Ø8 key hole (BASE feature rationale FB-06, FG-03).",
     "111211": "Bottom: 2 x M6, 15 of full thread (tap drill Ø5.0 x 18), for the M6 x 12 button head fixing screws, "
               "10 from the back face and 7.5 either side of the centre line. End face: 2 x M6 tapped through, for "
               "the hook studs, 26 and 60 above the bottom (pod Z 37.5 and 71.5) on the centre line (joints register "
@@ -107,17 +163,21 @@ HOLES = {
               "(Y -699). Flange: blind rivet holes to FR1, HOLD.",
     "110101": "Holes on the part drawings (111101; the key 111211 on the Joints Engineer's sheet).",
     "110103": "Holes, slots and notches on the part drawing (111103).",
+    "110102": "Holes on the part drawing (111102; the keys on the Joints Engineer's sheet).",
+    "110104": "Holes on the part drawings (111104, 111105; the knee key 111214 on the Joints Engineer's sheet).",
+    "110106": "Holes on the part drawings (111106, 111301).",
 }
 
 
 # sheets whose views reach the bottom left: their notes go on the right, above the title block
-NOTES_RIGHT = {"110000"}
+NOTES_RIGHT = {"110000", "111602", "111104", "111105"}
 
 
 def kind_of(pn):
     if pn[2:4] == "00" or pn[2] == "0":             # xx0000 to xx0999: assemblies (conventions section 5)
         return "assembly"
-    return {"111101": "tube", "111102": "tube", "111103": "tube", "111106": "tube", "111301": "sheet"}.get(pn, "plate")
+    return {"111101": "tube", "111102": "tube", "111103": "tube", "111104": "tube", "111105": "tube", "111106": "tube",
+            "111301": "sheet", "111602": "turned"}.get(pn, "plate")
 
 
 def text_block(pn):
@@ -178,6 +238,52 @@ def fill_created_by(page):
     page.insert_text((lab.x0, base), AUTHOR, fontsize=max(hgt / 1.15, 3.5 * 72.0 / 25.4), fontname="helv")
 
 
+def stack_tags(page, x_max):
+    """Fusion puts a hole table's tag at each hole's upper right, so two coaxial holes (FL2's Ø8 key hole in the top
+    wall over the glide's Ø13.5 rivnut hole in the bottom wall) get their tags on top of each other. Tags that overlap
+    are written again side by side on the first one's line, 1 mm apart (a redaction takes out every letter it
+    touches, so the whole group is taken out and written again); nothing else moves, and a group with any other text
+    in its box is left alone. Only the views' tags (left of x_max, the notes column; the hole table's own tags are
+    right of it). Returns the tags moved."""
+    import re
+    tags = []
+    for b in page.get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln.get("spans", []):
+                if re.fullmatch(r"[A-Z][0-9]{1,2}", sp["text"].strip()) and sp["bbox"][2] < x_max:
+                    tags.append(sp)
+    tags.sort(key=lambda sp: (sp["text"].strip(), sp["bbox"][0]))
+    groups = []
+    for sp in tags:
+        r = fitz.Rect(sp["bbox"])
+        g = next((g for g in groups if any((r & fitz.Rect(q["bbox"])).get_area() >
+                                           0.2 * min(r.get_area(), fitz.Rect(q["bbox"]).get_area()) for q in g)), None)
+        if g is None:
+            groups.append([sp])
+        else:
+            g.append(sp)
+    moved = []
+    for g in (g for g in groups if len(g) > 1):
+        box = fitz.Rect(g[0]["bbox"])
+        for q in g[1:]:
+            box |= fitz.Rect(q["bbox"])
+        names = [q["text"].strip() for q in g]
+        others = [w[4] for w in page.get_text("words") if fitz.Rect(w[:4]).intersects(box) and w[4] not in names]
+        if others:
+            print("  tags %s overlap but share their box with %s: left as they are" % (", ".join(names), others))
+            continue
+        page.add_redact_annot(box)
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                              text=fitz.PDF_REDACT_TEXT_REMOVE)
+        x, y = g[0]["origin"]
+        for q in g:
+            page.insert_text((x, y), q["text"].strip(), fontsize=q["size"], fontname="helv",
+                             color=fitz.sRGB_to_pdf(q["color"]))
+            x += fitz.get_text_length(q["text"].strip(), fontname="helv", fontsize=q["size"]) + 2.8
+        moved += names[1:]
+    return moved
+
+
 def finish(pn):
     if pn in GENERATOR:
         raise SystemExit("%s is drawn by the drawing generator (D-112); not finished here" % pn)
@@ -190,6 +296,9 @@ def finish(pn):
     page = doc[0]
     fill_created_by(page)
     w, h = page.rect.width, page.rect.height
+    moved = stack_tags(page, w * 0.56)
+    if moved:
+        print("%s: hole tag(s) %s moved off the tag they covered (coaxial holes)" % (pn, ", ".join(moved)))
     lines = text_block(pn)
     mm = 72.0 / 25.4
     # letters at least 2.5 mm tall: ISO 3098 measures the capital height, about 0.72 of the font size in Arial,
