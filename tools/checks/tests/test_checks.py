@@ -1816,3 +1816,29 @@ def test_every_bonded_skin_sits_bond_t_off_its_frame():
     far = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -630.0)], bt=3.0)   # 17 mm behind: not bonded
     assert far == []
     assert c_geometry.bond_t(ROOT) == 3.0              # the skeleton's own parameter
+
+
+def test_an_edge_exception_with_a_place_covers_a_corners_two_edges_and_only_those_it_lists(monkeypatch, tmp_path):
+    # the PM (2026-11-02, ELECTRICAL's H04 in 711001's bottom): a row naming the hole's place may cover its two short
+    # edges at a notch or bend relief corner; without a place the edges must be parallel, as before
+    plate = _plate_with_hole(hole_x=10.0, hole_y=11.0, d=6.0)          # 10 and 11 from two edges at right angles
+
+    class FakeStep:
+        def instances(self):
+            return [{"solid": 1, "part_number": "711999", "name": "x", "path": ["711999"], "frame": sf.Frame()}]
+
+        def solid(self, sid):
+            return plate
+    monkeypatch.setitem(c_geometry.load_step.__defaults__[0], str(tmp_path / "x.step"), FakeStep())
+
+    def edge_findings(**row):
+        rows = {"711999": [dict({"hole_dia_mm": "6.0", "min_edge_mm": "9.5", "max_short_edges": "2",
+                                 "ruling": "PM ruling", "reason": "test"}, **row)]}
+        return [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, [],
+                                                          hole_rules=[], edge_exceptions=rows)
+                if f.rule == "edge-distance"]
+    assert len(edge_findings()) == 1                                 # no place: corner edges aren't one strip
+    assert edge_findings(place="X 10 Y 11") == []                    # its place: both corner edges covered
+    assert len(edge_findings(place="X 10 Y 11", max_short_edges="1")) == 1   # a row covering one edge only
+    assert len(edge_findings(place="X 30 Y 11")) == 1                # another hole's place
+    assert len(edge_findings(place="X 10 Y 11", min_edge_mm="10.5")) == 1    # 10 mm is under the row's minimum

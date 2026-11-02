@@ -729,7 +729,9 @@ def load_hole_rules(root):
 def load_edge_exceptions(root):
     """pn -> rows of v2/04-Checks/config/edge-exceptions.csv: edge distances the PM accepted for one hole size
     of one part, with the ruling. A row lets at most max_short_edges parallel edge lines sit under the
-    2-diameter rule, each at least min_edge_mm from the hole centre; every other edge keeps the rule."""
+    2-diameter rule, each at least min_edge_mm from the hole centre; every other edge keeps the rule. A row whose
+    place column gives the hole's centre (part coordinates, as the finding prints it) covers that hole alone, and
+    its short edges may meet at a corner (a notch or a bend relief: the PM, 2026-11-02)."""
     p = os.path.join(root, "v2/04-Checks/config/edge-exceptions.csv")
     out = {}
     if os.path.exists(p):
@@ -737,6 +739,10 @@ def load_edge_exceptions(root):
             if row.get("part_number"):
                 out.setdefault(row["part_number"].strip(), []).append(row)
     return out
+
+
+EDGE_PLACE = re.compile(r"\b([XYZ])\s*(-?\d+(?:\.\d+)?)", re.I)    # a row's place: "X 127 Z 4"
+EDGE_PLACE_TOL = 0.5        # mm
 
 
 def _edge_accepted(rows, hole, edges, need):
@@ -755,8 +761,13 @@ def _edge_accepted(rows, hole, edges, need):
         if abs((num(row.get("hole_dia_mm")) or 0) - hole.diameter) > 0.05:
             continue
         lo, n_max = num(row.get("min_edge_mm")) or 0.0, int(num(row.get("max_short_edges")) or 0)
-        if len(lines) <= n_max and all(e[0] + 0.05 >= lo for e in short) and \
-                all(abs(abs(sf.dot(e[1], lines[0][1])) - 1.0) < 1e-3 for e in short):
+        place = {k.lower(): float(v) for k, v in EDGE_PLACE.findall(row.get("place") or "")}
+        if place and any(abs(hole.center["xyz".index(k)] - v) > EDGE_PLACE_TOL for k, v in place.items()):
+            continue                # a row with a place covers that one hole only
+        # without a place, the short edges must be parallel (one strip); a row naming the hole's place may cover
+        # edges meeting at a corner, as a notch's or bend relief's two sides (the PM, 2026-11-02, ELECTRICAL's H04)
+        parallel = all(abs(abs(sf.dot(e[1], lines[0][1])) - 1.0) < 1e-3 for e in short)
+        if len(lines) <= n_max and all(e[0] + 0.05 >= lo for e in short) and (parallel or place):
             return row
     return None
 
