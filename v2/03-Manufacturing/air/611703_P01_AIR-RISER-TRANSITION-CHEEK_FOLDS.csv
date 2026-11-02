@@ -1,0 +1,3 @@
+fold,x0,y0,x1,y1,angle_deg,inside_radius_mm,direction_as_drawn,bend_allowance_mm,k_factor,thickness_mm
+CHEEK KINK 1,95.9822,-124.0326,0.6029,-1.7979,4.050,1.00,UP,0.1018,0.44,1.0
+CHEEK KINK 2,179.6162,79.4834,0.5995,308.9045,4.050,1.00,DOWN,0.1018,0.44,1.0

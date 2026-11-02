@@ -8,7 +8,7 @@ One native Fusion design, `410000_P01_CEILING_CAD`, built by script from named p
 |---|---|---|---|
 | 410000 | CEILING · Trần | assembly | 1 |
 | 410101 / 410102 | CEILING - PANEL ASSY - C1 / C2 · Trần - tấm trái / phải (cụm) | assembly | 1 + 1 |
-| 411101 / 411102 | CEILING - PANEL FRAME - C1 / C2 · Trần trái / phải - khung nhôm | made (aluminium 20 × 40 × 1.2, 7 members) | 1 + 1 |
+| 411101 / 411102 | CEILING - PANEL FRAME - C1 / C2 · Trần trái / phải - khung thép | made (welded galvanized steel 20 × 40 and 40 × 40, 1.0 and 0.8 walls, 7 members and 4 mitre plates, D-131) | 1 + 1 |
 | 411301 | CEILING - SKIN - COMMON · Trần - tấm ốp alu (dùng chung trái/phải) | made (ACP 3 mm) | 2 |
 | 510301 | LINING - CASSETTE - CEILING - COMMON · Cassette trần (dùng chung trái/phải) | assembly, one part for both halves | 2 |
 | 513101 | LINING - TRAY - CEILING · Khay thép cassette trần | made (sheet metal, 0.5 mm) | 2 |
