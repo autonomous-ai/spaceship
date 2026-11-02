@@ -190,8 +190,9 @@ def test_cad_masses_from_main():
     ws = rollup.WALL_SIDE
     for item, a_, b_ in (("L1 and R1, lower side outer panels", 1, 2), ("L2 and R2, upper side outer panels", 3, 4)):
         line = rows[item]
-        want = sum(ws[n]["frame"] + ws[n]["skin"] + ws[n]["fill"] + ws[n]["bond"] for n in (a_, b_)) / 2
+        want = sum(ws[n]["frame"] + ws[n]["skin"] + ws[n]["fill"] + ws[n]["bond"] + ws[n]["ledge"] for n in (a_, b_)) / 2
         assert abs(line[3] - want) < 1e-9 and rollup.basis(line) == "CAD, main", line
+    assert ws[1]["ledge"] > 0.5 and ws[3]["ledge"] == 0 == ws[4]["ledge"], ws    # the ledge on L1 (rebuilt), not upper
     l1 = rows["L1 and R1, lower side outer panels"]
     cs = next(r for k, r in rows.items() if k.startswith("Wall cassette, side, lower"))
     assert abs(cs[3] - sum(ws[n]["tray"] + ws[n]["felt"] + ws[n]["cass_seals"] for n in (1, 2)) / 2) < 1e-9, cs
@@ -206,14 +207,14 @@ def test_cad_masses_from_main():
     assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
     hw = next(r for k, r in rows.items() if k.startswith("M6 bolts, rivnuts"))
     assert rollup.basis(hw) == "CAD, main (part)", hw
-    assert "D-117" in hw[5] and "cleats assumption" in hw[4], hw                 # the cleat allowance rides on this line
+    assert "cleats" not in hw[4] and "D-131" in hw[5], hw                         # D-131 welds the frames: no cleat allowance
     assert "cam" not in hw[1].lower(), hw                                          # D-116: no cam connectors
     rc, uk = rollup.register_counts(), rollup.fixings_unit_kg()
     assert set(rc) == set(uk) == set(rollup.FIXING_PNS), (rc, uk)
     (ns, ks), (nw, kw) = rollup.JOINTS["831001"], rollup.JOINTS["831002"]
     nt, kt = rollup.JOINTS["831010"]                  # DT's two 11 mm spigots on DR's ledge (D-157), on the same line
     assert nt == 2 and kt > 0, (nt, kt)
-    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nt * kt + nw * kw + rollup.CLEATS_KG
+    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nt * kt + nw * kw   # no cleats: D-131 welds
     assert abs(hw[3] - want) < 1e-9, (hw[3], want)
     fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
     f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}

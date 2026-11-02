@@ -43,8 +43,22 @@ def holes(body):
         ctr = [r(o[i], 2) for i in range(3)]
         ctr[ax] = None
         full = all(abs((fb[i + 3] - fb[i]) - g.radius * 20) < 0.05 for i in range(3) if i != ax)
+        # convex: the face's normal points away from its axis (an outside round such as the skin's fold radius), so
+        # it isn't a hole
+        convex = False
+        try:
+            p = f.pointOnFace
+            ok, nrm = f.evaluator.getNormalAtPoint(p)
+            v = adsk.core.Vector3D.create(p.x - g.origin.x, p.y - g.origin.y, p.z - g.origin.z)
+            a = g.axis.copy()
+            a.normalize()
+            along = v.dotProduct(a)
+            radial = adsk.core.Vector3D.create(v.x - a.x * along, v.y - a.y * along, v.z - a.z * along)
+            convex = bool(ok) and nrm.dotProduct(radial) > 0
+        except Exception:            # noqa: BLE001  (an unreadable face stays a hole, as before)
+            convex = False
         out.append({"d": r(g.radius * 20, 2), "axis": "xyz"[ax], "centre": ctr, "from": lo, "to": hi,
-                    "full_circle": full})
+                    "full_circle": full, "convex": convex})
     return out
 
 
@@ -54,9 +68,23 @@ def run(_context):
     design = adsk.fusion.Design.cast(app.activeProduct)
     rep = {"document": doc.name, "version": doc.dataFile.versionNumber if doc.dataFile else None,
            "saved": doc.isSaved, "modified": doc.isModified, "components": [], "parameters": []}
+    root = design.rootComponent
     for c in design.allComponents:
+        # D-120: a part placed several times is one component with several copies (occurrences); the copies'
+        # parents tell the assembly tree (a frame's members, a fill's pieces, the panel's hardware)
+        occs = [] if c == root else [root.allOccurrencesByComponent(c).item(i)
+                                     for i in range(root.allOccurrencesByComponent(c).count)]
+        parents = sorted({(o.assemblyContext.component.partNumber if o.assemblyContext else root.partNumber)
+                          for o in occs})
         comp: dict = {"part_number": c.partNumber, "name": c.name, "description": c.description,
-                      "is_root": c == design.rootComponent, "bodies": []}
+                      "is_root": c == root, "copies": 1 if c == root else len(occs), "parents": parents,
+                      "bodies": []}
+        # each body's "box" below is in the component's own space (a part's shape: a STEP-imported or joint-placed
+        # copy sits at its own origin there); "placed_box" is where its copies are in the design, all of them
+        placed = [box(b) for b in c.bRepBodies] if c == root else [
+            box(o.bRepBodies.item(j)) for o in occs for j in range(o.bRepBodies.count)]
+        comp["placed_box"] = ([min(q[k] for q in placed) for k in range(3)] +
+                              [max(q[k + 3] for q in placed) for k in range(3)]) if placed else None
         for b in c.bRepBodies:
             pp = b.physicalProperties
             comp["bodies"].append({"name": b.name, "box": box(b), "volume_mm3": r(b.volume * 1000.0, 1),

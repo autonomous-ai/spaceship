@@ -1,34 +1,45 @@
 drawing,covers,status,note
-210000_P01_WALL_DWG,210000,to do,WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py)
-210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG,210101,to do,panel assembly L1
-211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG,211101,to do,frame L1
-510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_DWG,510101,to do,cassette L1
-210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_DWG,210102,to do,panel assembly R1
-211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_DWG,211102,to do,frame R1
-510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_DWG,510102,to do,cassette R1
-210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_DWG,210103,to do,panel assembly L2
-211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_DWG,211103,to do,frame L2
-510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_DWG,510103,to do,cassette L2
-210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_DWG,210104,to do,panel assembly R2
-211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_DWG,211104,to do,frame R2
-510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_DWG,510104,to do,cassette R2
-210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_DWG,210201,to do,panel assembly B1
-211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_DWG,211201,to do,frame B1
-510201_P01_LINING-CASSETTE-BACK-LOWER-B1_DWG,510201,to do,cassette B1
-210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_DWG,210202,to do,panel assembly B2
-211202_P01_WALL-PANEL-FRAME-BACK-LOWER-B2_DWG,211202,to do,frame B2
-510202_P01_LINING-CASSETTE-BACK-LOWER-B2_DWG,510202,to do,cassette B2
-210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_DWG,210203,to do,panel assembly B3
-211203_P01_WALL-PANEL-FRAME-BACK-UPPER-B3_DWG,211203,to do,frame B3
-510203_P01_LINING-CASSETTE-BACK-UPPER-B3_DWG,510203,to do,cassette B3
-210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_DWG,210204,to do,panel assembly B4
-211204_P01_WALL-PANEL-FRAME-BACK-UPPER-B4_DWG,211204,to do,frame B4
-510204_P01_LINING-CASSETTE-BACK-UPPER-B4_DWG,510204,to do,cassette B4
-211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG,211301 211302 211303 211304,to do,"tabulated: the side skins (RH the mirror of LH; L1 = L2, R1 = R2)"
-511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG,511101 511102 511103 511104,to do,tabulated: the side trays (LH = RH; upper ones shorter)
-511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG,511201 511202 511203 511204,to do,tabulated: the back trays (LH = RH; upper ones shorter)
-211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_DWG,211501 211502 211503 211504,to do,"tabulated: the side fills (the bays have pockets, so they get a drawing)"
-211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_DWG,211601 211602 211603 211604,to do,tabulated: the back fills (pin and ceiling pockets listed per part)
+210000_P01_WALL_DWG,210000,to do,WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py); the drawing generator's assembly mode (D-158)
+210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG,210101,to do,panel assembly L1; the drawing generator's assembly mode (D-158)
+211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG,211101,to do,"frame L1, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_DWG,510101,done,cassette L1; the drawing generator's assembly mode (D-158)
+210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_DWG,210102,to do,panel assembly R1; the drawing generator's assembly mode (D-158)
+211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_DWG,211102,to do,"frame R1, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_DWG,510102,done,cassette R1; the drawing generator's assembly mode (D-158)
+210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_DWG,210103,to do,panel assembly L2; the drawing generator's assembly mode (D-158)
+211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_DWG,211103,to do,"frame L2, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_DWG,510103,done,cassette L2; the drawing generator's assembly mode (D-158)
+210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_DWG,210104,to do,panel assembly R2; the drawing generator's assembly mode (D-158)
+211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_DWG,211104,to do,"frame R2, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_DWG,510104,done,cassette R2; the drawing generator's assembly mode (D-158)
+210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_DWG,210201,to do,panel assembly B1; the drawing generator's assembly mode (D-158)
+211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_DWG,211201,to do,"frame B1, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510201_P01_LINING-CASSETTE-BACK-LOWER-B1_DWG,510201,done,cassette B1; the drawing generator's assembly mode (D-158)
+210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_DWG,210202,to do,panel assembly B2; the drawing generator's assembly mode (D-158)
+211202_P01_WALL-PANEL-FRAME-BACK-LOWER-B2_DWG,211202,to do,"frame B2, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510202_P01_LINING-CASSETTE-BACK-LOWER-B2_DWG,510202,done,cassette B2; the drawing generator's assembly mode (D-158)
+210203_P01_WALL-PANEL-ASSY-BACK-UPPER-B3_DWG,210203,to do,panel assembly B3; the drawing generator's assembly mode (D-158)
+211203_P01_WALL-PANEL-FRAME-BACK-UPPER-B3_DWG,211203,to do,"frame B3, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510203_P01_LINING-CASSETTE-BACK-UPPER-B3_DWG,510203,to do,cassette B3; the drawing generator's assembly mode (D-158)
+210204_P01_WALL-PANEL-ASSY-BACK-UPPER-B4_DWG,210204,to do,panel assembly B4; the drawing generator's assembly mode (D-158)
+211204_P01_WALL-PANEL-FRAME-BACK-UPPER-B4_DWG,211204,to do,"frame B4, welded steel with its members (D-131); the drawing generator, from the STEP (D-139)"
+510204_P01_LINING-CASSETTE-BACK-UPPER-B4_DWG,510204,to do,cassette B4; the drawing generator's assembly mode (D-158)
+211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG,211301,done,"side skin L1, V-grooved and folded at its 2 mm outside radius (D-161); the drawing generator, from the STEP (D-139)"
+511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG,511101,done,"side tray L1, bent sheet; the drawing generator, from the STEP (D-139)"
+211302_P01_WALL-SKIN-SIDE-LOWER-RH_DWG,211302,to do,"side skin R1, V-grooved and folded at its 2 mm outside radius (D-161); the drawing generator, from the STEP (D-139)"
+511102_P01_LINING-TRAY-SIDE-LOWER-RH_DWG,511102,to do,"side tray R1, bent sheet; the drawing generator, from the STEP (D-139)"
+211303_P01_WALL-SKIN-SIDE-UPPER-LH_DWG,211303,to do,"side skin L2, V-grooved and folded at its 2 mm outside radius (D-161); the drawing generator, from the STEP (D-139)"
+511103_P01_LINING-TRAY-SIDE-UPPER-LH_DWG,511103,to do,"side tray L2, bent sheet; the drawing generator, from the STEP (D-139)"
+211304_P01_WALL-SKIN-SIDE-UPPER-RH_DWG,211304,to do,"side skin R2, V-grooved and folded at its 2 mm outside radius (D-161); the drawing generator, from the STEP (D-139)"
+511104_P01_LINING-TRAY-SIDE-UPPER-RH_DWG,511104,to do,"side tray R2, bent sheet; the drawing generator, from the STEP (D-139)"
+511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG,511201,to do,"back tray B1, bent sheet; the drawing generator, from the STEP (D-139)"
+511202_P01_LINING-TRAY-BACK-LOWER-B2_DWG,511202,to do,"back tray B2, bent sheet; the drawing generator, from the STEP (D-139)"
+511203_P01_LINING-TRAY-BACK-UPPER-B3_DWG,511203,to do,"back tray B3, bent sheet; the drawing generator, from the STEP (D-139)"
+511204_P01_LINING-TRAY-BACK-UPPER-B4_DWG,511204,to do,"back tray B4, bent sheet; the drawing generator, from the STEP (D-139)"
+211701_P01_WALL-CASSETTE-LEDGE-SIDE-LOWER-COMMON_DWG,211701,done,"the side cassette ledge (L1 and R1), a bent 1.5 angle with its rivets' countersinks (the Lead's rulings of 2026-11-01); the drawing generator, from the STEP (D-139)"
+211801_P01_WALL-CASSETTE-LEDGE-BACK-LOWER_DWG,211801,to do,"the back cassette ledge (B1 and B2), with B1's rebuild; the drawing generator, from the STEP (D-139)"
+"(on the frame drawings' cut lists, D-162)",212101 212102 212103 212104 212105,cut list,L1's frame members: each member's row in its frame drawing's cut list is its drawing (D-162; 210000_P01_WALL-TUBE-CUT-LIST_BOM.csv); the other frames' members join as their frames are rebuilt
+"(no drawing, D-128)",211515 211516 211517 211518 211535 211536 211537 211538 211614 211615 211616 211634 211635 211636,cut list,"fill pieces: 40 mm PET batt, each of the 14 forms knife cut from its own DXF, the full outline with every notch (the 60 x 60 notches beside the bolts go right through the batt; B2's piece also has ELECTRICAL's cut-outs), with material, density, thickness, tolerance and part number in its parts-list row; the pieces go straight into the panel assemblies, whose drawings show each in place (FILL-PIECES.md); the panels' own fill numbers 211501-211504 and 211601-211604 are cancelled (D-123)"
 "(no drawing, D-89 part 4)",211401 211402 211403 211404,cut list,"back skins: flat ACP cut by CNC router from their DXFs (outline and holes, B2's inlet and LAN holes included); material, thickness, finish and ISO 2768-m in the parts-list rows"
-"(no drawing, D-89)",511301 511302 511303 511304,cut list,"side felt: knife-cut pieces; size, material, tolerance and part number in the parts list; 511302 (R1) and 511304 (R2) carry ELECTRICAL's openings and are cut from their DXFs (a flat part with its DXF, D-89 part 4)"
-"(no drawing, D-89)",511401 511402 511403 511404,cut list,"back felt: knife-cut pieces; size, material, tolerance and part number in the parts list; 511402 (B2) and 511404 (B4) carry ELECTRICAL's openings and are cut from their DXFs (a flat part with its DXF, D-89 part 4)"
+"(no drawing, D-89)",511301 511302 511303 511304,cut list,"side felt: knife-cut pieces; size, material, tolerance and part number in the parts list; 511302 (R1) and 511304 (R2) carry ELECTRICAL's openings and are cut from their DXFs, outline and every opening, with material, grade, thickness, tolerance and part number in their rows: no drawing (D-128)"
+"(no drawing, D-89)",511401 511402 511403 511404,cut list,"back felt: knife-cut pieces; size, material, tolerance and part number in the parts list; 511402 (B2) and 511404 (B4) carry ELECTRICAL's openings and are cut from their DXFs, outline and every opening, with material, grade, thickness, tolerance and part number in their rows: no drawing (D-128)"

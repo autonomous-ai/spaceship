@@ -354,16 +354,21 @@ PANE_SHARE = 1 - SILL_CHANNEL_SHARE - DR_CHANNEL_SHARE - DT_CHANNEL_SHARE
 PIECES = [
     # ---------------- pallet 1, 48 x 40 in: upright stack, listed from the open face (first out) to the back
     Piece("1-01", "210201", "WALL - PANEL ASSY - BACK LOWER - B1", "Vách hậu - cụm tấm dưới trái", "B1", [("B", 1)],
-          S(sk("half_pw"), 1127, sk("outer_t")), "WALL 210201 P01 STEP: 1200.6 x 1126.6 x 46, its locating spigots 8 mm out of the top edge", 1, 3, "WALL"),
+          S(sk("half_pw"), 1131, 74), "WALL 210201 P01 STEP: 1200.6 x 1126.6 x 46, its locating spigots 8 mm out of the top edge; "
+          "planned as it comes out of its rebuild with the cassette ledge, as L1: 28 out on the room side (46 + 28) and 3.8 below "
+          "the frame (WALL, 2026-11-01)", 1, 3, "WALL"),
     Piece("1-02", "210202", "WALL - PANEL ASSY - BACK LOWER - B2", "Vách hậu - cụm tấm dưới phải", "B2",
-          [("B", 1), ("ELEC", POWER_UNIT_SHARE)], S(sk("half_pw"), 1127, 88),
-          "WALL 210202 P01 STEP with ELECTRICAL's power unit 710001 fitted (710000 P01 STEP): 1200.6 x 1126.6 x 87.5",
+          [("B", 1), ("ELEC", POWER_UNIT_SHARE)], S(sk("half_pw"), 1131, 88),
+          "WALL 210202 P01 STEP with ELECTRICAL's power unit 710001 fitted (710000 P01 STEP): 1200.6 x 1126.6 x 87.5; with the "
+          "cassette ledge after its rebuild, 3.8 below the frame, and still 87.5 thick: the ledge's 28 on the room side is inside "
+          "the power unit's 41.5",
           1, 3, "WALL",
           note="carries the power unit 710001, fitted, wired and tested at the factory: its mass from ELECTRICAL's parts list, as a share of ELECTRICAL's roll-up line; foam block over the unit's face in the stack"),
     Piece("1-03", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
-          S(sk("side_l"), 1151, 48.5), "WALL 210101 P01 STEP: 1492.7 x 1150.7 x 48.3, spigots 8 mm out of the top edge, rivnuts and stop washers 2.3 mm proud", 1, 4, "WALL"),
+          S(sk("side_l"), 1155, 74), "WALL 210101 P01 STEP: 1492.74 x 1154.55 x 74 with its cassette ledge, 28 out on the room "
+          "side and 3.8 below the frame; spigots 8 mm out of the top edge", 1, 4, "WALL"),
     Piece("1-04", "210102", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
-          S(sk("side_l"), 1151, 48.5), "WALL 210102 P01 STEP, as L1", 1, 4, "WALL"),
+          S(sk("side_l"), 1155, 74), "WALL 210102 P01 STEP, as L1 after its rebuild with the cassette ledge", 1, 4, "WALL"),
     Piece("1-05", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - B3", "Vách hậu - cụm tấm trên trái", "B3", [("B", 1)],
           S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 5, "WALL"),
     Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - B4", "Vách hậu - cụm tấm trên phải", "B4", [("B", 1)],

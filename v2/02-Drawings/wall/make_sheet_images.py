@@ -13,6 +13,7 @@ with each image's size in mm, which the drawing script reads to place them.
 
 import json
 import os
+import re
 import sys
 
 import fitz  # PyMuPDF
@@ -55,7 +56,7 @@ def tab_rows(kind, back):
     return out
 
 
-def render(name, lines, width_mm, size_pt=7.0, lead=1.35, title=None, border=True):
+def render(name, lines, width_mm, size_pt=10.0, lead=1.35, title=None, border=True):
     """Lines of text (wrapped to width_mm) in a bordered block, rendered to PNG. Returns (path, w_mm, h_mm)."""
     font = fitz.Font(fontfile=FONT)
     pad = 2.0 * PT
@@ -145,22 +146,47 @@ def data_block(pn, comp, rep, scale, sheet, material, mass, kind="Part"):
     ]
 
 
+def rivnut_sku(rep):
+    """The Sherex rivnut a design carries (838003): from its component's name, else from the rivnut_d parameter's
+    source (a frame's design holds no rivnut); CAH2-610-4.2, the part before D-163, for a report with neither."""
+    for c in rep.get("components", []):
+        m = re.search(r"SHEREX (\S+)", c["name"]) if c["part_number"] == "838003" else None
+        if m:
+            return m.group(1)
+    for p in rep.get("parameters", []):
+        m = re.search(r"Sherex (C[A-Z]+\d-\d+-[\d.]+\d)", p.get("comment") or "") if p["name"] == "rivnut_d" else None
+        if m:
+            return m.group(1)
+    return "CAH2-610-4.2"
+
+
 def frame_blocks(pn, src=None):
     rep = load(src or pn)
     pos = position(rep)
     frame = comp_of(rep, pn)
-    bodies = sorted(frame["bodies"], key=lambda b: b["name"])
     prm = {p["name"]: p["value"] for p in rep["parameters"]}
+    # D-120: a rebuilt frame holds no bodies itself; its members are parts, the studs copies of one
+    members = [c for c in rep["components"] if c["part_number"].startswith("212") and pn in c.get("parents", [])]
+    if members:
+        bodies = [dict(c["bodies"][0], part=c["part_number"]) for c in members for _ in range(c.get("copies", 1))]
+    else:
+        bodies = sorted(frame["bodies"], key=lambda b: b["name"])
     mass = sum(b["mass_kg"] for b in bodies)
     bx = box_of(bodies)
     cut = {}
     for b in bodies:
         d = sorted(round(b["box"][i + 3] - b["box"][i], 2) for i in range(3))
-        wall = prm.get("stud_t", 1.0) if b["name"].startswith("STILE - MID") else prm.get("tube_t", 1.2)
+        wall = prm.get("stud_t", 0.8) if b["name"].startswith("STILE - MID") else (
+            prm.get("corner_t", prm.get("tube_t", 1.0)) if d[0] >= 39.9 else prm.get("tube_t", 1.0))
         sec = "%s × %.1f" % ("40 × 40" if d[0] >= 39.9 else "20 × 40", wall)
-        key = (b["name"].rstrip("0123456789 ").strip(), sec, d[2])
+        key = (("%s %s" % (b["part"], b["name"])) if members else b["name"].rstrip("0123456789 ").strip(), sec, d[2])
         cut[key] = cut.get(key, 0) + 1
-    data = data_block(pn, frame, rep, "1:5", "A2", "aluminium tube 6063-T6, mill finish (D-79)", mass)
+    # D-163: the rivnut hole and part as the frame's own CAD has them (Ø10.00 +0.10/0 and CAL2-610-4.2 from its
+    # rebuild): a frame's design holds no rivnut, so its part comes from the rivnut_d parameter's source
+    rv_sku = rivnut_sku(rep)
+    rv = "Ø%.2f +0.10/0 = Sherex %s rivnut" % (prm.get("rivnut_d", 9.53), rv_sku)
+    data = data_block(pn, frame, rep, "1:5", "A2", "steel box tube S280GD+Z (EN 10346) or SGC400 (JIS G3302), "
+                      "yield 280 MPa or more, zinc Z100, pre-galvanized; welded (D-131, J-FRAME-01)", mass)
     if pos["back"]:
         seam_x = bx[3] if not pos["right"] else bx[0]
         datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = the closing-seam face "
@@ -169,16 +195,17 @@ def frame_blocks(pn, src=None):
                                                                 seam_x, "left" if pos["right"] else "right", bx[4]))
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer): bottom rail, outer "
-                 "stile (corner)%s. Ø19 = key access and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut: "
+                 "stile (corner)%s. Ø19 = key access and grommet retainer. " + rv + " (steel, zinc plated): "
                  "top rail%s. %s Ø8.5 round by the closing seam and the 8.5 × 14 slot along the edge at the corner end "
                  "= locating spigots (ST-02). Bolts at 220, 473.00, 725.99, 978.99 from the frame's ends; corner bolts "
                  "at 220, 559.31, 898.61 on Y 824. Reasons: FEATURE-RATIONALE-%s.md." % (
                      ", top rail (ceiling)" if pos["row"] == 2 else "",
                      " (4 for the panel above with stop washers, 2 spigot)" if pos["row"] == 1 else " (2 spigot, for the ceiling)",
                      "Centre stile: 3 plain Ø7.0 that the next panel's pins pass through." if not pos["right"] else
-                     "Centre stile: 3 Ø9.53 pin rivnuts (no stop washer) with Ø19 access behind them.",
+                     "Centre stile: 3 Ø%.2f pin rivnuts (no stop washer) with Ø19 access behind them." % prm.get("rivnut_d", 9.53),
                      rep["document"].split("_")[0].replace("2112", "2102")))
-        extra = "1 × 45° lead-in on the top edge of the closing-seam face (R-J9). "
+        extra = ("1 × 45° lead-in on the top edge of the closing-seam face, ground into the corner weld (R-J9, "
+                 "FR-13). " if members else "1 × 45° lead-in on the top edge of the closing-seam face (R-J9). ")
     else:
         datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = front face of the front "
                   "stile (pod Y %.2f, 2.26 seam to the decor block), the drawing's %s edge. C = outer face (pod X %.0f, "
@@ -186,8 +213,9 @@ def frame_blocks(pn, src=None):
                                             "right" if pos["right"] else "left", bx[0] if not pos["right"] else bx[3]))
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access "
-                 "and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut over a 1.5 mm stop washer. Ø8.5 "
-                 "and the 8.5 × 14 slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner "
+                 "and grommet retainer. " + rv + " (steel, zinc plated) over a 1.5 mm stop washer. Ø8.5 "
+                 "and the 8.5 × %g slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner " % (
+                     prm.get("spigot_slot", 14.0)) +
                  "rivnuts on the bolt line Y 824 (pod)%s. Reasons: FEATURE-RATIONALE-%s.md." % (
                      "; ceiling rivnuts on Z 2374 from Y -645 at 351.67 (the ceiling's rule)" if pos["row"] == 2 else "",
                      rep["document"].split("_")[0].replace("2111", "2101")))
@@ -197,17 +225,35 @@ def frame_blocks(pn, src=None):
         "1. " + views_note(pos),
         datums,
         holes,
-        "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009).",
-        "5. Cut list, square ends, tube 6063-T6 (studs 1.0 wall, D-85): " + "; ".join(
+        ("4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009); "
+         "every joint hole is made after welding and the touch-up, the jig located on the joint faces and the spigot "
+         "hole (J-FRAME-01)." if members else
+         "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009)."),
+        ("5. Cut list, ends per note 6, steel box tube (walls per J-FRAME-01, D-131): " if members else
+         "5. Cut list, square ends: ") + "; ".join(
             "%s: %s tube, length %g, qty %d" % (k[0].title().replace(" - ", " "), k[1], k[2], q)
             for k, q in sorted(cut.items())) + ".",
-        "6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
-        "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
-        "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's capability "
-        "is known (guideline 6.3)." % extra,
-        "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
-        "(HOLD-02), torque (HOLD-01). P01 DRAFT.",
-        "8. Lengths and hole positions without their own tolerance: ISO 2768-1 class m (aluminium tube, sawn and "
+        ("6. Welded frame (D-131): the 4 perimeter members run to the outer corners, mitred there (D-117: 45° where "
+         "the two are the same size; 26.57° on a 40 × 40 meeting a 20 × 40, 63.43° on the 20 × 40), each member cut "
+         "back so a 2 mm mitre plate (joints register 831007 to 831009) fits in the mitre, centred on the mitre "
+         "line: 1.41 off each member where the two are the same size, 2.24 off a 20 × 40 and 1.12 off a 40 × 40 where "
+         "they meet. The plate is welded in, its edges ground flush on the skin and seam faces. The studs fit square "
+         "between the rails and are welded there. Weld coupons prove the corner before the first frame is welded. "
+         "Pre-galvanized tube, zinc Z100; after welding and grinding, every weld and burnt zone wire-brushed and "
+         "coated with a 2-component zinc-rich epoxy; no hot-dip and no vent holes (J-FRAME-01). Each "
+         "member is its own part (D-120). %sCut lengths outer to outer after the cut-back, ±0.5 (assumption) until "
+         "the frame maker's capability is known (guideline 6.3)." % extra) if members else
+        ("6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
+         "adhesive; no welds); the cleats are the joints register's parts, placed when they land. Rails run "
+         "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's "
+         "capability is known (guideline 6.3)." % extra),
+        ("7. Rivnuts and stop washers are set at the factory after the zinc-rich touch-up (J-FRAME-01; see the panel "
+         "assembly). Seam faces flat within 0.5, skin-side faces within ±0.5 of one plane, diagonals equal within "
+         "1.5, measured after welding and before the holes (J-FRAME-01). HOLD: captive bolt retainer (HOLD-02), "
+         "torque (HOLD-01). P01 DRAFT." if members else
+         "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: captive bolt retainer "
+         "(HOLD-02), torque (HOLD-01). P01 DRAFT."),
+        "8. Lengths and hole positions without their own tolerance: ISO 2768-1 class m (steel tube, sawn and "
         "drilled), for the frame maker to confirm (guideline 3.2). Deburr every cut end and hole; break sharp "
         "edges 0.2 max. Hole tables: X to the right, Y up in each view, from the origin named in the table title.",
     ]
@@ -239,7 +285,8 @@ def skin_blocks(pn, src=None):
                 b[2], b[1], "right" if pos["right"] else "left"),
             "3. Blank %.2f × %.2f (DXF %s_P01_..._DXF.dxf): main face %.2f plus the %.2f back return, outer-face "
             "lengths. The return is V-grooved on the back face along the BEND line and folded 90° to cover the frame's "
-            "back end at the corner (D-55). Fold allowance 0 and the groove rest thickness: HOLD H16." % (
+            "back end at the corner (D-55), 3 mm off it: bonded there like the main face (note 4). Fold allowance 0 "
+            "and the groove rest thickness: HOLD H16." % (
                 ret + length, height, pn, length, ret),
         ]
     table = ["**TABULATED DRAWING (D-89): ONE SHAPE, THESE PART NUMBERS (part · position · hand · size)"] + \
@@ -248,8 +295,16 @@ def skin_blocks(pn, src=None):
                                                           "on the panel drawing 210202 and in its DXF." if pos["back"]
                                                           else "RH is the mirror of LH; L1 = L2 and R1 = R2.")]
     notes = ["**GENERAL NOTES", "1. " + views_note(pos)] + body + [
-        "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
-        "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2).",
+        ("4. Bond to the frame: Sikaflex-252, one joint at least 12 wide × 3 on every frame member, the 3 set by "
+         "fixing-tape pieces in line with the bead; both faces pre-treated with an abrasive pad, Aktivator-205 and "
+         "Primer-210; laid face down on a flat table with the ACP face as datum (bond spec section 8, D-137; "
+         "HOLD-B6); on a side skin also one joint, 3 mm thick and as wide as the return allows up to 12, between "
+         "the return and the frame's back end: every skin face that meets a frame is bonded, none touches it "
+         "(D-137)." if not pos["back"] else
+         "4. Bond to the frame: Sikaflex-252, one joint at least 12 wide × 3 on every frame member, the 3 set by "
+         "fixing-tape pieces in line with the bead; both faces pre-treated with an abrasive pad, Aktivator-205 and "
+         "Primer-210; laid face down on a flat table with the ACP face as datum (bond spec section 8, D-137; "
+         "HOLD-B6)."),
         "5. Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
         "6. Protect the coloured face; film stays on until the panel is installed.",
     ]
@@ -296,78 +351,6 @@ def tray_blocks(pn, src=None):
                                              "and in their DXFs." if pos["back"] else "")]
     return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("table", table, 150.0, None)]
 
-
-def fill_blocks(pn, src=None):
-    """Cavity fill (D-89: the fill bays have pockets, so they get a drawing; one tabulated drawing per family).
-    Pocket positions come from the panel's own frame: one 60 x 60 x 40 pocket beside each Ø19 access hole,
-    given from datum A (the fill's bottom face) and datum B (its front edge on a side panel, its closing-seam
-    edge on a back panel)."""
-    rep = load(src or pn)
-    pos = position(rep)
-    c = comp_of(rep, pn)
-    bodies = c["bodies"]
-    fb = box_of(bodies)
-    mass = sum(b["mass_kg"] for b in bodies)
-    panel = load(("2101" if pn.startswith("2115") else "2102") + pn[4:])
-    frame = [k for k in panel["components"] if k["part_number"].startswith(("2111", "2112"))][0]
-    prm = {q["name"]: q["value"] for q in panel["parameters"]}
-    pw = prm.get("pocket_w", 60.0)
-    along = 0 if pos["back"] else 1                      # x for the back wall, y for a side wall
-    if pos["back"]:
-        b_edge = fb[3] if not pos["right"] else fb[0]    # the closing-seam edge of the fill
-    else:
-        b_edge = fb[1]                                   # the front edge
-    a_edge, height = fb[2], fb[5] - fb[2]
-    width = fb[3 + along] - fb[along]
-    rows = []
-    for b in frame["bodies"]:
-        for h in b["holes"]:
-            if abs(h["d"] - prm.get("access_d", 19.0)) > 0.01 or not h["full_circle"]:
-                continue
-            ctr = h["centre"]
-            if b["name"] in ("RAIL - BOTTOM", "RAIL - TOP"):
-                u = abs(ctr[along] - b_edge)
-                v = (0.0, pw) if b["name"] == "RAIL - BOTTOM" else (height - pw, height)
-                kind = "bottom bolt" if b["name"] == "RAIL - BOTTOM" else "ceiling bolt"
-                rows.append((kind, (u - pw / 2, u + pw / 2), v))
-            else:
-                z = ctr[2] - a_edge
-                at_b = b["name"] in ("STILE - FRONT", "STILE - CENTRE")
-                kind = {"STILE - FRONT": "decor bolt", "STILE - CENTRE": "closing-seam pin",
-                        "STILE - OUTER": "corner bolt"}.get(b["name"], b["name"])
-                rows.append((kind, (0.0, pw) if at_b else (width - pw, width), (z - pw / 2, z + pw / 2)))
-    rows.sort(key=lambda r: (r[0], r[1][0], r[2][0]))
-    data = data_block(pn, c, rep, "1:5", "A2", "PET fill 40 mm, 24 kg/m³, Pyrotek Sorberpoly 2D (HW-SEL B)", mass)
-    notes = [
-        "**GENERAL NOTES",
-        "1. " + views_note(pos),
-        "2. Datums. A = bottom face of the pieces (pod Z %.2f, on the bottom rail). B = the %s (pod %s %.2f). "
-        "Pieces are knife-cut to the bays between the studs, 40 thick, friction fit (D-34)." % (
-            a_edge, "closing-seam edge" if pos["back"] else "front edge", "X" if pos["back"] else "Y", b_edge),
-        "3. %d pieces, %s; overall %.2f × %.2f × 40. Tolerance ±2 on length and width (assumption: knife-cut PET "
-        "batt), thickness as supplied." % (len(bodies), "; ".join(sorted({"%.1f × %.1f" % tuple(sorted(
-            (bb["box"][3 + along] - bb["box"][along], bb["box"][5] - bb["box"][2]), reverse=True)) for bb in bodies})),
-            width, height),
-        "4. Pockets: 60 × 60 × 40 left out beside each bolt this panel drives, so the 5 mm key reaches its Ø19 access "
-        "hole from inside before the cassette goes on (joints register FR-10, 2.3). Positions below, in mm from B "
-        "(along the panel) and A (up).",
-    ]
-    pockets = ["**POCKETS (kind · from B · from A), each 60 × 60 × 40 through the fill"] + [
-        "%s · %.2f–%.2f · %.2f–%.2f" % (k, u[0], u[1], v[0], v[1]) for k, u, v in rows]
-    if pos["back"]:
-        tab = ["**TABULATED DRAWING (D-89): THE BACK FILLS (part · position · pockets)",
-               "211601 · B1 · as shown: bottom bolts, corner bolts",
-               "211602 · B2 · as B1 (mirrored), plus 3 closing-seam pin pockets at B, at the corner pockets' heights; "
-               "the first bay left out for ELECTRICAL's power unit, sleeve and connectors (panel drawing 210202, F47)",
-               "211603 · B3 · as B1, plus 4 ceiling bolt pockets at the top, at the bottom pockets' positions from B",
-               "211604 · B4 · as B3 (mirrored), plus the 3 closing-seam pin pockets"]
-    else:
-        tab = ["**TABULATED DRAWING (D-89): THE SIDE FILLS (part · position · hand)",
-               "211501 · L1 · LH · as shown", "211502 · R1 · RH · mirror of 211501",
-               "211503 · L2 · LH · same as 211501 (the upper panel's bolts and pockets sit at the same places)",
-               "211504 · R2 · RH · mirror of 211501"]
-    return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("pockets", pockets, 150.0, None),
-            ("table", tab, 150.0, None)]
 
 
 def parts_rows(bom_csv, top_pn):
@@ -505,13 +488,15 @@ def assembly_blocks(pn, kind, src=None):
     if kind == "panel":
         frame = pns.get("2112") or pns.get("2111")
         skin = pns.get("2114") or pns.get("2113")
-        fill = pns.get("2116") or pns.get("2115")
+        fills = sorted({r["part_number"] for r in rows if r["part_number"][:4] in ("2115", "2116")})
+        # before D-120 one fill part; after it the numbered pieces straight in the panel (D-123), cut from DXFs (D-128)
+        fill = fills[0] if len(fills) == 1 else "pieces %s, each cut from its DXF (D-128)" % ", ".join(fills)
         cass = "51" + pn[2:]
         notes = [
             "**GENERAL NOTES",
             "1. " + views_note(pos),
-            "2. Stack outside to inside: ACP skin 3 (%s), bond line 3 (SikaTack Panel-50, 12 × 3 on every member), "
-            "frame 40 (%s, 6063-T6), PET fill 40 in the bays (%s): outer panel 46. Then the 4 mm gap and the lining "
+            "2. Stack outside to inside: ACP skin 3 (%s), bond line 3 (Sikaflex-252, 12 × 3 on every member), "
+            "frame 40 (%s, welded galvanized steel, D-131), PET fill 40 in the bays (%s): outer panel 46. Then the 4 mm gap and the lining "
             "cassette 34 (%s, a separate part): 84 in all." % (skin, frame, fill, cass),
             "3. Site joints (joints register): %s Seam gap 2.26 at each stopped joint, set by the 1.5 mm stop washers."
             % JOINTS.get(pos["code"], ""),
@@ -520,7 +505,7 @@ def assembly_blocks(pn, kind, src=None):
             "left open beside every bolt this panel drives." % (
                 ", the closing-seam bulb seal (HOLD-12)" if pos["code"] in ("B2", "B4") else ""),
             "5. Bond: panel bonded face down on a flat table; no standing, stacking or shipping before 72 h (bond spec).",
-            "6. Member joints: internal cleats per D-115. HOLD: retainer (HOLD-02), torque (HOLD-01), gasket "
+            "6. Frame welded at the corners (mitre plates) and the T joints (D-131). HOLD: retainer (HOLD-02), torque (HOLD-01), gasket "
             "converter (HOLD-05).",
         ]
     else:
@@ -557,8 +542,10 @@ def main(argv):
     if kind in ("panel", "cassette"):
         blocks = assembly_blocks(pn, kind, src)
     else:
+        if kind == "fill":
+            raise SystemExit("no fill drawing: the fill pieces are cut from their DXFs (D-128); see FILL-PIECES.md")
         blocks = {"frame": frame_blocks, "frame_back": frame_blocks, "skin": skin_blocks,
-                  "tray": tray_blocks, "fill": fill_blocks}[kind](pn, src)
+                  "tray": tray_blocks}[kind](pn, src)
     meta = {}
     for name, lines, width, title in blocks:
         path, w, h = render("%s_%s" % (pn, name), lines, width, title=title)

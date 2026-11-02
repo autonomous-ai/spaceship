@@ -192,8 +192,29 @@ def add_view(sheet, orientation, centre, scale):
     v = sheet.views.add(inp)
     if v is None:
         raise RuntimeError("Views.add returned None for %s" % orientation)
-    if abs(v.scaleValue - scale) > 1e-6:
+    # the view may still be computing when Views.add returns: reading its scale then raised "failed to read view
+    # scale" (the skin sample, 2026-11-01 11:11); let Fusion work and read again, for up to about 30 s
+    import time
+    for tries in range(60):
+        try:
+            got = v.scaleValue
+            break
+        except RuntimeError as exc:
+            if tries == 59:
+                raise RuntimeError("the %s view's scale still can't be read after 30 s (%s): its model may not "
+                                   "have loaded" % (orientation, exc))
+            adsk.doEvents()
+            time.sleep(0.5)
+    if tries:
+        print("VIEW|%s view readable after %d tries" % (orientation, tries))
+    if abs(got - scale) > 1e-6:
         v.scaleValue = scale            # the input's scale is ignored in this build (tools/fusion/README.md)
+    # Fusion ignores the style given at creation and draws hidden lines on every view (CEILING's first sample,
+    # PM check 2026-11-01): set it again on the view; the hole tables carry each face's holes
+    if v.style != adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType:
+        v.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
+    if v.style != adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType:
+        raise RuntimeError("view %s keeps hidden lines after the style is set" % orientation)
     return v
 
 
@@ -241,6 +262,11 @@ def frame_dims(sheet, views, scale, right=False):
                  if abs(xy(ln.startPoint)[0] - xy(ln.endPoint)[0]) < 0.01
                  and abs(xy(ln.startPoint)[1] - xy(ln.endPoint)[1]) > 0.8 * (e[3] - e[1])})
     near = [x for i, x in enumerate(xs) if i % 2 == (1 if right else 0) and e[0] + 0.5 < x < e[2] - 0.5]
+    kept = []                         # never the same dimension twice (PM check 2026-11-01)
+    for x in near:
+        if all(abs(x - y) > 0.5 for y in kept):
+            kept.append(x)
+    near = kept
     for k, x in enumerate(near):
         tgt = nearest_end(v, (x, e[1] + 20.0 * scale), tol=20.0 * scale + 0.6)
         dim(sheet, o, tgt, ((xb + x) / 2, e[1] - 8.0 - 4.5 * (k % 3)))
@@ -273,14 +299,16 @@ def datum(sheet, letter, line, place):
 
 
 def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
-    """ISO first-angle symbol (as the Phase 0 proof drew it)."""
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
+    """ISO first-angle symbol: the truncated cone's outline in a sketch of its own (sharing one with the circles
+    drew it as a triangle: CEILING's first sample, PM check 2026-11-01), the two circles in another."""
+    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - OUTLINE")
     pts = [p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
            p2(x0, y0 + d / 2), p2(x0, y0 - d / 2)]
     sk.lines.add(pts)
+    sk2 = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - CIRCLES")
     cx = x0 + length + gap + big / 2
-    sk.circles.addByCenterRadius(p2(cx, y0), big / 2)
-    sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
+    sk2.circles.addByCenterRadius(p2(cx, y0), big / 2)
+    sk2.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
 MAPPING = os.path.join(HERE, "image_mapping.json")
@@ -348,6 +376,7 @@ def annotate(app, kind, pn, datum_b):
         raise RuntimeError("the sheet already has %d views; start a new drawing" % sheet.views.count)
     cfg = KINDS[kind]
     print("sheet %s: %s x %s" % (sheet.name, round(sheet.width, 2), round(sheet.height, 2)))
+    step("STEP|views for %s" % pn)
     views = place_views(sheet, cfg)
     right = datum_b == "right"
     side = "right" if right else "left"
@@ -367,6 +396,7 @@ def annotate(app, kind, pn, datum_b):
     for vname, title in cfg["tables"]:
         hole_table(sheet, views[vname], "%s (ORIGIN: VIEW LOWER %s CORNER)" % (title, side.upper())
                    if "ORIGIN" not in title else title, "br" if right else "bl")
+    step("STEP|symbol and notes for %s" % pn)
     projection_symbol(sheet, 30.0, 400.0)                 # top left: clear of the views and the note column
     finish(app, dwg, sheet, kind, pn)
 
@@ -387,27 +417,62 @@ def finish(app, dwg, sheet, kind, pn):
         sheet.views.count, sheet.drawingDimensions.count, sheet.holeTables.count))
 
 
+STEP_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".raw", "annotate-steps.log")
+
+
+def step(msg):
+    """Print a step and append it, timestamped, to .raw/annotate-steps.log at once: the runner only returns a run's
+    printed lines when it ends, so after a hang (the 05:00 run, 2026-11-01) this file shows where it stopped."""
+    import time
+    print(msg)
+    try:
+        os.makedirs(os.path.dirname(STEP_LOG), exist_ok=True)
+        with open(STEP_LOG, "a", encoding="utf-8") as fh:
+            fh.write("%s %s\n" % (time.strftime("%H:%M:%S", time.gmtime()), msg))
+            fh.flush()
+    except OSError:
+        pass
+
+
 def open_drawing(app, name):
     """Open the saved drawing NAME from Default Project / FocusPod v2 (the screen is unlocked: PM rule)."""
     proj = [app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
             if app.data.dataProjects.item(i).name == "Default Project"][0]
     fold = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-    files = []
-    for _attempt in range(3):            # the list can change while others save
-        try:
-            files = [fold.dataFiles.item(i) for i in range(fold.dataFiles.count)]
-            break
-        except RuntimeError:
-            adsk.doEvents()
-    files = [f for f in files if f.name == name]
+    from fusion_folder import read_folder     # the shared reader (#213): one fetch of the folder per pass
+    found, _unknown, _others = read_folder(fold, stop_when=lambda f, u, o: name in f)
+    files = found.get(name, [])
     if len(files) != 1:
         raise RuntimeError("%d saved drawings are called %r" % (len(files), name))
     app.data.activeProject = proj
     doc = app.documents.open(files[0], True)
     if doc is None:
         raise RuntimeError("could not open %r" % name)
-    print("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
+    step("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
     return doc
+
+
+def update_refs(doc, name):
+    """A drawing keeps the design version it was started from: bring its references to the latest saved
+    versions before any view is added (the WALL rework saves new design versions, D-120). Prints each
+    reference's version before and after; raises when one is still out of date."""
+    def state():
+        out = []
+        refs = doc.documentReferences
+        for i in range(refs.count):
+            r = refs.item(i)
+            out.append((r.dataFile.name if r.dataFile else "?", r.version, r.isOutOfDate))
+        return out
+    before = state()
+    if any(st for _n, _v, st in before):
+        if not doc.updateAllReferences():
+            raise RuntimeError("%s: updating its references failed (%s)" % (name, before))
+        after = state()
+        if any(st for _n, _v, st in after):
+            raise RuntimeError("%s: references still out of date after the update: %s" % (name, after))
+        step("BATCH|references of %s updated: %s -> %s" % (name, before, after))
+    else:
+        step("BATCH|references of %s up to date: %s" % (name, before))
 
 
 def run(_context):
@@ -433,22 +498,23 @@ def run(_context):
                 raise RuntimeError("%r is open with unsaved changes; not reused (PM rule 4)" % name)
             doc = docs[0] if docs else open_drawing(app, name)
             doc.activate()
+            update_refs(doc, name)
             if ARGS.get("only_images") == "1":            # notes added later to an annotated drawing
                 dwg = adsk.drawing.Drawing.cast(app.activeProduct)
                 if dwg is None or not dwg.activeSheet.views.count:
                     raise RuntimeError("%r has no views yet: annotate it first" % name)
-                print("BATCH|images %s" % name)
+                step("BATCH|images %s" % name)
                 finish(app, dwg, dwg.activeSheet, kind, pn)
             else:
-                print("BATCH|annotate %s" % name)
+                step("BATCH|annotate %s" % name)
                 annotate(app, kind, pn, datum_b)
             if not doc.save("views, dimensions, hole tables, notes"):
                 raise RuntimeError("save failed")
             done.append(name)
-            print("BATCH|done %s" % name)
+            step("BATCH|done %s" % name)
         except Exception as exc:                          # noqa: BLE001  (report, close, go on)
             failed.append(item)
-            print("BATCH|FAIL %s: %s" % (item, exc))
+            step("BATCH|FAIL %s: %s" % (item, exc))
             print(traceback.format_exc()[-1200:])
         finally:
             if doc is not None and doc.isValid:
