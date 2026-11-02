@@ -730,6 +730,37 @@ def test_any_line_folds_with_a_cut_out():
     assert any("the DXF has no cut-out of its shape there" in x for x in f2), f2
 
 
+def test_fold_sections_in_one_plane_draw_apart():
+    """611801's crossed letters (the Lead): two fold sections cut in one plane (its B1 and B6, both at the duct's mid
+    height) drew one cutting line over the other across the whole view, both letters at each end. A fold section's
+    cutting line now runs over its own fold only, so each pair of letters sits by its own fold. A rectangular duct
+    with a 90° and a 60° fold on opposite edges, both cut at x 150: each letter pair stays within 25 of its fold,
+    the pairs apart, and the sheet reads back. Two cutting lines that lie on one another are found."""
+    d = os.path.join(TMP, "duct_one_plane")
+    os.makedirs(d, exist_ok=True)
+    base = [(0.0, 0.0), (300.0, 0.0), (300.0, 200.0), (0.0, 200.0)]
+    tabs = [(0, 90.0, 20.0, 280.0, [(0.0, 40.0), (260.0, 40.0)], []),
+            (2, 60.0, 20.0, 280.0, [(0.0, 30.0), (260.0, 30.0)], [])]
+    step, dxf = _duct_variant(d, "PLANE", "219962", base=base, tabs=tabs)
+    row = dict(ROW, part_number="219962", name="TEST - DUCT HALF", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219962.pdf")
+    compose.make("219962", "none", dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model",
+                                                     "dxf": dxf}), p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    words = [w for w in fitz.open(p)[0].get_text("words")
+             if w[4] in ("D", "E") and 22 * readback.MM < w[0] < 820 * readback.MM]
+    ys = {k: sorted(w[1] / readback.MM for w in words if w[4] == k) for k in ("D", "E")}
+    assert len(ys["D"]) == len(ys["E"]) == 2, ys
+    for k in ys:
+        assert ys[k][1] - ys[k][0] < 25.0, ys
+    assert ys["D"][1] < ys["E"][0] or ys["E"][1] < ys["D"][0], ys
+    assert compose._cuts_overlap(((0, 0), (10, 0)), ((5, 0.2), (20, 0.2)))
+    assert not compose._cuts_overlap(((0, 0), (10, 0)), ((11, 0), (20, 0)))
+    assert not compose._cuts_overlap(((0, 0), (10, 0)), ((5, 3), (20, 3)))
+
+
 class _RowSays:
     """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
 
