@@ -375,7 +375,7 @@ PIECES = [
     Piece("1-09", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 7, "CEILING"),
     Piece("1-10", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(sk("wall_depth"), sk("half_pw"), 70), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame) and the grille 611602 over it (AIR 610000 P01 STEP): 70 thick", 1, 7, "CEILING",
+          S(sk("wall_depth"), sk("half_pw"), 71), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame), its top flange on the roof, and the grille 611602 over it (AIR 610000 P01 STEP, the AIR follow-up's sleeve flange): 71 thick", 1, 7, "CEILING",
           note="the roof sleeve and grille ride loose with C2 (#263), the grille's 4 bolts and washers (J-AIR-03) in a bag taped to the grille: the sleeve seated in C2's roof slot and taped, the grille taped flat over it; both come off at unpacking and go on after the soffit hangs (guide step 17)"),
     Piece("1-11", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
           S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
@@ -426,8 +426,10 @@ PIECES = [
           [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2322, 359, 233),
           "AIR 610000 P01 STEP: the soffit 610201 with its exhaust fan box and fans (the roof sleeve ships with C2, #263)", 2, 16, "AIR",
           note="exhaust fan box 610402 with its 2 fans fitted inside the soffit's right end at the factory (D-87), the roof sleeve's gasket on its top; the exhaust cartridge ships on its own (2-18)"),
-    Piece("2-10", "610101", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2108, 359, 212),
-          "AIR 610000 P01 STEP: the column 610101 with its faces, angles, plates, fill and kick grille, without the supply cartridge", 2, 15, "AIR"),
+    Piece("2-10", "610101", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2120, 359, 212),
+          "AIR 610000 P01 STEP: the column 610101 with its faces, angles, plates, fill and kick grille, without the supply cartridge; "
+          "2120 tall since D-132 (its foot at Z 0, no mat), 14 mm under the install sheet's 2134 elevator door (the Lead's OK, "
+          "2026-11-01)", 2, 15, "AIR"),
     Piece("2-11", "350002", "FRONT - DECOR BLOCK ASSY - DT", "Khối trang trí trên (cụm)", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1699, 306, 203),
           "FRONT 350002 P01 STEP: the door's top stop and catch stand 26 mm below the skin", 2, 11, "FRONT"),
     Piece("2-12", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS", "Bộ điện: dây, dây nguồn, hub, đèn", "-", [("ELEC", 1 - POWER_UNIT_SHARE)],
@@ -889,11 +891,15 @@ CAD = {
     "2-11": dict(step="front/350002_P01_*_STEP.step"),
     "2-13": dict(parts=[dict(step=INT_STEP, sub="810201")]),
     "2-15": dict(parts=[dict(step=INT_STEP, sub="810101"), dict(step=INT_STEP, sub="818102")]),
-    "2-09": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-18)"}),
-    "2-10": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-17)"}),
+    "2-09": dict(step=AIR_STEP, sub="610201", drop={"610301": "the exhaust cartridge ships on its own (2-18)",
+                                                    "611301": "its casing (the AIR follow-up models the cartridge's parts)",
+                                                    "611302": "its layers"}),
+    "2-10": dict(step=AIR_STEP, sub="610101", drop={"610301": "the supply cartridge ships on its own (2-17)",
+                                                    "611301": "its casing (the AIR follow-up models the cartridge's parts)",
+                                                    "611302": "its layers"}),
     "2-16": dict(step=AIR_STEP, sub="610401"),
-    "2-17": dict(step=AIR_STEP, sub="610101", keep={"610301"}),
-    "2-18": dict(step=AIR_STEP, sub="610201", keep={"610301"}),
+    "2-17": dict(step=AIR_STEP, sub="610101", keep={"610301", "611301", "611302"}),     # the cartridge, its casing and layers
+    "2-18": dict(step=AIR_STEP, sub="610201", keep={"610301", "611301", "611302"}),
     "2-19": dict(step=CEIL_STEP, sub="510301", occ=1), "2-20": dict(step=CEIL_STEP, sub="510301", occ=2),
 }
 _STEP_CACHE = {}

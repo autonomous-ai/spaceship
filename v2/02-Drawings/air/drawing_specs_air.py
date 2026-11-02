@@ -108,7 +108,7 @@ SPECS = {
                                                                 "egrille", "stud", "hinge", "latch", "lock")]
             + ["EXHAUST FAN BOX", "CARTRIDGE EXHAUST"])),
     "cart": spec("cart", [
-        "Splitter cartridge, one part for both paths (D-61): 173 x 314 x 1750, 2 mm aluminium casing open at both ends, three 50 mm absorbent layers with two 80 mm passages.",
+        "Splitter cartridge, one part for both paths (D-61): 173 x 314 x 1750, 2 mm aluminium casing open at both ends (D-61; D-121), three 50 mm Sorberpoly 2D layers at 32 kg/m3 (D-116) with two 80 mm passages.",
         "Layers: Pyrotek Sorberpoly 2D, knife cut (parts-list row, no drawing, D-89).",
     ], bbox(names=["CARTRIDGE SUPPLY"])),
     "sbox": spec("sbox", [
@@ -116,7 +116,7 @@ SPECS = {
         "Riser 1 mm steel 139 x 155, Z 105 to 1445; box 300 x 155 x 300 at Z 1650 to 1950.",
     ], bbox(names=["SUPPLY FAN BOX", "INTAKE RISER", "RISER TRANSITION", "SUPPLY TRANSITION"])),
     "ebox": spec("ebox", [
-        "Exhaust fan box: 294 x 314 x 173, 2 mm aluminium, lined 50 (air report 7e); two NF-A14 fans 618401 lying flat.",
+        "Exhaust fan box: 294 x 314 x 173, 3 mm aluminium (D-124), lined 50 (air report 7e); two NF-A14 fans 618401 lying flat.",
         "Fitted in the soffit at the factory (D-87); under C2's roof sleeve.",
     ], bbox(names=["EXHAUST FAN BOX"]), sheet="A2"),
     "col_ang": spec("col_ang", [

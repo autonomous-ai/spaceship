@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1080" viewBox="0 0 1500 1080">
 <rect width="1500" height="1080" fill="#ffffff"/>
 <text x="20.0" y="30.0" font-family="Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#222">910002 P01  PALLET LOAD 2 - 96 x 48 in (2438 x 1219 mm) - six tiers</text>
-<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 328 kg, loaded height 1595 mm. Left: side elevation along the 96 in side. Right: each tier from above. Units mm. DRAFT.</text>
+<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 327 kg, loaded height 1595 mm. Left: side elevation along the 96 in side. Right: each tier from above. Units mm. DRAFT.</text>
 <rect x="40" y="620" width="731.5" height="36.3" fill="#d2b48c" stroke="#7a5c2e"/>
 <text x="405.8" y="644.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#222">96 x 48 pallet, 121</text>
 <rect x="40" y="548.7" width="731.5" height="71.3" fill="none" stroke="#999" stroke-dasharray="3 3"/>
@@ -18,7 +18,7 @@
 <rect x="40.0" y="405.0" width="512.7" height="63.9" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
 <rect x="552.7" y="408.9" width="180.0" height="60.0" fill="#9b59b6" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
 <rect x="40.0" y="396.0" width="699.6" height="72.9" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="358.2" width="635.4" height="110.7" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="358.2" width="639.0" height="110.7" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
 <text x="779.5" y="417.5" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 3: DL on its side, DT, soffit, air column (369)</text>
 <rect x="40" y="232.2" width="731.5" height="120.0" fill="none" stroke="#999" stroke-dasharray="3 3"/>
 <rect x="40.0" y="288.3" width="604.5" height="63.9" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
@@ -63,7 +63,7 @@
 <text x="1133.2" y="735.1" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-12</text>
 <rect x="925.1" y="763.0" width="279.8" height="44.3" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="928.1" y="773.0" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-09</text>
-<rect x="925.1" y="807.3" width="254.2" height="26.6" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="925.1" y="807.3" width="255.6" height="26.6" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="928.1" y="817.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-10</text>
 <text x="40.0" y="900.3" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 4: air parts, light shelf, FR1 and cartons</text>
 <rect x="40.0" y="906.28" width="292.6" height="146.3" fill="none" stroke="#7a5c2e"/>
