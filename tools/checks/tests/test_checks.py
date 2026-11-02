@@ -1816,3 +1816,20 @@ def test_every_bonded_skin_sits_bond_t_off_its_frame():
     far = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -630.0)], bt=3.0)   # 17 mm behind: not bonded
     assert far == []
     assert c_geometry.bond_t(ROOT) == 3.0              # the skeleton's own parameter
+
+
+def test_a_lining_is_a_soft_good_only_when_its_material_is_foam_felt_or_fibre():
+    # D-180 (the PM, 2026-11-01): AIR's fan box linings 611405 to 611407 close under D-89 as soft goods, with no
+    # rename; a steel lining, or one whose material doesn't say what it is, keeps its drawing
+    from common import is_soft, soft_head
+    name = "AIR - FAN BOX LINING - EXHAUST SIDE"
+    assert soft_head(name, "polyurethane foam, Pyrotek Sorberpoly 2D, 32 kg/m3") == "FOAM"
+    assert soft_head(name, "polyester felt 12 mm") == "FELT" and soft_head(name, "glass fibre board") == "FELT"
+    assert is_soft(name, material="open-cell foam") and is_soft(name, kinds=("FOAM",), material="open-cell foam")
+    assert not is_soft(name, kinds=("FELT", "FILL"), material="open-cell foam")
+    for m in ("", "Pyrotek Sorberpoly 2D 32 kg/m3", "steel sheet 0.8, galvanized"):
+        assert not is_soft(name, material=m) or "foam" in m.lower(), m
+    assert not is_soft(name, material="steel sheet 0.8") and not is_soft(name)
+    assert c_drawings.soft_kind(name, "polyester felt") == "felt or fill"
+    assert c_drawings.soft_kind(name, "PU foam") == "soft" and c_drawings.soft_kind(name) == ""
+    assert c_drawings.soft_kind("LINING - FILL - CEILING - BAY A") == "felt or fill"     # unchanged without a material

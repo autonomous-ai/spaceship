@@ -170,9 +170,26 @@ def head_noun(name):
     return words[-1] if words else ""
 
 
-def is_soft(name, kinds=None):
-    """A soft good by its head noun (fill, felt, foam, gasket, seal, tape); kinds narrows the set."""
+# D-180 (the PM, 2026-11-01, on AIR's fan box linings): LINING is a soft good when its material is foam, felt or
+# fibre (no rename: a lining isn't a fill). Felt or fibre reads as a felt, foam as a foam; any other lining (a steel
+# one) keeps its head noun and its drawing.
+SOFT_LINING_MATERIAL = re.compile(r"\b(?:(foam)\w*|(felt|fib(?:re|er)s?|fibrous)\b)", re.I)
+
+
+def soft_head(name, material=""):
+    """The head noun the soft-goods rules read: LINING becomes FOAM or FELT by its material (D-180)."""
     h = head_noun(name)
+    if h in ("LINING", "LININGS"):
+        m = SOFT_LINING_MATERIAL.search(material or "")
+        if m:
+            return "FOAM" if m.group(1) else "FELT"
+    return h
+
+
+def is_soft(name, kinds=None, material=""):
+    """A soft good by its head noun (fill, felt, foam, gasket, seal, tape); kinds narrows the set. Give the part's
+    material and a foam, felt or fibre LINING counts too (D-180)."""
+    h = soft_head(name, material)
     if not SOFT_HEADS.fullmatch(h):
         return False
     return kinds is None or any(h.rstrip("S").endswith(k) for k in kinds)

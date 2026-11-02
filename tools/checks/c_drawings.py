@@ -638,11 +638,12 @@ def felt_dxf_lacks(root, pn, shape, dxf_path):
     return lacks
 
 
-def soft_kind(name):
-    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89)."""
-    if not is_soft(name):
+def soft_kind(name, material=""):
+    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89); with the material, a
+    foam, felt or fibre LINING too (D-180)."""
+    if not is_soft(name, material=material):
         return ""
-    return "felt or fill" if is_soft(name, kinds=("FELT", "FILL")) else "soft"
+    return "felt or fill" if is_soft(name, kinds=("FELT", "FILL"), material=material) else "soft"
 
 
 # D-89 part 4 (PM rule, 2026-11-01): a flat part cut from sheet (laser, waterjet or CNC router) with no bends
@@ -1279,7 +1280,7 @@ def member_lacks(pn, entries, idx, ends=None, text_of=None):
 
 def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
                    bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None, made_why=None,
-                   ends_by_pn=None):
+                   ends_by_pn=None, materials=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -1342,7 +1343,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   (GENERATOR_FIX if gen else ""),
                                   rel(root, tp), GENERATOR_OWNER if gen else owner))
             continue
-        kind = soft_kind(names.get(pn, ""))
+        kind = soft_kind(names.get(pn, ""), (materials or {}).get(pn, ""))
         if not pdfs and kind == "soft" and files.get("DXF"):
             continue        # D-89 (3): a DXF gives the outline of a foam, gasket, seal or tape, any shape
         if not pdfs and kind:
