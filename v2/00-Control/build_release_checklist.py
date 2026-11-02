@@ -744,20 +744,24 @@ def made_hold(r, rows):
     return False
 
 
+GA_AUDIT = ("At release, run the Checker's audit (#413) too: this line reads only the sheet's record of its sources, "
+            "so a change to the generator's own code shows only in the audit, which redraws the GA.")
+
+
 def ga_line(ga):
-    """D-176's line on whether the GA (100000) is current, from ga_current()'s (path, why)."""
+    """D-176's line on whether the GA (100000) is current, from ga_current()'s (path, why). Every wording ends with
+    GA_AUDIT, since the sheet's record can't show a change to the generator's own code (Reviewer 6's P3 on #425)."""
     path, why = ga or (None, [])
     if not path:
         return ("**The GA (100000, D-176)**: no generated GA sheet in the working tree" +
-                (" (%s)." % "; ".join(why) if why else "."))
+                (" (%s). " % "; ".join(why) if why else ". ") + GA_AUDIT)
     if not why:
-        return (f"**The GA (100000, D-176)**: current: `{path}`'s recorded sources are as it was drawn from. The Checker's "
-                "audit (#413) also redraws it byte for byte; the GA only warns there, and Fusion Engineer 2 redraws it at "
-                "checkpoints.")
+        return (f"**The GA (100000, D-176)**: current: `{path}`'s recorded sources are as it was drawn from. The GA only "
+                "warns in the Checker's audit, and Fusion Engineer 2 redraws it at checkpoints. " + GA_AUDIT)
     shown = "; ".join(why[:6]) + ("; and %d more" % (len(why) - 6) if len(why) > 6 else "")
     return (f"**The GA (100000, D-176)**: out of date: `{path}` was drawn from sources that have moved since ({shown}). "
             "Fusion Engineer 2 redraws it at checkpoints, and it must be current at release; a parts-list line for "
-            "100000, if there is one, stays open until then.")
+            "100000, if there is one, stays open until then. " + GA_AUDIT)
 
 
 def state_of(gaps, screen, hold=False, drawgen=False):

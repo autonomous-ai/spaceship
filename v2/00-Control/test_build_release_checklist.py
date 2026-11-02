@@ -390,6 +390,12 @@ class D176GA(unittest.TestCase):
         self.assertIn("out of date", rc.ga_line(("a.pdf", ["v2/04-BOM/x.csv changed"])))
         self.assertIn("current:", rc.ga_line(("a.pdf", [])))
 
+    def test_every_ga_line_says_to_run_the_audit_at_release(self):
+        """The sheet's record can't show a change to the generator's own code, so whatever the GA reads, the line says to
+        run the Checker's audit at release too (Reviewer 6's P3 on #425, the Lead's ruling)."""
+        for ga in (("a.pdf", []), ("a.pdf", ["v2/04-BOM/x.csv changed"]), (None, []), (None, ["not read: OSError"])):
+            self.assertIn("At release, run the Checker's audit (#413) too", rc.ga_line(ga), ga)
+
 
 class D162CutListRow(unittest.TestCase):
     """D-162: a weldment member's drawing is its frame's cut list row, when the row states section, cut length,
