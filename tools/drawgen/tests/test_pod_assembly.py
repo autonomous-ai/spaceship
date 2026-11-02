@@ -9,7 +9,7 @@
 3. A top part with no number, or one the master BOM doesn't hold, or one under a first-level row the entry leaves
    out, stops the sheet with a message naming the file.
 4. The sheet draws from today's STEPs and reads back PASS: one table row per first-level assembly, a balloon on each
-   one a STEP has, the two heights (2400 to the roof skin, 2402 overall) measured again.
+   one a STEP has, the two heights (2400 to the roof skin, 2403 overall) measured again.
 5. The read-back is not a rubber stamp: it fails a table cell that differs from the master BOM, a balloon moved off
    its assembly, a STEP changed since the sheet was drawn, and a STEP of the pod the sheet doesn't name.
 """
@@ -120,7 +120,7 @@ def test_the_sheet_draws_and_reads_back():
     assert st["rows"] == len(first) and st["steps"] == len(P.pod_steps())
     assert st["balloons"] == len([b for b in rep["data"]["balloons"]]) > 0
     hs = sorted(float(p["value"]) for g in rep["data"]["interfaces"] for p in g["points"])
-    assert hs == [2400.0, 2402.0], hs                     # the roof skin (D-21) and the grille's top, from the floor
+    assert hs == [2400.0, 2403.0], hs                     # the roof skin (D-21) and the grille's top, from the floor
     assert os.path.basename(final) == "100000_%s_POD-SPACESHIP_DWG.pdf" % P.skeleton_rev()
 
 
@@ -246,7 +246,7 @@ def test_the_sheet_has_its_clear_sizes_position_codes_and_mass():
     assert x["mass"]["kg"] == P.rollup_mass()[0]
     by = {r["name"]: r for r in x["sizes"]}
     assert (by["inside width"]["lo_pn"], by["inside width"]["hi_pn"]) == ("510101", "510102")
-    assert by["door clear width"]["lo_pn"] == "351103"           # DL's stop, not the open leaf, sets it
+    assert by["door clear width"]["lo_pn"] == "351106"           # DL's stop (#313: its pieces 2 and 3), not the leaf
     assert by["door clear width at the head"]["value"] < by["door clear width"]["value"] < \
         by["door clear width at the foot"]["value"]                 # the slanted edge: narrower going up
 

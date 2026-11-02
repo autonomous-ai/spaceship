@@ -73,3 +73,37 @@ Same method, in the same run as each build:
 | DL | decor_d 215; dl_w 283; dl_y3 848 | 308.0 x 199.0 x 2292.0 | 313.0 x 213.0 x 2292.0 | 308.0 x 199.0 x 2292.0 | none (worst 0.020) | PASS, 15 anchors |
 
 0 unhealthy items and 0 loose sketches in every state.
+
+## 350002 DT and 350001 DL: D-120 rebuilds (2026-11-01)
+
+Same method, in the same run as each build, the frames now made of member components and copies:
+
+| Block | Edits | Before (box mm) | After the edits | Reverted | Anchors off | Result |
+|---|---|---|---|---|---|---|
+| DT | decor_d 215; dt_xr 1690; dl_w 283 | 1699.0 x 202.8 x 306.0 | 1690.0 x 212.8 x 306.0 | 1699.0 x 202.8 x 306.0 | none (worst 0.010) | PASS, 17 anchors |
+| DL | decor_d 215; dl_w 283; dl_y3 848 | 308.0 x 199.0 x 2292.0 | 313.0 x 213.0 x 2292.0 | 308.0 x 199.0 x 2292.0 | none (worst 0.010) | PASS, 15 anchors |
+
+0 unhealthy items and 0 loose sketches in every state; the copies follow the edits through their joints.
+
+
+## 350003 DR: D-120, D-130 and D-131 spans rebuild (2026-11-01)
+
+| Block | Edits | Before (box mm) | After the edits | Reverted | Anchors off | Result |
+|---|---|---|---|---|---|---|
+| DR | decor_d 215; fix_xk 511; fix_zk 1531 | 1020.0 x 217.9 x 2290.1 | 1020.0 x 227.9 x 2290.1 | 1020.0 x 217.9 x 2290.1 | none (worst 0.010) | PASS, 31 anchors |
+
+0 unhealthy items and 0 loose sketches in every state. The day's first DR build failed here: the inner face panel moved with decor_d but AIR's named value `dr_acc_face_y`, which no feature used, kept its old value in the edited copy (anchor −631.13 against −641.14). The panel and its felt are now built from that named value, so the value AIR reads and the model can't drift.
+
+## 350001 DL, 350002 DT, 350003 DR: the 3 mm bond line (2026-11-01)
+
+| Block | Edits | Before (box mm) | After the edits | Reverted | Anchors off | Result |
+|---|---|---|---|---|---|---|
+| DL | decor_d 215; dl_w 283; dl_y3 848 | 308.0 x 199.0 x 2292.0 | 313.0 x 213.0 x 2292.0 | 308.0 x 199.0 x 2292.0 | none (worst 0.010) | PASS, 16 anchors |
+| DT | decor_d 215; dt_xr 1690; dl_w 283 | 1699.0 x 202.8 x 306.0 | 1690.0 x 212.8 x 306.0 | 1699.0 x 202.8 x 306.0 | none (worst 0.010) | PASS, 17 anchors |
+| DR | decor_d 215; fix_xk 511; fix_zk 1531 | 1020.0 x 217.9 x 2290.1 | 1020.0 x 227.9 x 2290.1 | 1020.0 x 217.9 x 2290.1 | none (worst 0.010) | PASS, 31 anchors |
+
+0 unhealthy items and 0 loose sketches in every state. Two first runs failed here and were fixed before these:
+- DR: four frame anchors still expected the tubes on the skin.
+- DL: in the edited state one feature went unhealthy, because the door-side ring tubes' old outline folded over itself where the 7 mm front face had no width at the bond line's depth.
+
+`frame_preflight.py` now checks both offline before a run.
