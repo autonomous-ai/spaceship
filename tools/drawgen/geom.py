@@ -129,8 +129,9 @@ def _solids(shape):
     return out
 
 
-def read_step(path):
-    """[(product name, [solids in top coordinates])] for every leaf product occurrence in the file."""
+def read_step(path, paths=False):
+    """[(product name, [solids in top coordinates])] for every leaf product occurrence in the file; with paths, each
+    also with its ancestors from the top, [(placement key, product name)] (a welded frame's members, D-120)."""
     doc = TDocStd_Document(TCollection_ExtendedString("XmlOcaf"))
     r = STEPCAFControl_Reader()
     r.SetNameMode(True)
@@ -143,24 +144,25 @@ def read_step(path):
     st.GetFreeShapes(tops)
     out = []
 
-    def walk(lab, loc, name):
+    def walk(lab, loc, name, key, anc):
         if st.IsAssembly_s(lab):
+            here = anc + ((key, name or _name(lab)),)
             comps = TDF_LabelSequence()
             st.GetComponents_s(lab, comps)
             for i in range(1, comps.Length() + 1):
                 c = comps.Value(i)
                 ref = TDF_Label()
                 st.GetReferredShape_s(c, ref)
-                walk(ref, loc.Multiplied(st.GetLocation_s(c)), _name(ref) or _name(c))
+                walk(ref, loc.Multiplied(st.GetLocation_s(c)), _name(ref) or _name(c), key + (i,), here)
             return
         shape = st.GetShape_s(lab)
         if not loc.IsIdentity():
             shape = shape.Moved(loc)
-        out.append((name or _name(lab), _solids(shape)))
+        out.append((name or _name(lab), _solids(shape)) + ((anc,) if paths else ()))
 
     for i in range(1, tops.Length() + 1):
         lab = tops.Value(i)
-        walk(lab, TopLoc_Location(), _name(lab))
+        walk(lab, TopLoc_Location(), _name(lab), (i,), ())
     return out
 
 
@@ -195,9 +197,11 @@ def body_names(path, pn):
     return names, sf
 
 
-def load_part(path, pn):
+def load_part(path, pn, frame_members=False):
     """The bodies of part pn in a STEP file (its own file, or a team assembly holding it), with their names and
-    a unit check against the repo's reader. Raises when the file holds no solid of that part."""
+    a unit check against the repo's reader. Raises when the file holds no solid of that part. frame_members: the
+    part is a welded frame whose entry names its cut list (D-162), so its own file, if every body there is a member
+    part, is read as its members (otherwise it is read as it always was)."""
     bodies = []
     occurrences = 0
     for name, solids in read_step(path):
@@ -208,17 +212,48 @@ def load_part(path, pn):
             continue
         for s in solids:
             bodies.append(Body("", s))
+    members = False
     if not bodies:
         # a part's own file: the product may carry the document name (PN_REV_NAME_CAD) or PN_1
         own = os.path.basename(path).startswith(pn + "_")
         if own:
-            for name, solids in read_step(path):
-                for s in solids:
-                    bodies.append(Body("", s))
+            leaves = [(name, solids) for name, solids in read_step(path) if solids]
+            others = [name for name, _s in leaves if part_number_of(name) not in (None, pn)]
+            if frame_members and leaves and len(others) == len(leaves):
+                # a welded frame in its own file whose every body is a member part (WALL's 211101, D-120): each body
+                # named by its member's number and name, as from a team STEP
+                bodies += [Body(name, s) for name, solids in leaves for s in solids]
+                members = True
+                occurrences = 1
+            else:
+                for name, solids in leaves:
+                    for s in solids:
+                        bodies.append(Body("", s))
+    if not bodies:
+        # a welded frame with no body of its own (D-120: its members are parts under it): every solid under its first
+        # placement, each body named by its member's number and name; its quantity is its own placements' count
+        first, keys = None, set()
+        for name, solids, anc in read_step(path, paths=True):
+            key = next((k for k, nm in anc if part_number_of(nm) == pn), None)
+            if key is None:
+                continue
+            keys.add(key)
+            if first is None:
+                first = key
+            if key == first:
+                bodies += [Body(name, s) for s in solids]
+        members = bool(bodies)
+        occurrences = len(keys)
     if not bodies:
         raise LookupError("no solid of %s in %s" % (pn, path))
     names, sf = body_names(path, pn)
+    if members:                 # the unit check reads the members' instances
+        for mpn in sorted({part_number_of(b.name) for b in bodies} - {None}):
+            more, sf = body_names(path, mpn)
+            names.update(more)
     for b in bodies:
+        if members:             # a member's body keeps its member's name
+            continue
         key = tuple(round(v, 1) for v in b.box)
         b.name = names.get(key, "")
         if not b.name:          # boxes from vertices vs. optimal boxes can differ by a rounding step
@@ -226,6 +261,8 @@ def load_part(path, pn):
             if best and sum(abs(x - y) for x, y in zip(best[0], key)) < 0.6:
                 b.name = best[1]
     unit = {"declared": sf.unit_name, "scale_to_mm": sf.scale, "occurrences": max(occurrences, 1)}
+    if members:                 # only a frame of members says so (other parts' drawing data stays as it was)
+        unit["members"] = True
     # unit check (D-13): the repo reader scales by the declared unit; OCC converts on its own. They must agree.
     worst = 0.0
     for b in bodies:
@@ -281,6 +318,8 @@ class Hole:
         self.partners = []       # other runs on the same axis (a hole through two tube walls)
         self.tag = None
         self.point_angle = None  # a blind hole's drill point (degrees), when its cone is in the model
+        self.csk = None          # a countersink at the entry: {"dia", "angle" (included, degrees), "depth"} (D-143)
+        self.csk_both = False
 
     @property
     def normal(self):
@@ -396,7 +435,8 @@ def features(body):
         if sf.GetType() == GeomAbs_Cone:
             cn = sf.Cone()
             dd = cn.Axis().Direction()
-            cones.append({"apex": pnt(cn.Apex()), "dir": canon_dir((dd.X(), dd.Y(), dd.Z())), "semi": abs(cn.SemiAngle())})
+            cones.append({"apex": pnt(cn.Apex()), "dir": canon_dir((dd.X(), dd.Y(), dd.Z())), "semi": abs(cn.SemiAngle()),
+                          "face": f})
 
     def point_at(d, a0, r, t_end, beyond):
         """A cone that is the drill point at this end of a run (beyond: +1 past t1, -1 before t0): its angle."""
@@ -410,6 +450,31 @@ def features(body):
             want = r / math.tan(cn["semi"]) if cn["semi"] > 1e-6 else 1e9
             if abs((t - t_end) * beyond - want) < max(0.02, 0.01 * r):
                 return 2 * math.degrees(cn["semi"])
+        return None
+    def csk_at(d, a0, r, t_end, outward):
+        """A countersink at this end of a run (outward: +1 the cone widens past t1, -1 before t0): its outer
+        diameter, included angle and depth along the axis, from the cone on the run's axis that starts at the hole's
+        circle and widens out of the material (D-143)."""
+        for cn in cones:
+            if abs(abs(vdot(cn["dir"], d)) - 1) > 1e-6 or cn["semi"] < 1e-6:
+                continue
+            off = vsub(cn["apex"], a0)
+            t = vdot(off, d)
+            if math.sqrt(max(0.0, vdot(off, off) - t * t)) > 0.02:
+                continue
+            if abs((t_end - t) * outward - r / math.tan(cn["semi"])) > max(0.02, 0.01 * r):
+                continue
+            rs = []
+            for v in _vertices_of(cn["face"]):
+                q = pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v)))
+                o = vsub(q, a0)
+                tt = vdot(o, d)
+                rs.append(math.sqrt(max(0.0, vdot(o, o) - tt * tt)))
+            R = max(rs) if rs else r
+            if R <= r + 1e-3:
+                continue
+            return {"dia": 2 * R, "angle": 2 * math.degrees(cn["semi"]), "depth": (R - r) / math.tan(cn["semi"]),
+                    "face": cn["face"]}
         return None
     holes, partial = [], []
     for g in groups:
@@ -451,9 +516,24 @@ def features(body):
                 else:
                     entry, axis = p0, d
             key = (tuple(round(x, 6) for x in d), tuple(round(x, 2) for x in a0))     # the axis line only
-            holes.append(Hole(body, entry, axis, 2 * h0["r"], run["t1"] - run["t0"], through, key,
-                              run["t0"], run["t1"]))
+            # a countersink (D-143): the hole is drilled from its side, the entry on the face where the cone opens,
+            # the depth the bore and the cone together
+            ck0 = csk_at(d, a0, h0["r"], run["t0"], -1) if not closed0 else None
+            ck1 = csk_at(d, a0, h0["r"], run["t1"], +1) if not closed1 else None
+            depth = run["t1"] - run["t0"]
+            csk = None
+            if ck1 and not ck0:
+                csk = ck1
+                entry, axis = vadd(p1, vmul(d, ck1["depth"])), vmul(d, -1.0)
+                depth += ck1["depth"]
+            elif ck0 and not ck1:
+                csk = ck0
+                entry, axis = vsub(p0, vmul(d, ck0["depth"])), d
+                depth += ck0["depth"]
+            holes.append(Hole(body, entry, axis, 2 * h0["r"], depth, through, key, run["t0"], run["t1"]))
             holes[-1].point_angle = pt1 if entry is p0 else pt0
+            holes[-1].csk = csk
+            holes[-1].csk_both = bool(ck0 and ck1)
     # partners: runs on one axis line (both walls of a tube)
     for h in holes:
         h.partners = [o for o in holes if o is not h and o.line_key == h.line_key]
@@ -608,6 +688,8 @@ def unexplained_curved_faces(body, holes, slots):
             continue
         if t == GeomAbs_Cone and drill_point_of(s, holes) is not None:
             continue
+        if t == GeomAbs_Cone and any(h.csk is not None and h.csk["face"].IsSame(f) for h in holes):
+            continue            # a countersink, called out with its hole (D-143)
         out.append(({GeomAbs_Cone: "cone"}.get(t, "surface type %s" % int(t)), None))
     return out
 

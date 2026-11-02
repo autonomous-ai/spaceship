@@ -49,6 +49,8 @@ class FakeFusion(http.server.ThreadingHTTPServer):
         self.done = []             # (end time, script text)
         self.open_log = None       # where a STUCK_OPEN / OPEN_ENDS script logs its open
         self.open_end_after = 1.5  # an OPEN_ENDS script's open ends this long after it started
+        self.objects = []          # each tools/call's object (script and readOnly flag), unwrapped
+        self.wake = threading.Event()   # a WAKES_ON_REQUEST script's open waits for any other request
         self.mutex = threading.Lock()
         self.thread = threading.Thread(target=self.serve_forever, daemon=True)
         self.thread.start()
@@ -87,6 +89,22 @@ class FakeHandler(http.server.BaseHTTPRequestHandler):
                 script = base64.b64decode(m.group(1)).decode("utf-8")
             with srv.mutex:
                 srv.scripts.append((time.time(), script))
+                srv.objects.append(dict(args.get("object", {}), script=script))
+            if "WAKES_ON_REQUEST_IN_FUSION" in script:
+                # live 2026-11-01 15:35:57: an open that sits idle until another request reaches Fusion
+                srv.log_open("start open ZZ_P00_IDLE-SAMPLE_DWG v1 visible; run: TEST: idle.py")
+                woke = srv.wake.wait(srv.slow_delay)
+                srv.log_open("end open ZZ_P00_IDLE-SAMPLE_DWG v1 after 1.0 s: ok")
+                text = json.dumps({"success": True, "message": "woke" if woke else "never woken"})
+                reply = json.dumps({"jsonrpc": "2.0", "id": body["id"], "result": {
+                    "content": [{"type": "text", "text": text}], "isError": False}}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(reply)))
+                self.end_headers()
+                self.wfile.write(reply)
+                return
+            srv.wake.set()                         # any other request wakes an idle open
             if "STUCK_OPEN_IN_FUSION" in script or "OPEN_ENDS_IN_FUSION" in script:
                 srv.log_open("start open ZZ_P00_STUCK-SAMPLE_DWG v1 visible; run: TEST: stuck.py")
                 if "OPEN_ENDS_IN_FUSION" in script:
@@ -597,6 +615,114 @@ class RunnerTests(unittest.TestCase):
         return self.runner(stuck, "--url", self.fake.url, "--timeout", "1", "--busy-poll", "0.5",
                            "--busy-wait", "30", "--open-limit", limit)
 
+    # PM ruling 2026-11-01 15:56: an open that sits idle until a request reaches Fusion gets a read-only check
+    def idle_run(self, *extra):
+        self.fake.delay, self.fake.slow_delay = 0.05, 20.0     # the open waits up to 20 s for any request
+        self.fake.open_log = self.lockdir + ".opens.log"
+        return self.runner(self.write("idle.py", "WAKES_ON_REQUEST_IN_FUSION"), "--url", self.fake.url, *extra)
+
+    def test_an_idle_open_gets_a_read_only_check_and_ends_right_after(self):
+        t0 = time.time()
+        code, out, err = self.idle_run("--timeout", "30", "--nudge-after", "1", "--nudge-every", "1")
+        self.assertEqual(code, 0, err)
+        self.assertLess(time.time() - t0, 10)                    # not the 20 s the open would wait
+        self.assertIn("woke", out)
+        self.assertRegex(err, r"nudge 1: open ZZ_P00_IDLE-SAMPLE_DWG v1 is \d+ s old; a read-only check was "
+                              r"answered in [0-9.]+ s; the open ended [0-9.]+ s after it")
+        checks = [o for o in self.fake.objects if o["script"] == rs.IDLE_CHECK]
+        self.assertEqual(checks, [{"script": rs.IDLE_CHECK, "readOnly": True}])     # one check, read-only no-op
+        with open(self.fake.open_log, encoding="utf-8") as fh:
+            text = fh.read()
+        self.assertIn("nudge 1: open ZZ_P00_IDLE-SAMPLE_DWG v1", text)              # kept in the open log
+        self.assertEqual(rs.unfinished_opens(self.fake.open_log), [])               # not read as an open
+        self.assertFalse(os.path.exists(self.lockdir))
+
+    def test_the_checks_run_only_inside_the_runs_own_lock(self):
+        # the Lead: keep the probe inside the waiting run's own lock: started after the lock is taken, stopped
+        # (waiting for a check in flight) before it goes back
+        events = []
+        keep = (rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release)
+
+        def start(self_):
+            events.append("nudger start")
+            return keep[0](self_)
+
+        def stop(self_):
+            keep[1](self_)
+            events.append("nudger stopped")
+
+        def acquire(self_, *a, **k):
+            r = keep[2](self_, *a, **k)
+            events.append("lock taken")
+            return r
+
+        def release(self_):
+            events.append("lock given back")
+            return keep[3](self_)
+        rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release = \
+            start, stop, acquire, release
+        try:
+            self.fake.delay = 0.05
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                rc = rs.main([self.script, "--url", self.fake.url, "--lock", self.lockdir])
+        finally:
+            rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release = keep
+        self.assertEqual(rc, 0)
+        self.assertEqual(events, ["lock taken", "nudger start", "nudger stopped", "lock given back"])
+
+    def test_the_checks_stop_before_the_timeout_paths_own_checks(self):
+        # Reviewer 5, P3 on #402: after a call times out, the run's own busy wait and open guard come only once the
+        # nudger has stopped, and the lock goes back last
+        events = []
+        keep = (rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release,
+                rs.wait_for_fusion, rs.guard_opens)
+
+        def start(self_):
+            events.append("nudger start")
+            return keep[0](self_)
+
+        def stop(self_):
+            keep[1](self_)
+            events.append("nudger stopped")
+
+        def acquire(self_, *a, **k):
+            r = keep[2](self_, *a, **k)
+            events.append("lock taken")
+            return r
+
+        def release(self_):
+            events.append("lock given back")
+            return keep[3](self_)
+
+        def busy(*_a, **_k):
+            events.append("busy wait")
+            return True
+
+        def guard(*_a, **_k):
+            events.append("open guard")
+            return []
+        rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release = \
+            start, stop, acquire, release
+        rs.wait_for_fusion, rs.guard_opens = busy, guard
+        try:
+            self.fake.delay, self.fake.slow_delay = 0.05, 2.0
+            slow = self.write("slow.py", "SLOW_IN_FUSION")
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                rc = rs.main([slow, "--url", self.fake.url, "--lock", self.lockdir, "--timeout", "0.3"])
+        finally:
+            (rs.OpenNudger.start, rs.OpenNudger.stop, rs.FusionLock.acquire, rs.FusionLock.release,
+             rs.wait_for_fusion, rs.guard_opens) = keep
+        self.assertEqual(rc, 2)                                   # the call timed out
+        self.assertEqual(events, ["lock taken", "nudger start", "nudger stopped", "busy wait", "open guard",
+                                  "lock given back"])
+
+    def test_without_the_check_the_idle_open_runs_into_the_timeout(self):
+        code, _out, err = self.idle_run("--timeout", "3", "--nudge-after", "0", "--busy-poll", "0.5",
+                                        "--busy-wait", "30", "--open-limit", "20")
+        self.assertEqual(code, 2, err)                            # the call timed out, as at 15:50 that day
+        self.assertNotIn("nudge", err)
+        self.assertIn("Fusion answers again", err)               # the check after the timeout woke it
+
     def test_an_open_that_never_ends_flags_fusion_unhealthy_even_though_it_answers(self):
         code, _out, err = self.stuck_run()
         self.assertEqual(code, rs.EXIT_UNHEALTHY, err)
@@ -834,8 +960,321 @@ class OpenLogTests(unittest.TestCase):
         self.assertEqual([l.split(" open ")[1].split(" v4")[0] for l in self.lines(log) if " start " in l],
                          ["X_P01_CAD", "Y_P01_CAD"])
 
+    def test_new_cloud_files_are_noted_once_per_session_on_all_three_document_classes(self):
+        # PM ruling 2026-11-01: the shared folder reader waits about 10 s after a new file (fusion_folder)
+        import types
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.fake_core()
+        calls = []
+
+        def doc_class(label):
+            class Doc:
+                def saveAs(self, name, folder, desc, tag):
+                    calls.append((label, name))
+                    return name != "REFUSED_CAD"
+            return Doc
+        core.Document = doc_class("core")
+        fusion, drawing = types.ModuleType("adsk.fusion"), types.ModuleType("adsk.drawing")
+        fusion.FusionDocument, drawing.DrawingDocument = doc_class("fusion"), doc_class("drawing")
+        keep = {k: sys.modules.get(k) for k in ("adsk.fusion", "adsk.drawing")}
+        sys.modules.update({"adsk.fusion": fusion, "adsk.drawing": drawing})
+        try:
+            self.run_wrapped(core, log, "X_P01_CAD", True)
+            first = [core.Documents.open] + [getattr(c, m) for c in (core.Document, fusion.FusionDocument,
+                                                                     drawing.DrawingDocument) for m in ("saveAs",)]
+            self.run_wrapped(core, log, "Y_P01_CAD", True)            # a second run: no second wrapper
+            again = [core.Documents.open] + [getattr(c, m) for c in (core.Document, fusion.FusionDocument,
+                                                                     drawing.DrawingDocument) for m in ("saveAs",)]
+            for a, b in zip(first, again):                            # Reviewer 5, P3 on #379: the guard holds
+                self.assertIs(a, b)
+            for cls, name in ((fusion.FusionDocument, "A_CAD"), (drawing.DrawingDocument, "B_DWG"),
+                              (core.Document, "C_CAD")):
+                before = time.time()
+                self.assertTrue(cls().saveAs(name, None, "", ""))
+                self.assertEqual(core._spaceship_new_file, name)
+                self.assertGreaterEqual(core._spaceship_new_file_at, before)
+            self.assertFalse(core.Document().saveAs("REFUSED_CAD", None, "", ""))
+            self.assertEqual(core._spaceship_new_file, "C_CAD")        # a refused save is no new file
+            self.assertEqual(calls, [("fusion", "A_CAD"), ("drawing", "B_DWG"), ("core", "C_CAD"),
+                                     ("core", "REFUSED_CAD")])        # each class's own saveAs, called once
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+
+    # PM ruling 2026-11-01 (CEILING: v11 saved at 14:30, its report step opened v10 a few seconds later)
+    def version_core(self):
+        """A fake adsk.core whose documents save new versions and whose open says which version it opened."""
+        import types
+        core = types.ModuleType("adsk.core")
+        core.RESULT = []
+
+        class Documents:
+            def open(self, dataFile, visible=True):
+                return (dataFile.name, dataFile.versionNumber)
+        core.Documents = Documents
+
+        class DataFile:
+            def __init__(self, name, v, folder=None):
+                self.name, self.versionNumber, self.parentFolder, self.fileExtension = name, v, folder, "f3d"
+
+            @property
+            def latestVersion(self):
+                return self
+        core.DataFile = DataFile
+
+        class Document:
+            def __init__(self, name, v, modified=True, ok=True, lag=False):
+                self.name, self.dataFile, self.isModified, self.ok, self.lag = name, DataFile(name, v), modified, ok, lag
+
+            def save(self, desc=""):
+                if self.ok and self.isModified and not self.lag:      # Fusion: a save makes the next version
+                    self.dataFile = DataFile(self.name, self.dataFile.versionNumber + 1)
+                return self.ok
+
+            def saveAs(self, name, folder, desc, tag):
+                return True
+        core.Document = Document
+        return core
+
+    def listing(self, core, versions):
+        """A folder whose listing of NAME_CAD gives the next of versions each time (the last one from then on)."""
+        test = self
+
+        class Files:
+            def __init__(self):
+                self.calls = 0
+
+            def asArray(self):
+                v = versions[min(self.calls, len(versions) - 1)]
+                self.calls += 1
+                return [core.DataFile("NAME_CAD", v, folder)]
+
+            @property
+            def count(self):
+                return 1
+
+        class Folder:
+            dataFiles = Files()
+        folder = Folder()
+        del test
+        return folder
+
+    def test_a_save_notes_the_version_it_made(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        first = self._installed_once(core, log)
+        self.assertIs(core.Document.save, first)                      # read after the second run (Reviewer 5, P3)
+        core.Document("A_CAD", 10).save("d")                          # changes: v11
+        core.Document("B_CAD", 4, modified=False).save("d")           # no changes: it stays v4
+        core.Document("C_CAD", 7, ok=False).save("d")                 # refused: nothing noted
+        core.Document("D_CAD", 20, lag=True).save("d")                # the document still says v20: v21 is noted
+        saved = core._spaceship_saved
+        self.assertEqual({k: v["version"] for k, v in saved.items()}, {"A_CAD": 11, "B_CAD": 4, "D_CAD": 21})
+        self.assertLessEqual(saved["A_CAD"]["at"], time.monotonic())
+        self.assertEqual(core._spaceship_saved_name, "D_CAD")          # every save's time, for the folder pause
+        self.assertLessEqual(core._spaceship_saved_mono, time.monotonic())
+        self.assertGreaterEqual(core._spaceship_saved_mono, saved["A_CAD"]["at"])
+
+    def _installed_once(self, core, log):
+        first = core.Document.save
+        self.run_wrapped(core, log, "Y_P01_CAD", True)
+        return first
+
+    def test_the_first_folder_listing_comes_10_s_after_the_save(self):
+        # PM ruling 2026-11-01 on #386: no folder listed within 10 s of any save (as #379 for new files)
+        from unittest import mock
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        clock = {"t": 5000.0}
+        listed_at = []
+
+        def now():
+            return clock["t"]
+
+        def sleep(s):
+            clock["t"] += s
+        folder = self.listing(core, [10, 11])
+        real = folder.dataFiles.asArray
+
+        def seen():
+            listed_at.append(clock["t"])
+            return real()
+        folder.dataFiles.asArray = seen
+        with mock.patch("time.monotonic", now), mock.patch("time.sleep", sleep):
+            core.Document("NAME_CAD", 10).save("v11")                   # at 5000.0, the default pause
+            clock["t"] += 2.0                                           # the report step opens 2 s later
+            got = core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True)
+        self.assertEqual(got, ("NAME_CAD", 11))
+        self.assertGreaterEqual(listed_at[0], 5010.0)                   # not before 10 s after the save
+        self.assertLess(listed_at[0], 5010.6)
+        self.assertEqual(len(listed_at), 2)                             # then every 3 s: v11 on the second look
+        self.assertAlmostEqual(listed_at[1] - listed_at[0], 3.0)
+
+    def test_an_open_soon_after_a_save_waits_for_the_saved_version(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core._spaceship_version_wait_s, core._spaceship_version_step_s = 2.0, 0.01
+        core._spaceship_list_pause_s = 0.0
+        doc = core.Document("NAME_CAD", 10)
+        self.assertTrue(doc.save("v11"))
+        folder = self.listing(core, [10, 10, 11])                     # the cloud lists v11 on the third look
+        self.assertEqual(core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True), ("NAME_CAD", 11))
+        self.assertEqual(folder.dataFiles.calls, 3)
+        text = "".join(self.lines(log))
+        self.assertIn("waiting for NAME_CAD v11: the cloud lists v10", text)
+        self.assertIn("found NAME_CAD v11", text)
+
+    def test_an_open_gives_up_rather_than_open_the_older_version(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core._spaceship_version_wait_s, core._spaceship_version_step_s = 0.1, 0.01
+        core._spaceship_list_pause_s = 0.0
+        core.Document("NAME_CAD", 10).save("v11")
+        folder = self.listing(core, [10])
+        with self.assertRaises(RuntimeError) as cm:
+            core.Documents().open(core.DataFile("NAME_CAD", 10, folder), True)
+        self.assertIn("version 11 was saved", str(cm.exception))
+        self.assertIn("still lists version 10", str(cm.exception))
+        self.assertIn("gave up waiting for NAME_CAD v11", "".join(self.lines(log)))
+
+    def test_any_other_open_goes_through_at_once(self):
+        log = os.path.join(tempfile.mkdtemp(), "opens.log")
+        core = self.version_core()
+        self.run_wrapped(core, log, "X_P01_CAD", True)
+        core.Document("NAME_CAD", 10).save("v11")
+        folder = self.listing(core, [10])
+        open_ = core.Documents().open
+        self.assertEqual(open_(core.DataFile("OTHER_CAD", 3, folder), True), ("OTHER_CAD", 3))       # another name
+        self.assertEqual(open_(core.DataFile("NAME_CAD", 11, folder), True), ("NAME_CAD", 11))       # the saved one
+        core._spaceship_saved["NAME_CAD"]["at"] -= 120.0                                             # long ago
+        self.assertEqual(open_(core.DataFile("NAME_CAD", 10, folder), True), ("NAME_CAD", 10))
+        self.assertEqual(folder.dataFiles.calls, 0)                                                  # no folder read
+
     def test_the_log_sits_next_to_the_lock(self):
         self.assertEqual(rs.open_log_path("/tmp/x.lock"), "/tmp/x.lock.opens.log")
+
+
+class NudgeTests(unittest.TestCase):
+    """The read-only check for an open of this run that sits idle (PM ruling 2026-11-01 15:56)."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="nudge-test-")
+        self.log_path = os.path.join(self.tmp, "x.lock.opens.log")
+        self.said = []
+        self.calls = []
+        self.on_call = None
+
+    def line(self, text, ago=0.0):
+        with open(self.log_path, "a", encoding="utf-8") as fh:
+            fh.write(time.strftime("%Y-%m-%d %H:%M:%S UTC ", time.gmtime(time.time() - ago)) + text + "\n")
+
+    def factory(self, url, timeout):
+        test = self
+
+        class M:
+            def initialize(self):
+                pass
+
+            def call_tool(self, name, args):
+                test.calls.append((url, timeout, name, args))
+                if test.on_call:
+                    test.on_call()
+                return {}
+        return M()
+
+    def nudger(self, offset=0, **kw):
+        kw.setdefault("after_s", 1.0)
+        kw.setdefault("every_s", 1.0)
+        kw.setdefault("watch_s", 1.0)
+        return rs.OpenNudger("http://fake/mcp", self.log_path, offset, "TEST: x.py", log=self.said.append,
+                             mcp_factory=self.factory, **kw)
+
+    def test_an_open_over_a_minute_old_gets_one_read_only_check_and_its_end_is_logged(self):
+        self.line("start open A_P01_X_DWG v1 visible; run: TEST: x.py", ago=2.0)
+        self.on_call = lambda: self.line("end open A_P01_X_DWG v1 after 2.0 s: ok")
+        n = self.nudger().start()
+        time.sleep(1.0)
+        n.stop()
+        self.assertEqual(self.calls, [("http://fake/mcp", rs.NUDGE_CALL_S, "fusion_mcp_execute",
+                                       {"featureType": "script", "object": {"script": rs.IDLE_CHECK,
+                                                                            "readOnly": True}})])
+        self.assertEqual(rs.IDLE_CHECK, "def run(_context):\n    pass\n")      # does nothing
+        self.assertEqual(len(n.nudges), 1)
+        self.assertLess(n.nudges[0]["ended_after"], 1.0)
+        self.assertIn("the open ended", self.said[0])
+        with open(self.log_path, encoding="utf-8") as fh:
+            self.assertIn("nudge 1: open A_P01_X_DWG v1", fh.read())
+        self.assertEqual(rs.unfinished_opens(self.log_path), [])
+
+    def test_a_young_open_and_an_earlier_runs_open_get_none(self):
+        self.line("start open OLD_P01_X_DWG v1 visible; run: someone earlier", ago=300.0)
+        offset = rs.open_log_size(self.log_path)                   # this run's lines start here
+        self.line("start open A_P01_X_DWG v1 visible; run: TEST: x.py")
+        n = self.nudger(offset, after_s=5.0).start()
+        time.sleep(1.5)
+        n.stop()
+        self.assertEqual(self.calls, [])
+
+    def test_a_stuck_open_gets_one_check_per_interval_and_none_after_stop(self):
+        self.line("start open A_P01_X_DWG v1 visible; run: TEST: x.py", ago=5.0)
+        n = self.nudger(every_s=1.0, watch_s=0.1).start()        # it re-reads the log every 0.25 s
+        time.sleep(2.3)
+        n.stop()
+        sent = len(self.calls)
+        self.assertTrue(2 <= sent <= 3, sent)                       # once a second here, not at every look
+        self.assertTrue(all("hadn't ended" in s for s in self.said), self.said)
+        time.sleep(0.8)
+        self.assertEqual(len(self.calls), sent)                    # nothing once the run's call is back
+
+    def test_stop_waits_for_a_check_in_flight_through_both_its_calls(self):
+        # Reviewer 5, P3 on #402: one check makes two calls of up to NUDGE_CALL_S each, then a look at the log,
+        # so stop() waits that long for it (70 s): no check outlives the run's lock
+        n = self.nudger(watch_s=rs.NUDGE_WATCH_S)
+        waits = []
+
+        class Thread:
+            def join(self, timeout=None):
+                waits.append(timeout)
+
+            def is_alive(self):
+                return False
+        n.thread = Thread()
+        n.stop()
+        self.assertEqual(waits, [2 * rs.NUDGE_CALL_S + rs.NUDGE_WATCH_S])
+        self.assertEqual(waits[0], 70.0)
+        self.assertEqual(self.said, [])
+
+        class Stuck(Thread):
+            def is_alive(self):
+                return True
+        n.thread = Stuck()
+        n.stop()
+        self.assertIn("still hadn't ended", self.said[-1])        # never silent
+
+    def test_zero_turns_it_off_and_no_answer_is_logged(self):
+        self.line("start open A_P01_X_DWG v1 visible; run: TEST: x.py", ago=5.0)
+        off = self.nudger(after_s=0).start()
+        time.sleep(0.5)
+        off.stop()
+        self.assertEqual(self.calls, [])
+        self.assertIsNone(off.thread)
+
+        def no_answer():
+            raise rs.McpTimeout("no answer")
+        self.on_call = no_answer
+        n = self.nudger(watch_s=0.1).start()
+        time.sleep(0.6)
+        n.stop()
+        self.assertGreaterEqual(len(n.nudges), 1)
+        self.assertIsNone(n.nudges[0]["answered"])
+        self.assertIn("got no answer", self.said[0])
 
 
 class OpenGuardTests(unittest.TestCase):

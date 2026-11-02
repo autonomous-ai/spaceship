@@ -47,6 +47,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   It keeps the principal view's up where it can. A through hole that leaves its part at an angle is drawn from
   the face it is square to.
 - Blind holes: their depth (of the full diameter) and, when the model has it, the drill point's angle.
+- Countersinks (D-143): a cone on a hole's axis at its open end, widening out of the material, is called out with
+  its hole, `Ø5.5, CSK Ø10.4 x 90°` (the outer diameter at the face and the included angle); the hole is drilled
+  from that face. A hole countersunk from both sides is refused for now. In bent sheet mode a countersink is called
+  out the same way (the DXF cuts the bore), and any other cone is refused, never taken for a corner relief's end.
+  The read-back finds each countersink in the STEP itself (a cone with two circles on a hole's axis, the smaller the
+  hole's: its outer diameter, and its angle from the circles' radii and spacing) and checks the printed callout,
+  both ways.
 - Holes through two walls of one member: a removed section through their axis, hatched per ISO 128-50 (filled
   solid under 1.6 mm on paper), each wall's hole sized across its gap.
 - One hole table per face: tags H01... on the views, `X (mm)` and `Y (mm)` from that view's origin (O1, O2...,
@@ -79,9 +86,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   unfolds to, and every DXF circle on a model hole, on one run of bends or two (a tray: across each run from its own
   flange, along it from the base both share). Where no hole pins which way up the DXF is drawn, every reading the
   bend lines allow must fold the same part, so the DXF must be symmetric that way, or the part is refused (Reviewer 6
-  on #335). Cut-outs that aren't round holes, and slots, are refused for now (the check reads round holes). A model
-  that folds sharp takes its inside radius from the entry. Anything else is refused with the reason (INTERIOR's
-  811201: a hole the DXF cuts in a bend zone; WALL's 511202: its 304 x 268 and 80 x 11 cut-outs). A V-grooved and
+  on #335). Cut-outs that aren't round holes (rectangles, sharp or with round corners, and slots, through one
+  flange) are in the hole tables (centre X and Y, length x width along X or Y, corner radius) with their centre lines,
+  and each one's edge, unfolded, must be the same shape as one of the DXF's, point for point both ways and counted
+  (WALL's 511202: its power unit's 304 x 268 and the 80 x 11 corner slot); any other shape is refused. The folds are
+  read from a section through the middle, or the nearest one clear of holes and cut-outs, and the profile section is
+  cut there. A model that folds sharp takes its inside radius from the entry. Anything else is refused with the reason
+  (INTERIOR's 811201: a hole the DXF cuts in a bend zone). A V-grooved and
   folded panel (ACP; its entry says `vgroove` with the groove) has no K-factor: its outer skin runs round each fold
   unstretched, so the flat develops along the outer face, each leg to its fold's outside arc plus the arc, the fold
   line at the arc's middle (the model's outside radius, WALL's 2 mm by the maker's guide). A V-groove fold the model
@@ -127,5 +138,7 @@ the PDF's own text and paths); for a bent part, every bend row is on one of the 
 OCC), each run's bend lines sit where its outside flange lengths, angles, inside radius and the printed K-factor put
 them within 0.05 mm, its flat is as long as the DXF's, every STEP hole unfolds (by the sheet's record of how each
 flange unfolds, each flange checked against a face of the STEP) onto a DXF circle of its size within 0.05 mm and
-every DXF circle onto a STEP hole, and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+every DXF circle onto a STEP hole; every cut-out of the STEP (found from its own faces through the sheet that close
+into a void) unfolds onto one of the DXF's cut shapes point for point both ways, with its table row's centre and
+size as the STEP has them; and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.
