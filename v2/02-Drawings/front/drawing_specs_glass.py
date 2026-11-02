@@ -21,9 +21,8 @@ SPECS["pane"] = {
     "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (190, 225), "iso": (320, 100)},
     "box": {"front": (min(xs), PB[0][1], max(xs), PB[4][1])},
     "dims": [
-        ("front", PB[0], PB[1], "below", 12), ("front", PB[1], (PB[1][0], PB[3][1]), "right", 15),
-        ("front", PB[4], PB[3], "above", 10), ("front", PB[0], PB[4], "left", 12),
-        ("front", PB[1], PB[2], "right", 30), ("front", PB[2], PB[3], "right", 45),
+        ("front", PB[0], PB[1], "below", 12), ("front", PB[4], PB[3], "above", 10),
+        ("front", PB[0], PB[4], "left", 12), ("front", PB[1], PB[2], "right", 15),
     ],
     "notes": [
         "Glass: 4+4 laminated safety glass, two toughened, heat-soaked panes (EN 12150, EN 14179) with 0.76 mm grey "
@@ -82,7 +81,7 @@ SPECS["uprof"] = {
                     -V_FIX["glass_y"] + V_FIX["gu_prof_w"] / 2)},
     "dims": [
         ("front", UP[0], UP[1], "below", 15), ("front", UP[4], UP[3], "above", 12),
-        ("front", UP[1], UP[2], "right", 20), ("front", UP[2], UP[3], "right", 35), ("front", UP[0], UP[4], "left", 15),
+        ("front", UP[1], UP[2], "right", 20), ("front", UP[0], UP[4], "left", 15),
     ],
     "notes": [
         "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5 (hardware selection C5), bought by length, cut into 4 "

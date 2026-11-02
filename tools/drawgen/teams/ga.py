@@ -46,11 +46,11 @@ POD = {
          "offset": "left", "ends": [["floor"], ["368007", "351203"]], "label": "DOOR CLEAR %s"},
         {"name": "door clear width", "view": "section_C", "along": "x", "start": [-373.5, -700.0, 1000.0],
          "beam": {"y": [-850.0, -640.0]}, "open": True, "outside": "down",
-         "ends": [["351103"], ["368003", "361003", "368004"]], "label": "DOOR CLEAR %s"},
+         "ends": [["351105", "351106", "351107"], ["368003", "361003", "368004"]], "label": "DOOR CLEAR %s"},
         {"name": "door clear width at the foot", "along": "x", "start": [-373.5, -700.0, 115.0],
-         "beam": {"y": [-850.0, -640.0]}, "open": True, "ends": [["351103"], ["368003", "361003", "368004"]]},
+         "beam": {"y": [-850.0, -640.0]}, "open": True, "ends": [["351105", "351106", "351107"], ["368003", "361003", "368004"]]},
         {"name": "door clear width at the head", "along": "x", "start": [-500.0, -700.0, 2089.0],
-         "beam": {"y": [-850.0, -640.0]}, "open": True, "ends": [["351103"], ["368003", "361003", "368004"]]},
+         "beam": {"y": [-850.0, -640.0]}, "open": True, "ends": [["351105", "351106", "351107"], ["368003", "361003", "368004"]]},
     ],
     # Position codes (guideline 5.1; PM ruling 2026-11-01: L1 to R2, B1 to B4, C1 to C3), each on a view that shows
     # its panel face on; the back's are seen from inside, in B-B
@@ -61,7 +61,7 @@ POD = {
         {"view": "principal", "of": ["410000", "610000"], "along": "y", "at": "max",
          "origin": {"pn": "110000", "face": "-Z"}, "side": "right",
          "words": "FRONT VIEW: heights from the room floor (Z 0, under the glides): the roof skin's top 2400 (D-21) "
-                  "and the overall top 2402, AIR's roof grille 611602 (PM ruling 2026-11-01: the room's ceiling must "
+                  "and the overall top 2403, AIR's roof grille 611602 on the roof sleeve's 1 mm flange (PM ruling 2026-11-01: the room's ceiling must "
                   "clear the overall height)"},
     ],
     # the packaging isn't on the pod as it stands

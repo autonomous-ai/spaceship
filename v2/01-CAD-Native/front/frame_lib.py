@@ -151,43 +151,169 @@ def axis3(axes, u, v):
 def build_members(design, comp, L, members, t_expr):
     """Each member: a fully constrained polygon, extruded, then shelled to a tube with its end faces open, to its own
     wall m["t"] when it has one (a parameter name or expression), else t_expr.
-    Returns {key: body}. A member whose shell fails stays solid and is reported (FRAME SHELL FAILED)."""
+    Returns {key: body}. A member whose shell fails stays solid and is reported (FRAME SHELL FAILED).
+    (Before D-120: every member a body of comp. build_member_components makes each its own component.)"""
+    return {m["key"]: build_one(design, comp, L, m, t_expr) for m in members}
+
+
+def build_one(design, comp, L, m, t_expr, shell=True):
+    """One member in comp: its polygon extruded, then (a tube) shelled with both ends open. Returns the body."""
     import adsk.core
     import adsk.fusion
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
-    bodies = {}
+    sk = L.poly(design, comp, L.plane_of(comp, m["axes"]), m["axes"], 0, "TUBE %s - %s" % (m["key"], m["name"]),
+                m["pts"])
+    f = L.extrude_span(comp, sk, m["along"], m["a"], m["b"], NEW, None, "EXTRUDE - TUBE %s" % m["key"])
+    if f.bodies.count != 1:
+        raise RuntimeError("tube %s: extrude made %d bodies" % (m["key"], f.bodies.count))
+    b = f.bodies.item(0)
+    b.name = "%s %s %s" % (m["key"], m["name"], m["section"])
+    if not shell:
+        return b
+    ev = lambda e: L.ev(design, e)
+    num = member_numbers(m, ev)
+    if num["axis"] is None:
+        ax = tuple(1.0 if k == m["along"] else 0.0 for k in ("x", "y", "z"))
+    else:
+        ax = axis3(m["axes"], *num["axis"])
+    ends = adsk.core.ObjectCollection.create()
+    for fc in b.faces:
+        ok, nrm = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
+        # an end face leans on the tube's axis; where a wide tube meets a narrow one the mitre is long and
+        # oblique (about 14 degrees off the axis for 80 against 20), so the test is small but not zero
+        if abs(nrm.x * ax[0] + nrm.y * ax[1] + nrm.z * ax[2]) > 0.1:
+            ends.add(fc)
+    try:
+        if ends.count < 2:
+            raise RuntimeError("%d end faces" % ends.count)
+        si = comp.features.shellFeatures.createInput(ends, False)
+        si.insideThickness = adsk.core.ValueInput.createByString(m.get("t", t_expr))
+        sh = comp.features.shellFeatures.add(si)
+        sh.name = "SHELL - TUBE %s (ENDS OPEN)" % m["key"]
+    except Exception as exc:
+        print("FRAME SHELL FAILED|%s|%r" % (m["key"], exc))
+    return b
+
+
+# ---- D-120: every member its own component; a repeated part is copies of one component
+
+def shift_of(first, m):
+    """The shift from member `first` to its copy `m`, (dx, dy, dz) as expressions in model axes: the difference of
+    their first corners and of their extrusion starts. A component whose two expressions are the same text is 0."""
+    ax = {"x": 0, "y": 1, "z": 2}
+    out = ["0 mm", "0 mm", "0 mm"]
+    for k in (0, 1):
+        a, b = str(m["pts"][0][k]), str(first["pts"][0][k])
+        out[ax[m["axes"][k]]] = "0 mm" if a == b else "(%s) - (%s)" % (a, b)
+    a, b = str(m["a"]), str(first["a"])
+    out[ax[m["along"]]] = "0 mm" if a == b else "(%s) - (%s)" % (a, b)
+    return tuple(out)
+
+
+def solid_corners(m, ev):
+    """The member's outline corners in model mm, both ends: [(x, y, z)]."""
+    ax = {"x": 0, "y": 1, "z": 2}
+    out = []
+    for w in (ev(m["a"]), ev(m["b"])):
+        for u, v in m["pts"]:
+            p = [0.0, 0.0, 0.0]
+            p[ax[m["axes"][0]]], p[ax[m["axes"][1]]], p[ax[m["along"]]] = ev(u), ev(v), w
+            out.append(tuple(p))
+    return out
+
+
+def check_copies(members, parts, ev, tol=0.01):
+    """Each member that shares a part number with an earlier one must be that member moved by shift_of(), corner for
+    corner (same plane, extrusion axis, section and wall too). Returns [(key, first key, shift in mm)]; raises on any
+    that isn't."""
+    first, out = {}, []
     for m in members:
-        sk = L.poly(design, comp, L.plane_of(comp, m["axes"]), m["axes"], 0, "TUBE %s - %s" % (m["key"], m["name"]),
-                    m["pts"])
-        f = L.extrude_span(comp, sk, m["along"], m["a"], m["b"], NEW, None, "EXTRUDE - TUBE %s" % m["key"])
-        if f.bodies.count != 1:
-            raise RuntimeError("tube %s: extrude made %d bodies" % (m["key"], f.bodies.count))
-        b = f.bodies.item(0)
-        b.name = "%s %s %s" % (m["key"], m["name"], m["section"])
-        ev = lambda e: L.ev(design, e)
-        num = member_numbers(m, ev)
-        if num["axis"] is None:
-            ax = tuple(1.0 if k == m["along"] else 0.0 for k in ("x", "y", "z"))
-        else:
-            ax = axis3(m["axes"], *num["axis"])
-        ends = adsk.core.ObjectCollection.create()
-        for fc in b.faces:
-            ok, nrm = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
-            # an end face leans on the tube's axis; where a wide tube meets a narrow one the mitre is long and
-            # oblique (about 14 degrees off the axis for 80 against 20), so the test is small but not zero
-            if abs(nrm.x * ax[0] + nrm.y * ax[1] + nrm.z * ax[2]) > 0.1:
-                ends.add(fc)
-        try:
-            if ends.count < 2:
-                raise RuntimeError("%d end faces" % ends.count)
-            si = comp.features.shellFeatures.createInput(ends, False)
-            si.insideThickness = adsk.core.ValueInput.createByString(m.get("t", t_expr))
-            sh = comp.features.shellFeatures.add(si)
-            sh.name = "SHELL - TUBE %s (ENDS OPEN)" % m["key"]
-        except Exception as exc:
-            print("FRAME SHELL FAILED|%s|%r" % (m["key"], exc))
-        bodies[m["key"]] = b
-    return bodies
+        pn = parts[m["key"]][:2]
+        if pn not in first:
+            first[pn] = m
+            continue
+        f = first[pn]
+        if (m["axes"], m["along"], m["section"], m.get("t")) != (f["axes"], f["along"], f["section"], f.get("t")):
+            raise RuntimeError("%s isn't a copy of %s (part %s): plane, axis, section or wall differ" % (m["key"], f["key"], pn))
+        d = [ev(e) for e in shift_of(f, m)]
+        cf, cm = solid_corners(f, ev), solid_corners(m, ev)
+        worst = max(abs(p[i] + d[i] - q[i]) for p, q in zip(cf, cm) for i in range(3))
+        if worst > tol:
+            raise RuntimeError("%s isn't %s moved by %s: corners off by %.3f mm" % (m["key"], f["key"], d, worst))
+        out.append((m["key"], f["key"], tuple(round(x, 3) for x in d)))
+    return out
+
+
+def place_by_shift(parent, occ, shift, name):
+    """Rigid joint: occ's origin onto a construction point at `shift` (expressions, in parent's space), where three
+    planes meet: each the parent's origin plane, or that plane offset by the shift's expression, so an edit moves it."""
+    import adsk.core
+    import adsk.fusion
+    planes = []
+    for base, e, tag in ((parent.yZConstructionPlane, shift[0], "X"), (parent.xZConstructionPlane, shift[1], "Y"),
+                         (parent.xYConstructionPlane, shift[2], "Z")):
+        if e in ("0", "0 mm"):
+            planes.append(base)
+            continue
+        pi = parent.constructionPlanes.createInput()
+        pi.setByOffset(base, adsk.core.ValueInput.createByString(e))
+        pl = parent.constructionPlanes.add(pi)
+        pl.name = "PLANE %s - %s" % (tag, name)
+        pl.isLightBulbOn = False
+        planes.append(pl)
+    ci = parent.constructionPoints.createInput()
+    ci.setByThreePlanes(planes[0], planes[1], planes[2])
+    pt = parent.constructionPoints.add(ci)
+    pt.name = "POINT - " + name
+    pt.isLightBulbOn = False
+    g_occ = adsk.fusion.JointGeometry.createByPoint(occ.component.originConstructionPoint.createForAssemblyContext(occ))
+    g_par = adsk.fusion.JointGeometry.createByPoint(pt)
+    ji = parent.joints.createInput(g_occ, g_par)
+    ji.setAsRigidJointMotion()
+    j = parent.joints.add(ji)
+    j.name = "PLACE - " + name
+    return j
+
+
+def build_member_components(design, frame_comp, L, members, t_expr, parts, rev, shell=True):
+    """D-120: each frame member its own component under frame_comp, named 'PN NAME', with its part number.
+    parts: {member key: (pn, name, vn)}. The first member of a part (number and name) is built in place (an
+    identity occurrence, so its sketches keep the block's expressions and stay fully constrained) and, for a tube,
+    shelled; each later member of that part is a copy of its component, placed by place_by_shift() at its shift.
+    Returns (native, comps, occs): the body in its own component, the component, and the occurrence in frame_comp's
+    context, each by member key (a copy shares the first's body and component)."""
+    import adsk.core
+    first, native, comps, occs = {}, {}, {}, {}
+    for m in members:
+        key = m["key"]
+        pn, name, vn = parts[key]
+        if (pn, name) in first:
+            f = first[(pn, name)]
+            occ = frame_comp.occurrences.addExistingComponent(comps[f["key"]], adsk.core.Matrix3D.create())
+            place_by_shift(frame_comp, occ, shift_of(f, m), "%s %s AS A COPY OF %s" % (pn, key, f["key"]))
+            native[key], comps[key], occs[key] = native[f["key"]], comps[f["key"]], occ
+            continue
+        occ = frame_comp.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        mc = occ.component
+        mc.name = ("%s %s" % (pn, name)).strip()
+        mc.partNumber = pn
+        mc.description = "%s | %s | %s" % (name, vn, rev)
+        native[key] = build_one(design, mc, L, m, t_expr, shell)
+        first[(pn, name)] = m
+        comps[key], occs[key] = mc, occ
+    return native, comps, occs
+
+
+def root_bodies(frame_occ, native, occs):
+    """Each member's body in the root's context (through the frame's occurrence and its own; frame_occ None when the
+    members sit in the root itself), for the clash check and the box report: a copy's body sits where its joint put it."""
+    return {k: native[k].createForAssemblyContext(occs[k] if frame_occ is None else occs[k].createForAssemblyContext(frame_occ))
+            for k in native}
+
+
+def frame_mass(frame_occ, occs):
+    """The welded frame's mass: every member occurrence's, copies counted once each (kg)."""
+    return sum(occs[k].createForAssemblyContext(frame_occ).physicalProperties.mass for k in occs)
 
 
 def cut_list_rows(members, ev, frame_pn):
@@ -199,6 +325,134 @@ def cut_list_rows(members, ev, frame_pn):
                      1, m.get("ends", "mitred to its neighbours (see the frame drawing)"),
                      "calculation (from the parameters)"))
     return rows
+
+
+# the tube cut list (D-162, PM ruling 2026-11-01): a welded frame's member is drawn by its cut list row (section,
+# material, cut length long point to long point, both end angles from square and how they lean, quantity, tolerance);
+# a member keeps its own sheet only for an end the row can't state (two cuts at one end)
+CUT_HEADER = ["frame", "member", "member_part", "name", "section", "material", "length_mm", "end_a_deg", "end_b_deg",
+              "lean", "qty", "tolerance", "ends", "status"]
+CUT_TOL = "length +/-0.5; end angles +/-0.5 deg (PROPOSED)"
+
+
+def fmt_mm(x, nd=1):
+    """x rounded half up to nd decimals, steady against float noise: Fusion's values and the offline evaluator's can
+    fall either side of an exact half (DL's posts, 592.25 long, came out 592.3 from the build and 592.2 offline)."""
+    f = 10.0 ** nd
+    r = math.floor(abs(x) * f + 0.5 + 1e-6) / f
+    return "%.*f" % (nd, -r if x < 0 and r else r)
+
+
+def end_angles(m, ev):
+    """The cut angles at each end of a member, degrees from square, signed by lean ({"a": [...], "b": [...]}): its
+    polygon's edges that aren't its two long sides. End A is the end its axis starts from. A lengthwise member (its
+    polygon is its section) is square at both ends."""
+    num = member_numbers(m, ev)
+    if num["axis"] is None:
+        return {"a": [0.0], "b": [0.0]}
+    pts, ax = num["pts"], num["axis"]
+    perp = (-ax[1], ax[0])
+    n = len(pts)
+    proj = [p[0] * ax[0] + p[1] * ax[1] for p in pts]
+    mid = (max(proj) + min(proj)) / 2
+    ends = {"a": [], "b": []}
+    for i in range(n):
+        p, q = pts[i], pts[(i + 1) % n]
+        d = (q[0] - p[0], q[1] - p[1])
+        L = math.hypot(*d)
+        if L < 1e-6:
+            continue
+        along = (d[0] * ax[0] + d[1] * ax[1]) / L
+        if abs(along) > 0.999 and L > 25.0:          # a long side
+            continue
+        if d[0] * perp[0] + d[1] * perp[1] < 0:        # run each end edge across the tube the same way
+            d = (-d[0], -d[1])
+        ang = math.degrees(math.atan2(d[0] * ax[0] + d[1] * ax[1], d[0] * perp[0] + d[1] * perp[1]))
+        side = "a" if (proj[i] + proj[(i + 1) % n]) / 2 < mid else "b"
+        ends[side].append(ang)
+    return ends
+
+
+def end_cuts(m, ev):
+    """(end A degrees from square, end B, lean, cuts at end A, cuts at end B) of a member (end_angles). Lean:
+    'parallel' when both cuts lean the same way (a parallelogram), 'opposite' when they lean apart (a trapezoid),
+    'square' when one end is square, 'two cuts at one end' when an end has two (its angle is then None)."""
+    ends = end_angles(m, ev)
+    na, nb = len(ends["a"]), len(ends["b"])
+    a = ends["a"][0] if na == 1 else None
+    b = ends["b"][0] if nb == 1 else None
+    if a is None or b is None:
+        lean = "two cuts at one end"
+    elif abs(a) < 0.05 or abs(b) < 0.05:
+        lean = "square"
+    else:
+        lean = "parallel" if a * b > 0 else "opposite"
+    return a, b, lean, na, nb
+
+
+def _deg(x):
+    return "square (0°)" if abs(x) < 0.05 else "%s°" % fmt_mm(abs(x))
+
+
+def end_names(m, ev):
+    """Its two ends named by where they point in the pod: left/right (X), front/back (Y: the front is -Y), lower/upper
+    (Z), by the axis's components of 0.4 or more (a diagonal gets two words), with A and B as in end_angles."""
+    num = member_numbers(m, ev)
+    if num["axis"] is None:
+        return "end A", "end B"
+    a3 = axis3(m["axes"], *num["axis"])
+    words = {0: ("left", "right"), 1: ("front", "back"), 2: ("lower", "upper")}
+    use = [i for i in (2, 1, 0) if abs(a3[i]) >= 0.4]
+
+    def name(sign):
+        return " ".join(words[i][1] if a3[i] * sign > 0 else words[i][0] for i in use) + " end"
+    return name(-1.0) + " (A)", name(1.0) + " (B)"
+
+
+def end_text(m, ev, pn):
+    """A member's ends in words for its cut-list row (D-162: the row is its drawing): each end, named by where it
+    points, with its angle from square and the unit, how the two cuts lean, and the member's own note on what each end
+    meets. An end with two cuts names both angles and the member's own sheet, which shows them (a cut list can't place
+    two cuts)."""
+    ends = end_angles(m, ev)
+    a, b, lean, _na, _nb = end_cuts(m, ev)
+    na_, nb_ = end_names(m, ev)
+
+    def one(lst):
+        if len(lst) == 1:
+            return _deg(lst[0])
+        return "two cuts, %s (its own sheet %s)" % (" and ".join(_deg(x) for x in lst), pn)
+    note = m.get("ends", "")
+    if note and "angles on the frame drawing" in note:
+        note = ""
+    if a is not None and b is not None and abs(a) < 0.05 and abs(b) < 0.05:
+        s = "square both ends"
+        if note.startswith(s):
+            return note
+    else:
+        s = "%s %s; %s %s" % (na_, one(ends["a"]), nb_, one(ends["b"]))
+        if lean in ("parallel", "opposite"):
+            s += "; the cuts lean %s" % ("the same way (parallel)" if lean == "parallel" else "apart (opposite)")
+    return s + ("; " + note if note else "")
+
+
+def write_cut_list(path, members, ev, frame_pn, mparts, material):
+    """The frame's tube cut list CSV (CUT_HEADER), one row per tube: the same rounding (fmt_mm) in the build and
+    offline (frame_preflight.py --cut-lists), so both write the same file."""
+    import csv
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(CUT_HEADER)
+        for m in members:
+            num = member_numbers(m, ev)
+            ends = end_angles(m, ev)
+            a, b, lean, na, nb = end_cuts(m, ev)
+            fmt = lambda lst: (fmt_mm(abs(lst[0])) if len(lst) == 1
+                               else " and ".join(fmt_mm(abs(x)) for x in lst) + " (two cuts)")
+            pn = mparts[m["key"]][0]
+            w.writerow([frame_pn, m["key"], pn, m["name"], "tube " + m["section"], material,
+                        fmt_mm(num["length"]), fmt(ends["a"]), fmt(ends["b"]), lean, 1, CUT_TOL,
+                        end_text(m, ev, pn), "calculation (from the parameters)"])
 
 
 def write_plate_dxf(path, body, along="y"):
@@ -257,3 +511,54 @@ def write_plate_dxf(path, body, along="y"):
     w = max(p[0] for p in pts) - u0
     h = max(p[1] for p in pts) - v0
     return round(w, 2), round(h, 2), holes, (round(u0, 2), round(v0, 2))
+
+
+ALLOCATION_REL = "v2/04-BOM/number-allocation.csv"
+
+
+def member_parts(repo_root, frame_pn, member_pn):
+    """{member key: (pn, name, name_vi)} from the master BOM's allocation list (D-120, #232). Each number must be
+    allocated to this frame and not cancelled, its quantity must be how many members use it, and a number used once
+    must be named after its member. Raises on any mismatch, so the model can't drift from Control's list."""
+    import collections
+    import csv
+    import os
+    with open(os.path.join(repo_root, ALLOCATION_REL), encoding="utf-8") as f:
+        rows = {r["part_number"]: r for r in csv.DictReader(f)}
+    count = collections.Counter(member_pn.values())
+    out = {}
+    for key, pn in member_pn.items():
+        r = rows.get(pn)
+        if r is None:
+            raise RuntimeError("member %s: %s isn't in %s" % (key, pn, ALLOCATION_REL))
+        if r["parent"].strip() != frame_pn or "CANCEL" in r["status"].upper():
+            raise RuntimeError("member %s: %s belongs to %r (%s), not to the frame %s" % (key, pn, r["parent"], r["status"], frame_pn))
+        if int(round(float(r["qty_per_parent"] or 0))) != count[pn]:
+            raise RuntimeError("%s: the allocation list says %s per frame, the frame has %d (%s)" % (
+                pn, r["qty_per_parent"], count[pn], ", ".join(k for k, v in member_pn.items() if v == pn)))
+        out[key] = (pn, r["name"].strip(), r["name_vi"].strip())
+    return out
+
+
+def write_weldment_lists(L, design, root_dir, rows, frame_pn, member_rows, weld_rel, block_rel, block):
+    """D-120 parts lists: the weldment's own list (the frame's row on top, then its tube parts, the frame row the sum
+    of them) and the block's list, where the frame is one row carrying that sum, so no tube is counted twice (the
+    master BOM reads the frame row as an assembly, the roll-up reads the block's rows). rows: the block's rows with
+    the frame row and member_rows among them (front_lib.write_parts_list's tuples); block: (pn, name, name_vi).
+    Returns (block total, weldment total)."""
+    import os
+    frow = [r for r in rows if r[0] == frame_pn][0]
+    weld = L.write_parts_list(design, os.path.join(root_dir, weld_rel), [frow] + list(member_rows), frame_pn,
+                              frow[1], frow[2])
+    members = {id(r) for r in member_rows}
+    block_rows = []
+    for r in rows:
+        if id(r) in members:
+            continue
+        if r[0] == frame_pn:
+            r = tuple(r[:6]) + (round(weld, 3), "calculation (sum of its parts list %s)" % weld_rel.split("/")[-1]) + \
+                tuple(r[8:])
+        block_rows.append(r)
+    total = L.write_parts_list(design, os.path.join(root_dir, block_rel), block_rows, *block)
+    return total, weld
+

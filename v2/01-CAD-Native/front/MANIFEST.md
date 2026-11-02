@@ -14,9 +14,9 @@ Part numbers: FRONT's own bands, `conventions.md` section 6 (DECIDED, D-22, D-28
 |---|---|---|---|
 | 360001 FRONT - DOOR UNIT · Cụm cửa kính | `360001_P01_FRONT-DOOR-UNIT_CAD`, exported as `360001_P01_FRONT-DOOR-UNIT_CAD.f3d`; part-only `361001_P01_FRONT-DOOR-LEAF-4-4-LAMINATED_CAD`, `361002_P01_FRONT-DOOR-KICK-STRIP_CAD` | `door_unit.py` | Built in one run on P04 v4, exported, edit test PASS; drawings pending (drawing starts paused) |
 | 360002 FRONT - FIXED GLASS UNIT · Cụm vách kính cố định | `360002_P01_FRONT-FIXED-GLASS-UNIT_CAD`, exported as `360002_P01_FRONT-FIXED-GLASS-UNIT_CAD.f3d` | `fixed_glass.py` | Built in one run on P04 v4, exported, edit test PASS; drawings pending |
-| 350003 FRONT - DECOR BLOCK ASSY - DR · Khối trang trí phải (cụm) | `350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD`; part-only `351306_P01_FRONT-DECOR-FRAME-DR_CAD`, `351301_P01_FRONT-DECOR-SKIN-DR_CAD` | `dr_block.py` | Stage 2 (frame) written and checked offline; build queued; drawings pending |
-| 350002 FRONT - DECOR BLOCK ASSY - DT · Khối trang trí trên (cụm) | `350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD`; part-only `351204_..._FRAME-DT_CAD`, `351201_..._SKIN-DT_CAD` | `dt_block.py` | as DR |
-| 350001 FRONT - DECOR BLOCK ASSY - DL · Khối trang trí trái (cụm) | `350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD`; part-only `351104_..._FRAME-DL_CAD`, `351101_..._SKIN-DL_CAD` | `dl_block.py` | as DR |
+| 350003 FRONT - DECOR BLOCK ASSY - DR · Khối trang trí phải (cụm) | `350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD`; part-only `351306_P01_FRONT-DECOR-FRAME-DR_CAD`, `351301_P01_FRONT-DECOR-SKIN-DR_CAD` | `dr_block.py` | Built 2026-11-01 for D-120 (the frame a weldment of 21 tube parts), D-130 (one removable inner face panel) and D-131's skin spans (F09): 0 clashes, edit test PASS, STEP re-read exact (`BUILD-RECORD.md`); drawings pending (D-139) |
+| 350002 FRONT - DECOR BLOCK ASSY - DT · Khối trang trí trên (cụm) | `350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD`; part-only `351204_..._FRAME-DT_CAD`, `351201_..._SKIN-DT_CAD` | `dt_block.py` | Built 2026-11-01 for D-120 (the D-120 sample: 11 tube parts); drawings pending (D-139) |
+| 350001 FRONT - DECOR BLOCK ASSY - DL · Khối trang trí trái (cụm) | `350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD`; part-only `351104_..._FRAME-DL_CAD`, `351101_..._SKIN-DL_CAD` | `dl_block.py` | Built 2026-11-01 for D-120 (16 tube parts; the hinge-side stop in 3 numbers); drawings pending (D-139) |
 
 Shared code: `front_lib.py` (skeleton parameter loader, fully constrained polygons, clash and health checks, exports, the joints register's names for bought items, one run per design: build, save, export, pictures, edit test), `edit_test_front.py` (edit test of any FRONT design from its anchors file), `frame_lib.py` (tube frames: lines, rings of mitred tubes, tubes shelled with open ends, cut lists, flat-part DXF).
 
@@ -131,10 +131,12 @@ One script per block (`dl_block.py`, `dt_block.py`, `dr_block.py`); `--arg step=
 | `v2/01-CAD-Native/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx_CAD.f3d` | Native designs, exported from the saved cloud version |
 | `v2/03-Manufacturing/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx_STEP.step` | STEP AP214, length unit cm declared in the file (D-13) |
 | `v2/03-Manufacturing/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx_BOM.csv` | Parts lists for the master BOM, written from the model |
-| `v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv`, `351204_...-DT-...`, `351104_...-DL-...` | Tube cut lists (frame, member, name, section, length, ends) |
+| `v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR_BOM.csv`, `351204_...-DT_BOM.csv`, `351104_...-DL_BOM.csv` | Each welded frame's own parts list (D-120): one row per tube part, its copies as its quantity; the block's list keeps the frame as one weldment row |
+| `v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv`, `351204_...-DT-...`, `351104_...-DL-...` | Tube cut lists (frame, member, member part, name, section, length, ends) |
 | `v2/03-Manufacturing/front/3513n1_P01_FRONT-DECOR-SKIN-Dx_DXF.dxf` | The skins laid flat, one panel per outside face, 1:1 in mm (layers CUT and MARK) |
-| `v2/03-Manufacturing/front/351302_...BACK-PLATE-DR_DXF.dxf`, `351305_...ACCESS-PANEL-DR_DXF.dxf`, `351303_...INNER-PANEL-DR_DXF.dxf`, `351202_...BACK-PLATE-DT_DXF.dxf`, `351102_...BACK-PLATE-DL_DXF.dxf` | Flat parts cut from sheet: outline and every hole, 1:1 in mm, layer CUT; no drawing (D-89 part 4) |
-| `v2/03-Manufacturing/front/351304_...INNER-PANEL-FELT-DR_DXF.dxf` | The felt's outline for the cutter, 1:1 in mm; the felt keeps a drawing, since its outline is stepped and slanted, not a rectangle (D-89) |
+| `v2/03-Manufacturing/front/351302_...BACK-PLATE-DR_DXF.dxf`, `351202_...BACK-PLATE-DT_DXF.dxf`, `351102_...BACK-PLATE-DL_DXF.dxf` | Flat parts cut from sheet: outline and every hole, 1:1 in mm, layer CUT; no drawing (D-89 part 4) |
+| `v2/03-Manufacturing/front/351305_...INNER-FACE-PANEL-DR-REMOVABLE_DXF.dxf` | DR's removable inner face panel (D-130) for the laser: outline, the opening, 21 screw holes and the 2 hook-stud rivnut holes, 1:1 in mm; its drawing (flatness, D-130) comes from drawgen (D-139) |
+| `v2/03-Manufacturing/front/351304_...INNER-PANEL-FELT-DR_DXF.dxf` | The felt's outline and its 10 closed holes for the cutter, 1:1 in mm; no drawing (D-128: its DXF matches its STEP) |
 | `v2/01-CAD-Native/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx_ANCHORS.json` | Edit-test anchors |
 | `v2/01-CAD-Native/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx-FRONT_IMG.png`, `...-ISO_IMG.png` | Pictures, checked by eye |
 
@@ -142,11 +144,11 @@ One script per block (`dl_block.py`, `dt_block.py`, `dr_block.py`); `--arg step=
 
 | Block | Skin | Frame (welded) | Plates and panels | Fitted parts |
 |---|---|---|---|---|
-| DR 350003 | 351301 | 351306 (26 tubes) | 351302 back plate (fixed), 351305 access panel, 351303 inner panel, 351304 felt | 350004: reserved air spaces for AIR's supply fan box assembly 610401: 351402 riser, 351403 and 351405 transitions, 351404 fan box (AIR designs and lists those parts and the two fans: 611501, 618103, 618102, 610401; no mass and no drawing here, PM rulings 2026-11-01) |
-| DT 350002 | 351201 | 351204 (13 tubes) | 351202 back plate | 368007 catch, 351203 top stop, 368005 top seal |
-| DL 350001 | 351101 | 351104 (26 tubes) | 351102 back plate | 351103 hinge-side stop, 368005 seal |
+| DR 350003 | 351301 | 351306 (24 tubes as 21 parts, 352301 to 352322 less 352321) | 351302 back plate (fixed), 351305 removable inner face panel (D-130; ships loose), 351304 felt on it, 848013 seal; 351303 cancelled (D-130) | 350004: reserved air spaces for AIR's supply fan box assembly 610401: 351402 riser, 351403 and 351405 transitions, 351404 fan box (AIR designs and lists those parts and the two fans: 611501, 618103, 618102, 610401; no mass and no drawing here, PM rulings 2026-11-01) |
+| DT 350002 | 351201 | 351204 (13 tubes as 11 parts, 352201 to 352211) | 351202 back plate | 368007 catch, 351203 top stop, 368005 top seal |
+| DL 350001 | 351101 | 351104 (26 tubes as 16 parts, 352101 to 352116) | 351102 back plate | 351105 to 351107 hinge-side stop pieces (351103 cancelled, D-123), 368005 seal in 4 pieces |
 
 ### How the frames are made in the model
 
-Each tube is a polygon on an origin plane (front and back rings in X-Z, facet and plan tubes in X-Y, chamfer tubes in Y-Z), extruded along the third axis, then shelled to its 1.5 mm wall with its end faces open. A ring's corners are where its lines, pushed in by the skin and by the tube width, meet (`frame_lib.ring`), so neighbouring tubes meet on their mitres; every corner is an expression of skeleton and block parameters and every sketch is fully constrained. The frame data (`frame_members()` in each script) is evaluated offline before a Fusion run: no tube overlaps another tube, an air part, a hinge pocket, a panel or a glass channel, and every corner lies inside the skin.
+Each tube is a polygon on an origin plane (front and back rings in X-Z, facet and plan tubes in X-Y, chamfer tubes in Y-Z), extruded along the third axis, then shelled to its 1.5 mm wall with its end faces open. A ring's corners are where its lines, pushed in by the skin, the 3 mm bond line where a tube bonds to the skin (skeleton `bond_t`, D-137) and the tube width, meet (`frame_lib.ring`), so neighbouring tubes meet on their mitres; every corner is an expression of skeleton and block parameters and every sketch is fully constrained. The frame data (`frame_members()` in each script) is evaluated offline before a Fusion run, at the nominal values and at the edit test's (every tube outline a simple polygon with no edge under 0.5 mm, every frame anchor on its tube): no tube overlaps another tube, an air part, a hinge pocket, a panel or a glass channel, and every corner lies inside the skin.
 
