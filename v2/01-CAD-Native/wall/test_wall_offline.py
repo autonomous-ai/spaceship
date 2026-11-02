@@ -228,7 +228,7 @@ class WallSidePanelTest(unittest.TestCase):
                         continue
                     self.assertRegex(pn, r"^(21|51)\d{4}$")
                     self.assertNotIn(pn, ns["RESERVED"])
-                    self.assertNotIn(pn, seen, "%s used twice" % pn)
+                    self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                     seen[pn] = name
                     self.assertTrue(vn)
         self.assertEqual(seen["210101"], "WALL - PANEL ASSY - SIDE LOWER - LH")
@@ -290,7 +290,7 @@ class WallBackPanelTest(unittest.TestCase):
                     continue
                 self.assertRegex(pn, r"^(21|51)\d{4}$")
                 self.assertNotIn(pn, ns["RESERVED"])
-                self.assertNotIn(pn, seen, "%s used twice" % pn)
+                self.assertTrue(pn not in seen or (name.endswith("- COMMON") and seen[pn] == name), "%s used twice" % pn)
                 seen[pn] = name
         self.assertEqual(seen["210201"], "WALL - PANEL ASSY - BACK LOWER - B1")
         self.assertEqual(seen["211204"], "WALL - PANEL FRAME - BACK UPPER - B4")

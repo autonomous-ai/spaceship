@@ -158,13 +158,15 @@ def box_body(comp, name, b, ctx, op=None, bodies=None):
     x0, x1, y0, y1, z0, z1 = b
     plane = offset_plane(comp, comp.xYConstructionPlane, z0, "PLANE - %s Z0" % name)
     sk = rect_sketch(comp, plane, "OUTLINE - " + name, x0, x1, y0, y1, ctx)
-    op = op or adsk.fusion.FeatureOperations.NewBodyFeatureOperation
+    if op is None:            # not `op or ...`: JoinFeatureOperation is 0, so `or` would turn a join into a new body
+        op = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
     ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), op)
     ei.setDistanceExtent(False, vi("(%s) - (%s)" % (z1, z0)))
     if bodies:
         ei.participantBodies = bodies
     f = comp.features.extrudeFeatures.add(ei)
-    f.name = ("EXTRUDE - " if op == adsk.fusion.FeatureOperations.NewBodyFeatureOperation else "CUT - ") + name
+    f.name = {adsk.fusion.FeatureOperations.NewBodyFeatureOperation: "EXTRUDE - ",
+              adsk.fusion.FeatureOperations.JoinFeatureOperation: "JOIN - "}.get(op, "CUT - ") + name
     if op == adsk.fusion.FeatureOperations.NewBodyFeatureOperation:
         f.bodies.item(0).name = name
         return f.bodies.item(0)

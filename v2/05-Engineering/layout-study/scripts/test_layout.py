@@ -156,21 +156,21 @@ def test_p04_rollup_lines():
     assert [r[1] for r in csv_rows if kit.search(r[1] + " " + r[5])] == [later[0][1]], "only the kit is outside the cap"
     csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
-    # AIR from its CAD (PR #91): the lines add up to the parts list's 610000 plus the ruled changes its follow-up builds
-    # (D-116 layers at 32, D-124 casings at 3 mm) and what the CAD doesn't model yet (D-121, the riser's foot, D-130's boot), nothing
-    # twice; the fill moves only the column's and the soffit's fill, from the CAD's 32 kg/m3 (D-81)
+    # AIR from its CAD (the follow-up's, with D-116's layers, D-124's casings and D-121's bulkheads and linings modelled):
+    # the lines add up to the parts list's 610000 plus the riser's foot and D-130's boot (the air report's allowances),
+    # less the joints register's hardware (the fixings kit's line), nothing twice; at the CAD's own fill density the lines
+    # are the CAD's masses, and the fill moves only the column's and the soffit's fill (D-81)
     air = lambda f: sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=f) if g == "AIR")
     k, A = rollup.AIR["kg"], rollup.AIR
     layers = 2 * A["n_layers"] * k["611302"] * (rollup.AA.CART_LAYER_KG_M3 / A["layer_rho"] - 1)
-    casings = (k["611401"] + k["611402"]) * (rollup.AA.CASINGS[rollup.AA.FANBOX_CASING][2] / rollup.AIR_FBOX_T_CAD - 1)
-    want = (k["610000"] - sum(A["register_hw"].values()) + layers + casings + sum(rollup.air_unmodelled().values())
-            + rollup.AIR_RISER_FOOT_KG + rollup.AA.BOOT_KG)      # AIR's register hardware is in the fixings kit's line
-    assert abs(air(32.0) - want) < 0.01, (air(32.0), want)
-    assert abs(air(32.0) - air(rollup.FILL_LIGHT) - (k["611104"] + k["611203"]) * (1 - rollup.FILL_LIGHT / 32.0)) < 1e-9
+    want = (k["610000"] - sum(A["register_hw"].values()) + layers + rollup.AIR_RISER_FOOT_KG + rollup.AA.BOOT_KG)
+    assert abs(air(A["fill_rho"]) - want) < 0.01, (air(A["fill_rho"]), want)
+    assert abs(air(32.0) - air(rollup.FILL_LIGHT) - (k["611104"] + k["611203"]) * (32.0 - rollup.FILL_LIGHT) / A["fill_rho"]) < 1e-9
     for name in ("Named clips",):                                  # the light shelf and ledge are INTERIOR's CAD now
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
-    assert len([r for r in rows if "ships loose" in r[1]]) == 2
+    loose = [r[1] for r in rows if "ships loose" in r[1]]   # AIR's riser and supply fan box; DR's inner face panel (D-130)
+    assert len(loose) == 3 and sum(x.startswith("DR inner face panel") for x in loose) == 1, loose
     ap = rollup.applied()
     assert len(ap) == 8 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's four (its floor item went with D-132)
     off = rollup.lines(**rollup.OFF)
@@ -250,7 +250,11 @@ def test_cad_masses_from_main():
         dl = rows[item]
         d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(os.path.join(rollup.MANUF, "front",
                                                                            rollup.FRONT_DECOR[b]["path"])) if r["pn"]}
-        assert abs(dl[3] - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
+        lz = sum(d[k] for k in rollup.FRONT_DECOR_LOOSE.get(b, ()))   # DR's loose inner face panel and felt (D-130)
+        assert abs(dl[3] + lz - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
+        if lz:
+            lp = next(r for k, r in rows.items() if k.startswith("DR inner face panel"))
+            assert abs(lp[3] - lz) < 1e-9 and rollup.basis(lp) == "CAD, main", lp
     assert rollup.FRONT_DECOR["DR"]["reserved"] == ["350004", "351402", "351403", "351404", "351405"]
     assert 0.5 < rollup.dr_channels_kg() < 0.6                                   # the right and diagonal channels
     bc = rollup.BASE_CAD          # D-132: BASE's soft lip by its length at the PM's kg/m; the door edge seals are FRONT's
