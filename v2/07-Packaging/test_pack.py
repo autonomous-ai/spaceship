@@ -68,7 +68,7 @@ def test_bolt_change_is_caught():
 def test_heavy_piece_is_caught():
     p = pack.PIECE["2-03"]
     saved = p.extra_kg
-    p.extra_kg = 5.0          # DR with its riser's share would pass 20 kg
+    p.extra_kg = 8.1          # DR with its inner face panel and felt fitted would pass 20 kg (D-130: they ship loose, 2-22)
     try:
         assert "K2" in failing(pack.Model())
     finally:
@@ -142,7 +142,7 @@ def test_d87_in_the_steps():
     names = " ".join(p.name for p in pack.PIECES)
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
     assert pack.PIECE["2-09"].kg <= 20 and pack.PIECE["2-16"].kg <= 20
-    assert len(tags) == 39
+    assert len(tags) == 40    # with DR's loose inner face panel 2-22 (D-130)
     power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
     assert all(o["secs"] < 600 for o in power["ops"])
 

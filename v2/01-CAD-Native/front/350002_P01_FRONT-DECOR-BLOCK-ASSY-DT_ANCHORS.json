@@ -68,22 +68,22 @@
    "expression": "dt_zb - stop_h"
   },
   {
-   "component": "351204 FRONT - DECOR FRAME - DT",
+   "component": "352202 FRONT - DECOR FRAME DT - BACK RING DR JOINT",
    "index": 3,
    "expression": "dt_xr - pod_w / 2"
   },
   {
-   "component": "351204 FRONT - DECOR FRAME - DT",
+   "component": "352201 FRONT - DECOR FRAME DT - BACK RING BOTTOM",
    "index": 2,
-   "expression": "dt_zb + dt_skin_t"
+   "expression": "dt_zb + dt_fo"
   },
   {
-   "component": "351204 FRONT - DECOR FRAME - DT",
+   "component": "352203 FRONT - DECOR FRAME DT - BACK RING TOP",
    "index": 5,
-   "expression": "pod_h - dt_skin_t"
+   "expression": "pod_h - dt_fo"
   },
   {
-   "component": "351204 FRONT - DECOR FRAME - DT",
+   "component": "352204 FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL",
    "index": 4,
    "expression": "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t"
   }
