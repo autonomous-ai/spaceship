@@ -117,7 +117,8 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "rgrille": "perforated sheet, laser cut: the outline and the 4 bolt holes (its DXF)",
            "casing": "sheet metal: cut, folded into a tube (blank HOLD: the factory's bend table)",
            "box": "sheet metal: cut, folded, riveted (blank HOLD)", "box_s": "sheet metal: cut, folded, riveted (blank HOLD); 14 Ø4.1 rivet holes "
-           "for the transitions made in the flat, none drilled on site",
+           "for the transitions made in the flat, none drilled on site; fit: set at assembly (the two transitions are riveted "
+           "on round it, D-174)",
            "riser": "sheet metal: cut, folded into a tube (blank HOLD); one rivnut hole for the buffer; 10 Ø4.1 "
            "rivet holes for the lower transition's collar made in the flat, none drilled on site",
            "sleeve": "sheet metal: cut, folded into a tube with its top flange (40 left, 72 back, 15 front and right) "
@@ -135,11 +136,11 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "m_ang": "laser cut, folded to an angle 53 x 30 x 2 (blank HOLD); riveted to the door-side plate or inside the "
                     "front face before the felt (rivet HOLD); the mounts' bolt holes HOLD with the mount",
            "blk_e": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
-                    "(sealant HOLD), its fixing to the casing HOLD",
+                    "(sealant HOLD), its fixing to the casing HOLD; fit: set at assembly (sealed into the casing, D-174)",
            "blk_s": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
-                    "(sealant HOLD), its fixing to the casing HOLD",
-           "lin_es": "knife cut; bonded to the casing (adhesive HOLD)", "lin_ee": "knife cut; bonded to the casing (adhesive HOLD)",
-           "lin_s": "knife cut; bonded to the casing (adhesive HOLD)",
+                    "(sealant HOLD), its fixing to the casing HOLD; fit: set at assembly (sealed into the casing, D-174)",
+           "lin_es": "knife cut; bonded to the casing (adhesive HOLD); fit: set at assembly (knife cut to the casing and bonded in, D-174)", "lin_ee": "knife cut; bonded to the casing (adhesive HOLD); fit: set at assembly (knife cut to the casing and bonded in, D-174)",
+           "lin_s": "knife cut; bonded to the casing (adhesive HOLD); fit: set at assembly (knife cut to the casing and bonded in, D-174)",
            "lip": "laser cut, folded to an angle; 3 closed-end blind rivets to the casing's front wall (rivet HOLD, with "
                   "the casing's)"}
 HOLD_MASS = {
@@ -253,7 +254,8 @@ def flat_cut_list(v):
                          "drawing": ("HOLD: a cut file with its notches or holes (the AIR model's cut-outs)"
                                      if any(t == n for t, _c in A.cutouts()) or any(f == n for f, _k, _a in A.features())
                                      else "none (D-89: plain rectangle)"),
-                         "note": ("D-121: bonded to the fan box casing's wall (adhesive HOLD)" if lining else
+                         "note": ("D-121: bonded to the fan box casing's wall (adhesive HOLD); fit: set at assembly (knife cut to the "
+                                  "casing and bonded in, D-174)" if lining else
                                   "its notches and openings knife cut with it, at the factory: see the AIR model's "
                                   "cut-outs")})
     pn, name, vn, _k, mat = A.PARTS["layer"]
@@ -402,6 +404,21 @@ def parts_list(v, mass):
                      "status": "DRAFT", "source": src})
         by_key[key] = rows[-1]
         kids.setdefault(parent, []).append((key, hp[3]))
+    # the roof sleeve's butyl tape ring (D-177: factory-applied under the flange's outer edge, outside C2's Ø17 holes,
+    # pressed down by hand on site; product HOLD for Sourcing): along the flange's outline tape_w / 2 in from its edge
+    fx0, fx1, fy0, fy1 = (A.ev(v, e) for e in A.sleeve_flange())
+    tape_m = 2 * ((fx1 - fx0 - v["tape_w"]) + (fy1 - fy0 - v["tape_w"])) / 1000.0
+    rows.append({"part_number": "848017", "name": "SEALS - ROOF SLEEVE FLANGE SEAL - BUTYL TAPE - 8 X 2 - HOLD",
+                 "name_vi": "Vòng băng keo butyl - ống thải qua mái", "kind": "HOLD", "parent": A.PARTS["sleeve"][0],
+                 "qty_per_parent": "%.2f" % tape_m, "qty_per_pod": "%.2f" % tape_m,
+                 "material": "butyl rubber tape, 8 x 2 (product HOLD-29 for Sourcing)", "finish": "",
+                 "process": "factory-applied under the flange's outer edge, outside the four Ø17 holes; pressed down by "
+                            "hand on site (D-177)", "maker": "HOLD-29", "sku": "HOLD-29", "torque": "", "size_mm": "8 x 2",
+                 "tolerance": "", "mass_each_kg": "%.4f" % (v["tape_w"] * v["tape_t"] * 1000 * v["tape_rho"] * 1e-9),
+                 "mass_status": "assumption (butyl at %.0f kg/m3, per metre)" % v["tape_rho"], "revision": REV,
+                 "status": "DRAFT", "source": "D-177 (the Lead, 2026-11-01); Control's number; joints register J-AIR-03"})
+    by_key["tape"] = rows[-1]
+    kids.setdefault("sleeve", []).append(("tape", tape_m))
 
     def total(key):
         r = by_key[key]

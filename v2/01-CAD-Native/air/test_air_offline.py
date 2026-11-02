@@ -371,6 +371,7 @@ class SleeveOneSolid(unittest.TestCase):
         ox0, ox1, oy0, oy1 = (A.ev(V, e) for e in A.sleeve_opening())
         fx0, fx1, fy0, fy1 = (A.ev(V, e) for e in A.sleeve_flange())
         sx0, sw, sy0, sd, t = (V[k] for k in ("slot_x0", "slot_w", "slot_y0", "slot_d", "slv_t"))
+        t += V["slv_gap"]          # the walls slv_gap inside C2's slot (D-177), the opening their inside
         self.assertAlmostEqual(ox0 - sx0, t)
         self.assertAlmostEqual(sx0 + sw - ox1, t)
         self.assertAlmostEqual(oy0 - sy0, t)
@@ -467,8 +468,10 @@ class FrontScrews(unittest.TestCase):
         over the undersides' top face, so the 1 mm relief the Ø18 washers needed is gone)."""
         under = ("SOFFIT UNDERSIDE LEFT", "SOFFIT UNDERSIDE RIGHT", "SOFFIT UNDERSIDE FIXED")
         cuts = [(t, tuple(A.ev(V, e) for e in b)) for t, b in A.cutouts() if t in under]
-        eg = b6("EXHAUST GRILLE")
-        self.assertEqual([(t, b[:4]) for t, b in cuts], [("SOFFIT UNDERSIDE LEFT", eg[:4])])
+        eg = b6("EXHAUST GRILLE")      # D-174: the grille hole_gap / 2 inside its opening all round
+        h = V["hole_gap"] / 2
+        self.assertEqual([(t, tuple(round(x, 6) for x in b[:4])) for t, b in cuts],
+                         [("SOFFIT UNDERSIDE LEFT", tuple(round(x, 6) for x in (eg[0] - h, eg[1] + h, eg[2] - h, eg[3] + h)))])
         self.assertFalse([n for n, _k, _a in A.features() if n in under[:2]])
         # the fixed part's one hole (ELECTRICAL's exhaust fan leads, 2026-11-01) opens into the column under it, so it
         # can't be seen: wholly inside the column's plan between its front angles' legs and its front face
@@ -541,7 +544,9 @@ class FrontInterface(unittest.TestCase):
         self.assertEqual(theirs[1], dict((p[0], p[1]) for p in A.all_params())["dr_acc_face_y"])
         for name in self.DOOR_SIDE:
             # the underside sections keep the 2 mm joint at the door edge (the Lead's ruling on the soffit hinge)
-            want = yd + V["us_jg"] if name.startswith("SOFFIT UNDERSIDE") else yd
+            # and the column's left face stands fit_gap off DR's access panel 351305 (D-174)
+            want = (yd + V["us_jg"] if name.startswith("SOFFIT UNDERSIDE") else
+                    yd + V["fit_gap"] if name == "COLUMN FACE LEFT" else yd)
             self.assertAlmostEqual(b6(name)[2], want, msg=name)
         for name, (_k, bx) in LAY.items():
             if _k not in ("box_s", "blk_s", "lin_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock",

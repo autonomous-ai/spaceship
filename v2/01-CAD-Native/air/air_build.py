@@ -920,7 +920,8 @@ def run(_context):
         # the roof sleeve: its walls through the slot, and its top flange on C2's skin round the slot (J-AIR-03)
         _os, slc = new_comp(root, "sleeve")
         sz0 = lay["ROOF SLEEVE"][1][4]
-        sw = CB.box_body(slc, "ROOF SLEEVE", ("slot_x0", "slot_x0 + slot_w", "slot_y0", "slot_y0 + slot_d", sz0, "pod_h"),
+        wx0, wx1, wy0, wy1 = A.sleeve_walls()        # slv_gap inside C2's slot (D-177)
+        sw = CB.box_body(slc, "ROOF SLEEVE", (wx0, wx1, wy0, wy1, sz0, "pod_h"),
                          ctx)
         hollow_axis(slc, sw, "z", "slv_t", "ROOF SLEEVE")
         fx0, fx1, fy0, fy1 = A.sleeve_flange()

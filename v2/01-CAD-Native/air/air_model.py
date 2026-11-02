@@ -302,6 +302,16 @@ AIR_PARAMS = [
      "calculation", "the transition's facet side meets its right end (the opening's, X 1161), Y (about -717)"),
     # ---- roof slot, sleeve and grille (D-61: Y -620 to -326, in the right outer ceiling panel)
     ("slv_t", "1 mm", "mm", "assumption", "roof sleeve wall, galvanised steel"),
+    ("tape_w", "8 mm", "mm", "source", "D-177: the butyl tape ring 848017, 8 wide (CEILING's check: 1.5 clear of the Ø17 holes "
+     "at full play)"),
+    ("tape_t", "2 mm", "mm", "source", "D-177: the ring's full thickness before it is pressed"),
+    ("tape_rho", "1500", "", "assumption", "butyl tape's density, kg/m3"),
+    ("slv_gap", "1 mm", "mm", "source", "D-177 (the Lead, 2026-11-01): the sleeve's walls 1.0 inside C2's slot on every side; "
+     "its flange and butyl ring 848017 cover the gap"),
+    # ---- fits (D-174, the Lead's rulings of 2026-11-01: AIR's parts take the gaps, so FRONT's and CEILING's don't change)
+    ("fit_gap", "1.5 mm", "mm", "source", "D-174: a made part fitted between two others stands this far off one of them "
+     "(a ±0.5 cut still goes in)"),
+    ("hole_gap", "1 mm", "mm", "source", "D-174: a part inside an opening is this much smaller across it, half each side"),
     ("rg_t", "2 mm", "mm", "assumption", "roof grille plate; 50 % free or more (report 7e), pattern HOLD"),
     # the sleeve's top flange on C2's skin, with the grille's 4 rivnuts 838003 (J-AIR-03, HOLD-04's edge rule: each
     # rivnut 2 hole diameters from every free edge, the skin's slot edge too; CEILING's layout, 2026-11-01): 2 on the
@@ -417,7 +427,7 @@ MATERIALS = {
     "steel": ("Galvanised steel DX51D+Z", 7850.0),
     "face": ("ACP 3 + felt 9 face (5.3 kg/m2)", 5.3 / 0.012),
     "pfill": ("Polyester fill 24 kg/m3", 24.0),     # D-81: the lighter cavity fill (provisional on T02); the layers stay at 32
-    "pyro": ("Pyrotek Sorberpoly 2D 32 kg/m3", 32.0),      # D-116: the density Pyrotek's published absorption is for (selection.md)
+    "pyro": ("polyester (PET) fibre, Pyrotek Sorberpoly 2D, 32 kg/m3", 32.0),      # D-116: the density Pyrotek's published absorption is for (selection.md)
     "fan": ("Fan envelope 0.195 kg (Noctua's specification)", 0.195 / (0.14 * 0.14 * 0.025)),   # 618401's own sheet: 195 g
     "hold": ("HOLD envelope - no mass", 1.0),
 }
@@ -715,8 +725,10 @@ def layout():
     # column: foot plate on the floor's mat, faces above the kick grille up to the soffit
     b.append(("col_foot", "COLUMN FOOT PLATE", box("col_x0", XR, YD, YFACE, ZC0, ZCB)))
     zg1 = "%s + grille_z + grille_h" % ZCB
-    b.append(("col_front", "COLUMN FACE FRONT", box("col_x0", XR, "%s - face_t" % YFACE, YFACE, zg1, ZS0)))
-    b.append(("col_left", "COLUMN FACE LEFT", box("col_x0", "col_x0 + face_t", YD, "%s - face_t" % YFACE, zg1, ZS0)))
+    zft = "%s - fit_gap" % ZS0      # D-174: the faces end fit_gap under the soffit (a 1.5 joint under its front face)
+    b.append(("col_front", "COLUMN FACE FRONT", box("col_x0", XR, "%s - face_t" % YFACE, YFACE, zg1, zft)))
+    b.append(("col_left", "COLUMN FACE LEFT", box("col_x0", "col_x0 + face_t", "%s + fit_gap" % YD, "%s - face_t" % YFACE,
+                                                  zg1, zft)))     # D-174: fit_gap off DR's access panel 351305
     zg0 = "%s + grille_z" % ZCB
     b.append(("kick", "KICK GRILLE FRONT", box("col_x0", XR, "%s - grille_t" % YFACE, YFACE, zg0, zg1)))
     b.append(("kick_l", "KICK GRILLE LEFT", box("col_x0", "col_x0 + grille_t", "%s - grille_t - grille_l" % YFACE,
@@ -726,7 +738,7 @@ def layout():
                              ("FR", "%s - ang_f" % XR, "ang_f", "%s - face_t - ang_w" % YFACE),
                              ("BL", "col_x0 + face_t", "ang_w", YD)):
         b.append(("col_ang_b" if name == "BL" else "col_ang", "COLUMN ANGLE %s" % name,
-                  box(x0, "%s + %s" % (x0, xw), y0, "%s + ang_w" % y0, ZCB, ZS0)))
+                  box(x0, "%s + %s" % (x0, xw), y0, "%s + ang_w" % y0, ZCB, "%s - fit_gap" % ZS0)))     # D-174
     # supply cartridge: its right side on the column's limit, 5 off the floating lining; the plenum
     # plates sit only above and below it (air report #110: 27 of fill at the left face, D-61)
     cx1 = XR
@@ -752,7 +764,7 @@ def layout():
     b.append(("sof_rail_d", "SOFFIT RAIL DOOR", box(XL, XR, YD, "%s + rail_w" % YW, zr0, zr1)))
     b.append(("sof_rail_r", "SOFFIT RAIL ROOM", box(XL, XR, "%s - rail_w" % YFACE, YFACE, zr0, zr1)))
     b.append(("sof_door", "SOFFIT DOOR PLATE", box(XL, XR, YD, "%s + dp_t" % YD, "%s + face_t + hl_h" % ZS0, zr0)))
-    b.append(("sof_end", "SOFFIT END PLATE LEFT", box(XL, "%s + box_t" % XL, "%s + dp_t" % YD, "%s - face_t" % YFACE,
+    b.append(("sof_end", "SOFFIT END PLATE LEFT", box(XL, "%s + box_t" % XL, "%s + dp_t" % YD, "%s - face_t - fit_gap" % YFACE,
                                                       "%s + face_t" % ZS0, ZBT)))
     ex1 = "%s - fb_w" % XR
     ez0 = "%s + face_t + sof_fill_t" % ZS0
@@ -770,8 +782,9 @@ def layout():
     # bottom), so nothing there cuts it, whatever the pod's size
     b.append(("sof_fill_f", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE,
                                                       "%s + sf_ff_dz" % ez0, ZBT)))
-    b.append(("egrille", "EXHAUST GRILLE", box("%s + eg_x0" % XIL, "%s + eg_x0 + eg_l" % XIL, "%s + face_t" % YW,
-                                                "%s + face_t + eg_w" % YW, ZS0, "%s + grille_t" % ZS0)))
+    b.append(("egrille", "EXHAUST GRILLE", box("%s + eg_x0 + hole_gap / 2" % XIL, "%s + eg_x0 + eg_l - hole_gap / 2" % XIL,
+                                                "%s + face_t + hole_gap / 2" % YW, "%s + face_t + eg_w - hole_gap / 2" % YW,
+                                                ZS0, "%s + grille_t" % ZS0)))      # D-174: in its opening, 0.5 all round
     # hanging: 4 studs (head under the rail, shank up through the fork to the ceiling frame),
     # 2 captive lock screws in the door-side rail (838002, retainer HOLD), hinges and latches
     zf = "(pod_h - outer_t - rvn_head)"
@@ -877,12 +890,18 @@ def sleeve_flange():
     return ("slot_x0 - slv_fl_l", "slot_x0 + slot_w + slv_fl_f", "slot_y0 - slv_fl_f", "slot_y0 + slot_d + slv_fl_b")
 
 
+def sleeve_walls():
+    """(x0, x1, y0, y1) of the sleeve's walls outside: slv_gap inside C2's slot on every side (D-177)."""
+    return ("slot_x0 + slv_gap", "slot_x0 + slot_w - slv_gap", "slot_y0 + slv_gap", "slot_y0 + slot_d - slv_gap")
+
+
 def sleeve_opening():
-    """(x0, x1, y0, y1) of the opening through the sleeve's top flange: the walls' inside (slv_t in from the slot's
-    outline), so the flange sits on the walls' top edges and the sleeve is one solid. Cut at the slot's outline, the
+    """(x0, x1, y0, y1) of the opening through the sleeve's top flange: the walls' inside (slv_t in from their outside),
+    so the flange sits on the walls' top edges and the sleeve is one solid. Cut at the slot's outline, the
     opening took the flange off the wall tops and left it touching them on an edge only: two solids in the STEP (the
     mechanical checks' C06 on the follow-up's first saved build, 2026-11-01)."""
-    return ("slot_x0 + slv_t", "slot_x0 + slot_w - slv_t", "slot_y0 + slv_t", "slot_y0 + slot_d - slv_t")
+    x0, x1, y0, y1 = sleeve_walls()
+    return ("%s + slv_t" % x0, "%s - slv_t" % x1, "%s + slv_t" % y0, "%s - slv_t" % y1)
 
 
 def sleeve_rivnuts():
@@ -976,7 +995,8 @@ def cutouts():
     hub = hub_zone()
     eg = lay["EXHAUST GRILLE"]
     hub_cut = (hub[0], hub[1], "%s - face_t - 40 mm" % YFACE, hub[3], hub[4], hub[5])
-    eg_cut = (eg[0], eg[1], eg[2], eg[3], ZS0, "%s + face_t" % ZS0)    # the grille's opening through the face
+    eg_cut = ("%s - hole_gap / 2" % eg[0], "%s + hole_gap / 2" % eg[1], "%s - hole_gap / 2" % eg[2],
+              "%s + hole_gap / 2" % eg[3], ZS0, "%s + face_t" % ZS0)    # the grille's opening (eg_l x eg_w) through the face
     # in the fill the hub's cut runs on to the FR angle, so no 1 mm of fill stays between the entries and the hub
     # (ELECTRICAL 2026-11-01 15:47)
     hub_fill = (hub[0], "%s - ang_f" % XR) + hub_cut[2:]
@@ -1065,6 +1085,8 @@ def fan_box_inner():
     sfan = "sb_z0 + lin_t"
     stop = "sb_z0 + sb_h"
     return [
+        # D-174: the bulkheads and linings are fitted into their casing by its maker, so their rows say "fit: set at
+        # assembly" (air_exports.py); cut smaller, the bores' webs and the leads' path fell under their minimums
         ("blk_e", "FAN BOX BULKHEAD EXHAUST", box(ex0, ex1, ey0, ey1, "%s - blk_t" % etop, etop)),
         ("lin_es", "FAN BOX LINING EXHAUST SIDE 1", box(ex0, ex1, ey0, "%s + lin_t" % ey0, ez0, efan)),
         ("lin_es", "FAN BOX LINING EXHAUST SIDE 2", box(ex0, ex1, "%s - lin_t" % ey1, ey1, ez0, efan)),
