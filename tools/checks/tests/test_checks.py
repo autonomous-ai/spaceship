@@ -1888,3 +1888,31 @@ def test_an_edge_exception_place_must_pick_out_one_hole(monkeypatch, tmp_path):
     assert flagged("X 10 Y +11") == [10.0]                              # a written + sign reads as the number
     for bad in ("near the corner", "X 10 X 11", "X 10 Y 11 left"):    # unreadable places accept nothing
         assert flagged(bad) == [10.0, 10.0], bad
+
+
+def test_an_edge_exception_place_counts_every_solid_of_the_part(monkeypatch, tmp_path):
+    # Reviewer 21 on #448 at 6696214: uniqueness was checked within one solid; a part number with two solids (as WALL's
+    # frames have) let 'X 10' excuse a matching hole in the other solid too
+    a = _plate_with_hole(hole_x=10.0, hole_y=11.0, d=6.0)               # corner hole at (10, 11)
+    b = _plate_with_hole(height=122.0, hole_x=10.0, hole_y=111.0, d=6.0)   # corner hole at (10, 111)
+    b.id = 2
+    solids = {1: a, 2: b}
+
+    class FakeStep:
+        def instances(self):
+            return [{"solid": i, "part_number": "711997", "name": "x", "path": ["711997"], "frame": sf.Frame()}
+                    for i in (1, 2, 2)]                                   # solid 2 placed twice: one set of holes
+
+        def solid(self, sid):
+            return solids[sid]
+    monkeypatch.setitem(c_geometry.load_step.__defaults__[0], str(tmp_path / "x.step"), FakeStep())
+
+    def flagged(place):
+        rows = {"711997": [{"hole_dia_mm": "6.0", "min_edge_mm": "9.5", "max_short_edges": "2", "place": place}]}
+        return sorted(f.subject for f in c_geometry.check_part_features(
+            str(tmp_path), str(tmp_path / "x.step"), {}, [], hole_rules=[], edge_exceptions=rows)
+            if f.rule == "edge-distance")
+    both = flagged("")
+    assert len(both) == 2
+    assert flagged("X 10") == both                                      # matches a hole in each solid: neither
+    assert flagged("X 10 Y 11") == [x for x in both if "Y 111" in x]    # one hole: only it is excused

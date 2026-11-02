@@ -815,6 +815,13 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
     s = load_step(path)
     r = rel(root, path)
     done = set()
+    part_holes = {}                 # pn -> the holes of each distinct solid it has here (a place must name one hole)
+    for inst in s.instances():
+        so = s.solid(inst["solid"])
+        seen = part_holes.setdefault(inst["part_number"], {})
+        if so.id not in seen:
+            seen[so.id] = list(so.holes)
+    part_holes = {pn: [h for hs in sols.values() for h in hs] for pn, sols in part_holes.items()}
     for inst in s.instances():
         so = s.solid(inst["solid"])
         k = (inst["part_number"], so.id)
@@ -850,7 +857,7 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
             need = edge_factor * h.diameter
             if e + 1e-6 < need:
                 rows = edge_exceptions.get(pn, [])
-                if rows and _edge_accepted(rows, h, edges, need, holes):
+                if rows and _edge_accepted(rows, h, edges, need, part_holes.get(pn, holes)):
                     continue        # an edge distance the PM accepted, with its rationale
                 sev = "severe" if e < 1.5 * h.diameter else "major"
                 ruled = ""
