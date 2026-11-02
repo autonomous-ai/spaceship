@@ -20,6 +20,7 @@ Exit 1 on any mismatch in a panel whose STEP matches the list's layout.
 import csv
 import glob
 import math
+import re
 import os
 import sys
 
@@ -144,7 +145,21 @@ def main():
             missing.append("%s (%s): STALE, its STEP has %d fill bodies and the list %d bays (an older layout; the "
                            "panel is rebuilt with it)" % (pos, pn, len(bodies), len(rows)))
             continue
-        for (lo, hi, s, inst), r in zip(bodies, rows):
+        # pair each body with its bay by the part number in its name (B2's bays 1 and 2 sit under the power unit and
+        # 3 and 4 over it, at the same places along the wall, so the order along the wall alone pairs them wrongly);
+        # copies of one number pair in order along the wall, then up
+        def number_of(inst):
+            m = re.search(r"\b(211[56]\d\d)\b", " ".join([inst["name"] or ""] + list(inst["path"])))
+            return m.group(1) if m else ""
+        pairs = []
+        for pn_ in sorted({r["number"] for r in rows}):
+            rs = [r for r in rows if r["number"] == pn_]
+            bs = sorted((b for b in bodies if number_of(b[3]) == pn_), key=lambda b: (round(b[0][u_ax], 1), b[0][2]))
+            if len(bs) != len(rs):
+                bad.append("%s: %d bodies numbered %s in the STEP, %d bays in the list" % (pos, len(bs), pn_, len(rs)))
+                continue
+            pairs += list(zip(bs, rs))
+        for (lo, hi, s, inst), r in sorted(pairs, key=lambda q: int(q[1]["bay"])):
             label = "%s bay %s (%s %s, %s)" % (pos, r["bay"], r["form"], r["number"], r["fit"])
             w, h, t = float(r["w_mm"]), float(r["h_mm"]), float(r["t_mm"])
             size = (hi[u_ax] - lo[u_ax], hi[2] - lo[2], hi[thick_ax] - lo[thick_ax])

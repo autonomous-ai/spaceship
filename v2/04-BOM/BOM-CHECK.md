@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 416 part lines (196 made, 220 bought, 150 on HOLD) and 55 sub-assembly lines from 19 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 432.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 433 part lines (211 made, 222 bought, 150 on HOLD) and 56 sub-assembly lines from 19 parts list(s); 48 hardware items in the joints register (47 with a part number). Listed parts weigh 437.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -230,7 +230,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 194 numbers, 109 not in a team's list yet, 62 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 194 numbers, 100 not in a team's list yet, 71 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -280,7 +280,7 @@ From `v2/04-BOM/number-allocation.csv`: 194 numbers, 109 not in a team's list ye
 | 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | in use |
 | 211611 | WALL - CAVITY FILL PIECE F09 373 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 2 | CANCELLED |
 | 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | in use |
-| 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | in use |
 | 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 211204 | 2 | in use |
 | 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 211204 | 2 | in use |
 | 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 211204 | 4 | in use |
@@ -414,20 +414,20 @@ From `v2/04-BOM/number-allocation.csv`: 194 numbers, 109 not in a team's list ye
 | 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
 | 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
 | 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
-| 212606 | WALL - FRAME STUD BELOW THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212607 | WALL - FRAME STUB ABOVE THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212608 | WALL - FRAME CROSS MEMBER LOWER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212609 | WALL - FRAME CROSS MEMBER UPPER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212606 | WALL - FRAME STUD BELOW THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212607 | WALL - FRAME STUB ABOVE THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212608 | WALL - FRAME CROSS MEMBER LOWER - BACK LOWER - B2 | 211202 | 1 | in use |
+| 212609 | WALL - FRAME CROSS MEMBER UPPER - BACK LOWER - B2 | 211202 | 1 | in use |
 | 212206 | WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH | 211102 | 4 | in use |
 | 212406 | WALL - FRAME STUD WITH SCREEN RAIL RIVNUTS - SIDE UPPER - RH | 211104 | 2 | in use |
 | 211551 | WALL - CAVITY FILL PIECE F15 112.7 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
 | 211552 | WALL - CAVITY FILL PIECE F16 98.2 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
 | 211553 | WALL - CAVITY FILL PIECE F17 100 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
 | 211554 | WALL - CAVITY FILL PIECE F18 94 X 1102.7 - SIDE LOWER - RH | 210102 | 1 | in use |
-| 211641 | WALL - CAVITY FILL PIECE F19 274.7 X 717 - BACK LOWER - B2 | 210202 | 1 | ALLOCATED |
-| 211642 | WALL - CAVITY FILL PIECE F20 274.7 X 717 - BACK LOWER - B2 | 210202 | 1 | ALLOCATED |
-| 211643 | WALL - CAVITY FILL PIECE F21 274.7 X 60.1 - BACK LOWER - B2 | 210202 | 2 | ALLOCATED |
-| 211644 | WALL - CAVITY FILL PIECE F22 99 X 458.2 - BACK LOWER - B2 | 210202 | 1 | ALLOCATED |
+| 211641 | WALL - CAVITY FILL PIECE F19 274.7 X 717 - BACK LOWER - B2 | 210202 | 1 | in use |
+| 211642 | WALL - CAVITY FILL PIECE F20 274.7 X 717 - BACK LOWER - B2 | 210202 | 1 | in use |
+| 211643 | WALL - CAVITY FILL PIECE F21 274.7 X 60.1 - BACK LOWER - B2 | 210202 | 2 | in use |
+| 211644 | WALL - CAVITY FILL PIECE F22 99 X 458.2 - BACK LOWER - B2 | 210202 | 1 | in use |
 
 ## Rules
 

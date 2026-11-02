@@ -678,7 +678,9 @@ def hardware_rows(frame, comps, back, lower, prm):
     # INTERIOR's fixings on R1's and R2's studs (D-172): rivnuts on the stud's room face for its stand-offs, no stop
     # washer (F54)
     interior = len(holes_in([b for b in fb if b["name"] == "STILE - MID INTERIOR"], prm.get("rivnut_d", 9.53)))
-    stopped = rivnuts - len(spig_rv) - len(pins) - interior
+    # B2's power unit fixings in its cross members (F57): the unit sits on their heads, no stop washer
+    unit = len(holes_in([b for b in fb if b["name"] in ("CROSS - LOWER", "CROSS - UPPER")], prm.get("rivnut_d", 9.53)))
+    stopped = rivnuts - len(spig_rv) - len(pins) - interior - unit
     if sw_bodies and len(sw_bodies) != stopped:
         raise SystemExit("CAD has %d stop washers for %d stopped-joint rivnuts" % (len(sw_bodies), stopped))
     centre_holes = [b for b in fb if b["name"] == "STILE - CENTRE"]
@@ -711,6 +713,8 @@ def hardware_rows(frame, comps, back, lower, prm):
         roles.append("%d spigot rivnuts" % len(spig_rv))
     if pins:
         roles.append("%d closing-seam pin rivnuts, no stop washer" % len(pins))
+    if unit:
+        roles.append("%d for the power unit in the cross members, no stop washer (F57)" % unit)
     if interior:
         roles.append("%d for INTERIOR's %s on the studs' room faces, no stop washer (D-172)" % (
             interior, "ledge brackets" if lower else "screen rail"))
