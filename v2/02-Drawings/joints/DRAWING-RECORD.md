@@ -95,3 +95,11 @@ Reviewer 10 held #346 on one P2: the front view printed 831001's 7.24 and 15.24,
 
 **Read back from the PDF:** front view L, L + 8, 8, 8 (the pin's Ø8 h9 is in note 3); 5.88; top view 4. Created by and the author read "Autonomous"; no maker named (D-147 (1)).
 
+
+## The pin's diameter and the stud's thread (2026-11-02)
+
+The mechanical check found "8 printed twice" on the spigot sheet. The two 8s were two different sizes: the pin's diameter, left to right, and the stud's length, bottom to top. The pin's diameter was printed bare, without its Ø. The Lead asked for a small fix (2026-11-02), done in the finish step from the same raw export, with no Fusion run:
+- **The pin reads Ø8 h9** (note 3's fit). Fusion left its value only 4 mm between the shoulder line and the dimension line, too tight for 3.5 mm capitals: the value had sat on the shoulder line since the first sheet (Reviewer 10's "the pin's 8 off the shoulder line"). It now stands outside, right of the extension line, on the dimension line extended under it (ISO 129-1).
+- **The stud reads M6**, its thread. It is drawn at its 6g mean major Ø5.88 (note 4), which the view printed as a bare 5.88.
+- How: `letter_dims` takes an optional way ("h" or "v") for a value two sizes share, and an optional place outside the extension lines; the spigot's `relabel` list runs after the table's letters. Its re-read checks each new text once, in its direction, and each value as many times fewer as it was replaced. The extension line must be where the place says, or the finish stops.
+- Read back: no dimension value printed twice (the check's rule); the other views' texts are unchanged. Still for the next annotate run: the centre line and centre mark, and 831001's STEP header.

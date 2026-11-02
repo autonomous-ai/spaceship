@@ -47,6 +47,15 @@ PARTS = {
         # the two sizes the table varies, lettered on the front view in the finish (Reviewer 10 on #346: the view
         # printed 831001's 7.24 and 15.24, which disagree with 831010's row): Fusion's value -> the letter
         "letters": [("7.24", "L"), ("15.24", "L + 8")],
+        # sizes Fusion printed bare, given their symbol in the finish (the Lead, 2026-11-02: the check's "8 printed
+        # twice" was the pin's diameter, left to right, and the stud's length, bottom to top, two different sizes; a
+        # diameter on a side view needs its Ø, ISO 129-1): Fusion's value -> the text, "h" picking the left-to-right
+        # one. The stud is drawn at its 6g mean major Ø5.88 (note 4), so its size is its thread, M6. Fusion left the
+        # pin's value only 4 mm between the shoulder line (y 110.16) and its dimension line (y 114.16), too tight for
+        # 3.5 mm capitals, so Ø8 h9 goes outside, right of the extension line at x 140.0, on the dimension line
+        # extended under it (sheet mm from the top left; ISO 129-1)
+        "relabel": [("8", "Ø8 h9", "h", {"at": (142.0, 113.2), "line": (140.0, 156.5, 114.16)}),
+                    ("5.88", "M6")],
         "notes": [
             "NOTES (831001, 831010 P01, PROPOSED) - TABULATED",
             "1. UNITS MM. SCALE 5:1. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
@@ -492,20 +501,41 @@ def view_spans(page, x_max=None):
     return out
 
 
+def _runs(d, way):
+    """A text direction against "h" (left to right) or "v" (bottom to top, as Fusion writes a vertical value)."""
+    return abs(d[0]) > 0.99 if way == "h" else d[1] < -0.99
+
+
 def letter_dims(pdf_in, pdf_out, letters):
-    """A tabulated sheet's varying sizes as letters: each (value, letter) takes the one dimension value Fusion
-    printed on the views (it must be there exactly once), removes its text from the page (a redaction; the
-    dimension's lines and arrows stay) and writes the letter on the same baseline, centred where the value was,
-    at its size and in its direction. Fails unless the re-read finds every letter and none of the values."""
+    """A tabulated sheet's varying sizes as letters, or a bare size given its symbol: each (value, letter) or
+    (value, letter, way) takes the one dimension value Fusion printed on the views (exactly once; with way "h" or
+    "v", exactly once running that way, for a value two sizes share), removes its text from the page (a redaction;
+    the dimension's lines and arrows stay) and writes the letter on the same baseline, centred where the value was,
+    at its size and in its direction. Fails unless the re-read finds every letter once, in its direction, and each
+    value as many times fewer as it was replaced."""
     import fitz
+    from collections import Counter
     doc = fitz.open(pdf_in)
     page = doc[0]
     spans = view_spans(page)
+    before = Counter(t for t, _d, _s in spans)
     todo = []
-    for value, letter in letters:
-        hits = [(d, sp) for t, d, sp in spans if t == value]
+    k = page.rect.width / 420.0
+    places = {}
+    for entry in letters:
+        value, letter = entry[0], entry[1]
+        way = entry[2] if len(entry) > 2 else None
+        if len(entry) > 3:                        # outside the extension lines: the text's left end and baseline,
+            places[letter] = entry[3]             # and the dimension line extended under it (sheet mm)
+            x0, x1, y = entry[3]["line"]
+            if not any(it[0] == "l" and abs(it[1].x / k - x0) < 0.3 and abs(it[2].x / k - x0) < 0.3 and
+                       min(it[1].y, it[2].y) / k - 0.3 < y < max(it[1].y, it[2].y) / k + 0.3
+                       for d in page.get_drawings() for it in d["items"]):
+                raise SystemExit("letters: no extension line at x %.2f through y %.2f for %r" % (x0, y, letter))
+        hits = [(d, sp) for t, d, sp in spans if t == value and (way is None or _runs(d, way))]
         if len(hits) != 1:
-            raise SystemExit("letters: %r is on the views %d times (want once)" % (value, len(hits)))
+            raise SystemExit("letters: %r is on the views %d times%s (want once)"
+                             % (value, len(hits), " running %s" % way if way else ""))
         todo.append((hits[0][0], hits[0][1], value, letter))
     for _d, sp, _v, _l in todo:
         page.add_redact_annot(fitz.Rect(sp["bbox"]), fill=False)
@@ -516,7 +546,11 @@ def letter_dims(pdf_in, pdf_out, letters):
         w = font.text_length(letter, fontsize=size)
         x0, y0, x1, y1 = sp["bbox"]
         ox, oy = sp["origin"]
-        if abs(d[0]) > 0.99:                      # left to right
+        if letter in places:
+            (tx, ty), (x0, x1, y) = places[letter]["at"], places[letter]["line"]
+            page.draw_line(fitz.Point(x0 * k, y * k), fitz.Point(x1 * k, y * k), width=0.72)
+            page.insert_text(fitz.Point(tx * k, ty * k), letter, fontsize=size, fontname=FONT)
+        elif abs(d[0]) > 0.99:                    # left to right
             page.insert_text(fitz.Point((x0 + x1) / 2 - w / 2, oy), letter, fontsize=size, fontname=FONT)
         elif d[1] < -0.99:                        # bottom to top, as Fusion writes a vertical dimension's value
             page.insert_text(fitz.Point(ox, (y0 + y1) / 2 + w / 2), letter, fontsize=size, fontname=FONT,
@@ -526,9 +560,10 @@ def letter_dims(pdf_in, pdf_out, letters):
     doc.save(pdf_out)
     doc.close()
     got = view_spans(fitz.open(pdf_out)[0])
-    texts = [t for t, _d, _s in got]
+    after = Counter(t for t, _d, _s in got)
     for d, _sp, value, letter in todo:
-        if value in texts or [dd for t, dd, _s in got if t == letter] != [d]:
+        if after[value] != before[value] - sum(1 for t in todo if t[2] == value) or \
+                [dd for t, dd, _s in got if t == letter] != [d]:
             raise SystemExit("letters: after the re-read %r is still there or %r isn't, once, in its direction"
                              % (value, letter))
 
@@ -695,6 +730,9 @@ def finish(part):
     subprocess.run(cmd, check=True)
     if cfg.get("letters"):                 # before the notes: the table repeats the values
         letter_dims(clean, clean + ".tmp", cfg["letters"])
+        os.replace(clean + ".tmp", clean)
+    if cfg.get("relabel"):                 # a bare size given its symbol, the same way
+        letter_dims(clean, clean + ".tmp", cfg["relabel"])
         os.replace(clean + ".tmp", clean)
     end = add_notes(clean, out, cfg["notes"])
     doc = fitz.open(out)
