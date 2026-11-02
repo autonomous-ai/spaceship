@@ -413,12 +413,20 @@ class D162CutListRow(unittest.TestCase):
     def test_every_row_reads_as_c05_reads_it(self):
         # the checklist and C05 give the same answer on every row (C05's member_row_lacks, the Checker's #357)
         _geometry, c_drawings = rc.load_checks()
-        if not hasattr(c_drawings, "member_row_lacks"):
-            self.skipTest("C05's member_row_lacks comes with the Checker's #357")
         rows = [r for text in (CEILING_ROWS, WALL_ROWS) for r in csv.DictReader(io.StringIO(text))]
         rows += [dict(self.ROW, ends=ends) for ends in END_WORDINGS]
         for r in rows:
             self.assertEqual(rc.member_row_lacks(r), c_drawings.member_row_lacks(r), r["ends"])
+
+    def test_the_checklist_reads_a_row_with_c05s_own_function(self):
+        # one reader for both tools, not a copy: a change in C05's member_row_lacks reaches the checklist's d162_rows
+        _geometry, c_drawings = rc.load_checks()
+        old = c_drawings.member_row_lacks
+        c_drawings.member_row_lacks = lambda row: ["planted"]
+        try:
+            self.assertEqual(rc.d162_rows({CEILING_CUT: CEILING_ROWS})["412101"], ("411101", ["planted"]))
+        finally:
+            c_drawings.member_row_lacks = old
 
 
 class MakerAlternatives(unittest.TestCase):
