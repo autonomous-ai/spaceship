@@ -149,6 +149,6 @@ Looked at and rejected:
 
 - **Skeleton P04, updated in place (PRs #58 and #94):** this count reads the skeleton's named values for the panel sizes (side_l, side_h, back_ph, half_pw, half_fw, wall_depth, frame_t, stack_t, floor_t), so a skeleton change reaches it on the next run. The linings aren't named in the skeleton and come from its build record; the floor panels, their mat and the threshold went with D-132. The bolt counts follow the joints register.
 - **Each part PR that merges:** its CAD masses replace this study's model masses line by line (the table of CAD masses above lists those already in; B3 and B4 and the upper back cassettes and a few allowances are still estimates; AIR's lines carry the changes its follow-up builds). The fixings kit counts the joints register's hardware at the parts lists' masses (D-116), so it follows the register.
-- **BASE's support behind the intake mesh:** if it leaves less than 0.030 m2 free, the air report re-runs the fan noise (25.4 / 29.8 dB(A) at 53 / 65 l/s now).
+- **BASE's support behind the intake mesh:** if it leaves less than 0.030 m2 free, the air report re-runs the fan noise (25.4 / 29.9 dB(A) at 53 / 65 l/s now).
 - **D-83:** a 35 N magnetic catch in DT and a magnetic seal pair on the glass edges replace the door lock (0.84 kg in FRONT's door unit); the door line follows FRONT's CAD.
 - **The tests:** T02 (fill), T07 (clips), T10 (weights) and the castor and edge tests on the floor sample (D-86) replace the provisional and assumed lines.
