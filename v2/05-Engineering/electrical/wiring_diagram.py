@@ -286,13 +286,14 @@ def sheet3(doc, rows, harness, v):
         elif c in ("INLET", "LAN-FT"):
             s.circle(X((bx[0] + bx[3]) / 2), Z((bx[2] + bx[5]) / 2), (bx[3] - bx[0]) / 2 * k,
                      MAINS if c == "INLET" else SIG, 0.3)
-        elif c == "SLEEVE":
-            s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), MAINS, 0.25, dashes="[1 1] 0")
+        elif c in ("MN-UP", "MN-JOG", "MN-MBR", "LN-BAND", "LN-UP", "LN-MBR"):
+            s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), MAINS if c.startswith("MN") else SIG, 0.25, dashes="[1 1] 0")
         elif c in ("P1", "P4", "P5", "P6", "T1-B2", "L1-B2", "L1-B4", "G-B2-B4", "S-CNR"):
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), SELV, 0.3)
         elif c.startswith("C1") or c in ("FX-CEIL", "FX-SHELF", "PU-PLATE"):
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), GREY, 0.3)
-    vlab(X(200), Z(313) + 1.0, ["inlet X 120 Z 313, LAN Z 375", "(v1's spot, off the X 0 closing seam)"], MAINS)
+    vlab(X(230), Z(313) + 1.0, ["inlet X 120 Z 313, LAN X %.0f Z 375" % v["lan_x"], "(off the X 0 closing seam;",
+                                "cord and LAN 50 mm apart)"], MAINS)
     vlab(X(400), Z(1100) - 2.0, "trunk Z 1100 to the corner", SELV)
     vlab(X(370), Z(1800), "light feed up B2, B4 (X %.0f)" % v["lt_x"], SELV)
     vlab(X(370), Z(2290) + 3.0, "shelf feed X %.0f Z %.0f" % (v["lt_x"], v["shelf_z"]), SELV)
@@ -344,8 +345,12 @@ def sheet3(doc, rows, harness, v):
         ("7  Room cord into the inlet, breaker on, press TEST: PASS (D-87).", False),
         ("", False),
         ("KEEP-OUTS FOR OTHER TEAMS", True),
-        ("WALL: B2 bay X %.0f-%.0f, Z %.0f-%.0f for the unit; sleeve X %.0f-%.0f," % (v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], v["sl_x"] - 10, v["sl_x"] + 10), False),
-        ("Z 301-870; the holes and slots in B2-CASS, B4-CASS, R1-CASS, R2-CASS.", False),
+        ("WALL: B2 bay X %.0f-%.0f, Z %.0f-%.0f for the unit; the cord X %.0f-%.0f" % (
+            v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], v["mn_cx"] - v["mn_w"] / 2, v["mn_cx"] + v["mn_w"] / 2), False),
+        ("from Z %.0f, to X %.0f from Z %.0f; the LAN X %.0f-%.0f Z %.0f-%.0f, X %.0f-%.0f" % (
+            v["rb_z1"], v["mn_x"] + v["mn_w"] / 2, v["jog_z"], v["lan_x"] - v["ln_w"] / 2, v["ln_x"] + v["ln_w"] / 2,
+            v["ln_bz"], v["ln_bz"] + v["ln_bh"], v["ln_x"] - v["ln_w"] / 2, v["ln_x"] + v["ln_w"] / 2), False),
+        ("above; the holes and slots in B2-CASS, B4-CASS, R1-CASS, R2-CASS.", False),
         ("INTERIOR: ledge and screen fixings 15 mm off the trunk band Z 1085-1115.", False),
         ("AIR (CEILING): hub zone X %.0f-%.0f, Z %.0f-%.0f; FR angle entries" % (v["hub_xc"] - v["hub_w"] / 2,
                                                                               v["hub_xc"] + v["hub_w"] / 2,
@@ -362,7 +367,7 @@ def sheet3(doc, rows, harness, v):
         yy += 4.1
     notes = [
         "1. Every coordinate in these views is computed from electrical_model.py (skeleton P04 parameters), so they follow the CAD.",
-        "2. Bushings: 2836N in the 19.1 holes (the unit's H01-H03, G-B2-B4 x2, G-CEIL-B/F), SB 437-5 in the FR angle (G-COL1, G-COL2); cordgrips at G-SOFFIT, G-FBOX; S-CNR gets an edge strip.",
+        "2. Bushings: 2836N in the 19.1 holes (the unit's H01-H03, G-B2-B4 x2, G-CEIL-B/F), SB 437-5 in the FR angle (G-COL1, G-COL2) and the LAN's passage (the unit's H10, B2's lower member), SB 625-7 in the mains cord's (H04, the member); cordgrips at G-SOFFIT, G-FBOX; S-CNR gets an edge strip.",
         "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) go through the felt only, clear of the 12 mm lips: no steel edge, no bushing (no hole through a lip, D-69).",
         "4. These views are the route drawing of 710000; there is no separate Fusion drawing of the route model (PM ruling 2026-11-01).",
     ]

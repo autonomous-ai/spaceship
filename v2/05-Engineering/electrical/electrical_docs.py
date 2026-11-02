@@ -260,8 +260,9 @@ def calc_md(v, mass_of, harness):
       "%.2f kW continuous at 80 %% (NEC 210.19, 210.20). A laptop charger takes about 0.6 A; a 1.5 kW heater, the largest "
       "plug-in appliance on a 15 A US circuit, takes 12.5 A and still holds with the supplies (assumption)." % (
           MAINS_V, 15 * MAINS_V / 1000.0, 0.8 * 15 * MAINS_V / 1000.0))
-    A("- Mains conductors 14 AWG (UL 1015, 105 °C, in the sleeve and inside the unit): rated for 15 A and protected by "
-      "the 15 A breaker (NEC 240.4(D)); the equipment ground is 14 AWG green too (NEC 250.122).")
+    A("- Mains conductors 14 AWG, all 105 °C (the SJEOOW 14/3 cord's up B2 and on inside the unit to the breaker; UL 1015 "
+      "inside the unit): rated for 15 A and protected by the 15 A breaker (NEC 240.4(D)); the equipment ground is 14 AWG "
+      "green too (NEC 250.122).")
     A("- The prototype is tested in Vietnam through a 220-to-110 V step-down transformer, part of the test set, not the "
       "pod (D-133); it must carry the outlets' load too (2 kVA or more, assumption).")
     A("")

@@ -39,7 +39,7 @@ UP_RUNS = (1.150, 1.150, 1.050, 1.050)   # m: the uplight's four runs (the back 
                        # walls), each the longest whole number of 50 mm sections in its 1.166 / 1.051 m shelf run (calculation)
 UP_M = round(sum(UP_RUNS), 3)       # 4.400 m
 UP_W = round(UP_M * 6.0, 1)       # 26.4 W, the uplight strip at full (calculation)
-DOWN_ROW = 0.950                    # m: one down-light row, 19 sections of 50 mm, the longest that fits the 991 mm LED profile 718101 with room for the feed (D-126, D-168)
+DOWN_ROW = 0.950                    # m: one down-light row, 19 sections of 50 mm, the longest that fits the 988.5 mm LED profile 718101 (CEILING's shelf run under D-174, 1.25 short of each face) with room for the feed (D-126, D-168)
 DOWN_W = round(2 * DOWN_ROW * 6.0, 1)  # 11.4 W, two rows of the down strip at full (calculation)
 CALL_W = 2.7
 UP_TYP = round(LIGHT_BUDGET_W - DOWN_W, 1)   # 10.3 W: the work scene, down-light full, the uplight takes the rest
@@ -138,6 +138,16 @@ IN_AIR_E = 200.0       # mm inside the exhaust fan box from its cordgrip to the 
 STRIP_FEEDS = {"W11a": 2, "W11b": 2, "W11c": 4, "W12": 1}
 
 AWG16, AWG18, AWG20, AWG22, AWG24 = 1.31, 0.823, 0.519, 0.326, 0.205   # mm2 (source: AWG table)
+# the mains feed up B2 (W01): a jacketed 14/3 cord in its own channel, its conductors 105 C inside the unit (D-173)
+MAINS_CORD = "Southwire SEOPRENE SJEOOW 14/3 cord, 300 V, 105 C (718089)"
+CORD_OD = 9.22         # mm, the cord's diameter (source: Southwire 550433, 0.363 in)
+CORD_BEND = 4.0        # x OD, the tightest fixed bend (source: AutomationDirect's 14 AWG SJEOOW sheet, the same UL file,
+                       # "Min. Bend Radius 4x diameter"; General Cable's cord catalogue p. 95, the NEC table: 4 x for an
+                       # unshielded multi-conductor cable up to 1 in)
+CAT6_OD = 5.87         # mm, Belden 3612 (source: its sheet)
+CAT6_BEND = 4.0        # x OD, 4-pair UTP (source: TIA-568)
+RB_IN = 80.0           # mm inside the rear box, the grip to the inlet's tabs (assumption until 711003)
+PU_MAINS = 200.0       # mm inside the unit, H04 to the breaker and the PE stud (assumption: the factory's layout)
 
 
 def _len(v, *codes):
@@ -171,12 +181,20 @@ def harnesses(v):
         rows.append(kw)
 
     # ---- mains and LAN, inside B2 and the power unit (factory wired, never touched on site)
-    add(id="W01", harness_pn="710001", segment="PU", function="mains feed", frm="inlet (outside B2, v1 position)",
-        to="breaker in the power unit", route="SLEEVE in B2's frame bay", circuit="mains 120 V",
-        conductors="L, N, PE", cable="UL 1015 14 AWG single cores (black, white, green) in the sleeve", area_mm2=2.08,
-        length_mm=L("SLEEVE") + 150 + 200, end_a="inlet terminals (powerCON TRUE1 TOP)", end_b="breaker, PE terminal",
-        grommets="sleeve end bushes", amps_max=15.0,
-        note="mains only inside B2 and the unit (D-10, IF-12); US 120 V 60 Hz, 15 A (D-133)")
+    add(id="W01", harness_pn="710001", segment="PU", function="mains feed", frm="inlet (B2's skin, X 120 Z 313)",
+        to="breaker in the power unit",
+        route="MN-UP, MN-JOG: WALL's cord channel in B2's fill, up from the rear box's grip at X 85 and over to X 127 "
+              "from Z 750; MN-MBR: its own passage through the lower cross member, into the unit's H04",
+        circuit="mains 120 V", conductors="L, N, PE", cable=MAINS_CORD, area_mm2=2.08,
+        length_mm=RB_IN + L("MN-UP", "MN-JOG", "MN-MBR") + PU_MAINS,
+        end_a="inlet terminals (powerCON TRUE1 TOP), 1/4 in disconnects (718074), inside the rear box 711003",
+        end_b="breaker; the green core to the PE stud (H09)",
+        grommets="the rear box's cordgrip; SB 625-7 (718088) in the member's bottom wall and in the unit's H04; the "
+                 "cord's clamp inside the unit (H15)",
+        amps_max=15.0,
+        note="mains only inside B2 and the unit (D-10, IF-12); US 120 V 60 Hz, 15 A (D-133). The pod's own internal "
+             "wiring, judged under its product listing (UL 962-type), not building-wiring rules (the Lead, 2026-11-01): a "
+             "bushing at every metal edge, strain relief at both ends; bends no tighter than %g x its diameter" % CORD_BEND)
     add(id="W02", harness_pn="710001", segment="PU", function="mains inside the unit",
         frm="breaker", to="GFCI receptacle; PS1, PS2, PS3 inputs", route="inside the power unit", circuit="mains 120 V",
         conductors="L, N (+ PE to the receptacle)", cable="UL 1015 14 AWG (black, white; green to the receptacle)",
@@ -190,12 +208,18 @@ def harnesses(v):
         conductors="PE", cable="UL 1015 14 AWG green", area_mm2=2.08, length_mm=300,
         length_status="assumption", end_a="M6 ring lug, 16-14 AWG", end_b="M6 ring lug, 16-14 AWG", grommets="", amps_max=None,
         note="B2 is the only panel a mains part touches (compliance note 3)")
-    add(id="W04", harness_pn="710001", segment="PU", function="LAN in", frm="etherCON jack (B2 skin)",
-        to="LAN keystone jack 1 (unit face)", route="SLEEVE in B2's frame bay", circuit="LAN",
-        conductors="4 pairs", cable="Cat6 U/UTP, Belden 3612 (23 AWG solid)", area_mm2=None, length_mm=L("SLEEVE") + 300,
-        end_a="pressed into the etherCON's IDC (24-22 AWG solid)", end_b="punched down at keystone jack 1",
-        grommets="sleeve end bushes",
-        amps_max=None, note="plan VT09; the building LAN comes in at v1's position")
+    add(id="W04", harness_pn="710001", segment="PU", function="LAN in", frm="etherCON jack (B2 skin, X 170 Z 375)",
+        to="LAN keystone jack 1 (unit face)",
+        route="LN-BAND, LN-UP: WALL's LAN channel in B2's fill, along the jack's top and up at X 199 to 215; LN-MBR: its own "
+              "passage through the lower cross member, into the unit's H10",
+        circuit="LAN", conductors="4 pairs", cable="Cat6 U/UTP, Belden 3612 (23 AWG solid)", area_mm2=None,
+        length_mm=L("LN-BAND", "LN-UP", "LN-MBR") + 300,
+        end_a="pressed into the etherCON's IDC (24-22 AWG solid); the jack built right-angled (Neutrik BDA 188), turned 180 degrees",
+        end_b="punched down at keystone jack 1",
+        grommets="SB 437-5 (718084) in the member's bottom wall and in the unit's H10",
+        amps_max=None,
+        note="plan VT09; at least 50 mm from the mains cord all the way (the Lead's rule, 2026-11-01), never in its channel "
+             "or passage (NEC 800.133); bends no tighter than 4 x its diameter (TIA-568)")
     # ---- light feed (PS2) to the light shelf: PU -> B2-CASS -> B4-CASS -> shelf
     add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="light controller outputs (PS2) via F2 5 A",
         to="pocket P5 in B2-CASS", route="out of the unit's top (bushed hole H03) straight up into B2-CASS's cable gap: the cut-out is plain, no steel on the path", circuit="PS2 lights",
@@ -383,7 +407,7 @@ AL = "aluminium 5052-H32"
 
 # ---- power unit 710001: made parts
 part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
-     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.465, "CAD (Fusion volume 173,405 mm3 x 2.68 g/cm3, 711001 P01 design version 5)",
+     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.465, "CAD (Fusion volume 173,340 mm3 x 2.68 g/cm3, 711001 P01 design version 7)",
      size="296 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
      status="DRAFT; HOLD feature: the fixing to B2's frame (WALL, IF-12)",
      source="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD (electrical_parts_cad.py)",
@@ -458,6 +482,11 @@ part("socket", "718007", "ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5
 # 718008 (UTEN two-port LAN socket) and 718009 (86 back box) are retired by D-133: the keystone jacks snap into the
 # front plate, and the GFCI receptacle needs no box. A retired number is never used again.
 RETIRED = {"718008": "D-133: LAN keystone jacks in the front plate", "718009": "D-133: no 86 back box",
+           "718017": "the mains feed up B2 is a jacketed cord, not wires in conduit: the conduit's connector can't fit "
+                     "between the unit and a cross member that touches it (2026-11-01)",
+           "718075": "as 718017: no conduit, so no conduit connector (2026-11-01)",
+           "718020": "W01 is the cord 718089 from the inlet to the breaker, its own 105 C conductors inside the unit "
+                     "(D-173), so no separate 14 AWG cores for it (2026-11-01)",
            "718027": "the inlet sensor lead runs in the air path, so it moves to the plenum cable 718026 (2026-11-01)"}
 part("dinrail", "718010", "ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM", "Điện - thanh ray DIN", "PI", "710001", 1,
      "steel", "zinc plated", 0.03, "assumption", maker="Phoenix Contact", sku="NS 35/7,5 PERF 2000MM, 0801733, cut to 100 (unverified)",
@@ -492,12 +521,18 @@ part("m4nut", "718047", "ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM", "
      sku="CLA-M4-1 (unverified: the aluminium clinch nut for 1.0 mm sheet)", size="M4", status=HOLD_BUY,
      source="PEM catalogue", note="pressed into the body's lips")
 P["m4nut"].update(grade="aluminium", torque_nm="HOLD (as the screw)")
-part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện - vít tiếp địa M5", "PI", "710001", 1,
+part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện - vít tiếp địa M5", "PI", "710001", 2,
      "aluminium", "plain, as supplied", 0.005, "assumption", maker="PennEngineering", sku="FHA-M5-12 (unverified)", status=HOLD_BUY,
-     source="PEM catalogue", note="the enclosure's PE point: inlet, socket and bond lugs")
-part("pe_nut", "718079", "ELECTRICAL - NUT - M5 - SERRATED FLANGE - A2", "Điện - đai ốc M5 mặt bích răng", "PI", "710001", 1,
+     source="PEM catalogue", note="H09, the enclosure's PE point: inlet, socket and bond lugs; H15, the mains cord's clamp "
+                                  "718090 (the same stud, so one part)")
+part("pe_nut", "718079", "ELECTRICAL - NUT - M5 - SERRATED FLANGE - A2", "Điện - đai ốc M5 mặt bích răng", "PI", "710001", 2,
      "stainless A2", "plain", 0.0014, "source", status=HOLD_BUY,
-     note="on the earth stud 718014, over its lugs")
+     note="on the studs 718014: the earth stud, over its lugs, and the cord clamp's stud")
+part("cord_clamp", "718090", "ELECTRICAL - CABLE CLAMP - NYLON - 9.5 MM LOOP", "Điện - kẹp cáp nhựa vòng 9,5 mm", "PI", "710001", 1,
+     "nylon 6/6 UL94 V-2", "black, as supplied", 0.001, "assumption", maker="Heyco", sku="CCH 3/8 (3376, black)",
+     status=HOLD_BUY, source="https://www.heyco.com/wp-content/uploads/2024/12/Nylon-Cable-Clamps.pdf",
+     note="the mains cord's strain relief inside the unit, on the stud in H15 just above the cord's entry H04 (the Lead, "
+          "2026-11-01: strain relief at both ends; the rear box's cordgrip is the other)")
 _POLE = 2 + len(SUPPLIES)          # conductors per pole: the feed, the GFCI's LINE and each supply's input
 assert _POLE <= 8, _POLE            # two connectors joined by a short jumper take 8
 part("lever", "718080", "ELECTRICAL - LEVER CONNECTOR - 5 CONDUCTOR - UL 486C", "Điện - cút nối dây 5 cực", "PI", "710001",
@@ -516,15 +551,11 @@ part("serrated", "718015", "ELECTRICAL - BONDING WASHER - SERRATED M6 A2", "Đi�
 part("lug", "718016", "ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG", "Điện - đầu cos tròn 16-14 AWG", "PI", "710001", 5,
      "tinned copper", "", 0.001, "assumption", sku="16-14 AWG, #10 (M5) x 4, 1/4 in (M6) x 1, UL 486A-486B listed; maker HOLD",
      status=HOLD_BUY, source="", note="PE lugs (D-133: 14 AWG)")
-part("sleeve", "718017", "ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN", "Điện - ống luồn dây mềm 1/2 in", "PI", "710001", 0.6,
-     "PVC, UL 1660 liquidtight flexible nonmetallic (LFNC-B)", "", 0.08, "assumption (kg per m)",
-     sku="trade size 1/2 (21.3 OD); maker HOLD", status=HOLD_BUY, source="",
-     note="the sleeve in B2's bay, inlet to unit, 0.57 m (route model); an NMLT-11 (718075) at each end: into the unit's "
-          "H04 (Ø22.2) and into the inlet's rear box (711003, next rebuild); qty in m")
 part("bolt", "838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI",
      "710001", 4, "steel", "zinc plated", 0.0055, "assumption", maker="HOLD: standard part, maker picked with the joints register",
      sku="ISO 4762 M6 x 16, 8.8, zinc plated", size="M6", status=HOLD_BUY, source=JNT,
-     note="the unit's 4 fixings into B2's members: the pod's one bolt, one 5 mm key (D-63)")
+     note="the unit's 4 fixings (H11 to H14) into the rivnuts of B2's two cross members (WALL), driven from inside the "
+          "empty body before its parts go in: the pod's one bolt, one 5 mm key (D-63)")
 P["bolt"].update(length_mm="16", grade="8.8", torque_nm="HOLD (D-48: set by the rivnut spin-out test T06)")
 part("washer", "838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox", "PI", "710001", 4,
      "stainless steel", "plain (A2 stainless)", 0.0028, "assumption",
@@ -535,8 +566,9 @@ part("rivnut", "838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-6
      "710001", 4, "steel 1008/1010 (maker)", "zinc plated, trivalent passivation (maker)", 0.0067,
      "calculation (the joints register's sizes: body Ø9.50 x 14.86, head Ø12.96 x 0.76, M6 bore, steel 7850 kg/m3)",
      maker="Sherex", sku="CAL2-610-4.2", size="M6", status=HOLD_BUY, source=JNT,
-     note="set in B2's vertical members by the factory before the unit goes in, in round Ø10.00 +0.10 holes (D-163; "
-          "WALL's frame drawing shows the holes); the joints register's H-03")
+     note="set in B2's two welded cross members by the factory before the unit goes in (upper member X 110 and 376, "
+          "lower X 160 and 376, Y 824), in round Ø10.00 +0.10 holes (D-163; WALL's frame drawing shows the holes); the "
+          "joints register's H-03")
 P["rivnut"].update(grade="steel 1008/1010", torque_nm="HOLD (D-48: spin-out test T06)", length_mm="14.86")
 
 # ---- wire and cable by length (unit: m; mass each = kg per m)
@@ -552,13 +584,15 @@ def _m(ids):
     return sum(rows[i]["length_mm"] for i in ids) / 1000.0
 
 
-cable("w15", "718020", "ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN)", "Điện - dây đơn UL 1015 14 AWG (đen, trắng, xanh lá)",
-      "710001", 3 * _m(["W01"]), 0.025, "maker HOLD: UL 1015 AWM, 600 V, 105 °C, stranded copper",
-      "W01: L, N, PE in the sleeve (D-133: sized for 15 A)")
+cable("cord_w01", "718089", "ELECTRICAL - CORD - SJEOOW 14/3 - 105 C", "Điện - dây nguồn mềm SJEOOW 14/3 105 °C",
+      "710001", _m(["W01"]), 0.119, "maker HOLD: 14/3 SJEOOW, 300 V, 105 C",
+      "W01: the mains feed from the inlet up B2 into the unit, one length; its own 105 C conductors run on inside the "
+      "unit to the breaker and the PE stud (D-173; D-133: sized for 15 A)",
+      kgm_status="source (Southwire 550433: 80 lb per 1000 ft)")
 cable("w10", "718021", "ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE)", "Điện - dây đơn UL 1015 14 AWG (đen, trắng)", "710001",
-      1.5, 0.025, "maker HOLD: as 718020", "W02 inside the unit (assumption; D-133: sized for 15 A)")
+      1.5, 0.025, "maker HOLD: UL 1015 AWM, 600 V, 105 °C, stranded copper", "W02 inside the unit (assumption; D-133: sized for 15 A)")
 cable("w25", "718022", "ELECTRICAL - WIRE - UL 1015 14 AWG GREEN", "Điện - dây tiếp địa UL 1015 14 AWG", "710001", 0.3, 0.025,
-      "maker HOLD: as 718020", "W03 bond lead (D-133: 14 AWG, the equipment ground for a 15 A circuit, NEC 250.122)")
+      "maker HOLD: UL 1015 AWM, 600 V, 105 °C, stranded copper", "W03 bond lead (D-133: 14 AWG, the equipment ground for a 15 A circuit, NEC 250.122)")
 cable("w18u", "718087", "ELECTRICAL - WIRE - UL 1015 18 AWG - LEADS IN THE POWER UNIT", "Điện - dây đơn UL 1015 18 AWG trong hộp nguồn",
       "710001", sum(n * _m([i]) for i, n in (("W10a", 6), ("W20a", 4), ("W24a", 6), ("W30a", 4))), 0.0097,
       "maker HOLD", "D-173: every 12 and 24 V and signal lead inside the power unit, from its terminal to its receptacle just "
@@ -723,12 +757,18 @@ part("clip", "718043", "ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY", "Đi�
      note="one at each tie point in the lining trays (tie_points: pockets, every 300 mm, none near the cut-out; "
           "710000_P01_ELECTRICAL-TRAY-TIE-HOLES_CALC.csv); clips to the tray only (D-26)")
 # ---- the column route's own parts (agreed with CEILING 2026-11-01; AIR cuts the holes, ELECTRICAL lists what goes in them)
-part("bush_col", "718084", "ELECTRICAL - BUSHING - SNAP 11.1 HOLE - NYLON", "Điện - vòng đệm luồn dây lỗ 11.1", "PI", "710023", 2,
+part("bush_col", "718084", "ELECTRICAL - BUSHING - SNAP 11.1 HOLE - NYLON", "Điện - vòng đệm luồn dây lỗ 11.1", "PI", "710000", 4,
      "nylon 6/6 UL94 V-2", "black, as supplied", 0.0005, "assumption", maker="Heyco", sku="SB 437-5 (2043, black)",
      status=HOLD_BUY, source=HEYCO,
-     note="G-COL1 and G-COL2: the trunk's two entries through AIR's FR angle (2 mm aluminium, holes 11.1), one cable in each "
-          "(W20d 4.67 mm, W24d 5.31 mm; bore 7.9). Head outside, in the 5 mm gap; the cables' hub ends are ferrules, so they "
-          "pass the bore")
+     note="2 in the column (710023), G-COL1 and G-COL2: the trunk's two entries through AIR's FR angle (2 mm aluminium, holes "
+          "11.1), one cable in each (W20d 4.67 mm, W24d 5.31 mm; bore 7.9); head outside, in the 5 mm gap; the cables' hub "
+          "ends are ferrules, so they pass the bore. 2 in B2 (710001): the LAN cable W04 (5.87 mm) through the lower cross "
+          "member's bottom wall (snapped in from below) and the unit's H10 (head inside)")
+part("bush_mains", "718088", "ELECTRICAL - BUSHING - SNAP 15.9 HOLE - NYLON", "Điện - vòng đệm luồn dây lỗ 15.9", "PI",
+     "710001", 2, "nylon 6/6 UL94 V-2", "black, as supplied", 0.0012, "assumption", maker="Heyco", sku="SB 625-7 (2070, black)",
+     status=HOLD_BUY, source=HEYCO,
+     note="the mains cord W01 (9.27 mm, bore 11.1) through the lower cross member's bottom wall (snapped in from below) and "
+          "the unit's H04 (1.0 mm aluminium, head inside): a bushing at every metal edge it passes (the Lead, 2026-11-01)")
 part("cordgrip", "718085", "ELECTRICAL - CORDGRIP - M12 - LIQUID TIGHT - NYLON", "Điện - ốc siết cáp M12", "PI", "710023", 2,
      "nylon 6/6 UL94 V-2, Buna N gland", "black, as supplied", 0.005, "assumption", maker="Heyco",
      sku="RLTCG M12 (M4330, black, locknut included)", status=HOLD_BUY, source=HEYCO,
@@ -757,12 +797,12 @@ TECHLIGHT = "Tech-Light P13-2 profile and C15 cover: public retailer listings (B
 part("led_prof", "718101", "ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5", "Điện - thanh nhôm LED nổi 23 x 12.5 - kệ đèn",
      "PI", "810201", 1, "aluminium", "anodised as supplied; colour to match the shelf (HOLD)", 0.16,
      "assumption (about 0.16 kg/m for a 23 x 12.5 surface profile; maker figure HOLD)", maker="Tech-Light (type)",
-     sku="P13-2 type, cut to 991 mm", size="23 x 12.5 outside, 20 inside at the strip base, 991 long", status=HOLD_BUY, source=TECHLIGHT,
+     sku="P13-2 type, cut to 988.5 mm", size="23 x 12.5 outside, 20 inside at the strip base, 988.5 long (the shelf run, D-174)", status=HOLD_BUY, source=TECHLIGHT,
      note="takes the down-light's two 8 mm strips side by side (2 x 0.95 m) with 4 mm to spare; heat 12 W/m at full: about 20 K above the room (calculation, 9 W/m2K on about 66 mm of outer surface), maker's rating HOLD; replaces CEILING's channel 811204 (D-126)")
 part("led_cover", "718102", "ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN", "Điện - nắp mờ nhẹ (satin) gài cho thanh LED",
      "PI", "810201", 1, "polycarbonate, satin (grade HOLD)", "satin, as supplied: at least 86 % light transmission (ASTM D1003)", 0.04,
      "assumption (about 0.04 kg/m)", maker="HOLD (no supplier contact)",
-     sku="satin clip-in cover for the P13-2 type profile, cut to 991 mm; no public product verified yet (HOLD)", size="20 wide, 991 long",
+     sku="satin clip-in cover for the P13-2 type profile, cut to 988.5 mm; no public product verified yet (HOLD)", size="20 wide, 988.5 long (the shelf run, D-174)",
      status=HOLD_BUY, source=TECHLIGHT + "; D-127: a satin cover passing at least 86 %, no clear cover",
      note="D-127 (PM, 2026-11-01): satin, at least 86 % light transmission, so the ledge gets 350 to 364 lx when new at the "
           "same 22 W (calculation); no clear cover, because the shelves are open underneath and the LED dots would show from "
@@ -775,7 +815,7 @@ part("led_cap", "718103", "ELECTRICAL - LED PROFILE END CAP", "Điện - nắp b
 part("led_clip", "718104", "ELECTRICAL - LED PROFILE MOUNTING CLIP", "Điện - kẹp gắn thanh LED", "PI", "810201", 3,
      "steel, as supplied", "as supplied", 0.002, "assumption", maker="Tech-Light (type)", sku="P13-2 mounting clip type",
      size="for 23 x 12.5", status=HOLD_BUY, source=TECHLIGHT,
-     note="3 on the 991 mm profile, about every 400 mm (assumption); the count follows the product's clip spacing (HOLD with the profile)")
+     note="3 on the 988.5 mm profile, about every 400 mm (assumption); the count follows the product's clip spacing (HOLD with the profile)")
 part("strip_call", "718051", "ELECTRICAL - LED STRIP - 24 V 3.0 W/M - 3000 K - 8 MM", "Điện - LED dây đèn gọi video 24 V",
      "PI", "710024", 0.9, "", "", 0.02, "assumption (kg per m)", maker="Häfele",
      sku="LED 3142 833.76.216 (24 V, 3000 K; the US twin of 2165)",
@@ -849,18 +889,10 @@ part("plug_us", "718072", "ELECTRICAL - MAINS PLUG - NEMA 5-15P", "Điện - ph�
      note="D-133: US 120 V. The prototype is tested in Vietnam through a 220-to-110 V step-down transformer (the test set's, "
           "not a pod part)")
 
-# ---- lines the named products added (2026-11-01): the inlet's tab terminals, the conduit's connector, the call
-# light profile's end caps
+# ---- lines the named products added (2026-11-01): the inlet's tab terminals, the call light profile's end caps
 part("qd", "718074", "ELECTRICAL - FEMALE DISCONNECT - 0.250 IN - 16-14 AWG - INSULATED", "Điện - đầu cos cái 6,3 mm",
      "PI", "710001", 3, "tin-plated brass, nylon insulation", "", 0.001, "assumption", status=HOLD_BUY,
      note="the inlet NAC3MPX-TOP's three 1/4 in tabs (L, N, PE), on W01's 14 AWG")
-part("sleeve_fit", "718075", "ELECTRICAL - CONDUIT CONNECTOR - LFNC 1/2 IN - STRAIGHT", "Điện - đầu nối ống luồn dây 1/2 in",
-     "PI", "710001", 2, "nylon 6, as supplied", "as supplied", 0.01, "assumption", maker="Electri-Flex",
-     sku="NMLT-11 (UL and cUL E197675; 1/2 in trade-size knockout)", status=HOLD_BUY,
-     source="https://www.electriflex.com/wp-content/uploads/2016/07/Type-NMLT-NMSC-Nonmetallic-Type-B-Connectors-_-Electri-Flex-2.pdf",
-     note="the conduit 718017 into the unit's H04, and into the inlet's rear box at the other end (711003, a folded "
-          "aluminium cover clamped by the inlet's own screws: Neutrik makes no rear cover, and the inlet is a UL 498 "
-          "Recognized component the product must enclose; modelled with the inlet in ELECTRICAL's next rebuild)")
 part("call_caps", "718076", "ELECTRICAL - CALL LIGHT PROFILE END CAP (PAIR)", "Điện - nắp bịt thanh nhôm đèn gọi (cặp)",
      "PI", "710024", 1, "plastic, silver", "as supplied", 0.004, "assumption", status=HOLD_BUY,
      note="the 0.9 m call light bar's two ends")
@@ -914,6 +946,26 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'locking steps for panels to 3.2 mm; nylon 6/6, 94V-2, -18 to 105 C; UL Recognized E15331, CSA 8919',
             'https://www.heyco.com/wp-content/uploads/2024/09/Snap-Bushings-1.pdf',
             "the FR angle's 2 mm leg is inside its range; one cable in each"),
+ '718089': ('SOUTHWIRE 550433',
+            'Southwire',
+            '550433 (spec 70065): SEOPRENE type SJEOOW 14/3, 300 V, -50 to 105 C, black; UL 62 (E46194), CSA LL90458; '
+            'OD 0.363 in (9.22 mm); 80 lb per 1000 ft',
+            'https://cabletechsupport.southwire.com/en/cablespec/download_cable/?cable=7102&country=US',
+            '0.119 kg/m (calculation); its tightest fixed bend 4 x its diameter, 37 mm (AutomationDirect\'s 14 AWG SJEOOW '
+            'sheet, the same UL file: https://cdn.automationdirect.com/static/specs/oldspec/flexcordsjeoow_2026_04_01.pdf)'),
+ '718090': ('HEYCO CCH 3/8',
+            'Heyco',
+            'CCH 3/8 (3376 black): nylon cable clamp for a 0.375 in (9.5 mm) bundle, mounting hole 0.203 in (5.2 mm), '
+            'a #10 or M5 screw; nylon 6/6, 94V-2, 0 to 105 C',
+            'https://www.heyco.com/wp-content/uploads/2024/12/Nylon-Cable-Clamps.pdf',
+            "its sheet gives no pull rating or UL file: its hold on the 9.22 mm cord is proved by the end product's cord "
+            "pull test (UL 962, the certification list); the next smaller loop if the cord slips"),
+ '718088': ('HEYCO SB 625-7',
+            'Heyco',
+            'SB 625-7 (2070 black): snap bushing for a 0.625 in (15.9 mm) hole, bore 0.437 in (11.1 mm), head 18.2 mm, '
+            'multiple locking steps for panels to 3.2 mm; nylon 6/6, 94V-2, -18 to 105 C; UL Recognized E15331, CSA 8919',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Snap-Bushings-1.pdf',
+            "the member's bottom wall and the unit's 1.0 mm bottom are inside its range; the cord alone in it"),
  '718085': ('HEYCO RLTCG M12',
             'Heyco',
             'RLTCG M12 (M4330 black, locknut included): Heyco-Tite liquid tight cordgrip, cable 1.7-5.3 mm, clearance hole 12.0 '
@@ -1040,20 +1092,10 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'E52164',
             'https://www.panduit.com/en/products/wire-termination/electrical-terminals/ring-terminals/p204344.html#pn=PV14-10R-C',
             ''),
- '718017': ('ELECTRI-FLEX LIQUATITE NM-11',
-            'Electri-Flex',
-            'Liquatite Type NM 1/2 in (catalog 81011, 100 ft): LFNC-B, UL 1660 Type B, file E79308',
-            'https://www.electriflex.com/products/type-nm/',
-            ''),
  '718019': ('FABORY 51340.040.008 DIN 7985-H',
             'Fabory',
             '51340.040.008: M4 x 8 Phillips raised cheese head, DIN 7985-H (ISO 7045 head 8 x 3.1), A2-70',
             'https://www.fabory.com/en/p/51340040008/generatePdf',
-            ''),
- '718020': ('ALPHA WIRE 461419 BK005/WH005/GR005',
-            'Alpha Wire',
-            '461419 BK005, WH005, GR005: UL 1015 AWM 105 C 600 V, 14 AWG 19/.0147 copper, 100 ft spools',
-            'https://www.alphawire.com/disteAPI/SpecPDF/DownloadProductSpecPdf?productPartNumber=461419',
             ''),
  '718021': ('ALPHA WIRE 461419 BK005/WH005',
             'Alpha Wire',
@@ -1317,14 +1359,6 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'No.153',
             'https://www.panduit.com/en/products/wire-termination/electrical-terminals/disconnects/p204674.html#pn=DNF14-250FIB-C',
             ''),
- '718075': ('ELECTRI-FLEX NMLT-11',
-            'Electri-Flex',
-            'NMLT-11: straight connector for 1/2 in liquidtight flexible nonmetallic conduit Type B (NM, NMHT, NMFG, '
-            'NM2), 1/2 in trade-size knockout, nylon 6, 94V-2, 125 C, O-ring and steel locknut; UL and cUL listed '
-            'E197675',
-            'https://www.electriflex.com/wp-content/uploads/2016/07/Type-NMLT-NMSC-Nonmetallic-Type-B-Connectors-_-Electri-Flex-2.pdf',
-            "one into the unit's H04 (Ø22.2, the 7/8 in hole for a 1/2 in trade-size knockout), one into the inlet's "
-            'rear box (711003, next rebuild); not for Type A or steel conduit'),
  '718076': ('HÄFELE 833.72.853',
             'Häfele',
             '833.72.853: end caps for profile 2191, with a cable outlet, push fit, 1 pair; sold by Häfele America',

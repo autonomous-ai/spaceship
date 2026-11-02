@@ -180,7 +180,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | Label | Part number | Piece | Vietnamese | Pos. | kg | Status | Size mm | Step |
 | --- | --- | --- | --- | --- | ---: | --- | --- | ---: |
 | **1-01** | 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | Vách hậu - cụm tấm dưới trái | B1 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1127 × 46 | 3 |
-| **1-02** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 12.48 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 3 |
+| **1-02** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 12.45 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 3 |
 | **1-03** | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | L1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 4 |
 | **1-04** | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | R1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 4 |
 | **1-05** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - B3 | Vách hậu - cụm tấm trên trái | B3 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1118.61 × 46 | 5 |
@@ -282,7 +282,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-09 × 0.5, 2-16 × 0.5 |
 | BASE | Base seal: BASE's soft lip along the band pieces' inner faces | 6.129 | 0.49 | calculation (CAD); kg/m source | 2-04 × 2.4, 2-05 × 1.462, 2-06 × 1.464, 2-07 × 0.803 |
 | BASE | Cable grommets: the sealed cable holes | 1 | 0.10 | source | A-4 |
-| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 6.35 | calculation (CAD) | 1-02 × 0.604832, 2-12 × 0.395168 |
+| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 6.32 | calculation (CAD) | 1-02 × 0.603118, 2-12 × 0.396882 |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.57 | calculation (CAD) | 2-13 |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-15 |
 | WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.17 | calculation (part CAD); cleats assumption | A-3 |

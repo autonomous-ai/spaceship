@@ -380,6 +380,96 @@ class Column(unittest.TestCase):
         self.assertNotIn("W32", rows)        # the column's draw wire is gone: one cable per bushing, no cord in the plenum
 
 
+class B2(unittest.TestCase):
+    """B2's interface with the power unit (agreed with WALL 2026-11-01, the Lead approving B2's members): the unit's
+    fixing holes over the cross members' rivnuts, the two cables in their own channels and passages at least 50 mm
+    apart (NEC 800.133; the Lead's rule), and bends no tighter than each cable allows."""
+
+    MAINS = ("MN-UP", "MN-JOG", "MN-MBR")
+    LAN = ("LAN-FT", "LN-BAND", "LN-UP", "LN-MBR")
+
+    def setUp(self):
+        self.v = M.values()
+        self.box = {b["code"]: M.body_box(b, self.v) for b in M.BODIES}
+
+    @staticmethod
+    def gap(a, b):
+        d = [max(a[i] - b[i + 3], b[i] - a[i + 3], 0.0) for i in range(3)]
+        return sum(x * x for x in d) ** 0.5
+
+    def test_points_as_agreed_with_wall(self):
+        v = self.v
+        self.assertEqual((v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"]), (95.0, 391.0, 870.0, 1130.0))
+        self.assertAlmostEqual(v["y_fr"], 824.0)
+        self.assertEqual((v["mn_x"], v["ln_x"], v["lan_x"]), (127.0, 207.0, 170.0))
+        sys.path.insert(0, os.path.join(REPO, "v2", "02-Drawings", "electrical"))
+        try:
+            import body_drawing_text as T
+        finally:
+            sys.path.pop(0)
+        p = T.params()
+        rows = {r[0]: r for r in T.hole_rows(p)}
+        x0 = v["pu_x0"]
+        # the fixing holes over the rivnuts: the lower member's at X 160 and 376, the upper member's at X 110 and 376
+        self.assertEqual([(rows[t][1], round(x0 + rows[t][2], 2)) for t in ("H11", "H12", "H13", "H14")],
+                         [("bottom", 160.0), ("bottom", 376.0), ("top", 110.0), ("top", 376.0)])
+        for t in ("H04", "H10", "H11", "H12", "H13", "H14"):    # all at Y 824, the members' mid-depth
+            self.assertAlmostEqual(v["y_bf"] + p["v"]["d"] - rows[t][4], v["y_fr"], msg=t)
+        self.assertAlmostEqual(x0 + rows["H04"][2], v["mn_x"])
+        self.assertAlmostEqual(x0 + rows["H10"][2], v["ln_x"])
+
+    def test_unit_holes_meet_c09(self):
+        """The bottom's and top's holes: each 2 diameters from the free ends, 2 of the larger diameter apart."""
+        sys.path.insert(0, os.path.join(REPO, "v2", "02-Drawings", "electrical"))
+        try:
+            import body_drawing_text as T
+        finally:
+            sys.path.pop(0)
+        p = T.params()
+        w = p["v"]["w"]
+        rows = T.hole_rows(p)
+        for face in ("bottom", "top"):
+            hs = [r for r in rows if r[1] == face]
+            for r in hs:
+                self.assertGreaterEqual(min(r[2], w - r[2]), 2 * r[5] - 1e-6, r[0])
+            for i, a in enumerate(hs):
+                for b in hs[i + 1:]:
+                    c2c = ((a[2] - b[2]) ** 2 + (a[4] - b[4]) ** 2) ** 0.5
+                    self.assertGreaterEqual(c2c, 2 * max(a[5], b[5]) - 1e-6, (a[0], b[0]))
+
+    def test_cord_and_lan_50_apart(self):
+        bx = self.box
+        for m in self.MAINS:
+            for n in self.LAN:
+                self.assertGreaterEqual(self.gap(bx[m], bx[n]), 50.0 - 1e-6, (m, n))
+        # the inlet itself comes nearer the LAN jack (46): its terminals sit inside the metal rear box (711003), the
+        # barrier there (posted to WALL and the Lead, 2026-11-01 17:20)
+        self.assertGreaterEqual(self.gap(bx["INLET"], bx["LAN-FT"]), 40.0)
+
+    def test_bends(self):
+        v = self.v
+        # the cord's S-bend from its riser to its passage, two equal arcs: r = (h^2 + o^2) / (4 o)
+        o, h = v["mn_x"] - v["mn_cx"], (v["pu_z0"] - v["mbr_h"]) - v["jog_z"]
+        self.assertGreaterEqual((h * h + o * o) / (4 * o), EP.CORD_BEND * EP.CORD_OD)
+        # the LAN's S-bend from the jack's top to its riser, inside the band
+        o, h = v["ln_x"] - v["lan_x"], v["ln_bh"]
+        self.assertGreaterEqual((h * h + o * o) / (4 * o), EP.CAT6_BEND * EP.CAT6_OD)
+
+    def test_cables_take_their_own_routes(self):
+        rows = {h["id"]: h for h in EP.harnesses(self.v)}
+        for code in ("MN-UP", "MN-JOG", "MN-MBR"):
+            self.assertIn(code, rows["W01"]["route"])
+            self.assertNotIn(code, rows["W04"]["route"])
+        for code in ("LN-BAND", "LN-UP", "LN-MBR"):
+            self.assertIn(code, rows["W04"]["route"])
+            self.assertNotIn(code, rows["W01"]["route"])
+        self.assertNotIn("SLEEVE", [b["code"] for b in M.BODIES])
+        nums = {r["part_number"] for r in EP.P.values()}
+        for pn in ("718017", "718075"):
+            self.assertIn(pn, EP.RETIRED)
+            self.assertNotIn(pn, nums)
+
+
 class FlatParts(unittest.TestCase):
     """D-89 part 4, read with the mechanical check's own code (tools/checks)."""
 

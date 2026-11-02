@@ -112,12 +112,17 @@ def hole_rows(p, zs=1):
     rows = [("H01", side, None, v["lead_z1"], d - v["lead_y"], v["hole_b"], "lead exit 1, Heyco 2836N bushing"),
             ("H02", side, None, v["lead_z2"], d - v["lead_y"], v["hole_b"], "lead exit 2, Heyco 2836N bushing"),
             ("H03", "top", xb(v["top_x"]), None, d - v["lead_y"], v["hole_b"], "light feed exit, Heyco 2836N bushing"),
-            ("H04", "bottom", xb(v["sleeve_x"]), None, d - v["sleeve_y"], v["sleeve_d"],
-             "mains and LAN conduit, NMLT-11 connector")]
+            ("H04", "bottom", xb(v["mn_x"]), None, d - v["fr_y"], v["mn_d"], "mains cord entry, Heyco SB 625-7 bushing")]
     for i, (x, y) in enumerate(((v["clinch_x"], v["clinch_y"]), (w - v["clinch_x"], v["clinch_y"]),
                                 (v["clinch_x"], h - v["clinch_y"]), (w - v["clinch_x"], h - v["clinch_y"]))):
         rows.append(("H%02d" % (5 + i), "front lip", xb(x), y, None, v["clinch_d"], "M4 clinch nut, PEM CLA-M4-1"))
     rows.append(("H09", "bottom", xb(v["estud_x"]), None, d - v["estud_y"], v["estud_d"], "M5 earth stud, PEM FHA-M5-12"))
+    rows.append(("H10", "bottom", xb(v["ln_x"]), None, d - v["fr_y"], v["ln_d"], "LAN cable entry, Heyco SB 437-5 bushing"))
+    fix = "M6 fixing to WALL's cross member"
+    for tag, face, x in (("H11", "bottom", v["fixb_x1"]), ("H12", "bottom", v["fix_x2"]),
+                         ("H13", "top", v["fixt_x1"]), ("H14", "top", v["fix_x2"])):
+        rows.append((tag, face, xb(x), None, d - v["fr_y"], v["fix_d"], fix))
+    rows.append(("H15", "back", xb(v["clamp_x"]), v["clamp_y"], None, v["estud_d"], "mains cord clamp stud, PEM FHA-M5-12"))
     return rows
 
 
@@ -143,21 +148,29 @@ def check_rows(rows, box, holes, zs, tol=0.05):
             probs.append("%s: %d distances given, not 2" % (tag, 3 - len(through)))
             continue
         k = through[0]
-        hits = []
+        fk, end = FACES[face]
+        if fk != k:
+            probs.append("%s: a hole in the %s goes along axis %d, not %d" % (tag, face, fk, k))
+            continue
+        at_face = 0.0 if end == "low" else size[k]
+        # two walls facing each other can have holes on one line (the bottom's and the top's fixing holes): a row
+        # takes the hole in its own wall
+        hits, elsewhere = [], []
         for i, (centre, axis, hd) in enumerate(holes):
             dist = datum_distances(centre, box, zs)
             if abs(abs(axis[k]) - 1.0) > 1e-6 or abs(hd - dia) > tol:
                 continue
             if all(abs(dist[j] - given[j]) <= tol for j in range(3) if j != k):
-                hits.append((i, dist))
-        if len(hits) != 1:
-            probs.append("%s: %d STEP holes of Ø%.1f at %s" % (tag, len(hits), dia, given))
+                (hits if abs(dist[k] - at_face) <= 3.0 else elsewhere).append((i, dist))
+        if not hits and elsewhere:
+            probs.append("%s: the STEP hole is not in the %s (%.1f along its axis)" % (tag, face, elsewhere[0][1][k]))
             continue
-        i, dist = hits[0]
-        used.add(i)
-        fk, end = FACES[face]
-        if fk != k or abs(dist[k] - (0.0 if end == "low" else size[k])) > 3.0:
-            probs.append("%s: the STEP hole is not in the %s (%.1f along its axis)" % (tag, face, dist[k]))
+        if len(hits) != 1:
+            probs.append("%s: %d STEP holes of Ø%.1f at %s in the %s" % (tag, len(hits), dia, given, face))
+            continue
+        if hits[0][0] in used:
+            probs.append("%s: its STEP hole is another row's too" % tag)
+        used.add(hits[0][0])
     for i, (centre, _axis, hd) in enumerate(holes):
         if i not in used:
             probs.append("a STEP hole of Ø%.1f at %s has no row" % (hd, tuple(round(v, 2) for v in centre)))
@@ -195,18 +208,20 @@ def lines(date="2026-11-01"):
             ("", 1.5, False),
             ("GENERAL NOTES", HEAD_H, True),
             ("1. GENERAL TOLERANCE: ISO 2768-m. Hole positions ±0.2; hole diameters +0.1/0, the PEM holes H05-H09 "
-             "+0.08/0.", BODY_H, False),
+             "and H15 +0.08/0.", BODY_H, False),
             ("2. Outside size %.0f x %.0f x %.0f (datums A bottom, B left in the FRONT view, C back face); lips %.0f inward."
              % (v["w"], v["h"], v["d"], v["lip"]), BODY_H, False),
             ("3. Inside bend radius %.1f (= thickness), K-factor 0.44, square bend reliefs. Cut from the flat pattern"
              % v["t"], BODY_H, False),
             ("   711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DXF.dxf (same revision).", BODY_H, False),
-            ("4. Fit the Heyco 2836N bushings in H01-H03 after folding. Press the PEM CLA-M4-1 clinch nuts into H05-H08 "
+            ("4. Fit the Heyco 2836N bushings in H01-H03 after folding, and the Heyco snap bushings SB 625-7 in H04 and "
+             "SB 437-5 in H10 from inside the box, head inside. Press the PEM CLA-M4-1 clinch nuts into H05-H08 "
              "from inside the box, head inside, so the plate's screws pull them onto the lips (PEM CL-18). Press the "
-             "FHA-M5-12 earth stud into H09 head outside, with PEM's anvil for sheet up to 1.5 mm (FH-18). The order "
+             "FHA-M5-12 studs into H09 (earth) and H15 (the cord's clamp) head outside, with PEM's anvil for sheet up to 1.5 mm (FH-18). The order "
              "with the folding is the factory's, with its tooling.", BODY_H, False),
-            ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12). H09's place is an assumption until the "
-             "unit's inside layout (the factory's).", BODY_H, False),
+            ("5. H11-H14 fix the unit to WALL's two cross members in B2 (IF-12): an M6 screw with a washer through "
+             "each, from inside the box, into the member's rivnut. H09's place is an assumption until the unit's "
+             "inside layout (the factory's).", BODY_H, False),
             ("6. (%s) and (%s): the H05-H08 pitch, for reference; the hole table gives the positions." % pitch(p),
              BODY_H, False),
             ("7. View D: the bottom, seen in the direction of arrow D (from below), drawn turned 180°: datum B is on its "
@@ -453,14 +468,16 @@ def tags_for(rows, views_json, box, holes, zs):
     """[(tag, view, x, y, r)]: each hole's circle on the sheet, in the view that shows it as a circle."""
     BV = _views()
     out = []
-    for tag, _face, b, a, c, dia, _note in rows:
+    size = (box[3] - box[0], box[4] - box[1], box[5] - box[2])
+    for tag, face, b, a, c, dia, _note in rows:
         k = [b, a, c].index(None)
+        at_face = 0.0 if FACES[face][1] == "low" else size[k]   # the row's own wall (two walls can share a line)
         for centre, axis, hd in holes:
             dist = datum_distances(centre, box, zs)
-            if abs(abs(axis[k]) - 1.0) < 1e-6 and abs(hd - dia) <= 0.05 and all(
+            if abs(abs(axis[k]) - 1.0) < 1e-6 and abs(hd - dia) <= 0.05 and abs(dist[k] - at_face) <= 3.0 and all(
                     abs(dist[j] - [b, a, c][j]) <= 0.05 for j in range(3) if j != k):
                 for name, rec in views_json["views"].items():
-                    if name != "iso" and (centre, axis, hd) in BV.seen(name, box, holes, zs):
+                    if name != "iso" and (centre, axis, hd) in BV.seen(name, box, holes, zs, opening=True):
                         x, y = BV.on_sheet(name, box, centre, rec["extent"], views_json["scale"], zs)
                         out.append((tag, name, x, y, hd / 2.0 * views_json["scale"]))
     return out
@@ -636,8 +653,8 @@ def finish_pdf(raw, out, views_path=None, step=STEP):
     doc = fitz.open(tmp)
     page = doc[0]
     reference_dims(page)
-    iso_date(page)
-    write_block(page, lines(), table_cells(rows))
+    date = iso_date(page)                      # the source line carries the drawing's own date
+    write_block(page, lines(date), table_cells(rows))
     segs, circles, texts = geometry(page)
     view_d_marks(page, views_json, segs, texts)
     # the tags, after everything else, so they keep clear of it all
