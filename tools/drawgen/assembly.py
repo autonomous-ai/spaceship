@@ -48,6 +48,9 @@ entry} (D-139). An entry holds only what the STEP and the list can't give:
   {letter, pn, median: 'x' or 'y', view, words}: the part's centre plane, on the view's overall size of it;
 - balloon_views: {part number: view}: where that item's balloon goes (a cassette's clips and catches on its plan);
 - overall_sides: {'x': 'up' or 'down', 'y': 'left' or 'right'}: the principal's overall sizes on those sides;
+- combined_sizes: pod axes ('X', 'Y', 'Z') along which the combined size with the reference outlines follows the
+  overall size, in brackets as a reference dimension, where it matters for fitting (the overall sizes are the
+  assembly's own parts only: the Lead's ruling, 2026-11-01);
 - envelopes: {name start: part number}: a held part the STEP models as a named shape without a number (WALL's
   'NO-PN-HOLD-H03' clip zones for the clip 518001), drawn and ballooned as that part;
 - unhatched: part numbers a section leaves whole (ISO 128-50: shafts, pins, studs and the like cut along their
@@ -353,9 +356,29 @@ def children_of(rows, pn, keys, path):
     return own, []
 
 
+def foreign_rows(pn, team):
+    """[(list file, [rows])]: the rows of other teams' lists that name assembly pn as their parent (a parent column
+    with its number), teams in name order and each list's rows in its order. They are the assembly's own parts (the
+    Lead's ruling, 2026-11-01: ELECTRICAL's list puts the light shelf's LED profile, cover, end caps and clips under
+    INTERIOR's 810201)."""
+    out = []
+    for t in sorted(d for d in os.listdir(inputs.MANUF) if d != team and os.path.isdir(os.path.join(inputs.MANUF, d))):
+        for p in inputs.team_lists(t):
+            with open(p, newline="", encoding="utf-8") as fh:
+                rows = list(csv.DictReader(fh))
+            if not rows or "parent" not in rows[0] or "part_number" not in rows[0]:
+                continue
+            mine = [r for r in rows if (r.get("part_number") or "").strip() and
+                    pn in {x.strip() for x in (r.get("parent") or "").split("|")}]
+            if mine:
+                out.append((p, mine))
+    return out
+
+
 def list_rows(pn, team, parent_keys=()):
     """(the assembly's own row, [the rows directly under it], the list file) from the team's lists; rows under it in
-    two lists are an error (one list owns an assembly's parts)."""
+    two of them are an error (one list owns an assembly's parts). Other teams' rows that name it as their parent
+    follow (foreign_rows)."""
     keys = {pn} | set(parent_keys)
     own, kids, src = None, [], None
     for p in inputs.team_lists(team):
@@ -368,6 +391,9 @@ def list_rows(pn, team, parent_keys=()):
             if kids and src != p:
                 raise NotDrawable("%s: rows under it in two lists (%s and %s)" % (pn, inputs.rel(src), inputs.rel(p)))
             kids, src = mine, p
+    for p, mine in foreign_rows(pn, team):
+        kids = kids + mine
+        src = src or p
     return own, kids, src
 
 
@@ -379,7 +405,7 @@ def unit_of(row):
     """The row's unit when it isn't a count: its unit cell, else metres for family 84 (the master BOM's 'SEALS AND
     TAPES BY LENGTH (family 84)', counted per metre)."""
     u = (row.get("unit") or "").strip()
-    if u and u not in ("pcs", "pc", "ea"):
+    if u and u.lower() not in ("pcs", "pc", "ea"):     # a count in any case ('PCS', 'EA': Reviewer 9 on #408)
         return u
     return "m" if (row.get("part_number") or "").strip().startswith("84") else ""
 
@@ -415,9 +441,12 @@ class Assy:
     kind = "assembly"           # the sheet's kind in its drawing data; check() reads only 'assembly'
 
     def sources(self):
-        """What the sheet was drawn from, with their hashes: the STEP and the parts list."""
-        return [{"role": "STEP", "path": inputs.rel(self.step), "sha256_12": inputs.sha12(self.step)},
-                {"role": "parts list", "path": inputs.rel(self.list_file), "sha256_12": inputs.sha12(self.list_file)}]
+        """What the sheet was drawn from, with their hashes: the STEP and the parts list, then each other team's list
+        that puts parts under it."""
+        return ([{"role": "STEP", "path": inputs.rel(self.step), "sha256_12": inputs.sha12(self.step)},
+                 {"role": "parts list", "path": inputs.rel(self.list_file), "sha256_12": inputs.sha12(self.list_file)}]
+                + [{"role": "parts list", "path": inputs.rel(p), "sha256_12": inputs.sha12(p)}
+                   for p in self.foreign_lists if p != self.list_file])
 
     def __init__(self, pn, team, entry, step=None):
         self.pn, self.team, self.entry = pn, team, entry
@@ -434,6 +463,7 @@ class Assy:
             raise NotDrawable("%s: its STEP has parts without a part number (%s): every body belongs to a numbered "
                               "part (guideline 4.1)" % (pn, ", ".join(sorted({o.name or "?" for o in loose}))))
         own, kids, self.list_file = list_rows(pn, team, entry.get("parent_keys", ()))
+        self.foreign_lists = [p_ for p_, _r in foreign_rows(pn, team)]     # other teams' lists with parts under it
         if own is None:
             raise NotDrawable("%s: no row in %s's parts lists" % (pn, team))
         if not kids:
@@ -588,8 +618,13 @@ def prim_point(p, t):
     if p.kind == "arc":
         a = p.a0 + t * (p.a1 - p.a0)
         return (p.c[0] + p.r * math.cos(a), p.c[1] + p.r * math.sin(a)), (-math.sin(a), math.cos(a))
-    q0, q1 = bez(p.pts, max(0.0, t - 0.01)), bez(p.pts, min(1.0, t + 0.01))
-    return bez(p.pts, t), (q1[0] - q0[0], q1[1] - q0[1])
+    # a chain of cubic pieces (project._bezier_pieces), as the sheet draws it, piece by piece: t runs along the
+    # pieces (one curve of high degree through all their control points isn't the drawn line: BASE's 110104)
+    n = max(1, (len(p.pts) - 1) // 3)
+    k = min(n - 1, int(t * n))
+    seg, u = p.pts[3 * k:3 * k + 4], t * n - k
+    q0, q1 = bez(seg, max(0.0, u - 0.01)), bez(seg, min(1.0, u + 0.01))
+    return bez(seg, u), (q1[0] - q0[0], q1[1] - q0[1])
 
 
 def seg_dist(p, a, b):
@@ -613,7 +648,7 @@ def prim_dist(pt, p):
             return abs(math.dist(pt, p.c) - p.r)
         ends = [(p.c[0] + p.r * math.cos(x), p.c[1] + p.r * math.sin(x)) for x in (p.a0, p.a1)]
         return min(math.dist(pt, e) for e in ends)
-    pts = [bez(p.pts, k / 16.0) for k in range(17)]
+    pts = [bez(p.pts[3 * j:3 * j + 4], k / 16.0) for j in range(max(1, (len(p.pts) - 1) // 3)) for k in range(17)]
     return min(seg_dist(pt, a, b) for a, b in zip(pts, pts[1:]))
 
 
@@ -645,6 +680,13 @@ class AView:
         x0, y0, x1, y1 = self.extent
         a, b = self.S((x0, y0)), self.S((x1, y1))
         return (a[0], a[1], b[0], b[1])
+
+    def own_extent(self, occs):
+        """The extent of the assembly's own parts in this view (true mm): a reference outline is left out (the Lead's
+        ruling, 2026-11-01: an assembly's overall sizes cover only its own parts; INTERIOR's light shelf 810201 is 40
+        high, ELECTRICAL's LED profile under it ships and is fitted separately)."""
+        own = [p for o, ps in zip(occs, self.prims) if not o.item.ref for p in ps]
+        return project.extent(own) if own else self.extent
 
     def size(self, scale=None):
         s = self.scale if scale is None else scale
@@ -1068,27 +1110,86 @@ class Side:
         self.overall = {}       # axis: (p1, p2, side, gap) of the overall size drawn on this view
 
 
-def overall_dims(sh, views, sides, entry=None):
+def _prim_points(p):
+    """Points on a primitive (view mm): a line's ends, an arc's ends and the quadrant points it passes, points along
+    a curve, piece by piece as the sheet draws it (BASE's fix for 110104)."""
+    if p.kind == "line":
+        return [p.p, p.q]
+    if p.kind == "arc":
+        angs = [p.a0, p.a1]
+        k = math.ceil(p.a0 / (math.pi / 2))
+        while k * math.pi / 2 < p.a1:
+            angs.append(k * math.pi / 2)
+            k += 1
+        return [(p.c[0] + p.r * math.cos(a), p.c[1] + p.r * math.sin(a)) for a in angs]
+    return [bez(p.pts[3 * j:3 * j + 4], i / 16.0) for j in range(max(1, (len(p.pts) - 1) // 3)) for i in range(17)]
+
+
+def pod_axis(d):
+    """The pod axis ('X', 'Y' or 'Z') a view direction runs along."""
+    return "XYZ"[max(range(3), key=lambda k: abs(d[k]))]
+
+
+def overall_dims(sh, views, sides, entry=None, occs=None):
     """The three overall sizes (true mm, read from the exact projection): the principal's width and height, and
-    the depth on the first related view; each on a side no neighbouring view uses."""
+    the depth on the first related view; each on a side no neighbouring view uses. With occs (the assembly's), only
+    its own parts count and a reference outline is left out (the Lead's ruling, 2026-11-01); the size line still
+    clears the outline. Where the entry's combined_sizes names the pod axis a size runs along and a reference
+    outline makes the combined size larger, that size follows outside it in brackets, as a reference dimension
+    (ISO 129-1), e.g. (52.5) on INTERIOR's light shelf with ELECTRICAL's LED profile under it."""
     P = views["principal"]
     out = []
+    combined = set((entry or {}).get("combined_sizes", ()))
 
     def put(av, axis, side):
-        x0, y0, x1, y1 = av.extent
+        fx0, fy0, fx1, fy1 = av.extent
+        x0, y0, x1, y1 = av.own_extent(occs) if occs is not None else av.extent
         if axis == "x":
-            val = x1 - x0
-            ya = y1 if side == "up" else y0
+            val, full = x1 - x0, fx1 - fx0
+            ya, fa = (y1, fy1) if side == "up" else (y0, fy0)
             p1, p2 = av.S((x0, ya)), av.S((x1, ya))
         else:
-            val = y1 - y0
-            xa = x0 if side == "left" else x1
-            p1, p2 = av.S((xa, y0)), av.S((xa, y1))
+            val, full = y1 - y0, fy1 - fy0
+            ya, fa = (x0, fx0) if side == "left" else (x1, fx1)
+            p1, p2 = av.S((ya, y0)), av.S((ya, y1))
+        gap = 10.0 + abs(fa - ya) * av.scale       # the size line clears a reference outline beyond the parts
         txt = fmt(val, 1)
-        sh.dim_linear(p1, p2, side, 10.0, txt, 2.5)
+        sh.dim_linear(p1, p2, side, gap, txt, 2.5)
         sides[av.name].dims[side] = max(sides[av.name].dims[side], 14.0)
-        sides[av.name].overall[axis] = (p1, p2, side, 10.0)
+        sides[av.name].overall[axis] = (p1, p2, side, gap)
         out.append({"view": av.name, "axis": axis, "value": round(val, 3), "text": txt})
+        if pod_axis(av.view.x if axis == "x" else av.view.y) in combined and full - val > 0.05:
+            combined_dim(av, axis, side, (x0, y0, x1, y1))
+
+    def combined_dim(av, axis, own_side, own):
+        """The combined size with the reference outlines, in brackets, on the side where a reference outline sets
+        its extreme, its extension lines from the points that set each end (Reviewer 16 on #412: the shelf's (52.5)
+        is set by the LED profile at its right end), outside the overall size when that is on the same side."""
+        fx0, fy0, fx1, fy1 = av.extent
+        k = 0 if axis == "x" else 1             # the size runs along this view coordinate; j across it
+        j = 1 - k
+        pts = [q for ps in av.prims for p in ps for q in _prim_points(p)]
+        lo_v, hi_v = (fx0, fx1) if axis == "x" else (fy0, fy1)
+        own_lo, own_hi = (own[0], own[2]) if axis == "x" else (own[1], own[3])
+        lo_pts = [q for q in pts if q[k] <= lo_v + 0.05] or [min(pts, key=lambda q: q[k])]
+        hi_pts = [q for q in pts if q[k] >= hi_v - 0.05] or [max(pts, key=lambda q: q[k])]
+        refs = [q for o, ps in zip(occs or [], av.prims) if o.item.ref for p in ps for q in _prim_points(p)
+                if q[k] < own_lo - 0.05 or q[k] > own_hi + 0.05]
+        lo_j, hi_j = (fy0, fy1) if axis == "x" else (fx0, fx1)
+        across = sum(q[j] for q in refs) / len(refs) if refs else (lo_j + hi_j) / 2
+        far_side = across - lo_j > hi_j - across
+        cside = ("up" if far_side else "down") if axis == "x" else ("right" if far_side else "left")
+        pick = max if far_side else min
+        a_, b_ = pick(lo_pts, key=lambda q: q[j]), pick(hi_pts, key=lambda q: q[j])
+        a_, b_ = ((a_[0], lo_v), (b_[0], hi_v)) if axis == "y" else ((lo_v, a_[1]), (hi_v, b_[1]))
+        far = pick(a_[j], b_[j])
+        base = 18.0 if cside == own_side else 10.0
+        gap = base + abs((hi_j if far_side else lo_j) - far) * av.scale
+        ctxt = "(%s)" % fmt(hi_v - lo_v, 1)
+        sh.dim_linear(av.S(a_), av.S(b_), cside, gap, ctxt, 2.5)
+        sides[av.name].dims[cside] = max(sides[av.name].dims[cside], base + 4.0)
+        out.append({"view": av.name, "axis": axis, "value": round(hi_v - lo_v, 3), "text": ctxt, "reference": True,
+                    "side": cside})
 
     want = (entry or {}).get("overall_sides", {})     # the entry may move one (a datum's leader goes that way)
     put(P, "x", want.get("x") or ("up" if "below" not in views else ("down" if "above" not in views else "up")))
@@ -1453,8 +1554,14 @@ def _view_words(views, nm):
 
 def notes_for(assy, views, ifaces=None, datums=None):
     e = assy.entry
-    out = ["Parts, quantities, materials and finishes as the parts list %s (its rows under %s), word for word; each "
-           "part's own drawing holds its sizes and tolerances." % (os.path.basename(assy.list_file), assy.pn)]
+    lists = [assy.list_file] + [p_ for p_ in getattr(assy, "foreign_lists", ()) if p_ != assy.list_file]
+    if len(lists) == 1:
+        out = ["Parts, quantities, materials and finishes as the parts list %s (its rows under %s), word for word; "
+               "each part's own drawing holds its sizes and tolerances." % (os.path.basename(assy.list_file), assy.pn)]
+    else:       # other teams' rows that name the assembly as their parent are its parts too (the Lead, 2026-11-01)
+        out = ["Parts, quantities, materials and finishes as the parts lists %s and %s (their rows under %s, in that "
+               "order), word for word; each part's own drawing holds its sizes and tolerances." % (
+                   ", ".join(os.path.basename(p_) for p_ in lists[:-1]), os.path.basename(lists[-1]), assy.pn)]
     un = [it for it in assy.table_items if not it.occs]
     if un:
         out.append("Items marked * (%s) are not in the STEP %s %s: they have no balloon; their places are in their "
@@ -1463,12 +1570,23 @@ def notes_for(assy, views, ifaces=None, datums=None):
     for it in assy.table_items:
         keys = sorted({getattr(o, "envelope", None) for o in it.occs} - {None})
         if keys:
-            out.append("Item %d %s is shown by the STEP's held envelope%s %s: the part isn't named yet (%s); its "
-                       "places and count are the envelope's." % (
-                           it.no, it.pn, "s" if len(it.occs[0].solids) > 1 else "", ", ".join(keys),
-                           (it.row.get("status") or "HOLD").strip()))
+            plural = "s" if len(it.occs[0].solids) > 1 else ""
+            maker = (it.row.get("maker") or "").strip()
+            if (it.row.get("kind") or "").strip().upper() != "HOLD" and maker and not maker.upper().startswith("HOLD"):
+                # the list row names a product (WALL's 518003, D-170), only its model is missing (the WALL Drawings
+                # Engineer, 2026-11-01)
+                out.append("Item %d %s is shown by the STEP's envelope%s %s: the part is named, but the STEP holds "
+                           "only its envelope until the part is modelled; its places and count are the envelope's." % (
+                               it.no, it.pn, plural, ", ".join(keys)))
+            else:
+                out.append("Item %d %s is shown by the STEP's held envelope%s %s: the part isn't named yet (%s); its "
+                           "places and count are the envelope's." % (
+                               it.no, it.pn, plural, ", ".join(keys), (it.row.get("status") or "HOLD").strip()))
     for it in assy.refs:
         r, _k, _f = list_rows(it.pn, assy.team)
+        if r is None:       # another team's part: its row in that team's lists
+            r = next((x for x in (inputs.parts_row(it.pn, t_)[0] for t_ in sorted(os.listdir(inputs.MANUF))
+                                  if os.path.isdir(os.path.join(inputs.MANUF, t_))) if x), None)
         par = (r or {}).get("parent", "").strip() if r else ""
         why = (r or {}).get("source", "").strip() if r else ""
         out.append("%s %s is drawn as a reference outline (thin long dash double-dot line, ISO 128-20 type 05) and "
@@ -1556,7 +1674,7 @@ def make(pn, team, entry, out_path, today=None, step=None, assy=None):
     cuts = cutting_planes(sh, views)
     clines = centre_lines(sh, assy, views)
     sides = {nm: Side() for nm in views}
-    dims = overall_dims(sh, views, sides, entry)
+    dims = overall_dims(sh, views, sides, entry, assy.occs)
     ifaces = interface_dims(sh, assy, views, sides)
     stacks = stack_dims(sh, assy, views, sides)
     datums = datum_symbols(sh, assy, views, sides)
@@ -1905,6 +2023,54 @@ def table_text(page, data):
     return out
 
 
+def _first_placement(step_path, pn, envelopes=None):
+    """[(item part number, [solids])] under the first placement of assembly pn in the file, in top coordinates, as
+    the read-back's own walk: each leaf by the first part number on its way down from the assembly (a sub-assembly's
+    number owns every solid under it; a grouping without one is looked through; a held shape by its envelope's
+    part), None for a body of the assembly's own. [] when the file has no such assembly."""
+    _doc, st = _xcaf(step_path)
+    tops = TDF_LabelSequence()
+    st.GetFreeShapes(tops)
+    found, done = [], []
+
+    def num(nm):
+        return geom.part_number_of(nm or "") or next((v for k, v in (envelopes or {}).items()
+                                                       if (nm or "").startswith(k)), None)
+
+    def leaves(lab, loc, item):
+        if st.IsAssembly_s(lab):
+            comps = TDF_LabelSequence()
+            st.GetComponents_s(lab, comps)
+            for i in range(1, comps.Length() + 1):
+                c = comps.Value(i)
+                ref = TDF_Label()
+                st.GetReferredShape_s(c, ref)
+                leaves(ref, loc.Multiplied(st.GetLocation_s(c)), item or num(_label_name(ref) or _label_name(c)))
+            return
+        shape = st.GetShape_s(lab)
+        found.append((item, _solids_of(shape.Moved(loc) if not loc.IsIdentity() else shape)))
+
+    def walk(lab, loc, nm):
+        if done:
+            return
+        if num(nm) == pn and st.IsAssembly_s(lab):
+            leaves(lab, loc, None)
+            done.append(True)
+            return
+        if st.IsAssembly_s(lab):
+            comps = TDF_LabelSequence()
+            st.GetComponents_s(lab, comps)
+            for i in range(1, comps.Length() + 1):
+                c = comps.Value(i)
+                ref = TDF_Label()
+                st.GetReferredShape_s(c, ref)
+                walk(ref, loc.Multiplied(st.GetLocation_s(c)), _label_name(ref) or _label_name(c))
+
+    for i in range(1, tops.Length() + 1):
+        walk(tops.Value(i), TopLoc_Location(), _label_name(tops.Value(i)))
+    return found
+
+
 def _solids_by_pn(step_path, envelopes=None, groups=None):
     """{part number: its solids in the file's top coordinates}. A sub-assembly's number owns every solid under it
     (a D-120 welded frame's members, a cassette's parts), as drawing takes a sub-assembly as one item; a part's
@@ -2073,7 +2239,7 @@ def check(pdf_path):
     page = doc[0]
     data = readback.read_data(doc)
     fails = []
-    stats = {"rows": 0, "balloons": 0, "interfaces": 0}
+    stats = {"rows": 0, "balloons": 0, "interfaces": 0, "overall": 0}
     if data.get("kind") != "assembly":
         return ["not an assembly sheet (no kind 'assembly' in its drawing data)"], stats
     step = os.path.join(inputs.REPO, [s_ for s_ in data["sources"] if s_["role"] == "STEP"][0]["path"])
@@ -2083,6 +2249,9 @@ def check(pdf_path):
     keys = {pn} | set(data.get("parent_keys", ()))
     with open(lst, newline="", encoding="utf-8") as fh:
         _own, rows = children_of(list(csv.DictReader(fh)), pn, keys, lst)
+    # then every other team's rows that name it as their parent (its parts too: the Lead, 2026-11-01)
+    owner = os.path.basename(os.path.dirname(lst))
+    rows = rows + [r for _p, mine in foreign_rows(pn, owner) for r in mine]
     tab = table_text(page, data)
     if sorted(tab) != list(range(1, len(rows) + 1)):
         fails.append("the table's items %s are not 1 to %d (the list's rows under %s)" % (sorted(tab), len(rows), pn))
@@ -2192,6 +2361,31 @@ def check(pdf_path):
             want = abs(vdot(vsub(c3, o3), ax))
             if abs(abs(float(p_["value"])) - want) > TOL_ON:
                 fails.append("interface value %s for %s, the STEP gives %.2f" % (p_["value"], p_["pn"], want))
+    # 4. the overall sizes, measured again from the STEP's first placement of the assembly: the list's parts only
+    # (the Lead's ruling, 2026-11-01: a reference outline isn't the assembly's), a bracketed reference size over
+    # everything under it; each one printed as its text
+    listed = {(r.get("part_number") or "").strip() for r in rows}
+    place = _first_placement(step, pn, env) if data.get("dims") else []
+    printed = [t[4] for t in readback.text_boxes(page, data["sheet_h"])]
+    for dm in data.get("dims", []):
+        stats["overall"] += 1
+        v = views[dm["view"]]
+        ax = v["x"] if dm["axis"] == "x" else v["y"]
+        sol = [s_ for it_pn, ss in place if dm.get("reference") or it_pn is None or it_pn in listed for s_ in ss]
+        if not sol:
+            fails.append("overall size %s: the STEP has no part of %s to measure" % (dm["text"], pn))
+            continue
+        b = box_of(sol)
+        corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
+        want = max(vdot(c, ax) for c in corners) - min(vdot(c, ax) for c in corners)
+        if abs(float(dm["value"]) - want) > TOL_ON:
+            fails.append("overall size %s on the %s view: the STEP's %s give %.2f" % (
+                dm["text"], dm["view"], "parts, references included," if dm.get("reference") else "own parts",
+                want))
+        if dm["text"] != (("(%s)" % fmt(float(dm["value"]), 1)) if dm.get("reference") else fmt(float(dm["value"]), 1)):
+            fails.append("overall size %s doesn't print its value %.3f" % (dm["text"], float(dm["value"])))
+        if dm["text"] not in printed:
+            fails.append("overall size %s isn't printed on the sheet" % dm["text"])
     for dm in data.get("datums", []):
         v = views[dm["view"]]
         inst = groups.get(dm["pn"], [])
@@ -2502,9 +2696,9 @@ def main(argv=None):
                 bad += 1
                 continue
             fails, st = check(final)
-            print("%s: %s; read-back %s (%d table rows, %d balloons, %d interface sizes)" % (
+            print("%s: %s; read-back %s (%d table rows, %d balloons, %d interface sizes, %d overall sizes)" % (
                 pn, inputs.rel(final) if final.startswith(inputs.REPO) else final, "PASS" if not fails else "FAIL",
-                st["rows"], st["balloons"], st["interfaces"]))
+                st["rows"], st["balloons"], st["interfaces"], st.get("overall", 0)))
             for f in fails:
                 print("  - " + f)
             bad += bool(fails)
@@ -2571,7 +2765,8 @@ def _median_datum(sh, assy, views, sides, d):
     corners = [(b[0] if j & 1 else b[3], b[1] if j & 2 else b[4], b[2] if j & 4 else b[5]) for j in range(8)]
     lo, hi = min(vdot(c, ax3) for c in corners), max(vdot(c, ax3) for c in corners)
     k = 0 if axis == "x" else 1
-    if abs(lo - av.extent[k]) > 0.05 or abs(hi - av.extent[k + 2]) > 0.05:
+    ext = av.own_extent(assy.occs)        # the overall size is the assembly's own parts'
+    if abs(lo - ext[k]) > 0.05 or abs(hi - ext[k + 2]) > 0.05:
         raise NotDrawable("%s: datum %s: %s doesn't span the %s view's overall %s size" % (assy.pn, d["letter"],
                                                                                          d["pn"], nm, axis))
     g = sides[nm].overall.get(axis)
