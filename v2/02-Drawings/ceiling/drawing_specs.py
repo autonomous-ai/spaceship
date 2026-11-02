@@ -23,11 +23,62 @@ SHEETS = {"A1": (841.0, 594.0), "A2": (594.0, 420.0)}
 # Fusion's ISO title block sits in the bottom right corner, about 200 x 52 mm inside the
 # 10 mm border (measured on the Phase 0 proof PDF); the title data image goes above it
 IMG_W = 170.0                   # both images are this wide on the sheet, mm
+PX_MM = 10.0                    # the images are drawn at 10 px per mm (render_notes.py)
+# Sheet.images.insert puts any PNG in at this width at scale 1, whatever its pixels or DPI tag
+# (a 1000 px image and the 1700 px notes of the first rib sample both came out 58.0 mm wide,
+# 2026-10-31 and 2026-11-01), so each image is inserted at scale = its width / this
+FUSION_IMG_W = 58.02
+LABEL_GAP = 3.0                 # a view's scale label sits this far below the view, mm
+DETAIL_LABEL_GAP = 16.0         # a detail's label sits this far above it, clear of the dimension over its flange, mm
+# views drawn with hidden lines (the rest show visible edges only); make_drawing_ceiling.py sets
+# the style again after making the view, as Fusion ignores the one given on the input
+STYLES = {"tray": {"front": "hidden", "top": "hidden", "left": "hidden"}, "cassette": {"top": "hidden"}}
+# the part axis each view's 2D X and Y run along (guideline 3.3; the left view's X is -Y)
+AXES = {"front": ("X", "Z"), "top": ("X", "Y"), "left": ("Y", "Z")}
 
 
-def image_places(sheet):
+HOLE_TABLE_ROOM = 55.0          # mm at the sheet's top right: Fusion puts a hole table there and the API can't move
+                                # it (the tray's first drawing, 2026-11-01: 30 mm tall with one row), so the notes start lower
+
+
+def image_places(sheet, holes=False):
     w, h = SHEETS[sheet]
-    return {"notes": (w - 20.0 - IMG_W, h - 15.0), "title": (w - 20.0 - IMG_W, 150.0)}
+    return {"notes": (w - 20.0 - IMG_W, h - 15.0 - (HOLE_TABLE_ROOM if holes else 0.0)), "title": (w - 20.0 - IMG_W, 150.0)}
+
+
+SYMBOL_PX_MARGIN = 1.0          # mm of white round the symbol in its picture
+
+
+def symbol_place(sheet):
+    """Where the first-angle symbol's outline starts (its narrow end's middle, sheet mm): the shared helper's place
+    (tools/fusion/fusion_drawing.py default_symbol_place), just left of the 180 x 47 title block and 6 clear of it
+    and of the frame. The symbol goes on the sheet as a picture: Fusion's PDF export of a sketch chain lost a corner
+    on A1 even in a sketch of its own and clear of every border (the tray and cassette, 2026-11-01)."""
+    w, _h = SHEETS[sheet]
+    return (w - 10.0 - 180.0 - 6.0 - 24.0, 10.0 + 6.0 + 5.0)
+
+
+def scale_text(scale):
+    """1:5, 2:1, 1:10 ..."""
+    return ("%g:1" % round(scale, 3)) if scale >= 1 else ("1:%g" % round(1 / scale, 3))
+
+
+def labels(sp):
+    """{view: [lines]} for each view drawn at another scale than the sheet's (ISO 5455: that scale goes next to the
+    view; the sheet's own is in the title data), and each detail's own label (its name, scale and what it says)."""
+    out = {k: ["SCALE " + scale_text(x)] for k, x in sorted(sp["scales"].items()) if abs(x - sp["scale"]) > 1e-9}
+    for k, d in sorted(sp.get("details", {}).items()):
+        out[k] = list(d["label"])
+    return out
+
+
+def new_size(done, axis, value, tol=0.05):
+    """True, and recorded in done, when no dimension along this part axis has this size yet:
+    each size is dimensioned once on a drawing (ISO 129-1). done is a list of (axis, mm)."""
+    if any(a == axis and abs(v - value) <= tol for a, v in done):
+        return False
+    done.append((axis, value))
+    return True
 
 COMMON_NOTES = [
     "UNITS: mm. Angles in degrees. Mass in kg.",
@@ -35,7 +86,7 @@ COMMON_NOTES = [
     "the view from above is below it; the view from the left is to its right.",
     "2D axes: front view X(2D)=X, Y(2D)=Z; view from above X(2D)=X, Y(2D)=Y; "
     "view from the left X(2D)=-Y, Y(2D)=Z (guideline 3.3).",
-    "Dimensions run from the datum faces named in these notes, and to hole centres. "
+    "Dimensions run from the datum faces named in these notes (overall sizes where none is named), and to hole centres. "
     "No ISO 2768 class is applied (conventions 3); the tolerances in note 1 are assumptions "
     "until the factory confirms what it holds.",
     "Status DRAFT P01: for the prototype and the factory's sample only, not released.",
@@ -48,10 +99,17 @@ def doc_name(key, doctype):
     return "%s_%s_%s_%s" % (pn, M.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"), doctype)
 
 
-def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None):
+def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", scales=None, faces=None, sizes=None,
+         details=None, hole_table=True):
     """A1 layout: the front view top left, the view from above below it, the view from the
     left to its right (first angle), the isometric view below that; notes top right, title
-    data above the title block."""
+    data above the title block. faces: {view: ["bottom"]} adds the width of that face of the view where it is a
+    size of its own (the rib's crown; the overall width is measured face to face, so a crown narrower than the
+    flanges needs its own). sizes: every dimension value the drawing must print, once each (check_drawing_pdf.py
+    reads them back), taken from the model's values and the notes. holes: the view whose holes get their size and centre
+    dimensions; hole_table=False leaves out Fusion's hole table (it printed empty on the tray's front view twice). details: {name: {"of": a view's orientation,
+    "at": its centre, "scale", "label": [lines], "dims": [what make_drawing_ceiling.detail_dims puts on it]}}: a base
+    view of its own, outside the first-angle set, at a larger scale (the API makes no section or detail views)."""
     pn, name, vn, kind, mat = M.PARTS[key]
     mname = M.MATERIALS[mat][0] if mat else "see the parts list"
     v = dict(front=(200, 480), top=(200, 290), left=(480, 480), iso=(500, 260)) if sheet == "A1" else \
@@ -60,11 +118,16 @@ def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", 
     return {
         "key": key, "design": doc_name(key, "CAD"), "drawing": doc_name(key, "DWG"),
         "scale": scale, "scales": scales or {}, "views": v, "holes": holes, "sheet": sheet,
-        "images": image_places(sheet),
+        "faces": faces or {}, "sizes": list(sizes or []), "details": details or {},
+        "hole_table": bool(holes) and hole_table,
+        "styles": STYLES.get(key, {}),
+        "images": image_places(sheet, bool(holes) and hole_table),
         "title": [("PART NO.", pn), ("NAME", name), ("TÊN", vn), ("REV / STATUS", "%s / DRAFT" % M.REV),
                   ("MATERIAL", mname), ("FINISH", M.FINISH.get(key, "-")),
-                  ("SCALE", "1:%d" % round(1 / scale) + ("".join(", %s view %s" % (k, ("%d:1" % round(x)) if x >= 1 else ("1:%d" % round(1 / x)))
-                                                                    for k, x in sorted((scales or {}).items())))),
+                  ("SCALE", scale_text(scale) + "".join(", %s view %s" % (k, scale_text(x))
+                                                         for k, x in sorted((scales or {}).items()))
+                   + "".join(", detail %s %s" % (d["label"][0].split(":")[0].split()[-1], scale_text(d["scale"]))
+                             for _k, d in sorted((details or {}).items()))),
                    ("UNITS", "mm"), ("PROJECTION", "first angle"), ("SHEET", sheet)]
         + list(title_extra),
         "notes": list(notes) + COMMON_NOTES,
@@ -79,18 +142,25 @@ SPECS = {
         "Flat pattern: 513101_P01_LINING-TRAY-CEILING_DXF.dxf (layers CUT, BEND, MARK).",
         "Datums: A = top face of the base; B = outer face of the front return; C = centre plane (X' = 0).",
         "Returns run the full 34 depth and turn in as 12 lips under the felt (PM ruling; guideline 8.2).",
-        "Two holes Ø19.1 for ELECTRICAL's cable bushings in the front and back returns, centre 12.5 below datum A (PM ruling 2026-11-01).",
+        "Two holes for ELECTRICAL's cable bushings, one in each of the front and back returns, on datum C (PM ruling "
+        "2026-11-01): size and height dimensioned in the front view, where the back one lies hidden behind the front one. "
+        "No hole table: Fusion's table printed empty on this view twice (2026-11-01).",
         "Clip and catch fixing zones on the base: no holes until a clip and a catch are named (HOLD-08).",
         "Symmetric about datum C: one part for both ceiling halves.",
-    ], holes="front"),
+    ], holes="front", hole_table=False, sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
     "rib": spec("rib", 0.2, [
         "Tolerances (assumption): cut length +/-1; bent sizes +/-0.5.",
-        "Galvanised steel DX51D+Z, 0.5 thick, hat section: crown 20, height 24, flanges 2 x 12 (assumptions).",
-        "Blank and bend lines: 513102_P01_LINING-RIB-CEILING_DXF.dxf.",
+        "Galvanised steel DX51D+Z, one strip bent into the hat section of detail A (sizes outside). Blank and bend "
+        "lines: 513102_P01_LINING-RIB-CEILING_DXF.dxf, 88.52 wide with R0.5 inside and K 0.44 (assumptions until a "
+        "bend coupon on the factory's tooling sets them).",
         "Fixing to the tray and to the felt: HOLD (H09), drawn as touching only.",
-        "Two per cassette, at X' = +/- cs_w/6 (three equal felt spans).",
-        "The front view (the hat section) is drawn at 2:1 so the bends read; the other views at 1:5.",
-    ], sheet="A2", scales={"front": 2.0}, views={"front": (110, 360), "top": (110, 200), "left": (260, 360), "iso": (300, 180)}),
+        "Two per cassette, at X' = +/-193.33 (a sixth of the cassette's 1160: three equal felt spans).",
+        "Detail A draws the hat section at 2:1, outside the first-angle set; the first-angle views are at 1:5.",
+    ], sheet="A2", views={"front": (100, 380), "top": (100, 225), "left": (250, 380), "iso": (300, 130)},
+        sizes=["44", "1034", "20", "24", "12", "0.5"],
+        details={"detail": {"of": "front", "at": (330, 290), "scale": 2.0,
+                            "label": ["DETAIL A: HAT SECTION, SCALE 2:1", "SIZES OUTSIDE; R0.5 INSIDE, 4 × 90°"],
+                            "dims": ["height", "crown", "flange", "thickness"]}}),
     "felt": spec("felt", 0.2, [
         "Tolerances (assumption): knife-cut outline +/-1.",
         "PET felt 9, Dark Gray (D-79); the factory's felt (D-31), its emission certificate on HOLD.",
@@ -117,14 +187,16 @@ SPECS = {
         "Fixing to the tray's back: HOLD (H10).",
     ]),
     "cassette": spec("cassette", 0.2, [
-        "Tolerances: see the part drawings; the assembled outline 1160 x 1045 x 34 +/-1 (assumption).",
+        "Tolerances: see the part drawings; the assembled outline 1160 x 1045 x 74 +/-1: the tray 34 deep and the "
+        "fill 40 on its back (assumption).",
         "Ceiling lining cassette, one part for both halves (C1-CASS, C2-CASS). Drawing D06 of the wall-and-door sample.",
         "Parts: 513101 tray 1, 513102 rib 2, 513201 felt 1, 513301 / 513302 / 513303 fill 1 each, "
         "518001 clip 6 (HOLD), 518002 safety catch 2 (HOLD).",
         "Clips on the back faces of ceiling cross members X1, X2, X3, over the ribs; catches on X2's front face (D-47).",
         "Hangs 4 below the ceiling frame and never touches it except through the clips and catches (D-17).",
         "Cables run in the 24 gap and clip to the tray only (D-26, D-41).",
-    ], holes="front"),
+        "The two cable bushing holes are the tray's, sized and placed on its drawing 513101.",
+    ], sizes=["1160", "1045", "74"]),
 }
 
 
@@ -148,10 +220,14 @@ def frame_hole_notes(half):
              "SOFFIT HANGER FRONT": "front member, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
              "SOFFIT HANGER X1": "cross member X1, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
              "SOFFIT LOCK": "cross member 1, underside (rivnuts 838003 for the soffit's two captive lock screws, D-87; "
-                            "C2's are the same part's, unused)"}
+                            "C2's are the same part's, unused)",
+             "DT BOLT CLEARANCE": "front member, front wall (DT's back plate bolts here into its rivnuts, J-FRONT-03)",
+             "DT BOLT ACCESS": "front member, back wall (the key's access to DT's bolt, J-FRONT-03)"}
     out = []
     for (name, d), pts in rows.items():
-        if name.startswith(("BACK", "SOFFIT")):
+        if name.startswith("DT"):                    # along X in the front member's walls, at one height
+            pos = "from A: %s; from C: %.2f" % (", ".join("%.2f" % p[0] for p in pts), pts[0][2])
+        elif name.startswith(("BACK", "SOFFIT")):
             pos = "from A: %s; from B: %s" % (", ".join("%.2f" % p[0] for p in pts), ", ".join(sorted({"%.2f" % p[1] for p in pts})))
         else:
             pos = "from B: %s; from C: %.2f" % (", ".join("%.2f" % p[1] for p in pts), pts[0][2])
@@ -273,4 +349,6 @@ _ga = spec("ceiling", 0.1, [
 ], views={"front": (300, 470), "top": (300, 250), "left": (620, 470), "iso": (620, 240)}, scales={"iso": 0.05})
 _ga["design"] = "410000_P01_CEILING_CAD"
 SPECS["ga"] = _ga
-ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib"]
+# the cassette 510301 is drawn by the drawing generator's assembly mode (the Lead's ruling on Reviewer 5's D-114 pass:
+# a sub-assembly sheet needs a parts table with balloons, which Fusion's API can't draw); its spec stays for reference
+ORDER = ["ga", "assy", "frame_c1", "frame_c2", "tray", "rib", "fills"]
