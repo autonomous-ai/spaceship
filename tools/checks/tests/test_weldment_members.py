@@ -70,8 +70,20 @@ def test_a_member_on_its_frames_drawing_needs_no_sheet_of_its_own(tmp_path):
                  "square ends (fits between the rails, welded T joints, D-131)"):
         assert c_drawings.member_row_lacks({"section": "20 x 40 x 1.0", "length_mm": "1491.35", "ends": ends,
                                             "qty": "1"}) == [], ends
+    # Reviewer 6 (the Lead's ruling with Control): each end on its own. 'both ends deburred' gives no end, so only the
+    # front end is given; a square end needs no angle
+    assert c_drawings.ends_given("both ends deburred, front end mitred 45 deg") == 1
+    assert c_drawings.ends_given("front end mitred 45 deg, back end square") == 2
+    assert c_drawings.ends_given("front end mitred 45° and a 30° bevel on its face") == 1    # one end named: one given
+    assert c_drawings.member_row_lacks({"section": "s", "length_mm": "1", "ends": "front end mitred 45 deg, back end "
+                                        "square", "qty": "1"}) == []
+    # an end-angle column with a plain number gives its end (FRONT's end_a_deg and end_b_deg in #313)
+    cols = {"section": "tube 20 x 20 x 1.5", "length_mm": "1422.8", "qty": "1", "ends": ""}
+    assert c_drawings.member_row_lacks(dict(cols, end_a_deg="22.4", end_b_deg="45.0")) == []
+    assert c_drawings.member_row_lacks(dict(cols, end_a_deg="22.4", end_b_deg="")) == ["both end angles"]
     # but one angle for one end isn't both, and 'both ends' with no angle isn't either
-    for ends in ("front end mitred 45 deg; back end to suit", "both ends mitred to suit; 45 deg plate"):
+    for ends in ("front end mitred 45 deg; back end to suit", "both ends mitred to suit; 45 deg plate",
+                 "both ends deburred, front end mitred 45 deg"):
         assert c_drawings.member_row_lacks({"section": "s", "length_mm": "1", "ends": ends, "qty": "1"}) == \
             ["both end angles"], ends
 
