@@ -54,7 +54,7 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | 211516 WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON:2 / FILL - BAY 2 | (-1244.0, 339.09, 132.26, -1204.0, 570.0, 1235.0) | (-1244.0, 404.09, 132.26, -1204.0, 570.0, 1212.26) |
 | 211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 3 | (-1244.0, -111.83, 132.26, -1204.0, 93.63, 1235.0) | (-1244.0, -18.17, 132.26, -1204.0, 154.78, 1212.26) |
 | 211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON:2 / FILL - BAY 3 | (-1244.0, 113.63, 132.26, -1204.0, 319.09, 1235.0) | (-1244.0, 247.48, 132.26, -1204.0, 420.43, 1212.26) |
-| 211518 WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 6 | (-1244.0, 590.0, 132.26, -1204.0, 804.0, 1235.0) | (-1244.0, 590.0, 132.26, -1204.0, 804.0, 1212.26) |
+| 211518 WALL - CAVITY FILL PIECE F04 214 X 1102.7 - SIDE LOWER - LH:1 / FILL - BAY 6 | (-1244.0, 590.0, 132.26, -1204.0, 804.0, 1235.0) | (-1244.0, 590.0, 132.26, -1204.0, 804.0, 1212.26) |
 | 211701 WALL - CASSETTE LEDGE - SIDE LOWER - COMMON:1 / LEDGE - STEEL ANGLE UNDER THE CASSETTE | (-1204.0, -635.0, 108.45, -1176.0, 795.0, 130.26) | (-1204.0, -440.0, 108.45, -1176.0, 795.0, 130.26) |
 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:1 / SPIGOT | (-1228.0, -546.74, 1247.76, -1220.0, -538.74, 1263.0) | (-1228.0, -351.74, 1225.02, -1220.0, -343.74, 1240.26) |
 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:2 / SPIGOT | (-1228.0, 746.0, 1247.76, -1220.0, 754.0, 1263.0) | (-1228.0, 746.0, 1225.02, -1220.0, 754.0, 1240.26) |
@@ -102,73 +102,115 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 ## Edit test: 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD.f3d
 
-Copy opened as a new, unsaved document and closed without saving. Components: 211102, 211302, 211502, 831001, 831002, 838003.
+Copy opened as a new, unsaved document and closed without saving. Components: 211102, 211302, 211515, 211516, 211517, 211551, 211552, 211553, 211554, 211701, 212201, 212202, 212203, 212204, 212205, 212206, 831001, 831002, 831007, 831008, 838003, 838012, 848015.
 
-1. Reopen: timeline 164 items, 0 not healthy; sketches 47, 47 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1000 mm: rebuild 164 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 275 items, 0 not healthy; sketches 61, 61 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 275 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
 | wall_depth | 1495 | 1300 |
-| side_h | 1142.74 | 1000 |
-| stile_pitch_max | 400 | 400 |
-| frm_len | 1489.74 | 1294.74 |
-| stile_n_mid | 3 | 3 |
-| stile_pitch | 364.935 | 316.185 |
-| cass_len | 1445 | 1250 |
-| cass_h | 1142.74 | 1000 |
+| side_h | 1142.74 | 1120 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1486.74 | 1291.74 |
+| stile_n_mid | 7 | 7 |
+| stud_c1 | 270 | 270 |
+| stud_c2 | 402.74 | 402.74 |
+| stud_c3 | 520.913 | 455.913 |
+| stud_c4 | 746.37 | 648.87 |
+| stud_c5 | 971.827 | 841.827 |
+| stud_c6 | 1222.74 | 1027.74 |
+| stud_c7 | 1342.74 | 1147.74 |
+| cass_len | 1440 | 1245 |
+| cass_h | 1142.74 | 1120 |
+| lin_front_dy | 5 | 5 |
 | top_h | 20 | 20 |
+| pod_h | 2400 | 2400 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| outer_t | 46 | 46 |
+| lin_gap | 4 | 4 |
 
 3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
 
 | Body | Before | After |
 |---|---|---|
-| 211102 / RAIL - BOTTOM | (1204.0, -642.74, 112.26, 1244.0, 847.0, 132.26) | (1204.0, -447.74, 112.26, 1244.0, 847.0, 132.26) |
-| 211102 / RAIL - TOP | (1204.0, -642.74, 1235.0, 1244.0, 847.0, 1255.0) | (1204.0, -447.74, 1092.26, 1244.0, 847.0, 1112.26) |
-| 211102 / STILE - BACK | (1204.0, 807.0, 132.26, 1244.0, 847.0, 1235.0) | (1204.0, 807.0, 132.26, 1244.0, 847.0, 1092.26) |
-| 211102 / STILE - FRONT | (1204.0, -642.74, 132.26, 1244.0, -622.74, 1235.0) | (1204.0, -447.74, 132.26, 1244.0, -427.74, 1092.26) |
-| 211102 / STILE - MID 1 | (1204.0, -277.81, 132.26, 1244.0, -257.81, 1235.0) | (1204.0, -131.56, 132.26, 1244.0, -111.56, 1092.26) |
-| 211102 / STILE - MID 2 | (1204.0, 87.13, 132.26, 1244.0, 107.13, 1235.0) | (1204.0, 184.63, 132.26, 1244.0, 204.63, 1092.26) |
-| 211102 / STILE - MID 3 | (1204.0, 452.06, 132.26, 1244.0, 472.06, 1235.0) | (1204.0, 500.81, 132.26, 1244.0, 520.81, 1092.26) |
-| 211302 / SKIN - ACP 3 WITH BACK RETURN | (1204.0, -642.74, 112.26, 1250.0, 850.0, 1255.0) | (1204.0, -447.74, 112.26, 1250.0, 850.0, 1112.26) |
-| 211502 / FILL - BAY 1 | (1204.0, -622.74, 132.26, 1244.0, -277.81, 1235.0) | (1204.0, -427.74, 132.26, 1244.0, -131.56, 1092.26) |
-| 211502 / FILL - BAY 2 | (1204.0, -257.81, 132.26, 1244.0, 87.13, 1235.0) | (1204.0, -111.56, 132.26, 1244.0, 184.63, 1092.26) |
-| 211502 / FILL - BAY 3 | (1204.0, 107.13, 132.26, 1244.0, 452.06, 1235.0) | (1204.0, 204.63, 132.26, 1244.0, 500.81, 1092.26) |
-| 211502 / FILL - BAY 4 | (1204.0, 472.06, 132.26, 1244.0, 807.0, 1235.0) | (1204.0, 520.81, 132.26, 1244.0, 807.0, 1092.26) |
-| 831001 / SPIGOT - TOP RAIL SPIGOT BACK | (1220.0, 746.0, 1245.76, 1228.0, 754.0, 1263.0) | (1220.0, 746.0, 1103.02, 1228.0, 754.0, 1120.26) |
-| 831001 / SPIGOT - TOP RAIL SPIGOT FRONT | (1220.0, -546.74, 1245.76, 1228.0, -538.74, 1263.0) | (1220.0, -351.74, 1103.02, 1228.0, -343.74, 1120.26) |
-| 831002 / STOP WASHER - BACK STILE CORNER 1 | (1202.5, 814.0, 322.26, 1204.0, 834.0, 342.26) | (1202.5, 814.0, 322.26, 1204.0, 834.0, 342.26) |
-| 831002 / STOP WASHER - BACK STILE CORNER 2 | (1202.5, 814.0, 661.56, 1204.0, 834.0, 681.56) | (1202.5, 814.0, 661.56, 1204.0, 834.0, 681.56) |
-| 831002 / STOP WASHER - BACK STILE CORNER 3 | (1202.5, 814.0, 1000.87, 1204.0, 834.0, 1020.87) | (1202.5, 814.0, 1000.87, 1204.0, 834.0, 1020.87) |
-| 831002 / STOP WASHER - TOP RAIL 1 | (1214.0, -432.74, 1255.0, 1234.0, -412.74, 1256.5) | (1214.0, -237.74, 1112.26, 1234.0, -217.74, 1113.76) |
-| 831002 / STOP WASHER - TOP RAIL 2 | (1214.0, -81.83, 1255.0, 1234.0, -61.83, 1256.5) | (1214.0, 48.17, 1112.26, 1234.0, 68.17, 1113.76) |
-| 831002 / STOP WASHER - TOP RAIL 3 | (1214.0, 269.09, 1255.0, 1234.0, 289.09, 1256.5) | (1214.0, 334.09, 1112.26, 1234.0, 354.09, 1113.76) |
-| 831002 / STOP WASHER - TOP RAIL 4 | (1214.0, 620.0, 1255.0, 1234.0, 640.0, 1256.5) | (1214.0, 620.0, 1112.26, 1234.0, 640.0, 1113.76) |
-| 838003 / RIVNUT - BACK STILE CORNER 1 | (1201.74, 817.52, 325.78, 1212.66, 830.48, 338.74) | (1201.74, 817.52, 325.78, 1212.66, 830.48, 338.74) |
-| 838003 / RIVNUT - BACK STILE CORNER 2 | (1201.74, 817.52, 665.09, 1212.66, 830.48, 678.05) | (1201.74, 817.52, 665.09, 1212.66, 830.48, 678.05) |
-| 838003 / RIVNUT - BACK STILE CORNER 3 | (1201.74, 817.52, 1004.39, 1212.66, 830.48, 1017.35) | (1201.74, 817.52, 1004.39, 1212.66, 830.48, 1017.35) |
-| 838003 / RIVNUT - TOP RAIL 1 | (1217.52, -429.22, 1246.34, 1230.48, -416.26, 1257.26) | (1217.52, -234.22, 1103.6, 1230.48, -221.26, 1114.52) |
-| 838003 / RIVNUT - TOP RAIL 2 | (1217.52, -78.31, 1246.34, 1230.48, -65.35, 1257.26) | (1217.52, 51.69, 1103.6, 1230.48, 64.65, 1114.52) |
-| 838003 / RIVNUT - TOP RAIL 3 | (1217.52, 272.61, 1246.34, 1230.48, 285.57, 1257.26) | (1217.52, 337.61, 1103.6, 1230.48, 350.57, 1114.52) |
-| 838003 / RIVNUT - TOP RAIL 4 | (1217.52, 623.52, 1246.34, 1230.48, 636.48, 1257.26) | (1217.52, 623.52, 1103.6, 1230.48, 636.48, 1114.52) |
-| 838003 / RIVNUT - TOP RAIL SPIGOT BACK | (1217.52, 743.52, 1244.84, 1230.48, 756.48, 1255.76) | (1217.52, 743.52, 1102.1, 1230.48, 756.48, 1113.02) |
-| 838003 / RIVNUT - TOP RAIL SPIGOT FRONT | (1217.52, -549.22, 1244.84, 1230.48, -536.26, 1255.76) | (1217.52, -354.22, 1102.1, 1230.48, -341.26, 1113.02) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212201 WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH:1 / RAIL - BOTTOM | (1204.0, -641.33, 112.26, 1244.0, 841.76, 132.26) | (1204.0, -446.33, 112.26, 1244.0, 841.76, 132.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212202 WALL - FRAME RAIL TOP - SIDE LOWER - RH:1 / RAIL - TOP | (1204.0, -641.33, 1235.0, 1244.0, 841.76, 1255.0) | (1204.0, -446.33, 1212.26, 1244.0, 841.76, 1232.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212203 WALL - FRAME STILE FRONT - SIDE LOWER - RH:1 / STILE - FRONT | (1204.0, -642.74, 113.67, 1244.0, -622.74, 1253.59) | (1204.0, -447.74, 113.67, 1244.0, -427.74, 1230.85) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212204 WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH:1 / STILE - BACK | (1204.0, 804.0, 113.38, 1244.0, 844.0, 1253.88) | (1204.0, 804.0, 113.38, 1244.0, 844.0, 1231.14) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212205 WALL - FRAME STILE MID - SIDE LOWER - RH:1 / STILE - MID | (1204.0, -382.74, 132.26, 1244.0, -362.74, 1235.0) | (1204.0, -187.74, 132.26, 1244.0, -167.74, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212205 WALL - FRAME STILE MID - SIDE LOWER - RH:2 / STILE - MID | (1204.0, -131.83, 132.26, 1244.0, -111.83, 1235.0) | (1204.0, -1.83, 132.26, 1244.0, 18.17, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212205 WALL - FRAME STILE MID - SIDE LOWER - RH:3 / STILE - MID | (1204.0, 570.0, 132.26, 1244.0, 590.0, 1235.0) | (1204.0, 570.0, 132.26, 1244.0, 590.0, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:1 / STILE - MID INTERIOR | (1204.0, 690.0, 132.26, 1244.0, 710.0, 1235.0) | (1204.0, 690.0, 132.26, 1244.0, 710.0, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:2 / STILE - MID INTERIOR | (1204.0, 319.09, 132.26, 1244.0, 339.09, 1235.0) | (1204.0, 384.09, 132.26, 1244.0, 404.09, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:3 / STILE - MID INTERIOR | (1204.0, 93.63, 132.26, 1244.0, 113.63, 1235.0) | (1204.0, 191.13, 132.26, 1244.0, 211.13, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:4 / STILE - MID INTERIOR | (1204.0, -250.0, 132.26, 1244.0, -230.0, 1235.0) | (1204.0, -55.0, 132.26, 1244.0, -35.0, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:1 / MITRE PLATE | (1204.0, -642.21, 112.79, 1244.0, -622.06, 132.94) | (1204.0, -447.21, 112.79, 1244.0, -427.06, 132.94) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:2 / MITRE PLATE | (1204.0, -642.21, 1234.32, 1244.0, -622.06, 1254.47) | (1204.0, -447.21, 1211.58, 1244.0, -427.06, 1231.73) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831008 HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL:1 / MITRE PLATE | (1204.0, 803.62, 112.77, 1244.0, 841.63, 133.12) | (1204.0, 803.62, 112.77, 1244.0, 841.63, 133.12) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831008 HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL:2 / MITRE PLATE | (1204.0, 803.62, 1234.14, 1244.0, 841.63, 1254.49) | (1204.0, 803.62, 1211.4, 1244.0, 841.63, 1231.75) |
+| 211302 WALL - SKIN - SIDE LOWER - RH:1 / SKIN - ACP 3 WITH BACK RETURN | (1204.0, -642.74, 112.26, 1250.0, 850.0, 1255.0) | (1204.0, -447.74, 112.26, 1250.0, 850.0, 1232.26) |
+| 211515 WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 1 | (1204.0, -622.74, 132.26, 1244.0, -382.74, 1235.0) | (1204.0, -427.74, 132.26, 1244.0, -187.74, 1212.26) |
+| 211516 WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 6 | (1204.0, 339.09, 132.26, 1244.0, 570.0, 1235.0) | (1204.0, 404.09, 132.26, 1244.0, 570.0, 1212.26) |
+| 211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON:1 / FILL - BAY 4 | (1204.0, -111.83, 132.26, 1244.0, 93.63, 1235.0) | (1204.0, -18.17, 132.26, 1244.0, 154.78, 1212.26) |
+| 211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON:2 / FILL - BAY 4 | (1204.0, 113.63, 132.26, 1244.0, 319.09, 1235.0) | (1204.0, 247.48, 132.26, 1244.0, 420.43, 1212.26) |
+| 211551 WALL - CAVITY FILL PIECE F15 112.7 X 1102.7 - SIDE LOWER - RH:1 / FILL - BAY 2 | (1204.0, -362.74, 132.26, 1244.0, -250.0, 1235.0) | (1204.0, -167.74, 132.26, 1244.0, -55.0, 1212.26) |
+| 211552 WALL - CAVITY FILL PIECE F16 98.2 X 1102.7 - SIDE LOWER - RH:1 / FILL - BAY 3 | (1204.0, -230.0, 132.26, 1244.0, -131.83, 1235.0) | (1204.0, -35.0, 132.26, 1244.0, -1.83, 1212.26) |
+| 211553 WALL - CAVITY FILL PIECE F17 100 X 1102.7 - SIDE LOWER - RH:1 / FILL - BAY 7 | (1204.0, 590.0, 132.26, 1244.0, 690.0, 1235.0) | (1204.0, 590.0, 132.26, 1244.0, 690.0, 1212.26) |
+| 211554 WALL - CAVITY FILL PIECE F18 94 X 1102.7 - SIDE LOWER - RH:1 / FILL - BAY 8 | (1204.0, 710.0, 132.26, 1244.0, 804.0, 1235.0) | (1204.0, 710.0, 132.26, 1244.0, 804.0, 1212.26) |
+| 211701 WALL - CASSETTE LEDGE - SIDE LOWER - COMMON:1 / LEDGE - STEEL ANGLE UNDER THE CASSETTE | (1176.0, -635.0, 108.45, 1204.0, 795.0, 130.26) | (1176.0, -440.0, 108.45, 1204.0, 795.0, 130.26) |
+| 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:1 / SPIGOT | (1220.0, -546.74, 1247.76, 1228.0, -538.74, 1263.0) | (1220.0, -351.74, 1225.02, 1228.0, -343.74, 1240.26) |
+| 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:2 / SPIGOT | (1220.0, 746.0, 1247.76, 1228.0, 754.0, 1263.0) | (1220.0, 746.0, 1225.02, 1228.0, 754.0, 1240.26) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:1 / STOP WASHER | (1214.0, -432.74, 1255.0, 1234.0, -412.74, 1256.5) | (1214.0, -237.74, 1232.26, 1234.0, -217.74, 1233.76) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:2 / STOP WASHER | (1214.0, -81.83, 1255.0, 1234.0, -61.83, 1256.5) | (1214.0, 48.17, 1232.26, 1234.0, 68.17, 1233.76) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:3 / STOP WASHER | (1214.0, 269.09, 1255.0, 1234.0, 289.09, 1256.5) | (1214.0, 334.09, 1232.26, 1234.0, 354.09, 1233.76) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:4 / STOP WASHER | (1214.0, 620.0, 1255.0, 1234.0, 640.0, 1256.5) | (1214.0, 620.0, 1232.26, 1234.0, 640.0, 1233.76) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:5 / STOP WASHER | (1202.5, 814.0, 322.26, 1204.0, 834.0, 342.26) | (1202.5, 814.0, 322.26, 1204.0, 834.0, 342.26) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:6 / STOP WASHER | (1202.5, 814.0, 661.56, 1204.0, 834.0, 681.56) | (1202.5, 814.0, 661.56, 1204.0, 834.0, 681.56) |
+| 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:7 / STOP WASHER | (1202.5, 814.0, 1000.87, 1204.0, 834.0, 1020.87) | (1202.5, 814.0, 1000.87, 1204.0, 834.0, 1020.87) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:1 / RIVNUT | (1217.53, -429.22, 1246.85, 1230.47, -416.26, 1257.26) | (1217.53, -234.22, 1224.11, 1230.47, -221.26, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:10 / RIVNUT | (1203.24, -246.47, 808.53, 1213.65, -233.52, 821.47) | (1203.24, -51.47, 808.53, 1213.65, -38.52, 821.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:11 / RIVNUT | (1203.24, 97.16, 808.53, 1213.65, 110.11, 821.47) | (1203.24, 194.66, 808.53, 1213.65, 207.61, 821.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:12 / RIVNUT | (1203.24, 322.61, 808.53, 1213.65, 335.56, 821.47) | (1203.24, 387.61, 808.53, 1213.65, 400.56, 821.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:13 / RIVNUT | (1203.24, 693.52, 808.53, 1213.65, 706.47, 821.47) | (1203.24, 693.52, 808.53, 1213.65, 706.47, 821.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:14 / RIVNUT | (1203.24, -246.47, 1038.53, 1213.65, -233.52, 1051.47) | (1203.24, -51.47, 1038.53, 1213.65, -38.52, 1051.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:15 / RIVNUT | (1203.24, 97.16, 1038.53, 1213.65, 110.11, 1051.47) | (1203.24, 194.66, 1038.53, 1213.65, 207.61, 1051.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:16 / RIVNUT | (1203.24, 322.61, 1038.53, 1213.65, 335.56, 1051.47) | (1203.24, 387.61, 1038.53, 1213.65, 400.56, 1051.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:17 / RIVNUT | (1203.24, 693.52, 1038.53, 1213.65, 706.47, 1051.47) | (1203.24, 693.52, 1038.53, 1213.65, 706.47, 1051.47) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:2 / RIVNUT | (1217.53, -78.3, 1246.85, 1230.47, -65.35, 1257.26) | (1217.53, 51.7, 1224.11, 1230.47, 64.65, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:3 / RIVNUT | (1217.53, 272.61, 1246.85, 1230.47, 285.56, 1257.26) | (1217.53, 337.61, 1224.11, 1230.47, 350.56, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:4 / RIVNUT | (1217.53, 623.52, 1246.85, 1230.47, 636.48, 1257.26) | (1217.53, 623.52, 1224.11, 1230.47, 636.48, 1234.52) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:5 / RIVNUT | (1217.53, -549.22, 1245.35, 1230.47, -536.26, 1255.76) | (1217.53, -354.22, 1222.61, 1230.47, -341.26, 1233.02) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:6 / RIVNUT | (1217.53, 743.53, 1245.35, 1230.47, 756.47, 1255.76) | (1217.53, 743.53, 1222.61, 1230.47, 756.47, 1233.02) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:7 / RIVNUT | (1201.74, 817.53, 325.78, 1212.15, 830.48, 338.74) | (1201.74, 817.53, 325.78, 1212.15, 830.48, 338.74) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:8 / RIVNUT | (1201.74, 817.53, 665.09, 1212.15, 830.48, 678.04) | (1201.74, 817.53, 665.09, 1212.15, 830.48, 678.04) |
+| 838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2:9 / RIVNUT | (1201.74, 817.53, 1004.4, 1212.15, 830.48, 1017.35) | (1201.74, 817.53, 1004.4, 1212.15, 830.48, 1017.35) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:1 / BLIND RIVET | (1202.5, -598.35, 117.91, 1210.5, -591.65, 124.61) | (1202.5, -403.35, 117.91, 1210.5, -396.65, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:2 / BLIND RIVET | (1202.5, -328.35, 117.91, 1210.5, -321.65, 124.61) | (1202.5, -172.35, 117.91, 1210.5, -165.65, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:3 / BLIND RIVET | (1202.5, -58.35, 117.91, 1210.5, -51.65, 124.61) | (1202.5, 58.65, 117.91, 1210.5, 65.35, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:4 / BLIND RIVET | (1202.5, 211.65, 117.91, 1210.5, 218.35, 124.61) | (1202.5, 289.65, 117.91, 1210.5, 296.35, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:5 / BLIND RIVET | (1202.5, 481.65, 117.91, 1210.5, 488.35, 124.61) | (1202.5, 520.65, 117.91, 1210.5, 527.35, 124.61) |
+| 838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8:6 / BLIND RIVET | (1202.5, 751.65, 117.91, 1210.5, 758.35, 124.61) | (1202.5, 751.65, 117.91, 1210.5, 758.35, 124.61) |
+| 848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA:1 / PAD - ON THE LEDGE UNDER THE CASSETTE (HOLD) | (1182.5, -635.0, 109.95, 1200.5, 795.0, 112.26) | (1182.5, -440.0, 109.95, 1200.5, 795.0, 112.26) |
 
 | Check | Result |
 |---|---|
-| rails run wall_depth - 2.26 - 3 | PASS |
-| frame starts 2.26 behind the decor back plate | PASS |
-| stiles span side_h - 20 - top_h | PASS |
-| mid stile count follows the 400 mm rule (3) | PASS |
-| no stile pitch over 400 | PASS |
-| fill bays = mid stile count + 1 (4) | PASS |
-| skin runs wall_depth - 2.26 and side_h | PASS |
+| rails run wall_depth - 2.26 - 6 (the back return and its bond line) less their plate cut-backs | PASS |
+| rails start one cut-back behind the frame's front end (2.26 behind the decor back plate) | PASS |
+| perimeter stiles span the panel height less their plate cut-backs | PASS |
+| studs span the panel height - 20 - top_h | PASS |
+| 7 studs, set from the bolts | PASS |
+| every clear bay 275 or less (the skin's 2 mm limit) [240.0, 112.7, 33.2, 173.0, 173.0, 165.9, 100.0, 94.0] | PASS |
+| every bolt 30 or more clear of every stud (R-J14) | PASS |
+| fill bays = stud count + 1 (8) | PASS |
+| skin runs wall_depth - 2.26 and the panel height | PASS |
 | top rail rivnuts follow the 220 rule [-227.74, 58.17, 344.09, 630.0] | PASS |
 | a stop washer under each top rail rivnut | PASS |
 | front spigot follows the panel's front end (+100) | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 164 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 275 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_CAD.f3d
 
@@ -685,46 +727,67 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 ## Edit test: 211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_CAD.f3d
 
-Copy opened as a new, unsaved document and closed without saving. Components: 211102.
+Copy opened as a new, unsaved document and closed without saving. Components: 211102, 212201, 212202, 212203, 212204, 212205, 212206, 831007, 831008.
 
-1. Reopen: timeline 73 items, 0 not healthy; sketches 22, 22 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1000 mm, stile_pitch_max -> 300 mm: rebuild 73 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 157 items, 0 not healthy; sketches 39, 39 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 157 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
 | wall_depth | 1495 | 1300 |
-| side_h | 1142.74 | 1000 |
-| stile_pitch_max | 400 | 300 |
-| frm_len | 1489.74 | 1294.74 |
-| stile_n_mid | 3 | 4 |
-| stile_pitch | 364.935 | 252.948 |
-| cass_len | 1445 | 1250 |
-| cass_h | 1142.74 | 1000 |
+| side_h | 1142.74 | 1120 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1486.74 | 1291.74 |
+| stile_n_mid | 7 | 7 |
+| stud_c1 | 270 | 270 |
+| stud_c2 | 402.74 | 402.74 |
+| stud_c3 | 520.913 | 455.913 |
+| stud_c4 | 746.37 | 648.87 |
+| stud_c5 | 971.827 | 841.827 |
+| stud_c6 | 1222.74 | 1027.74 |
+| stud_c7 | 1342.74 | 1147.74 |
+| cass_len | 1440 | 1245 |
+| cass_h | 1142.74 | 1120 |
+| lin_front_dy | 5 | 5 |
 | top_h | 20 | 20 |
+| pod_h | 2400 | 2400 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| outer_t | 46 | 46 |
+| lin_gap | 4 | 4 |
 
 3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
 
 | Body | Before | After |
 |---|---|---|
-| 211102 / RAIL - BOTTOM | (1204.0, -642.74, 112.26, 1244.0, 847.0, 132.26) | (1204.0, -447.74, 112.26, 1244.0, 847.0, 132.26) |
-| 211102 / RAIL - TOP | (1204.0, -642.74, 1235.0, 1244.0, 847.0, 1255.0) | (1204.0, -447.74, 1092.26, 1244.0, 847.0, 1112.26) |
-| 211102 / STILE - BACK | (1204.0, 807.0, 132.26, 1244.0, 847.0, 1235.0) | (1204.0, 807.0, 132.26, 1244.0, 847.0, 1092.26) |
-| 211102 / STILE - FRONT | (1204.0, -642.74, 132.26, 1244.0, -622.74, 1235.0) | (1204.0, -447.74, 132.26, 1244.0, -427.74, 1092.26) |
-| 211102 / STILE - MID 1 | (1204.0, -277.81, 132.26, 1244.0, -257.81, 1235.0) | (1204.0, -194.79, 132.26, 1244.0, -174.79, 1092.26) |
-| 211102 / STILE - MID 1 (1) | - | (1204.0, 564.05, 132.26, 1244.0, 584.05, 1092.26) |
-| 211102 / STILE - MID 2 | (1204.0, 87.13, 132.26, 1244.0, 107.13, 1235.0) | (1204.0, 58.16, 132.26, 1244.0, 78.16, 1092.26) |
-| 211102 / STILE - MID 3 | (1204.0, 452.06, 132.26, 1244.0, 472.06, 1235.0) | (1204.0, 311.1, 132.26, 1244.0, 331.1, 1092.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212201 WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH:1 / RAIL - BOTTOM | (1204.0, -641.33, 112.26, 1244.0, 841.76, 132.26) | (1204.0, -446.33, 112.26, 1244.0, 841.76, 132.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212202 WALL - FRAME RAIL TOP - SIDE LOWER - RH:1 / RAIL - TOP | (1204.0, -641.33, 1235.0, 1244.0, 841.76, 1255.0) | (1204.0, -446.33, 1212.26, 1244.0, 841.76, 1232.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212203 WALL - FRAME STILE FRONT - SIDE LOWER - RH:1 / STILE - FRONT | (1204.0, -642.74, 113.67, 1244.0, -622.74, 1253.59) | (1204.0, -447.74, 113.67, 1244.0, -427.74, 1230.85) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212204 WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH:1 / STILE - BACK | (1204.0, 804.0, 113.38, 1244.0, 844.0, 1253.88) | (1204.0, 804.0, 113.38, 1244.0, 844.0, 1231.14) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212205 WALL - FRAME STILE MID - SIDE LOWER - RH:1 / STILE - MID | (1204.0, -382.74, 132.26, 1244.0, -362.74, 1235.0) | (1204.0, -187.74, 132.26, 1244.0, -167.74, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212205 WALL - FRAME STILE MID - SIDE LOWER - RH:2 / STILE - MID | (1204.0, -131.83, 132.26, 1244.0, -111.83, 1235.0) | (1204.0, -1.83, 132.26, 1244.0, 18.17, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212205 WALL - FRAME STILE MID - SIDE LOWER - RH:3 / STILE - MID | (1204.0, 570.0, 132.26, 1244.0, 590.0, 1235.0) | (1204.0, 570.0, 132.26, 1244.0, 590.0, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:1 / STILE - MID INTERIOR | (1204.0, 690.0, 132.26, 1244.0, 710.0, 1235.0) | (1204.0, 690.0, 132.26, 1244.0, 710.0, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:2 / STILE - MID INTERIOR | (1204.0, 319.09, 132.26, 1244.0, 339.09, 1235.0) | (1204.0, 384.09, 132.26, 1244.0, 404.09, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:3 / STILE - MID INTERIOR | (1204.0, 93.63, 132.26, 1244.0, 113.63, 1235.0) | (1204.0, 191.13, 132.26, 1244.0, 211.13, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH:4 / STILE - MID INTERIOR | (1204.0, -250.0, 132.26, 1244.0, -230.0, 1235.0) | (1204.0, -55.0, 132.26, 1244.0, -35.0, 1212.26) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:1 / MITRE PLATE | (1204.0, -642.21, 112.79, 1244.0, -622.06, 132.94) | (1204.0, -447.21, 112.79, 1244.0, -427.06, 132.94) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL:2 / MITRE PLATE | (1204.0, -642.21, 1234.32, 1244.0, -622.06, 1254.47) | (1204.0, -447.21, 1211.58, 1244.0, -427.06, 1231.73) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831008 HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL:1 / MITRE PLATE | (1204.0, 803.62, 112.77, 1244.0, 841.63, 133.12) | (1204.0, 803.62, 112.77, 1244.0, 841.63, 133.12) |
+| 211102 WALL - PANEL FRAME - SIDE LOWER - RH:1+831008 HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL:2 / MITRE PLATE | (1204.0, 803.62, 1234.14, 1244.0, 841.63, 1254.49) | (1204.0, 803.62, 1211.4, 1244.0, 841.63, 1231.75) |
 
 | Check | Result |
 |---|---|
-| rails run wall_depth - 2.26 - 3 | PASS |
-| frame starts 2.26 behind the decor back plate | PASS |
-| stiles span side_h - 20 - top_h | PASS |
-| mid stile count follows the 300 mm rule (4) | PASS |
-| no stile pitch over 300 | PASS |
+| rails run wall_depth - 2.26 - 6 (the back return and its bond line) less their plate cut-backs | PASS |
+| rails start one cut-back behind the frame's front end (2.26 behind the decor back plate) | PASS |
+| perimeter stiles span the panel height less their plate cut-backs | PASS |
+| studs span the panel height - 20 - top_h | PASS |
+| 7 studs, set from the bolts | PASS |
+| every clear bay 275 or less (the skin's 2 mm limit) [240.0, 112.7, 33.2, 173.0, 173.0, 165.9, 100.0, 94.0] | PASS |
+| every bolt 30 or more clear of every stud (R-J14) | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 73 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 157 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_CAD.f3d
 
@@ -1038,6 +1101,50 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 4. Revert: 9 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
+## Edit test: 211302_P01_WALL-SKIN-SIDE-LOWER-RH_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211302.
+
+1. Reopen: timeline 9 items, 0 not healthy; sketches 2, 2 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 9 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| wall_depth | 1495 | 1300 |
+| side_h | 1142.74 | 1120 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1486.74 | 1291.74 |
+| stile_n_mid | 7 | 7 |
+| stud_c1 | 270 | 270 |
+| stud_c2 | 402.74 | 402.74 |
+| stud_c3 | 520.913 | 455.913 |
+| stud_c4 | 746.37 | 648.87 |
+| stud_c5 | 971.827 | 841.827 |
+| stud_c6 | 1222.74 | 1027.74 |
+| stud_c7 | 1342.74 | 1147.74 |
+| cass_len | 1440 | 1245 |
+| cass_h | 1142.74 | 1120 |
+| lin_front_dy | 5 | 5 |
+| top_h | 20 | 20 |
+| pod_h | 2400 | 2400 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| outer_t | 46 | 46 |
+| lin_gap | 4 | 4 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211302 WALL - SKIN - SIDE LOWER - RH:1 / SKIN - ACP 3 WITH BACK RETURN | (1204.0, -642.74, 112.26, 1250.0, 850.0, 1255.0) | (1204.0, -447.74, 112.26, 1250.0, 850.0, 1232.26) |
+
+| Check | Result |
+|---|---|
+| skin runs wall_depth - 2.26 and the panel height | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 9 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
 ## Edit test: 211303_P01_WALL-SKIN-SIDE-UPPER-LH_CAD.f3d
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211303.
@@ -1072,6 +1179,48 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | Body | Before | After |
 |---|---|---|
 | 211303 WALL - SKIN - SIDE UPPER - LH:1 / SKIN - ACP 3 WITH BACK RETURN | (-1250.0, -642.74, 1257.26, -1204.0, 850.0, 2400.0) | (-1250.0, -447.74, 1234.52, -1204.0, 850.0, 2400.0) |
+
+| Check | Result |
+|---|---|
+| skin runs wall_depth - 2.26 and the panel height | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 9 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 211304_P01_WALL-SKIN-SIDE-UPPER-RH_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211304.
+
+1. Reopen: timeline 9 items, 0 not healthy; sketches 2, 2 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 9 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| wall_depth | 1495 | 1300 |
+| side_h | 1142.74 | 1120 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1486.74 | 1291.74 |
+| stile_n_mid | 5 | 5 |
+| stud_c1 | 270 | 270 |
+| stud_c2 | 520.913 | 455.913 |
+| stud_c3 | 746.37 | 648.87 |
+| stud_c4 | 971.827 | 841.827 |
+| stud_c5 | 1222.74 | 1027.74 |
+| cass_len | 1440 | 1245 |
+| cass_h | 1092.74 | 1115.48 |
+| lin_front_dy | 5 | 5 |
+| top_h | 40 | 40 |
+| pod_h | 2400 | 2400 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| outer_t | 46 | 46 |
+| lin_gap | 4 | 4 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211304 WALL - SKIN - SIDE UPPER - RH:1 / SKIN - ACP 3 WITH BACK RETURN | (1204.0, -642.74, 1257.26, 1250.0, 850.0, 2400.0) | (1204.0, -447.74, 1234.52, 1250.0, 850.0, 2400.0) |
 
 | Check | Result |
 |---|---|
@@ -1274,19 +1423,26 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 
 Copy opened as a new, unsaved document and closed without saving. Components: 511102, 511302, NO-PN-HOLD-H03.
 
-1. Reopen: timeline 33 items, 0 not healthy; sketches 9, 9 fully constrained; parametric.
-2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm, stile_pitch_max -> 300 mm: rebuild 33 items, 0 not healthy, 0 sketches not fully constrained.
+1. Reopen: timeline 102 items, 0 not healthy; sketches 32, 32 fully constrained; parametric.
+2. Edit wall_depth -> 1300 mm, side_h -> 1120 mm: rebuild 102 items, 0 not healthy, 0 sketches not fully constrained.
 
 | Parameter | Before | After |
 |---|---|---|
 | wall_depth | 1495 | 1300 |
 | side_h | 1142.74 | 1120 |
-| stile_pitch_max | 400 | 300 |
-| frm_len | 1489.74 | 1294.74 |
-| stile_n_mid | 3 | 4 |
-| stile_pitch | 364.935 | 252.948 |
-| cass_len | 1445 | 1250 |
+| stile_pitch_max | 300 | 300 |
+| frm_len | 1486.74 | 1291.74 |
+| stile_n_mid | 7 | 7 |
+| stud_c1 | 270 | 270 |
+| stud_c2 | 402.74 | 402.74 |
+| stud_c3 | 520.913 | 455.913 |
+| stud_c4 | 746.37 | 648.87 |
+| stud_c5 | 971.827 | 841.827 |
+| stud_c6 | 1222.74 | 1027.74 |
+| stud_c7 | 1342.74 | 1147.74 |
+| cass_len | 1440 | 1245 |
 | cass_h | 1142.74 | 1120 |
+| lin_front_dy | 5 | 5 |
 | top_h | 20 | 20 |
 | pod_h | 2400 | 2400 |
 | panel_z0 | 112.26 | 112.26 |
@@ -1294,37 +1450,38 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 | outer_t | 46 | 46 |
 | lin_gap | 4 | 4 |
 | el_y_kit | 240.5 | 338 |
-| el_y_cx | -298 | -103 |
+| el_y_fx | -312 | -117 |
+| el_z_fx | 1162.5 | 1162.5 |
+| el_fx_d | 32 | 32 |
 | el_trunk_z | 1100 | 1100 |
 | el_kit_dz | 80 | 80 |
 | el_kit_d | 60 | 60 |
-| el_grm_d | 19.1 | 19.1 |
 
 3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
 
 | Body | Before | After |
 |---|---|---|
-| 511102 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (1166.0, -645.0, 112.26, 1200.0, 800.0, 1255.0) | (1166.0, -450.0, 112.26, 1200.0, 800.0, 1232.26) |
-| 511302 / FELT - PET 9 HELD BY THE TRAY LIPS | (1166.5, -643.5, 113.76, 1175.5, 798.5, 1253.5) | (1166.5, -448.5, 113.76, 1175.5, 798.5, 1230.76) |
-| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 1 (BOTTOM FRONT) | (1200.0, -277.81, 182.26, 1204.0, -257.81, 242.26) | (1200.0, -194.79, 182.26, 1204.0, -174.79, 242.26) |
-| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 2 (BOTTOM BACK) | (1200.0, 452.06, 182.26, 1204.0, 472.06, 242.26) | (1200.0, 564.05, 182.26, 1204.0, 584.05, 242.26) |
-| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 3 (TOP FRONT) | (1200.0, -277.81, 1125.0, 1204.0, -257.81, 1185.0) | (1200.0, -194.79, 1102.26, 1204.0, -174.79, 1162.26) |
-| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 4 (TOP BACK) | (1200.0, 452.06, 1125.0, 1204.0, 472.06, 1185.0) | (1200.0, 564.05, 1102.26, 1204.0, 584.05, 1162.26) |
+| 511102 LINING - TRAY - SIDE LOWER - RH:1 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (1166.0, -640.0, 112.26, 1200.0, 800.0, 1255.0) | (1166.0, -445.0, 112.26, 1200.0, 800.0, 1232.26) |
+| 511302 LINING - FELT - SIDE LOWER - RH:1 / FELT - PET 9 HELD BY THE TRAY LIPS | (1166.5, -638.5, 113.76, 1175.5, 798.5, 1253.5) | (1166.5, -443.5, 113.76, 1175.5, 798.5, 1230.76) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 1 (BOTTOM FRONT) | (1200.0, -382.74, 182.26, 1204.0, -362.74, 242.26) | (1200.0, -187.74, 182.26, 1204.0, -167.74, 242.26) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 2 (BOTTOM BACK) | (1200.0, 690.0, 182.26, 1204.0, 710.0, 242.26) | (1200.0, 690.0, 182.26, 1204.0, 710.0, 242.26) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 3 (TOP FRONT) | (1200.0, -382.74, 1125.0, 1204.0, -362.74, 1185.0) | (1200.0, -187.74, 1102.26, 1204.0, -167.74, 1162.26) |
+| NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / HOLD - CLIP ZONE 4 (TOP BACK) | (1200.0, 690.0, 1125.0, 1204.0, 710.0, 1185.0) | (1200.0, 690.0, 1102.26, 1204.0, 710.0, 1162.26) |
 
 | Check | Result |
 |---|---|
 | tray runs cass_len | PASS |
-| tray starts at the decor back plate | PASS |
+| tray starts lin_front_dy behind the decor back plate (R: 5, clear of DR's panel) | PASS |
 | tray height follows the row (cass_h) | PASS |
 | felt follows the tray, 1 mm clear inside the 0.5 returns | PASS |
-| clip zones sit on the first and last mid stile | PASS |
+| clip zones sit on the first and last stud | PASS |
 | top clip zones follow the top edge | PASS |
 | el_y_kit moves half the wall_depth change (+97.50) | PASS |
 | FA-KIT 60 hole at Y el_y_kit, Z trunk + 80 | PASS |
-| FX-COL 19.1 hole follows the column's back face (Y -103.00) | PASS |
+| FX-COL 32 hole follows the column's back face (Y -117.00, Z 1162.5) | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
-4. Revert: 33 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+4. Revert: 102 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_CAD.f3d
 

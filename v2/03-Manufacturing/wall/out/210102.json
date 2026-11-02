@@ -1,1392 +1,18 @@
 {
  "document": "210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD",
- "version": 2,
+ "version": 3,
  "saved": true,
  "modified": true,
  "components": [
-  {
-   "part_number": "211102",
-   "name": "211102 WALL - PANEL FRAME - SIDE LOWER - RH",
-   "description": "",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "RAIL - BOTTOM",
-     "box": [
-      1204.0,
-      -642.74,
-      112.26,
-      1244.0,
-      847.0,
-      132.26
-     ],
-     "volume_mm3": 204203.7,
-     "area_mm2": 341085.3,
-     "mass_kg": 0.5514,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 8.5,
-       "axis": "z",
-       "centre": [
-        1226.75,
-        750.0,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": false
-      },
-      {
-       "d": 8.5,
-       "axis": "z",
-       "centre": [
-        1221.25,
-        750.0,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": false
-      },
-      {
-       "d": 8.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": true
-      },
-      {
-       "d": 19.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 131.06,
-       "to": 132.26,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": true
-      },
-      {
-       "d": 19.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 131.06,
-       "to": 132.26,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": true
-      },
-      {
-       "d": 19.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 131.06,
-       "to": 132.26,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": true
-      },
-      {
-       "d": 19.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 131.06,
-       "to": 132.26,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 112.26,
-       "to": 113.46,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RAIL - TOP",
-     "box": [
-      1204.0,
-      -642.74,
-      1235.0,
-      1244.0,
-      847.0,
-      1255.0
-     ],
-     "volume_mm3": 205428.1,
-     "area_mm2": 342872.2,
-     "mass_kg": 0.5547,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.53,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        750.0,
-        null
-       ],
-       "from": 1253.8,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 1253.8,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 1253.8,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 1253.8,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 1253.8,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 1253.8,
-       "to": 1255.0,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STILE - FRONT",
-     "box": [
-      1204.0,
-      -642.74,
-      132.26,
-      1244.0,
-      -622.74,
-      1235.0
-     ],
-     "volume_mm3": 151283.5,
-     "area_mm2": 252709.7,
-     "mass_kg": 0.4085,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 19.0,
-       "axis": "y",
-       "centre": [
-        1224.0,
-        null,
-        1035.0
-       ],
-       "from": -623.94,
-       "to": -622.74,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "y",
-       "centre": [
-        1224.0,
-        null,
-        1035.0
-       ],
-       "from": -642.74,
-       "to": -641.54,
-       "full_circle": true
-      },
-      {
-       "d": 19.0,
-       "axis": "y",
-       "centre": [
-        1224.0,
-        null,
-        683.63
-       ],
-       "from": -623.94,
-       "to": -622.74,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "y",
-       "centre": [
-        1224.0,
-        null,
-        683.63
-       ],
-       "from": -642.74,
-       "to": -641.54,
-       "full_circle": true
-      },
-      {
-       "d": 19.0,
-       "axis": "y",
-       "centre": [
-        1224.0,
-        null,
-        332.26
-       ],
-       "from": -623.94,
-       "to": -622.74,
-       "full_circle": true
-      },
-      {
-       "d": 7.0,
-       "axis": "y",
-       "centre": [
-        1224.0,
-        null,
-        332.26
-       ],
-       "from": -642.74,
-       "to": -641.54,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STILE - BACK",
-     "box": [
-      1204.0,
-      807.0,
-      132.26,
-      1244.0,
-      847.0,
-      1235.0
-     ],
-     "volume_mm3": 205117.5,
-     "area_mm2": 342342.8,
-     "mass_kg": 0.5538,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.53,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        1010.87
-       ],
-       "from": 1204.0,
-       "to": 1205.2,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        671.56
-       ],
-       "from": 1204.0,
-       "to": 1205.2,
-       "full_circle": true
-      },
-      {
-       "d": 9.53,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        332.26
-       ],
-       "from": 1204.0,
-       "to": 1205.2,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STILE - MID 1",
-     "box": [
-      1204.0,
-      -277.81,
-      132.26,
-      1244.0,
-      -257.81,
-      1235.0
-     ],
-     "volume_mm3": 127917.8,
-     "area_mm2": 256067.7,
-     "mass_kg": 0.3454,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": []
-    },
-    {
-     "name": "STILE - MID 2",
-     "box": [
-      1204.0,
-      87.13,
-      132.26,
-      1244.0,
-      107.13,
-      1235.0
-     ],
-     "volume_mm3": 127917.8,
-     "area_mm2": 256067.7,
-     "mass_kg": 0.3454,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": []
-    },
-    {
-     "name": "STILE - MID 3",
-     "box": [
-      1204.0,
-      452.06,
-      132.26,
-      1244.0,
-      472.06,
-      1235.0
-     ],
-     "volume_mm3": 127917.8,
-     "area_mm2": 256067.7,
-     "mass_kg": 0.3454,
-     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
-     "holes": []
-    }
-   ]
-  },
-  {
-   "part_number": "831002",
-   "name": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
-   "description": "HARDWARE - LOCATING SPIGOT - D8 - SS | Chốt định vị Ø8 | part we make | rev P01 | DRAFT",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "STOP WASHER - TOP RAIL 1",
-     "box": [
-      1214.0,
-      -432.74,
-      1255.0,
-      1234.0,
-      -412.74,
-      1256.5
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STOP WASHER - TOP RAIL 2",
-     "box": [
-      1214.0,
-      -81.83,
-      1255.0,
-      1234.0,
-      -61.83,
-      1256.5
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STOP WASHER - TOP RAIL 3",
-     "box": [
-      1214.0,
-      269.09,
-      1255.0,
-      1234.0,
-      289.09,
-      1256.5
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STOP WASHER - TOP RAIL 4",
-     "box": [
-      1214.0,
-      620.0,
-      1255.0,
-      1234.0,
-      640.0,
-      1256.5
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1256.5,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STOP WASHER - BACK STILE CORNER 1",
-     "box": [
-      1202.5,
-      814.0,
-      322.26,
-      1204.0,
-      834.0,
-      342.26
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        332.26
-       ],
-       "from": 1202.5,
-       "to": 1204.0,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        332.26
-       ],
-       "from": 1202.5,
-       "to": 1204.0,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STOP WASHER - BACK STILE CORNER 2",
-     "box": [
-      1202.5,
-      814.0,
-      661.56,
-      1204.0,
-      834.0,
-      681.56
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        671.56
-       ],
-       "from": 1202.5,
-       "to": 1204.0,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        671.56
-       ],
-       "from": 1202.5,
-       "to": 1204.0,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "STOP WASHER - BACK STILE CORNER 3",
-     "box": [
-      1202.5,
-      814.0,
-      1000.87,
-      1204.0,
-      834.0,
-      1020.87
-     ],
-     "volume_mm3": 341.4,
-     "area_mm2": 598.9,
-     "mass_kg": 0.0009,
-     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
-     "holes": [
-      {
-       "d": 10.5,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        1010.87
-       ],
-       "from": 1202.5,
-       "to": 1204.0,
-       "full_circle": true
-      },
-      {
-       "d": 20.0,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        1010.87
-       ],
-       "from": 1202.5,
-       "to": 1204.0,
-       "full_circle": true
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "part_number": "838003",
-   "name": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
-   "description": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | Tán rút M6 | bought item | rev P01 | DRAFT",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "RIVNUT - TOP RAIL 1",
-     "box": [
-      1217.52,
-      -429.22,
-      1246.34,
-      1230.48,
-      -416.26,
-      1257.26
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1257.26,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -422.74,
-        null
-       ],
-       "from": 1256.5,
-       "to": 1257.26,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - TOP RAIL 2",
-     "box": [
-      1217.52,
-      -78.31,
-      1246.34,
-      1230.48,
-      -65.35,
-      1257.26
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1257.26,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -71.83,
-        null
-       ],
-       "from": 1256.5,
-       "to": 1257.26,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - TOP RAIL 3",
-     "box": [
-      1217.52,
-      272.61,
-      1246.34,
-      1230.48,
-      285.57,
-      1257.26
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1257.26,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        279.09,
-        null
-       ],
-       "from": 1256.5,
-       "to": 1257.26,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - TOP RAIL 4",
-     "box": [
-      1217.52,
-      623.52,
-      1246.34,
-      1230.48,
-      636.48,
-      1257.26
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1256.5,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 1246.34,
-       "to": 1257.26,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        630.0,
-        null
-       ],
-       "from": 1256.5,
-       "to": 1257.26,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - TOP RAIL SPIGOT FRONT",
-     "box": [
-      1217.52,
-      -549.22,
-      1244.84,
-      1230.48,
-      -536.26,
-      1255.76
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 1244.84,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 1244.84,
-       "to": 1255.76,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1255.76,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - TOP RAIL SPIGOT BACK",
-     "box": [
-      1217.52,
-      743.52,
-      1244.84,
-      1230.48,
-      756.48,
-      1255.76
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        750.0,
-        null
-       ],
-       "from": 1244.84,
-       "to": 1255.0,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        750.0,
-        null
-       ],
-       "from": 1244.84,
-       "to": 1255.76,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        750.0,
-        null
-       ],
-       "from": 1255.0,
-       "to": 1255.76,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - BACK STILE CORNER 1",
-     "box": [
-      1201.74,
-      817.52,
-      325.78,
-      1212.66,
-      830.48,
-      338.74
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        332.26
-       ],
-       "from": 1202.5,
-       "to": 1212.66,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        332.26
-       ],
-       "from": 1201.74,
-       "to": 1212.66,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        332.26
-       ],
-       "from": 1201.74,
-       "to": 1202.5,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - BACK STILE CORNER 2",
-     "box": [
-      1201.74,
-      817.52,
-      665.09,
-      1212.66,
-      830.48,
-      678.05
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        671.56
-       ],
-       "from": 1202.5,
-       "to": 1212.66,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        671.56
-       ],
-       "from": 1201.74,
-       "to": 1212.66,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        671.56
-       ],
-       "from": 1201.74,
-       "to": 1202.5,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "RIVNUT - BACK STILE CORNER 3",
-     "box": [
-      1201.74,
-      817.52,
-      1004.39,
-      1212.66,
-      830.48,
-      1017.35
-     ],
-     "volume_mm3": 511.7,
-     "area_mm2": 747.3,
-     "mass_kg": 0.0014,
-     "material": "ALUMINIUM 5056 RIVNUT 2640 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 9.5,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        1010.87
-       ],
-       "from": 1202.5,
-       "to": 1212.66,
-       "full_circle": true
-      },
-      {
-       "d": 6.0,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        1010.87
-       ],
-       "from": 1201.74,
-       "to": 1212.66,
-       "full_circle": true
-      },
-      {
-       "d": 12.96,
-       "axis": "x",
-       "centre": [
-        null,
-        824.0,
-        1010.87
-       ],
-       "from": 1201.74,
-       "to": 1202.5,
-       "full_circle": true
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "part_number": "211502",
-   "name": "211502 WALL - CAVITY FILL - SIDE LOWER - RH",
-   "description": "WALL - CAVITY FILL - SIDE LOWER - RH | Vách phải - bông PET dưới | P01",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "FILL - BAY 1",
-     "box": [
-      1204.0,
-      -622.74,
-      132.26,
-      1244.0,
-      -277.81,
-      1235.0
-     ],
-     "volume_mm3": 14638944.9,
-     "area_mm2": 866961.2,
-     "mass_kg": 0.3513,
-     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
-     "holes": []
-    },
-    {
-     "name": "FILL - BAY 2",
-     "box": [
-      1204.0,
-      -257.81,
-      132.26,
-      1244.0,
-      87.13,
-      1235.0
-     ],
-     "volume_mm3": 15070944.9,
-     "area_mm2": 874161.2,
-     "mass_kg": 0.3617,
-     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
-     "holes": []
-    },
-    {
-     "name": "FILL - BAY 3",
-     "box": [
-      1204.0,
-      107.13,
-      132.26,
-      1244.0,
-      452.06,
-      1235.0
-     ],
-     "volume_mm3": 15070944.9,
-     "area_mm2": 874161.2,
-     "mass_kg": 0.3617,
-     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
-     "holes": []
-    },
-    {
-     "name": "FILL - BAY 4",
-     "box": [
-      1204.0,
-      472.06,
-      132.26,
-      1244.0,
-      807.0,
-      1235.0
-     ],
-     "volume_mm3": 14629848.9,
-     "area_mm2": 851306.4,
-     "mass_kg": 0.3511,
-     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
-     "holes": []
-    }
-   ]
-  },
-  {
-   "part_number": "831001",
-   "name": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
-   "description": "HARDWARE - STOP WASHER - 10.5 X 20 X 1.5 - AL | Long đen chặn nhôm | part we make | rev P01 | DRAFT",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "SPIGOT - TOP RAIL SPIGOT FRONT",
-     "box": [
-      1220.0,
-      -546.74,
-      1245.76,
-      1228.0,
-      -538.74,
-      1263.0
-     ],
-     "volume_mm3": 646.7,
-     "area_mm2": 471.0,
-     "mass_kg": 0.0051,
-     "material": "STAINLESS SPIGOT 7900 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 1245.76,
-       "to": 1255.76,
-       "full_circle": true
-      },
-      {
-       "d": 8.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        -542.74,
-        null
-       ],
-       "from": 1255.76,
-       "to": 1263.0,
-       "full_circle": true
-      }
-     ]
-    },
-    {
-     "name": "SPIGOT - TOP RAIL SPIGOT BACK",
-     "box": [
-      1220.0,
-      746.0,
-      1245.76,
-      1228.0,
-      754.0,
-      1263.0
-     ],
-     "volume_mm3": 646.7,
-     "area_mm2": 471.0,
-     "mass_kg": 0.0051,
-     "material": "STAINLESS SPIGOT 7900 kg/m3 (source)",
-     "holes": [
-      {
-       "d": 6.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        750.0,
-        null
-       ],
-       "from": 1245.76,
-       "to": 1255.76,
-       "full_circle": true
-      },
-      {
-       "d": 8.0,
-       "axis": "z",
-       "centre": [
-        1224.0,
-        750.0,
-        null
-       ],
-       "from": 1255.76,
-       "to": 1263.0,
-       "full_circle": true
-      }
-     ]
-    }
-   ]
-  },
   {
    "part_number": "211302",
    "name": "211302 WALL - SKIN - SIDE LOWER - RH",
    "description": "WALL - SKIN - SIDE LOWER - RH | Vách phải - tấm ốp alu dưới | P01",
    "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
    "bodies": [
     {
      "name": "SKIN - ACP 3 WITH BACK RETURN",
@@ -1398,12 +24,793 @@
       850.0,
       1255.0
      ],
-     "volume_mm3": 5264854.6,
-     "area_mm2": 3525973.9,
-     "mass_kg": 6.1423,
+     "volume_mm3": 5263873.6,
+     "area_mm2": 3524991.3,
+     "mass_kg": 6.1412,
      "material": "ACP 3 MM EV3038 1166.7 kg/m3 (calculation)",
+     "holes": [
+      {
+       "d": 4.0,
+       "axis": "z",
+       "centre": [
+        1248.0,
+        848.0,
+        null
+       ],
+       "from": 112.26,
+       "to": 1255.0,
+       "full_circle": false,
+       "convex": true
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -642.74,
+    112.26,
+    1250.0,
+    850.0,
+    1255.0
+   ]
+  },
+  {
+   "part_number": "212206",
+   "name": "212206 WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH",
+   "description": "WALL - FRAME STUD WITH LEDGE BRACKET RIVNUTS - SIDE LOWER - RH | Vách phải - khung dưới - thanh đứng có tán rút giá kệ | P01",
+   "is_root": false,
+   "copies": 4,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "STILE - MID INTERIOR",
+     "box": [
+      1204.0,
+      690.0,
+      132.26,
+      1244.0,
+      710.0,
+      1235.0
+     ],
+     "volume_mm3": 102914.4,
+     "area_mm2": 257523.1,
+     "mass_kg": 0.8079,
+     "material": "STEEL BOX TUBE GALVANIZED 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 10.0,
+       "axis": "x",
+       "centre": [
+        null,
+        700.0,
+        1045.0
+       ],
+       "from": 1204.0,
+       "to": 1204.8,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "x",
+       "centre": [
+        null,
+        700.0,
+        815.0
+       ],
+       "from": 1204.0,
+       "to": 1204.8,
+       "full_circle": true,
+       "convex": false
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -250.0,
+    132.26,
+    1244.0,
+    710.0,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "211102",
+   "name": "211102 WALL - PANEL FRAME - SIDE LOWER - RH",
+   "description": "WALL - PANEL FRAME - SIDE LOWER - RH | Vách phải - khung dưới | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [],
+   "placed_box": null
+  },
+  {
+   "part_number": "211516",
+   "name": "211516 WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON",
+   "description": "WALL - CAVITY FILL PIECE F02 230.9 X 1102.7 - SIDE LOWER - COMMON | Vách - bông PET dưới - tấm F02 230.9 x 1102.7 (dùng chung) | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 6",
+     "box": [
+      1204.0,
+      339.09,
+      132.26,
+      1244.0,
+      570.0,
+      1235.0
+     ],
+     "volume_mm3": 10185494.8,
+     "area_mm2": 615967.0,
+     "mass_kg": 0.2445,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
      "holes": []
     }
+   ],
+   "placed_box": [
+    1204.0,
+    339.09,
+    132.26,
+    1244.0,
+    570.0,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "211701",
+   "name": "211701 WALL - CASSETTE LEDGE - SIDE LOWER - COMMON",
+   "description": "WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | Vách - thanh đỡ cassette dưới (dùng chung) | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "LEDGE - STEEL ANGLE UNDER THE CASSETTE",
+     "box": [
+      1176.0,
+      -635.0,
+      108.45,
+      1204.0,
+      795.0,
+      130.26
+     ],
+     "volume_mm3": 101406.8,
+     "area_mm2": 139791.1,
+     "mass_kg": 0.796,
+     "material": "GALVANIZED STEEL SHEET 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        755.0,
+        121.26
+       ],
+       "from": 1203.48,
+       "to": 1204.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        485.0,
+        121.26
+       ],
+       "from": 1203.48,
+       "to": 1204.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        215.0,
+        121.26
+       ],
+       "from": 1203.48,
+       "to": 1204.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        -55.0,
+        121.26
+       ],
+       "from": 1203.48,
+       "to": 1204.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        -325.0,
+        121.26
+       ],
+       "from": 1203.48,
+       "to": 1204.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        -595.0,
+        121.26
+       ],
+       "from": 1203.48,
+       "to": 1204.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 6.0,
+       "axis": "y",
+       "centre": [
+        1201.0,
+        null,
+        111.45
+       ],
+       "from": -635.0,
+       "to": 795.0,
+       "full_circle": false,
+       "convex": true
+      },
+      {
+       "d": 3.0,
+       "axis": "y",
+       "centre": [
+        1201.0,
+        null,
+        111.45
+       ],
+       "from": -635.0,
+       "to": 795.0,
+       "full_circle": false,
+       "convex": false
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1176.0,
+    -635.0,
+    108.45,
+    1204.0,
+    795.0,
+    130.26
+   ]
+  },
+  {
+   "part_number": "838012",
+   "name": "838012 HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8",
+   "description": "HARDWARE - BLIND RIVET - CLOSED END - COUNTERSUNK - ISO 15974 - AL/ST - 3.2 X 8 | Đinh tán rút kín đầu, đầu chìm 3.2 × 8 | P01",
+   "is_root": false,
+   "copies": 6,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "BLIND RIVET",
+     "box": [
+      -3.35,
+      -3.35,
+      -8.0,
+      3.35,
+      3.35,
+      0.0
+     ],
+     "volume_mm3": 76.5,
+     "area_mm2": 145.0,
+     "mass_kg": 0.0002,
+     "material": "STEEL ZINC BLIND RIVET (HOLD) 2700 kg/m3 (calculation)",
+     "holes": [
+      {
+       "d": 3.2,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": -8.0,
+       "to": -1.01,
+       "full_circle": true,
+       "convex": true
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1202.5,
+    -598.35,
+    117.91,
+    1210.5,
+    758.35,
+    124.61
+   ]
+  },
+  {
+   "part_number": "831002",
+   "name": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "description": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | Long đen chặn nhôm | P01 | Joints' STEP 831002_P01_HARDWARE-STOP-WASHER_STEP.step",
+   "is_root": false,
+   "copies": 7,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "STOP WASHER",
+     "box": [
+      -10.0,
+      -10.0,
+      0.0,
+      10.0,
+      10.0,
+      1.5
+     ],
+     "volume_mm3": 341.4,
+     "area_mm2": 598.9,
+     "mass_kg": 0.0009,
+     "material": "ALUMINIUM STOP WASHER 2700 kg/m3 (calculation)",
+     "holes": [
+      {
+       "d": 10.5,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": 0.0,
+       "to": 1.5,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 20.0,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": 0.0,
+       "to": 1.5,
+       "full_circle": true,
+       "convex": true
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1202.5,
+    -432.74,
+    322.26,
+    1234.0,
+    834.0,
+    1256.5
+   ]
+  },
+  {
+   "part_number": "211517",
+   "name": "211517 WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON",
+   "description": "WALL - CAVITY FILL PIECE F03 205.5 X 1102.7 - SIDE LOWER - COMMON | Vách - bông PET dưới - tấm F03 205.5 x 1102.7 (dùng chung) | P01",
+   "is_root": false,
+   "copies": 2,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 4",
+     "box": [
+      1204.0,
+      -111.83,
+      132.26,
+      1244.0,
+      93.63,
+      1235.0
+     ],
+     "volume_mm3": 8918611.4,
+     "area_mm2": 555386.3,
+     "mass_kg": 0.214,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -111.83,
+    132.26,
+    1244.0,
+    319.09,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "211554",
+   "name": "211554 WALL - CAVITY FILL PIECE F18 94 X 1102.7 - SIDE LOWER - RH",
+   "description": "WALL - CAVITY FILL PIECE F18 94 X 1102.7 - SIDE LOWER - RH | Vách phải - bông PET dưới - tấm F18 94 x 1102.7 | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 8",
+     "box": [
+      1204.0,
+      710.0,
+      132.26,
+      1244.0,
+      804.0,
+      1235.0
+     ],
+     "volume_mm3": 4146302.4,
+     "area_mm2": 303054.3,
+     "mass_kg": 0.0995,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    710.0,
+    132.26,
+    1244.0,
+    804.0,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "212202",
+   "name": "212202 WALL - FRAME RAIL TOP - SIDE LOWER - RH",
+   "description": "WALL - FRAME RAIL TOP - SIDE LOWER - RH | Vách phải - khung dưới - thanh ngang trên | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "RAIL - TOP",
+     "box": [
+      1204.0,
+      -641.33,
+      1235.0,
+      1244.0,
+      841.76,
+      1255.0
+     ],
+     "volume_mm3": 200309.6,
+     "area_mm2": 334580.2,
+     "mass_kg": 1.5724,
+     "material": "STEEL BOX TUBE GALVANIZED 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 10.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        750.0,
+        null
+       ],
+       "from": 1253.8,
+       "to": 1255.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -542.74,
+        null
+       ],
+       "from": 1253.8,
+       "to": 1255.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        630.0,
+        null
+       ],
+       "from": 1253.8,
+       "to": 1255.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        279.09,
+        null
+       ],
+       "from": 1253.8,
+       "to": 1255.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -71.83,
+        null
+       ],
+       "from": 1253.8,
+       "to": 1255.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -422.74,
+        null
+       ],
+       "from": 1253.8,
+       "to": 1255.0,
+       "full_circle": true,
+       "convex": false
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -641.33,
+    1235.0,
+    1244.0,
+    841.76,
+    1255.0
+   ]
+  },
+  {
+   "part_number": "831007",
+   "name": "831007 HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL",
+   "description": "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL | Tấm đệm góc vát 20 × 40 - 45° - thép 2.0 | P01 | Joints' STEP 831007_P01_HARDWARE-MITRE-PLATE-20X40-45DEG_STEP.step",
+   "is_root": false,
+   "copies": 2,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "MITRE PLATE",
+     "box": [
+      1.75,
+      0.0,
+      -1.0,
+      28.25,
+      40.0,
+      1.0
+     ],
+     "volume_mm3": 2120.0,
+     "area_mm2": 2386.0,
+     "mass_kg": 0.0166,
+     "material": "STEEL PLATE 2.0 GALVANIZED 7850 kg/m3 (source)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -642.21,
+    112.79,
+    1244.0,
+    -622.06,
+    1254.47
+   ]
+  },
+  {
+   "part_number": "831001",
+   "name": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "description": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | Chốt định vị Ø8 | P01 | Joints' STEP 831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
+   "is_root": false,
+   "copies": 2,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "SPIGOT",
+     "box": [
+      -4.0,
+      -4.0,
+      -8.0,
+      4.0,
+      4.0,
+      7.24
+     ],
+     "volume_mm3": 521.4,
+     "area_mm2": 462.8,
+     "mass_kg": 0.0041,
+     "material": "STAINLESS SPIGOT 7900 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 8.0,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": 0.0,
+       "to": 6.24,
+       "full_circle": true,
+       "convex": true
+      },
+      {
+       "d": 5.88,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": -8.0,
+       "to": 0.0,
+       "full_circle": true,
+       "convex": true
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1220.0,
+    -546.74,
+    1247.76,
+    1228.0,
+    754.0,
+    1263.0
+   ]
+  },
+  {
+   "part_number": "211551",
+   "name": "211551 WALL - CAVITY FILL PIECE F15 112.7 X 1102.7 - SIDE LOWER - RH",
+   "description": "WALL - CAVITY FILL PIECE F15 112.7 X 1102.7 - SIDE LOWER - RH | Vách phải - bông PET dưới - tấm F15 112.7 x 1102.7 | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 2",
+     "box": [
+      1204.0,
+      -362.74,
+      132.26,
+      1244.0,
+      -250.0,
+      1235.0
+     ],
+     "volume_mm3": 4972916.3,
+     "area_mm2": 345884.2,
+     "mass_kg": 0.1193,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -362.74,
+    132.26,
+    1244.0,
+    -250.0,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "211553",
+   "name": "211553 WALL - CAVITY FILL PIECE F17 100 X 1102.7 - SIDE LOWER - RH",
+   "description": "WALL - CAVITY FILL PIECE F17 100 X 1102.7 - SIDE LOWER - RH | Vách phải - bông PET dưới - tấm F17 100 x 1102.7 | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 7",
+     "box": [
+      1204.0,
+      590.0,
+      132.26,
+      1244.0,
+      690.0,
+      1235.0
+     ],
+     "volume_mm3": 4266960.0,
+     "area_mm2": 314367.2,
+     "mass_kg": 0.1024,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    590.0,
+    132.26,
+    1244.0,
+    690.0,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "212205",
+   "name": "212205 WALL - FRAME STILE MID - SIDE LOWER - RH",
+   "description": "WALL - FRAME STILE MID - SIDE LOWER - RH | Vách phải - khung dưới - thanh đứng giữa | P01",
+   "is_root": false,
+   "copies": 3,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "STILE - MID",
+     "box": [
+      1204.0,
+      -382.74,
+      132.26,
+      1244.0,
+      -362.74,
+      1235.0
+     ],
+     "volume_mm3": 103040.0,
+     "area_mm2": 257786.9,
+     "mass_kg": 0.8089,
+     "material": "STEEL BOX TUBE GALVANIZED 7850 kg/m3 (source)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -382.74,
+    132.26,
+    1244.0,
+    590.0,
+    1235.0
    ]
   },
   {
@@ -1411,7 +818,679 @@
    "name": "210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD",
    "description": "WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | P01 | position R1",
    "is_root": true,
-   "bodies": []
+   "copies": 1,
+   "parents": [],
+   "bodies": [],
+   "placed_box": null
+  },
+  {
+   "part_number": "212204",
+   "name": "212204 WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH",
+   "description": "WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - RH | Vách phải - khung dưới - thanh đứng sau 40x40 | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "STILE - BACK",
+     "box": [
+      1204.0,
+      804.0,
+      113.38,
+      1244.0,
+      844.0,
+      1253.88
+     ],
+     "volume_mm3": 174563.0,
+     "area_mm2": 349569.1,
+     "mass_kg": 1.3703,
+     "material": "STEEL BOX TUBE GALVANIZED 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 10.0,
+       "axis": "x",
+       "centre": [
+        null,
+        824.0,
+        1010.87
+       ],
+       "from": 1204.0,
+       "to": 1205.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "x",
+       "centre": [
+        null,
+        824.0,
+        671.56
+       ],
+       "from": 1204.0,
+       "to": 1205.0,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 10.0,
+       "axis": "x",
+       "centre": [
+        null,
+        824.0,
+        332.26
+       ],
+       "from": 1204.0,
+       "to": 1205.0,
+       "full_circle": true,
+       "convex": false
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    804.0,
+    113.38,
+    1244.0,
+    844.0,
+    1253.88
+   ]
+  },
+  {
+   "part_number": "838003",
+   "name": "838003 HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2",
+   "description": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2 | Tán rút M6 thép mạ kẽm | P01",
+   "is_root": false,
+   "copies": 17,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "RIVNUT",
+     "box": [
+      -6.47,
+      -6.47,
+      -9.65,
+      6.47,
+      6.47,
+      0.76
+     ],
+     "volume_mm3": 550.1,
+     "area_mm2": 734.5,
+     "mass_kg": 0.0043,
+     "material": "STEEL ZINC RIVNUT 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 9.91,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": -9.65,
+       "to": 0.0,
+       "full_circle": true,
+       "convex": true
+      },
+      {
+       "d": 6.0,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": -9.65,
+       "to": 0.76,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 12.95,
+       "axis": "z",
+       "centre": [
+        0.0,
+        0.0,
+        null
+       ],
+       "from": 0.0,
+       "to": 0.76,
+       "full_circle": true,
+       "convex": true
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1201.74,
+    -549.22,
+    325.78,
+    1230.47,
+    830.48,
+    1257.26
+   ]
+  },
+  {
+   "part_number": "211515",
+   "name": "211515 WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
+   "description": "WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON | Vách - bông PET dưới - tấm F01 240 x 1102.7 (dùng chung) | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 1",
+     "box": [
+      1204.0,
+      -622.74,
+      132.26,
+      1244.0,
+      -382.74,
+      1235.0
+     ],
+     "volume_mm3": 10010304.0,
+     "area_mm2": 627134.4,
+     "mass_kg": 0.2402,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -622.74,
+    132.26,
+    1244.0,
+    -382.74,
+    1235.0
+   ]
+  },
+  {
+   "part_number": "848015",
+   "name": "848015 SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA",
+   "description": "SEALS - CASSETTE LEDGE PAD - 18 X 2.36 - PORON 4701-40 320 PSA | Đệm đỡ cassette trên gờ | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "PAD - ON THE LEDGE UNDER THE CASSETTE (HOLD)",
+     "box": [
+      1182.5,
+      -635.0,
+      109.95,
+      1200.5,
+      795.0,
+      112.26
+     ],
+     "volume_mm3": 59459.4,
+     "area_mm2": 58169.8,
+     "mass_kg": 0.019,
+     "material": "SOFT PAD (HOLD) 320 kg/m3 (source)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1182.5,
+    -635.0,
+    109.95,
+    1200.5,
+    795.0,
+    112.26
+   ]
+  },
+  {
+   "part_number": "831008",
+   "name": "831008 HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL",
+   "description": "HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL | Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0 | P01 | Joints' STEP 831008_P01_HARDWARE-MITRE-PLATE-20X40-TO-40X40_STEP.step",
+   "is_root": false,
+   "copies": 2,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "MITRE PLATE",
+     "box": [
+      3.15,
+      0.0,
+      -1.0,
+      44.65,
+      40.0,
+      1.0
+     ],
+     "volume_mm3": 3320.0,
+     "area_mm2": 3646.0,
+     "mass_kg": 0.0261,
+     "material": "STEEL PLATE 2.0 GALVANIZED 7850 kg/m3 (source)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    803.62,
+    112.77,
+    1244.0,
+    841.63,
+    1254.49
+   ]
+  },
+  {
+   "part_number": "212203",
+   "name": "212203 WALL - FRAME STILE FRONT - SIDE LOWER - RH",
+   "description": "WALL - FRAME STILE FRONT - SIDE LOWER - RH | Vách phải - khung dưới - thanh đứng trước | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "STILE - FRONT",
+     "box": [
+      1204.0,
+      -642.74,
+      113.67,
+      1244.0,
+      -622.74,
+      1253.59
+     ],
+     "volume_mm3": 153657.3,
+     "area_mm2": 256780.6,
+     "mass_kg": 1.2062,
+     "material": "STEEL BOX TUBE GALVANIZED 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 19.0,
+       "axis": "y",
+       "centre": [
+        1224.0,
+        null,
+        1035.0
+       ],
+       "from": -623.94,
+       "to": -622.74,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "y",
+       "centre": [
+        1224.0,
+        null,
+        1035.0
+       ],
+       "from": -642.74,
+       "to": -641.54,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 19.0,
+       "axis": "y",
+       "centre": [
+        1224.0,
+        null,
+        683.63
+       ],
+       "from": -623.94,
+       "to": -622.74,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "y",
+       "centre": [
+        1224.0,
+        null,
+        683.63
+       ],
+       "from": -642.74,
+       "to": -641.54,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 19.0,
+       "axis": "y",
+       "centre": [
+        1224.0,
+        null,
+        332.26
+       ],
+       "from": -623.94,
+       "to": -622.74,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "y",
+       "centre": [
+        1224.0,
+        null,
+        332.26
+       ],
+       "from": -642.74,
+       "to": -641.54,
+       "full_circle": true,
+       "convex": false
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -642.74,
+    113.67,
+    1244.0,
+    -622.74,
+    1253.59
+   ]
+  },
+  {
+   "part_number": "212201",
+   "name": "212201 WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH",
+   "description": "WALL - FRAME RAIL BOTTOM - SIDE LOWER - RH | Vách phải - khung dưới - thanh ngang dưới | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "211102"
+   ],
+   "bodies": [
+    {
+     "name": "RAIL - BOTTOM",
+     "box": [
+      1204.0,
+      -641.33,
+      112.26,
+      1244.0,
+      841.76,
+      132.26
+     ],
+     "volume_mm3": 199055.2,
+     "area_mm2": 332812.1,
+     "mass_kg": 1.5626,
+     "material": "STEEL BOX TUBE GALVANIZED 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        755.0,
+        121.26
+       ],
+       "from": 1204.0,
+       "to": 1205.2,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        485.0,
+        121.26
+       ],
+       "from": 1204.0,
+       "to": 1205.2,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        215.0,
+        121.26
+       ],
+       "from": 1204.0,
+       "to": 1205.2,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        -55.0,
+        121.26
+       ],
+       "from": 1204.0,
+       "to": 1205.2,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        -325.0,
+        121.26
+       ],
+       "from": 1204.0,
+       "to": 1205.2,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 3.3,
+       "axis": "x",
+       "centre": [
+        null,
+        -595.0,
+        121.26
+       ],
+       "from": 1204.0,
+       "to": 1205.2,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 8.5,
+       "axis": "z",
+       "centre": [
+        1227.75,
+        750.0,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": false,
+       "convex": false
+      },
+      {
+       "d": 8.5,
+       "axis": "z",
+       "centre": [
+        1220.25,
+        750.0,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": false,
+       "convex": false
+      },
+      {
+       "d": 8.5,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -542.74,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 19.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        630.0,
+        null
+       ],
+       "from": 131.06,
+       "to": 132.26,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        630.0,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 19.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        279.09,
+        null
+       ],
+       "from": 131.06,
+       "to": 132.26,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        279.09,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 19.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -71.83,
+        null
+       ],
+       "from": 131.06,
+       "to": 132.26,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -71.83,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 19.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -422.74,
+        null
+       ],
+       "from": 131.06,
+       "to": 132.26,
+       "full_circle": true,
+       "convex": false
+      },
+      {
+       "d": 7.0,
+       "axis": "z",
+       "centre": [
+        1224.0,
+        -422.74,
+        null
+       ],
+       "from": 112.26,
+       "to": 113.46,
+       "full_circle": true,
+       "convex": false
+      }
+     ]
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -641.33,
+    112.26,
+    1244.0,
+    841.76,
+    132.26
+   ]
+  },
+  {
+   "part_number": "211552",
+   "name": "211552 WALL - CAVITY FILL PIECE F16 98.2 X 1102.7 - SIDE LOWER - RH",
+   "description": "WALL - CAVITY FILL PIECE F16 98.2 X 1102.7 - SIDE LOWER - RH | Vách phải - bông PET dưới - tấm F16 98.2 x 1102.7 | P01",
+   "is_root": false,
+   "copies": 1,
+   "parents": [
+    "210102"
+   ],
+   "bodies": [
+    {
+     "name": "FILL - BAY 3",
+     "box": [
+      1204.0,
+      -230.0,
+      132.26,
+      1244.0,
+      -131.83,
+      1235.0
+     ],
+     "volume_mm3": 4330386.5,
+     "area_mm2": 312592.4,
+     "mass_kg": 0.1039,
+     "material": "PET FILL 40 MM 24 kg/m3 (confirmed)",
+     "holes": []
+    }
+   ],
+   "placed_box": [
+    1204.0,
+    -230.0,
+    132.26,
+    1244.0,
+    -131.83,
+    1235.0
+   ]
   }
  ],
  "parameters": [
@@ -1420,140 +1499,140 @@
    "expression": "pod_w_Ref",
    "unit": "mm",
    "value": 2500.0,
-   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "pod_d",
    "expression": "pod_d_Ref",
    "unit": "mm",
    "value": 1700.0,
-   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "pod_h",
    "expression": "pod_h_Ref",
    "unit": "mm",
    "value": 2400.0,
-   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "wall_depth",
    "expression": "wall_depth_Ref",
    "unit": "mm",
    "value": 1495.0,
-   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "wall_z0",
    "expression": "wall_z0_Ref",
    "unit": "mm",
    "value": 110.0,
-   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "panel_z0",
    "expression": "panel_z0_Ref",
    "unit": "mm",
    "value": 112.26,
-   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "side_h",
    "expression": "side_h_Ref",
    "unit": "mm",
    "value": 1142.74,
-   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "back_ph",
    "expression": "back_ph_Ref",
    "unit": "mm",
    "value": 1118.61,
-   "comment": "LINKED: back_ph_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: back_ph_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "stack_t",
    "expression": "stack_t_Ref",
    "unit": "mm",
    "value": 84.0,
-   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "outer_t",
    "expression": "outer_t_Ref",
    "unit": "mm",
    "value": 46.0,
-   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "cass_t",
    "expression": "cass_t_Ref",
    "unit": "mm",
    "value": 34.0,
-   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "lin_gap",
    "expression": "lin_gap_Ref",
    "unit": "mm",
    "value": 4.0,
-   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "seam_gap",
    "expression": "seam_gap_Ref",
    "unit": "mm",
    "value": 2.26,
-   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "skin_t",
    "expression": "skin_t_Ref",
    "unit": "mm",
    "value": 3.0,
-   "comment": "LINKED: skin_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: skin_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "bond_t",
    "expression": "bond_t_Ref",
    "unit": "mm",
    "value": 3.0,
-   "comment": "LINKED: bond_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: bond_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "bolt_edge_inset",
    "expression": "bolt_edge_inset_Ref",
    "unit": "mm",
    "value": 220.0,
-   "comment": "LINKED: bolt_edge_inset_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: bolt_edge_inset_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "spigot_inset",
    "expression": "spigot_inset_Ref",
    "unit": "mm",
    "value": 100.0,
-   "comment": "LINKED: spigot_inset_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: spigot_inset_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "n_base_bolt",
    "expression": "n_base_bolt_Ref",
    "unit": "",
    "value": 4.0,
-   "comment": "LINKED: n_base_bolt_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: n_base_bolt_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "ceil_bolt_z",
    "expression": "ceil_bolt_z_Ref",
    "unit": "mm",
    "value": 2374.0,
-   "comment": "LINKED: ceil_bolt_z_Ref, derived from 100000_P04_POD-SKELETON_CAD v4 (skeleton is the single source)"
+   "comment": "LINKED: ceil_bolt_z_Ref, derived from 100000_P04_POD-SKELETON_CAD v6 (skeleton is the single source)"
   },
   {
    "name": "tube_w",
    "expression": "20 mm",
    "unit": "mm",
    "value": 20.0,
-   "comment": "CONFIRMED: D-34, D-54: aluminium tube 20 x 40 x 1.2; the 20 mm face carries the skin, so the 40 mm runs through the wall (outer_t = ACP 3 + frame 40). The joint register may turn it for the bond width (HOLD)"
+   "comment": "CONFIRMED: D-34, D-54, kept by D-131 (the same outside sections in welded, galvanized steel box tube): 20 x 40; the 20 mm face carries the skin, so the 40 mm runs through the wall (outer_t = ACP 3 + frame 40)"
   },
   {
    "name": "tube_d",
@@ -1567,21 +1646,35 @@
    "expression": "1.2 mm",
    "unit": "mm",
    "value": 1.2,
-   "comment": "CONFIRMED: D-34, D-54, D-85: perimeter members (rails, front and back stiles) keep the 1.2 mm wall; they carry the rivnuts (grip check passed)"
+   "comment": "SOURCE: the Joints Engineer's gauges for D-131 (PM ruling, 2026-11-01 05:29): 1.2 for a side panel's rails and front stile, for margin against thin tube and weak welds (corner lift 74% on L1 and L2)"
   },
   {
-   "name": "stud_t",
+   "name": "corner_t",
    "expression": "1.0 mm",
    "unit": "mm",
    "value": 1.0,
-   "comment": "CONFIRMED: D-85 (weight): intermediate studs at a 1.0 mm wall; they carry no rivnut, only the skin's bond line"
+   "comment": "SOURCE: the same: the 40 x 40 members (the back stile, and the upper panel's top member) stay 1.0"
+  },
+  {
+   "name": "stud_t",
+   "expression": "0.8 mm",
+   "unit": "mm",
+   "value": 0.8,
+   "comment": "SOURCE: the same: the studs at 0.8 (no rivnut, only the skin's bond line)"
+  },
+  {
+   "name": "plate_t",
+   "expression": "2 mm",
+   "unit": "mm",
+   "value": 2.0,
+   "comment": "SOURCE: the Joints Engineer's corner detail (2026-11-01 05:05): a 2 mm steel plate welded into each mitre, the members cut back so it fits, centred on the old mitre line"
   },
   {
    "name": "stile_pitch_max",
-   "expression": "400 mm",
+   "expression": "300 mm",
    "unit": "mm",
-   "value": 400.0,
-   "comment": "CONFIRMED: D-16, D-34: members 400 mm apart or less, to keep the ACP flat"
+   "value": 300.0,
+   "comment": "CONFIRMED: PM ruling 2026-11-01 (D-131 sample): the ACP flexes 2 mm or less under a 100 N push at a bay's centre, edges simply supported (make_acp_spans.py), so members about 300 apart; it was 400 (D-16, D-34)"
   },
   {
    "name": "pnl_len",
@@ -1595,7 +1688,7 @@
    "expression": "side_h",
    "unit": "mm",
    "value": 1142.74,
-   "comment": "CALCULATION: skeleton side_h: 2 sheets per side wall (D-23) with the seam gaps"
+   "comment": "CALCULATION: lower: skeleton side_h (2 sheets per side wall, D-23); upper: from one seam gap above the lower row to the roof datum pod_h, as the skeleton's envelope (equal to side_h at P04 values)"
   },
   {
    "name": "skin_ret",
@@ -1603,6 +1696,13 @@
    "unit": "mm",
    "value": 43.0,
    "comment": "ASSUMPTION: back return of the side skin: covers the frame's back end at the corner, where the side skin covers the back panel's edge (D-55; sample drawing D04). V-groove and fold per the ACP maker (HOLD H16)"
+  },
+  {
+   "name": "skin_fold_r",
+   "expression": "2 mm",
+   "unit": "mm",
+   "value": 2.0,
+   "comment": "SOURCE: outside radius of the back return's V-grooved fold: over 2 at the fold (the panel maker's guide 01/2021/HDTC-VD 4.5 and figure 4.5: under 2 cracks the face and voids the warranty); modelled (the Lead's ruling, 2026-11-01)"
   },
   {
    "name": "skin_setback",
@@ -1613,10 +1713,10 @@
   },
   {
    "name": "frm_len",
-   "expression": "pnl_len - skin_t",
+   "expression": "pnl_len - skin_t - bond_t",
    "unit": "mm",
-   "value": 1489.74,
-   "comment": "CALCULATION: the frame stops at the inside of the skin's back return"
+   "value": 1486.74,
+   "comment": "CALCULATION: the frame stops one bond line (bond_t) inside the skin's back return, which is bonded to it as the main face is (the Lead's ruling, 2026-11-01: every skin face that meets a frame is bonded at bond_t, no zero fits)"
   },
   {
    "name": "frm_h",
@@ -1634,17 +1734,10 @@
   },
   {
    "name": "stile_n_mid",
-   "expression": "ceil(( frm_len - tube_w / 2 - corner_w / 2 ) / stile_pitch_max) - 1",
+   "expression": "7",
    "unit": "",
-   "value": 3.0,
-   "comment": "CALCULATION: intermediate stiles so that no stile pitch (centre to centre) exceeds stile_pitch_max"
-  },
-  {
-   "name": "stile_pitch",
-   "expression": "( frm_len - tube_w / 2 - corner_w / 2 ) / ( stile_n_mid + 1 )",
-   "unit": "mm",
-   "value": 364.935,
-   "comment": "CALCULATION: equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"
+   "value": 7.0,
+   "comment": "CALCULATION: D-131 sample (PM 2026-11-01): 5 studs, placed clear of the bolts (stud_c1 to stud_c5): 4 even studs about 300 apart pass the skin's 2 mm limit but stand 14 and 24 mm from two bolts, under R-J14's 30; R1 two more, at Y -240 and 700, for INTERIOR's ledge brackets (the Lead's ruling of 2026-11-01 on INTERIOR's load check), numbered in Y order"
   },
   {
    "name": "top_h",
@@ -1697,10 +1790,10 @@
   },
   {
    "name": "rivnut_d",
-   "expression": "9.53 mm",
+   "expression": "10 mm",
    "unit": "mm",
-   "value": 9.53,
-   "comment": "SOURCE: Sherex CAH3-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03)"
+   "value": 10.0,
+   "comment": "CONFIRMED: D-163 (the Lead's ruling, 2026-11-01): Sherex CAL2-610-4.2 in a round drilled hole Ø10.00 +0.10/0, inside the maker's 10.00 +0.15/-0.0 (Sherex drawing CAL2-610-4.2 rev B, note 2) so the bolt-hole stack ST-03 stays positive; T06's spin-out test confirms it"
   },
   {
    "name": "spigot_d",
@@ -1710,11 +1803,25 @@
    "comment": "ASSUMPTION: register FR-05: hole for the 8 mm locating spigot H-05"
   },
   {
-   "name": "spigot_slot",
-   "expression": "14 mm",
+   "name": "pin_slot_w",
+   "expression": "8.5 mm",
    "unit": "mm",
-   "value": 14.0,
-   "comment": "ASSUMPTION: register FR-05: slot length for the second spigot"
+   "value": 8.5,
+   "comment": "CONFIRMED: D-169 (Joints, 2026-11-01): the decor block's pin slots 8.5 wide in X"
+  },
+  {
+   "name": "pin_slot_l",
+   "expression": "12 mm",
+   "unit": "mm",
+   "value": 12.0,
+   "comment": "CONFIRMED: D-169: 12 long in Z, along the member; on the bolt line, 100 from each end of the seam edge (the register's spigot rule)"
+  },
+  {
+   "name": "spigot_slot",
+   "expression": "16 mm",
+   "unit": "mm",
+   "value": 16.0,
+   "comment": "CONFIRMED: D-167 (the Lead's ruling, 2026-11-01): the seam gasket is 4.78 (PORON 4701-40's standard), so the side panels' back-end slot for the second spigot grows from 8.5 x 14 to 8.5 x 16, ±4 of travel, the panel held 3.4 out"
   },
   {
    "name": "spigot_edge",
@@ -1787,6 +1894,69 @@
    "comment": "CALCULATION: even pitch of the bolts along the panel"
   },
   {
+   "name": "int_stud_d1",
+   "expression": "402.74 mm",
+   "unit": "mm",
+   "value": 402.74,
+   "comment": "CALCULATION: the Lead's ruling of 2026-11-01 on INTERIOR's load check (WALL group): its ledge bracket stud at Y -240 (the ledge's left end) at the P04 size: 402.74 behind the frame's front end (Y -642.74)"
+  },
+  {
+   "name": "int_stud_d2",
+   "expression": "144 mm",
+   "unit": "mm",
+   "value": 144.0,
+   "comment": "CALCULATION: the Lead's ruling of 2026-11-01 on INTERIOR's load check (WALL group): its ledge bracket stud at Y 700 (the ledge's right end) at the P04 size: 144 before the frame's back end (Y 844)"
+  },
+  {
+   "name": "stud_c1",
+   "expression": "bolt_edge + 50 mm",
+   "unit": "mm",
+   "value": 270.0,
+   "comment": "CALCULATION: 50 past the 1st bolt: its face 40 clear of it (R-J14)"
+  },
+  {
+   "name": "stud_c2",
+   "expression": "int_stud_d1",
+   "unit": "mm",
+   "value": 402.74,
+   "comment": "CALCULATION: INTERIOR's ledge bracket at Y -240"
+  },
+  {
+   "name": "stud_c3",
+   "expression": "bolt_edge + len_bolt_pitch - 50 mm",
+   "unit": "mm",
+   "value": 520.9133,
+   "comment": "CALCULATION: 50 before the 2nd bolt (R-J14)"
+  },
+  {
+   "name": "stud_c4",
+   "expression": "bolt_edge + 1.5 * len_bolt_pitch",
+   "unit": "mm",
+   "value": 746.37,
+   "comment": "CALCULATION: midway between the 2nd and 3rd bolts"
+  },
+  {
+   "name": "stud_c5",
+   "expression": "bolt_edge + 2 * len_bolt_pitch + 50 mm",
+   "unit": "mm",
+   "value": 971.8267,
+   "comment": "CALCULATION: 50 past the 3rd bolt (R-J14)"
+  },
+  {
+   "name": "stud_c6",
+   "expression": "bolt_edge + 3 * len_bolt_pitch - 50 mm",
+   "unit": "mm",
+   "value": 1222.74,
+   "comment": "CALCULATION: 50 before the 4th bolt (R-J14)"
+  },
+  {
+   "name": "stud_c7",
+   "expression": "frm_len - int_stud_d2",
+   "unit": "mm",
+   "value": 1342.74,
+   "comment": "CALCULATION: INTERIOR's ledge bracket at Y 700"
+  },
+  {
    "name": "felt_t",
    "expression": "9 mm",
    "unit": "mm",
@@ -1836,11 +2006,18 @@
    "comment": "CALCULATION: air gap between the tray base and the felt (24): the acoustic gap (D-17) and the cable path (D-26)"
   },
   {
-   "name": "cass_len",
-   "expression": "wall_depth - stack_t + cass_t",
+   "name": "lin_front_dy",
+   "expression": "5 mm",
    "unit": "mm",
-   "value": 1445.0,
-   "comment": "CALCULATION: = 1448: from the decor back plate to past the back cassette's face, closing the inside corner (D-57)"
+   "value": 5.0,
+   "comment": "CONFIRMED: Lead ruling 2026-11-01 (F-308, F-309): the right-hand cassettes start at Y -640, 1 mm off DR's inner panel (its room face at Y -641.14, FRONT's measurement; the panel stays), and the service steps unclip R1's and R2's cassettes before that panel comes off; the left-hand ones start at the decor back plate (Y -645)"
+  },
+  {
+   "name": "cass_len",
+   "expression": "wall_depth - stack_t + cass_t - lin_front_dy",
+   "unit": "mm",
+   "value": 1440.0,
+   "comment": "CALCULATION: from the cassette's front end (lin_front_dy behind the decor back plate) to past the back cassette's face, closing the inside corner (D-57): 1445 on the left, 1440 on the right"
   },
   {
    "name": "cass_h",
@@ -1886,31 +2063,31 @@
   },
   {
    "name": "rivnut_head_d",
-   "expression": "12.96 mm",
+   "expression": "12.95 mm",
    "unit": "mm",
-   "value": 12.96,
-   "comment": "SOURCE: Sherex CAH3-610-4.2 head Ø12.96 (joints register H-03, SHX)"
+   "value": 12.95,
+   "comment": "SOURCE: Sherex CAL2-610-4.2 rev B: flange Ø12.45 to 12.95, the largest modelled (D-163)"
   },
   {
    "name": "rivnut_head_t",
    "expression": "0.76 mm",
    "unit": "mm",
    "value": 0.76,
-   "comment": "SOURCE: Sherex CAH3-610-4.2 head 0.76 ±0.08 (H-03, SHX)"
+   "comment": "SOURCE: Sherex CAL2-610-4.2 rev B: flange 0.68 to 0.84, its middle; with the 1.5 stop washer the 2.26 stop (R-J5), as before (D-163)"
   },
   {
    "name": "rivnut_body_d",
-   "expression": "9.5 mm",
+   "expression": "9.91 mm",
    "unit": "mm",
-   "value": 9.5,
-   "comment": "SOURCE: Sherex CAH3-610-4.2 body Ø9.50 max (H-03, SHX)"
+   "value": 9.91,
+   "comment": "SOURCE: Sherex CAL2-610-4.2 rev B: knurled body Ø9.91 max (D-163)"
   },
   {
    "name": "rivnut_len",
-   "expression": "10.16 mm",
+   "expression": "9.65 mm",
    "unit": "mm",
-   "value": 10.16,
-   "comment": "SOURCE: Sherex CAH3-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not modelled"
+   "value": 9.65,
+   "comment": "SOURCE: Sherex CAL2-610-4.2 rev B, note 3: installed length 9.65 max under the flange (14.35 to 15.11 before setting); the bulge inside the tube is not modelled (D-163)"
   },
   {
    "name": "m6_d",
@@ -1924,21 +2101,182 @@
    "expression": "8 mm",
    "unit": "mm",
    "value": 8.0,
-   "comment": "SOURCE: joints register H-05: Ø8 stainless pin (PROPOSED, assumption sizes)"
+   "comment": "SOURCE: joints register H-05: Ø8 stainless pin; the part itself is Joints' 831001 STEP, placed as it is (F-189)"
   },
   {
    "name": "spigot_proud",
    "expression": "8 mm",
    "unit": "mm",
    "value": 8.0,
-   "comment": "SOURCE: joints register H-05: stands 8 proud (read as: of the joint face)"
+   "comment": "SOURCE: joints register H-05 and Joints' README: the pin's top 8.00 above the tube face (Z 7.24 above its origin on the rivnut head)"
   },
   {
-   "name": "spigot_thread_l",
-   "expression": "10 mm",
+   "name": "int_rn_z1",
+   "expression": "815 mm",
    "unit": "mm",
-   "value": 10.0,
-   "comment": "ASSUMPTION: M6 thread into the spigot rivnut; H-05 gives no length; 10 stays inside the rivnut's 10.16"
+   "value": 815.0,
+   "comment": "CONFIRMED: the Lead's ruling of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group): each ledge bracket's lower rivnut, Z 815"
+  },
+  {
+   "name": "int_rn_z2",
+   "expression": "1045 mm",
+   "unit": "mm",
+   "value": 1045.0,
+   "comment": "CONFIRMED: the Lead's ruling of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group): each ledge bracket's upper rivnut, Z 1045"
+  },
+  {
+   "name": "int_so_d",
+   "expression": "12 mm",
+   "unit": "mm",
+   "value": 12.0,
+   "comment": "SOURCE: the Lead's ruling of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group): INTERIOR's steel stand-off, Ø12, from the stud to 5 proud of the felt"
+  },
+  {
+   "name": "int_clr_d",
+   "expression": "16 mm",
+   "unit": "mm",
+   "value": 16.0,
+   "comment": "CONFIRMED: the Lead's ruling of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group): the clearance hole in the tray and the felt, 2 round the stand-off, so the lining floats free of it (D-17)"
+  },
+  {
+   "name": "ledge_t",
+   "expression": "1.5 mm",
+   "unit": "mm",
+   "value": 1.5,
+   "comment": "CONFIRMED: the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted): galvanized steel sheet, DX51D+Z (EN 10346), Z100; 1.5 (the Lead's ruling the same day) so each rivet's countersink is machined in the upright with land under it, the heads flush and the rail's hole plain: 0.40 clear of the tray at J-FRAME-01's worst case"
+  },
+  {
+   "name": "ledge_r",
+   "expression": "ledge_t",
+   "unit": "mm",
+   "value": 1.5,
+   "comment": "ASSUMPTION: inside bend radius 1 x t, as the trays (the sheet metal rule's)"
+  },
+  {
+   "name": "ledge_out",
+   "expression": "28 mm",
+   "unit": "mm",
+   "value": 28.0,
+   "comment": "ASSUMPTION: the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted): the leg from the rail's room face, under the tray's 34 deep bottom return; its tip 10 short of the lining's room face, out of sight"
+  },
+  {
+   "name": "ledge_up",
+   "expression": "tube_w - 2 mm",
+   "unit": "mm",
+   "value": 18.0,
+   "comment": "ASSUMPTION: the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted): the upright reaches 2 under the bottom rail's top face"
+  },
+  {
+   "name": "ledge_pad_t",
+   "expression": "2.31 mm",
+   "unit": "mm",
+   "value": 2.31,
+   "comment": "CALCULATION: Joints' pick (WALL group, 2026-11-01): Rogers PORON 4701-40, the 320 kg/m3 grade, 2.36 thick (a standard size), PSA one side, slit 18 wide; the ledge's 7.7 kPa squeezes it about 2%, to about 2.31, so the leg sits 2.31 under the frame's bottom and the cassette's bottom stays level with it (the foam is ±10% thick)"
+  },
+  {
+   "name": "ledge_pad_w",
+   "expression": "18 mm",
+   "unit": "mm",
+   "value": 18.0,
+   "comment": "SOURCE: Joints' pick: the pad slit 18 wide, on the leg's flat past its bend"
+  },
+  {
+   "name": "ledge_front_dy",
+   "expression": "5 mm",
+   "unit": "mm",
+   "value": 5.0,
+   "comment": "CONFIRMED: both sides' ledges start where the right-hand cassettes do (lin_front_dy on R: the Lead's ruling on F-308 and F-309), so L1's and R1's are one part"
+  },
+  {
+   "name": "ledge_end",
+   "expression": "5 mm",
+   "unit": "mm",
+   "value": 5.0,
+   "comment": "ASSUMPTION: the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted): the ledge's ends 5 inside the right-hand cassette's"
+  },
+  {
+   "name": "ledge_len",
+   "expression": "wall_depth - stack_t + cass_t - ledge_front_dy - 2 * ledge_end",
+   "unit": "mm",
+   "value": 1430.0,
+   "comment": "CALCULATION: 1430: the right-hand cassette's length less 5 at each end"
+  },
+  {
+   "name": "ledge_rivet_d",
+   "expression": "3.3 mm",
+   "unit": "mm",
+   "value": 3.3,
+   "comment": "SOURCE: joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): the hole for 838012, Ø3.3 in the upright and the rail"
+  },
+  {
+   "name": "ledge_rivet_n",
+   "expression": "6",
+   "unit": "",
+   "value": 6.0,
+   "comment": "ASSUMPTION: the Lead's ledge ruling, 2026-11-01 (WALL's sizes, accepted): 6 rivets for the two cassettes' 20.2 kg, about 33 N each"
+  },
+  {
+   "name": "ledge_rivet_e",
+   "expression": "40 mm",
+   "unit": "mm",
+   "value": 40.0,
+   "comment": "ASSUMPTION: the end rivets 40 in from the ledge's ends"
+  },
+  {
+   "name": "ledge_rivet_z",
+   "expression": "tube_w / 2 - 1 mm",
+   "unit": "mm",
+   "value": 9.0,
+   "comment": "CALCULATION: the rivet line 9 above the frame's bottom: 9.0 from the upright's top edge (2.8 x the Ø3.2 rivet) and the hole's edge 8.2 from the bend"
+  },
+  {
+   "name": "ledge_rivet_pitch",
+   "expression": "( ledge_len - 2 * ledge_rivet_e ) / ( ledge_rivet_n - 1 )",
+   "unit": "mm",
+   "value": 270.0,
+   "comment": "CALCULATION: even, so the pattern is symmetric and the turned copy (RH) matches: one part"
+  },
+  {
+   "name": "rivet_d",
+   "expression": "3.2 mm",
+   "unit": "mm",
+   "value": 3.2,
+   "comment": "SOURCE: joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): 838012, closed end (D-166), countersunk, aluminium body with a steel mandrel, 3.2 x 8, grip 1.0 to 3.5 for the 1.5 + 1.2 = 2.7; shear 1100 N, tensile 1450 N"
+  },
+  {
+   "name": "rivet_head_d",
+   "expression": "6.7 mm",
+   "unit": "mm",
+   "value": 6.7,
+   "comment": "SOURCE: joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): the countersunk head Ø5.8 to 6.7, its largest"
+  },
+  {
+   "name": "rivet_csk_angle",
+   "expression": "120 deg",
+   "unit": "deg",
+   "value": 2.0944,
+   "comment": "SOURCE: joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): the head's 120 degrees"
+  },
+  {
+   "name": "rivet_head_t",
+   "expression": "( rivet_head_d - rivet_d ) / 2 / tan(rivet_csk_angle / 2)",
+   "unit": "mm",
+   "value": 1.0104,
+   "comment": "CALCULATION: the head's cone: 1.01 deep for Ø6.7 at 120 (the standard allows 1.3 at most: a rim at most 0.3 proud still clears the tray by 0.1 at J-FRAME-01's worst case)"
+  },
+  {
+   "name": "ledge_csk_d",
+   "expression": "rivet_head_d",
+   "unit": "mm",
+   "value": 6.7,
+   "comment": "CALCULATION: the upright's machined countersink: Ø6.7 at the head's 120, the head's largest, so every head (Ø5.8 to 6.7) sits flush or under; 0.52 of the 1.5 upright stays under it at the Ø3.3 hole (a third of its thickness)"
+  },
+  {
+   "name": "rivet_len",
+   "expression": "8 mm",
+   "unit": "mm",
+   "value": 8.0,
+   "comment": "SOURCE: joints register H-47, KK2 (Wurth 51452328 and the ISO 15974 table): 8 long overall (its envelope)"
   }
  ]
 }
